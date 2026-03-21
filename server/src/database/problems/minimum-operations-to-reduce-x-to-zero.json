@@ -1,0 +1,52 @@
+{
+  "id": "1658",
+  "title": "Minimum Operations to Reduce X to Zero",
+  "slug": "minimum-operations-to-reduce-x-to-zero",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and an integer <code>x</code>. In one operation, you can either remove the leftmost or the rightmost element from the array <code>nums</code> and subtract its value from <code>x</code>. Note that this <strong>modifies</strong> the array for future operations.</p>\n\n<p>Return <em>the <strong>minimum number</strong> of operations to reduce </em><code>x</code> <em>to <strong>exactly</strong></em> <code>0</code> <em>if it is possible</em><em>, otherwise, return </em><code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,4,2,3], x = 5\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The optimal solution is to remove the last two elements to reduce x to zero.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5,6,7,8,9], x = 4\n<strong>Output:</strong> -1\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,20,1,1,3], x = 10\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The optimal solution is to remove the last three elements and the first two elements (5 operations in total) to reduce x to zero.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= x &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and an integer `x`. In one operation, you can either remove the leftmost or the rightmost element from the array `nums` and subtract its value from `x`. Note that this **modifies** the array for future operations.\n\nReturn _the**minimum number** of operations to reduce _`x` _to**exactly**_ `0` _if it is possible_ _, otherwise, return_`-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,1,4,2,3], x = 5\n    **Output:** 2\n    **Explanation:** The optimal solution is to remove the last two elements to reduce x to zero.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,6,7,8,9], x = 4\n    **Output:** -1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,2,20,1,1,3], x = 10\n    **Output:** 5\n    **Explanation:** The optimal solution is to remove the last three elements and the first two elements (5 operations in total) to reduce x to zero.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 104`\n  * `1 <= x <= 109`",
+  "question": "You are given an integer array `nums` and an integer `x`. In one operation, you can either remove the leftmost or the rightmost element from the array `nums` and subtract its value from `x`. Note that this **modifies** the array for future operations.\n\nReturn _the**minimum number** of operations to reduce _`x` _to**exactly**_ `0` _if it is possible_ _, otherwise, return_`-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,1,4,2,3], x = 5\n    **Output:** 2\n    **Explanation:** The optimal solution is to remove the last two elements to reduce x to zero.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,6,7,8,9], x = 4\n    **Output:** -1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,2,20,1,1,3], x = 10\n    **Output:** 5\n    **Explanation:** The optimal solution is to remove the last three elements and the first two elements (5 operations in total) to reduce x to zero.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 104`\n  * `1 <= x <= 109`",
+  "topics": ["Array", "Hash Table", "Binary Search", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 229303,
+  "total_submissions": 567079,
+  "acceptance_rate": "40.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Size Subarray Sum",
+      "slug": "minimum-size-subarray-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-size-subarray-sum/"
+    },
+    {
+      "title": "Subarray Sum Equals K",
+      "slug": "subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sum-equals-k/"
+    },
+    {
+      "title": "Minimum Operations to Convert Number",
+      "slug": "minimum-operations-to-convert-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-convert-number/"
+    },
+    {
+      "title": "Removing Minimum Number of Magic Beans",
+      "slug": "removing-minimum-number-of-magic-beans",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/removing-minimum-number-of-magic-beans/"
+    },
+    {
+      "title": "Minimum Operations to Make the Integer Zero",
+      "slug": "minimum-operations-to-make-the-integer-zero",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-the-integer-zero/"
+    }
+  ],
+  "hints": [
+    "Think in reverse; instead of finding the minimum prefix + suffix, find the maximum subarray.",
+    "Finding the maximum subarray is standard and can be done greedily."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "729",
+  "title": "My Calendar I",
+  "slug": "my-calendar-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a <strong>double booking</strong>.</p>\n\n<p>A <strong>double booking</strong> happens when two events have some non-empty intersection (i.e., some moment is common to both events.).</p>\n\n<p>The event can be represented as a pair of integers <code>startTime</code> and <code>endTime</code> that represents a booking on the half-open interval <code>[startTime, endTime)</code>, the range of real numbers <code>x</code> such that <code>startTime &lt;= x &lt; endTime</code>.</p>\n\n<p>Implement the <code>MyCalendar</code> class:</p>\n\n<ul>\n\t<li><code>MyCalendar()</code> Initializes the calendar object.</li>\n\t<li><code>boolean book(int startTime, int endTime)</code> Returns <code>true</code> if the event can be added to the calendar successfully without causing a <strong>double booking</strong>. Otherwise, return <code>false</code> and do not add the event to the calendar.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;MyCalendar&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]\n[[], [10, 20], [15, 25], [20, 30]]\n<strong>Output</strong>\n[null, true, false, true]\n\n<strong>Explanation</strong>\nMyCalendar myCalendar = new MyCalendar();\nmyCalendar.book(10, 20); // return True\nmyCalendar.book(15, 25); // return False, It can not be booked because time 15 is already booked by another event.\nmyCalendar.book(20, 30); // return True, The event can be booked, as the first event takes every time less than 20, but not including 20.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= start &lt; end &lt;= 10<sup>9</sup></code></li>\n\t<li>At most <code>1000</code> calls will be made to <code>book</code>.</li>\n</ul>\n",
+  "content_markdown": "You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a **double booking**.\n\nA **double booking** happens when two events have some non-empty intersection (i.e., some moment is common to both events.).\n\nThe event can be represented as a pair of integers `startTime` and `endTime` that represents a booking on the half-open interval `[startTime, endTime)`, the range of real numbers `x` such that `startTime <= x < endTime`.\n\nImplement the `MyCalendar` class:\n\n  * `MyCalendar()` Initializes the calendar object.\n  * `boolean book(int startTime, int endTime)` Returns `true` if the event can be added to the calendar successfully without causing a **double booking**. Otherwise, return `false` and do not add the event to the calendar.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"MyCalendar\", \"book\", \"book\", \"book\"]\n    [[], [10, 20], [15, 25], [20, 30]]\n    **Output**\n    [null, true, false, true]\n    \n    **Explanation**\n    MyCalendar myCalendar = new MyCalendar();\n    myCalendar.book(10, 20); // return True\n    myCalendar.book(15, 25); // return False, It can not be booked because time 15 is already booked by another event.\n    myCalendar.book(20, 30); // return True, The event can be booked, as the first event takes every time less than 20, but not including 20.\n\n \n\n**Constraints:**\n\n  * `0 <= start < end <= 109`\n  * At most `1000` calls will be made to `book`.",
+  "question": "You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a **double booking**.\n\nA **double booking** happens when two events have some non-empty intersection (i.e., some moment is common to both events.).\n\nThe event can be represented as a pair of integers `startTime` and `endTime` that represents a booking on the half-open interval `[startTime, endTime)`, the range of real numbers `x` such that `startTime <= x < endTime`.\n\nImplement the `MyCalendar` class:\n\n  * `MyCalendar()` Initializes the calendar object.\n  * `boolean book(int startTime, int endTime)` Returns `true` if the event can be added to the calendar successfully without causing a **double booking**. Otherwise, return `false` and do not add the event to the calendar.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"MyCalendar\", \"book\", \"book\", \"book\"]\n    [[], [10, 20], [15, 25], [20, 30]]\n    **Output**\n    [null, true, false, true]\n    \n    **Explanation**\n    MyCalendar myCalendar = new MyCalendar();\n    myCalendar.book(10, 20); // return True\n    myCalendar.book(15, 25); // return False, It can not be booked because time 15 is already booked by another event.\n    myCalendar.book(20, 30); // return True, The event can be booked, as the first event takes every time less than 20, but not including 20.",
+  "constraints": "**Constraints:**\n\n  * `0 <= start < end <= 109`\n  * At most `1000` calls will be made to `book`.",
+  "topics": ["Array", "Binary Search", "Design", "Segment Tree", "Ordered Set"],
+  "total_accepted": 454350,
+  "total_submissions": 780023,
+  "acceptance_rate": "58.2%",
+  "similar_questions": [
+    {
+      "title": "My Calendar II",
+      "slug": "my-calendar-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/my-calendar-ii/"
+    },
+    {
+      "title": "My Calendar III",
+      "slug": "my-calendar-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/my-calendar-iii/"
+    },
+    {
+      "title": "Determine if Two Events Have Conflict",
+      "slug": "determine-if-two-events-have-conflict",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/determine-if-two-events-have-conflict/"
+    }
+  ],
+  "hints": [
+    "Store the events as a sorted list of intervals.  If none of the events conflict, then the new event can be added."
+  ]
+}

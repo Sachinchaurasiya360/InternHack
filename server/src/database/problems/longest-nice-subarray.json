@@ -1,0 +1,82 @@
+{
+  "id": "2401",
+  "title": "Longest Nice Subarray",
+  "slug": "longest-nice-subarray",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> consisting of <strong>positive</strong> integers.</p>\n\n<p>We call a subarray of <code>nums</code> <strong>nice</strong> if the bitwise <strong>AND</strong> of every pair of elements that are in <strong>different</strong> positions in the subarray is equal to <code>0</code>.</p>\n\n<p>Return <em>the length of the <strong>longest</strong> nice subarray</em>.</p>\n\n<p>A <strong>subarray</strong> is a <strong>contiguous</strong> part of an array.</p>\n\n<p><strong>Note</strong> that subarrays of length <code>1</code> are always considered nice.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,8,48,10]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The longest nice subarray is [3,8,48]. This subarray satisfies the conditions:\n- 3 AND 8 = 0.\n- 3 AND 48 = 0.\n- 8 AND 48 = 0.\nIt can be proven that no longer nice subarray can be obtained, so we return 3.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,1,5,11,13]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The length of the longest nice subarray is 1. Any subarray of length 1 can be chosen.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` consisting of **positive** integers.\n\nWe call a subarray of `nums` **nice** if the bitwise **AND** of every pair of elements that are in **different** positions in the subarray is equal to `0`.\n\nReturn _the length of the**longest** nice subarray_.\n\nA **subarray** is a **contiguous** part of an array.\n\n**Note** that subarrays of length `1` are always considered nice.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,8,48,10]\n    **Output:** 3\n    **Explanation:** The longest nice subarray is [3,8,48]. This subarray satisfies the conditions:\n    - 3 AND 8 = 0.\n    - 3 AND 48 = 0.\n    - 8 AND 48 = 0.\n    It can be proven that no longer nice subarray can be obtained, so we return 3.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,5,11,13]\n    **Output:** 1\n    **Explanation:** The length of the longest nice subarray is 1. Any subarray of length 1 can be chosen.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given an array `nums` consisting of **positive** integers.\n\nWe call a subarray of `nums` **nice** if the bitwise **AND** of every pair of elements that are in **different** positions in the subarray is equal to `0`.\n\nReturn _the length of the**longest** nice subarray_.\n\nA **subarray** is a **contiguous** part of an array.\n\n**Note** that subarrays of length `1` are always considered nice.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,8,48,10]\n    **Output:** 3\n    **Explanation:** The longest nice subarray is [3,8,48]. This subarray satisfies the conditions:\n    - 3 AND 8 = 0.\n    - 3 AND 48 = 0.\n    - 8 AND 48 = 0.\n    It can be proven that no longer nice subarray can be obtained, so we return 3.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,5,11,13]\n    **Output:** 1\n    **Explanation:** The length of the longest nice subarray is 1. Any subarray of length 1 can be chosen.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array", "Bit Manipulation", "Sliding Window"],
+  "total_accepted": 175015,
+  "total_submissions": 270074,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [
+    {
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+    },
+    {
+      "title": "Bitwise AND of Numbers Range",
+      "slug": "bitwise-and-of-numbers-range",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bitwise-and-of-numbers-range/"
+    },
+    {
+      "title": "Bitwise ORs of Subarrays",
+      "slug": "bitwise-ors-of-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bitwise-ors-of-subarrays/"
+    },
+    {
+      "title": "Fruit Into Baskets",
+      "slug": "fruit-into-baskets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fruit-into-baskets/"
+    },
+    {
+      "title": "Max Consecutive Ones III",
+      "slug": "max-consecutive-ones-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-consecutive-ones-iii/"
+    },
+    {
+      "title": "Get Equal Substrings Within Budget",
+      "slug": "get-equal-substrings-within-budget",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/get-equal-substrings-within-budget/"
+    },
+    {
+      "title": "Frequency of the Most Frequent Element",
+      "slug": "frequency-of-the-most-frequent-element",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/frequency-of-the-most-frequent-element/"
+    },
+    {
+      "title": "Longest Substring Of All Vowels in Order",
+      "slug": "longest-substring-of-all-vowels-in-order",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-of-all-vowels-in-order/"
+    },
+    {
+      "title": "Maximize the Confusion of an Exam",
+      "slug": "maximize-the-confusion-of-an-exam",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-the-confusion-of-an-exam/"
+    },
+    {
+      "title": "Maximum Sum of Distinct Subarrays With Length K",
+      "slug": "maximum-sum-of-distinct-subarrays-with-length-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-sum-of-distinct-subarrays-with-length-k/"
+    }
+  ],
+  "hints": [
+    "What is the maximum possible length of a nice subarray?",
+    "If two numbers have bitwise AND equal to zero, they do not have any common set bit. A number <code>x <= 10<sup>9</sup></code> only has 30 bits, hence the length of the longest nice subarray cannot exceed 30."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "708",
+  "title": "Insert into a Sorted Circular Linked List",
+  "slug": "insert-into-a-sorted-circular-linked-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Linked List"],
+  "total_accepted": 244142,
+  "total_submissions": 633666,
+  "acceptance_rate": "38.5%",
+  "similar_questions": [
+    {
+      "title": "Insertion Sort List",
+      "slug": "insertion-sort-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/insertion-sort-list/"
+    }
+  ],
+  "hints": []
+}

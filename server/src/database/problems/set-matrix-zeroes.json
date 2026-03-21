@@ -1,0 +1,48 @@
+{
+  "id": "73",
+  "title": "Set Matrix Zeroes",
+  "slug": "set-matrix-zeroes",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> integer matrix <code>matrix</code>, if an element is <code>0</code>, set its entire row and column to <code>0</code>&#39;s.</p>\n\n<p>You must do it <a href=\"https://en.wikipedia.org/wiki/In-place_algorithm\" target=\"_blank\">in place</a>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg\" style=\"width: 450px; height: 169px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,1,1],[1,0,1],[1,1,1]]\n<strong>Output:</strong> [[1,0,1],[0,0,0],[1,0,1]]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg\" style=\"width: 450px; height: 137px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]\n<strong>Output:</strong> [[0,0,0,0],[0,4,5,0],[0,3,1,0]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[0].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>-2<sup>31</sup> &lt;= matrix[i][j] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong></p>\n\n<ul>\n\t<li>A straightforward solution using <code>O(mn)</code> space is probably a bad idea.</li>\n\t<li>A simple improvement uses <code>O(m + n)</code> space, but still not the best solution.</li>\n\t<li>Could you devise a constant space solution?</li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` integer matrix `matrix`, if an element is `0`, set its entire row and column to `0`'s.\n\nYou must do it [in place](<https://en.wikipedia.org/wiki/In-place_algorithm>).\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg)\n    \n    \n    **Input:** matrix = [[1,1,1],[1,0,1],[1,1,1]]\n    **Output:** [[1,0,1],[0,0,0],[1,0,1]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg)\n    \n    \n    **Input:** matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]\n    **Output:** [[0,0,0,0],[0,4,5,0],[0,3,1,0]]\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[0].length`\n  * `1 <= m, n <= 200`\n  * `-231 <= matrix[i][j] <= 231 - 1`\n\n\n\n \n\n**Follow up:**\n\n  * A straightforward solution using `O(mn)` space is probably a bad idea.\n  * A simple improvement uses `O(m + n)` space, but still not the best solution.\n  * Could you devise a constant space solution?",
+  "question": "Given an `m x n` integer matrix `matrix`, if an element is `0`, set its entire row and column to `0`'s.\n\nYou must do it [in place](<https://en.wikipedia.org/wiki/In-place_algorithm>).",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg)\n    \n    \n    **Input:** matrix = [[1,1,1],[1,0,1],[1,1,1]]\n    **Output:** [[1,0,1],[0,0,0],[1,0,1]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg)\n    \n    \n    **Input:** matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]\n    **Output:** [[0,0,0,0],[0,4,5,0],[0,3,1,0]]",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[0].length`\n  * `1 <= m, n <= 200`\n  * `-231 <= matrix[i][j] <= 231 - 1`",
+  "topics": ["Array", "Hash Table", "Matrix"],
+  "total_accepted": 2490023,
+  "total_submissions": 3986216,
+  "acceptance_rate": "62.5%",
+  "similar_questions": [
+    {
+      "title": "Game of Life",
+      "slug": "game-of-life",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/game-of-life/"
+    },
+    {
+      "title": "Number of Laser Beams in a Bank",
+      "slug": "number-of-laser-beams-in-a-bank",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-laser-beams-in-a-bank/"
+    },
+    {
+      "title": "Minimum Operations to Remove Adjacent Ones in Matrix",
+      "slug": "minimum-operations-to-remove-adjacent-ones-in-matrix",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-operations-to-remove-adjacent-ones-in-matrix/"
+    },
+    {
+      "title": "Remove All Ones With Row and Column Flips II",
+      "slug": "remove-all-ones-with-row-and-column-flips-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-all-ones-with-row-and-column-flips-ii/"
+    }
+  ],
+  "hints": [
+    "If any cell of the matrix has a zero we can record its row and column number using additional memory.\r\nBut if you don't want to use extra memory then you can manipulate the array instead. i.e. simulating exactly what the question says.",
+    "Setting cell values to zero on the fly while iterating might lead to discrepancies. What if you use some other integer value as your marker?\r\nThere is still a better approach for this problem with O(1) space.",
+    "We could have used 2 sets to keep a record of rows/columns which need to be set to zero. But for an O(1) space solution, you can use one of the rows and and one of the columns to keep track of this information.",
+    "We can use the first cell of every row and column as a flag. This flag would determine whether a row or column has been set to zero."
+  ]
+}

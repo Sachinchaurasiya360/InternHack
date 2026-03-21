@@ -1,0 +1,37 @@
+{
+  "id": "25",
+  "title": "Reverse Nodes in k-Group",
+  "slug": "reverse-nodes-in-k-group",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a linked list, reverse the nodes of the list <code>k</code> at a time, and return <em>the modified list</em>.</p>\n\n<p><code>k</code> is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of <code>k</code> then left-out nodes, in the end, should remain as it is.</p>\n\n<p>You may not alter the values in the list&#39;s nodes, only nodes themselves may be changed.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg\" style=\"width: 542px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2,3,4,5], k = 2\n<strong>Output:</strong> [2,1,4,3,5]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg\" style=\"width: 542px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2,3,4,5], k = 3\n<strong>Output:</strong> [3,2,1,4,5]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is <code>n</code>.</li>\n\t<li><code>1 &lt;= k &lt;= n &lt;= 5000</code></li>\n\t<li><code>0 &lt;= Node.val &lt;= 1000</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow-up:</strong> Can you solve the problem in <code>O(1)</code> extra memory space?</p>\n",
+  "content_markdown": "Given the `head` of a linked list, reverse the nodes of the list `k` at a time, and return _the modified list_.\n\n`k` is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of `k` then left-out nodes, in the end, should remain as it is.\n\nYou may not alter the values in the list's nodes, only nodes themselves may be changed.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5], k = 2\n    **Output:** [2,1,4,3,5]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5], k = 3\n    **Output:** [3,2,1,4,5]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is `n`.\n  * `1 <= k <= n <= 5000`\n  * `0 <= Node.val <= 1000`\n\n\n\n \n\n**Follow-up:** Can you solve the problem in `O(1)` extra memory space?",
+  "question": "Given the `head` of a linked list, reverse the nodes of the list `k` at a time, and return _the modified list_.\n\n`k` is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of `k` then left-out nodes, in the end, should remain as it is.\n\nYou may not alter the values in the list's nodes, only nodes themselves may be changed.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5], k = 2\n    **Output:** [2,1,4,3,5]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5], k = 3\n    **Output:** [3,2,1,4,5]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is `n`.\n  * `1 <= k <= n <= 5000`\n  * `0 <= Node.val <= 1000`",
+  "topics": ["Linked List", "Recursion"],
+  "total_accepted": 1477687,
+  "total_submissions": 2259424,
+  "acceptance_rate": "65.4%",
+  "similar_questions": [
+    {
+      "title": "Swap Nodes in Pairs",
+      "slug": "swap-nodes-in-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/swap-nodes-in-pairs/"
+    },
+    {
+      "title": "Swapping Nodes in a Linked List",
+      "slug": "swapping-nodes-in-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/swapping-nodes-in-a-linked-list/"
+    },
+    {
+      "title": "Reverse Nodes in Even Length Groups",
+      "slug": "reverse-nodes-in-even-length-groups",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reverse-nodes-in-even-length-groups/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "2985",
+  "title": "Calculate Compressed Mean",
+  "slug": "calculate-compressed-mean",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 5494,
+  "total_submissions": 6383,
+  "acceptance_rate": "86.1%",
+  "similar_questions": [],
+  "hints": []
+}

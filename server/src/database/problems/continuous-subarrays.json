@@ -1,0 +1,28 @@
+{
+  "id": "2762",
+  "title": "Continuous Subarrays",
+  "slug": "continuous-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>. A subarray of <code>nums</code> is called <strong>continuous</strong> if:</p>\n\n<ul>\n\t<li>Let <code>i</code>, <code>i + 1</code>, ..., <code>j</code><sub> </sub>be the indices in the subarray. Then, for each pair of indices <code>i &lt;= i<sub>1</sub>, i<sub>2</sub> &lt;= j</code>, <code><font face=\"monospace\">0 &lt;=</font> |nums[i<sub>1</sub>] - nums[i<sub>2</sub>]| &lt;= 2</code>.</li>\n</ul>\n\n<p>Return <em>the total number of <strong>continuous</strong> subarrays.</em></p>\n\n<p>A subarray is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5,4,2,4]\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> \nContinuous subarray of size 1: [5], [4], [2], [4].\nContinuous subarray of size 2: [5,4], [4,2], [2,4].\nContinuous subarray of size 3: [4,2,4].\nThere are no subarrys of size 4.\nTotal continuous subarrays = 4 + 3 + 1 = 8.\nIt can be shown that there are no more continuous subarrays.\n</pre>\n\n<p>&nbsp;</p>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> \nContinuous subarray of size 1: [1], [2], [3].\nContinuous subarray of size 2: [1,2], [2,3].\nContinuous subarray of size 3: [1,2,3].\nTotal continuous subarrays = 3 + 2 + 1 = 6.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`. A subarray of `nums` is called **continuous** if:\n\n  * Let `i`, `i + 1`, ..., `j` be the indices in the subarray. Then, for each pair of indices `i <= i1, i2 <= j`, `0 <= |nums[i1] - nums[i2]| <= 2`.\n\n\n\nReturn _the total number of**continuous** subarrays._\n\nA subarray is a contiguous **non-empty** sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [5,4,2,4]\n    **Output:** 8\n    **Explanation:** \n    Continuous subarray of size 1: [5], [4], [2], [4].\n    Continuous subarray of size 2: [5,4], [4,2], [2,4].\n    Continuous subarray of size 3: [4,2,4].\n    There are no subarrys of size 4.\n    Total continuous subarrays = 4 + 3 + 1 = 8.\n    It can be shown that there are no more continuous subarrays.\n    \n\n \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 6\n    **Explanation:** \n    Continuous subarray of size 1: [1], [2], [3].\n    Continuous subarray of size 2: [1,2], [2,3].\n    Continuous subarray of size 3: [1,2,3].\n    Total continuous subarrays = 3 + 2 + 1 = 6.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given a **0-indexed** integer array `nums`. A subarray of `nums` is called **continuous** if:\n\n  * Let `i`, `i + 1`, ..., `j` be the indices in the subarray. Then, for each pair of indices `i <= i1, i2 <= j`, `0 <= |nums[i1] - nums[i2]| <= 2`.\n\n\n\nReturn _the total number of**continuous** subarrays._\n\nA subarray is a contiguous **non-empty** sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [5,4,2,4]\n    **Output:** 8\n    **Explanation:** \n    Continuous subarray of size 1: [5], [4], [2], [4].\n    Continuous subarray of size 2: [5,4], [4,2], [2,4].\n    Continuous subarray of size 3: [4,2,4].\n    There are no subarrys of size 4.\n    Total continuous subarrays = 4 + 3 + 1 = 8.\n    It can be shown that there are no more continuous subarrays.\n    \n\n \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 6\n    **Explanation:** \n    Continuous subarray of size 1: [1], [2], [3].\n    Continuous subarray of size 2: [1,2], [2,3].\n    Continuous subarray of size 3: [1,2,3].\n    Total continuous subarrays = 3 + 2 + 1 = 6.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "topics": [
+    "Array",
+    "Queue",
+    "Sliding Window",
+    "Heap (Priority Queue)",
+    "Ordered Set",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 118058,
+  "total_submissions": 203736,
+  "acceptance_rate": "57.9%",
+  "similar_questions": [],
+  "hints": [
+    "Try using the sliding window technique.",
+    "Use a set or map to keep track of the maximum and minimum of subarrays."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "2479",
+  "title": "Maximum XOR of Two Non-Overlapping Subtrees",
+  "slug": "maximum-xor-of-two-non-overlapping-subtrees",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Graph Theory", "Trie"],
+  "total_accepted": 951,
+  "total_submissions": 1827,
+  "acceptance_rate": "52.1%",
+  "similar_questions": [],
+  "hints": [
+    "Try to build the answer bit by bit from the most significant bit to the least significant.",
+    "Use the Trie Data Structure to decide for each bit if it exists in the final answer."
+  ]
+}

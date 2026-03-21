@@ -1,0 +1,25 @@
+{
+  "id": "187",
+  "title": "Repeated DNA Sequences",
+  "slug": "repeated-dna-sequences",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>The <strong>DNA sequence</strong> is composed of a series of nucleotides abbreviated as <code>&#39;A&#39;</code>, <code>&#39;C&#39;</code>, <code>&#39;G&#39;</code>, and <code>&#39;T&#39;</code>.</p>\n\n<ul>\n\t<li>For example, <code>&quot;ACGAATTCCG&quot;</code> is a <strong>DNA sequence</strong>.</li>\n</ul>\n\n<p>When studying <strong>DNA</strong>, it is useful to identify repeated sequences within the DNA.</p>\n\n<p>Given a string <code>s</code> that represents a <strong>DNA sequence</strong>, return all the <strong><code>10</code>-letter-long</strong> sequences (substrings) that occur more than once in a DNA molecule. You may return the answer in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT\"\n<strong>Output:</strong> [\"AAAAACCCCC\",\"CCCCCAAAAA\"]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"AAAAAAAAAAAAA\"\n<strong>Output:</strong> [\"AAAAAAAAAA\"]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;A&#39;</code>, <code>&#39;C&#39;</code>, <code>&#39;G&#39;</code>, or <code>&#39;T&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "The **DNA sequence** is composed of a series of nucleotides abbreviated as `'A'`, `'C'`, `'G'`, and `'T'`.\n\n  * For example, `\"ACGAATTCCG\"` is a **DNA sequence**.\n\n\n\nWhen studying **DNA** , it is useful to identify repeated sequences within the DNA.\n\nGiven a string `s` that represents a **DNA sequence** , return all the **`10`-letter-long** sequences (substrings) that occur more than once in a DNA molecule. You may return the answer in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT\"\n    **Output:** [\"AAAAACCCCC\",\"CCCCCAAAAA\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"AAAAAAAAAAAAA\"\n    **Output:** [\"AAAAAAAAAA\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'A'`, `'C'`, `'G'`, or `'T'`.",
+  "question": "The **DNA sequence** is composed of a series of nucleotides abbreviated as `'A'`, `'C'`, `'G'`, and `'T'`.\n\n  * For example, `\"ACGAATTCCG\"` is a **DNA sequence**.\n\n\n\nWhen studying **DNA** , it is useful to identify repeated sequences within the DNA.\n\nGiven a string `s` that represents a **DNA sequence** , return all the **`10`-letter-long** sequences (substrings) that occur more than once in a DNA molecule. You may return the answer in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT\"\n    **Output:** [\"AAAAACCCCC\",\"CCCCCAAAAA\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"AAAAAAAAAAAAA\"\n    **Output:** [\"AAAAAAAAAA\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'A'`, `'C'`, `'G'`, or `'T'`.",
+  "topics": [
+    "Hash Table",
+    "String",
+    "Bit Manipulation",
+    "Sliding Window",
+    "Rolling Hash",
+    "Hash Function"
+  ],
+  "total_accepted": 517612,
+  "total_submissions": 978187,
+  "acceptance_rate": "52.9%",
+  "similar_questions": [],
+  "hints": []
+}

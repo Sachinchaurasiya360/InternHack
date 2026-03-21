@@ -1,0 +1,28 @@
+{
+  "id": "1208",
+  "title": "Get Equal Substrings Within Budget",
+  "slug": "get-equal-substrings-within-budget",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two strings <code>s</code> and <code>t</code> of the same length and an integer <code>maxCost</code>.</p>\n\n<p>You want to change <code>s</code> to <code>t</code>. Changing the <code>i<sup>th</sup></code> character of <code>s</code> to <code>i<sup>th</sup></code> character of <code>t</code> costs <code>|s[i] - t[i]|</code> (i.e., the absolute difference between the ASCII values of the characters).</p>\n\n<p>Return <em>the maximum length of a substring of </em><code>s</code><em> that can be changed to be the same as the corresponding substring of </em><code>t</code><em> with a cost less than or equal to </em><code>maxCost</code>. If there is no substring from <code>s</code> that can be changed to its corresponding substring from <code>t</code>, return <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcd&quot;, t = &quot;bcdf&quot;, maxCost = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> &quot;abc&quot; of s can change to &quot;bcd&quot;.\nThat costs 3, so the maximum length is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcd&quot;, t = &quot;cdef&quot;, maxCost = 3\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Each character in s costs 2 to change to character in t,  so the maximum length is 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcd&quot;, t = &quot;acde&quot;, maxCost = 0\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> You cannot make any change, so the maximum length is 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>t.length == s.length</code></li>\n\t<li><code>0 &lt;= maxCost &lt;= 10<sup>6</sup></code></li>\n\t<li><code>s</code> and <code>t</code> consist of only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given two strings `s` and `t` of the same length and an integer `maxCost`.\n\nYou want to change `s` to `t`. Changing the `ith` character of `s` to `ith` character of `t` costs `|s[i] - t[i]|` (i.e., the absolute difference between the ASCII values of the characters).\n\nReturn _the maximum length of a substring of_`s` _that can be changed to be the same as the corresponding substring of_`t` _with a cost less than or equal to_`maxCost`. If there is no substring from `s` that can be changed to its corresponding substring from `t`, return `0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abcd\", t = \"bcdf\", maxCost = 3\n    **Output:** 3\n    **Explanation:** \"abc\" of s can change to \"bcd\".\n    That costs 3, so the maximum length is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\", t = \"cdef\", maxCost = 3\n    **Output:** 1\n    **Explanation:** Each character in s costs 2 to change to character in t,  so the maximum length is 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abcd\", t = \"acde\", maxCost = 0\n    **Output:** 1\n    **Explanation:** You cannot make any change, so the maximum length is 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `t.length == s.length`\n  * `0 <= maxCost <= 106`\n  * `s` and `t` consist of only lowercase English letters.",
+  "question": "You are given two strings `s` and `t` of the same length and an integer `maxCost`.\n\nYou want to change `s` to `t`. Changing the `ith` character of `s` to `ith` character of `t` costs `|s[i] - t[i]|` (i.e., the absolute difference between the ASCII values of the characters).\n\nReturn _the maximum length of a substring of_`s` _that can be changed to be the same as the corresponding substring of_`t` _with a cost less than or equal to_`maxCost`. If there is no substring from `s` that can be changed to its corresponding substring from `t`, return `0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abcd\", t = \"bcdf\", maxCost = 3\n    **Output:** 3\n    **Explanation:** \"abc\" of s can change to \"bcd\".\n    That costs 3, so the maximum length is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\", t = \"cdef\", maxCost = 3\n    **Output:** 1\n    **Explanation:** Each character in s costs 2 to change to character in t,  so the maximum length is 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abcd\", t = \"acde\", maxCost = 0\n    **Output:** 1\n    **Explanation:** You cannot make any change, so the maximum length is 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `t.length == s.length`\n  * `0 <= maxCost <= 106`\n  * `s` and `t` consist of only lowercase English letters.",
+  "topics": ["String", "Binary Search", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 198184,
+  "total_submissions": 333131,
+  "acceptance_rate": "59.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Nice Subarray",
+      "slug": "longest-nice-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-nice-subarray/"
+    }
+  ],
+  "hints": [
+    "Calculate the differences between s[i] and t[i].",
+    "Use a sliding window to track the longest valid substring."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "2133",
+  "title": "Check if Every Row and Column Contains All Numbers",
+  "slug": "check-if-every-row-and-column-contains-all-numbers",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>An <code>n x n</code> matrix is <strong>valid</strong> if every row and every column contains <strong>all</strong> the integers from <code>1</code> to <code>n</code> (<strong>inclusive</strong>).</p>\n\n<p>Given an <code>n x n</code> integer matrix <code>matrix</code>, return <code>true</code> <em>if the matrix is <strong>valid</strong>.</em> Otherwise, return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/21/example1drawio.png\" style=\"width: 250px; height: 251px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,2,3],[3,1,2],[2,3,1]]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> In this case, n = 3, and every row and column contains the numbers 1, 2, and 3.\nHence, we return true.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/21/example2drawio.png\" style=\"width: 250px; height: 251px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,1,1],[1,2,3],[1,2,3]]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> In this case, n = 3, but the first row and the first column do not contain the numbers 2 or 3.\nHence, we return false.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == matrix.length == matrix[i].length</code></li>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n\t<li><code>1 &lt;= matrix[i][j] &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "An `n x n` matrix is **valid** if every row and every column contains **all** the integers from `1` to `n` (**inclusive**).\n\nGiven an `n x n` integer matrix `matrix`, return `true` _if the matrix is**valid**._ Otherwise, return `false`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/21/example1drawio.png)\n    \n    \n    **Input:** matrix = [[1,2,3],[3,1,2],[2,3,1]]\n    **Output:** true\n    **Explanation:** In this case, n = 3, and every row and column contains the numbers 1, 2, and 3.\n    Hence, we return true.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/21/example2drawio.png)\n    \n    \n    **Input:** matrix = [[1,1,1],[1,2,3],[1,2,3]]\n    **Output:** false\n    **Explanation:** In this case, n = 3, but the first row and the first column do not contain the numbers 2 or 3.\n    Hence, we return false.\n    \n\n \n\n**Constraints:**\n\n  * `n == matrix.length == matrix[i].length`\n  * `1 <= n <= 100`\n  * `1 <= matrix[i][j] <= n`",
+  "question": "An `n x n` matrix is **valid** if every row and every column contains **all** the integers from `1` to `n` (**inclusive**).\n\nGiven an `n x n` integer matrix `matrix`, return `true` _if the matrix is**valid**._ Otherwise, return `false`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/21/example1drawio.png)\n    \n    \n    **Input:** matrix = [[1,2,3],[3,1,2],[2,3,1]]\n    **Output:** true\n    **Explanation:** In this case, n = 3, and every row and column contains the numbers 1, 2, and 3.\n    Hence, we return true.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/21/example2drawio.png)\n    \n    \n    **Input:** matrix = [[1,1,1],[1,2,3],[1,2,3]]\n    **Output:** false\n    **Explanation:** In this case, n = 3, but the first row and the first column do not contain the numbers 2 or 3.\n    Hence, we return false.",
+  "constraints": "**Constraints:**\n\n  * `n == matrix.length == matrix[i].length`\n  * `1 <= n <= 100`\n  * `1 <= matrix[i][j] <= n`",
+  "topics": ["Array", "Hash Table", "Matrix"],
+  "total_accepted": 113186,
+  "total_submissions": 209861,
+  "acceptance_rate": "53.9%",
+  "similar_questions": [
+    {
+      "title": "Valid Sudoku",
+      "slug": "valid-sudoku",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/valid-sudoku/"
+    },
+    {
+      "title": "Matrix Diagonal Sum",
+      "slug": "matrix-diagonal-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/matrix-diagonal-sum/"
+    },
+    {
+      "title": "First Completely Painted Row or Column",
+      "slug": "first-completely-painted-row-or-column",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/first-completely-painted-row-or-column/"
+    }
+  ],
+  "hints": [
+    "Use for loops to check each row for every number from 1 to n. Similarly, do the same for each column.",
+    "For each check, you can keep a set of the unique elements in the checked row/col. By the end of the check, the size of the set should be n."
+  ]
+}

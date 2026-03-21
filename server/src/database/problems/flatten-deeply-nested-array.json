@@ -1,0 +1,40 @@
+{
+  "id": "2625",
+  "title": "Flatten Deeply Nested Array",
+  "slug": "flatten-deeply-nested-array",
+  "difficulty": "Medium",
+  "category": "JavaScript",
+  "content_html": "<p>Given a&nbsp;<strong>multi-dimensional</strong> array&nbsp;<code>arr</code>&nbsp;and a depth <code>n</code>, return&nbsp;a&nbsp;<strong>flattened</strong>&nbsp;version of that array.</p>\n\n<p>A <strong>multi-dimensional</strong>&nbsp;array is a recursive data structure that contains integers or other&nbsp;<strong>multi-dimensional</strong>&nbsp;arrays.</p>\n\n<p>A&nbsp;<strong>flattened</strong>&nbsp;array is a version of that array with some or all of the sub-arrays removed and replaced with the actual elements in that sub-array. This flattening operation should only be done if the current depth of nesting&nbsp;is less&nbsp;than&nbsp;<code>n</code>. The depth of the elements in the first array are considered to be&nbsp;<code>0</code>.</p>\n\n<p>Please solve it without the built-in&nbsp;<code>Array.flat</code> method.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\narr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\nn = 0\n<strong>Output</strong>\n[1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n\n<strong>Explanation</strong>\nPassing a depth of n=0 will always result in the original array. This is because the smallest possible depth of a subarray (0) is not less than n=0. Thus, no subarray should be flattened. </pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input</strong>\narr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\nn = 1\n<strong>Output</strong>\n[1, 2, 3, 4, 5, 6, 7, 8, [9, 10, 11], 12, 13, 14, 15]\n\n<strong>Explanation</strong>\nThe subarrays starting with 4, 7, and 13 are all flattened. This is because their depth of 0 is less than 1. However [9, 10, 11] remains unflattened because its depth is 1.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input</strong>\narr = [[1, 2, 3], [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\nn = 2\n<strong>Output</strong>\n[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]\n\n<strong>Explanation</strong>\nThe maximum depth of any subarray is 1. Thus, all of them are flattened.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= count of numbers in arr &lt;=&nbsp;10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= count of subarrays in arr &lt;=&nbsp;10<sup>5</sup></code></li>\n\t<li><code>maxDepth &lt;= 1000</code></li>\n\t<li><code>-1000 &lt;= each number &lt;= 1000</code></li>\n\t<li><code><font face=\"monospace\">0 &lt;= n &lt;= 1000</font></code></li>\n</ul>\n",
+  "content_markdown": "Given a **multi-dimensional** array `arr` and a depth `n`, return a **flattened**  version of that array.\n\nA **multi-dimensional**  array is a recursive data structure that contains integers or other **multi-dimensional**  arrays.\n\nA **flattened**  array is a version of that array with some or all of the sub-arrays removed and replaced with the actual elements in that sub-array. This flattening operation should only be done if the current depth of nesting is less than `n`. The depth of the elements in the first array are considered to be `0`.\n\nPlease solve it without the built-in `Array.flat` method.\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    arr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    n = 0\n    **Output**\n    [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    \n    **Explanation**\n    Passing a depth of n=0 will always result in the original array. This is because the smallest possible depth of a subarray (0) is not less than n=0. Thus, no subarray should be flattened. \n\n**Example 2:**\n    \n    \n    **Input**\n    arr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    n = 1\n    **Output**\n    [1, 2, 3, 4, 5, 6, 7, 8, [9, 10, 11], 12, 13, 14, 15]\n    \n    **Explanation**\n    The subarrays starting with 4, 7, and 13 are all flattened. This is because their depth of 0 is less than 1. However [9, 10, 11] remains unflattened because its depth is 1.\n\n**Example 3:**\n    \n    \n    **Input**\n    arr = [[1, 2, 3], [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    n = 2\n    **Output**\n    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]\n    \n    **Explanation**\n    The maximum depth of any subarray is 1. Thus, all of them are flattened.\n\n \n\n**Constraints:**\n\n  * `0 <= count of numbers in arr <= 105`\n  * `0 <= count of subarrays in arr <= 105`\n  * `maxDepth <= 1000`\n  * `-1000 <= each number <= 1000`\n  * `0 <= n <= 1000`",
+  "question": "Given a **multi-dimensional** array `arr` and a depth `n`, return a **flattened**  version of that array.\n\nA **multi-dimensional**  array is a recursive data structure that contains integers or other **multi-dimensional**  arrays.\n\nA **flattened**  array is a version of that array with some or all of the sub-arrays removed and replaced with the actual elements in that sub-array. This flattening operation should only be done if the current depth of nesting is less than `n`. The depth of the elements in the first array are considered to be `0`.\n\nPlease solve it without the built-in `Array.flat` method.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    arr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    n = 0\n    **Output**\n    [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    \n    **Explanation**\n    Passing a depth of n=0 will always result in the original array. This is because the smallest possible depth of a subarray (0) is not less than n=0. Thus, no subarray should be flattened. \n\n**Example 2:**\n    \n    \n    **Input**\n    arr = [1, 2, 3, [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    n = 1\n    **Output**\n    [1, 2, 3, 4, 5, 6, 7, 8, [9, 10, 11], 12, 13, 14, 15]\n    \n    **Explanation**\n    The subarrays starting with 4, 7, and 13 are all flattened. This is because their depth of 0 is less than 1. However [9, 10, 11] remains unflattened because its depth is 1.\n\n**Example 3:**\n    \n    \n    **Input**\n    arr = [[1, 2, 3], [4, 5, 6], [7, 8, [9, 10, 11], 12], [13, 14, 15]]\n    n = 2\n    **Output**\n    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]\n    \n    **Explanation**\n    The maximum depth of any subarray is 1. Thus, all of them are flattened.",
+  "constraints": "**Constraints:**\n\n  * `0 <= count of numbers in arr <= 105`\n  * `0 <= count of subarrays in arr <= 105`\n  * `maxDepth <= 1000`\n  * `-1000 <= each number <= 1000`\n  * `0 <= n <= 1000`",
+  "topics": [],
+  "total_accepted": 79051,
+  "total_submissions": 120666,
+  "acceptance_rate": "65.5%",
+  "similar_questions": [
+    {
+      "title": "JSON Deep Equal",
+      "slug": "json-deep-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/json-deep-equal/"
+    },
+    {
+      "title": "Convert Object to JSON String",
+      "slug": "convert-object-to-json-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/convert-object-to-json-string/"
+    },
+    {
+      "title": "Nested Array Generator",
+      "slug": "nested-array-generator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/nested-array-generator/"
+    }
+  ],
+  "hints": [
+    "Write a recursive function that keeps track of the current depth.",
+    "if the current depth >= the maximum depth, always just push the value to the returned array. Otherwise recursively call flat on the array."
+  ]
+}

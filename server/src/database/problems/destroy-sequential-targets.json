@@ -1,0 +1,43 @@
+{
+  "id": "2453",
+  "title": "Destroy Sequential Targets",
+  "slug": "destroy-sequential-targets",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>nums</code> consisting of positive integers, representing targets on a number line. You are also given an integer <code>space</code>.</p>\n\n<p>You have a machine which can destroy targets. <strong>Seeding</strong> the machine with some <code>nums[i]</code> allows it to destroy all targets with values that can be represented as <code>nums[i] + c * space</code>, where <code>c</code> is any non-negative integer. You want to destroy the <strong>maximum</strong> number of targets in <code>nums</code>.</p>\n\n<p>Return<em> the <strong>minimum value</strong> of </em><code>nums[i]</code><em> you can seed the machine with to destroy the maximum number of targets.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,7,8,1,1,5], space = 2\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> If we seed the machine with nums[3], then we destroy all targets equal to 1,3,5,7,9,... \nIn this case, we would destroy 5 total targets (all except for nums[2]). \nIt is impossible to destroy more than 5 targets, so we return nums[3].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,5,2,4,6], space = 2\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Seeding the machine with nums[0], or nums[3] destroys 3 targets. \nIt is not possible to destroy more than 3 targets.\nSince nums[0] is the minimal integer that can destroy 3 targets, we return 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [6,2,5], space = 100\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Whatever initial seed we select, we can only destroy 1 target. The minimal seed is nums[1].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= space &lt;=&nbsp;10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `nums` consisting of positive integers, representing targets on a number line. You are also given an integer `space`.\n\nYou have a machine which can destroy targets. **Seeding** the machine with some `nums[i]` allows it to destroy all targets with values that can be represented as `nums[i] + c * space`, where `c` is any non-negative integer. You want to destroy the **maximum** number of targets in `nums`.\n\nReturn _the**minimum value** of _`nums[i]`_you can seed the machine with to destroy the maximum number of targets._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,7,8,1,1,5], space = 2\n    **Output:** 1\n    **Explanation:** If we seed the machine with nums[3], then we destroy all targets equal to 1,3,5,7,9,... \n    In this case, we would destroy 5 total targets (all except for nums[2]). \n    It is impossible to destroy more than 5 targets, so we return nums[3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,5,2,4,6], space = 2\n    **Output:** 1\n    **Explanation:** Seeding the machine with nums[0], or nums[3] destroys 3 targets. \n    It is not possible to destroy more than 3 targets.\n    Since nums[0] is the minimal integer that can destroy 3 targets, we return 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [6,2,5], space = 100\n    **Output:** 2\n    **Explanation:** Whatever initial seed we select, we can only destroy 1 target. The minimal seed is nums[1].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= space <= 109`",
+  "question": "You are given a **0-indexed** array `nums` consisting of positive integers, representing targets on a number line. You are also given an integer `space`.\n\nYou have a machine which can destroy targets. **Seeding** the machine with some `nums[i]` allows it to destroy all targets with values that can be represented as `nums[i] + c * space`, where `c` is any non-negative integer. You want to destroy the **maximum** number of targets in `nums`.\n\nReturn _the**minimum value** of _`nums[i]`_you can seed the machine with to destroy the maximum number of targets._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,7,8,1,1,5], space = 2\n    **Output:** 1\n    **Explanation:** If we seed the machine with nums[3], then we destroy all targets equal to 1,3,5,7,9,... \n    In this case, we would destroy 5 total targets (all except for nums[2]). \n    It is impossible to destroy more than 5 targets, so we return nums[3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,5,2,4,6], space = 2\n    **Output:** 1\n    **Explanation:** Seeding the machine with nums[0], or nums[3] destroys 3 targets. \n    It is not possible to destroy more than 3 targets.\n    Since nums[0] is the minimal integer that can destroy 3 targets, we return 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [6,2,5], space = 100\n    **Output:** 2\n    **Explanation:** Whatever initial seed we select, we can only destroy 1 target. The minimal seed is nums[1].",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= space <= 109`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 23040,
+  "total_submissions": 55227,
+  "acceptance_rate": "41.7%",
+  "similar_questions": [
+    {
+      "title": "Arithmetic Slices II - Subsequence",
+      "slug": "arithmetic-slices-ii-subsequence",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/arithmetic-slices-ii-subsequence/"
+    },
+    {
+      "title": "Pairs of Songs With Total Durations Divisible by 60",
+      "slug": "pairs-of-songs-with-total-durations-divisible-by-60",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/"
+    },
+    {
+      "title": "Longest Arithmetic Subsequence",
+      "slug": "longest-arithmetic-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-arithmetic-subsequence/"
+    },
+    {
+      "title": "Longest Arithmetic Subsequence of Given Difference",
+      "slug": "longest-arithmetic-subsequence-of-given-difference",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/"
+    }
+  ],
+  "hints": ["Keep track of nums[i] modulo k.", "Iterate over nums in sorted order."]
+}

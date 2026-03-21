@@ -31,8 +31,8 @@ export function ThinkingIndicator() {
       animate={{ opacity: 1, y: 0 }}
       className="flex gap-3"
     >
-      <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shrink-0">
-        <BotMessageSquare className="w-4 h-4 text-white" />
+      <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
+        <BotMessageSquare className="w-4 h-4 text-white dark:text-gray-950" />
       </div>
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl rounded-tl-sm px-4 py-3">
         {/* Step progress dots */}
@@ -42,7 +42,7 @@ export function ThinkingIndicator() {
               key={i}
               className={`h-1 rounded-full transition-all duration-500 ${
                 i <= stepIndex
-                  ? "w-5 bg-indigo-500"
+                  ? "w-5 bg-gray-950 dark:bg-white"
                   : "w-1.5 bg-gray-200 dark:bg-gray-700"
               }`}
             />
@@ -59,7 +59,7 @@ export function ThinkingIndicator() {
             transition={{ duration: 0.2 }}
             className="flex items-center gap-2"
           >
-            <step.icon className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
+            <step.icon className="w-3.5 h-3.5 text-gray-950 dark:text-white animate-pulse" />
             <span className="text-xs text-gray-600 dark:text-gray-400">{step.text}</span>
           </motion.div>
         </AnimatePresence>

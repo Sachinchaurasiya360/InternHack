@@ -1,0 +1,25 @@
+{
+  "id": "254",
+  "title": "Factor Combinations",
+  "slug": "factor-combinations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Backtracking"],
+  "total_accepted": 140582,
+  "total_submissions": 278365,
+  "acceptance_rate": "50.5%",
+  "similar_questions": [
+    {
+      "title": "Combination Sum",
+      "slug": "combination-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/combination-sum/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "640",
+  "title": "Solve the Equation",
+  "slug": "solve-the-equation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Solve a given equation and return the value of <code>&#39;x&#39;</code> in the form of a string <code>&quot;x=#value&quot;</code>. The equation contains only <code>&#39;+&#39;</code>, <code>&#39;-&#39;</code> operation, the variable <code>&#39;x&#39;</code> and its coefficient. You should return <code>&quot;No solution&quot;</code> if there is no solution for the equation, or <code>&quot;Infinite solutions&quot;</code> if there are infinite solutions for the equation.</p>\n\n<p>If there is exactly one solution for the equation, we ensure that the value of <code>&#39;x&#39;</code> is an integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> equation = &quot;x+5-3+x=6+x-2&quot;\n<strong>Output:</strong> &quot;x=2&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> equation = &quot;x=x&quot;\n<strong>Output:</strong> &quot;Infinite solutions&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> equation = &quot;2x=x&quot;\n<strong>Output:</strong> &quot;x=0&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= equation.length &lt;= 1000</code></li>\n\t<li><code>equation</code> has exactly one <code>&#39;=&#39;</code>.</li>\n\t<li><code>equation</code> consists of integers with an absolute value in the range <code>[0, 100]</code> without any leading zeros, and the variable <code>&#39;x&#39;</code>.</li>\n\t<li>The input is generated that if there is a single solution, it will be an integer.</li>\n</ul>\n",
+  "content_markdown": "Solve a given equation and return the value of `'x'` in the form of a string `\"x=#value\"`. The equation contains only `'+'`, `'-'` operation, the variable `'x'` and its coefficient. You should return `\"No solution\"` if there is no solution for the equation, or `\"Infinite solutions\"` if there are infinite solutions for the equation.\n\nIf there is exactly one solution for the equation, we ensure that the value of `'x'` is an integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** equation = \"x+5-3+x=6+x-2\"\n    **Output:** \"x=2\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** equation = \"x=x\"\n    **Output:** \"Infinite solutions\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** equation = \"2x=x\"\n    **Output:** \"x=0\"\n    \n\n \n\n**Constraints:**\n\n  * `3 <= equation.length <= 1000`\n  * `equation` has exactly one `'='`.\n  * `equation` consists of integers with an absolute value in the range `[0, 100]` without any leading zeros, and the variable `'x'`.\n  * The input is generated that if there is a single solution, it will be an integer.",
+  "question": "Solve a given equation and return the value of `'x'` in the form of a string `\"x=#value\"`. The equation contains only `'+'`, `'-'` operation, the variable `'x'` and its coefficient. You should return `\"No solution\"` if there is no solution for the equation, or `\"Infinite solutions\"` if there are infinite solutions for the equation.\n\nIf there is exactly one solution for the equation, we ensure that the value of `'x'` is an integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** equation = \"x+5-3+x=6+x-2\"\n    **Output:** \"x=2\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** equation = \"x=x\"\n    **Output:** \"Infinite solutions\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** equation = \"2x=x\"\n    **Output:** \"x=0\"",
+  "constraints": "**Constraints:**\n\n  * `3 <= equation.length <= 1000`\n  * `equation` has exactly one `'='`.\n  * `equation` consists of integers with an absolute value in the range `[0, 100]` without any leading zeros, and the variable `'x'`.\n  * The input is generated that if there is a single solution, it will be an integer.",
+  "topics": ["Math", "String", "Simulation"],
+  "total_accepted": 50151,
+  "total_submissions": 108883,
+  "acceptance_rate": "46.1%",
+  "similar_questions": [
+    {
+      "title": "Fraction Addition and Subtraction",
+      "slug": "fraction-addition-and-subtraction",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fraction-addition-and-subtraction/"
+    },
+    {
+      "title": "Minimize Result by Adding Parentheses to Expression",
+      "slug": "minimize-result-by-adding-parentheses-to-expression",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-result-by-adding-parentheses-to-expression/"
+    }
+  ],
+  "hints": []
+}

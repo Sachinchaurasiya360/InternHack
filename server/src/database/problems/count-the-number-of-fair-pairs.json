@@ -1,0 +1,47 @@
+{
+  "id": "2563",
+  "title": "Count the Number of Fair Pairs",
+  "slug": "count-the-number-of-fair-pairs",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>0-indexed</strong> integer array <code>nums</code> of size <code>n</code> and two integers <code>lower</code> and <code>upper</code>, return <em>the number of fair pairs</em>.</p>\n\n<p>A pair <code>(i, j)</code> is <b>fair </b>if:</p>\n\n<ul>\n\t<li><code>0 &lt;= i &lt; j &lt; n</code>, and</li>\n\t<li><code>lower &lt;= nums[i] + nums[j] &lt;= upper</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,1,7,4,4,5], lower = 3, upper = 6\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> There are 6 fair pairs: (0,3), (0,4), (0,5), (1,3), (1,4), and (1,5).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,7,9,2,5], lower = 11, upper = 11\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> There is a single fair pair: (2,3).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>nums.length == n</code></li>\n\t<li><code><font face=\"monospace\">-10<sup>9</sup></font>&nbsp;&lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code><font face=\"monospace\">-10<sup>9</sup>&nbsp;&lt;= lower &lt;= upper &lt;= 10<sup>9</sup></font></code></li>\n</ul>\n",
+  "content_markdown": "Given a **0-indexed** integer array `nums` of size `n` and two integers `lower` and `upper`, return _the number of fair pairs_.\n\nA pair `(i, j)` is **fair** if:\n\n  * `0 <= i < j < n`, and\n  * `lower <= nums[i] + nums[j] <= upper`\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [0,1,7,4,4,5], lower = 3, upper = 6\n    **Output:** 6\n    **Explanation:** There are 6 fair pairs: (0,3), (0,4), (0,5), (1,3), (1,4), and (1,5).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,7,9,2,5], lower = 11, upper = 11\n    **Output:** 1\n    **Explanation:** There is a single fair pair: (2,3).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums.length == n`\n  * `-109 <= nums[i] <= 109`\n  * `-109 <= lower <= upper <= 109`",
+  "question": "Given a **0-indexed** integer array `nums` of size `n` and two integers `lower` and `upper`, return _the number of fair pairs_.\n\nA pair `(i, j)` is **fair** if:\n\n  * `0 <= i < j < n`, and\n  * `lower <= nums[i] + nums[j] <= upper`",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [0,1,7,4,4,5], lower = 3, upper = 6\n    **Output:** 6\n    **Explanation:** There are 6 fair pairs: (0,3), (0,4), (0,5), (1,3), (1,4), and (1,5).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,7,9,2,5], lower = 11, upper = 11\n    **Output:** 1\n    **Explanation:** There is a single fair pair: (2,3).",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums.length == n`\n  * `-109 <= nums[i] <= 109`\n  * `-109 <= lower <= upper <= 109`",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 237081,
+  "total_submissions": 449896,
+  "acceptance_rate": "52.7%",
+  "similar_questions": [
+    {
+      "title": "Count of Range Sum",
+      "slug": "count-of-range-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-of-range-sum/"
+    },
+    {
+      "title": "Finding Pairs With a Certain Sum",
+      "slug": "finding-pairs-with-a-certain-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/finding-pairs-with-a-certain-sum/"
+    },
+    {
+      "title": "Count Number of Pairs With Absolute Difference K",
+      "slug": "count-number-of-pairs-with-absolute-difference-k",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-number-of-pairs-with-absolute-difference-k/"
+    },
+    {
+      "title": "Count Pairs Whose Sum is Less than Target",
+      "slug": "count-pairs-whose-sum-is-less-than-target",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-pairs-whose-sum-is-less-than-target/"
+    }
+  ],
+  "hints": [
+    "Sort the array in ascending order.",
+    "For each number in the array, keep track of the smallest and largest numbers in the array that can form a fair pair with this number.",
+    "As you move to larger number, both boundaries move down."
+  ]
+}

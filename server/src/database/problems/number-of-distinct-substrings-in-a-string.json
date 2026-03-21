@@ -1,0 +1,23 @@
+{
+  "id": "1698",
+  "title": "Number of Distinct Substrings in a String",
+  "slug": "number-of-distinct-substrings-in-a-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Trie", "Rolling Hash", "Suffix Array", "Hash Function"],
+  "total_accepted": 14300,
+  "total_submissions": 22076,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [],
+  "hints": [
+    "Calculate the prefix hashing array for s.",
+    "Use the prefix hashing array to calculate the hashing value of each substring.",
+    "Compare the hashing values to determine the unique substrings.",
+    "There could be collisions if you use hashing, what about double hashing."
+  ]
+}

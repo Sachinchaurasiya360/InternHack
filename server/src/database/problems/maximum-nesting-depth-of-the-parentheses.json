@@ -1,0 +1,27 @@
+{
+  "id": "1614",
+  "title": "Maximum Nesting Depth of the Parentheses",
+  "slug": "maximum-nesting-depth-of-the-parentheses",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>valid parentheses string</strong> <code>s</code>, return the <strong>nesting depth</strong> of<em> </em><code>s</code>. The nesting depth is the <strong>maximum</strong> number of nested parentheses.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;(1+(2*3)+((8)/4))+1&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Digit 8 is inside of 3 nested parentheses in the string.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;(1)+((2))+(((3)))&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Digit 3 is inside of 3 nested parentheses in the string.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;()(())((()()))&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of digits <code>0-9</code> and characters <code>&#39;+&#39;</code>, <code>&#39;-&#39;</code>, <code>&#39;*&#39;</code>, <code>&#39;/&#39;</code>, <code>&#39;(&#39;</code>, and <code>&#39;)&#39;</code>.</li>\n\t<li>It is guaranteed that parentheses expression <code>s</code> is a VPS.</li>\n</ul>\n",
+  "content_markdown": "Given a **valid parentheses string** `s`, return the **nesting depth** of __`s`. The nesting depth is the **maximum** number of nested parentheses.\n\n \n\n**Example 1:**\n\n**Input:** s = \"(1+(2*3)+((8)/4))+1\"\n\n**Output:** 3\n\n**Explanation:**\n\nDigit 8 is inside of 3 nested parentheses in the string.\n\n**Example 2:**\n\n**Input:** s = \"(1)+((2))+(((3)))\"\n\n**Output:** 3\n\n**Explanation:**\n\nDigit 3 is inside of 3 nested parentheses in the string.\n\n**Example 3:**\n\n**Input:** s = \"()(())((()()))\"\n\n**Output:** 3\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of digits `0-9` and characters `'+'`, `'-'`, `'*'`, `'/'`, `'('`, and `')'`.\n  * It is guaranteed that parentheses expression `s` is a VPS.",
+  "question": "Given a **valid parentheses string** `s`, return the **nesting depth** of __`s`. The nesting depth is the **maximum** number of nested parentheses.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"(1+(2*3)+((8)/4))+1\"\n\n**Output:** 3\n\n**Explanation:**\n\nDigit 8 is inside of 3 nested parentheses in the string.\n\n**Example 2:**\n\n**Input:** s = \"(1)+((2))+(((3)))\"\n\n**Output:** 3\n\n**Explanation:**\n\nDigit 3 is inside of 3 nested parentheses in the string.\n\n**Example 3:**\n\n**Input:** s = \"()(())((()()))\"\n\n**Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of digits `0-9` and characters `'+'`, `'-'`, `'*'`, `'/'`, `'('`, and `')'`.\n  * It is guaranteed that parentheses expression `s` is a VPS.",
+  "topics": ["String", "Stack"],
+  "total_accepted": 536994,
+  "total_submissions": 633427,
+  "acceptance_rate": "84.8%",
+  "similar_questions": [
+    {
+      "title": "Maximum Nesting Depth of Two Valid Parentheses Strings",
+      "slug": "maximum-nesting-depth-of-two-valid-parentheses-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/"
+    }
+  ],
+  "hints": [
+    "The depth of any character in the VPS is the ( number of left brackets before it ) - ( number of right brackets before it )"
+  ]
+}

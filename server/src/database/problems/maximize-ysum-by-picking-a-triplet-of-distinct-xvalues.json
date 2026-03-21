@@ -1,0 +1,35 @@
+{
+  "id": "3572",
+  "title": "Maximize Y‑Sum by Picking a Triplet of Distinct X‑Values",
+  "slug": "maximize-ysum-by-picking-a-triplet-of-distinct-xvalues",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integer arrays <code>x</code> and <code>y</code>, each of length <code>n</code>. You must choose three <strong>distinct</strong> indices <code>i</code>, <code>j</code>, and <code>k</code> such that:</p>\n\n<ul>\n\t<li><code>x[i] != x[j]</code></li>\n\t<li><code>x[j] != x[k]</code></li>\n\t<li><code>x[k] != x[i]</code></li>\n</ul>\n\n<p>Your goal is to <strong>maximize</strong> the value of <code>y[i] + y[j] + y[k]</code> under these conditions. Return the <strong>maximum</strong> possible sum that can be obtained by choosing such a triplet of indices.</p>\n\n<p>If no such triplet exists, return -1.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">x = [1,2,1,3,2], y = [5,3,4,6,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">14</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>Choose <code>i = 0</code> (<code>x[i] = 1</code>, <code>y[i] = 5</code>), <code>j = 1</code> (<code>x[j] = 2</code>, <code>y[j] = 3</code>), <code>k = 3</code> (<code>x[k] = 3</code>, <code>y[k] = 6</code>).</li>\n\t<li>All three values chosen from <code>x</code> are distinct. <code>5 + 3 + 6 = 14</code> is the maximum we can obtain. Hence, the output is 14.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">x = [1,2,1,2], y = [4,5,6,7]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">-1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>There are only two distinct values in <code>x</code>. Hence, the output is -1.</li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == x.length == y.length</code></li>\n\t<li><code>3 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= x[i], y[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two integer arrays `x` and `y`, each of length `n`. You must choose three **distinct** indices `i`, `j`, and `k` such that:\n\n  * `x[i] != x[j]`\n  * `x[j] != x[k]`\n  * `x[k] != x[i]`\n\n\n\nYour goal is to **maximize** the value of `y[i] + y[j] + y[k]` under these conditions. Return the **maximum** possible sum that can be obtained by choosing such a triplet of indices.\n\nIf no such triplet exists, return -1.\n\n \n\n**Example 1:**\n\n**Input:** x = [1,2,1,3,2], y = [5,3,4,6,2]\n\n**Output:** 14\n\n**Explanation:**\n\n  * Choose `i = 0` (`x[i] = 1`, `y[i] = 5`), `j = 1` (`x[j] = 2`, `y[j] = 3`), `k = 3` (`x[k] = 3`, `y[k] = 6`).\n  * All three values chosen from `x` are distinct. `5 + 3 + 6 = 14` is the maximum we can obtain. Hence, the output is 14.\n\n\n\n**Example 2:**\n\n**Input:** x = [1,2,1,2], y = [4,5,6,7]\n\n**Output:** -1\n\n**Explanation:**\n\n  * There are only two distinct values in `x`. Hence, the output is -1.\n\n\n\n \n\n**Constraints:**\n\n  * `n == x.length == y.length`\n  * `3 <= n <= 105`\n  * `1 <= x[i], y[i] <= 106`",
+  "question": "You are given two integer arrays `x` and `y`, each of length `n`. You must choose three **distinct** indices `i`, `j`, and `k` such that:\n\n  * `x[i] != x[j]`\n  * `x[j] != x[k]`\n  * `x[k] != x[i]`\n\n\n\nYour goal is to **maximize** the value of `y[i] + y[j] + y[k]` under these conditions. Return the **maximum** possible sum that can be obtained by choosing such a triplet of indices.\n\nIf no such triplet exists, return -1.",
+  "examples": "**Example 1:**\n\n**Input:** x = [1,2,1,3,2], y = [5,3,4,6,2]\n\n**Output:** 14\n\n**Explanation:**\n\n  * Choose `i = 0` (`x[i] = 1`, `y[i] = 5`), `j = 1` (`x[j] = 2`, `y[j] = 3`), `k = 3` (`x[k] = 3`, `y[k] = 6`).\n  * All three values chosen from `x` are distinct. `5 + 3 + 6 = 14` is the maximum we can obtain. Hence, the output is 14.\n\n\n\n**Example 2:**\n\n**Input:** x = [1,2,1,2], y = [4,5,6,7]\n\n**Output:** -1\n\n**Explanation:**\n\n  * There are only two distinct values in `x`. Hence, the output is -1.",
+  "constraints": "**Constraints:**\n\n  * `n == x.length == y.length`\n  * `3 <= n <= 105`\n  * `1 <= x[i], y[i] <= 106`",
+  "topics": ["Array", "Hash Table", "Greedy", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 30586,
+  "total_submissions": 48382,
+  "acceptance_rate": "63.2%",
+  "similar_questions": [
+    {
+      "title": "Maximum Sum of 3 Non-Overlapping Subarrays",
+      "slug": "maximum-sum-of-3-non-overlapping-subarrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-sum-of-3-non-overlapping-subarrays/"
+    },
+    {
+      "title": "Largest Values From Labels",
+      "slug": "largest-values-from-labels",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/largest-values-from-labels/"
+    }
+  ],
+  "hints": [
+    "For each unique <code>x</code>, keep only the maximum <code>y</code>; all other pairs with the same <code>x</code> are redundant.",
+    "Sort the pairs by <code>x</code> so that identical <code>x</code> values form contiguous blocks, then take the maximum <code>y</code> from each block.",
+    "Alternatively, use a map (or dictionary) from <code>x</code> to its largest <code>y</code>."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "132",
+  "title": "Palindrome Partitioning II",
+  "slug": "palindrome-partitioning-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, partition <code>s</code> such that every <span data-keyword=\"substring-nonempty\">substring</span> of the partition is a <span data-keyword=\"palindrome-string\">palindrome</span>.</p>\n\n<p>Return <em>the <strong>minimum</strong> cuts needed for a palindrome partitioning of</em> <code>s</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aab&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The palindrome partitioning [&quot;aa&quot;,&quot;b&quot;] could be produced using 1 cut.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a&quot;\n<strong>Output:</strong> 0\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ab&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 2000</code></li>\n\t<li><code>s</code> consists of lowercase English letters only.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, partition `s` such that every substring of the partition is a palindrome.\n\nReturn _the**minimum** cuts needed for a palindrome partitioning of_ `s`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** 1\n    **Explanation:** The palindrome partitioning [\"aa\",\"b\"] could be produced using 1 cut.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\"\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"ab\"\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` consists of lowercase English letters only.",
+  "question": "Given a string `s`, partition `s` such that every substring of the partition is a palindrome.\n\nReturn _the**minimum** cuts needed for a palindrome partitioning of_ `s`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** 1\n    **Explanation:** The palindrome partitioning [\"aa\",\"b\"] could be produced using 1 cut.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\"\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"ab\"\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` consists of lowercase English letters only.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 396476,
+  "total_submissions": 1083004,
+  "acceptance_rate": "36.6%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Partitioning",
+      "slug": "palindrome-partitioning",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/palindrome-partitioning/"
+    },
+    {
+      "title": "Palindrome Partitioning IV",
+      "slug": "palindrome-partitioning-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-partitioning-iv/"
+    },
+    {
+      "title": "Maximum Number of Non-overlapping Palindrome Substrings",
+      "slug": "maximum-number-of-non-overlapping-palindrome-substrings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-non-overlapping-palindrome-substrings/"
+    },
+    {
+      "title": "Number of Great Partitions",
+      "slug": "number-of-great-partitions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-great-partitions/"
+    }
+  ],
+  "hints": []
+}

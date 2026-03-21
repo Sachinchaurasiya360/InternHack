@@ -1,0 +1,25 @@
+{
+  "id": "48",
+  "title": "Rotate Image",
+  "slug": "rotate-image",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>n x n</code> 2D <code>matrix</code> representing an image, rotate the image by <strong>90</strong> degrees (clockwise).</p>\n\n<p>You have to rotate the image <a href=\"https://en.wikipedia.org/wiki/In-place_algorithm\" target=\"_blank\"><strong>in-place</strong></a>, which means you have to modify the input 2D matrix directly. <strong>DO NOT</strong> allocate another 2D matrix and do the rotation.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/28/mat1.jpg\" style=\"width: 500px; height: 188px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,2,3],[4,5,6],[7,8,9]]\n<strong>Output:</strong> [[7,4,1],[8,5,2],[9,6,3]]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/28/mat2.jpg\" style=\"width: 500px; height: 201px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]\n<strong>Output:</strong> [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == matrix.length == matrix[i].length</code></li>\n\t<li><code>1 &lt;= n &lt;= 20</code></li>\n\t<li><code>-1000 &lt;= matrix[i][j] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given an `n x n` 2D `matrix` representing an image, rotate the image by **90** degrees (clockwise).\n\nYou have to rotate the image [**in-place**](<https://en.wikipedia.org/wiki/In-place_algorithm>), which means you have to modify the input 2D matrix directly. **DO NOT** allocate another 2D matrix and do the rotation.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/28/mat1.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** [[7,4,1],[8,5,2],[9,6,3]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/28/mat2.jpg)\n    \n    \n    **Input:** matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]\n    **Output:** [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]\n    \n\n \n\n**Constraints:**\n\n  * `n == matrix.length == matrix[i].length`\n  * `1 <= n <= 20`\n  * `-1000 <= matrix[i][j] <= 1000`",
+  "question": "You are given an `n x n` 2D `matrix` representing an image, rotate the image by **90** degrees (clockwise).\n\nYou have to rotate the image [**in-place**](<https://en.wikipedia.org/wiki/In-place_algorithm>), which means you have to modify the input 2D matrix directly. **DO NOT** allocate another 2D matrix and do the rotation.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/28/mat1.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** [[7,4,1],[8,5,2],[9,6,3]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/28/mat2.jpg)\n    \n    \n    **Input:** matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]\n    **Output:** [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]",
+  "constraints": "**Constraints:**\n\n  * `n == matrix.length == matrix[i].length`\n  * `1 <= n <= 20`\n  * `-1000 <= matrix[i][j] <= 1000`",
+  "topics": ["Array", "Math", "Matrix"],
+  "total_accepted": 2724511,
+  "total_submissions": 3433370,
+  "acceptance_rate": "79.4%",
+  "similar_questions": [
+    {
+      "title": "Determine Whether Matrix Can Be Obtained By Rotation",
+      "slug": "determine-whether-matrix-can-be-obtained-by-rotation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/determine-whether-matrix-can-be-obtained-by-rotation/"
+    }
+  ],
+  "hints": []
+}

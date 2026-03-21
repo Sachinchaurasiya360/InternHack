@@ -1,0 +1,18 @@
+{
+  "id": "1108",
+  "title": "Defanging an IP Address",
+  "slug": "defanging-an-ip-address",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a valid (IPv4) IP <code>address</code>, return a defanged version of that IP address.</p>\r\n\r\n<p>A <em>defanged&nbsp;IP address</em>&nbsp;replaces every period <code>&quot;.&quot;</code> with <code>&quot;[.]&quot;</code>.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n<pre><strong>Input:</strong> address = \"1.1.1.1\"\r\n<strong>Output:</strong> \"1[.]1[.]1[.]1\"\r\n</pre><p><strong class=\"example\">Example 2:</strong></p>\r\n<pre><strong>Input:</strong> address = \"255.100.50.0\"\r\n<strong>Output:</strong> \"255[.]100[.]50[.]0\"\r\n</pre>\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li>The given <code>address</code> is a valid IPv4 address.</li>\r\n</ul>",
+  "content_markdown": "Given a valid (IPv4) IP `address`, return a defanged version of that IP address.\n\nA _defanged  IP address_ replaces every period `\".\"` with `\"[.]\"`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** address = \"1.1.1.1\"\r\n    **Output:** \"1[.]1[.]1[.]1\"\r\n    \n\n**Example 2:**\n    \n    \n    **Input:** address = \"255.100.50.0\"\r\n    **Output:** \"255[.]100[.]50[.]0\"\r\n    \n\n \n\n**Constraints:**\n\n  * The given `address` is a valid IPv4 address.",
+  "question": "Given a valid (IPv4) IP `address`, return a defanged version of that IP address.\n\nA _defanged  IP address_ replaces every period `\".\"` with `\"[.]\"`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** address = \"1.1.1.1\"\r\n    **Output:** \"1[.]1[.]1[.]1\"\r\n    \n\n**Example 2:**\n    \n    \n    **Input:** address = \"255.100.50.0\"\r\n    **Output:** \"255[.]100[.]50[.]0\"",
+  "constraints": "**Constraints:**\n\n  * The given `address` is a valid IPv4 address.",
+  "topics": ["String"],
+  "total_accepted": 840181,
+  "total_submissions": 933820,
+  "acceptance_rate": "90.0%",
+  "similar_questions": [],
+  "hints": []
+}

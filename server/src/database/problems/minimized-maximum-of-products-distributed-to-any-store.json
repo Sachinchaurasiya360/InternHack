@@ -1,0 +1,71 @@
+{
+  "id": "2064",
+  "title": "Minimized Maximum of Products Distributed to Any Store",
+  "slug": "minimized-maximum-of-products-distributed-to-any-store",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code> indicating there are <code>n</code> specialty retail stores. There are <code>m</code> product types of varying amounts, which are given as a <strong>0-indexed</strong> integer array <code>quantities</code>, where <code>quantities[i]</code> represents the number of products of the <code>i<sup>th</sup></code> product type.</p>\n\n<p>You need to distribute <strong>all products</strong> to the retail stores following these rules:</p>\n\n<ul>\n\t<li>A store can only be given <strong>at most one product type</strong> but can be given <strong>any</strong> amount of it.</li>\n\t<li>After distribution, each store will have been given some number of products (possibly <code>0</code>). Let <code>x</code> represent the maximum number of products given to any store. You want <code>x</code> to be as small as possible, i.e., you want to <strong>minimize</strong> the <strong>maximum</strong> number of products that are given to any store.</li>\n</ul>\n\n<p>Return <em>the minimum possible</em> <code>x</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 6, quantities = [11,6]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> One optimal way is:\n- The 11 products of type 0 are distributed to the first four stores in these amounts: 2, 3, 3, 3\n- The 6 products of type 1 are distributed to the other two stores in these amounts: 3, 3\nThe maximum number of products given to any store is max(2, 3, 3, 3, 3, 3) = 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 7, quantities = [15,10,10]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> One optimal way is:\n- The 15 products of type 0 are distributed to the first three stores in these amounts: 5, 5, 5\n- The 10 products of type 1 are distributed to the next two stores in these amounts: 5, 5\n- The 10 products of type 2 are distributed to the last two stores in these amounts: 5, 5\nThe maximum number of products given to any store is max(5, 5, 5, 5, 5, 5, 5) = 5.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1, quantities = [100000]\n<strong>Output:</strong> 100000\n<strong>Explanation:</strong> The only optimal way is:\n- The 100000 products of type 0 are distributed to the only store.\nThe maximum number of products given to any store is max(100000) = 100000.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == quantities.length</code></li>\n\t<li><code>1 &lt;= m &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= quantities[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n` indicating there are `n` specialty retail stores. There are `m` product types of varying amounts, which are given as a **0-indexed** integer array `quantities`, where `quantities[i]` represents the number of products of the `ith` product type.\n\nYou need to distribute **all products** to the retail stores following these rules:\n\n  * A store can only be given **at most one product type** but can be given **any** amount of it.\n  * After distribution, each store will have been given some number of products (possibly `0`). Let `x` represent the maximum number of products given to any store. You want `x` to be as small as possible, i.e., you want to **minimize** the **maximum** number of products that are given to any store.\n\n\n\nReturn _the minimum possible_ `x`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 6, quantities = [11,6]\n    **Output:** 3\n    **Explanation:** One optimal way is:\n    - The 11 products of type 0 are distributed to the first four stores in these amounts: 2, 3, 3, 3\n    - The 6 products of type 1 are distributed to the other two stores in these amounts: 3, 3\n    The maximum number of products given to any store is max(2, 3, 3, 3, 3, 3) = 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 7, quantities = [15,10,10]\n    **Output:** 5\n    **Explanation:** One optimal way is:\n    - The 15 products of type 0 are distributed to the first three stores in these amounts: 5, 5, 5\n    - The 10 products of type 1 are distributed to the next two stores in these amounts: 5, 5\n    - The 10 products of type 2 are distributed to the last two stores in these amounts: 5, 5\n    The maximum number of products given to any store is max(5, 5, 5, 5, 5, 5, 5) = 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 1, quantities = [100000]\n    **Output:** 100000\n    **Explanation:** The only optimal way is:\n    - The 100000 products of type 0 are distributed to the only store.\n    The maximum number of products given to any store is max(100000) = 100000.\n    \n\n \n\n**Constraints:**\n\n  * `m == quantities.length`\n  * `1 <= m <= n <= 105`\n  * `1 <= quantities[i] <= 105`",
+  "question": "You are given an integer `n` indicating there are `n` specialty retail stores. There are `m` product types of varying amounts, which are given as a **0-indexed** integer array `quantities`, where `quantities[i]` represents the number of products of the `ith` product type.\n\nYou need to distribute **all products** to the retail stores following these rules:\n\n  * A store can only be given **at most one product type** but can be given **any** amount of it.\n  * After distribution, each store will have been given some number of products (possibly `0`). Let `x` represent the maximum number of products given to any store. You want `x` to be as small as possible, i.e., you want to **minimize** the **maximum** number of products that are given to any store.\n\n\n\nReturn _the minimum possible_ `x`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 6, quantities = [11,6]\n    **Output:** 3\n    **Explanation:** One optimal way is:\n    - The 11 products of type 0 are distributed to the first four stores in these amounts: 2, 3, 3, 3\n    - The 6 products of type 1 are distributed to the other two stores in these amounts: 3, 3\n    The maximum number of products given to any store is max(2, 3, 3, 3, 3, 3) = 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 7, quantities = [15,10,10]\n    **Output:** 5\n    **Explanation:** One optimal way is:\n    - The 15 products of type 0 are distributed to the first three stores in these amounts: 5, 5, 5\n    - The 10 products of type 1 are distributed to the next two stores in these amounts: 5, 5\n    - The 10 products of type 2 are distributed to the last two stores in these amounts: 5, 5\n    The maximum number of products given to any store is max(5, 5, 5, 5, 5, 5, 5) = 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 1, quantities = [100000]\n    **Output:** 100000\n    **Explanation:** The only optimal way is:\n    - The 100000 products of type 0 are distributed to the only store.\n    The maximum number of products given to any store is max(100000) = 100000.",
+  "constraints": "**Constraints:**\n\n  * `m == quantities.length`\n  * `1 <= m <= n <= 105`\n  * `1 <= quantities[i] <= 105`",
+  "topics": ["Array", "Binary Search", "Greedy"],
+  "total_accepted": 148313,
+  "total_submissions": 235521,
+  "acceptance_rate": "63.0%",
+  "similar_questions": [
+    {
+      "title": "Koko Eating Bananas",
+      "slug": "koko-eating-bananas",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/koko-eating-bananas/"
+    },
+    {
+      "title": "Capacity To Ship Packages Within D Days",
+      "slug": "capacity-to-ship-packages-within-d-days",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/"
+    },
+    {
+      "title": "Maximum Candies Allocated to K Children",
+      "slug": "maximum-candies-allocated-to-k-children",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-candies-allocated-to-k-children/"
+    },
+    {
+      "title": "Find the Smallest Divisor Given a Threshold",
+      "slug": "find-the-smallest-divisor-given-a-threshold",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/"
+    },
+    {
+      "title": "Magnetic Force Between Two Balls",
+      "slug": "magnetic-force-between-two-balls",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/magnetic-force-between-two-balls/"
+    },
+    {
+      "title": "Minimum Limit of Balls in a Bag",
+      "slug": "minimum-limit-of-balls-in-a-bag",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-limit-of-balls-in-a-bag/"
+    },
+    {
+      "title": "Minimum Time to Complete Trips",
+      "slug": "minimum-time-to-complete-trips",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-time-to-complete-trips/"
+    },
+    {
+      "title": "Maximum Number of Robots Within Budget",
+      "slug": "maximum-number-of-robots-within-budget",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-robots-within-budget/"
+    }
+  ],
+  "hints": [
+    "There exists a monotonic nature such that when x is smaller than some number, there will be no way to distribute, and when x is not smaller than that number, there will always be a way to distribute.",
+    "If you are given a number k, where the number of products given to any store does not exceed k, could you determine if all products can be distributed?",
+    "Implement a function canDistribute(k), which returns true if you can distribute all products such that any store will not be given more than k products, and returns false if you cannot. Use this function to binary search for the smallest possible k."
+  ]
+}

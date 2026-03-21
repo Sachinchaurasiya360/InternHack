@@ -1,0 +1,28 @@
+{
+  "id": "1419",
+  "title": "Minimum Number of Frogs Croaking",
+  "slug": "minimum-number-of-frogs-croaking",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the string <code>croakOfFrogs</code>, which represents a combination of the string <code>&quot;croak&quot;</code> from different frogs, that is, multiple frogs can croak at the same time, so multiple <code>&quot;croak&quot;</code> are mixed.</p>\n\n<p><em>Return the minimum number of </em>different<em> frogs to finish all the croaks in the given string.</em></p>\n\n<p>A valid <code>&quot;croak&quot;</code> means a frog is printing five letters <code>&#39;c&#39;</code>, <code>&#39;r&#39;</code>, <code>&#39;o&#39;</code>, <code>&#39;a&#39;</code>, and <code>&#39;k&#39;</code> <strong>sequentially</strong>. The frogs have to print all five letters to finish a croak. If the given string is not a combination of a valid <code>&quot;croak&quot;</code> return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> croakOfFrogs = &quot;croakcroak&quot;\n<strong>Output:</strong> 1 \n<strong>Explanation:</strong> One frog yelling &quot;croak<strong>&quot;</strong> twice.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> croakOfFrogs = &quot;crcoakroak&quot;\n<strong>Output:</strong> 2 \n<strong>Explanation:</strong> The minimum number of frogs is two. \nThe first frog could yell &quot;<strong>cr</strong>c<strong>oak</strong>roak&quot;.\nThe second frog could yell later &quot;cr<strong>c</strong>oak<strong>roak</strong>&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> croakOfFrogs = &quot;croakcrook&quot;\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> The given string is an invalid combination of &quot;croak<strong>&quot;</strong> from different frogs.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= croakOfFrogs.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>croakOfFrogs</code> is either <code>&#39;c&#39;</code>, <code>&#39;r&#39;</code>, <code>&#39;o&#39;</code>, <code>&#39;a&#39;</code>, or <code>&#39;k&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given the string `croakOfFrogs`, which represents a combination of the string `\"croak\"` from different frogs, that is, multiple frogs can croak at the same time, so multiple `\"croak\"` are mixed.\n\n_Return the minimum number of_ different _frogs to finish all the croaks in the given string._\n\nA valid `\"croak\"` means a frog is printing five letters `'c'`, `'r'`, `'o'`, `'a'`, and `'k'` **sequentially**. The frogs have to print all five letters to finish a croak. If the given string is not a combination of a valid `\"croak\"` return `-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** croakOfFrogs = \"croakcroak\"\n    **Output:** 1 \n    **Explanation:** One frog yelling \"croak**\"** twice.\n    \n\n**Example 2:**\n    \n    \n    **Input:** croakOfFrogs = \"crcoakroak\"\n    **Output:** 2 \n    **Explanation:** The minimum number of frogs is two. \n    The first frog could yell \"**cr** c**oak** roak\".\n    The second frog could yell later \"cr**c** oak**roak** \".\n    \n\n**Example 3:**\n    \n    \n    **Input:** croakOfFrogs = \"croakcrook\"\n    **Output:** -1\n    **Explanation:** The given string is an invalid combination of \"croak**\"** from different frogs.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= croakOfFrogs.length <= 105`\n  * `croakOfFrogs` is either `'c'`, `'r'`, `'o'`, `'a'`, or `'k'`.",
+  "question": "You are given the string `croakOfFrogs`, which represents a combination of the string `\"croak\"` from different frogs, that is, multiple frogs can croak at the same time, so multiple `\"croak\"` are mixed.\n\n_Return the minimum number of_ different _frogs to finish all the croaks in the given string._\n\nA valid `\"croak\"` means a frog is printing five letters `'c'`, `'r'`, `'o'`, `'a'`, and `'k'` **sequentially**. The frogs have to print all five letters to finish a croak. If the given string is not a combination of a valid `\"croak\"` return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** croakOfFrogs = \"croakcroak\"\n    **Output:** 1 \n    **Explanation:** One frog yelling \"croak**\"** twice.\n    \n\n**Example 2:**\n    \n    \n    **Input:** croakOfFrogs = \"crcoakroak\"\n    **Output:** 2 \n    **Explanation:** The minimum number of frogs is two. \n    The first frog could yell \"**cr** c**oak** roak\".\n    The second frog could yell later \"cr**c** oak**roak** \".\n    \n\n**Example 3:**\n    \n    \n    **Input:** croakOfFrogs = \"croakcrook\"\n    **Output:** -1\n    **Explanation:** The given string is an invalid combination of \"croak**\"** from different frogs.",
+  "constraints": "**Constraints:**\n\n  * `1 <= croakOfFrogs.length <= 105`\n  * `croakOfFrogs` is either `'c'`, `'r'`, `'o'`, `'a'`, or `'k'`.",
+  "topics": ["String", "Counting"],
+  "total_accepted": 62756,
+  "total_submissions": 122710,
+  "acceptance_rate": "51.1%",
+  "similar_questions": [
+    {
+      "title": "Divide Intervals Into Minimum Number of Groups",
+      "slug": "divide-intervals-into-minimum-number-of-groups",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/"
+    }
+  ],
+  "hints": [
+    "keep the frequency of all characters from \"croak\" using a hashmap.",
+    "For each character in the given string, greedily match it to a possible \"croak\"."
+  ]
+}

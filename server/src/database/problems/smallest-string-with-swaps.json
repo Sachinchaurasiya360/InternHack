@@ -1,0 +1,61 @@
+{
+  "id": "1202",
+  "title": "Smallest String With Swaps",
+  "slug": "smallest-string-with-swaps",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code>, and an array of pairs of indices in the string&nbsp;<code>pairs</code>&nbsp;where&nbsp;<code>pairs[i] =&nbsp;[a, b]</code>&nbsp;indicates 2 indices(0-indexed) of the string.</p>\n\n<p>You can&nbsp;swap the characters at any pair of indices in the given&nbsp;<code>pairs</code>&nbsp;<strong>any number of times</strong>.</p>\n\n<p>Return the&nbsp;lexicographically smallest string that <code>s</code>&nbsp;can be changed to after using the swaps.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;dcab&quot;, pairs = [[0,3],[1,2]]\n<strong>Output:</strong> &quot;bacd&quot;\n<strong>Explaination:</strong> \nSwap s[0] and s[3], s = &quot;bcad&quot;\nSwap s[1] and s[2], s = &quot;bacd&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;dcab&quot;, pairs = [[0,3],[1,2],[0,2]]\n<strong>Output:</strong> &quot;abcd&quot;\n<strong>Explaination: </strong>\nSwap s[0] and s[3], s = &quot;bcad&quot;\nSwap s[0] and s[2], s = &quot;acbd&quot;\nSwap s[1] and s[2], s = &quot;abcd&quot;</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;cba&quot;, pairs = [[0,1],[1,2]]\n<strong>Output:</strong> &quot;abc&quot;\n<strong>Explaination: </strong>\nSwap s[0] and s[1], s = &quot;bca&quot;\nSwap s[1] and s[2], s = &quot;bac&quot;\nSwap s[0] and s[1], s = &quot;abc&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10^5</code></li>\n\t<li><code>0 &lt;= pairs.length &lt;= 10^5</code></li>\n\t<li><code>0 &lt;= pairs[i][0], pairs[i][1] &lt;&nbsp;s.length</code></li>\n\t<li><code>s</code>&nbsp;only contains lower case English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s`, and an array of pairs of indices in the string `pairs` where `pairs[i] = [a, b]` indicates 2 indices(0-indexed) of the string.\n\nYou can swap the characters at any pair of indices in the given `pairs` **any number of times**.\n\nReturn the lexicographically smallest string that `s` can be changed to after using the swaps.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"dcab\", pairs = [[0,3],[1,2]]\n    **Output:** \"bacd\"\n    **Explaination:** \n    Swap s[0] and s[3], s = \"bcad\"\n    Swap s[1] and s[2], s = \"bacd\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"dcab\", pairs = [[0,3],[1,2],[0,2]]\n    **Output:** \"abcd\"\n    **Explaination:**\n    Swap s[0] and s[3], s = \"bcad\"\n    Swap s[0] and s[2], s = \"acbd\"\n    Swap s[1] and s[2], s = \"abcd\"\n\n**Example 3:**\n    \n    \n    **Input:** s = \"cba\", pairs = [[0,1],[1,2]]\n    **Output:** \"abc\"\n    **Explaination:**\n    Swap s[0] and s[1], s = \"bca\"\n    Swap s[1] and s[2], s = \"bac\"\n    Swap s[0] and s[1], s = \"abc\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 10^5`\n  * `0 <= pairs.length <= 10^5`\n  * `0 <= pairs[i][0], pairs[i][1] < s.length`\n  * `s` only contains lower case English letters.",
+  "question": "You are given a string `s`, and an array of pairs of indices in the string `pairs` where `pairs[i] = [a, b]` indicates 2 indices(0-indexed) of the string.\n\nYou can swap the characters at any pair of indices in the given `pairs` **any number of times**.\n\nReturn the lexicographically smallest string that `s` can be changed to after using the swaps.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"dcab\", pairs = [[0,3],[1,2]]\n    **Output:** \"bacd\"\n    **Explaination:** \n    Swap s[0] and s[3], s = \"bcad\"\n    Swap s[1] and s[2], s = \"bacd\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"dcab\", pairs = [[0,3],[1,2],[0,2]]\n    **Output:** \"abcd\"\n    **Explaination:**\n    Swap s[0] and s[3], s = \"bcad\"\n    Swap s[0] and s[2], s = \"acbd\"\n    Swap s[1] and s[2], s = \"abcd\"\n\n**Example 3:**\n    \n    \n    **Input:** s = \"cba\", pairs = [[0,1],[1,2]]\n    **Output:** \"abc\"\n    **Explaination:**\n    Swap s[0] and s[1], s = \"bca\"\n    Swap s[1] and s[2], s = \"bac\"\n    Swap s[0] and s[1], s = \"abc\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 10^5`\n  * `0 <= pairs.length <= 10^5`\n  * `0 <= pairs[i][0], pairs[i][1] < s.length`\n  * `s` only contains lower case English letters.",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Sorting"
+  ],
+  "total_accepted": 145817,
+  "total_submissions": 241533,
+  "acceptance_rate": "60.4%",
+  "similar_questions": [
+    {
+      "title": "Minimize Hamming Distance After Swap Operations",
+      "slug": "minimize-hamming-distance-after-swap-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-hamming-distance-after-swap-operations/"
+    },
+    {
+      "title": "Process Restricted Friend Requests",
+      "slug": "process-restricted-friend-requests",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/process-restricted-friend-requests/"
+    },
+    {
+      "title": "Largest Number After Digit Swaps by Parity",
+      "slug": "largest-number-after-digit-swaps-by-parity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/largest-number-after-digit-swaps-by-parity/"
+    },
+    {
+      "title": "Lexicographically Smallest Beautiful String",
+      "slug": "lexicographically-smallest-beautiful-string",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/lexicographically-smallest-beautiful-string/"
+    },
+    {
+      "title": "Make Lexicographically Smallest Array by Swapping Elements",
+      "slug": "make-lexicographically-smallest-array-by-swapping-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/make-lexicographically-smallest-array-by-swapping-elements/"
+    }
+  ],
+  "hints": [
+    "Think of it as a graph problem.",
+    "Consider the pairs as connected nodes in the graph, what can you do with a connected component of indices ?",
+    "We can sort each connected component alone to get the lexicographically minimum string."
+  ]
+}

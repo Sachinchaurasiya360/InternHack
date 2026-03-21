@@ -1,0 +1,36 @@
+{
+  "id": "2537",
+  "title": "Count the Number of Good Subarrays",
+  "slug": "count-the-number-of-good-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the number of <strong>good</strong> subarrays of</em> <code>nums</code>.</p>\n\n<p>A subarray <code>arr</code> is <strong>good</strong> if there are <strong>at least </strong><code>k</code> pairs of indices <code>(i, j)</code> such that <code>i &lt; j</code> and <code>arr[i] == arr[j]</code>.</p>\n\n<p>A <strong>subarray</strong> is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,1,1,1], k = 10\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The only good subarray is the array nums itself.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,1,4,3,2,2,4], k = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> There are 4 different good subarrays:\n- [3,1,4,3,2,2] that has 2 pairs.\n- [3,1,4,3,2,2,4] that has 3 pairs.\n- [1,4,3,2,2,4] that has 2 pairs.\n- [4,3,2,2,4] that has 2 pairs.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i], k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return _the number of**good** subarrays of_ `nums`.\n\nA subarray `arr` is **good** if there are **at least**`k` pairs of indices `(i, j)` such that `i < j` and `arr[i] == arr[j]`.\n\nA **subarray** is a contiguous **non-empty** sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,1,1,1,1], k = 10\n    **Output:** 1\n    **Explanation:** The only good subarray is the array nums itself.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,4,3,2,2,4], k = 2\n    **Output:** 4\n    **Explanation:** There are 4 different good subarrays:\n    - [3,1,4,3,2,2] that has 2 pairs.\n    - [3,1,4,3,2,2,4] that has 3 pairs.\n    - [1,4,3,2,2,4] that has 2 pairs.\n    - [4,3,2,2,4] that has 2 pairs.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i], k <= 109`",
+  "question": "Given an integer array `nums` and an integer `k`, return _the number of**good** subarrays of_ `nums`.\n\nA subarray `arr` is **good** if there are **at least**`k` pairs of indices `(i, j)` such that `i < j` and `arr[i] == arr[j]`.\n\nA **subarray** is a contiguous **non-empty** sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,1,1,1,1], k = 10\n    **Output:** 1\n    **Explanation:** The only good subarray is the array nums itself.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,4,3,2,2,4], k = 2\n    **Output:** 4\n    **Explanation:** There are 4 different good subarrays:\n    - [3,1,4,3,2,2] that has 2 pairs.\n    - [3,1,4,3,2,2,4] that has 3 pairs.\n    - [1,4,3,2,2,4] that has 2 pairs.\n    - [4,3,2,2,4] that has 2 pairs.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i], k <= 109`",
+  "topics": ["Array", "Hash Table", "Sliding Window"],
+  "total_accepted": 129654,
+  "total_submissions": 196691,
+  "acceptance_rate": "65.9%",
+  "similar_questions": [
+    {
+      "title": "Count Number of Homogenous Substrings",
+      "slug": "count-number-of-homogenous-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-homogenous-substrings/"
+    },
+    {
+      "title": "Maximum Sum of Distinct Subarrays With Length K",
+      "slug": "maximum-sum-of-distinct-subarrays-with-length-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-sum-of-distinct-subarrays-with-length-k/"
+    }
+  ],
+  "hints": [
+    "For a fixed index l, try to find the minimum value of index r, such that the subarray is not good",
+    "When a number is added to a subarray, it increases the number of pairs by its previous appearances.",
+    "When a number is removed from the subarray, it decreases the number of pairs by its remaining appearances.",
+    "Maintain 2-pointers l and r such that we can keep in account the number of equal pairs."
+  ]
+}

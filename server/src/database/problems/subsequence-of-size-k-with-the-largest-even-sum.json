@@ -1,0 +1,41 @@
+{
+  "id": "2098",
+  "title": "Subsequence of Size K With the Largest Even Sum",
+  "slug": "subsequence-of-size-k-with-the-largest-even-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 4765,
+  "total_submissions": 13355,
+  "acceptance_rate": "35.7%",
+  "similar_questions": [
+    {
+      "title": "Split Array Largest Sum",
+      "slug": "split-array-largest-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-largest-sum/"
+    },
+    {
+      "title": "Partition Array for Maximum Sum",
+      "slug": "partition-array-for-maximum-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-array-for-maximum-sum/"
+    },
+    {
+      "title": "Number of Sub-arrays With Odd Sum",
+      "slug": "number-of-sub-arrays-with-odd-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-sub-arrays-with-odd-sum/"
+    }
+  ],
+  "hints": [
+    "Is the sum of two even numbers even or odd? How about two odd numbers? One odd number and one even number?",
+    "If there is an even number of odd numbers, the sum will be even and vice versa.",
+    "Create an integer array to store all the even numbers in nums and another array to store all the odd numbers in nums. Sort both arrays."
+  ]
+}

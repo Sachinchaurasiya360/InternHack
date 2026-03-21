@@ -1,0 +1,35 @@
+{
+  "id": "3201",
+  "title": "Find the Maximum Length of Valid Subsequence I",
+  "slug": "find-the-maximum-length-of-valid-subsequence-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "You are given an integer array <code>nums</code>.\n<p>A <span data-keyword=\"subsequence-array\">subsequence</span> <code>sub</code> of <code>nums</code> with length <code>x</code> is called <strong>valid</strong> if it satisfies:</p>\n\n<ul>\n\t<li><code>(sub[0] + sub[1]) % 2 == (sub[1] + sub[2]) % 2 == ... == (sub[x - 2] + sub[x - 1]) % 2.</code></li>\n</ul>\n\n<p>Return the length of the <strong>longest</strong> <strong>valid</strong> subsequence of <code>nums</code>.</p>\n\n<p>A <strong>subsequence</strong> is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The longest valid subsequence is <code>[1, 2, 3, 4]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,1,1,2,1,2]</span></p>\n\n<p><strong>Output:</strong> 6</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The longest valid subsequence is <code>[1, 2, 1, 2, 1, 2]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The longest valid subsequence is <code>[1, 3]</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 2 * 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`. \n\nA subsequence `sub` of `nums` with length `x` is called **valid** if it satisfies:\n\n  * `(sub[0] + sub[1]) % 2 == (sub[1] + sub[2]) % 2 == ... == (sub[x - 2] + sub[x - 1]) % 2.`\n\n\n\nReturn the length of the **longest** **valid** subsequence of `nums`.\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,3,4]\n\n**Output:** 4\n\n**Explanation:**\n\nThe longest valid subsequence is `[1, 2, 3, 4]`.\n\n**Example 2:**\n\n**Input:** nums = [1,2,1,1,2,1,2]\n\n**Output:** 6\n\n**Explanation:**\n\nThe longest valid subsequence is `[1, 2, 1, 2, 1, 2]`.\n\n**Example 3:**\n\n**Input:** nums = [1,3]\n\n**Output:** 2\n\n**Explanation:**\n\nThe longest valid subsequence is `[1, 3]`.\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 2 * 105`\n  * `1 <= nums[i] <= 107`",
+  "question": "You are given an integer array `nums`. \n\nA subsequence `sub` of `nums` with length `x` is called **valid** if it satisfies:\n\n  * `(sub[0] + sub[1]) % 2 == (sub[1] + sub[2]) % 2 == ... == (sub[x - 2] + sub[x - 1]) % 2.`\n\n\n\nReturn the length of the **longest** **valid** subsequence of `nums`.\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,3,4]\n\n**Output:** 4\n\n**Explanation:**\n\nThe longest valid subsequence is `[1, 2, 3, 4]`.\n\n**Example 2:**\n\n**Input:** nums = [1,2,1,1,2,1,2]\n\n**Output:** 6\n\n**Explanation:**\n\nThe longest valid subsequence is `[1, 2, 1, 2, 1, 2]`.\n\n**Example 3:**\n\n**Input:** nums = [1,3]\n\n**Output:** 2\n\n**Explanation:**\n\nThe longest valid subsequence is `[1, 3]`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 2 * 105`\n  * `1 <= nums[i] <= 107`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 141845,
+  "total_submissions": 258401,
+  "acceptance_rate": "54.9%",
+  "similar_questions": [
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    },
+    {
+      "title": "Length of the Longest Subsequence That Sums to Target",
+      "slug": "length-of-the-longest-subsequence-that-sums-to-target",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/length-of-the-longest-subsequence-that-sums-to-target/"
+    }
+  ],
+  "hints": [
+    "The possible sequence either contains all even elements, all odd elements, alternate even odd, or alternate odd even elements.",
+    "Considering only the parity of elements, there are only 4 possibilities and we can try all of them.",
+    "When selecting an element with any parity, try to select the earliest one."
+  ]
+}

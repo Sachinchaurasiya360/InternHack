@@ -1,0 +1,29 @@
+{
+  "id": "3153",
+  "title": "Sum of Digit Differences of All Pairs",
+  "slug": "sum-of-digit-differences-of-all-pairs",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> consisting of <strong>positive</strong> integers where all integers have the <strong>same</strong> number of digits.</p>\n\n<p>The <strong>digit difference</strong> between two integers is the <em>count</em> of different digits that are in the <strong>same</strong> position in the two integers.</p>\n\n<p>Return the <strong>sum</strong> of the <strong>digit differences</strong> between <strong>all</strong> pairs of integers in <code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [13,23,12]</span></p>\n\n<p><strong>Output:</strong> 4</p>\n\n<p><strong>Explanation:</strong><br />\nWe have the following:<br />\n- The digit difference between <strong>1</strong>3 and <strong>2</strong>3 is 1.<br />\n- The digit difference between 1<strong>3</strong> and 1<strong>2</strong> is 1.<br />\n- The digit difference between <strong>23</strong> and <strong>12</strong> is 2.<br />\nSo the total sum of digit differences between all pairs of integers is <code>1 + 1 + 2 = 4</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [10,10,10,10]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong><br />\nAll the integers in the array are the same. So the total sum of digit differences between all pairs of integers will be 0.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt; 10<sup>9</sup></code></li>\n\t<li>All integers in <code>nums</code> have the same number of digits.</li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` consisting of **positive** integers where all integers have the **same** number of digits.\n\nThe **digit difference** between two integers is the _count_ of different digits that are in the **same** position in the two integers.\n\nReturn the **sum** of the **digit differences** between **all** pairs of integers in `nums`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [13,23,12]\n\n**Output:** 4\n\n**Explanation:**  \nWe have the following:  \n\\- The digit difference between **1** 3 and **2** 3 is 1.  \n\\- The digit difference between 1**3** and 1**2** is 1.  \n\\- The digit difference between **23** and **12** is 2.  \nSo the total sum of digit differences between all pairs of integers is `1 + 1 + 2 = 4`.\n\n**Example 2:**\n\n**Input:** nums = [10,10,10,10]\n\n**Output:** 0\n\n**Explanation:**  \nAll the integers in the array are the same. So the total sum of digit differences between all pairs of integers will be 0.\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `1 <= nums[i] < 109`\n  * All integers in `nums` have the same number of digits.",
+  "question": "You are given an array `nums` consisting of **positive** integers where all integers have the **same** number of digits.\n\nThe **digit difference** between two integers is the _count_ of different digits that are in the **same** position in the two integers.\n\nReturn the **sum** of the **digit differences** between **all** pairs of integers in `nums`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [13,23,12]\n\n**Output:** 4\n\n**Explanation:**  \nWe have the following:  \n\\- The digit difference between **1** 3 and **2** 3 is 1.  \n\\- The digit difference between 1**3** and 1**2** is 1.  \n\\- The digit difference between **23** and **12** is 2.  \nSo the total sum of digit differences between all pairs of integers is `1 + 1 + 2 = 4`.\n\n**Example 2:**\n\n**Input:** nums = [10,10,10,10]\n\n**Output:** 0\n\n**Explanation:**  \nAll the integers in the array are the same. So the total sum of digit differences between all pairs of integers will be 0.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `1 <= nums[i] < 109`\n  * All integers in `nums` have the same number of digits.",
+  "topics": ["Array", "Hash Table", "Math", "Counting"],
+  "total_accepted": 29033,
+  "total_submissions": 67518,
+  "acceptance_rate": "43.0%",
+  "similar_questions": [
+    {
+      "title": "Total Hamming Distance",
+      "slug": "total-hamming-distance",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/total-hamming-distance/"
+    }
+  ],
+  "hints": [
+    "You can solve the problem for digits that are on the same position separately, and then sum up all the answers.",
+    "For each position, count the number of occurences of each digit from 0 to 9 that appear on that position.",
+    "Let <code>c</code> be the number of occurences of a digit on a position, that will contribute with <code>c * (n - c)</code> to the final answer, where <code>n</code> is the number of integers in <code>nums</code>."
+  ]
+}

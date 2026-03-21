@@ -1,0 +1,37 @@
+{
+  "id": "428",
+  "title": "Serialize and Deserialize N-ary Tree",
+  "slug": "serialize-and-deserialize-n-ary-tree",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Tree", "Depth-First Search", "Breadth-First Search"],
+  "total_accepted": 98908,
+  "total_submissions": 144135,
+  "acceptance_rate": "68.6%",
+  "similar_questions": [
+    {
+      "title": "Serialize and Deserialize Binary Tree",
+      "slug": "serialize-and-deserialize-binary-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/"
+    },
+    {
+      "title": "Serialize and Deserialize BST",
+      "slug": "serialize-and-deserialize-bst",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/serialize-and-deserialize-bst/"
+    },
+    {
+      "title": "Encode N-ary Tree to Binary Tree",
+      "slug": "encode-n-ary-tree-to-binary-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/encode-n-ary-tree-to-binary-tree/"
+    }
+  ],
+  "hints": []
+}

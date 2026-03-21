@@ -1,0 +1,46 @@
+{
+  "id": "2734",
+  "title": "Lexicographically Smallest String After Substring Operation",
+  "slug": "lexicographically-smallest-string-after-substring-operation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> consisting of lowercase English letters. Perform the following operation:</p>\n\n<ul>\n\t<li>Select any non-empty <span data-keyword=\"substring-nonempty\">substring</span> then replace every letter of the substring with the preceding letter of the English alphabet. For example, &#39;b&#39; is converted to &#39;a&#39;, and &#39;a&#39; is converted to &#39;z&#39;.</li>\n</ul>\n\n<p>Return the <span data-keyword=\"lexicographically-smaller-string\"><strong>lexicographically smallest</strong></span> string <strong>after performing the operation</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;cbabc&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;baabc&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Perform the operation on the substring starting at index 0, and ending at index 1 inclusive.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;aa&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;az&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Perform the operation on the last letter.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;acbbc&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;abaab&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Perform the operation on the substring starting at index 1, and ending at index 4 inclusive.</p>\n</div>\n\n<p><strong class=\"example\">Example 4:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;leetcode&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;kddsbncd&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Perform the operation on the entire string.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 3 * 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` consisting of lowercase English letters. Perform the following operation:\n\n  * Select any non-empty substring then replace every letter of the substring with the preceding letter of the English alphabet. For example, 'b' is converted to 'a', and 'a' is converted to 'z'.\n\n\n\nReturn the **lexicographically smallest** string **after performing the operation**.\n\n \n\n**Example 1:**\n\n**Input:** s = \"cbabc\"\n\n**Output:** \"baabc\"\n\n**Explanation:**\n\nPerform the operation on the substring starting at index 0, and ending at index 1 inclusive.\n\n**Example 2:**\n\n**Input:** s = \"aa\"\n\n**Output:** \"az\"\n\n**Explanation:**\n\nPerform the operation on the last letter.\n\n**Example 3:**\n\n**Input:** s = \"acbbc\"\n\n**Output:** \"abaab\"\n\n**Explanation:**\n\nPerform the operation on the substring starting at index 1, and ending at index 4 inclusive.\n\n**Example 4:**\n\n**Input:** s = \"leetcode\"\n\n**Output:** \"kddsbncd\"\n\n**Explanation:**\n\nPerform the operation on the entire string.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 3 * 105`\n  * `s` consists of lowercase English letters",
+  "question": "Given a string `s` consisting of lowercase English letters. Perform the following operation:\n\n  * Select any non-empty substring then replace every letter of the substring with the preceding letter of the English alphabet. For example, 'b' is converted to 'a', and 'a' is converted to 'z'.\n\n\n\nReturn the **lexicographically smallest** string **after performing the operation**.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"cbabc\"\n\n**Output:** \"baabc\"\n\n**Explanation:**\n\nPerform the operation on the substring starting at index 0, and ending at index 1 inclusive.\n\n**Example 2:**\n\n**Input:** s = \"aa\"\n\n**Output:** \"az\"\n\n**Explanation:**\n\nPerform the operation on the last letter.\n\n**Example 3:**\n\n**Input:** s = \"acbbc\"\n\n**Output:** \"abaab\"\n\n**Explanation:**\n\nPerform the operation on the substring starting at index 1, and ending at index 4 inclusive.\n\n**Example 4:**\n\n**Input:** s = \"leetcode\"\n\n**Output:** \"kddsbncd\"\n\n**Explanation:**\n\nPerform the operation on the entire string.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 3 * 105`\n  * `s` consists of lowercase English letters",
+  "topics": ["String", "Greedy"],
+  "total_accepted": 35436,
+  "total_submissions": 102682,
+  "acceptance_rate": "34.5%",
+  "similar_questions": [
+    {
+      "title": "Shifting Letters",
+      "slug": "shifting-letters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shifting-letters/"
+    },
+    {
+      "title": "Lexicographically Smallest String After Applying Operations",
+      "slug": "lexicographically-smallest-string-after-applying-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lexicographically-smallest-string-after-applying-operations/"
+    },
+    {
+      "title": "Lexicographically Smallest String After Operations With Constraint",
+      "slug": "lexicographically-smallest-string-after-operations-with-constraint",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lexicographically-smallest-string-after-operations-with-constraint/"
+    },
+    {
+      "title": "Replace Question Marks in String to Minimize Its Value",
+      "slug": "replace-question-marks-in-string-to-minimize-its-value",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/replace-question-marks-in-string-to-minimize-its-value/"
+    }
+  ],
+  "hints": [
+    "When a character is replaced by the one that comes before it on the alphabet, it makes the string lexicographically smaller, except for ‘a'.",
+    "Find the leftmost substring that doesn’t contain the character 'a' and change all characters in it."
+  ]
+}

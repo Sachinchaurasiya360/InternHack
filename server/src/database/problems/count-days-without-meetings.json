@@ -1,0 +1,28 @@
+{
+  "id": "3169",
+  "title": "Count Days Without Meetings",
+  "slug": "count-days-without-meetings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>days</code> representing the total number of days an employee is available for work (starting from day 1). You are also given a 2D array <code>meetings</code> of size <code>n</code> where, <code>meetings[i] = [start_i, end_i]</code> represents the starting and ending days of meeting <code>i</code> (inclusive).</p>\n\n<p>Return the count of days when the employee is available for work but no meetings are scheduled.</p>\n\n<p><strong>Note: </strong>The meetings may overlap.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">days = 10, meetings = [[5,7],[1,3],[9,10]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There is no meeting scheduled on the 4<sup>th</sup> and 8<sup>th</sup> days.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">days = 5, meetings = [[2,4],[1,3]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There is no meeting scheduled on the 5<sup>th </sup>day.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">days = 6, meetings = [[1,6]]</span></p>\n\n<p><strong>Output:</strong> 0</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Meetings are scheduled for all working days.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= days &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= meetings.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>meetings[i].length == 2</code></li>\n\t<li><code><font face=\"monospace\">1 &lt;= meetings[i][0] &lt;= meetings[i][1] &lt;= days</font></code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `days` representing the total number of days an employee is available for work (starting from day 1). You are also given a 2D array `meetings` of size `n` where, `meetings[i] = [start_i, end_i]` represents the starting and ending days of meeting `i` (inclusive).\n\nReturn the count of days when the employee is available for work but no meetings are scheduled.\n\n**Note:** The meetings may overlap.\n\n \n\n**Example 1:**\n\n**Input:** days = 10, meetings = [[5,7],[1,3],[9,10]]\n\n**Output:** 2\n\n**Explanation:**\n\nThere is no meeting scheduled on the 4th and 8th days.\n\n**Example 2:**\n\n**Input:** days = 5, meetings = [[2,4],[1,3]]\n\n**Output:** 1\n\n**Explanation:**\n\nThere is no meeting scheduled on the 5th day.\n\n**Example 3:**\n\n**Input:** days = 6, meetings = [[1,6]]\n\n**Output:** 0\n\n**Explanation:**\n\nMeetings are scheduled for all working days.\n\n \n\n**Constraints:**\n\n  * `1 <= days <= 109`\n  * `1 <= meetings.length <= 105`\n  * `meetings[i].length == 2`\n  * `1 <= meetings[i][0] <= meetings[i][1] <= days`",
+  "question": "You are given a positive integer `days` representing the total number of days an employee is available for work (starting from day 1). You are also given a 2D array `meetings` of size `n` where, `meetings[i] = [start_i, end_i]` represents the starting and ending days of meeting `i` (inclusive).\n\nReturn the count of days when the employee is available for work but no meetings are scheduled.\n\n**Note:** The meetings may overlap.",
+  "examples": "**Example 1:**\n\n**Input:** days = 10, meetings = [[5,7],[1,3],[9,10]]\n\n**Output:** 2\n\n**Explanation:**\n\nThere is no meeting scheduled on the 4th and 8th days.\n\n**Example 2:**\n\n**Input:** days = 5, meetings = [[2,4],[1,3]]\n\n**Output:** 1\n\n**Explanation:**\n\nThere is no meeting scheduled on the 5th day.\n\n**Example 3:**\n\n**Input:** days = 6, meetings = [[1,6]]\n\n**Output:** 0\n\n**Explanation:**\n\nMeetings are scheduled for all working days.",
+  "constraints": "**Constraints:**\n\n  * `1 <= days <= 109`\n  * `1 <= meetings.length <= 105`\n  * `meetings[i].length == 2`\n  * `1 <= meetings[i][0] <= meetings[i][1] <= days`",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 181778,
+  "total_submissions": 378034,
+  "acceptance_rate": "48.1%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    }
+  ],
+  "hints": [
+    "Merge the overlapping meetings and sort the new meetings timings.",
+    "Return the sum of difference between the end time of a meeting and the start time of the next meeting for all adjacent pairs."
+  ]
+}

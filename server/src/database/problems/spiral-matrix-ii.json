@@ -1,0 +1,37 @@
+{
+  "id": "59",
+  "title": "Spiral Matrix II",
+  "slug": "spiral-matrix-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer <code>n</code>, generate an <code>n x n</code> <code>matrix</code> filled with elements from <code>1</code> to <code>n<sup>2</sup></code> in spiral order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/13/spiraln.jpg\" style=\"width: 242px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> [[1,2,3],[8,9,4],[7,6,5]]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> [[1]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 20</code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer `n`, generate an `n x n` `matrix` filled with elements from `1` to `n2` in spiral order.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/13/spiraln.jpg)\n    \n    \n    **Input:** n = 3\n    **Output:** [[1,2,3],[8,9,4],[7,6,5]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [[1]]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 20`",
+  "question": "Given a positive integer `n`, generate an `n x n` `matrix` filled with elements from `1` to `n2` in spiral order.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/13/spiraln.jpg)\n    \n    \n    **Input:** n = 3\n    **Output:** [[1,2,3],[8,9,4],[7,6,5]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [[1]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 20`",
+  "topics": ["Array", "Matrix", "Simulation"],
+  "total_accepted": 782188,
+  "total_submissions": 1047722,
+  "acceptance_rate": "74.7%",
+  "similar_questions": [
+    {
+      "title": "Spiral Matrix",
+      "slug": "spiral-matrix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/spiral-matrix/"
+    },
+    {
+      "title": "Spiral Matrix III",
+      "slug": "spiral-matrix-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/spiral-matrix-iii/"
+    },
+    {
+      "title": "Spiral Matrix IV",
+      "slug": "spiral-matrix-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/spiral-matrix-iv/"
+    }
+  ],
+  "hints": []
+}

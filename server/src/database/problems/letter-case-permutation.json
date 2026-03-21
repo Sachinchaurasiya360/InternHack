@@ -1,0 +1,31 @@
+{
+  "id": "784",
+  "title": "Letter Case Permutation",
+  "slug": "letter-case-permutation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, you&nbsp;can transform every letter individually to be lowercase or uppercase to create another string.</p>\n\n<p>Return <em>a list of all possible strings we could create</em>. Return the output in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a1b2&quot;\n<strong>Output:</strong> [&quot;a1b2&quot;,&quot;a1B2&quot;,&quot;A1b2&quot;,&quot;A1B2&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;3z4&quot;\n<strong>Output:</strong> [&quot;3z4&quot;,&quot;3Z4&quot;]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 12</code></li>\n\t<li><code>s</code> consists of lowercase English letters, uppercase English letters, and digits.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, you can transform every letter individually to be lowercase or uppercase to create another string.\n\nReturn _a list of all possible strings we could create_. Return the output in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"a1b2\"\n    **Output:** [\"a1b2\",\"a1B2\",\"A1b2\",\"A1B2\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"3z4\"\n    **Output:** [\"3z4\",\"3Z4\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 12`\n  * `s` consists of lowercase English letters, uppercase English letters, and digits.",
+  "question": "Given a string `s`, you can transform every letter individually to be lowercase or uppercase to create another string.\n\nReturn _a list of all possible strings we could create_. Return the output in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"a1b2\"\n    **Output:** [\"a1b2\",\"a1B2\",\"A1b2\",\"A1B2\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"3z4\"\n    **Output:** [\"3z4\",\"3Z4\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 12`\n  * `s` consists of lowercase English letters, uppercase English letters, and digits.",
+  "topics": ["String", "Backtracking", "Bit Manipulation"],
+  "total_accepted": 367632,
+  "total_submissions": 485599,
+  "acceptance_rate": "75.7%",
+  "similar_questions": [
+    {
+      "title": "Subsets",
+      "slug": "subsets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subsets/"
+    },
+    {
+      "title": "Brace Expansion",
+      "slug": "brace-expansion",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/brace-expansion/"
+    }
+  ],
+  "hints": []
+}

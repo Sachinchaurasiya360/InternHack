@@ -1,0 +1,31 @@
+{
+  "id": "643",
+  "title": "Maximum Average Subarray I",
+  "slug": "maximum-average-subarray-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> consisting of <code>n</code> elements, and an integer <code>k</code>.</p>\n\n<p>Find a contiguous subarray whose <strong>length is equal to</strong> <code>k</code> that has the maximum average value and return <em>this value</em>. Any answer with a calculation error less than <code>10<sup>-5</sup></code> will be accepted.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,12,-5,-6,50,3], k = 4\n<strong>Output:</strong> 12.75000\n<strong>Explanation:</strong> Maximum average is (12 - 5 - 6 + 50) / 4 = 51 / 4 = 12.75\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5], k = 1\n<strong>Output:</strong> 5.00000\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= k &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` consisting of `n` elements, and an integer `k`.\n\nFind a contiguous subarray whose **length is equal to** `k` that has the maximum average value and return _this value_. Any answer with a calculation error less than `10-5` will be accepted.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,12,-5,-6,50,3], k = 4\n    **Output:** 12.75000\n    **Explanation:** Maximum average is (12 - 5 - 6 + 50) / 4 = 51 / 4 = 12.75\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5], k = 1\n    **Output:** 5.00000\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= k <= n <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "question": "You are given an integer array `nums` consisting of `n` elements, and an integer `k`.\n\nFind a contiguous subarray whose **length is equal to** `k` that has the maximum average value and return _this value_. Any answer with a calculation error less than `10-5` will be accepted.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,12,-5,-6,50,3], k = 4\n    **Output:** 12.75000\n    **Explanation:** Maximum average is (12 - 5 - 6 + 50) / 4 = 51 / 4 = 12.75\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5], k = 1\n    **Output:** 5.00000",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= k <= n <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "topics": ["Array", "Sliding Window"],
+  "total_accepted": 1123468,
+  "total_submissions": 2383180,
+  "acceptance_rate": "47.1%",
+  "similar_questions": [
+    {
+      "title": "Maximum Average Subarray II",
+      "slug": "maximum-average-subarray-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-average-subarray-ii/"
+    },
+    {
+      "title": "K Radius Subarray Averages",
+      "slug": "k-radius-subarray-averages",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-radius-subarray-averages/"
+    }
+  ],
+  "hints": []
+}

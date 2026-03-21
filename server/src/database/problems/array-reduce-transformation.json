@@ -1,0 +1,40 @@
+{
+  "id": "2626",
+  "title": "Array Reduce Transformation",
+  "slug": "array-reduce-transformation",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "<p>Given an integer array <code>nums</code>, a reducer function <code>fn</code>, and an initial value <code>init</code>, return the final result obtained by executing the <code>fn</code> function on each element of the array, sequentially, passing in the return value from the calculation on the preceding element.</p>\n\n<p>This result is achieved through the following operations: <code>val = fn(init, nums[0]), val = fn(val, nums[1]), val = fn(val, nums[2]), ...</code> until every element in the array has been processed. The ultimate value of <code>val</code> is then returned.</p>\n\n<p>If the length of the array is 0, the function should return <code>init</code>.</p>\n\n<p>Please solve it without using the built-in <code>Array.reduce</code> method.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nnums = [1,2,3,4]\nfn = function sum(accum, curr) { return accum + curr; }\ninit = 0\n<strong>Output:</strong> 10\n<strong>Explanation:</strong>\ninitially, the value is init=0.\n(0) + nums[0] = 1\n(1) + nums[1] = 3\n(3) + nums[2] = 6\n(6) + nums[3] = 10\nThe final answer is 10.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nnums = [1,2,3,4]\nfn = function sum(accum, curr) { return accum + curr * curr; }\ninit = 100\n<strong>Output:</strong> 130\n<strong>Explanation:</strong>\ninitially, the value is init=100.\n(100) + nums[0] * nums[0] = 101\n(101) + nums[1] * nums[1] = 105\n(105) + nums[2] * nums[2] = 114\n(114) + nums[3] * nums[3] = 130\nThe final answer is 130.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nnums = []\nfn = function sum(accum, curr) { return 0; }\ninit = 25\n<strong>Output:</strong> 25\n<strong>Explanation:</strong> For empty arrays, the answer is always init.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li><code>0 &lt;= init &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, a reducer function `fn`, and an initial value `init`, return the final result obtained by executing the `fn` function on each element of the array, sequentially, passing in the return value from the calculation on the preceding element.\n\nThis result is achieved through the following operations: `val = fn(init, nums[0]), val = fn(val, nums[1]), val = fn(val, nums[2]), ...` until every element in the array has been processed. The ultimate value of `val` is then returned.\n\nIf the length of the array is 0, the function should return `init`.\n\nPlease solve it without using the built-in `Array.reduce` method.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \n    nums = [1,2,3,4]\n    fn = function sum(accum, curr) { return accum + curr; }\n    init = 0\n    **Output:** 10\n    **Explanation:**\n    initially, the value is init=0.\n    (0) + nums[0] = 1\n    (1) + nums[1] = 3\n    (3) + nums[2] = 6\n    (6) + nums[3] = 10\n    The final answer is 10.\n    \n\n**Example 2:**\n    \n    \n    **Input:** \n    nums = [1,2,3,4]\n    fn = function sum(accum, curr) { return accum + curr * curr; }\n    init = 100\n    **Output:** 130\n    **Explanation:**\n    initially, the value is init=100.\n    (100) + nums[0] * nums[0] = 101\n    (101) + nums[1] * nums[1] = 105\n    (105) + nums[2] * nums[2] = 114\n    (114) + nums[3] * nums[3] = 130\n    The final answer is 130.\n    \n\n**Example 3:**\n    \n    \n    **Input:** \n    nums = []\n    fn = function sum(accum, curr) { return 0; }\n    init = 25\n    **Output:** 25\n    **Explanation:** For empty arrays, the answer is always init.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= nums.length <= 1000`\n  * `0 <= nums[i] <= 1000`\n  * `0 <= init <= 1000`",
+  "question": "Given an integer array `nums`, a reducer function `fn`, and an initial value `init`, return the final result obtained by executing the `fn` function on each element of the array, sequentially, passing in the return value from the calculation on the preceding element.\n\nThis result is achieved through the following operations: `val = fn(init, nums[0]), val = fn(val, nums[1]), val = fn(val, nums[2]), ...` until every element in the array has been processed. The ultimate value of `val` is then returned.\n\nIf the length of the array is 0, the function should return `init`.\n\nPlease solve it without using the built-in `Array.reduce` method.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \n    nums = [1,2,3,4]\n    fn = function sum(accum, curr) { return accum + curr; }\n    init = 0\n    **Output:** 10\n    **Explanation:**\n    initially, the value is init=0.\n    (0) + nums[0] = 1\n    (1) + nums[1] = 3\n    (3) + nums[2] = 6\n    (6) + nums[3] = 10\n    The final answer is 10.\n    \n\n**Example 2:**\n    \n    \n    **Input:** \n    nums = [1,2,3,4]\n    fn = function sum(accum, curr) { return accum + curr * curr; }\n    init = 100\n    **Output:** 130\n    **Explanation:**\n    initially, the value is init=100.\n    (100) + nums[0] * nums[0] = 101\n    (101) + nums[1] * nums[1] = 105\n    (105) + nums[2] * nums[2] = 114\n    (114) + nums[3] * nums[3] = 130\n    The final answer is 130.\n    \n\n**Example 3:**\n    \n    \n    **Input:** \n    nums = []\n    fn = function sum(accum, curr) { return 0; }\n    init = 25\n    **Output:** 25\n    **Explanation:** For empty arrays, the answer is always init.",
+  "constraints": "**Constraints:**\n\n  * `0 <= nums.length <= 1000`\n  * `0 <= nums[i] <= 1000`\n  * `0 <= init <= 1000`",
+  "topics": [],
+  "total_accepted": 285316,
+  "total_submissions": 333649,
+  "acceptance_rate": "85.5%",
+  "similar_questions": [
+    {
+      "title": "Group By",
+      "slug": "group-by",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-by/"
+    },
+    {
+      "title": "Filter Elements from Array",
+      "slug": "filter-elements-from-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/filter-elements-from-array/"
+    },
+    {
+      "title": "Apply Transform Over Each Element in Array",
+      "slug": "apply-transform-over-each-element-in-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/apply-transform-over-each-element-in-array/"
+    }
+  ],
+  "hints": [
+    "Declare a variable \"res\" and set it it equal to the initial value.",
+    "Loop over each value in the array and set \"res\" = fn(res, arr[i])."
+  ]
+}

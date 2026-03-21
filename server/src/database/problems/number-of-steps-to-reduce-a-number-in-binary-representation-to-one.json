@@ -1,0 +1,28 @@
+{
+  "id": "1404",
+  "title": "Number of Steps to Reduce a Number in Binary Representation to One",
+  "slug": "number-of-steps-to-reduce-a-number-in-binary-representation-to-one",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the binary representation of an integer as a string <code>s</code>, return <em>the number of steps to reduce it to </em><code>1</code><em> under the following rules</em>:</p>\n\n<ul>\n\t<li>\n\t<p>If the current number is even, you have to divide it by <code>2</code>.</p>\n\t</li>\n\t<li>\n\t<p>If the current number is odd, you have to add <code>1</code> to it.</p>\n\t</li>\n</ul>\n\n<p>It is guaranteed that you can always reach one for all test cases.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1101&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> &quot;1101&quot; corressponds to number 13 in their decimal representation.\nStep 1) 13 is odd, add 1 and obtain 14.&nbsp;\nStep 2) 14 is even, divide by 2 and obtain 7.\nStep 3) 7 is odd, add 1 and obtain 8.\nStep 4) 8 is even, divide by 2 and obtain 4.&nbsp; \nStep 5) 4 is even, divide by 2 and obtain 2.&nbsp;\nStep 6) 2 is even, divide by 2 and obtain 1.&nbsp; \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;10&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> &quot;10&quot; corresponds to number 2 in their decimal representation.\nStep 1) 2 is even, divide by 2 and obtain 1.&nbsp; \n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1&quot;\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length&nbsp;&lt;= 500</code></li>\n\t<li><code>s</code> consists of characters &#39;0&#39; or &#39;1&#39;</li>\n\t<li><code>s[0] == &#39;1&#39;</code></li>\n</ul>\n",
+  "content_markdown": "Given the binary representation of an integer as a string `s`, return _the number of steps to reduce it to_`1` _under the following rules_ :\n\n  * If the current number is even, you have to divide it by `2`.\n\n  * If the current number is odd, you have to add `1` to it.\n\n\n\n\nIt is guaranteed that you can always reach one for all test cases.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"1101\"\n    **Output:** 6\n    **Explanation:** \"1101\" corressponds to number 13 in their decimal representation.\n    Step 1) 13 is odd, add 1 and obtain 14. \n    Step 2) 14 is even, divide by 2 and obtain 7.\n    Step 3) 7 is odd, add 1 and obtain 8.\n    Step 4) 8 is even, divide by 2 and obtain 4.  \n    Step 5) 4 is even, divide by 2 and obtain 2. \n    Step 6) 2 is even, divide by 2 and obtain 1.  \n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10\"\n    **Output:** 1\n    **Explanation:** \"10\" corresponds to number 2 in their decimal representation.\n    Step 1) 2 is even, divide by 2 and obtain 1.  \n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1\"\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of characters '0' or '1'\n  * `s[0] == '1'`",
+  "question": "Given the binary representation of an integer as a string `s`, return _the number of steps to reduce it to_`1` _under the following rules_ :\n\n  * If the current number is even, you have to divide it by `2`.\n\n  * If the current number is odd, you have to add `1` to it.\n\n\n\n\nIt is guaranteed that you can always reach one for all test cases.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"1101\"\n    **Output:** 6\n    **Explanation:** \"1101\" corressponds to number 13 in their decimal representation.\n    Step 1) 13 is odd, add 1 and obtain 14. \n    Step 2) 14 is even, divide by 2 and obtain 7.\n    Step 3) 7 is odd, add 1 and obtain 8.\n    Step 4) 8 is even, divide by 2 and obtain 4.  \n    Step 5) 4 is even, divide by 2 and obtain 2. \n    Step 6) 2 is even, divide by 2 and obtain 1.  \n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10\"\n    **Output:** 1\n    **Explanation:** \"10\" corresponds to number 2 in their decimal representation.\n    Step 1) 2 is even, divide by 2 and obtain 1.  \n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1\"\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of characters '0' or '1'\n  * `s[0] == '1'`",
+  "topics": ["String", "Bit Manipulation", "Simulation"],
+  "total_accepted": 262568,
+  "total_submissions": 412246,
+  "acceptance_rate": "63.7%",
+  "similar_questions": [
+    {
+      "title": "Minimum Moves to Reach Target Score",
+      "slug": "minimum-moves-to-reach-target-score",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-reach-target-score/"
+    }
+  ],
+  "hints": [
+    "Read the string from right to left, if the string ends in '0' then the number is even otherwise it is odd.",
+    "Simulate the steps described in the binary string."
+  ]
+}

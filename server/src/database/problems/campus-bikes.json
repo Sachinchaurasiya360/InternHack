@@ -1,0 +1,28 @@
+{
+  "id": "1057",
+  "title": "Campus Bikes",
+  "slug": "campus-bikes",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 77748,
+  "total_submissions": 131607,
+  "acceptance_rate": "59.1%",
+  "similar_questions": [
+    {
+      "title": "Campus Bikes II",
+      "slug": "campus-bikes-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/campus-bikes-ii/"
+    }
+  ],
+  "hints": [
+    "<p>Sort the elements by distance. In case of a tie, sort them by the index of the worker. After that, if there are still ties, sort them by the index of the bike.</p>\r\n\r\n<p>Can you do this in less than O(nlogn) time, where n is the total number of pairs between workers and bikes?</p>",
+    "Loop the sorted elements and match each pair of worker and bike if the given worker and bike where not used."
+  ]
+}

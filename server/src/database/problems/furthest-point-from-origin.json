@@ -1,0 +1,28 @@
+{
+  "id": "2833",
+  "title": "Furthest Point From Origin",
+  "slug": "furthest-point-from-origin",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>moves</code> of length <code>n</code> consisting only of characters <code>&#39;L&#39;</code>, <code>&#39;R&#39;</code>, and <code>&#39;_&#39;</code>. The string represents your movement on a number line starting from the origin <code>0</code>.</p>\n\n<p>In the <code>i<sup>th</sup></code> move, you can choose one of the following directions:</p>\n\n<ul>\n\t<li>move to the left if <code>moves[i] = &#39;L&#39;</code> or <code>moves[i] = &#39;_&#39;</code></li>\n\t<li>move to the right if <code>moves[i] = &#39;R&#39;</code> or <code>moves[i] = &#39;_&#39;</code></li>\n</ul>\n\n<p>Return <em>the <strong>distance from the origin</strong> of the <strong>furthest</strong> point you can get to after </em><code>n</code><em> moves</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> moves = &quot;L_RL__R&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The furthest point we can reach from the origin 0 is point -3 through the following sequence of moves &quot;LLRLLLR&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> moves = &quot;_R__LL_&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The furthest point we can reach from the origin 0 is point -5 through the following sequence of moves &quot;LRLLLLL&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> moves = &quot;_______&quot;\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> The furthest point we can reach from the origin 0 is point 7 through the following sequence of moves &quot;RRRRRRR&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= moves.length == n &lt;= 50</code></li>\n\t<li><code>moves</code> consists only of characters <code>&#39;L&#39;</code>, <code>&#39;R&#39;</code> and <code>&#39;_&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `moves` of length `n` consisting only of characters `'L'`, `'R'`, and `'_'`. The string represents your movement on a number line starting from the origin `0`.\n\nIn the `ith` move, you can choose one of the following directions:\n\n  * move to the left if `moves[i] = 'L'` or `moves[i] = '_'`\n  * move to the right if `moves[i] = 'R'` or `moves[i] = '_'`\n\n\n\nReturn _the**distance from the origin** of the **furthest** point you can get to after _`n` _moves_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** moves = \"L_RL__R\"\n    **Output:** 3\n    **Explanation:** The furthest point we can reach from the origin 0 is point -3 through the following sequence of moves \"LLRLLLR\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** moves = \"_R__LL_\"\n    **Output:** 5\n    **Explanation:** The furthest point we can reach from the origin 0 is point -5 through the following sequence of moves \"LRLLLLL\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** moves = \"_______\"\n    **Output:** 7\n    **Explanation:** The furthest point we can reach from the origin 0 is point 7 through the following sequence of moves \"RRRRRRR\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= moves.length == n <= 50`\n  * `moves` consists only of characters `'L'`, `'R'` and `'_'`.",
+  "question": "You are given a string `moves` of length `n` consisting only of characters `'L'`, `'R'`, and `'_'`. The string represents your movement on a number line starting from the origin `0`.\n\nIn the `ith` move, you can choose one of the following directions:\n\n  * move to the left if `moves[i] = 'L'` or `moves[i] = '_'`\n  * move to the right if `moves[i] = 'R'` or `moves[i] = '_'`\n\n\n\nReturn _the**distance from the origin** of the **furthest** point you can get to after _`n` _moves_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** moves = \"L_RL__R\"\n    **Output:** 3\n    **Explanation:** The furthest point we can reach from the origin 0 is point -3 through the following sequence of moves \"LLRLLLR\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** moves = \"_R__LL_\"\n    **Output:** 5\n    **Explanation:** The furthest point we can reach from the origin 0 is point -5 through the following sequence of moves \"LRLLLLL\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** moves = \"_______\"\n    **Output:** 7\n    **Explanation:** The furthest point we can reach from the origin 0 is point 7 through the following sequence of moves \"RRRRRRR\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= moves.length == n <= 50`\n  * `moves` consists only of characters `'L'`, `'R'` and `'_'`.",
+  "topics": ["String", "Counting"],
+  "total_accepted": 60437,
+  "total_submissions": 92576,
+  "acceptance_rate": "65.3%",
+  "similar_questions": [
+    {
+      "title": "Robot Return to Origin",
+      "slug": "robot-return-to-origin",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/robot-return-to-origin/"
+    }
+  ],
+  "hints": [
+    "<div class=\"_1l1MA\">In an optimal answer, all occurrences of <code>'_’</code> will be replaced with the <strong>same</strong> character.</div>",
+    "<div class=\"_1l1MA\">Replace all characters of <code>'_’</code> with the character that occurs the most. </div>"
+  ]
+}

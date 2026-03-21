@@ -1,0 +1,21 @@
+{
+  "id": "1371",
+  "title": "Find the Longest Substring Containing Vowels in Even Counts",
+  "slug": "find-the-longest-substring-containing-vowels-in-even-counts",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the string <code>s</code>, return the size of the longest substring containing each vowel an even number of times. That is, &#39;a&#39;, &#39;e&#39;, &#39;i&#39;, &#39;o&#39;, and &#39;u&#39; must appear an even number of times.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;eleetminicoworoep&quot;\n<strong>Output:</strong> 13\n<strong>Explanation: </strong>The longest substring is &quot;leetminicowor&quot; which contains two each of the vowels: <strong>e</strong>, <strong>i</strong> and <strong>o</strong> and zero of the vowels: <strong>a</strong> and <strong>u</strong>.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;leetcodeisgreat&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The longest substring is &quot;leetc&quot; which contains two e&#39;s.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bcbcbc&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> In this case, the given string &quot;bcbcbc&quot; is the longest because all vowels: <strong>a</strong>, <strong>e</strong>, <strong>i</strong>, <strong>o</strong> and <strong>u</strong> appear zero times.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 5 x 10^5</code></li>\n\t<li><code>s</code>&nbsp;contains only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given the string `s`, return the size of the longest substring containing each vowel an even number of times. That is, 'a', 'e', 'i', 'o', and 'u' must appear an even number of times.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"eleetminicoworoep\"\n    **Output:** 13\n    **Explanation:** The longest substring is \"leetminicowor\" which contains two each of the vowels: **e** , **i** and **o** and zero of the vowels: **a** and **u**.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"leetcodeisgreat\"\n    **Output:** 5\n    **Explanation:** The longest substring is \"leetc\" which contains two e's.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"bcbcbc\"\n    **Output:** 6\n    **Explanation:** In this case, the given string \"bcbcbc\" is the longest because all vowels: **a** , **e** , **i** , **o** and **u** appear zero times.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 5 x 10^5`\n  * `s` contains only lowercase English letters.",
+  "question": "Given the string `s`, return the size of the longest substring containing each vowel an even number of times. That is, 'a', 'e', 'i', 'o', and 'u' must appear an even number of times.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"eleetminicoworoep\"\n    **Output:** 13\n    **Explanation:** The longest substring is \"leetminicowor\" which contains two each of the vowels: **e** , **i** and **o** and zero of the vowels: **a** and **u**.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"leetcodeisgreat\"\n    **Output:** 5\n    **Explanation:** The longest substring is \"leetc\" which contains two e's.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"bcbcbc\"\n    **Output:** 6\n    **Explanation:** In this case, the given string \"bcbcbc\" is the longest because all vowels: **a** , **e** , **i** , **o** and **u** appear zero times.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 5 x 10^5`\n  * `s` contains only lowercase English letters.",
+  "topics": ["Hash Table", "String", "Bit Manipulation", "Prefix Sum"],
+  "total_accepted": 140200,
+  "total_submissions": 185243,
+  "acceptance_rate": "75.7%",
+  "similar_questions": [],
+  "hints": [
+    "Represent the counts (odd or even) of vowels with a bitmask.",
+    "Precompute the prefix xor for the bitmask of vowels and then get the longest valid substring."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "305",
+  "title": "Number of Islands II",
+  "slug": "number-of-islands-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Union-Find"],
+  "total_accepted": 177663,
+  "total_submissions": 439588,
+  "acceptance_rate": "40.4%",
+  "similar_questions": [
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-islands/"
+    },
+    {
+      "title": "Process Restricted Friend Requests",
+      "slug": "process-restricted-friend-requests",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/process-restricted-friend-requests/"
+    }
+  ],
+  "hints": []
+}

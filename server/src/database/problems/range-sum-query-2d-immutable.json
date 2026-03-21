@@ -1,0 +1,37 @@
+{
+  "id": "304",
+  "title": "Range Sum Query 2D - Immutable",
+  "slug": "range-sum-query-2d-immutable",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a 2D matrix <code>matrix</code>, handle multiple queries of the following type:</p>\n\n<ul>\n\t<li>Calculate the <strong>sum</strong> of the elements of <code>matrix</code> inside the rectangle defined by its <strong>upper left corner</strong> <code>(row1, col1)</code> and <strong>lower right corner</strong> <code>(row2, col2)</code>.</li>\n</ul>\n\n<p>Implement the <code>NumMatrix</code> class:</p>\n\n<ul>\n\t<li><code>NumMatrix(int[][] matrix)</code> Initializes the object with the integer matrix <code>matrix</code>.</li>\n\t<li><code>int sumRegion(int row1, int col1, int row2, int col2)</code> Returns the <strong>sum</strong> of the elements of <code>matrix</code> inside the rectangle defined by its <strong>upper left corner</strong> <code>(row1, col1)</code> and <strong>lower right corner</strong> <code>(row2, col2)</code>.</li>\n</ul>\n\n<p>You must design an algorithm where <code>sumRegion</code> works on <code>O(1)</code> time complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/14/sum-grid.jpg\" style=\"width: 415px; height: 415px;\" />\n<pre>\n<strong>Input</strong>\n[&quot;NumMatrix&quot;, &quot;sumRegion&quot;, &quot;sumRegion&quot;, &quot;sumRegion&quot;]\n[[[[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]], [2, 1, 4, 3], [1, 1, 2, 2], [1, 2, 2, 4]]\n<strong>Output</strong>\n[null, 8, 11, 12]\n\n<strong>Explanation</strong>\nNumMatrix numMatrix = new NumMatrix([[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]);\nnumMatrix.sumRegion(2, 1, 4, 3); // return 8 (i.e sum of the red rectangle)\nnumMatrix.sumRegion(1, 1, 2, 2); // return 11 (i.e sum of the green rectangle)\nnumMatrix.sumRegion(1, 2, 2, 4); // return 12 (i.e sum of the blue rectangle)\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= matrix[i][j] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= row1 &lt;= row2 &lt; m</code></li>\n\t<li><code>0 &lt;= col1 &lt;= col2 &lt; n</code></li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>sumRegion</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a 2D matrix `matrix`, handle multiple queries of the following type:\n\n  * Calculate the **sum** of the elements of `matrix` inside the rectangle defined by its **upper left corner** `(row1, col1)` and **lower right corner** `(row2, col2)`.\n\n\n\nImplement the `NumMatrix` class:\n\n  * `NumMatrix(int[][] matrix)` Initializes the object with the integer matrix `matrix`.\n  * `int sumRegion(int row1, int col1, int row2, int col2)` Returns the **sum** of the elements of `matrix` inside the rectangle defined by its **upper left corner** `(row1, col1)` and **lower right corner** `(row2, col2)`.\n\n\n\nYou must design an algorithm where `sumRegion` works on `O(1)` time complexity.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/14/sum-grid.jpg)\n    \n    \n    **Input**\n    [\"NumMatrix\", \"sumRegion\", \"sumRegion\", \"sumRegion\"]\n    [[[[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]], [2, 1, 4, 3], [1, 1, 2, 2], [1, 2, 2, 4]]\n    **Output**\n    [null, 8, 11, 12]\n    \n    **Explanation**\n    NumMatrix numMatrix = new NumMatrix([[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]);\n    numMatrix.sumRegion(2, 1, 4, 3); // return 8 (i.e sum of the red rectangle)\n    numMatrix.sumRegion(1, 1, 2, 2); // return 11 (i.e sum of the green rectangle)\n    numMatrix.sumRegion(1, 2, 2, 4); // return 12 (i.e sum of the blue rectangle)\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 200`\n  * `-104 <= matrix[i][j] <= 104`\n  * `0 <= row1 <= row2 < m`\n  * `0 <= col1 <= col2 < n`\n  * At most `104` calls will be made to `sumRegion`.",
+  "question": "Given a 2D matrix `matrix`, handle multiple queries of the following type:\n\n  * Calculate the **sum** of the elements of `matrix` inside the rectangle defined by its **upper left corner** `(row1, col1)` and **lower right corner** `(row2, col2)`.\n\n\n\nImplement the `NumMatrix` class:\n\n  * `NumMatrix(int[][] matrix)` Initializes the object with the integer matrix `matrix`.\n  * `int sumRegion(int row1, int col1, int row2, int col2)` Returns the **sum** of the elements of `matrix` inside the rectangle defined by its **upper left corner** `(row1, col1)` and **lower right corner** `(row2, col2)`.\n\n\n\nYou must design an algorithm where `sumRegion` works on `O(1)` time complexity.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/14/sum-grid.jpg)\n    \n    \n    **Input**\n    [\"NumMatrix\", \"sumRegion\", \"sumRegion\", \"sumRegion\"]\n    [[[[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]], [2, 1, 4, 3], [1, 1, 2, 2], [1, 2, 2, 4]]\n    **Output**\n    [null, 8, 11, 12]\n    \n    **Explanation**\n    NumMatrix numMatrix = new NumMatrix([[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]);\n    numMatrix.sumRegion(2, 1, 4, 3); // return 8 (i.e sum of the red rectangle)\n    numMatrix.sumRegion(1, 1, 2, 2); // return 11 (i.e sum of the green rectangle)\n    numMatrix.sumRegion(1, 2, 2, 4); // return 12 (i.e sum of the blue rectangle)",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 200`\n  * `-104 <= matrix[i][j] <= 104`\n  * `0 <= row1 <= row2 < m`\n  * `0 <= col1 <= col2 < n`\n  * At most `104` calls will be made to `sumRegion`.",
+  "topics": ["Array", "Design", "Matrix", "Prefix Sum"],
+  "total_accepted": 469715,
+  "total_submissions": 811587,
+  "acceptance_rate": "57.9%",
+  "similar_questions": [
+    {
+      "title": "Range Sum Query - Immutable",
+      "slug": "range-sum-query-immutable",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/range-sum-query-immutable/"
+    },
+    {
+      "title": "Range Sum Query 2D - Mutable",
+      "slug": "range-sum-query-2d-mutable",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-sum-query-2d-mutable/"
+    },
+    {
+      "title": "Find the Grid of Region Average",
+      "slug": "find-the-grid-of-region-average",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-grid-of-region-average/"
+    }
+  ],
+  "hints": []
+}

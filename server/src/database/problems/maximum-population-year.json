@@ -1,0 +1,28 @@
+{
+  "id": "1854",
+  "title": "Maximum Population Year",
+  "slug": "maximum-population-year",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D integer array <code>logs</code> where each <code>logs[i] = [birth<sub>i</sub>, death<sub>i</sub>]</code> indicates the birth and death years of the <code>i<sup>th</sup></code> person.</p>\n\n<p>The <strong>population</strong> of some year <code>x</code> is the number of people alive during that year. The <code>i<sup>th</sup></code> person is counted in year <code>x</code>&#39;s population if <code>x</code> is in the <strong>inclusive</strong> range <code>[birth<sub>i</sub>, death<sub>i</sub> - 1]</code>. Note that the person is <strong>not</strong> counted in the year that they die.</p>\n\n<p>Return <em>the <strong>earliest</strong> year with the <strong>maximum population</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> logs = [[1993,1999],[2000,2010]]\n<strong>Output:</strong> 1993\n<strong>Explanation:</strong> The maximum population is 1, and 1993 is the earliest year with this population.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> logs = [[1950,1961],[1960,1971],[1970,1981]]\n<strong>Output:</strong> 1960\n<strong>Explanation:</strong> \nThe maximum population is 2, and it had happened in years 1960 and 1970.\nThe earlier year between them is 1960.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= logs.length &lt;= 100</code></li>\n\t<li><code>1950 &lt;= birth<sub>i</sub> &lt; death<sub>i</sub> &lt;= 2050</code></li>\n</ul>\n",
+  "content_markdown": "You are given a 2D integer array `logs` where each `logs[i] = [birthi, deathi]` indicates the birth and death years of the `ith` person.\n\nThe **population** of some year `x` is the number of people alive during that year. The `ith` person is counted in year `x`'s population if `x` is in the **inclusive** range `[birthi, deathi - 1]`. Note that the person is **not** counted in the year that they die.\n\nReturn _the**earliest** year with the **maximum population**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** logs = [[1993,1999],[2000,2010]]\n    **Output:** 1993\n    **Explanation:** The maximum population is 1, and 1993 is the earliest year with this population.\n    \n\n**Example 2:**\n    \n    \n    **Input:** logs = [[1950,1961],[1960,1971],[1970,1981]]\n    **Output:** 1960\n    **Explanation:** \n    The maximum population is 2, and it had happened in years 1960 and 1970.\n    The earlier year between them is 1960.\n\n \n\n**Constraints:**\n\n  * `1 <= logs.length <= 100`\n  * `1950 <= birthi < deathi <= 2050`",
+  "question": "You are given a 2D integer array `logs` where each `logs[i] = [birthi, deathi]` indicates the birth and death years of the `ith` person.\n\nThe **population** of some year `x` is the number of people alive during that year. The `ith` person is counted in year `x`'s population if `x` is in the **inclusive** range `[birthi, deathi - 1]`. Note that the person is **not** counted in the year that they die.\n\nReturn _the**earliest** year with the **maximum population**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** logs = [[1993,1999],[2000,2010]]\n    **Output:** 1993\n    **Explanation:** The maximum population is 1, and 1993 is the earliest year with this population.\n    \n\n**Example 2:**\n    \n    \n    **Input:** logs = [[1950,1961],[1960,1971],[1970,1981]]\n    **Output:** 1960\n    **Explanation:** \n    The maximum population is 2, and it had happened in years 1960 and 1970.\n    The earlier year between them is 1960.",
+  "constraints": "**Constraints:**\n\n  * `1 <= logs.length <= 100`\n  * `1950 <= birthi < deathi <= 2050`",
+  "topics": ["Array", "Counting", "Prefix Sum"],
+  "total_accepted": 113171,
+  "total_submissions": 177709,
+  "acceptance_rate": "63.7%",
+  "similar_questions": [
+    {
+      "title": "Shifting Letters II",
+      "slug": "shifting-letters-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shifting-letters-ii/"
+    }
+  ],
+  "hints": [
+    "For each year find the number of people whose birth_i ≤ year and death_i > year.",
+    "Find the maximum value between all years."
+  ]
+}

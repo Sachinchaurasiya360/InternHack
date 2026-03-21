@@ -1,0 +1,31 @@
+{
+  "id": "139",
+  "title": "Word Break",
+  "slug": "word-break",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> and a dictionary of strings <code>wordDict</code>, return <code>true</code> if <code>s</code> can be segmented into a space-separated sequence of one or more dictionary words.</p>\n\n<p><strong>Note</strong> that the same word in the dictionary may be reused multiple times in the segmentation.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;leetcode&quot;, wordDict = [&quot;leet&quot;,&quot;code&quot;]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Return true because &quot;leetcode&quot; can be segmented as &quot;leet code&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;applepenapple&quot;, wordDict = [&quot;apple&quot;,&quot;pen&quot;]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Return true because &quot;applepenapple&quot; can be segmented as &quot;apple pen apple&quot;.\nNote that you are allowed to reuse a dictionary word.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;catsandog&quot;, wordDict = [&quot;cats&quot;,&quot;dog&quot;,&quot;sand&quot;,&quot;and&quot;,&quot;cat&quot;]\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 300</code></li>\n\t<li><code>1 &lt;= wordDict.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= wordDict[i].length &lt;= 20</code></li>\n\t<li><code>s</code> and <code>wordDict[i]</code> consist of only lowercase English letters.</li>\n\t<li>All the strings of <code>wordDict</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` and a dictionary of strings `wordDict`, return `true` if `s` can be segmented into a space-separated sequence of one or more dictionary words.\n\n**Note** that the same word in the dictionary may be reused multiple times in the segmentation.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"leetcode\", wordDict = [\"leet\",\"code\"]\n    **Output:** true\n    **Explanation:** Return true because \"leetcode\" can be segmented as \"leet code\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"applepenapple\", wordDict = [\"apple\",\"pen\"]\n    **Output:** true\n    **Explanation:** Return true because \"applepenapple\" can be segmented as \"apple pen apple\".\n    Note that you are allowed to reuse a dictionary word.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"catsandog\", wordDict = [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 300`\n  * `1 <= wordDict.length <= 1000`\n  * `1 <= wordDict[i].length <= 20`\n  * `s` and `wordDict[i]` consist of only lowercase English letters.\n  * All the strings of `wordDict` are **unique**.",
+  "question": "Given a string `s` and a dictionary of strings `wordDict`, return `true` if `s` can be segmented into a space-separated sequence of one or more dictionary words.\n\n**Note** that the same word in the dictionary may be reused multiple times in the segmentation.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"leetcode\", wordDict = [\"leet\",\"code\"]\n    **Output:** true\n    **Explanation:** Return true because \"leetcode\" can be segmented as \"leet code\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"applepenapple\", wordDict = [\"apple\",\"pen\"]\n    **Output:** true\n    **Explanation:** Return true because \"applepenapple\" can be segmented as \"apple pen apple\".\n    Note that you are allowed to reuse a dictionary word.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"catsandog\", wordDict = [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 300`\n  * `1 <= wordDict.length <= 1000`\n  * `1 <= wordDict[i].length <= 20`\n  * `s` and `wordDict[i]` consist of only lowercase English letters.\n  * All the strings of `wordDict` are **unique**.",
+  "topics": ["Array", "Hash Table", "String", "Dynamic Programming", "Trie", "Memoization"],
+  "total_accepted": 2322000,
+  "total_submissions": 4724612,
+  "acceptance_rate": "49.1%",
+  "similar_questions": [
+    {
+      "title": "Word Break II",
+      "slug": "word-break-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/word-break-ii/"
+    },
+    {
+      "title": "Extra Characters in a String",
+      "slug": "extra-characters-in-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/extra-characters-in-a-string/"
+    }
+  ],
+  "hints": []
+}

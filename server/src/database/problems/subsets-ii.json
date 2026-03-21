@@ -1,0 +1,31 @@
+{
+  "id": "90",
+  "title": "Subsets II",
+  "slug": "subsets-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> that may contain duplicates, return <em>all possible</em> <span data-keyword=\"subset\"><em>subsets</em></span><em> (the power set)</em>.</p>\n\n<p>The solution set <strong>must not</strong> contain duplicate subsets. Return the solution in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,2]\n<strong>Output:</strong> [[],[1],[1,2],[1,2,2],[2],[2,2]]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [0]\n<strong>Output:</strong> [[],[0]]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10</code></li>\n\t<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` that may contain duplicates, return _all possible_ _subsets_ _(the power set)_.\n\nThe solution set **must not** contain duplicate subsets. Return the solution in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2]\n    **Output:** [[],[1],[1,2],[1,2,2],[2],[2,2]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0]\n    **Output:** [[],[0]]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 10`\n  * `-10 <= nums[i] <= 10`",
+  "question": "Given an integer array `nums` that may contain duplicates, return _all possible_ _subsets_ _(the power set)_.\n\nThe solution set **must not** contain duplicate subsets. Return the solution in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2]\n    **Output:** [[],[1],[1,2],[1,2,2],[2],[2,2]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0]\n    **Output:** [[],[0]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 10`\n  * `-10 <= nums[i] <= 10`",
+  "topics": ["Array", "Backtracking", "Bit Manipulation"],
+  "total_accepted": 1442675,
+  "total_submissions": 2368628,
+  "acceptance_rate": "60.9%",
+  "similar_questions": [
+    {
+      "title": "Subsets",
+      "slug": "subsets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subsets/"
+    },
+    {
+      "title": "Find Array Given Subset Sums",
+      "slug": "find-array-given-subset-sums",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-array-given-subset-sums/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "2664",
+  "title": "The Knight’s Tour",
+  "slug": "the-knights-tour",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Backtracking", "Matrix"],
+  "total_accepted": 6726,
+  "total_submissions": 9257,
+  "acceptance_rate": "72.7%",
+  "similar_questions": [],
+  "hints": []
+}

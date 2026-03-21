@@ -1,0 +1,40 @@
+{
+  "id": "2395",
+  "title": "Find Subarrays With Equal Sum",
+  "slug": "find-subarrays-with-equal-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>0-indexed</strong> integer array <code>nums</code>, determine whether there exist <strong>two</strong> subarrays of length <code>2</code> with <strong>equal</strong> sum. Note that the two subarrays must begin at <strong>different</strong> indices.</p>\n\n<p>Return <code>true</code><em> if these subarrays exist, and </em><code>false</code><em> otherwise.</em></p>\n\n<p>A <b>subarray</b> is a contiguous non-empty sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,2,4]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The subarrays with elements [4,2] and [2,4] have the same sum of 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> No two subarrays of size 2 have the same sum.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,0,0]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The subarrays [nums[0],nums[1]] and [nums[1],nums[2]] have the same sum of 0. \nNote that even though the subarrays have the same content, the two subarrays are considered different because they are in different positions in the original array.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a **0-indexed** integer array `nums`, determine whether there exist **two** subarrays of length `2` with **equal** sum. Note that the two subarrays must begin at **different** indices.\n\nReturn `true` _if these subarrays exist, and_`false` _otherwise._\n\nA **subarray** is a contiguous non-empty sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,2,4]\n    **Output:** true\n    **Explanation:** The subarrays with elements [4,2] and [2,4] have the same sum of 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** false\n    **Explanation:** No two subarrays of size 2 have the same sum.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [0,0,0]\n    **Output:** true\n    **Explanation:** The subarrays [nums[0],nums[1]] and [nums[1],nums[2]] have the same sum of 0. \n    Note that even though the subarrays have the same content, the two subarrays are considered different because they are in different positions in the original array.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 1000`\n  * `-109 <= nums[i] <= 109`",
+  "question": "Given a **0-indexed** integer array `nums`, determine whether there exist **two** subarrays of length `2` with **equal** sum. Note that the two subarrays must begin at **different** indices.\n\nReturn `true` _if these subarrays exist, and_`false` _otherwise._\n\nA **subarray** is a contiguous non-empty sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,2,4]\n    **Output:** true\n    **Explanation:** The subarrays with elements [4,2] and [2,4] have the same sum of 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** false\n    **Explanation:** No two subarrays of size 2 have the same sum.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [0,0,0]\n    **Output:** true\n    **Explanation:** The subarrays [nums[0],nums[1]] and [nums[1],nums[2]] have the same sum of 0. \n    Note that even though the subarrays have the same content, the two subarrays are considered different because they are in different positions in the original array.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 1000`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 71802,
+  "total_submissions": 107361,
+  "acceptance_rate": "66.9%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "Partition Equal Subset Sum",
+      "slug": "partition-equal-subset-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-equal-subset-sum/"
+    },
+    {
+      "title": "Find Two Non-overlapping Sub-arrays Each With Target Sum",
+      "slug": "find-two-non-overlapping-sub-arrays-each-with-target-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-two-non-overlapping-sub-arrays-each-with-target-sum/"
+    }
+  ],
+  "hints": [
+    "Use a counter to keep track of the subarray sums.",
+    "Use a hashset to check if any two sums are equal."
+  ]
+}

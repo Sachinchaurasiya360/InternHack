@@ -1,0 +1,42 @@
+{
+  "id": "1162",
+  "title": "As Far from Land as Possible",
+  "slug": "as-far-from-land-as-possible",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>n x n</code> <code>grid</code>&nbsp;containing only values <code>0</code> and <code>1</code>, where&nbsp;<code>0</code> represents water&nbsp;and <code>1</code> represents land, find a water cell such that its distance to the nearest land cell is maximized, and return the distance.&nbsp;If no land or water exists in the grid, return <code>-1</code>.</p>\n\n<p>The distance used in this problem is the Manhattan distance:&nbsp;the distance between two cells <code>(x0, y0)</code> and <code>(x1, y1)</code> is <code>|x0 - x1| + |y0 - y1|</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/05/03/1336_ex1.JPG\" style=\"width: 185px; height: 87px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,0,1],[0,0,0],[1,0,1]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The cell (1, 1) is as far as possible from all the land with distance 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/05/03/1336_ex2.JPG\" style=\"width: 184px; height: 87px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,0,0],[0,0,0],[0,0,0]]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The cell (2, 2) is as far as possible from all the land with distance 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= n&nbsp;&lt;= 100</code></li>\n\t<li><code>grid[i][j]</code>&nbsp;is <code>0</code> or <code>1</code></li>\n</ul>\n",
+  "content_markdown": "Given an `n x n` `grid` containing only values `0` and `1`, where `0` represents water and `1` represents land, find a water cell such that its distance to the nearest land cell is maximized, and return the distance. If no land or water exists in the grid, return `-1`.\n\nThe distance used in this problem is the Manhattan distance: the distance between two cells `(x0, y0)` and `(x1, y1)` is `|x0 - x1| + |y0 - y1|`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/05/03/1336_ex1.JPG)\n    \n    \n    **Input:** grid = [[1,0,1],[0,0,0],[1,0,1]]\n    **Output:** 2\n    **Explanation:** The cell (1, 1) is as far as possible from all the land with distance 2.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/05/03/1336_ex2.JPG)\n    \n    \n    **Input:** grid = [[1,0,0],[0,0,0],[0,0,0]]\n    **Output:** 4\n    **Explanation:** The cell (2, 2) is as far as possible from all the land with distance 4.\n    \n\n \n\n**Constraints:**\n\n  * `n == grid.length`\n  * `n == grid[i].length`\n  * `1 <= n <= 100`\n  * `grid[i][j]` is `0` or `1`",
+  "question": "Given an `n x n` `grid` containing only values `0` and `1`, where `0` represents water and `1` represents land, find a water cell such that its distance to the nearest land cell is maximized, and return the distance. If no land or water exists in the grid, return `-1`.\n\nThe distance used in this problem is the Manhattan distance: the distance between two cells `(x0, y0)` and `(x1, y1)` is `|x0 - x1| + |y0 - y1|`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/05/03/1336_ex1.JPG)\n    \n    \n    **Input:** grid = [[1,0,1],[0,0,0],[1,0,1]]\n    **Output:** 2\n    **Explanation:** The cell (1, 1) is as far as possible from all the land with distance 2.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/05/03/1336_ex2.JPG)\n    \n    \n    **Input:** grid = [[1,0,0],[0,0,0],[0,0,0]]\n    **Output:** 4\n    **Explanation:** The cell (2, 2) is as far as possible from all the land with distance 4.",
+  "constraints": "**Constraints:**\n\n  * `n == grid.length`\n  * `n == grid[i].length`\n  * `1 <= n <= 100`\n  * `grid[i][j]` is `0` or `1`",
+  "topics": ["Array", "Dynamic Programming", "Breadth-First Search", "Matrix"],
+  "total_accepted": 182018,
+  "total_submissions": 348793,
+  "acceptance_rate": "52.2%",
+  "similar_questions": [
+    {
+      "title": "Shortest Distance from All Buildings",
+      "slug": "shortest-distance-from-all-buildings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/shortest-distance-from-all-buildings/"
+    },
+    {
+      "title": "K Highest Ranked Items Within a Price Range",
+      "slug": "k-highest-ranked-items-within-a-price-range",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-highest-ranked-items-within-a-price-range/"
+    },
+    {
+      "title": "Maximum Manhattan Distance After K Changes",
+      "slug": "maximum-manhattan-distance-after-k-changes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-manhattan-distance-after-k-changes/"
+    }
+  ],
+  "hints": [
+    "Can you think of this problem in a backwards way ?",
+    "Imagine expanding outward from each land cell. What kind of search does that ?",
+    "Use BFS starting from all land cells in the same time.",
+    "When do you reach the furthest water cell?"
+  ]
+}

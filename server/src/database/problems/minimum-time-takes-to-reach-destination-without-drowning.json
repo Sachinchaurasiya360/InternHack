@@ -1,0 +1,22 @@
+{
+  "id": "2814",
+  "title": "Minimum Time Takes to Reach Destination Without Drowning",
+  "slug": "minimum-time-takes-to-reach-destination-without-drowning",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Breadth-First Search", "Matrix"],
+  "total_accepted": 1560,
+  "total_submissions": 2861,
+  "acceptance_rate": "54.5%",
+  "similar_questions": [],
+  "hints": [
+    "Think of using breadth-first search.",
+    "Use a BFS to find for each cell the time at which it will become flooded.",
+    "Another BFS then simulates your movement, taking into account information gathered by the first BFS."
+  ]
+}

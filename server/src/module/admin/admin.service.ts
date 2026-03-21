@@ -1150,18 +1150,7 @@ export class AdminService {
     }
     const skip = (query.page - 1) * query.limit;
     const [topics, total] = await Promise.all([
-      prisma.dsaTopic.findMany({
-        where,
-        skip,
-        take: query.limit,
-        orderBy: { orderIndex: "asc" },
-        include: {
-          subTopics: {
-            orderBy: { orderIndex: "asc" },
-            include: { _count: { select: { problems: true } } },
-          },
-        },
-      }),
+      prisma.dsaTopic.findMany({ where, skip, take: query.limit, orderBy: { orderIndex: "asc" } }),
       prisma.dsaTopic.count({ where }),
     ]);
     return {
@@ -1171,128 +1160,26 @@ export class AdminService {
   }
 
   async getDsaTopic(topicId: number) {
-    const topic = await prisma.dsaTopic.findUnique({
-      where: { id: topicId },
-      include: {
-        subTopics: {
-          orderBy: { orderIndex: "asc" },
-          include: { problems: { orderBy: { orderIndex: "asc" } } },
-        },
-      },
-    });
+    const topic = await prisma.dsaTopic.findUnique({ where: { id: topicId } });
     if (!topic) throw new Error("DSA topic not found");
     return topic;
   }
 
-  async createDsaTopic(input: {
-    name: string;
-    description?: string | undefined;
-    orderIndex: number;
-    subTopics?: Array<{
-      name: string;
-      orderIndex: number;
-      problems?: Array<{
-        title: string; difficulty?: string | undefined; leetcodeUrl?: string | undefined; gfgUrl?: string | undefined;
-        articleUrl?: string | undefined; videoUrl?: string | undefined; hackerrankUrl?: string | undefined; codechefUrl?: string | undefined;
-        tags?: string[]; companies?: string[]; hints?: string | undefined; sheets?: string[]; orderIndex: number;
-      }> | undefined;
-    }> | undefined;
-  }) {
+  async createDsaTopic(input: { name: string; description?: string | undefined; orderIndex: number }) {
     const slug = generateSlug(input.name);
     return prisma.dsaTopic.create({
-      data: {
-        name: input.name,
-        slug,
-        description: input.description ?? null,
-        orderIndex: input.orderIndex,
-        subTopics: {
-          create: (input.subTopics ?? []).map((st) => ({
-            name: st.name,
-            orderIndex: st.orderIndex,
-            problems: {
-              create: (st.problems ?? []).map((p) => ({
-                title: p.title,
-                difficulty: p.difficulty ?? "Easy",
-                leetcodeUrl: p.leetcodeUrl || null,
-                gfgUrl: p.gfgUrl || null,
-                articleUrl: p.articleUrl || null,
-                videoUrl: p.videoUrl || null,
-                hackerrankUrl: p.hackerrankUrl || null,
-                codechefUrl: p.codechefUrl || null,
-                tags: p.tags ?? [],
-                companies: p.companies ?? [],
-                hints: p.hints ?? null,
-                sheets: p.sheets ?? [],
-                orderIndex: p.orderIndex,
-              })),
-            },
-          })),
-        },
-      },
-      include: {
-        subTopics: { include: { problems: true } },
-      },
+      data: { name: input.name, slug, description: input.description ?? null, orderIndex: input.orderIndex },
     });
   }
 
-  async updateDsaTopic(topicId: number, input: {
-    name?: string | undefined; description?: string | undefined; orderIndex?: number | undefined;
-    subTopics?: Array<{
-      name: string; orderIndex: number;
-      problems?: Array<{
-        title: string; difficulty?: string | undefined; leetcodeUrl?: string | undefined; gfgUrl?: string | undefined;
-        articleUrl?: string | undefined; videoUrl?: string | undefined; hackerrankUrl?: string | undefined; codechefUrl?: string | undefined;
-        tags?: string[]; companies?: string[]; hints?: string | undefined; sheets?: string[]; orderIndex: number;
-      }> | undefined;
-    }> | undefined;
-  }) {
+  async updateDsaTopic(topicId: number, input: { name?: string; description?: string; orderIndex?: number }) {
     const topic = await prisma.dsaTopic.findUnique({ where: { id: topicId } });
     if (!topic) throw new Error("DSA topic not found");
-
-    if (input.subTopics !== undefined) {
-      return prisma.$transaction(async (tx) => {
-        await tx.dsaSubTopic.deleteMany({ where: { topicId } });
-        return tx.dsaTopic.update({
-          where: { id: topicId },
-          data: {
-            name: input.name ?? topic.name,
-            slug: input.name ? generateSlug(input.name) : topic.slug,
-            description: input.description !== undefined ? (input.description ?? null) : topic.description,
-            orderIndex: input.orderIndex ?? topic.orderIndex,
-            subTopics: {
-              create: input.subTopics!.map((st) => ({
-                name: st.name,
-                orderIndex: st.orderIndex,
-                problems: {
-                  create: (st.problems ?? []).map((p) => ({
-                    title: p.title,
-                    difficulty: p.difficulty ?? "Easy",
-                    leetcodeUrl: p.leetcodeUrl || null,
-                    gfgUrl: p.gfgUrl || null,
-                    articleUrl: p.articleUrl || null,
-                    videoUrl: p.videoUrl || null,
-                    hackerrankUrl: p.hackerrankUrl || null,
-                    codechefUrl: p.codechefUrl || null,
-                    tags: p.tags ?? [],
-                    companies: p.companies ?? [],
-                    hints: p.hints ?? null,
-                    sheets: p.sheets ?? [],
-                    orderIndex: p.orderIndex,
-                  })),
-                },
-              })),
-            },
-          },
-          include: { subTopics: { include: { problems: true } } },
-        });
-      });
-    }
-
     const data: Prisma.dsaTopicUpdateInput = {};
     if (input.name !== undefined) { data.name = input.name; data.slug = generateSlug(input.name); }
     if (input.description !== undefined) data.description = input.description ?? null;
     if (input.orderIndex !== undefined) data.orderIndex = input.orderIndex;
-    return prisma.dsaTopic.update({ where: { id: topicId }, data, include: { subTopics: { include: { problems: true } } } });
+    return prisma.dsaTopic.update({ where: { id: topicId }, data });
   }
 
   async deleteDsaTopic(topicId: number) {
@@ -1302,27 +1189,20 @@ export class AdminService {
   }
 
   async createDsaProblem(input: {
-    title: string; difficulty?: string | undefined; subTopicId: number; orderIndex: number;
-    leetcodeUrl?: string | undefined; gfgUrl?: string | undefined; articleUrl?: string | undefined; videoUrl?: string | undefined;
-    hackerrankUrl?: string | undefined; codechefUrl?: string | undefined; tags?: string[]; companies?: string[];
-    hints?: string | undefined; sheets?: string[];
+    title: string; slug: string; difficulty?: string; leetcodeUrl?: string; gfgUrl?: string;
+    tags?: string[]; companies?: string[]; hints?: string[]; description?: string;
   }) {
     return prisma.dsaProblem.create({
       data: {
         title: input.title,
+        slug: input.slug,
         difficulty: input.difficulty ?? "Easy",
-        subTopicId: input.subTopicId,
-        orderIndex: input.orderIndex,
         leetcodeUrl: input.leetcodeUrl || null,
         gfgUrl: input.gfgUrl || null,
-        articleUrl: input.articleUrl || null,
-        videoUrl: input.videoUrl || null,
-        hackerrankUrl: input.hackerrankUrl || null,
-        codechefUrl: input.codechefUrl || null,
         tags: input.tags ?? [],
         companies: input.companies ?? [],
-        hints: input.hints ?? null,
-        sheets: input.sheets ?? [],
+        hints: input.hints ?? [],
+        description: input.description || null,
       },
     });
   }
@@ -1332,18 +1212,16 @@ export class AdminService {
     if (!problem) throw new Error("DSA problem not found");
     const data: Prisma.dsaProblemUpdateInput = {};
     if (input["title"] !== undefined) data.title = input["title"] as string;
+    if (input["slug"] !== undefined) data.slug = input["slug"] as string;
     if (input["difficulty"] !== undefined) data.difficulty = input["difficulty"] as string;
-    if (input["orderIndex"] !== undefined) data.orderIndex = input["orderIndex"] as number;
     if (input["leetcodeUrl"] !== undefined) data.leetcodeUrl = (input["leetcodeUrl"] as string) || null;
     if (input["gfgUrl"] !== undefined) data.gfgUrl = (input["gfgUrl"] as string) || null;
     if (input["articleUrl"] !== undefined) data.articleUrl = (input["articleUrl"] as string) || null;
     if (input["videoUrl"] !== undefined) data.videoUrl = (input["videoUrl"] as string) || null;
-    if (input["hackerrankUrl"] !== undefined) data.hackerrankUrl = (input["hackerrankUrl"] as string) || null;
-    if (input["codechefUrl"] !== undefined) data.codechefUrl = (input["codechefUrl"] as string) || null;
     if (input["tags"] !== undefined) data.tags = input["tags"] as string[];
     if (input["companies"] !== undefined) data.companies = input["companies"] as string[];
-    if (input["hints"] !== undefined) data.hints = (input["hints"] as string) || null;
-    if (input["sheets"] !== undefined) data.sheets = input["sheets"] as string[];
+    if (input["hints"] !== undefined) data.hints = input["hints"] as string[];
+    if (input["description"] !== undefined) data.description = (input["description"] as string) || null;
     return prisma.dsaProblem.update({ where: { id: problemId }, data });
   }
 

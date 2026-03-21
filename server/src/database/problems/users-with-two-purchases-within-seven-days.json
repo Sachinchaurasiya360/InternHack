@@ -1,0 +1,25 @@
+{
+  "id": "2228",
+  "title": "Users With Two Purchases Within Seven Days",
+  "slug": "users-with-two-purchases-within-seven-days",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 11922,
+  "total_submissions": 25552,
+  "acceptance_rate": "46.7%",
+  "similar_questions": [
+    {
+      "title": "Biggest Window Between Visits",
+      "slug": "biggest-window-between-visits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/biggest-window-between-visits/"
+    }
+  ],
+  "hints": []
+}

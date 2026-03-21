@@ -1,0 +1,56 @@
+{
+  "id": "3117",
+  "title": "Minimum Sum of Values by Dividing Array",
+  "slug": "minimum-sum-of-values-by-dividing-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two arrays <code>nums</code> and <code>andValues</code> of length <code>n</code> and <code>m</code> respectively.</p>\n\n<p>The <strong>value</strong> of an array is equal to the <strong>last</strong> element of that array.</p>\n\n<p>You have to divide <code>nums</code> into <code>m</code> <strong>disjoint contiguous</strong> <span data-keyword=\"subarray-nonempty\">subarrays</span> such that for the <code>i<sup>th</sup></code> subarray <code>[l<sub>i</sub>, r<sub>i</sub>]</code>, the bitwise <code>AND</code> of the subarray elements is equal to <code>andValues[i]</code>, in other words, <code>nums[l<sub>i</sub>] &amp; nums[l<sub>i</sub> + 1] &amp; ... &amp; nums[r<sub>i</sub>] == andValues[i]</code> for all <code>1 &lt;= i &lt;= m</code>, where <code>&amp;</code> represents the bitwise <code>AND</code> operator.</p>\n\n<p>Return <em>the <strong>minimum</strong> possible sum of the <strong>values</strong> of the </em><code>m</code><em> subarrays </em><code>nums</code><em> is divided into</em>. <em>If it is not possible to divide </em><code>nums</code><em> into </em><code>m</code><em> subarrays satisfying these conditions, return</em> <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,4,3,3,2], andValues = [0,3,3,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">12</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The only possible way to divide <code>nums</code> is:</p>\n\n<ol>\n\t<li><code>[1,4]</code> as <code>1 &amp; 4 == 0</code>.</li>\n\t<li><code>[3]</code> as the bitwise <code>AND</code> of a single element subarray is that element itself.</li>\n\t<li><code>[3]</code> as the bitwise <code>AND</code> of a single element subarray is that element itself.</li>\n\t<li><code>[2]</code> as the bitwise <code>AND</code> of a single element subarray is that element itself.</li>\n</ol>\n\n<p>The sum of the values for these subarrays is <code>4 + 3 + 3 + 2 = 12</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,3,5,7,7,7,5], andValues = [0,7,5]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">17</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There are three ways to divide <code>nums</code>:</p>\n\n<ol>\n\t<li><code>[[2,3,5],[7,7,7],[5]]</code> with the sum of the values <code>5 + 7 + 5 == 17</code>.</li>\n\t<li><code>[[2,3,5,7],[7,7],[5]]</code> with the sum of the values <code>7 + 7 + 5 == 19</code>.</li>\n\t<li><code>[[2,3,5,7,7],[7],[5]]</code> with the sum of the values <code>7 + 7 + 5 == 19</code>.</li>\n</ol>\n\n<p>The minimum possible sum of the values is <code>17</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3,4], andValues = [2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">-1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The bitwise <code>AND</code> of the entire array <code>nums</code> is <code>0</code>. As there is no possible way to divide <code>nums</code> into a single subarray to have the bitwise <code>AND</code> of elements <code>2</code>, return <code>-1</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n == nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= m == andValues.length &lt;= min(n, 10)</code></li>\n\t<li><code>1 &lt;= nums[i] &lt; 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= andValues[j] &lt; 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two arrays `nums` and `andValues` of length `n` and `m` respectively.\n\nThe **value** of an array is equal to the **last** element of that array.\n\nYou have to divide `nums` into `m` **disjoint contiguous** subarrays such that for the `ith` subarray `[li, ri]`, the bitwise `AND` of the subarray elements is equal to `andValues[i]`, in other words, `nums[li] & nums[li + 1] & ... & nums[ri] == andValues[i]` for all `1 <= i <= m`, where `&` represents the bitwise `AND` operator.\n\nReturn _the**minimum** possible sum of the **values** of the _`m` _subarrays_`nums` _is divided into_. _If it is not possible to divide_`nums` _into_`m` _subarrays satisfying these conditions, return_ `-1`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,4,3,3,2], andValues = [0,3,3,2]\n\n**Output:** 12\n\n**Explanation:**\n\nThe only possible way to divide `nums` is:\n\n  1. `[1,4]` as `1 & 4 == 0`.\n  2. `[3]` as the bitwise `AND` of a single element subarray is that element itself.\n  3. `[3]` as the bitwise `AND` of a single element subarray is that element itself.\n  4. `[2]` as the bitwise `AND` of a single element subarray is that element itself.\n\n\n\nThe sum of the values for these subarrays is `4 + 3 + 3 + 2 = 12`.\n\n**Example 2:**\n\n**Input:** nums = [2,3,5,7,7,7,5], andValues = [0,7,5]\n\n**Output:** 17\n\n**Explanation:**\n\nThere are three ways to divide `nums`:\n\n  1. `[[2,3,5],[7,7,7],[5]]` with the sum of the values `5 + 7 + 5 == 17`.\n  2. `[[2,3,5,7],[7,7],[5]]` with the sum of the values `7 + 7 + 5 == 19`.\n  3. `[[2,3,5,7,7],[7],[5]]` with the sum of the values `7 + 7 + 5 == 19`.\n\n\n\nThe minimum possible sum of the values is `17`.\n\n**Example 3:**\n\n**Input:** nums = [1,2,3,4], andValues = [2]\n\n**Output:** -1\n\n**Explanation:**\n\nThe bitwise `AND` of the entire array `nums` is `0`. As there is no possible way to divide `nums` into a single subarray to have the bitwise `AND` of elements `2`, return `-1`.\n\n \n\n**Constraints:**\n\n  * `1 <= n == nums.length <= 104`\n  * `1 <= m == andValues.length <= min(n, 10)`\n  * `1 <= nums[i] < 105`\n  * `0 <= andValues[j] < 105`",
+  "question": "You are given two arrays `nums` and `andValues` of length `n` and `m` respectively.\n\nThe **value** of an array is equal to the **last** element of that array.\n\nYou have to divide `nums` into `m` **disjoint contiguous** subarrays such that for the `ith` subarray `[li, ri]`, the bitwise `AND` of the subarray elements is equal to `andValues[i]`, in other words, `nums[li] & nums[li + 1] & ... & nums[ri] == andValues[i]` for all `1 <= i <= m`, where `&` represents the bitwise `AND` operator.\n\nReturn _the**minimum** possible sum of the **values** of the _`m` _subarrays_`nums` _is divided into_. _If it is not possible to divide_`nums` _into_`m` _subarrays satisfying these conditions, return_ `-1`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,4,3,3,2], andValues = [0,3,3,2]\n\n**Output:** 12\n\n**Explanation:**\n\nThe only possible way to divide `nums` is:\n\n  1. `[1,4]` as `1 & 4 == 0`.\n  2. `[3]` as the bitwise `AND` of a single element subarray is that element itself.\n  3. `[3]` as the bitwise `AND` of a single element subarray is that element itself.\n  4. `[2]` as the bitwise `AND` of a single element subarray is that element itself.\n\n\n\nThe sum of the values for these subarrays is `4 + 3 + 3 + 2 = 12`.\n\n**Example 2:**\n\n**Input:** nums = [2,3,5,7,7,7,5], andValues = [0,7,5]\n\n**Output:** 17\n\n**Explanation:**\n\nThere are three ways to divide `nums`:\n\n  1. `[[2,3,5],[7,7,7],[5]]` with the sum of the values `5 + 7 + 5 == 17`.\n  2. `[[2,3,5,7],[7,7],[5]]` with the sum of the values `7 + 7 + 5 == 19`.\n  3. `[[2,3,5,7,7],[7],[5]]` with the sum of the values `7 + 7 + 5 == 19`.\n\n\n\nThe minimum possible sum of the values is `17`.\n\n**Example 3:**\n\n**Input:** nums = [1,2,3,4], andValues = [2]\n\n**Output:** -1\n\n**Explanation:**\n\nThe bitwise `AND` of the entire array `nums` is `0`. As there is no possible way to divide `nums` into a single subarray to have the bitwise `AND` of elements `2`, return `-1`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n == nums.length <= 104`\n  * `1 <= m == andValues.length <= min(n, 10)`\n  * `1 <= nums[i] < 105`\n  * `0 <= andValues[j] < 105`",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Dynamic Programming",
+    "Bit Manipulation",
+    "Segment Tree",
+    "Queue"
+  ],
+  "total_accepted": 6926,
+  "total_submissions": 24844,
+  "acceptance_rate": "27.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost to Split an Array",
+      "slug": "minimum-cost-to-split-an-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-cost-to-split-an-array/"
+    },
+    {
+      "title": "Split With Minimum Sum",
+      "slug": "split-with-minimum-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/split-with-minimum-sum/"
+    },
+    {
+      "title": "Find Subarray With Bitwise OR Closest to K",
+      "slug": "find-subarray-with-bitwise-or-closest-to-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-subarray-with-bitwise-or-closest-to-k/"
+    },
+    {
+      "title": "Find X Value of Array II",
+      "slug": "find-x-value-of-array-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-x-value-of-array-ii/"
+    }
+  ],
+  "hints": [
+    "Let <code>dp[i][j]</code> be the optimal answer to split  <code>nums[0..(i - 1)]</code> into the first <code>j</code> andValues.",
+    "<code>dp[i][j] = min(dp[(i - z)][j - 1]) + nums[i - 1]</code> over all <code>x <= z <= y</code> and <code>dp[0][0] = 0</code>, where <code>x</code> and <code>y</code> are the longest and shortest subarrays ending with <code>nums[i - 1]</code> and the bitwise-and of all the values in it is <code>andValues[j - 1]</code>.",
+    "The answer is <code>dp[n][m]</code>.",
+    "To calculate <code>x</code> and <code>y</code>, we can use binary search (or sliding window). Note that the more values we have, the smaller the <code>AND</code> value is.",
+    "To calculate the result, we need to support RMQ (range minimum query). Segment tree is one way to do it in <code>O(log(n))</code>. But we can use Monotonic Queue since the ranges are indeed “sliding to right” which can be reduced to the classical minimum value in sliding window problem, for a <code>O(n)</code> solution."
+  ]
+}

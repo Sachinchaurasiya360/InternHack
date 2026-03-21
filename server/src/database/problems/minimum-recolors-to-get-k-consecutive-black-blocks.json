@@ -1,0 +1,40 @@
+{
+  "id": "2379",
+  "title": "Minimum Recolors to Get K Consecutive Black Blocks",
+  "slug": "minimum-recolors-to-get-k-consecutive-black-blocks",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> string <code>blocks</code> of length <code>n</code>, where <code>blocks[i]</code> is either <code>&#39;W&#39;</code> or <code>&#39;B&#39;</code>, representing the color of the <code>i<sup>th</sup></code> block. The characters <code>&#39;W&#39;</code> and <code>&#39;B&#39;</code> denote the colors white and black, respectively.</p>\n\n<p>You are also given an integer <code>k</code>, which is the desired number of <strong>consecutive</strong> black blocks.</p>\n\n<p>In one operation, you can <strong>recolor</strong> a white block such that it becomes a black block.</p>\n\n<p>Return<em> the <strong>minimum</strong> number of operations needed such that there is at least <strong>one</strong> occurrence of </em><code>k</code><em> consecutive black blocks.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> blocks = &quot;WBBWWBBWBW&quot;, k = 7\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nOne way to achieve 7 consecutive black blocks is to recolor the 0th, 3rd, and 4th blocks\nso that blocks = &quot;BBBBBBBWBW&quot;. \nIt can be shown that there is no way to achieve 7 consecutive black blocks in less than 3 operations.\nTherefore, we return 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> blocks = &quot;WBWBBBW&quot;, k = 2\n<strong>Output:</strong> 0\n<strong>Explanation:</strong>\nNo changes need to be made, since 2 consecutive black blocks already exist.\nTherefore, we return 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == blocks.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n\t<li><code>blocks[i]</code> is either <code>&#39;W&#39;</code> or <code>&#39;B&#39;</code>.</li>\n\t<li><code>1 &lt;= k &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** string `blocks` of length `n`, where `blocks[i]` is either `'W'` or `'B'`, representing the color of the `ith` block. The characters `'W'` and `'B'` denote the colors white and black, respectively.\n\nYou are also given an integer `k`, which is the desired number of **consecutive** black blocks.\n\nIn one operation, you can **recolor** a white block such that it becomes a black block.\n\nReturn _the**minimum** number of operations needed such that there is at least **one** occurrence of _`k` _consecutive black blocks._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** blocks = \"WBBWWBBWBW\", k = 7\n    **Output:** 3\n    **Explanation:**\n    One way to achieve 7 consecutive black blocks is to recolor the 0th, 3rd, and 4th blocks\n    so that blocks = \"BBBBBBBWBW\". \n    It can be shown that there is no way to achieve 7 consecutive black blocks in less than 3 operations.\n    Therefore, we return 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** blocks = \"WBWBBBW\", k = 2\n    **Output:** 0\n    **Explanation:**\n    No changes need to be made, since 2 consecutive black blocks already exist.\n    Therefore, we return 0.\n    \n\n \n\n**Constraints:**\n\n  * `n == blocks.length`\n  * `1 <= n <= 100`\n  * `blocks[i]` is either `'W'` or `'B'`.\n  * `1 <= k <= n`",
+  "question": "You are given a **0-indexed** string `blocks` of length `n`, where `blocks[i]` is either `'W'` or `'B'`, representing the color of the `ith` block. The characters `'W'` and `'B'` denote the colors white and black, respectively.\n\nYou are also given an integer `k`, which is the desired number of **consecutive** black blocks.\n\nIn one operation, you can **recolor** a white block such that it becomes a black block.\n\nReturn _the**minimum** number of operations needed such that there is at least **one** occurrence of _`k` _consecutive black blocks._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** blocks = \"WBBWWBBWBW\", k = 7\n    **Output:** 3\n    **Explanation:**\n    One way to achieve 7 consecutive black blocks is to recolor the 0th, 3rd, and 4th blocks\n    so that blocks = \"BBBBBBBWBW\". \n    It can be shown that there is no way to achieve 7 consecutive black blocks in less than 3 operations.\n    Therefore, we return 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** blocks = \"WBWBBBW\", k = 2\n    **Output:** 0\n    **Explanation:**\n    No changes need to be made, since 2 consecutive black blocks already exist.\n    Therefore, we return 0.",
+  "constraints": "**Constraints:**\n\n  * `n == blocks.length`\n  * `1 <= n <= 100`\n  * `blocks[i]` is either `'W'` or `'B'`.\n  * `1 <= k <= n`",
+  "topics": ["String", "Sliding Window"],
+  "total_accepted": 228719,
+  "total_submissions": 333400,
+  "acceptance_rate": "68.6%",
+  "similar_questions": [
+    {
+      "title": "Max Consecutive Ones III",
+      "slug": "max-consecutive-ones-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-consecutive-ones-iii/"
+    },
+    {
+      "title": "Maximum Points You Can Obtain from Cards",
+      "slug": "maximum-points-you-can-obtain-from-cards",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/"
+    },
+    {
+      "title": "Maximum Number of Vowels in a Substring of Given Length",
+      "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/"
+    }
+  ],
+  "hints": [
+    "Iterate through all possible consecutive substrings of k characters.",
+    "Find the number of changes for each substring to make all blocks black, and return the minimum of these."
+  ]
+}

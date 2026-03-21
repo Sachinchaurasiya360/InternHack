@@ -1,0 +1,18 @@
+{
+  "id": "2020",
+  "title": "Number of Accounts That Did Not Stream",
+  "slug": "number-of-accounts-that-did-not-stream",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 13834,
+  "total_submissions": 19212,
+  "acceptance_rate": "72.0%",
+  "similar_questions": [],
+  "hints": []
+}

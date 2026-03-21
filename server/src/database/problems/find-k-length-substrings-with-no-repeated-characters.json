@@ -1,0 +1,22 @@
+{
+  "id": "1100",
+  "title": "Find K-Length Substrings With No Repeated Characters",
+  "slug": "find-k-length-substrings-with-no-repeated-characters",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 55894,
+  "total_submissions": 73077,
+  "acceptance_rate": "76.5%",
+  "similar_questions": [],
+  "hints": [
+    "How to check efficiently each K-length substring?",
+    "First store the first leftmost K-length substring in a hashTable or array of frequencies.",
+    "Then iterate through the rest of characters and erase the first element and add the next element from the right. If in the hashTable we have K different character we add 1 to the counter. After that return as answer the counter."
+  ]
+}

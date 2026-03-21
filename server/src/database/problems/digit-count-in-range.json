@@ -1,0 +1,34 @@
+{
+  "id": "1067",
+  "title": "Digit Count in Range",
+  "slug": "digit-count-in-range",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming"],
+  "total_accepted": 4668,
+  "total_submissions": 10065,
+  "acceptance_rate": "46.4%",
+  "similar_questions": [
+    {
+      "title": "Number of Digit One",
+      "slug": "number-of-digit-one",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-digit-one/"
+    },
+    {
+      "title": "Sum of Numbers With Units Digit K",
+      "slug": "sum-of-numbers-with-units-digit-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-numbers-with-units-digit-k/"
+    }
+  ],
+  "hints": [
+    "Define a function f(x) to get the requested sum from 1 to x. So the answer will be f(hi) - f(lo - 1)",
+    "In order to solve f(x) we need to do a DP over digits approach."
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "2183",
+  "title": "Count Array Pairs Divisible by K",
+  "slug": "count-array-pairs-divisible-by-k",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>0-indexed</strong> integer array <code>nums</code> of length <code>n</code> and an integer <code>k</code>, return <em>the <strong>number of pairs</strong></em> <code>(i, j)</code> <em>such that:</em></p>\n\n<ul>\n\t<li><code>0 &lt;= i &lt; j &lt;= n - 1</code> <em>and</em></li>\n\t<li><code>nums[i] * nums[j]</code> <em>is divisible by</em> <code>k</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5], k = 2\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> \nThe 7 pairs of indices whose corresponding products are divisible by 2 are\n(0, 1), (0, 3), (1, 2), (1, 3), (1, 4), (2, 3), and (3, 4).\nTheir products are 2, 4, 6, 8, 10, 12, and 20 respectively.\nOther pairs such as (0, 2) and (2, 4) have products 3 and 15 respectively, which are not divisible by 2.    \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4], k = 5\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There does not exist any pair of indices whose corresponding product is divisible by 5.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i], k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a **0-indexed** integer array `nums` of length `n` and an integer `k`, return _the**number of pairs**_ `(i, j)` _such that:_\n\n  * `0 <= i < j <= n - 1` _and_\n  * `nums[i] * nums[j]` _is divisible by_ `k`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4,5], k = 2\n    **Output:** 7\n    **Explanation:** \n    The 7 pairs of indices whose corresponding products are divisible by 2 are\n    (0, 1), (0, 3), (1, 2), (1, 3), (1, 4), (2, 3), and (3, 4).\n    Their products are 2, 4, 6, 8, 10, 12, and 20 respectively.\n    Other pairs such as (0, 2) and (2, 4) have products 3 and 15 respectively, which are not divisible by 2.    \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 5\n    **Output:** 0\n    **Explanation:** There does not exist any pair of indices whose corresponding product is divisible by 5.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i], k <= 105`",
+  "question": "Given a **0-indexed** integer array `nums` of length `n` and an integer `k`, return _the**number of pairs**_ `(i, j)` _such that:_\n\n  * `0 <= i < j <= n - 1` _and_\n  * `nums[i] * nums[j]` _is divisible by_ `k`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4,5], k = 2\n    **Output:** 7\n    **Explanation:** \n    The 7 pairs of indices whose corresponding products are divisible by 2 are\n    (0, 1), (0, 3), (1, 2), (1, 3), (1, 4), (2, 3), and (3, 4).\n    Their products are 2, 4, 6, 8, 10, 12, and 20 respectively.\n    Other pairs such as (0, 2) and (2, 4) have products 3 and 15 respectively, which are not divisible by 2.    \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 5\n    **Output:** 0\n    **Explanation:** There does not exist any pair of indices whose corresponding product is divisible by 5.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i], k <= 105`",
+  "topics": ["Array", "Hash Table", "Math", "Counting", "Number Theory"],
+  "total_accepted": 22794,
+  "total_submissions": 74585,
+  "acceptance_rate": "30.6%",
+  "similar_questions": [
+    {
+      "title": "Number of Single Divisor Triplets",
+      "slug": "number-of-single-divisor-triplets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-single-divisor-triplets/"
+    },
+    {
+      "title": "Check If Array Pairs Are Divisible by k",
+      "slug": "check-if-array-pairs-are-divisible-by-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-array-pairs-are-divisible-by-k/"
+    },
+    {
+      "title": "Find the Number of Good Pairs II",
+      "slug": "find-the-number-of-good-pairs-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-number-of-good-pairs-ii/"
+    },
+    {
+      "title": "Find the Number of Good Pairs I",
+      "slug": "find-the-number-of-good-pairs-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-number-of-good-pairs-i/"
+    }
+  ],
+  "hints": [
+    "For any element in the array, what is the smallest number it should be multiplied with such that the product is divisible by k?",
+    "The smallest number which should be multiplied with nums[i] so that the product is divisible by k is k / gcd(k, nums[i]). Now think about how you can store and update the count of such numbers present in the array efficiently."
+  ]
+}

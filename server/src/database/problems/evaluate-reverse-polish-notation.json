@@ -1,0 +1,31 @@
+{
+  "id": "150",
+  "title": "Evaluate Reverse Polish Notation",
+  "slug": "evaluate-reverse-polish-notation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of strings <code>tokens</code> that represents an arithmetic expression in a <a href=\"http://en.wikipedia.org/wiki/Reverse_Polish_notation\" target=\"_blank\">Reverse Polish Notation</a>.</p>\n\n<p>Evaluate the expression. Return <em>an integer that represents the value of the expression</em>.</p>\n\n<p><strong>Note</strong> that:</p>\n\n<ul>\n\t<li>The valid operators are <code>&#39;+&#39;</code>, <code>&#39;-&#39;</code>, <code>&#39;*&#39;</code>, and <code>&#39;/&#39;</code>.</li>\n\t<li>Each operand may be an integer or another expression.</li>\n\t<li>The division between two integers always <strong>truncates toward zero</strong>.</li>\n\t<li>There will not be any division by zero.</li>\n\t<li>The input represents a valid arithmetic expression in a reverse polish notation.</li>\n\t<li>The answer and all the intermediate calculations can be represented in a <strong>32-bit</strong> integer.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> tokens = [&quot;2&quot;,&quot;1&quot;,&quot;+&quot;,&quot;3&quot;,&quot;*&quot;]\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> ((2 + 1) * 3) = 9\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> tokens = [&quot;4&quot;,&quot;13&quot;,&quot;5&quot;,&quot;/&quot;,&quot;+&quot;]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> (4 + (13 / 5)) = 6\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> tokens = [&quot;10&quot;,&quot;6&quot;,&quot;9&quot;,&quot;3&quot;,&quot;+&quot;,&quot;-11&quot;,&quot;*&quot;,&quot;/&quot;,&quot;*&quot;,&quot;17&quot;,&quot;+&quot;,&quot;5&quot;,&quot;+&quot;]\n<strong>Output:</strong> 22\n<strong>Explanation:</strong> ((10 * (6 / ((9 + 3) * -11))) + 17) + 5\n= ((10 * (6 / (12 * -11))) + 17) + 5\n= ((10 * (6 / -132)) + 17) + 5\n= ((10 * 0) + 17) + 5\n= (0 + 17) + 5\n= 17 + 5\n= 22\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= tokens.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>tokens[i]</code> is either an operator: <code>&quot;+&quot;</code>, <code>&quot;-&quot;</code>, <code>&quot;*&quot;</code>, or <code>&quot;/&quot;</code>, or an integer in the range <code>[-200, 200]</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of strings `tokens` that represents an arithmetic expression in a [Reverse Polish Notation](<http://en.wikipedia.org/wiki/Reverse_Polish_notation>).\n\nEvaluate the expression. Return _an integer that represents the value of the expression_.\n\n**Note** that:\n\n  * The valid operators are `'+'`, `'-'`, `'*'`, and `'/'`.\n  * Each operand may be an integer or another expression.\n  * The division between two integers always **truncates toward zero**.\n  * There will not be any division by zero.\n  * The input represents a valid arithmetic expression in a reverse polish notation.\n  * The answer and all the intermediate calculations can be represented in a **32-bit** integer.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** tokens = [\"2\",\"1\",\"+\",\"3\",\"*\"]\n    **Output:** 9\n    **Explanation:** ((2 + 1) * 3) = 9\n    \n\n**Example 2:**\n    \n    \n    **Input:** tokens = [\"4\",\"13\",\"5\",\"/\",\"+\"]\n    **Output:** 6\n    **Explanation:** (4 + (13 / 5)) = 6\n    \n\n**Example 3:**\n    \n    \n    **Input:** tokens = [\"10\",\"6\",\"9\",\"3\",\"+\",\"-11\",\"*\",\"/\",\"*\",\"17\",\"+\",\"5\",\"+\"]\n    **Output:** 22\n    **Explanation:** ((10 * (6 / ((9 + 3) * -11))) + 17) + 5\n    = ((10 * (6 / (12 * -11))) + 17) + 5\n    = ((10 * (6 / -132)) + 17) + 5\n    = ((10 * 0) + 17) + 5\n    = (0 + 17) + 5\n    = 17 + 5\n    = 22\n    \n\n \n\n**Constraints:**\n\n  * `1 <= tokens.length <= 104`\n  * `tokens[i]` is either an operator: `\"+\"`, `\"-\"`, `\"*\"`, or `\"/\"`, or an integer in the range `[-200, 200]`.",
+  "question": "You are given an array of strings `tokens` that represents an arithmetic expression in a [Reverse Polish Notation](<http://en.wikipedia.org/wiki/Reverse_Polish_notation>).\n\nEvaluate the expression. Return _an integer that represents the value of the expression_.\n\n**Note** that:\n\n  * The valid operators are `'+'`, `'-'`, `'*'`, and `'/'`.\n  * Each operand may be an integer or another expression.\n  * The division between two integers always **truncates toward zero**.\n  * There will not be any division by zero.\n  * The input represents a valid arithmetic expression in a reverse polish notation.\n  * The answer and all the intermediate calculations can be represented in a **32-bit** integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** tokens = [\"2\",\"1\",\"+\",\"3\",\"*\"]\n    **Output:** 9\n    **Explanation:** ((2 + 1) * 3) = 9\n    \n\n**Example 2:**\n    \n    \n    **Input:** tokens = [\"4\",\"13\",\"5\",\"/\",\"+\"]\n    **Output:** 6\n    **Explanation:** (4 + (13 / 5)) = 6\n    \n\n**Example 3:**\n    \n    \n    **Input:** tokens = [\"10\",\"6\",\"9\",\"3\",\"+\",\"-11\",\"*\",\"/\",\"*\",\"17\",\"+\",\"5\",\"+\"]\n    **Output:** 22\n    **Explanation:** ((10 * (6 / ((9 + 3) * -11))) + 17) + 5\n    = ((10 * (6 / (12 * -11))) + 17) + 5\n    = ((10 * (6 / -132)) + 17) + 5\n    = ((10 * 0) + 17) + 5\n    = (0 + 17) + 5\n    = 17 + 5\n    = 22",
+  "constraints": "**Constraints:**\n\n  * `1 <= tokens.length <= 104`\n  * `tokens[i]` is either an operator: `\"+\"`, `\"-\"`, `\"*\"`, or `\"/\"`, or an integer in the range `[-200, 200]`.",
+  "topics": ["Array", "Math", "Stack"],
+  "total_accepted": 1676604,
+  "total_submissions": 2937584,
+  "acceptance_rate": "57.1%",
+  "similar_questions": [
+    {
+      "title": "Basic Calculator",
+      "slug": "basic-calculator",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/basic-calculator/"
+    },
+    {
+      "title": "Expression Add Operators",
+      "slug": "expression-add-operators",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/expression-add-operators/"
+    }
+  ],
+  "hints": []
+}

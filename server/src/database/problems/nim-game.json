@@ -1,0 +1,27 @@
+{
+  "id": "292",
+  "title": "Nim Game",
+  "slug": "nim-game",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are playing the following Nim Game with your friend:</p>\n\n<ul>\n\t<li>Initially, there is a heap of stones on the table.</li>\n\t<li>You and your friend will alternate taking turns, and <strong>you go first</strong>.</li>\n\t<li>On each turn, the person whose turn it is will remove 1 to 3 stones from the heap.</li>\n\t<li>The one who removes the last stone is the winner.</li>\n</ul>\n\n<p>Given <code>n</code>, the number of stones in the heap, return <code>true</code><em> if you can win the game assuming both you and your friend play optimally, otherwise return </em><code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> false\n<strong>Explanation:</strong> These are the possible outcomes:\n1. You remove 1 stone. Your friend removes 3 stones, including the last stone. Your friend wins.\n2. You remove 2 stones. Your friend removes 2 stones, including the last stone. Your friend wins.\n3. You remove 3 stones. Your friend removes the last stone. Your friend wins.\nIn all outcomes, your friend wins.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> true\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "You are playing the following Nim Game with your friend:\n\n  * Initially, there is a heap of stones on the table.\n  * You and your friend will alternate taking turns, and **you go first**.\n  * On each turn, the person whose turn it is will remove 1 to 3 stones from the heap.\n  * The one who removes the last stone is the winner.\n\n\n\nGiven `n`, the number of stones in the heap, return `true` _if you can win the game assuming both you and your friend play optimally, otherwise return_`false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** false\n    **Explanation:** These are the possible outcomes:\n    1. You remove 1 stone. Your friend removes 3 stones, including the last stone. Your friend wins.\n    2. You remove 2 stones. Your friend removes 2 stones, including the last stone. Your friend wins.\n    3. You remove 3 stones. Your friend removes the last stone. Your friend wins.\n    In all outcomes, your friend wins.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 2\n    **Output:** true\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 231 - 1`",
+  "question": "You are playing the following Nim Game with your friend:\n\n  * Initially, there is a heap of stones on the table.\n  * You and your friend will alternate taking turns, and **you go first**.\n  * On each turn, the person whose turn it is will remove 1 to 3 stones from the heap.\n  * The one who removes the last stone is the winner.\n\n\n\nGiven `n`, the number of stones in the heap, return `true` _if you can win the game assuming both you and your friend play optimally, otherwise return_`false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** false\n    **Explanation:** These are the possible outcomes:\n    1. You remove 1 stone. Your friend removes 3 stones, including the last stone. Your friend wins.\n    2. You remove 2 stones. Your friend removes 2 stones, including the last stone. Your friend wins.\n    3. You remove 3 stones. Your friend removes the last stone. Your friend wins.\n    In all outcomes, your friend wins.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 2\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 231 - 1`",
+  "topics": ["Math", "Brainteaser", "Game Theory"],
+  "total_accepted": 527646,
+  "total_submissions": 890520,
+  "acceptance_rate": "59.3%",
+  "similar_questions": [
+    {
+      "title": "Flip Game II",
+      "slug": "flip-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flip-game-ii/"
+    }
+  ],
+  "hints": [
+    "If there are 5 stones in the heap, could you figure out a way to remove the stones such that you will always be the winner?"
+  ]
+}

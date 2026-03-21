@@ -1,0 +1,25 @@
+{
+  "id": "10",
+  "title": "Regular Expression Matching",
+  "slug": "regular-expression-matching",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an input string <code>s</code>&nbsp;and a pattern <code>p</code>, implement regular expression matching with support for <code>&#39;.&#39;</code> and <code>&#39;*&#39;</code> where:</p>\n\n<ul>\n\t<li><code>&#39;.&#39;</code> Matches any single character.​​​​</li>\n\t<li><code>&#39;*&#39;</code> Matches zero or more of the preceding element.</li>\n</ul>\n\n<p>Return a boolean indicating whether the matching covers the entire input string (not partial).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;, p = &quot;a&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> &quot;a&quot; does not match the entire string &quot;aa&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;, p = &quot;a*&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> &#39;*&#39; means zero or more of the preceding element, &#39;a&#39;. Therefore, by repeating &#39;a&#39; once, it becomes &quot;aa&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ab&quot;, p = &quot;.*&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> &quot;.*&quot; means &quot;zero or more (*) of any character (.)&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length&nbsp;&lt;= 20</code></li>\n\t<li><code>1 &lt;= p.length&nbsp;&lt;= 20</code></li>\n\t<li><code>s</code> contains only lowercase English letters.</li>\n\t<li><code>p</code> contains only lowercase English letters, <code>&#39;.&#39;</code>, and&nbsp;<code>&#39;*&#39;</code>.</li>\n\t<li>It is guaranteed for each appearance of the character <code>&#39;*&#39;</code>, there will be a previous valid character to match.</li>\n</ul>\n",
+  "content_markdown": "Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` and `'*'` where:\n\n  * `'.'` Matches any single character.​​​​\n  * `'*'` Matches zero or more of the preceding element.\n\n\n\nReturn a boolean indicating whether the matching covers the entire input string (not partial).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aa\", p = \"a\"\n    **Output:** false\n    **Explanation:** \"a\" does not match the entire string \"aa\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aa\", p = \"a*\"\n    **Output:** true\n    **Explanation:** '*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes \"aa\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"ab\", p = \".*\"\n    **Output:** true\n    **Explanation:** \".*\" means \"zero or more (*) of any character (.)\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 20`\n  * `1 <= p.length <= 20`\n  * `s` contains only lowercase English letters.\n  * `p` contains only lowercase English letters, `'.'`, and `'*'`.\n  * It is guaranteed for each appearance of the character `'*'`, there will be a previous valid character to match.",
+  "question": "Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` and `'*'` where:\n\n  * `'.'` Matches any single character.​​​​\n  * `'*'` Matches zero or more of the preceding element.\n\n\n\nReturn a boolean indicating whether the matching covers the entire input string (not partial).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aa\", p = \"a\"\n    **Output:** false\n    **Explanation:** \"a\" does not match the entire string \"aa\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aa\", p = \"a*\"\n    **Output:** true\n    **Explanation:** '*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes \"aa\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"ab\", p = \".*\"\n    **Output:** true\n    **Explanation:** \".*\" means \"zero or more (*) of any character (.)\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 20`\n  * `1 <= p.length <= 20`\n  * `s` contains only lowercase English letters.\n  * `p` contains only lowercase English letters, `'.'`, and `'*'`.\n  * It is guaranteed for each appearance of the character `'*'`, there will be a previous valid character to match.",
+  "topics": ["String", "Dynamic Programming", "Recursion"],
+  "total_accepted": 1342387,
+  "total_submissions": 4404751,
+  "acceptance_rate": "30.5%",
+  "similar_questions": [
+    {
+      "title": "Wildcard Matching",
+      "slug": "wildcard-matching",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/wildcard-matching/"
+    }
+  ],
+  "hints": []
+}

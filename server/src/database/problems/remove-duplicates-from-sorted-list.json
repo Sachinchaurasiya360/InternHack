@@ -1,0 +1,31 @@
+{
+  "id": "83",
+  "title": "Remove Duplicates from Sorted List",
+  "slug": "remove-duplicates-from-sorted-list",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a sorted linked list, <em>delete all duplicates such that each element appears only once</em>. Return <em>the linked list <strong>sorted</strong> as well</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/04/list1.jpg\" style=\"width: 302px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> head = [1,1,2]\n<strong>Output:</strong> [1,2]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/04/list2.jpg\" style=\"width: 542px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> head = [1,1,2,3,3]\n<strong>Output:</strong> [1,2,3]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is in the range <code>[0, 300]</code>.</li>\n\t<li><code>-100 &lt;= Node.val &lt;= 100</code></li>\n\t<li>The list is guaranteed to be <strong>sorted</strong> in ascending order.</li>\n</ul>\n",
+  "content_markdown": "Given the `head` of a sorted linked list, _delete all duplicates such that each element appears only once_. Return _the linked list**sorted** as well_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/list1.jpg)\n    \n    \n    **Input:** head = [1,1,2]\n    **Output:** [1,2]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/list2.jpg)\n    \n    \n    **Input:** head = [1,1,2,3,3]\n    **Output:** [1,2,3]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 300]`.\n  * `-100 <= Node.val <= 100`\n  * The list is guaranteed to be **sorted** in ascending order.",
+  "question": "Given the `head` of a sorted linked list, _delete all duplicates such that each element appears only once_. Return _the linked list**sorted** as well_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/list1.jpg)\n    \n    \n    **Input:** head = [1,1,2]\n    **Output:** [1,2]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/list2.jpg)\n    \n    \n    **Input:** head = [1,1,2,3,3]\n    **Output:** [1,2,3]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 300]`.\n  * `-100 <= Node.val <= 100`\n  * The list is guaranteed to be **sorted** in ascending order.",
+  "topics": ["Linked List"],
+  "total_accepted": 2291055,
+  "total_submissions": 4069759,
+  "acceptance_rate": "56.3%",
+  "similar_questions": [
+    {
+      "title": "Remove Duplicates from Sorted List II",
+      "slug": "remove-duplicates-from-sorted-list-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/"
+    },
+    {
+      "title": "Remove Duplicates From an Unsorted Linked List",
+      "slug": "remove-duplicates-from-an-unsorted-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-duplicates-from-an-unsorted-linked-list/"
+    }
+  ],
+  "hints": []
+}

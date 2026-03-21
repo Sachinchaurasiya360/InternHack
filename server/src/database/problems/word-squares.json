@@ -1,0 +1,25 @@
+{
+  "id": "425",
+  "title": "Word Squares",
+  "slug": "word-squares",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String", "Backtracking", "Trie"],
+  "total_accepted": 83103,
+  "total_submissions": 152123,
+  "acceptance_rate": "54.6%",
+  "similar_questions": [
+    {
+      "title": "Valid Word Square",
+      "slug": "valid-word-square",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-word-square/"
+    }
+  ],
+  "hints": []
+}

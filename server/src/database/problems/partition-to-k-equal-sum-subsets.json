@@ -1,0 +1,58 @@
+{
+  "id": "698",
+  "title": "Partition to K Equal Sum Subsets",
+  "slug": "partition-to-k-equal-sum-subsets",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return <code>true</code> if it is possible to divide this array into <code>k</code> non-empty subsets whose sums are all equal.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,3,2,3,5,2,1], k = 4\n<strong>Output:</strong> true\n<strong>Explanation:</strong> It is possible to divide it into 4 subsets (5), (1, 4), (2,3), (2,3) with equal sums.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4], k = 3\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= nums.length &lt;= 16</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li>The frequency of each element is in the range <code>[1, 4]</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return `true` if it is possible to divide this array into `k` non-empty subsets whose sums are all equal.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,3,2,3,5,2,1], k = 4\n    **Output:** true\n    **Explanation:** It is possible to divide it into 4 subsets (5), (1, 4), (2,3), (2,3) with equal sums.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 3\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= nums.length <= 16`\n  * `1 <= nums[i] <= 104`\n  * The frequency of each element is in the range `[1, 4]`.",
+  "question": "Given an integer array `nums` and an integer `k`, return `true` if it is possible to divide this array into `k` non-empty subsets whose sums are all equal.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,3,2,3,5,2,1], k = 4\n    **Output:** true\n    **Explanation:** It is possible to divide it into 4 subsets (5), (1, 4), (2,3), (2,3) with equal sums.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 3\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= nums.length <= 16`\n  * `1 <= nums[i] <= 104`\n  * The frequency of each element is in the range `[1, 4]`.",
+  "topics": [
+    "Array",
+    "Dynamic Programming",
+    "Backtracking",
+    "Bit Manipulation",
+    "Memoization",
+    "Bitmask"
+  ],
+  "total_accepted": 337197,
+  "total_submissions": 877507,
+  "acceptance_rate": "38.4%",
+  "similar_questions": [
+    {
+      "title": "Partition Equal Subset Sum",
+      "slug": "partition-equal-subset-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-equal-subset-sum/"
+    },
+    {
+      "title": "Fair Distribution of Cookies",
+      "slug": "fair-distribution-of-cookies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fair-distribution-of-cookies/"
+    },
+    {
+      "title": "Maximum Number of Ways to Partition an Array",
+      "slug": "maximum-number-of-ways-to-partition-an-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array/"
+    },
+    {
+      "title": "Maximum Rows Covered by Columns",
+      "slug": "maximum-rows-covered-by-columns",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-rows-covered-by-columns/"
+    },
+    {
+      "title": "Maximum Product of Two Integers With No Common Bits",
+      "slug": "maximum-product-of-two-integers-with-no-common-bits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-of-two-integers-with-no-common-bits/"
+    }
+  ],
+  "hints": [
+    "We can figure out what target each subset must sum to.  Then, let's recursively search, where at each call to our function, we choose which of k subsets the next value will join."
+  ]
+}

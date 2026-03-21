@@ -1,0 +1,25 @@
+{
+  "id": "472",
+  "title": "Concatenated Words",
+  "slug": "concatenated-words",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>words</code> (<strong>without duplicates</strong>), return <em>all the <strong>concatenated words</strong> in the given list of</em> <code>words</code>.</p>\n\n<p>A <strong>concatenated word</strong> is defined as a string that is comprised entirely of at least two shorter words (not necessarily distinct)&nbsp;in the given array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;cat&quot;,&quot;cats&quot;,&quot;catsdogcats&quot;,&quot;dog&quot;,&quot;dogcatsdog&quot;,&quot;hippopotamuses&quot;,&quot;rat&quot;,&quot;ratcatdogcat&quot;]\n<strong>Output:</strong> [&quot;catsdogcats&quot;,&quot;dogcatsdog&quot;,&quot;ratcatdogcat&quot;]\n<strong>Explanation:</strong> &quot;catsdogcats&quot; can be concatenated by &quot;cats&quot;, &quot;dog&quot; and &quot;cats&quot;; \n&quot;dogcatsdog&quot; can be concatenated by &quot;dog&quot;, &quot;cats&quot; and &quot;dog&quot;; \n&quot;ratcatdogcat&quot; can be concatenated by &quot;rat&quot;, &quot;cat&quot;, &quot;dog&quot; and &quot;cat&quot;.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;cat&quot;,&quot;dog&quot;,&quot;catdog&quot;]\n<strong>Output:</strong> [&quot;catdog&quot;]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 30</code></li>\n\t<li><code>words[i]</code> consists of only lowercase English letters.</li>\n\t<li>All the strings of <code>words</code> are <strong>unique</strong>.</li>\n\t<li><code>1 &lt;= sum(words[i].length) &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of strings `words` (**without duplicates**), return _all the**concatenated words** in the given list of_ `words`.\n\nA **concatenated word** is defined as a string that is comprised entirely of at least two shorter words (not necessarily distinct) in the given array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"cat\",\"cats\",\"catsdogcats\",\"dog\",\"dogcatsdog\",\"hippopotamuses\",\"rat\",\"ratcatdogcat\"]\n    **Output:** [\"catsdogcats\",\"dogcatsdog\",\"ratcatdogcat\"]\n    **Explanation:** \"catsdogcats\" can be concatenated by \"cats\", \"dog\" and \"cats\"; \n    \"dogcatsdog\" can be concatenated by \"dog\", \"cats\" and \"dog\"; \n    \"ratcatdogcat\" can be concatenated by \"rat\", \"cat\", \"dog\" and \"cat\".\n\n**Example 2:**\n    \n    \n    **Input:** words = [\"cat\",\"dog\",\"catdog\"]\n    **Output:** [\"catdog\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 104`\n  * `1 <= words[i].length <= 30`\n  * `words[i]` consists of only lowercase English letters.\n  * All the strings of `words` are **unique**.\n  * `1 <= sum(words[i].length) <= 105`",
+  "question": "Given an array of strings `words` (**without duplicates**), return _all the**concatenated words** in the given list of_ `words`.\n\nA **concatenated word** is defined as a string that is comprised entirely of at least two shorter words (not necessarily distinct) in the given array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"cat\",\"cats\",\"catsdogcats\",\"dog\",\"dogcatsdog\",\"hippopotamuses\",\"rat\",\"ratcatdogcat\"]\n    **Output:** [\"catsdogcats\",\"dogcatsdog\",\"ratcatdogcat\"]\n    **Explanation:** \"catsdogcats\" can be concatenated by \"cats\", \"dog\" and \"cats\"; \n    \"dogcatsdog\" can be concatenated by \"dog\", \"cats\" and \"dog\"; \n    \"ratcatdogcat\" can be concatenated by \"rat\", \"cat\", \"dog\" and \"cat\".\n\n**Example 2:**\n    \n    \n    **Input:** words = [\"cat\",\"dog\",\"catdog\"]\n    **Output:** [\"catdog\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 104`\n  * `1 <= words[i].length <= 30`\n  * `words[i]` consists of only lowercase English letters.\n  * All the strings of `words` are **unique**.\n  * `1 <= sum(words[i].length) <= 105`",
+  "topics": ["Array", "String", "Dynamic Programming", "Depth-First Search", "Trie", "Sorting"],
+  "total_accepted": 264833,
+  "total_submissions": 532591,
+  "acceptance_rate": "49.7%",
+  "similar_questions": [
+    {
+      "title": "Word Break II",
+      "slug": "word-break-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/word-break-ii/"
+    }
+  ],
+  "hints": []
+}

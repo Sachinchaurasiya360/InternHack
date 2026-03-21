@@ -1,0 +1,28 @@
+{
+  "id": "2582",
+  "title": "Pass the Pillow",
+  "slug": "pass-the-pillow",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> people standing in a line labeled from <code>1</code> to <code>n</code>. The first person in the line is holding a pillow initially. Every second, the person holding the pillow passes it to the next person standing in the line. Once the pillow reaches the end of the line, the direction changes, and people continue passing the pillow in the opposite direction.</p>\n\n<ul>\n\t<li>For example, once the pillow reaches the <code>n<sup>th</sup></code> person they pass it to the <code>n - 1<sup>th</sup></code> person, then to the <code>n - 2<sup>th</sup></code> person and so on.</li>\n</ul>\n\n<p>Given the two positive integers <code>n</code> and <code>time</code>, return <em>the index of the person holding the pillow after </em><code>time</code><em> seconds</em>.</p>\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4, time = 5\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> People pass the pillow in the following way: 1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; 3 -&gt; 2.\nAfter five seconds, the 2<sup>nd</sup> person is holding the pillow.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, time = 2\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> People pass the pillow in the following way: 1 -&gt; 2 -&gt; 3.\nAfter two seconds, the 3<sup>r</sup><sup>d</sup> person is holding the pillow.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n &lt;= 1000</code></li>\n\t<li><code>1 &lt;= time &lt;= 1000</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as <a href=\"https://leetcode.com/problems/find-the-child-who-has-the-ball-after-k-seconds/description/\" target=\"_blank\"> 3178: Find the Child Who Has the Ball After K Seconds.</a></p>\n",
+  "content_markdown": "There are `n` people standing in a line labeled from `1` to `n`. The first person in the line is holding a pillow initially. Every second, the person holding the pillow passes it to the next person standing in the line. Once the pillow reaches the end of the line, the direction changes, and people continue passing the pillow in the opposite direction.\n\n  * For example, once the pillow reaches the `nth` person they pass it to the `n - 1th` person, then to the `n - 2th` person and so on.\n\n\n\nGiven the two positive integers `n` and `time`, return _the index of the person holding the pillow after_`time` _seconds_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4, time = 5\n    **Output:** 2\n    **Explanation:** People pass the pillow in the following way: 1 -> 2 -> 3 -> 4 -> 3 -> 2.\n    After five seconds, the 2nd person is holding the pillow.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, time = 2\n    **Output:** 3\n    **Explanation:** People pass the pillow in the following way: 1 -> 2 -> 3.\n    After two seconds, the 3rd person is holding the pillow.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= n <= 1000`\n  * `1 <= time <= 1000`\n\n\n\n \n\n**Note:** This question is the same as [ 3178: Find the Child Who Has the Ball After K Seconds.](<https://leetcode.com/problems/find-the-child-who-has-the-ball-after-k-seconds/description/>)",
+  "question": "There are `n` people standing in a line labeled from `1` to `n`. The first person in the line is holding a pillow initially. Every second, the person holding the pillow passes it to the next person standing in the line. Once the pillow reaches the end of the line, the direction changes, and people continue passing the pillow in the opposite direction.\n\n  * For example, once the pillow reaches the `nth` person they pass it to the `n - 1th` person, then to the `n - 2th` person and so on.\n\n\n\nGiven the two positive integers `n` and `time`, return _the index of the person holding the pillow after_`time` _seconds_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4, time = 5\n    **Output:** 2\n    **Explanation:** People pass the pillow in the following way: 1 -> 2 -> 3 -> 4 -> 3 -> 2.\n    After five seconds, the 2nd person is holding the pillow.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, time = 2\n    **Output:** 3\n    **Explanation:** People pass the pillow in the following way: 1 -> 2 -> 3.\n    After two seconds, the 3rd person is holding the pillow.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n <= 1000`\n  * `1 <= time <= 1000`\n\n\n\n \n\n**Note:** This question is the same as [ 3178: Find the Child Who Has the Ball After K Seconds.](<https://leetcode.com/problems/find-the-child-who-has-the-ball-after-k-seconds/description/>)",
+  "topics": ["Math", "Simulation"],
+  "total_accepted": 214401,
+  "total_submissions": 378880,
+  "acceptance_rate": "56.6%",
+  "similar_questions": [
+    {
+      "title": "Find the Student that Will Replace the Chalk",
+      "slug": "find-the-student-that-will-replace-the-chalk",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-student-that-will-replace-the-chalk/"
+    }
+  ],
+  "hints": [
+    "Maintain two integer variables, direction and i, where direction denotes the current direction in which the pillow should pass, and i denotes an index of the person holding the pillow.",
+    "While time is positive, update the current index with the current direction. If the index reaches the end of the line, multiply direction by - 1."
+  ]
+}

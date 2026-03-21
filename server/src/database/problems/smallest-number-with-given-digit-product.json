@@ -1,0 +1,37 @@
+{
+  "id": "2847",
+  "title": "Smallest Number With Given Digit Product",
+  "slug": "smallest-number-with-given-digit-product",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Greedy"],
+  "total_accepted": 1369,
+  "total_submissions": 3162,
+  "acceptance_rate": "43.3%",
+  "similar_questions": [
+    {
+      "title": "Smallest Divisible Digit Product I",
+      "slug": "smallest-divisible-digit-product-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/smallest-divisible-digit-product-i/"
+    },
+    {
+      "title": "Smallest Divisible Digit Product II",
+      "slug": "smallest-divisible-digit-product-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/smallest-divisible-digit-product-ii/"
+    }
+  ],
+  "hints": [
+    "Find the prime factors of <code>n</code>.",
+    "If there is a prime factor <code>p</code> such that <code>p >= 11</code>, the answer is <code>-1</code>. Since there are no digits whose products equal <code>p</code>.",
+    "Factors <code>5</code> and <code>7</code> should be included in the answer since their product with any number bigger than <code>1</code> is a 2-digit number.",
+    "For factors <code>2</code> and <code>3</code>, we group every three <code>2</code> into an <code>8</code> and every two <code>3</code> into a <code>9</code>.",
+    "For any leftover <code>2</code> or <code>3</code>, check all the possible combinations."
+  ]
+}

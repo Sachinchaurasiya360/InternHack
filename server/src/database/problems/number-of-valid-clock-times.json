@@ -1,0 +1,34 @@
+{
+  "id": "2437",
+  "title": "Number of Valid Clock Times",
+  "slug": "number-of-valid-clock-times",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string of length <code>5</code> called <code>time</code>, representing the current time on a digital clock in the format <code>&quot;hh:mm&quot;</code>. The <strong>earliest</strong> possible time is <code>&quot;00:00&quot;</code> and the <strong>latest</strong> possible time is <code>&quot;23:59&quot;</code>.</p>\n\n<p>In the string <code>time</code>, the digits represented by the <code>?</code>&nbsp;symbol are <strong>unknown</strong>, and must be <strong>replaced</strong> with a digit from <code>0</code> to <code>9</code>.</p>\n\n<p>Return<em> an integer </em><code>answer</code><em>, the number of valid clock times that can be created by replacing every </em><code>?</code><em>&nbsp;with a digit from </em><code>0</code><em> to </em><code>9</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = &quot;?5:00&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We can replace the ? with either a 0 or 1, producing &quot;05:00&quot; or &quot;15:00&quot;. Note that we cannot replace it with a 2, since the time &quot;25:00&quot; is invalid. In total, we have two choices.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = &quot;0?:0?&quot;\n<strong>Output:</strong> 100\n<strong>Explanation:</strong> Each ? can be replaced by any digit from 0 to 9, so we have 100 total choices.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = &quot;??:??&quot;\n<strong>Output:</strong> 1440\n<strong>Explanation:</strong> There are 24 possible choices for the hours, and 60 possible choices for the minutes. In total, we have 24 * 60 = 1440 choices.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>time</code> is a valid string of length <code>5</code> in the format <code>&quot;hh:mm&quot;</code>.</li>\n\t<li><code>&quot;00&quot; &lt;= hh &lt;= &quot;23&quot;</code></li>\n\t<li><code>&quot;00&quot; &lt;= mm &lt;= &quot;59&quot;</code></li>\n\t<li>Some of the digits might be replaced with <code>&#39;?&#39;</code> and need to be replaced with digits from <code>0</code> to <code>9</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string of length `5` called `time`, representing the current time on a digital clock in the format `\"hh:mm\"`. The **earliest** possible time is `\"00:00\"` and the **latest** possible time is `\"23:59\"`.\n\nIn the string `time`, the digits represented by the `?` symbol are **unknown** , and must be **replaced** with a digit from `0` to `9`.\n\nReturn _an integer_`answer` _, the number of valid clock times that can be created by replacing every_`?`_  with a digit from _`0` _to_`9`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** time = \"?5:00\"\n    **Output:** 2\n    **Explanation:** We can replace the ? with either a 0 or 1, producing \"05:00\" or \"15:00\". Note that we cannot replace it with a 2, since the time \"25:00\" is invalid. In total, we have two choices.\n    \n\n**Example 2:**\n    \n    \n    **Input:** time = \"0?:0?\"\n    **Output:** 100\n    **Explanation:** Each ? can be replaced by any digit from 0 to 9, so we have 100 total choices.\n    \n\n**Example 3:**\n    \n    \n    **Input:** time = \"??:??\"\n    **Output:** 1440\n    **Explanation:** There are 24 possible choices for the hours, and 60 possible choices for the minutes. In total, we have 24 * 60 = 1440 choices.\n    \n\n \n\n**Constraints:**\n\n  * `time` is a valid string of length `5` in the format `\"hh:mm\"`.\n  * `\"00\" <= hh <= \"23\"`\n  * `\"00\" <= mm <= \"59\"`\n  * Some of the digits might be replaced with `'?'` and need to be replaced with digits from `0` to `9`.",
+  "question": "You are given a string of length `5` called `time`, representing the current time on a digital clock in the format `\"hh:mm\"`. The **earliest** possible time is `\"00:00\"` and the **latest** possible time is `\"23:59\"`.\n\nIn the string `time`, the digits represented by the `?` symbol are **unknown** , and must be **replaced** with a digit from `0` to `9`.\n\nReturn _an integer_`answer` _, the number of valid clock times that can be created by replacing every_`?`_  with a digit from _`0` _to_`9`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** time = \"?5:00\"\n    **Output:** 2\n    **Explanation:** We can replace the ? with either a 0 or 1, producing \"05:00\" or \"15:00\". Note that we cannot replace it with a 2, since the time \"25:00\" is invalid. In total, we have two choices.\n    \n\n**Example 2:**\n    \n    \n    **Input:** time = \"0?:0?\"\n    **Output:** 100\n    **Explanation:** Each ? can be replaced by any digit from 0 to 9, so we have 100 total choices.\n    \n\n**Example 3:**\n    \n    \n    **Input:** time = \"??:??\"\n    **Output:** 1440\n    **Explanation:** There are 24 possible choices for the hours, and 60 possible choices for the minutes. In total, we have 24 * 60 = 1440 choices.",
+  "constraints": "**Constraints:**\n\n  * `time` is a valid string of length `5` in the format `\"hh:mm\"`.\n  * `\"00\" <= hh <= \"23\"`\n  * `\"00\" <= mm <= \"59\"`\n  * Some of the digits might be replaced with `'?'` and need to be replaced with digits from `0` to `9`.",
+  "topics": ["String", "Enumeration"],
+  "total_accepted": 37906,
+  "total_submissions": 79177,
+  "acceptance_rate": "47.9%",
+  "similar_questions": [
+    {
+      "title": "Largest Time for Given Digits",
+      "slug": "largest-time-for-given-digits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/largest-time-for-given-digits/"
+    },
+    {
+      "title": "Latest Time by Replacing Hidden Digits",
+      "slug": "latest-time-by-replacing-hidden-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/latest-time-by-replacing-hidden-digits/"
+    }
+  ],
+  "hints": [
+    "Brute force all possible clock times.",
+    "Checking if a clock time is valid can be done with Regex."
+  ]
+}

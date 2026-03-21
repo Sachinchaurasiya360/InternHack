@@ -1,0 +1,29 @@
+{
+  "id": "2950",
+  "title": "Number of Divisible Substrings",
+  "slug": "number-of-divisible-substrings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Counting", "Prefix Sum"],
+  "total_accepted": 3617,
+  "total_submissions": 4850,
+  "acceptance_rate": "74.6%",
+  "similar_questions": [
+    {
+      "title": "Count Substrings Divisible By Last Digit",
+      "slug": "count-substrings-divisible-by-last-digit",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-substrings-divisible-by-last-digit/"
+    }
+  ],
+  "hints": [
+    "Iterate over all substrings in <code>O(n * n)</code>.",
+    "For each substring, try to calculate the sum of the mapped values in <code>O(1)</code>.",
+    "To do the above, use a partial sum array."
+  ]
+}

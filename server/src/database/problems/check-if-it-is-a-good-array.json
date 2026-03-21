@@ -1,0 +1,21 @@
+{
+  "id": "1250",
+  "title": "Check If It Is a Good Array",
+  "slug": "check-if-it-is-a-good-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> of&nbsp;positive integers. Your task is to select some subset of <code>nums</code>, multiply each element by an integer and add all these numbers.&nbsp;The array is said to be&nbsp;<strong>good&nbsp;</strong>if you can obtain a sum of&nbsp;<code>1</code>&nbsp;from the array by any possible subset and multiplicand.</p>\n\n<p>Return&nbsp;<code>True</code>&nbsp;if the array is <strong>good&nbsp;</strong>otherwise&nbsp;return&nbsp;<code>False</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [12,5,7,23]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Pick numbers 5 and 7.\n5*3 + 7*(-2) = 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [29,6,10]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Pick numbers 29, 6 and 10.\n29*1 + 6*(-3) + 10*(-1) = 1\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,6]\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10^5</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10^9</code></li>\n</ul>\n",
+  "content_markdown": "Given an array `nums` of positive integers. Your task is to select some subset of `nums`, multiply each element by an integer and add all these numbers. The array is said to be **good  **if you can obtain a sum of `1` from the array by any possible subset and multiplicand.\n\nReturn `True` if the array is **good  **otherwise return `False`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [12,5,7,23]\n    **Output:** true\n    **Explanation:** Pick numbers 5 and 7.\n    5*3 + 7*(-2) = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [29,6,10]\n    **Output:** true\n    **Explanation:** Pick numbers 29, 6 and 10.\n    29*1 + 6*(-3) + 10*(-1) = 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,6]\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 10^5`\n  * `1 <= nums[i] <= 10^9`",
+  "question": "Given an array `nums` of positive integers. Your task is to select some subset of `nums`, multiply each element by an integer and add all these numbers. The array is said to be **good  **if you can obtain a sum of `1` from the array by any possible subset and multiplicand.\n\nReturn `True` if the array is **good  **otherwise return `False`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [12,5,7,23]\n    **Output:** true\n    **Explanation:** Pick numbers 5 and 7.\n    5*3 + 7*(-2) = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [29,6,10]\n    **Output:** true\n    **Explanation:** Pick numbers 29, 6 and 10.\n    29*1 + 6*(-3) + 10*(-1) = 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,6]\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 10^5`\n  * `1 <= nums[i] <= 10^9`",
+  "topics": ["Array", "Math", "Number Theory"],
+  "total_accepted": 36943,
+  "total_submissions": 58280,
+  "acceptance_rate": "63.4%",
+  "similar_questions": [],
+  "hints": [
+    "Eq.  ax+by=1 has solution x, y if gcd(a,b) = 1.",
+    "Can you generalize the formula?.  Check Bézout's lemma."
+  ]
+}

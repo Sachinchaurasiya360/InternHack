@@ -1,0 +1,37 @@
+{
+  "id": "394",
+  "title": "Decode String",
+  "slug": "decode-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an encoded string, return its decoded string.</p>\n\n<p>The encoding rule is: <code>k[encoded_string]</code>, where the <code>encoded_string</code> inside the square brackets is being repeated exactly <code>k</code> times. Note that <code>k</code> is guaranteed to be a positive integer.</p>\n\n<p>You may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc. Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, <code>k</code>. For example, there will not be input like <code>3a</code> or <code>2[4]</code>.</p>\n\n<p>The test cases are generated so that the length of the output will never exceed <code>10<sup>5</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;3[a]2[bc]&quot;\n<strong>Output:</strong> &quot;aaabcbc&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;3[a2[c]]&quot;\n<strong>Output:</strong> &quot;accaccacc&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;2[abc]3[cd]ef&quot;\n<strong>Output:</strong> &quot;abcabccdcdcdef&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 30</code></li>\n\t<li><code>s</code> consists of lowercase English letters, digits, and square brackets <code>&#39;[]&#39;</code>.</li>\n\t<li><code>s</code> is guaranteed to be <strong>a valid</strong> input.</li>\n\t<li>All the integers in <code>s</code> are in the range <code>[1, 300]</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an encoded string, return its decoded string.\n\nThe encoding rule is: `k[encoded_string]`, where the `encoded_string` inside the square brackets is being repeated exactly `k` times. Note that `k` is guaranteed to be a positive integer.\n\nYou may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc. Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, `k`. For example, there will not be input like `3a` or `2[4]`.\n\nThe test cases are generated so that the length of the output will never exceed `105`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"3[a]2[bc]\"\n    **Output:** \"aaabcbc\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"3[a2[c]]\"\n    **Output:** \"accaccacc\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"2[abc]3[cd]ef\"\n    **Output:** \"abcabccdcdcdef\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 30`\n  * `s` consists of lowercase English letters, digits, and square brackets `'[]'`.\n  * `s` is guaranteed to be **a valid** input.\n  * All the integers in `s` are in the range `[1, 300]`.",
+  "question": "Given an encoded string, return its decoded string.\n\nThe encoding rule is: `k[encoded_string]`, where the `encoded_string` inside the square brackets is being repeated exactly `k` times. Note that `k` is guaranteed to be a positive integer.\n\nYou may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc. Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, `k`. For example, there will not be input like `3a` or `2[4]`.\n\nThe test cases are generated so that the length of the output will never exceed `105`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"3[a]2[bc]\"\n    **Output:** \"aaabcbc\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"3[a2[c]]\"\n    **Output:** \"accaccacc\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"2[abc]3[cd]ef\"\n    **Output:** \"abcabccdcdcdef\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 30`\n  * `s` consists of lowercase English letters, digits, and square brackets `'[]'`.\n  * `s` is guaranteed to be **a valid** input.\n  * All the integers in `s` are in the range `[1, 300]`.",
+  "topics": ["String", "Stack", "Recursion"],
+  "total_accepted": 1164662,
+  "total_submissions": 1869947,
+  "acceptance_rate": "62.3%",
+  "similar_questions": [
+    {
+      "title": "Encode String with Shortest Length",
+      "slug": "encode-string-with-shortest-length",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/encode-string-with-shortest-length/"
+    },
+    {
+      "title": "Number of Atoms",
+      "slug": "number-of-atoms",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-atoms/"
+    },
+    {
+      "title": "Brace Expansion",
+      "slug": "brace-expansion",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/brace-expansion/"
+    }
+  ],
+  "hints": []
+}

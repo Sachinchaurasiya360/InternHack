@@ -1,0 +1,34 @@
+{
+  "id": "2778",
+  "title": "Sum of Squares of Special Elements ",
+  "slug": "sum-of-squares-of-special-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>1-indexed</strong> integer array <code>nums</code> of length <code>n</code>.</p>\n\n<p>An element <code>nums[i]</code> of <code>nums</code> is called <strong>special</strong> if <code>i</code> divides <code>n</code>, i.e. <code>n % i == 0</code>.</p>\n\n<p>Return <em>the <strong>sum of the squares</strong> of all <strong>special</strong> elements of </em><code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4]\n<strong>Output:</strong> 21\n<strong>Explanation:</strong> There are exactly 3 special elements in nums: nums[1] since 1 divides 4, nums[2] since 2 divides 4, and nums[4] since 4 divides 4. \nHence, the sum of the squares of all special elements of nums is nums[1] * nums[1] + nums[2] * nums[2] + nums[4] * nums[4] = 1 * 1 + 2 * 2 + 4 * 4 = 21.  \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,7,1,19,18,3]\n<strong>Output:</strong> 63\n<strong>Explanation:</strong> There are exactly 4 special elements in nums: nums[1] since 1 divides 6, nums[2] since 2 divides 6, nums[3] since 3 divides 6, and nums[6] since 6 divides 6. \nHence, the sum of the squares of all special elements of nums is nums[1] * nums[1] + nums[2] * nums[2] + nums[3] * nums[3] + nums[6] * nums[6] = 2 * 2 + 7 * 7 + 1 * 1 + 3 * 3 = 63. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length == n &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **1-indexed** integer array `nums` of length `n`.\n\nAn element `nums[i]` of `nums` is called **special** if `i` divides `n`, i.e. `n % i == 0`.\n\nReturn _the**sum of the squares** of all **special** elements of _`nums`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 21\n    **Explanation:** There are exactly 3 special elements in nums: nums[1] since 1 divides 4, nums[2] since 2 divides 4, and nums[4] since 4 divides 4. \n    Hence, the sum of the squares of all special elements of nums is nums[1] * nums[1] + nums[2] * nums[2] + nums[4] * nums[4] = 1 * 1 + 2 * 2 + 4 * 4 = 21.  \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,7,1,19,18,3]\n    **Output:** 63\n    **Explanation:** There are exactly 4 special elements in nums: nums[1] since 1 divides 6, nums[2] since 2 divides 6, nums[3] since 3 divides 6, and nums[6] since 6 divides 6. \n    Hence, the sum of the squares of all special elements of nums is nums[1] * nums[1] + nums[2] * nums[2] + nums[3] * nums[3] + nums[6] * nums[6] = 2 * 2 + 7 * 7 + 1 * 1 + 3 * 3 = 63. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length == n <= 50`\n  * `1 <= nums[i] <= 50`",
+  "question": "You are given a **1-indexed** integer array `nums` of length `n`.\n\nAn element `nums[i]` of `nums` is called **special** if `i` divides `n`, i.e. `n % i == 0`.\n\nReturn _the**sum of the squares** of all **special** elements of _`nums`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 21\n    **Explanation:** There are exactly 3 special elements in nums: nums[1] since 1 divides 4, nums[2] since 2 divides 4, and nums[4] since 4 divides 4. \n    Hence, the sum of the squares of all special elements of nums is nums[1] * nums[1] + nums[2] * nums[2] + nums[4] * nums[4] = 1 * 1 + 2 * 2 + 4 * 4 = 21.  \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,7,1,19,18,3]\n    **Output:** 63\n    **Explanation:** There are exactly 4 special elements in nums: nums[1] since 1 divides 6, nums[2] since 2 divides 6, nums[3] since 3 divides 6, and nums[6] since 6 divides 6. \n    Hence, the sum of the squares of all special elements of nums is nums[1] * nums[1] + nums[2] * nums[2] + nums[3] * nums[3] + nums[6] * nums[6] = 2 * 2 + 7 * 7 + 1 * 1 + 3 * 3 = 63.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length == n <= 50`\n  * `1 <= nums[i] <= 50`",
+  "topics": ["Array", "Enumeration"],
+  "total_accepted": 99373,
+  "total_submissions": 121265,
+  "acceptance_rate": "81.9%",
+  "similar_questions": [
+    {
+      "title": "Sum of Square Numbers",
+      "slug": "sum-of-square-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-square-numbers/"
+    },
+    {
+      "title": "Sum of All Odd Length Subarrays",
+      "slug": "sum-of-all-odd-length-subarrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sum-of-all-odd-length-subarrays/"
+    }
+  ],
+  "hints": [
+    "Iterate over all the elements of the array. For each index i, check if it is special using the modulo operator.",
+    "if n%i == 0, index i is special and you should add nums[i] to the answer."
+  ]
+}

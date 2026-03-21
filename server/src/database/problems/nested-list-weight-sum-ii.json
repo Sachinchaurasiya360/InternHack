@@ -1,0 +1,31 @@
+{
+  "id": "364",
+  "title": "Nested List Weight Sum II",
+  "slug": "nested-list-weight-sum-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Stack", "Depth-First Search", "Breadth-First Search"],
+  "total_accepted": 165666,
+  "total_submissions": 248138,
+  "acceptance_rate": "66.8%",
+  "similar_questions": [
+    {
+      "title": "Nested List Weight Sum",
+      "slug": "nested-list-weight-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/nested-list-weight-sum/"
+    },
+    {
+      "title": "Array Nesting",
+      "slug": "array-nesting",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/array-nesting/"
+    }
+  ],
+  "hints": []
+}

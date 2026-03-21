@@ -1,0 +1,58 @@
+{
+  "id": "2006",
+  "title": "Count Number of Pairs With Absolute Difference K",
+  "slug": "count-number-of-pairs-with-absolute-difference-k",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the number of pairs</em> <code>(i, j)</code> <em>where</em> <code>i &lt; j</code> <em>such that</em> <code>|nums[i] - nums[j]| == k</code>.</p>\n\n<p>The value of <code>|x|</code> is defined as:</p>\n\n<ul>\n\t<li><code>x</code> if <code>x &gt;= 0</code>.</li>\n\t<li><code>-x</code> if <code>x &lt; 0</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,2,1], k = 1\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The pairs with an absolute difference of 1 are:\n- [<strong><u>1</u></strong>,<strong><u>2</u></strong>,2,1]\n- [<strong><u>1</u></strong>,2,<strong><u>2</u></strong>,1]\n- [1,<strong><u>2</u></strong>,2,<strong><u>1</u></strong>]\n- [1,2,<strong><u>2</u></strong>,<strong><u>1</u></strong>]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3], k = 3\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There are no pairs with an absolute difference of 3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,1,5,4], k = 2\n<strong>Output:</strong> 3\n<b>Explanation:</b> The pairs with an absolute difference of 2 are:\n- [<strong><u>3</u></strong>,2,<strong><u>1</u></strong>,5,4]\n- [<strong><u>3</u></strong>,2,1,<strong><u>5</u></strong>,4]\n- [3,<strong><u>2</u></strong>,1,5,<strong><u>4</u></strong>]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 200</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 100</code></li>\n\t<li><code>1 &lt;= k &lt;= 99</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return _the number of pairs_ `(i, j)` _where_ `i < j` _such that_ `|nums[i] - nums[j]| == k`.\n\nThe value of `|x|` is defined as:\n\n  * `x` if `x >= 0`.\n  * `-x` if `x < 0`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2,1], k = 1\n    **Output:** 4\n    **Explanation:** The pairs with an absolute difference of 1 are:\n    - [**_1_** ,**_2_** ,2,1]\n    - [**_1_** ,2,**_2_** ,1]\n    - [1,**_2_** ,2,**_1_**]\n    - [1,2,**_2_** ,**_1_**]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3], k = 3\n    **Output:** 0\n    **Explanation:** There are no pairs with an absolute difference of 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,2,1,5,4], k = 2\n    **Output:** 3\n    **Explanation:** The pairs with an absolute difference of 2 are:\n    - [**_3_** ,2,**_1_** ,5,4]\n    - [**_3_** ,2,1,**_5_** ,4]\n    - [3,**_2_** ,1,5,**_4_**]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 200`\n  * `1 <= nums[i] <= 100`\n  * `1 <= k <= 99`",
+  "question": "Given an integer array `nums` and an integer `k`, return _the number of pairs_ `(i, j)` _where_ `i < j` _such that_ `|nums[i] - nums[j]| == k`.\n\nThe value of `|x|` is defined as:\n\n  * `x` if `x >= 0`.\n  * `-x` if `x < 0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2,1], k = 1\n    **Output:** 4\n    **Explanation:** The pairs with an absolute difference of 1 are:\n    - [**_1_** ,**_2_** ,2,1]\n    - [**_1_** ,2,**_2_** ,1]\n    - [1,**_2_** ,2,**_1_**]\n    - [1,2,**_2_** ,**_1_**]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3], k = 3\n    **Output:** 0\n    **Explanation:** There are no pairs with an absolute difference of 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,2,1,5,4], k = 2\n    **Output:** 3\n    **Explanation:** The pairs with an absolute difference of 2 are:\n    - [**_3_** ,2,**_1_** ,5,4]\n    - [**_3_** ,2,1,**_5_** ,4]\n    - [3,**_2_** ,1,5,**_4_**]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 200`\n  * `1 <= nums[i] <= 100`\n  * `1 <= k <= 99`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 230391,
+  "total_submissions": 269980,
+  "acceptance_rate": "85.3%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "K-diff Pairs in an Array",
+      "slug": "k-diff-pairs-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-diff-pairs-in-an-array/"
+    },
+    {
+      "title": "Finding Pairs With a Certain Sum",
+      "slug": "finding-pairs-with-a-certain-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/finding-pairs-with-a-certain-sum/"
+    },
+    {
+      "title": "Count Equal and Divisible Pairs in an Array",
+      "slug": "count-equal-and-divisible-pairs-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-equal-and-divisible-pairs-in-an-array/"
+    },
+    {
+      "title": "Count Number of Bad Pairs",
+      "slug": "count-number-of-bad-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-bad-pairs/"
+    },
+    {
+      "title": "Count the Number of Fair Pairs",
+      "slug": "count-the-number-of-fair-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-fair-pairs/"
+    }
+  ],
+  "hints": [
+    "Can we check every possible pair?",
+    "Can we use a nested for loop to solve this problem?"
+  ]
+}

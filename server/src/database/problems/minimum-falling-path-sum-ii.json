@@ -1,0 +1,29 @@
+{
+  "id": "1289",
+  "title": "Minimum Falling Path Sum II",
+  "slug": "minimum-falling-path-sum-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>n x n</code> integer matrix <code>grid</code>, return <em>the minimum sum of a <strong>falling path with non-zero shifts</strong></em>.</p>\n\n<p>A <strong>falling path with non-zero shifts</strong> is a choice of exactly one element from each row of <code>grid</code> such that no two elements chosen in adjacent rows are in the same column.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/08/10/falling-grid.jpg\" style=\"width: 244px; height: 245px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,2,3],[4,5,6],[7,8,9]]\n<strong>Output:</strong> 13\n<strong>Explanation:</strong> \nThe possible falling paths are:\n[1,5,9], [1,5,7], [1,6,7], [1,6,8],\n[2,4,8], [2,4,9], [2,6,7], [2,6,8],\n[3,4,8], [3,4,9], [3,5,7], [3,5,9]\nThe falling path with the smallest sum is&nbsp;[1,5,7], so the answer is&nbsp;13.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[7]]\n<strong>Output:</strong> 7\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == grid.length == grid[i].length</code></li>\n\t<li><code>1 &lt;= n &lt;= 200</code></li>\n\t<li><code>-99 &lt;= grid[i][j] &lt;= 99</code></li>\n</ul>\n",
+  "content_markdown": "Given an `n x n` integer matrix `grid`, return _the minimum sum of a**falling path with non-zero shifts**_.\n\nA **falling path with non-zero shifts** is a choice of exactly one element from each row of `grid` such that no two elements chosen in adjacent rows are in the same column.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/08/10/falling-grid.jpg)\n    \n    \n    **Input:** grid = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** 13\n    **Explanation:** \n    The possible falling paths are:\n    [1,5,9], [1,5,7], [1,6,7], [1,6,8],\n    [2,4,8], [2,4,9], [2,6,7], [2,6,8],\n    [3,4,8], [3,4,9], [3,5,7], [3,5,9]\n    The falling path with the smallest sum is [1,5,7], so the answer is 13.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[7]]\n    **Output:** 7\n    \n\n \n\n**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `1 <= n <= 200`\n  * `-99 <= grid[i][j] <= 99`",
+  "question": "Given an `n x n` integer matrix `grid`, return _the minimum sum of a**falling path with non-zero shifts**_.\n\nA **falling path with non-zero shifts** is a choice of exactly one element from each row of `grid` such that no two elements chosen in adjacent rows are in the same column.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/08/10/falling-grid.jpg)\n    \n    \n    **Input:** grid = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** 13\n    **Explanation:** \n    The possible falling paths are:\n    [1,5,9], [1,5,7], [1,6,7], [1,6,8],\n    [2,4,8], [2,4,9], [2,6,7], [2,6,8],\n    [3,4,8], [3,4,9], [3,5,7], [3,5,9]\n    The falling path with the smallest sum is [1,5,7], so the answer is 13.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[7]]\n    **Output:** 7",
+  "constraints": "**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `1 <= n <= 200`\n  * `-99 <= grid[i][j] <= 99`",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 163217,
+  "total_submissions": 258132,
+  "acceptance_rate": "63.2%",
+  "similar_questions": [
+    {
+      "title": "Minimum Falling Path Sum",
+      "slug": "minimum-falling-path-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-falling-path-sum/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming.",
+    "Let dp[i][j] be the answer for the first i rows such that column j is chosen from row i.",
+    "Use the concept of cumulative array to optimize the complexity of the solution."
+  ]
+}

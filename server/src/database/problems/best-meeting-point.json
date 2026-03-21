@@ -1,0 +1,33 @@
+{
+  "id": "296",
+  "title": "Best Meeting Point",
+  "slug": "best-meeting-point",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Sorting", "Matrix"],
+  "total_accepted": 96789,
+  "total_submissions": 157666,
+  "acceptance_rate": "61.4%",
+  "similar_questions": [
+    {
+      "title": "Shortest Distance from All Buildings",
+      "slug": "shortest-distance-from-all-buildings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/shortest-distance-from-all-buildings/"
+    },
+    {
+      "title": "Minimum Moves to Equal Array Elements II",
+      "slug": "minimum-moves-to-equal-array-elements-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/"
+    }
+  ],
+  "hints": [
+    "Try to solve it in one dimension first. How can this solution apply to the two dimension case?"
+  ]
+}

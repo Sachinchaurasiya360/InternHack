@@ -1,0 +1,47 @@
+{
+  "id": "2259",
+  "title": "Remove Digit From Number to Maximize Result",
+  "slug": "remove-digit-from-number-to-maximize-result",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>number</code> representing a <strong>positive integer</strong> and a character <code>digit</code>.</p>\n\n<p>Return <em>the resulting string after removing <strong>exactly one occurrence</strong> of </em><code>digit</code><em> from </em><code>number</code><em> such that the value of the resulting string in <strong>decimal</strong> form is <strong>maximized</strong></em>. The test cases are generated such that <code>digit</code> occurs at least once in <code>number</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> number = &quot;123&quot;, digit = &quot;3&quot;\n<strong>Output:</strong> &quot;12&quot;\n<strong>Explanation:</strong> There is only one &#39;3&#39; in &quot;123&quot;. After removing &#39;3&#39;, the result is &quot;12&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> number = &quot;1231&quot;, digit = &quot;1&quot;\n<strong>Output:</strong> &quot;231&quot;\n<strong>Explanation:</strong> We can remove the first &#39;1&#39; to get &quot;231&quot; or remove the second &#39;1&#39; to get &quot;123&quot;.\nSince 231 &gt; 123, we return &quot;231&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> number = &quot;551&quot;, digit = &quot;5&quot;\n<strong>Output:</strong> &quot;51&quot;\n<strong>Explanation:</strong> We can remove either the first or second &#39;5&#39; from &quot;551&quot;.\nBoth result in the string &quot;51&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= number.length &lt;= 100</code></li>\n\t<li><code>number</code> consists of digits from <code>&#39;1&#39;</code> to <code>&#39;9&#39;</code>.</li>\n\t<li><code>digit</code> is a digit from <code>&#39;1&#39;</code> to <code>&#39;9&#39;</code>.</li>\n\t<li><code>digit</code> occurs at least once in <code>number</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `number` representing a **positive integer** and a character `digit`.\n\nReturn _the resulting string after removing**exactly one occurrence** of _`digit` _from_`number` _such that the value of the resulting string in**decimal** form is **maximized**_. The test cases are generated such that `digit` occurs at least once in `number`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** number = \"123\", digit = \"3\"\n    **Output:** \"12\"\n    **Explanation:** There is only one '3' in \"123\". After removing '3', the result is \"12\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** number = \"1231\", digit = \"1\"\n    **Output:** \"231\"\n    **Explanation:** We can remove the first '1' to get \"231\" or remove the second '1' to get \"123\".\n    Since 231 > 123, we return \"231\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** number = \"551\", digit = \"5\"\n    **Output:** \"51\"\n    **Explanation:** We can remove either the first or second '5' from \"551\".\n    Both result in the string \"51\".\n    \n\n \n\n**Constraints:**\n\n  * `2 <= number.length <= 100`\n  * `number` consists of digits from `'1'` to `'9'`.\n  * `digit` is a digit from `'1'` to `'9'`.\n  * `digit` occurs at least once in `number`.",
+  "question": "You are given a string `number` representing a **positive integer** and a character `digit`.\n\nReturn _the resulting string after removing**exactly one occurrence** of _`digit` _from_`number` _such that the value of the resulting string in**decimal** form is **maximized**_. The test cases are generated such that `digit` occurs at least once in `number`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** number = \"123\", digit = \"3\"\n    **Output:** \"12\"\n    **Explanation:** There is only one '3' in \"123\". After removing '3', the result is \"12\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** number = \"1231\", digit = \"1\"\n    **Output:** \"231\"\n    **Explanation:** We can remove the first '1' to get \"231\" or remove the second '1' to get \"123\".\n    Since 231 > 123, we return \"231\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** number = \"551\", digit = \"5\"\n    **Output:** \"51\"\n    **Explanation:** We can remove either the first or second '5' from \"551\".\n    Both result in the string \"51\".",
+  "constraints": "**Constraints:**\n\n  * `2 <= number.length <= 100`\n  * `number` consists of digits from `'1'` to `'9'`.\n  * `digit` is a digit from `'1'` to `'9'`.\n  * `digit` occurs at least once in `number`.",
+  "topics": ["String", "Greedy", "Enumeration"],
+  "total_accepted": 127434,
+  "total_submissions": 264236,
+  "acceptance_rate": "48.2%",
+  "similar_questions": [
+    {
+      "title": "Remove K Digits",
+      "slug": "remove-k-digits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-k-digits/"
+    },
+    {
+      "title": "Remove Vowels from a String",
+      "slug": "remove-vowels-from-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-vowels-from-a-string/"
+    },
+    {
+      "title": "Second Largest Digit in a String",
+      "slug": "second-largest-digit-in-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/second-largest-digit-in-a-string/"
+    },
+    {
+      "title": "Minimum Operations to Make a Special Number",
+      "slug": "minimum-operations-to-make-a-special-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-a-special-number/"
+    }
+  ],
+  "hints": [
+    "The maximum length of number is really small.",
+    "Iterate through the digits of number and every time we see digit, try removing it.",
+    "To remove a character at index i, concatenate the substring from index 0 to i - 1 and the substring from index i + 1 to number.length - 1."
+  ]
+}

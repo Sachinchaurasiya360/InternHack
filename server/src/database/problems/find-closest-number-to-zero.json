@@ -1,0 +1,28 @@
+{
+  "id": "2239",
+  "title": "Find Closest Number to Zero",
+  "slug": "find-closest-number-to-zero",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> of size <code>n</code>, return <em>the number with the value <strong>closest</strong> to </em><code>0</code><em> in </em><code>nums</code>. If there are multiple answers, return <em>the number with the <strong>largest</strong> value</em>.</p>\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-4,-2,1,4,8]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nThe distance from -4 to 0 is |-4| = 4.\nThe distance from -2 to 0 is |-2| = 2.\nThe distance from 1 to 0 is |1| = 1.\nThe distance from 4 to 0 is |4| = 4.\nThe distance from 8 to 0 is |8| = 8.\nThus, the closest number to 0 in the array is 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,-1,1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> 1 and -1 are both the closest numbers to 0, so 1 being larger is returned.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n\t<li><code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` of size `n`, return _the number with the value**closest** to _`0` _in_`nums`. If there are multiple answers, return _the number with the**largest** value_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [-4,-2,1,4,8]\n    **Output:** 1\n    **Explanation:**\n    The distance from -4 to 0 is |-4| = 4.\n    The distance from -2 to 0 is |-2| = 2.\n    The distance from 1 to 0 is |1| = 1.\n    The distance from 4 to 0 is |4| = 4.\n    The distance from 8 to 0 is |8| = 8.\n    Thus, the closest number to 0 in the array is 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,-1,1]\n    **Output:** 1\n    **Explanation:** 1 and -1 are both the closest numbers to 0, so 1 being larger is returned.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `-105 <= nums[i] <= 105`",
+  "question": "Given an integer array `nums` of size `n`, return _the number with the value**closest** to _`0` _in_`nums`. If there are multiple answers, return _the number with the**largest** value_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [-4,-2,1,4,8]\n    **Output:** 1\n    **Explanation:**\n    The distance from -4 to 0 is |-4| = 4.\n    The distance from -2 to 0 is |-2| = 2.\n    The distance from 1 to 0 is |1| = 1.\n    The distance from 4 to 0 is |4| = 4.\n    The distance from 8 to 0 is |8| = 8.\n    Thus, the closest number to 0 in the array is 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,-1,1]\n    **Output:** 1\n    **Explanation:** 1 and -1 are both the closest numbers to 0, so 1 being larger is returned.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `-105 <= nums[i] <= 105`",
+  "topics": ["Array"],
+  "total_accepted": 205236,
+  "total_submissions": 429854,
+  "acceptance_rate": "47.7%",
+  "similar_questions": [
+    {
+      "title": "Find K Closest Elements",
+      "slug": "find-k-closest-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-k-closest-elements/"
+    }
+  ],
+  "hints": [
+    "Keep track of the number closest to 0 as you iterate through the array.",
+    "Ensure that if multiple numbers are closest to 0, you store the one with the largest value."
+  ]
+}

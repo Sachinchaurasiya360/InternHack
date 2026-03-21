@@ -1,0 +1,36 @@
+{
+  "id": "3313",
+  "title": "Find the Last Marked Nodes in Tree",
+  "slug": "find-the-last-marked-nodes-in-tree",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search"],
+  "total_accepted": 626,
+  "total_submissions": 1125,
+  "acceptance_rate": "55.6%",
+  "similar_questions": [
+    {
+      "title": "Minimum Time to Visit Disappearing Nodes",
+      "slug": "minimum-time-to-visit-disappearing-nodes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-time-to-visit-disappearing-nodes/"
+    },
+    {
+      "title": "Time Taken to Mark All Nodes",
+      "slug": "time-taken-to-mark-all-nodes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/time-taken-to-mark-all-nodes/"
+    }
+  ],
+  "hints": [
+    "We need to calculate the height of tree when rooted at each node.",
+    "Find a diameter using two DFS.",
+    "The farthest node from each node must be one of the endpoints of the diameter.",
+    "The last marked node will be one of the end of the diameter, whichever is more distant."
+  ]
+}

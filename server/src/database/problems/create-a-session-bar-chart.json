@@ -1,0 +1,25 @@
+{
+  "id": "1435",
+  "title": "Create a Session Bar Chart",
+  "slug": "create-a-session-bar-chart",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 27145,
+  "total_submissions": 36495,
+  "acceptance_rate": "74.4%",
+  "similar_questions": [
+    {
+      "title": "Count Salary Categories",
+      "slug": "count-salary-categories",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-salary-categories/"
+    }
+  ],
+  "hints": []
+}

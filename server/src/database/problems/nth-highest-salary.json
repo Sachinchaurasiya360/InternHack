@@ -1,0 +1,25 @@
+{
+  "id": "177",
+  "title": "Nth Highest Salary",
+  "slug": "nth-highest-salary",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "<p>Table: <code>Employee</code></p>\n\n<pre>\n+-------------+------+\n| Column Name | Type |\n+-------------+------+\n| id          | int  |\n| salary      | int  |\n+-------------+------+\nid is the primary key (column with unique values) for this table.\nEach row of this table contains information about the salary of an employee.\n</pre>\n\n<p>&nbsp;</p>\n\n<p>Write a solution to find the <code>n<sup>th</sup></code> highest <strong>distinct</strong> salary from the <code>Employee</code> table. If there are less than <code>n</code> distinct salaries, return&nbsp;<code>null</code>.</p>\n\n<p>The result format is in the following example.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nEmployee table:\n+----+--------+\n| id | salary |\n+----+--------+\n| 1  | 100    |\n| 2  | 200    |\n| 3  | 300    |\n+----+--------+\nn = 2\n<strong>Output:</strong> \n+------------------------+\n| getNthHighestSalary(2) |\n+------------------------+\n| 200                    |\n+------------------------+\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nEmployee table:\n+----+--------+\n| id | salary |\n+----+--------+\n| 1  | 100    |\n+----+--------+\nn = 2\n<strong>Output:</strong> \n+------------------------+\n| getNthHighestSalary(2) |\n+------------------------+\n| null                   |\n+------------------------+\n</pre>\n",
+  "content_markdown": "Table: `Employee`\n    \n    \n    +-------------+------+\n    | Column Name | Type |\n    +-------------+------+\n    | id          | int  |\n    | salary      | int  |\n    +-------------+------+\n    id is the primary key (column with unique values) for this table.\n    Each row of this table contains information about the salary of an employee.\n    \n\n \n\nWrite a solution to find the `nth` highest **distinct** salary from the `Employee` table. If there are less than `n` distinct salaries, return `null`.\n\nThe result format is in the following example.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \n    Employee table:\n    +----+--------+\n    | id | salary |\n    +----+--------+\n    | 1  | 100    |\n    | 2  | 200    |\n    | 3  | 300    |\n    +----+--------+\n    n = 2\n    **Output:** \n    +------------------------+\n    | getNthHighestSalary(2) |\n    +------------------------+\n    | 200                    |\n    +------------------------+\n    \n\n**Example 2:**\n    \n    \n    **Input:** \n    Employee table:\n    +----+--------+\n    | id | salary |\n    +----+--------+\n    | 1  | 100    |\n    +----+--------+\n    n = 2\n    **Output:** \n    +------------------------+\n    | getNthHighestSalary(2) |\n    +------------------------+\n    | null                   |\n    +------------------------+",
+  "question": "Table: `Employee`\n    \n    \n    +-------------+------+\n    | Column Name | Type |\n    +-------------+------+\n    | id          | int  |\n    | salary      | int  |\n    +-------------+------+\n    id is the primary key (column with unique values) for this table.\n    Each row of this table contains information about the salary of an employee.\n    \n\n \n\nWrite a solution to find the `nth` highest **distinct** salary from the `Employee` table. If there are less than `n` distinct salaries, return `null`.\n\nThe result format is in the following example.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \n    Employee table:\n    +----+--------+\n    | id | salary |\n    +----+--------+\n    | 1  | 100    |\n    | 2  | 200    |\n    | 3  | 300    |\n    +----+--------+\n    n = 2\n    **Output:** \n    +------------------------+\n    | getNthHighestSalary(2) |\n    +------------------------+\n    | 200                    |\n    +------------------------+\n    \n\n**Example 2:**\n    \n    \n    **Input:** \n    Employee table:\n    +----+--------+\n    | id | salary |\n    +----+--------+\n    | 1  | 100    |\n    +----+--------+\n    n = 2\n    **Output:** \n    +------------------------+\n    | getNthHighestSalary(2) |\n    +------------------------+\n    | null                   |\n    +------------------------+",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 634298,
+  "total_submissions": 1633166,
+  "acceptance_rate": "38.8%",
+  "similar_questions": [
+    {
+      "title": "The Number of Users That Are Eligible for Discount",
+      "slug": "the-number-of-users-that-are-eligible-for-discount",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/the-number-of-users-that-are-eligible-for-discount/"
+    }
+  ],
+  "hints": []
+}

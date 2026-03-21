@@ -1,0 +1,40 @@
+{
+  "id": "1295",
+  "title": "Find Numbers with Even Number of Digits",
+  "slug": "find-numbers-with-even-number-of-digits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> of integers, return how many of them contain an <strong>even number</strong> of digits.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [12,345,2,6,7896]\n<strong>Output:</strong> 2\n<strong>Explanation: \n</strong>12 contains 2 digits (even number of digits).&nbsp;\n345 contains 3 digits (odd number of digits).&nbsp;\n2 contains 1 digit (odd number of digits).&nbsp;\n6 contains 1 digit (odd number of digits).&nbsp;\n7896 contains 4 digits (even number of digits).&nbsp;\nTherefore only 12 and 7896 contain an even number of digits.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [555,901,482,1771]\n<strong>Output:</strong> 1 \n<strong>Explanation: </strong>\nOnly 1771 contains an even number of digits.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 500</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array `nums` of integers, return how many of them contain an **even number** of digits.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [12,345,2,6,7896]\n    **Output:** 2\n    **Explanation:** 12 contains 2 digits (even number of digits). \n    345 contains 3 digits (odd number of digits). \n    2 contains 1 digit (odd number of digits). \n    6 contains 1 digit (odd number of digits). \n    7896 contains 4 digits (even number of digits). \n    Therefore only 12 and 7896 contain an even number of digits.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [555,901,482,1771]\n    **Output:** 1 \n    **Explanation:**\n    Only 1771 contains an even number of digits.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 500`\n  * `1 <= nums[i] <= 105`",
+  "question": "Given an array `nums` of integers, return how many of them contain an **even number** of digits.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [12,345,2,6,7896]\n    **Output:** 2\n    **Explanation:** 12 contains 2 digits (even number of digits). \n    345 contains 3 digits (odd number of digits). \n    2 contains 1 digit (odd number of digits). \n    6 contains 1 digit (odd number of digits). \n    7896 contains 4 digits (even number of digits). \n    Therefore only 12 and 7896 contain an even number of digits.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [555,901,482,1771]\n    **Output:** 1 \n    **Explanation:**\n    Only 1771 contains an even number of digits.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 500`\n  * `1 <= nums[i] <= 105`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 1052573,
+  "total_submissions": 1321430,
+  "acceptance_rate": "79.7%",
+  "similar_questions": [
+    {
+      "title": "Finding 3-Digit Even Numbers",
+      "slug": "finding-3-digit-even-numbers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/finding-3-digit-even-numbers/"
+    },
+    {
+      "title": "Number of Even and Odd Bits",
+      "slug": "number-of-even-and-odd-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-even-and-odd-bits/"
+    },
+    {
+      "title": "Find if Digit Game Can Be Won",
+      "slug": "find-if-digit-game-can-be-won",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-if-digit-game-can-be-won/"
+    }
+  ],
+  "hints": [
+    "How to compute the number of digits of a number ?",
+    "Divide the number by 10 again and again to get the number of digits."
+  ]
+}

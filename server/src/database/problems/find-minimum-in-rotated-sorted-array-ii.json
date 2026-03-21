@@ -1,0 +1,25 @@
+{
+  "id": "154",
+  "title": "Find Minimum in Rotated Sorted Array II",
+  "slug": "find-minimum-in-rotated-sorted-array-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Suppose an array of length <code>n</code> sorted in ascending order is <strong>rotated</strong> between <code>1</code> and <code>n</code> times. For example, the array <code>nums = [0,1,4,4,5,6,7]</code> might become:</p>\n\n<ul>\n\t<li><code>[4,5,6,7,0,1,4]</code> if it was rotated <code>4</code> times.</li>\n\t<li><code>[0,1,4,4,5,6,7]</code> if it was rotated <code>7</code> times.</li>\n</ul>\n\n<p>Notice that <strong>rotating</strong> an array <code>[a[0], a[1], a[2], ..., a[n-1]]</code> 1 time results in the array <code>[a[n-1], a[0], a[1], a[2], ..., a[n-2]]</code>.</p>\n\n<p>Given the sorted rotated array <code>nums</code> that may contain <strong>duplicates</strong>, return <em>the minimum element of this array</em>.</p>\n\n<p>You must decrease the overall operation steps as much as possible.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,3,5]\n<strong>Output:</strong> 1\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [2,2,2,0,1]\n<strong>Output:</strong> 0\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 5000</code></li>\n\t<li><code>-5000 &lt;= nums[i] &lt;= 5000</code></li>\n\t<li><code>nums</code> is sorted and rotated between <code>1</code> and <code>n</code> times.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> This problem is similar to&nbsp;<a href=\"https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/description/\" target=\"_blank\">Find Minimum in Rotated Sorted Array</a>, but&nbsp;<code>nums</code> may contain <strong>duplicates</strong>. Would this affect the runtime complexity? How and why?</p>\n\n<p>&nbsp;</p>\n",
+  "content_markdown": "Suppose an array of length `n` sorted in ascending order is **rotated** between `1` and `n` times. For example, the array `nums = [0,1,4,4,5,6,7]` might become:\n\n  * `[4,5,6,7,0,1,4]` if it was rotated `4` times.\n  * `[0,1,4,4,5,6,7]` if it was rotated `7` times.\n\n\n\nNotice that **rotating** an array `[a[0], a[1], a[2], ..., a[n-1]]` 1 time results in the array `[a[n-1], a[0], a[1], a[2], ..., a[n-2]]`.\n\nGiven the sorted rotated array `nums` that may contain **duplicates** , return _the minimum element of this array_.\n\nYou must decrease the overall operation steps as much as possible.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,5]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,2,0,1]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 5000`\n  * `-5000 <= nums[i] <= 5000`\n  * `nums` is sorted and rotated between `1` and `n` times.\n\n\n\n \n\n**Follow up:** This problem is similar to [Find Minimum in Rotated Sorted Array](<https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/description/>), but `nums` may contain **duplicates**. Would this affect the runtime complexity? How and why?",
+  "question": "Suppose an array of length `n` sorted in ascending order is **rotated** between `1` and `n` times. For example, the array `nums = [0,1,4,4,5,6,7]` might become:\n\n  * `[4,5,6,7,0,1,4]` if it was rotated `4` times.\n  * `[0,1,4,4,5,6,7]` if it was rotated `7` times.\n\n\n\nNotice that **rotating** an array `[a[0], a[1], a[2], ..., a[n-1]]` 1 time results in the array `[a[n-1], a[0], a[1], a[2], ..., a[n-2]]`.\n\nGiven the sorted rotated array `nums` that may contain **duplicates** , return _the minimum element of this array_.\n\nYou must decrease the overall operation steps as much as possible.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,5]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,2,0,1]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 5000`\n  * `-5000 <= nums[i] <= 5000`\n  * `nums` is sorted and rotated between `1` and `n` times.",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 601092,
+  "total_submissions": 1345343,
+  "acceptance_rate": "44.7%",
+  "similar_questions": [
+    {
+      "title": "Find Minimum in Rotated Sorted Array",
+      "slug": "find-minimum-in-rotated-sorted-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/"
+    }
+  ],
+  "hints": []
+}

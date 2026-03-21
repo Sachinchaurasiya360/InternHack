@@ -1,0 +1,30 @@
+{
+  "id": "1165",
+  "title": "Single-Row Keyboard",
+  "slug": "single-row-keyboard",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String"],
+  "total_accepted": 93626,
+  "total_submissions": 106634,
+  "acceptance_rate": "87.8%",
+  "similar_questions": [
+    {
+      "title": "Total Distance to Type a String Using One Finger",
+      "slug": "total-distance-to-type-a-string-using-one-finger",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/total-distance-to-type-a-string-using-one-finger/"
+    }
+  ],
+  "hints": [
+    "Can be the problem divided in parts, so solving each part and sum their solutions it should return the answer? Yes, you only need to divide the problem in finger jumps.",
+    "In each finger jump you need to move your finger from one character to another, you need to know its index.",
+    "Map each character to it's index.",
+    "Use a hash table to do that."
+  ]
+}

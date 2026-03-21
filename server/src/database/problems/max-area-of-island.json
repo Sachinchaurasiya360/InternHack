@@ -1,0 +1,55 @@
+{
+  "id": "695",
+  "title": "Max Area of Island",
+  "slug": "max-area-of-island",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> binary matrix <code>grid</code>. An island is a group of <code>1</code>&#39;s (representing land) connected <strong>4-directionally</strong> (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.</p>\n\n<p>The <strong>area</strong> of an island is the number of cells with a value <code>1</code> in the island.</p>\n\n<p>Return <em>the maximum <strong>area</strong> of an island in </em><code>grid</code>. If there is no island, return <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/05/01/maxarea1-grid.jpg\" style=\"width: 500px; height: 310px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The answer is not 11, because the island must be connected 4-directionally.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[0,0,0,0,0,0,0,0]]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 50</code></li>\n\t<li><code>grid[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` binary matrix `grid`. An island is a group of `1`'s (representing land) connected **4-directionally** (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.\n\nThe **area** of an island is the number of cells with a value `1` in the island.\n\nReturn _the maximum**area** of an island in _`grid`. If there is no island, return `0`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/05/01/maxarea1-grid.jpg)\n    \n    \n    **Input:** grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]\n    **Output:** 6\n    **Explanation:** The answer is not 11, because the island must be connected 4-directionally.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[0,0,0,0,0,0,0,0]]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 50`\n  * `grid[i][j]` is either `0` or `1`.",
+  "question": "You are given an `m x n` binary matrix `grid`. An island is a group of `1`'s (representing land) connected **4-directionally** (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.\n\nThe **area** of an island is the number of cells with a value `1` in the island.\n\nReturn _the maximum**area** of an island in _`grid`. If there is no island, return `0`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/05/01/maxarea1-grid.jpg)\n    \n    \n    **Input:** grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]\n    **Output:** 6\n    **Explanation:** The answer is not 11, because the island must be connected 4-directionally.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[0,0,0,0,0,0,0,0]]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 50`\n  * `grid[i][j]` is either `0` or `1`.",
+  "topics": ["Array", "Depth-First Search", "Breadth-First Search", "Union-Find", "Matrix"],
+  "total_accepted": 1208170,
+  "total_submissions": 1637238,
+  "acceptance_rate": "73.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-islands/"
+    },
+    {
+      "title": "Battleships in a Board",
+      "slug": "battleships-in-a-board",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/battleships-in-a-board/"
+    },
+    {
+      "title": "Island Perimeter",
+      "slug": "island-perimeter",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/island-perimeter/"
+    },
+    {
+      "title": "Largest Submatrix With Rearrangements",
+      "slug": "largest-submatrix-with-rearrangements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/largest-submatrix-with-rearrangements/"
+    },
+    {
+      "title": "Detonate the Maximum Bombs",
+      "slug": "detonate-the-maximum-bombs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/detonate-the-maximum-bombs/"
+    },
+    {
+      "title": "Maximum Number of Fish in a Grid",
+      "slug": "maximum-number-of-fish-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-fish-in-a-grid/"
+    }
+  ],
+  "hints": []
+}

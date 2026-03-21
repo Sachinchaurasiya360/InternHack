@@ -1,0 +1,23 @@
+{
+  "id": "1602",
+  "title": "Find Nearest Right Node in Binary Tree",
+  "slug": "find-nearest-right-node-in-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 24978,
+  "total_submissions": 33272,
+  "acceptance_rate": "75.1%",
+  "similar_questions": [],
+  "hints": [
+    "Use BFS, traverse the tree level by level and always push the left node first",
+    "When you reach the target node, mark  a boolean variable true",
+    "If you meet another node in the same level after marking the boolean true, return this node.",
+    "If you did not meet new nodes in the same level and started traversing a new level, return Null"
+  ]
+}

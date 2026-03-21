@@ -1,0 +1,41 @@
+{
+  "id": "2244",
+  "title": "Minimum Rounds to Complete All Tasks",
+  "slug": "minimum-rounds-to-complete-all-tasks",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>tasks</code>, where <code>tasks[i]</code> represents the difficulty level of a task. In each round, you can complete either 2 or 3 tasks of the <strong>same difficulty level</strong>.</p>\n\n<p>Return <em>the <strong>minimum</strong> rounds required to complete all the tasks, or </em><code>-1</code><em> if it is not possible to complete all the tasks.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> tasks = [2,2,3,3,2,4,4,4,4,4]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> To complete all the tasks, a possible plan is:\n- In the first round, you complete 3 tasks of difficulty level 2. \n- In the second round, you complete 2 tasks of difficulty level 3. \n- In the third round, you complete 3 tasks of difficulty level 4. \n- In the fourth round, you complete 2 tasks of difficulty level 4.  \nIt can be shown that all the tasks cannot be completed in fewer than 4 rounds, so the answer is 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> tasks = [2,3,3]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There is only 1 task of difficulty level 2, but in each round, you can only complete either 2 or 3 tasks of the same difficulty level. Hence, you cannot complete all the tasks, and the answer is -1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= tasks.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= tasks[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as <a href=\"https://leetcode.com/problems/minimum-number-of-operations-to-make-array-empty/description/\" target=\"_blank\">2870: Minimum Number of Operations to Make Array Empty.</a></p>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `tasks`, where `tasks[i]` represents the difficulty level of a task. In each round, you can complete either 2 or 3 tasks of the **same difficulty level**.\n\nReturn _the**minimum** rounds required to complete all the tasks, or _`-1` _if it is not possible to complete all the tasks._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** tasks = [2,2,3,3,2,4,4,4,4,4]\n    **Output:** 4\n    **Explanation:** To complete all the tasks, a possible plan is:\n    - In the first round, you complete 3 tasks of difficulty level 2. \n    - In the second round, you complete 2 tasks of difficulty level 3. \n    - In the third round, you complete 3 tasks of difficulty level 4. \n    - In the fourth round, you complete 2 tasks of difficulty level 4.  \n    It can be shown that all the tasks cannot be completed in fewer than 4 rounds, so the answer is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** tasks = [2,3,3]\n    **Output:** -1\n    **Explanation:** There is only 1 task of difficulty level 2, but in each round, you can only complete either 2 or 3 tasks of the same difficulty level. Hence, you cannot complete all the tasks, and the answer is -1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= tasks.length <= 105`\n  * `1 <= tasks[i] <= 109`\n\n\n\n \n\n**Note:** This question is the same as [2870: Minimum Number of Operations to Make Array Empty.](<https://leetcode.com/problems/minimum-number-of-operations-to-make-array-empty/description/>)",
+  "question": "You are given a **0-indexed** integer array `tasks`, where `tasks[i]` represents the difficulty level of a task. In each round, you can complete either 2 or 3 tasks of the **same difficulty level**.\n\nReturn _the**minimum** rounds required to complete all the tasks, or _`-1` _if it is not possible to complete all the tasks._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** tasks = [2,2,3,3,2,4,4,4,4,4]\n    **Output:** 4\n    **Explanation:** To complete all the tasks, a possible plan is:\n    - In the first round, you complete 3 tasks of difficulty level 2. \n    - In the second round, you complete 2 tasks of difficulty level 3. \n    - In the third round, you complete 3 tasks of difficulty level 4. \n    - In the fourth round, you complete 2 tasks of difficulty level 4.  \n    It can be shown that all the tasks cannot be completed in fewer than 4 rounds, so the answer is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** tasks = [2,3,3]\n    **Output:** -1\n    **Explanation:** There is only 1 task of difficulty level 2, but in each round, you can only complete either 2 or 3 tasks of the same difficulty level. Hence, you cannot complete all the tasks, and the answer is -1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= tasks.length <= 105`\n  * `1 <= tasks[i] <= 109`\n\n\n\n \n\n**Note:** This question is the same as [2870: Minimum Number of Operations to Make Array Empty.](<https://leetcode.com/problems/minimum-number-of-operations-to-make-array-empty/description/>)",
+  "topics": ["Array", "Hash Table", "Greedy", "Counting"],
+  "total_accepted": 171519,
+  "total_submissions": 271274,
+  "acceptance_rate": "63.2%",
+  "similar_questions": [
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/climbing-stairs/"
+    },
+    {
+      "title": "Odd String Difference",
+      "slug": "odd-string-difference",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/odd-string-difference/"
+    },
+    {
+      "title": "Minimum Levels to Gain More Points",
+      "slug": "minimum-levels-to-gain-more-points",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-levels-to-gain-more-points/"
+    }
+  ],
+  "hints": [
+    "Which data structure can you use to store the number of tasks of each difficulty level?",
+    "For any particular difficulty level, what can be the optimal strategy to complete the tasks using minimum rounds?",
+    "When can we not complete all tasks of a difficulty level?"
+  ]
+}

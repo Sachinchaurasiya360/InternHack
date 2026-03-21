@@ -1,0 +1,37 @@
+{
+  "id": "3420",
+  "title": "Count Non-Decreasing Subarrays After K Operations",
+  "slug": "count-non-decreasing-subarrays-after-k-operations",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> of <code>n</code> integers and an integer <code>k</code>.</p>\n\n<p>For each subarray of <code>nums</code>, you can apply <strong>up to</strong> <code>k</code> operations on it. In each operation, you increment any element of the subarray by 1.</p>\n\n<p><strong>Note</strong> that each subarray is considered independently, meaning changes made to one subarray do not persist to another.</p>\n\n<p>Return the number of subarrays that you can make <strong>non-decreasing</strong> ​​​​​after performing at most <code>k</code> operations.</p>\n\n<p>An array is said to be <strong>non-decreasing</strong> if each element is greater than or equal to its previous element, if it exists.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [6,3,1,2,4,4], k = 7</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">17</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Out of all 21 possible subarrays of <code>nums</code>, only the subarrays <code>[6, 3, 1]</code>, <code>[6, 3, 1, 2]</code>, <code>[6, 3, 1, 2, 4]</code> and <code>[6, 3, 1, 2, 4, 4]</code> cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is <code>21 - 4 = 17</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [6,3,1,3,6], k = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">12</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The subarray <code>[3, 1, 3, 6]</code> along with all subarrays of <code>nums</code> with three or fewer elements, except <code>[6, 3, 1]</code>, can be made non-decreasing after <code>k</code> operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except <code>[6, 3, 1]</code>, so there are <code>1 + 5 + 4 + 2 = 12</code> subarrays that can be made non-decreasing.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` of `n` integers and an integer `k`.\n\nFor each subarray of `nums`, you can apply **up to** `k` operations on it. In each operation, you increment any element of the subarray by 1.\n\n**Note** that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\n\nReturn the number of subarrays that you can make **non-decreasing** ​​​​​after performing at most `k` operations.\n\nAn array is said to be **non-decreasing** if each element is greater than or equal to its previous element, if it exists.\n\n \n\n**Example 1:**\n\n**Input:** nums = [6,3,1,2,4,4], k = 7\n\n**Output:** 17\n\n**Explanation:**\n\nOut of all 21 possible subarrays of `nums`, only the subarrays `[6, 3, 1]`, `[6, 3, 1, 2]`, `[6, 3, 1, 2, 4]` and `[6, 3, 1, 2, 4, 4]` cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is `21 - 4 = 17`.\n\n**Example 2:**\n\n**Input:** nums = [6,3,1,3,6], k = 4\n\n**Output:** 12\n\n**Explanation:**\n\nThe subarray `[3, 1, 3, 6]` along with all subarrays of `nums` with three or fewer elements, except `[6, 3, 1]`, can be made non-decreasing after `k` operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except `[6, 3, 1]`, so there are `1 + 5 + 4 + 2 = 12` subarrays that can be made non-decreasing.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "question": "You are given an array `nums` of `n` integers and an integer `k`.\n\nFor each subarray of `nums`, you can apply **up to** `k` operations on it. In each operation, you increment any element of the subarray by 1.\n\n**Note** that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\n\nReturn the number of subarrays that you can make **non-decreasing** ​​​​​after performing at most `k` operations.\n\nAn array is said to be **non-decreasing** if each element is greater than or equal to its previous element, if it exists.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [6,3,1,2,4,4], k = 7\n\n**Output:** 17\n\n**Explanation:**\n\nOut of all 21 possible subarrays of `nums`, only the subarrays `[6, 3, 1]`, `[6, 3, 1, 2]`, `[6, 3, 1, 2, 4]` and `[6, 3, 1, 2, 4, 4]` cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is `21 - 4 = 17`.\n\n**Example 2:**\n\n**Input:** nums = [6,3,1,3,6], k = 4\n\n**Output:** 12\n\n**Explanation:**\n\nThe subarray `[3, 1, 3, 6]` along with all subarrays of `nums` with three or fewer elements, except `[6, 3, 1]`, can be made non-decreasing after `k` operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except `[6, 3, 1]`, so there are `1 + 5 + 4 + 2 = 12` subarrays that can be made non-decreasing.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "topics": [
+    "Array",
+    "Stack",
+    "Segment Tree",
+    "Queue",
+    "Sliding Window",
+    "Monotonic Stack",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 4100,
+  "total_submissions": 17253,
+  "acceptance_rate": "23.8%",
+  "similar_questions": [
+    {
+      "title": "Non-decreasing Array",
+      "slug": "non-decreasing-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/non-decreasing-array/"
+    }
+  ],
+  "hints": [
+    "Use a sparse table.",
+    "Compute <code>sp[e][i] = [lastElement, operations]</code> where <code>operations</code> is the number of <code>operations</code> required to make the subarray <code>nums[i...i + 2^e - 1]</code> non-decreasing, and <code>lastElement</code> be the value of the last element after the operations were applied on it.",
+    "How can we combine <code>sp[a][i]</code> with <code>sp[b][i + 2^a]</code> to find the answer for the subarray <code>nums[i...i + 2^a + 2^b - 1]</code>?"
+  ]
+}

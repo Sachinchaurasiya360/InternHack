@@ -1,0 +1,52 @@
+{
+  "id": "1406",
+  "title": "Stone Game III",
+  "slug": "stone-game-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Alice and Bob continue their games with piles of stones. There are several stones <strong>arranged in a row</strong>, and each stone has an associated value which is an integer given in the array <code>stoneValue</code>.</p>\n\n<p>Alice and Bob take turns, with Alice starting first. On each player&#39;s turn, that player can take <code>1</code>, <code>2</code>, or <code>3</code> stones from the <strong>first</strong> remaining stones in the row.</p>\n\n<p>The score of each player is the sum of the values of the stones taken. The score of each player is <code>0</code> initially.</p>\n\n<p>The objective of the game is to end with the highest score, and the winner is the player with the highest score and there could be a tie. The game continues until all the stones have been taken.</p>\n\n<p>Assume Alice and Bob <strong>play optimally</strong>.</p>\n\n<p>Return <code>&quot;Alice&quot;</code><em> if Alice will win, </em><code>&quot;Bob&quot;</code><em> if Bob will win, or </em><code>&quot;Tie&quot;</code><em> if they will end the game with the same score</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> stoneValue = [1,2,3,7]\n<strong>Output:</strong> &quot;Bob&quot;\n<strong>Explanation:</strong> Alice will always lose. Her best move will be to take three piles and the score become 6. Now the score of Bob is 7 and Bob wins.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> stoneValue = [1,2,3,-9]\n<strong>Output:</strong> &quot;Alice&quot;\n<strong>Explanation:</strong> Alice must choose all the three piles at the first move to win and leave Bob with negative score.\nIf Alice chooses one pile her score will be 1 and the next move Bob&#39;s score becomes 5. In the next move, Alice will take the pile with value = -9 and lose.\nIf Alice chooses two piles her score will be 3 and the next move Bob&#39;s score becomes 3. In the next move, Alice will take the pile with value = -9 and also lose.\nRemember that both play optimally so here Alice will choose the scenario that makes her win.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> stoneValue = [1,2,3,6]\n<strong>Output:</strong> &quot;Tie&quot;\n<strong>Explanation:</strong> Alice cannot win this game. She can end the game in a draw if she decided to choose all the first three piles, otherwise she will lose.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= stoneValue.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>-1000 &lt;= stoneValue[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Alice and Bob continue their games with piles of stones. There are several stones **arranged in a row** , and each stone has an associated value which is an integer given in the array `stoneValue`.\n\nAlice and Bob take turns, with Alice starting first. On each player's turn, that player can take `1`, `2`, or `3` stones from the **first** remaining stones in the row.\n\nThe score of each player is the sum of the values of the stones taken. The score of each player is `0` initially.\n\nThe objective of the game is to end with the highest score, and the winner is the player with the highest score and there could be a tie. The game continues until all the stones have been taken.\n\nAssume Alice and Bob **play optimally**.\n\nReturn `\"Alice\"`_if Alice will win,_`\"Bob\"`_if Bob will win, or_`\"Tie\"`_if they will end the game with the same score_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** stoneValue = [1,2,3,7]\n    **Output:** \"Bob\"\n    **Explanation:** Alice will always lose. Her best move will be to take three piles and the score become 6. Now the score of Bob is 7 and Bob wins.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stoneValue = [1,2,3,-9]\n    **Output:** \"Alice\"\n    **Explanation:** Alice must choose all the three piles at the first move to win and leave Bob with negative score.\n    If Alice chooses one pile her score will be 1 and the next move Bob's score becomes 5. In the next move, Alice will take the pile with value = -9 and lose.\n    If Alice chooses two piles her score will be 3 and the next move Bob's score becomes 3. In the next move, Alice will take the pile with value = -9 and also lose.\n    Remember that both play optimally so here Alice will choose the scenario that makes her win.\n    \n\n**Example 3:**\n    \n    \n    **Input:** stoneValue = [1,2,3,6]\n    **Output:** \"Tie\"\n    **Explanation:** Alice cannot win this game. She can end the game in a draw if she decided to choose all the first three piles, otherwise she will lose.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= stoneValue.length <= 5 * 104`\n  * `-1000 <= stoneValue[i] <= 1000`",
+  "question": "Alice and Bob continue their games with piles of stones. There are several stones **arranged in a row** , and each stone has an associated value which is an integer given in the array `stoneValue`.\n\nAlice and Bob take turns, with Alice starting first. On each player's turn, that player can take `1`, `2`, or `3` stones from the **first** remaining stones in the row.\n\nThe score of each player is the sum of the values of the stones taken. The score of each player is `0` initially.\n\nThe objective of the game is to end with the highest score, and the winner is the player with the highest score and there could be a tie. The game continues until all the stones have been taken.\n\nAssume Alice and Bob **play optimally**.\n\nReturn `\"Alice\"`_if Alice will win,_`\"Bob\"`_if Bob will win, or_`\"Tie\"`_if they will end the game with the same score_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** stoneValue = [1,2,3,7]\n    **Output:** \"Bob\"\n    **Explanation:** Alice will always lose. Her best move will be to take three piles and the score become 6. Now the score of Bob is 7 and Bob wins.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stoneValue = [1,2,3,-9]\n    **Output:** \"Alice\"\n    **Explanation:** Alice must choose all the three piles at the first move to win and leave Bob with negative score.\n    If Alice chooses one pile her score will be 1 and the next move Bob's score becomes 5. In the next move, Alice will take the pile with value = -9 and lose.\n    If Alice chooses two piles her score will be 3 and the next move Bob's score becomes 3. In the next move, Alice will take the pile with value = -9 and also lose.\n    Remember that both play optimally so here Alice will choose the scenario that makes her win.\n    \n\n**Example 3:**\n    \n    \n    **Input:** stoneValue = [1,2,3,6]\n    **Output:** \"Tie\"\n    **Explanation:** Alice cannot win this game. She can end the game in a draw if she decided to choose all the first three piles, otherwise she will lose.",
+  "constraints": "**Constraints:**\n\n  * `1 <= stoneValue.length <= 5 * 104`\n  * `-1000 <= stoneValue[i] <= 1000`",
+  "topics": ["Array", "Math", "Dynamic Programming", "Game Theory"],
+  "total_accepted": 109692,
+  "total_submissions": 173292,
+  "acceptance_rate": "63.3%",
+  "similar_questions": [
+    {
+      "title": "Stone Game V",
+      "slug": "stone-game-v",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-v/"
+    },
+    {
+      "title": "Stone Game VI",
+      "slug": "stone-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vi/"
+    },
+    {
+      "title": "Stone Game VII",
+      "slug": "stone-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vii/"
+    },
+    {
+      "title": "Stone Game VIII",
+      "slug": "stone-game-viii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-viii/"
+    },
+    {
+      "title": "Stone Game IX",
+      "slug": "stone-game-ix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ix/"
+    }
+  ],
+  "hints": [
+    "The game can be mapped to minmax game. Alice tries to maximize the total score and Bob tries to minimize it.",
+    "Use dynamic programming to simulate the game. If the total score was 0 the game is \"Tie\", and if it has positive value then \"Alice\" wins, otherwise \"Bob\" wins."
+  ]
+}

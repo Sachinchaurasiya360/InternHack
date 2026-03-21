@@ -1,0 +1,47 @@
+{
+  "id": "26",
+  "title": "Remove Duplicates from Sorted Array",
+  "slug": "remove-duplicates-from-sorted-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> sorted in <strong>non-decreasing order</strong>, remove the duplicates <a href=\"https://en.wikipedia.org/wiki/In-place_algorithm\" target=\"_blank\"><strong>in-place</strong></a> such that each unique element appears only <strong>once</strong>. The <strong>relative order</strong> of the elements should be kept the <strong>same</strong>.</p>\n\n<p>Consider the number of <em>unique elements</em> in&nbsp;<code>nums</code> to be <code>k<strong>​​​​​​​</strong></code>​​​​​​​. <meta charset=\"UTF-8\" />After removing duplicates, return the number of unique elements&nbsp;<code>k</code>.</p>\n\n<p><meta charset=\"UTF-8\" />The first&nbsp;<code>k</code>&nbsp;elements of&nbsp;<code>nums</code>&nbsp;should contain the unique numbers in <strong>sorted order</strong>. The remaining elements beyond index&nbsp;<code>k - 1</code>&nbsp;can be ignored.</p>\n\n<p><strong>Custom Judge:</strong></p>\n\n<p>The judge will test your solution with the following code:</p>\n\n<pre>\nint[] nums = [...]; // Input array\nint[] expectedNums = [...]; // The expected answer with correct length\n\nint k = removeDuplicates(nums); // Calls your implementation\n\nassert k == expectedNums.length;\nfor (int i = 0; i &lt; k; i++) {\n    assert nums[i] == expectedNums[i];\n}\n</pre>\n\n<p>If all assertions pass, then your solution will be <strong>accepted</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,2]\n<strong>Output:</strong> 2, nums = [1,2,_]\n<strong>Explanation:</strong> Your function should return k = 2, with the first two elements of nums being 1 and 2 respectively.\nIt does not matter what you leave beyond the returned k (hence they are underscores).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,0,1,1,1,2,2,3,3,4]\n<strong>Output:</strong> 5, nums = [0,1,2,3,4,_,_,_,_,_]\n<strong>Explanation:</strong> Your function should return k = 5, with the first five elements of nums being 0, 1, 2, 3, and 4 respectively.\nIt does not matter what you leave beyond the returned k (hence they are underscores).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>-100 &lt;= nums[i] &lt;= 100</code></li>\n\t<li><code>nums</code> is sorted in <strong>non-decreasing</strong> order.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` sorted in **non-decreasing order** , remove the duplicates [**in-place**](<https://en.wikipedia.org/wiki/In-place_algorithm>) such that each unique element appears only **once**. The **relative order** of the elements should be kept the **same**.\n\nConsider the number of _unique elements_ in `nums` to be `k**​​​​​​​**`​​​​​​​. After removing duplicates, return the number of unique elements `k`.\n\nThe first `k` elements of `nums` should contain the unique numbers in **sorted order**. The remaining elements beyond index `k - 1` can be ignored.\n\n**Custom Judge:**\n\nThe judge will test your solution with the following code:\n    \n    \n    int[] nums = [...]; // Input array\n    int[] expectedNums = [...]; // The expected answer with correct length\n    \n    int k = removeDuplicates(nums); // Calls your implementation\n    \n    assert k == expectedNums.length;\n    for (int i = 0; i < k; i++) {\n        assert nums[i] == expectedNums[i];\n    }\n    \n\nIf all assertions pass, then your solution will be **accepted**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,1,2]\n    **Output:** 2, nums = [1,2,_]\n    **Explanation:** Your function should return k = 2, with the first two elements of nums being 1 and 2 respectively.\n    It does not matter what you leave beyond the returned k (hence they are underscores).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,0,1,1,1,2,2,3,3,4]\n    **Output:** 5, nums = [0,1,2,3,4,_,_,_,_,_]\n    **Explanation:** Your function should return k = 5, with the first five elements of nums being 0, 1, 2, 3, and 4 respectively.\n    It does not matter what you leave beyond the returned k (hence they are underscores).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-100 <= nums[i] <= 100`\n  * `nums` is sorted in **non-decreasing** order.",
+  "question": "Given an integer array `nums` sorted in **non-decreasing order** , remove the duplicates [**in-place**](<https://en.wikipedia.org/wiki/In-place_algorithm>) such that each unique element appears only **once**. The **relative order** of the elements should be kept the **same**.\n\nConsider the number of _unique elements_ in `nums` to be `k**​​​​​​​**`​​​​​​​. After removing duplicates, return the number of unique elements `k`.\n\nThe first `k` elements of `nums` should contain the unique numbers in **sorted order**. The remaining elements beyond index `k - 1` can be ignored.\n\n**Custom Judge:**\n\nThe judge will test your solution with the following code:\n    \n    \n    int[] nums = [...]; // Input array\n    int[] expectedNums = [...]; // The expected answer with correct length\n    \n    int k = removeDuplicates(nums); // Calls your implementation\n    \n    assert k == expectedNums.length;\n    for (int i = 0; i < k; i++) {\n        assert nums[i] == expectedNums[i];\n    }\n    \n\nIf all assertions pass, then your solution will be **accepted**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,1,2]\n    **Output:** 2, nums = [1,2,_]\n    **Explanation:** Your function should return k = 2, with the first two elements of nums being 1 and 2 respectively.\n    It does not matter what you leave beyond the returned k (hence they are underscores).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,0,1,1,1,2,2,3,3,4]\n    **Output:** 5, nums = [0,1,2,3,4,_,_,_,_,_]\n    **Explanation:** Your function should return k = 5, with the first five elements of nums being 0, 1, 2, 3, and 4 respectively.\n    It does not matter what you leave beyond the returned k (hence they are underscores).",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-100 <= nums[i] <= 100`\n  * `nums` is sorted in **non-decreasing** order.",
+  "topics": ["Array", "Two Pointers"],
+  "total_accepted": 7545672,
+  "total_submissions": 12111409,
+  "acceptance_rate": "62.3%",
+  "similar_questions": [
+    {
+      "title": "Remove Element",
+      "slug": "remove-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-element/"
+    },
+    {
+      "title": "Remove Duplicates from Sorted Array II",
+      "slug": "remove-duplicates-from-sorted-array-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array-ii/"
+    },
+    {
+      "title": "Apply Operations to an Array",
+      "slug": "apply-operations-to-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/apply-operations-to-an-array/"
+    },
+    {
+      "title": "Sum of Distances",
+      "slug": "sum-of-distances",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-distances/"
+    }
+  ],
+  "hints": [
+    "In this problem, the key point to focus on is the input array being sorted. As far as duplicate elements are concerned, what is their positioning in the array when the given array is sorted? Look at the image below for the answer. If we know the position of one of the elements, do we also know the positioning of all the duplicate elements?\r\n\r\n<br>\r\n<img src=\"https://assets.leetcode.com/uploads/2019/10/20/hint_rem_dup.png\" width=\"500\"/>",
+    "We need to modify the array in-place and the size of the final array would potentially be smaller than the size of the input array. So, we ought to use a two-pointer approach here. One, that would keep track of the current element in the original array and another one for just the unique elements.",
+    "Essentially, once an element is encountered, you simply need to <b>bypass</b> its duplicates and move on to the next unique element."
+  ]
+}

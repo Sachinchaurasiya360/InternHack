@@ -1,0 +1,18 @@
+{
+  "id": "1972",
+  "title": "First and Last Call On the Same Day",
+  "slug": "first-and-last-call-on-the-same-day",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 12277,
+  "total_submissions": 24030,
+  "acceptance_rate": "51.1%",
+  "similar_questions": [],
+  "hints": []
+}

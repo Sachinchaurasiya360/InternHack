@@ -1,0 +1,33 @@
+{
+  "id": "739",
+  "title": "Daily Temperatures",
+  "slug": "daily-temperatures",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>temperatures</code> represents the daily temperatures, return <em>an array</em> <code>answer</code> <em>such that</em> <code>answer[i]</code> <em>is the number of days you have to wait after the</em> <code>i<sup>th</sup></code> <em>day to get a warmer temperature</em>. If there is no future day for which this is possible, keep <code>answer[i] == 0</code> instead.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> temperatures = [73,74,75,71,69,72,76,73]\n<strong>Output:</strong> [1,1,4,2,1,1,0,0]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> temperatures = [30,40,50,60]\n<strong>Output:</strong> [1,1,1,0]\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> temperatures = [30,60,90]\n<strong>Output:</strong> [1,1,0]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;=&nbsp;temperatures.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>30 &lt;=&nbsp;temperatures[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `temperatures` represents the daily temperatures, return _an array_ `answer` _such that_ `answer[i]` _is the number of days you have to wait after the_ `ith` _day to get a warmer temperature_. If there is no future day for which this is possible, keep `answer[i] == 0` instead.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** temperatures = [73,74,75,71,69,72,76,73]\n    **Output:** [1,1,4,2,1,1,0,0]\n    \n\n**Example 2:**\n    \n    \n    **Input:** temperatures = [30,40,50,60]\n    **Output:** [1,1,1,0]\n    \n\n**Example 3:**\n    \n    \n    **Input:** temperatures = [30,60,90]\n    **Output:** [1,1,0]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= temperatures.length <= 105`\n  * `30 <= temperatures[i] <= 100`",
+  "question": "Given an array of integers `temperatures` represents the daily temperatures, return _an array_ `answer` _such that_ `answer[i]` _is the number of days you have to wait after the_ `ith` _day to get a warmer temperature_. If there is no future day for which this is possible, keep `answer[i] == 0` instead.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** temperatures = [73,74,75,71,69,72,76,73]\n    **Output:** [1,1,4,2,1,1,0,0]\n    \n\n**Example 2:**\n    \n    \n    **Input:** temperatures = [30,40,50,60]\n    **Output:** [1,1,1,0]\n    \n\n**Example 3:**\n    \n    \n    **Input:** temperatures = [30,60,90]\n    **Output:** [1,1,0]",
+  "constraints": "**Constraints:**\n\n  * `1 <= temperatures.length <= 105`\n  * `30 <= temperatures[i] <= 100`",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 1630106,
+  "total_submissions": 2384714,
+  "acceptance_rate": "68.4%",
+  "similar_questions": [
+    {
+      "title": "Next Greater Element I",
+      "slug": "next-greater-element-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/next-greater-element-i/"
+    },
+    {
+      "title": "Online Stock Span",
+      "slug": "online-stock-span",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/online-stock-span/"
+    }
+  ],
+  "hints": [
+    "If the temperature is say, 70 today, then in the future a warmer temperature must be either 71, 72, 73, ..., 99, or 100.  We could remember when all of them occur next."
+  ]
+}

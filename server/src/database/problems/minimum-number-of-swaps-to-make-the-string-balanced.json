@@ -1,0 +1,47 @@
+{
+  "id": "1963",
+  "title": "Minimum Number of Swaps to Make the String Balanced",
+  "slug": "minimum-number-of-swaps-to-make-the-string-balanced",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> string <code>s</code> of <strong>even</strong> length <code>n</code>. The string consists of <strong>exactly</strong> <code>n / 2</code> opening brackets <code>&#39;[&#39;</code> and <code>n / 2</code> closing brackets <code>&#39;]&#39;</code>.</p>\n\n<p>A string is called <strong>balanced</strong> if and only if:</p>\n\n<ul>\n\t<li>It is the empty string, or</li>\n\t<li>It can be written as <code>AB</code>, where both <code>A</code> and <code>B</code> are <strong>balanced</strong> strings, or</li>\n\t<li>It can be written as <code>[C]</code>, where <code>C</code> is a <strong>balanced</strong> string.</li>\n</ul>\n\n<p>You may swap the brackets at <strong>any</strong> two indices <strong>any</strong> number of times.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of swaps to make </em><code>s</code> <em><strong>balanced</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;][][&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> You can make the string balanced by swapping index 0 with index 3.\nThe resulting string is &quot;[[]]&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;]]][[[&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You can do the following to make the string balanced:\n- Swap index 0 with index 4. s = &quot;[]][][&quot;.\n- Swap index 1 with index 5. s = &quot;[[][]]&quot;.\nThe resulting string is &quot;[[][]]&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;[]&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The string is already balanced.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == s.length</code></li>\n\t<li><code>2 &lt;= n &lt;= 10<sup>6</sup></code></li>\n\t<li><code>n</code> is even.</li>\n\t<li><code>s[i]</code> is either <code>&#39;[&#39; </code>or <code>&#39;]&#39;</code>.</li>\n\t<li>The number of opening brackets <code>&#39;[&#39;</code> equals <code>n / 2</code>, and the number of closing brackets <code>&#39;]&#39;</code> equals <code>n / 2</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** string `s` of **even** length `n`. The string consists of **exactly** `n / 2` opening brackets `'['` and `n / 2` closing brackets `']'`.\n\nA string is called **balanced** if and only if:\n\n  * It is the empty string, or\n  * It can be written as `AB`, where both `A` and `B` are **balanced** strings, or\n  * It can be written as `[C]`, where `C` is a **balanced** string.\n\n\n\nYou may swap the brackets at **any** two indices **any** number of times.\n\nReturn _the**minimum** number of swaps to make _`s` _**balanced**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"][][\"\n    **Output:** 1\n    **Explanation:** You can make the string balanced by swapping index 0 with index 3.\n    The resulting string is \"[[]]\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"]]][[[\"\n    **Output:** 2\n    **Explanation:** You can do the following to make the string balanced:\n    - Swap index 0 with index 4. s = \"[]][][\".\n    - Swap index 1 with index 5. s = \"[[][]]\".\n    The resulting string is \"[[][]]\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"[]\"\n    **Output:** 0\n    **Explanation:** The string is already balanced.\n    \n\n \n\n**Constraints:**\n\n  * `n == s.length`\n  * `2 <= n <= 106`\n  * `n` is even.\n  * `s[i]` is either `'[' `or `']'`.\n  * The number of opening brackets `'['` equals `n / 2`, and the number of closing brackets `']'` equals `n / 2`.",
+  "question": "You are given a **0-indexed** string `s` of **even** length `n`. The string consists of **exactly** `n / 2` opening brackets `'['` and `n / 2` closing brackets `']'`.\n\nA string is called **balanced** if and only if:\n\n  * It is the empty string, or\n  * It can be written as `AB`, where both `A` and `B` are **balanced** strings, or\n  * It can be written as `[C]`, where `C` is a **balanced** string.\n\n\n\nYou may swap the brackets at **any** two indices **any** number of times.\n\nReturn _the**minimum** number of swaps to make _`s` _**balanced**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"][][\"\n    **Output:** 1\n    **Explanation:** You can make the string balanced by swapping index 0 with index 3.\n    The resulting string is \"[[]]\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"]]][[[\"\n    **Output:** 2\n    **Explanation:** You can do the following to make the string balanced:\n    - Swap index 0 with index 4. s = \"[]][][\".\n    - Swap index 1 with index 5. s = \"[[][]]\".\n    The resulting string is \"[[][]]\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"[]\"\n    **Output:** 0\n    **Explanation:** The string is already balanced.",
+  "constraints": "**Constraints:**\n\n  * `n == s.length`\n  * `2 <= n <= 106`\n  * `n` is even.\n  * `s[i]` is either `'[' `or `']'`.\n  * The number of opening brackets `'['` equals `n / 2`, and the number of closing brackets `']'` equals `n / 2`.",
+  "topics": ["Two Pointers", "String", "Stack", "Greedy"],
+  "total_accepted": 242602,
+  "total_submissions": 310447,
+  "acceptance_rate": "78.1%",
+  "similar_questions": [
+    {
+      "title": "Remove Invalid Parentheses",
+      "slug": "remove-invalid-parentheses",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/remove-invalid-parentheses/"
+    },
+    {
+      "title": "Minimum Add to Make Parentheses Valid",
+      "slug": "minimum-add-to-make-parentheses-valid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/"
+    },
+    {
+      "title": "Minimum Remove to Make Valid Parentheses",
+      "slug": "minimum-remove-to-make-valid-parentheses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/"
+    },
+    {
+      "title": "Minimum Insertions to Balance a Parentheses String",
+      "slug": "minimum-insertions-to-balance-a-parentheses-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-insertions-to-balance-a-parentheses-string/"
+    }
+  ],
+  "hints": [
+    "Iterate over the string and keep track of the number of opening and closing brackets on each step.",
+    "If the number of closing brackets is ever larger, you need to make a swap.",
+    "Swap it with the opening bracket closest to the end of s."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1256",
+  "title": "Encode Number",
+  "slug": "encode-number",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "String", "Bit Manipulation"],
+  "total_accepted": 8605,
+  "total_submissions": 12233,
+  "acceptance_rate": "70.3%",
+  "similar_questions": [
+    {
+      "title": "Convert to Base -2",
+      "slug": "convert-to-base-2",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/convert-to-base-2/"
+    }
+  ],
+  "hints": [
+    "Try to find the number of binary digits returned by the function.",
+    "The pattern is to start counting from zero after determining the number of binary digits."
+  ]
+}

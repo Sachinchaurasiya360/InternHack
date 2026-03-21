@@ -1,0 +1,35 @@
+{
+  "id": "1186",
+  "title": "Maximum Subarray Sum with One Deletion",
+  "slug": "maximum-subarray-sum-with-one-deletion",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers, return the maximum sum for a <strong>non-empty</strong>&nbsp;subarray (contiguous elements) with at most one element deletion.&nbsp;In other words, you want to choose a subarray and optionally delete one element from it so that there is still at least one element left and the&nbsp;sum of the remaining elements is maximum possible.</p>\n\n<p>Note that the subarray needs to be <strong>non-empty</strong> after deleting one element.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,-2,0,3]\n<strong>Output:</strong> 4\n<strong>Explanation: </strong>Because we can choose [1, -2, 0, 3] and drop -2, thus the subarray [1, 0, 3] becomes the maximum value.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,-2,-2,3]\n<strong>Output:</strong> 3\n<strong>Explanation: </strong>We just choose [3] and it&#39;s the maximum sum.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [-1,-1,-1,-1]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong>&nbsp;The final subarray needs to be non-empty. You can&#39;t choose [-1] and delete -1 from it, then get an empty subarray to make the sum equals to 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= arr[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers, return the maximum sum for a **non-empty**  subarray (contiguous elements) with at most one element deletion. In other words, you want to choose a subarray and optionally delete one element from it so that there is still at least one element left and the sum of the remaining elements is maximum possible.\n\nNote that the subarray needs to be **non-empty** after deleting one element.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,-2,0,3]\n    **Output:** 4\n    **Explanation:** Because we can choose [1, -2, 0, 3] and drop -2, thus the subarray [1, 0, 3] becomes the maximum value.\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,-2,-2,3]\n    **Output:** 3\n    **Explanation:** We just choose [3] and it's the maximum sum.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [-1,-1,-1,-1]\n    **Output:** -1\n    **Explanation:**  The final subarray needs to be non-empty. You can't choose [-1] and delete -1 from it, then get an empty subarray to make the sum equals to 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `-104 <= arr[i] <= 104`",
+  "question": "Given an array of integers, return the maximum sum for a **non-empty**  subarray (contiguous elements) with at most one element deletion. In other words, you want to choose a subarray and optionally delete one element from it so that there is still at least one element left and the sum of the remaining elements is maximum possible.\n\nNote that the subarray needs to be **non-empty** after deleting one element.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,-2,0,3]\n    **Output:** 4\n    **Explanation:** Because we can choose [1, -2, 0, 3] and drop -2, thus the subarray [1, 0, 3] becomes the maximum value.\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,-2,-2,3]\n    **Output:** 3\n    **Explanation:** We just choose [3] and it's the maximum sum.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [-1,-1,-1,-1]\n    **Output:** -1\n    **Explanation:**  The final subarray needs to be non-empty. You can't choose [-1] and delete -1 from it, then get an empty subarray to make the sum equals to 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `-104 <= arr[i] <= 104`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 75141,
+  "total_submissions": 160715,
+  "acceptance_rate": "46.8%",
+  "similar_questions": [
+    {
+      "title": "Maximize Subarray Sum After Removing All Occurrences of One Element",
+      "slug": "maximize-subarray-sum-after-removing-all-occurrences-of-one-element",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximize-subarray-sum-after-removing-all-occurrences-of-one-element/"
+    },
+    {
+      "title": "Maximum Unique Subarray Sum After Deletion",
+      "slug": "maximum-unique-subarray-sum-after-deletion",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-unique-subarray-sum-after-deletion/"
+    }
+  ],
+  "hints": [
+    "How to solve this problem if no deletions are allowed ?",
+    "Try deleting each element and find the maximum subarray sum to both sides of that element.",
+    "To do that efficiently, use the idea of Kadane's algorithm."
+  ]
+}

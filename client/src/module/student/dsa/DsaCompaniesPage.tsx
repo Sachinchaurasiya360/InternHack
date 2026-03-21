@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
-import { ArrowLeft, ArrowRight, Building2, CheckCircle2, ChevronDown, Lightbulb, ExternalLink, BookOpen, TrendingUp } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Building2, CheckCircle2, ChevronLeft, ChevronRight as ChevronRightIcon, ExternalLink, BookOpen, TrendingUp, Search } from "lucide-react";
+import { motion } from "framer-motion";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaCompany, DsaCompanyProblem } from "../../../lib/types";
+import type { DsaCompany, DsaPaginatedProblems } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -72,18 +72,26 @@ function CompanyLogo({ name }: { name: string }) {
 export default function DsaCompaniesPage() {
   const { user } = useAuthStore();
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [companySearch, setCompanySearch] = useState("");
 
   const { data: companies, isLoading } = useQuery({
     queryKey: queryKeys.dsa.companies(),
     queryFn: () => api.get<DsaCompany[]>("/dsa/companies").then((r) => r.data),
+    staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
-  const { data: problems } = useQuery({
-    queryKey: queryKeys.dsa.company(selectedCompany!),
-    queryFn: () => api.get<DsaCompanyProblem[]>(`/dsa/companies/${selectedCompany}`).then((r) => r.data),
+  const { data: problemData, isLoading: problemsLoading } = useQuery({
+    queryKey: queryKeys.dsa.company(selectedCompany!, page),
+    queryFn: () => api.get<DsaPaginatedProblems>(`/dsa/companies/${selectedCompany}?page=${page}&limit=50`).then((r) => r.data),
     enabled: !!selectedCompany,
+    placeholderData: keepPreviousData,
+    staleTime: 15 * 24 * 60 * 60 * 1000,
   });
+
+  const filteredCompanies = companies?.filter((c) =>
+    !companySearch || c.name.toLowerCase().includes(companySearch.toLowerCase())
+  );
 
   if (isLoading) return <LoadingScreen />;
 
@@ -158,56 +166,71 @@ export default function DsaCompaniesPage() {
       )}
 
       {!selectedCompany ? (
-        /* ─── Company Grid ─── */
+        /* Company Grid */
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="space-y-3"
         >
-          {companies?.map((company, i) => (
-            <motion.button
-              key={company.name}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + i * 0.04 }}
-              onClick={() => setSelectedCompany(company.name)}
-              className="group w-full flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 text-left"
-            >
-              <CompanyLogo name={company.name} />
+          {/* Search */}
+          <div className="relative max-w-sm mb-6">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search companies..."
+              value={companySearch}
+              onChange={(e) => setCompanySearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-100 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950/10 dark:focus:ring-white/10 transition-all"
+            />
+          </div>
 
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-gray-950 dark:text-white capitalize truncate">
-                  {company.name}
-                </h3>
-                <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
-                  <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
-                    {company.count} problems
-                  </span>
+          <div className="space-y-3">
+            {filteredCompanies?.map((company, i) => (
+              <motion.button
+                key={company.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 + Math.min(i, 20) * 0.02 }}
+                onClick={() => { setSelectedCompany(company.name); setPage(1); }}
+                className="group w-full flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 text-left"
+              >
+                <CompanyLogo name={company.name} />
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-gray-950 dark:text-white capitalize truncate">
+                    {company.name}
+                  </h3>
+                  <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
+                      {company.count} problems
+                    </span>
+                  </div>
                 </div>
+
+                <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </motion.button>
+            ))}
+
+            {filteredCompanies?.length === 0 && (
+              <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800">
+                <Building2 className="w-10 h-10 text-indigo-500 mx-auto mb-4" />
+                <h3 className="font-display text-lg font-bold text-gray-950 dark:text-white mb-2">No companies found</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-500">
+                  {companySearch ? "No companies match your search." : "Company data is not available yet."}
+                </p>
               </div>
-
-              <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-            </motion.button>
-          ))}
-
-          {companies?.length === 0 && (
-            <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800">
-              <Building2 className="w-10 h-10 text-indigo-500 mx-auto mb-4" />
-              <h3 className="font-display text-lg font-bold text-gray-950 dark:text-white mb-2">No companies found</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-500">Company data is not available yet.</p>
-            </div>
-          )}
+            )}
+          </div>
         </motion.div>
       ) : (
-        /* ─── Problem List ─── */
+        /* Problem List */
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
           <button
-            onClick={() => { setSelectedCompany(null); setExpandedId(null); }}
+            onClick={() => { setSelectedCompany(null); setPage(1); }}
             className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -215,22 +238,36 @@ export default function DsaCompaniesPage() {
           </button>
 
           <h2 className="text-xl font-bold text-gray-950 dark:text-white capitalize mb-4">
-            {selectedCompany} <span className="text-gray-400 dark:text-gray-500 font-normal text-base">({problems?.length ?? 0} problems)</span>
+            {selectedCompany}
+            {!problemsLoading && <span className="text-gray-400 dark:text-gray-500 font-normal text-base ml-2">({problemData?.total ?? 0} problems)</span>}
           </h2>
 
+          {problemsLoading && !problemData ? (
+            <div className="space-y-2">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse w-3/4" />
+                      <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse w-1/3" />
+                    </div>
+                    <div className="h-4 w-12 bg-gray-100 dark:bg-gray-800 rounded animate-pulse shrink-0" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="space-y-2">
-            {problems?.map((p, idx) => (
+            {problemData?.problems.map((p, idx) => (
               <motion.div
                 key={p.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.03 }}
+                transition={{ delay: idx * 0.02 }}
                 className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300"
               >
-                <div
-                  className="flex items-center gap-3 px-5 py-4 cursor-pointer"
-                  onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
-                >
+                <div className="flex items-center gap-3 px-5 py-4">
                   {user && (
                     <div className="shrink-0">
                       {p.solved ? (
@@ -242,17 +279,18 @@ export default function DsaCompaniesPage() {
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <span className={`text-sm font-medium ${p.solved ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"}`}>
+                    <Link
+                      to={`/learn/dsa/problem/${p.slug}`}
+                      className={`text-sm font-medium no-underline hover:underline ${p.solved ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"}`}
+                    >
                       {p.title}
-                    </span>
+                    </Link>
                     <div className="flex items-center gap-2 mt-1">
-                      <Link
-                        to={`/learn/dsa/${p.topicSlug}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-[11px] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors no-underline"
-                      >
-                        {p.topicName}
-                      </Link>
+                      {p.acceptanceRate && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                          {p.acceptanceRate}
+                        </span>
+                      )}
                       {p.tags.slice(0, 2).map((tag) => (
                         <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                           {tag}
@@ -267,48 +305,17 @@ export default function DsaCompaniesPage() {
 
                   {p.leetcodeUrl && (
                     <a href={p.leetcodeUrl} target="_blank" rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0"
+                      className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 no-underline"
                       title="LeetCode"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   )}
-
-                  <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0 transition-transform duration-200 ${expandedId === p.id ? "rotate-180" : ""}`} />
                 </div>
-
-                <AnimatePresence>
-                  {expandedId === p.id && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 pb-4 pt-1 ml-8">
-                        {p.hints ? (
-                          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Lightbulb className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                              <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Hint & Approach</span>
-                            </div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{p.hints}</p>
-                          </div>
-                        ) : (
-                          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 italic">No hints available for this problem yet.</p>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </motion.div>
             ))}
 
-            {problems?.length === 0 && (
+            {problemData?.problems.length === 0 && (
               <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800">
                 <Building2 className="w-10 h-10 text-gray-400 mx-auto mb-4" />
                 <h3 className="font-display text-lg font-bold text-gray-950 dark:text-white mb-2">No problems found</h3>
@@ -316,6 +323,32 @@ export default function DsaCompaniesPage() {
               </div>
             )}
           </div>
+          )}
+
+          {/* Pagination */}
+          {problemData && problemData.totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-8">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Prev
+              </button>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Page {page} of {problemData.totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(problemData.totalPages, p + 1))}
+                disabled={page >= problemData.totalPages}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+                <ChevronRightIcon className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </motion.div>
       )}
     </div>

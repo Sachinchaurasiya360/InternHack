@@ -1,0 +1,34 @@
+{
+  "id": "329",
+  "title": "Longest Increasing Path in a Matrix",
+  "slug": "longest-increasing-path-in-a-matrix",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> integers <code>matrix</code>, return <em>the length of the longest increasing path in </em><code>matrix</code>.</p>\n\n<p>From each cell, you can either move in four directions: left, right, up, or down. You <strong>may not</strong> move <strong>diagonally</strong> or move <strong>outside the boundary</strong> (i.e., wrap-around is not allowed).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/05/grid1.jpg\" style=\"width: 242px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[9,9,4],[6,6,8],[2,1,1]]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The longest increasing path is <code>[1, 2, 6, 9]</code>.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/27/tmp-grid.jpg\" style=\"width: 253px; height: 253px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[3,4,5],[3,2,6],[2,2,1]]\n<strong>Output:</strong> 4\n<strong>Explanation: </strong>The longest increasing path is <code>[3, 4, 5, 6]</code>. Moving diagonally is not allowed.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[1]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>0 &lt;= matrix[i][j] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` integers `matrix`, return _the length of the longest increasing path in_`matrix`.\n\nFrom each cell, you can either move in four directions: left, right, up, or down. You **may not** move **diagonally** or move **outside the boundary** (i.e., wrap-around is not allowed).\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/05/grid1.jpg)\n    \n    \n    **Input:** matrix = [[9,9,4],[6,6,8],[2,1,1]]\n    **Output:** 4\n    **Explanation:** The longest increasing path is [1, 2, 6, 9].\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/27/tmp-grid.jpg)\n    \n    \n    **Input:** matrix = [[3,4,5],[3,2,6],[2,2,1]]\n    **Output:** 4\n    **Explanation:** The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[1]]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 200`\n  * `0 <= matrix[i][j] <= 231 - 1`",
+  "question": "Given an `m x n` integers `matrix`, return _the length of the longest increasing path in_`matrix`.\n\nFrom each cell, you can either move in four directions: left, right, up, or down. You **may not** move **diagonally** or move **outside the boundary** (i.e., wrap-around is not allowed).",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/05/grid1.jpg)\n    \n    \n    **Input:** matrix = [[9,9,4],[6,6,8],[2,1,1]]\n    **Output:** 4\n    **Explanation:** The longest increasing path is [1, 2, 6, 9].\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/27/tmp-grid.jpg)\n    \n    \n    **Input:** matrix = [[3,4,5],[3,2,6],[2,2,1]]\n    **Output:** 4\n    **Explanation:** The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[1]]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 200`\n  * `0 <= matrix[i][j] <= 231 - 1`",
+  "topics": [
+    "Array",
+    "Dynamic Programming",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Topological Sort",
+    "Memoization",
+    "Matrix"
+  ],
+  "total_accepted": 701266,
+  "total_submissions": 1244789,
+  "acceptance_rate": "56.3%",
+  "similar_questions": [
+    {
+      "title": "Number of Increasing Paths in a Grid",
+      "slug": "number-of-increasing-paths-in-a-grid",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-increasing-paths-in-a-grid/"
+    }
+  ],
+  "hints": []
+}

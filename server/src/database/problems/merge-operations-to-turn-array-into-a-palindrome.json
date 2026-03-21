@@ -1,0 +1,22 @@
+{
+  "id": "2422",
+  "title": "Merge Operations to Turn Array Into a Palindrome",
+  "slug": "merge-operations-to-turn-array-into-a-palindrome",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Greedy"],
+  "total_accepted": 18925,
+  "total_submissions": 27456,
+  "acceptance_rate": "68.9%",
+  "similar_questions": [],
+  "hints": [
+    "Can you find how many operations are needed to make the first element of the array equal to the last element?",
+    "Notice that you can use the same idea of the previous hint to make the second element equal to the second last one.",
+    "Use the same idea until all elements of the array are used."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "297",
+  "title": "Serialize and Deserialize Binary Tree",
+  "slug": "serialize-and-deserialize-binary-tree",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.</p>\n\n<p>Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.</p>\n\n<p><strong>Clarification:</strong> The input/output format is the same as <a href=\"https://support.leetcode.com/hc/en-us/articles/32442719377939-How-to-create-test-cases-on-LeetCode#h_01J5EGREAW3NAEJ14XC07GRW1A\" target=\"_blank\">how LeetCode serializes a binary tree</a>. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/15/serdeser.jpg\" style=\"width: 442px; height: 324px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3,null,null,4,5]\n<strong>Output:</strong> [1,2,3,null,null,4,5]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = []\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-1000 &lt;= Node.val &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.\n\nDesign an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.\n\n**Clarification:** The input/output format is the same as [how LeetCode serializes a binary tree](<https://support.leetcode.com/hc/en-us/articles/32442719377939-How-to-create-test-cases-on-LeetCode#h_01J5EGREAW3NAEJ14XC07GRW1A>). You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/15/serdeser.jpg)\n    \n    \n    **Input:** root = [1,2,3,null,null,4,5]\n    **Output:** [1,2,3,null,null,4,5]\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = []\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 104]`.\n  * `-1000 <= Node.val <= 1000`",
+  "question": "Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.\n\nDesign an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.\n\n**Clarification:** The input/output format is the same as [how LeetCode serializes a binary tree](<https://support.leetcode.com/hc/en-us/articles/32442719377939-How-to-create-test-cases-on-LeetCode#h_01J5EGREAW3NAEJ14XC07GRW1A>). You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/15/serdeser.jpg)\n    \n    \n    **Input:** root = [1,2,3,null,null,4,5]\n    **Output:** [1,2,3,null,null,4,5]\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = []\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 104]`.\n  * `-1000 <= Node.val <= 1000`",
+  "topics": [
+    "String",
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Design",
+    "Binary Tree"
+  ],
+  "total_accepted": 1170732,
+  "total_submissions": 1939287,
+  "acceptance_rate": "60.4%",
+  "similar_questions": [
+    {
+      "title": "Encode and Decode Strings",
+      "slug": "encode-and-decode-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/encode-and-decode-strings/"
+    },
+    {
+      "title": "Serialize and Deserialize BST",
+      "slug": "serialize-and-deserialize-bst",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/serialize-and-deserialize-bst/"
+    },
+    {
+      "title": "Find Duplicate Subtrees",
+      "slug": "find-duplicate-subtrees",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-duplicate-subtrees/"
+    },
+    {
+      "title": "Serialize and Deserialize N-ary Tree",
+      "slug": "serialize-and-deserialize-n-ary-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/serialize-and-deserialize-n-ary-tree/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,58 @@
+{
+  "id": "692",
+  "title": "Top K Frequent Words",
+  "slug": "top-k-frequent-words",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>words</code> and an integer <code>k</code>, return <em>the </em><code>k</code><em> most frequent strings</em>.</p>\n\n<p>Return the answer <strong>sorted</strong> by <strong>the frequency</strong> from highest to lowest. Sort the words with the same frequency by their <strong>lexicographical order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;i&quot;,&quot;love&quot;,&quot;leetcode&quot;,&quot;i&quot;,&quot;love&quot;,&quot;coding&quot;], k = 2\n<strong>Output:</strong> [&quot;i&quot;,&quot;love&quot;]\n<strong>Explanation:</strong> &quot;i&quot; and &quot;love&quot; are the two most frequent words.\nNote that &quot;i&quot; comes before &quot;love&quot; due to a lower alphabetical order.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;the&quot;,&quot;day&quot;,&quot;is&quot;,&quot;sunny&quot;,&quot;the&quot;,&quot;the&quot;,&quot;the&quot;,&quot;sunny&quot;,&quot;is&quot;,&quot;is&quot;], k = 4\n<strong>Output:</strong> [&quot;the&quot;,&quot;is&quot;,&quot;sunny&quot;,&quot;day&quot;]\n<strong>Explanation:</strong> &quot;the&quot;, &quot;is&quot;, &quot;sunny&quot; and &quot;day&quot; are the four most frequent words, with the number of occurrence being 4, 3, 2 and 1 respectively.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 500</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 10</code></li>\n\t<li><code>words[i]</code> consists of lowercase English letters.</li>\n\t<li><code>k</code> is in the range <code>[1, The number of <strong>unique</strong> words[i]]</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow-up:</strong> Could you solve it in <code>O(n log(k))</code> time and <code>O(n)</code> extra space?</p>\n",
+  "content_markdown": "Given an array of strings `words` and an integer `k`, return _the_`k` _most frequent strings_.\n\nReturn the answer **sorted** by **the frequency** from highest to lowest. Sort the words with the same frequency by their **lexicographical order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"i\",\"love\",\"leetcode\",\"i\",\"love\",\"coding\"], k = 2\n    **Output:** [\"i\",\"love\"]\n    **Explanation:** \"i\" and \"love\" are the two most frequent words.\n    Note that \"i\" comes before \"love\" due to a lower alphabetical order.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"the\",\"day\",\"is\",\"sunny\",\"the\",\"the\",\"the\",\"sunny\",\"is\",\"is\"], k = 4\n    **Output:** [\"the\",\"is\",\"sunny\",\"day\"]\n    **Explanation:** \"the\", \"is\", \"sunny\" and \"day\" are the four most frequent words, with the number of occurrence being 4, 3, 2 and 1 respectively.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 500`\n  * `1 <= words[i].length <= 10`\n  * `words[i]` consists of lowercase English letters.\n  * `k` is in the range `[1, The number of **unique** words[i]]`\n\n\n\n \n\n**Follow-up:** Could you solve it in `O(n log(k))` time and `O(n)` extra space?",
+  "question": "Given an array of strings `words` and an integer `k`, return _the_`k` _most frequent strings_.\n\nReturn the answer **sorted** by **the frequency** from highest to lowest. Sort the words with the same frequency by their **lexicographical order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"i\",\"love\",\"leetcode\",\"i\",\"love\",\"coding\"], k = 2\n    **Output:** [\"i\",\"love\"]\n    **Explanation:** \"i\" and \"love\" are the two most frequent words.\n    Note that \"i\" comes before \"love\" due to a lower alphabetical order.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"the\",\"day\",\"is\",\"sunny\",\"the\",\"the\",\"the\",\"sunny\",\"is\",\"is\"], k = 4\n    **Output:** [\"the\",\"is\",\"sunny\",\"day\"]\n    **Explanation:** \"the\", \"is\", \"sunny\" and \"day\" are the four most frequent words, with the number of occurrence being 4, 3, 2 and 1 respectively.",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 500`\n  * `1 <= words[i].length <= 10`\n  * `words[i]` consists of lowercase English letters.\n  * `k` is in the range `[1, The number of **unique** words[i]]`",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Trie",
+    "Sorting",
+    "Heap (Priority Queue)",
+    "Bucket Sort",
+    "Counting"
+  ],
+  "total_accepted": 773453,
+  "total_submissions": 1289739,
+  "acceptance_rate": "60.0%",
+  "similar_questions": [
+    {
+      "title": "Top K Frequent Elements",
+      "slug": "top-k-frequent-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/top-k-frequent-elements/"
+    },
+    {
+      "title": "K Closest Points to Origin",
+      "slug": "k-closest-points-to-origin",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-closest-points-to-origin/"
+    },
+    {
+      "title": "Sort Features by Popularity",
+      "slug": "sort-features-by-popularity",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-features-by-popularity/"
+    },
+    {
+      "title": "Sender With Largest Word Count",
+      "slug": "sender-with-largest-word-count",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sender-with-largest-word-count/"
+    },
+    {
+      "title": "Maximum Number of Pairs in Array",
+      "slug": "maximum-number-of-pairs-in-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-number-of-pairs-in-array/"
+    }
+  ],
+  "hints": []
+}

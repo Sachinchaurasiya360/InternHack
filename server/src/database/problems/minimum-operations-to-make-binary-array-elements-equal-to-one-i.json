@@ -1,0 +1,28 @@
+{
+  "id": "3191",
+  "title": "Minimum Operations to Make Binary Array Elements Equal to One I",
+  "slug": "minimum-operations-to-make-binary-array-elements-equal-to-one-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <span data-keyword=\"binary-array\">binary array</span> <code>nums</code>.</p>\n\n<p>You can do the following operation on the array <strong>any</strong> number of times (possibly zero):</p>\n\n<ul>\n\t<li>Choose <strong>any</strong> 3 <strong>consecutive</strong> elements from the array and <strong>flip</strong> <strong>all</strong> of them.</li>\n</ul>\n\n<p><strong>Flipping</strong> an element means changing its value from 0 to 1, and from 1 to 0.</p>\n\n<p>Return the <strong>minimum</strong> number of operations required to make all elements in <code>nums</code> equal to 1. If it is impossible, return -1.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [0,1,1,1,0,0]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong><br />\nWe can do the following operations:</p>\n\n<ul>\n\t<li>Choose the elements at indices 0, 1 and 2. The resulting array is <code>nums = [<u><strong>1</strong></u>,<u><strong>0</strong></u>,<u><strong>0</strong></u>,1,0,0]</code>.</li>\n\t<li>Choose the elements at indices 1, 2 and 3. The resulting array is <code>nums = [1,<u><strong>1</strong></u>,<u><strong>1</strong></u>,<strong><u>0</u></strong>,0,0]</code>.</li>\n\t<li>Choose the elements at indices 3, 4 and 5. The resulting array is <code>nums = [1,1,1,<strong><u>1</u></strong>,<u><strong>1</strong></u>,<u><strong>1</strong></u>]</code>.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [0,1,1,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">-1</span></p>\n\n<p><strong>Explanation:</strong><br />\nIt is impossible to make all elements equal to 1.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 1</code></li>\n</ul>\n",
+  "content_markdown": "You are given a binary array `nums`.\n\nYou can do the following operation on the array **any** number of times (possibly zero):\n\n  * Choose **any** 3 **consecutive** elements from the array and **flip** **all** of them.\n\n\n\n**Flipping** an element means changing its value from 0 to 1, and from 1 to 0.\n\nReturn the **minimum** number of operations required to make all elements in `nums` equal to 1. If it is impossible, return -1.\n\n \n\n**Example 1:**\n\n**Input:** nums = [0,1,1,1,0,0]\n\n**Output:** 3\n\n**Explanation:**  \nWe can do the following operations:\n\n  * Choose the elements at indices 0, 1 and 2. The resulting array is `nums = [_**1**_ ,_**0**_ ,_**0**_ ,1,0,0]`.\n  * Choose the elements at indices 1, 2 and 3. The resulting array is `nums = [1,_**1**_ ,_**1**_ ,**_0_** ,0,0]`.\n  * Choose the elements at indices 3, 4 and 5. The resulting array is `nums = [1,1,1,**_1_** ,_**1**_ ,_**1**_]`.\n\n\n\n**Example 2:**\n\n**Input:** nums = [0,1,1,1]\n\n**Output:** -1\n\n**Explanation:**  \nIt is impossible to make all elements equal to 1.\n\n \n\n**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `0 <= nums[i] <= 1`",
+  "question": "You are given a binary array `nums`.\n\nYou can do the following operation on the array **any** number of times (possibly zero):\n\n  * Choose **any** 3 **consecutive** elements from the array and **flip** **all** of them.\n\n\n\n**Flipping** an element means changing its value from 0 to 1, and from 1 to 0.\n\nReturn the **minimum** number of operations required to make all elements in `nums` equal to 1. If it is impossible, return -1.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [0,1,1,1,0,0]\n\n**Output:** 3\n\n**Explanation:**  \nWe can do the following operations:\n\n  * Choose the elements at indices 0, 1 and 2. The resulting array is `nums = [_**1**_ ,_**0**_ ,_**0**_ ,1,0,0]`.\n  * Choose the elements at indices 1, 2 and 3. The resulting array is `nums = [1,_**1**_ ,_**1**_ ,**_0_** ,0,0]`.\n  * Choose the elements at indices 3, 4 and 5. The resulting array is `nums = [1,1,1,**_1_** ,_**1**_ ,_**1**_]`.\n\n\n\n**Example 2:**\n\n**Input:** nums = [0,1,1,1]\n\n**Output:** -1\n\n**Explanation:**  \nIt is impossible to make all elements equal to 1.",
+  "constraints": "**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `0 <= nums[i] <= 1`",
+  "topics": ["Array", "Bit Manipulation", "Queue", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 209021,
+  "total_submissions": 259883,
+  "acceptance_rate": "80.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of K Consecutive Bit Flips",
+      "slug": "minimum-number-of-k-consecutive-bit-flips",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-k-consecutive-bit-flips/"
+    }
+  ],
+  "hints": [
+    "If <code>nums[0]</code> is 0, then the only way to change it to 1 is by doing an operation on the first 3 elements of the array.",
+    "After Changing <code>nums[0]</code> to 1, use the same logic on the remaining array."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "281",
+  "title": "Zigzag Iterator",
+  "slug": "zigzag-iterator",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Design", "Queue", "Iterator"],
+  "total_accepted": 111256,
+  "total_submissions": 167381,
+  "acceptance_rate": "66.5%",
+  "similar_questions": [
+    {
+      "title": "Binary Search Tree Iterator",
+      "slug": "binary-search-tree-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-search-tree-iterator/"
+    },
+    {
+      "title": "Flatten 2D Vector",
+      "slug": "flatten-2d-vector",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-2d-vector/"
+    },
+    {
+      "title": "Peeking Iterator",
+      "slug": "peeking-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/peeking-iterator/"
+    },
+    {
+      "title": "Flatten Nested List Iterator",
+      "slug": "flatten-nested-list-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-nested-list-iterator/"
+    },
+    {
+      "title": "Merge Strings Alternately",
+      "slug": "merge-strings-alternately",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-strings-alternately/"
+    }
+  ],
+  "hints": []
+}

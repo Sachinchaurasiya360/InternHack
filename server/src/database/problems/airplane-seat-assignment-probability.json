@@ -1,0 +1,22 @@
+{
+  "id": "1227",
+  "title": "Airplane Seat Assignment Probability",
+  "slug": "airplane-seat-assignment-probability",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p><code>n</code> passengers board an airplane with exactly <code>n</code> seats. The first passenger has lost the ticket and picks a seat randomly. But after that, the rest of the passengers will:</p>\n\n<ul>\n\t<li>Take their own seat if it is still available, and</li>\n\t<li>Pick other seats randomly when they find their seat occupied</li>\n</ul>\n\n<p>Return <em>the probability that the </em><code>n<sup>th</sup></code><em> person gets his own seat</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> 1.00000\n<strong>Explanation: </strong>The first person can only get the first seat.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> 0.50000\n<strong>Explanation: </strong>The second person has a probability of 0.5 to get the second seat (when first person gets the first seat).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "`n` passengers board an airplane with exactly `n` seats. The first passenger has lost the ticket and picks a seat randomly. But after that, the rest of the passengers will:\n\n  * Take their own seat if it is still available, and\n  * Pick other seats randomly when they find their seat occupied\n\n\n\nReturn _the probability that the_`nth` _person gets his own seat_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1.00000\n    **Explanation:** The first person can only get the first seat.\n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** 0.50000\n    **Explanation:** The second person has a probability of 0.5 to get the second seat (when first person gets the first seat).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`",
+  "question": "`n` passengers board an airplane with exactly `n` seats. The first passenger has lost the ticket and picks a seat randomly. But after that, the rest of the passengers will:\n\n  * Take their own seat if it is still available, and\n  * Pick other seats randomly when they find their seat occupied\n\n\n\nReturn _the probability that the_`nth` _person gets his own seat_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1.00000\n    **Explanation:** The first person can only get the first seat.\n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** 0.50000\n    **Explanation:** The second person has a probability of 0.5 to get the second seat (when first person gets the first seat).",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`",
+  "topics": ["Math", "Dynamic Programming", "Brainteaser", "Probability and Statistics"],
+  "total_accepted": 56079,
+  "total_submissions": 83422,
+  "acceptance_rate": "67.2%",
+  "similar_questions": [],
+  "hints": [
+    "Let f(n) denote the probability of the n-th person getting correct seat in n-person case, then:\r\n\r\nf(1) = 1 (base case, trivial)\r\nf(2) = 1/2 (also trivial)",
+    "Try to calculate f(3), f(4), and f(5) using the base cases. What is the value of them?\r\nf(i) for i >= 2 will also be 1/2.",
+    "Try to proof why f(i) = 1/2 for i >= 2."
+  ]
+}

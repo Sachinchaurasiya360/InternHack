@@ -1,0 +1,33 @@
+{
+  "id": "2418",
+  "title": "Sort the People",
+  "slug": "sort-the-people",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of strings <code>names</code>, and an array <code>heights</code> that consists of <strong>distinct</strong> positive integers. Both arrays are of length <code>n</code>.</p>\n\n<p>For each index <code>i</code>, <code>names[i]</code> and <code>heights[i]</code> denote the name and height of the <code>i<sup>th</sup></code> person.</p>\n\n<p>Return <code>names</code><em> sorted in <strong>descending</strong> order by the people&#39;s heights</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> names = [&quot;Mary&quot;,&quot;John&quot;,&quot;Emma&quot;], heights = [180,165,170]\n<strong>Output:</strong> [&quot;Mary&quot;,&quot;Emma&quot;,&quot;John&quot;]\n<strong>Explanation:</strong> Mary is the tallest, followed by Emma and John.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> names = [&quot;Alice&quot;,&quot;Bob&quot;,&quot;Bob&quot;], heights = [155,185,150]\n<strong>Output:</strong> [&quot;Bob&quot;,&quot;Alice&quot;,&quot;Bob&quot;]\n<strong>Explanation:</strong> The first Bob is the tallest, followed by Alice and the second Bob.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == names.length == heights.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>3</sup></code></li>\n\t<li><code>1 &lt;= names[i].length &lt;= 20</code></li>\n\t<li><code>1 &lt;= heights[i] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>names[i]</code> consists of lower and upper case English letters.</li>\n\t<li>All the values of <code>heights</code> are distinct.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of strings `names`, and an array `heights` that consists of **distinct** positive integers. Both arrays are of length `n`.\n\nFor each index `i`, `names[i]` and `heights[i]` denote the name and height of the `ith` person.\n\nReturn `names` _sorted in**descending** order by the people's heights_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** names = [\"Mary\",\"John\",\"Emma\"], heights = [180,165,170]\n    **Output:** [\"Mary\",\"Emma\",\"John\"]\n    **Explanation:** Mary is the tallest, followed by Emma and John.\n    \n\n**Example 2:**\n    \n    \n    **Input:** names = [\"Alice\",\"Bob\",\"Bob\"], heights = [155,185,150]\n    **Output:** [\"Bob\",\"Alice\",\"Bob\"]\n    **Explanation:** The first Bob is the tallest, followed by Alice and the second Bob.\n    \n\n \n\n**Constraints:**\n\n  * `n == names.length == heights.length`\n  * `1 <= n <= 103`\n  * `1 <= names[i].length <= 20`\n  * `1 <= heights[i] <= 105`\n  * `names[i]` consists of lower and upper case English letters.\n  * All the values of `heights` are distinct.",
+  "question": "You are given an array of strings `names`, and an array `heights` that consists of **distinct** positive integers. Both arrays are of length `n`.\n\nFor each index `i`, `names[i]` and `heights[i]` denote the name and height of the `ith` person.\n\nReturn `names` _sorted in**descending** order by the people's heights_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** names = [\"Mary\",\"John\",\"Emma\"], heights = [180,165,170]\n    **Output:** [\"Mary\",\"Emma\",\"John\"]\n    **Explanation:** Mary is the tallest, followed by Emma and John.\n    \n\n**Example 2:**\n    \n    \n    **Input:** names = [\"Alice\",\"Bob\",\"Bob\"], heights = [155,185,150]\n    **Output:** [\"Bob\",\"Alice\",\"Bob\"]\n    **Explanation:** The first Bob is the tallest, followed by Alice and the second Bob.",
+  "constraints": "**Constraints:**\n\n  * `n == names.length == heights.length`\n  * `1 <= n <= 103`\n  * `1 <= names[i].length <= 20`\n  * `1 <= heights[i] <= 105`\n  * `names[i]` consists of lower and upper case English letters.\n  * All the values of `heights` are distinct.",
+  "topics": ["Array", "Hash Table", "String", "Sorting"],
+  "total_accepted": 375317,
+  "total_submissions": 442628,
+  "acceptance_rate": "84.8%",
+  "similar_questions": [
+    {
+      "title": "Sort Array by Increasing Frequency",
+      "slug": "sort-array-by-increasing-frequency",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-increasing-frequency/"
+    },
+    {
+      "title": "Sort the Students by Their Kth Score",
+      "slug": "sort-the-students-by-their-kth-score",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-the-students-by-their-kth-score/"
+    }
+  ],
+  "hints": [
+    "Find the tallest person and swap with the first person, then find the second tallest person and swap with the second person, etc. Repeat until you fix all n people."
+  ]
+}

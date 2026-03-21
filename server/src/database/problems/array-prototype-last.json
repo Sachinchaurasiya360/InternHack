@@ -1,0 +1,34 @@
+{
+  "id": "2619",
+  "title": "Array Prototype Last",
+  "slug": "array-prototype-last",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "<p>Write code that enhances all arrays such that you can call the&nbsp;<code>array.last()</code>&nbsp;method on any array and it will return the last element. If there are no elements in the array, it should return&nbsp;<code>-1</code>.</p>\n\n<p>You may assume the array is the output of&nbsp;<code>JSON.parse</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [null, {}, 3]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> Calling nums.last() should return the last element: 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = []\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> Because there are no elements, return -1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>arr</code> is a valid JSON array</li>\n\t<li><code>0 &lt;= arr.length &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Write code that enhances all arrays such that you can call the `array.last()` method on any array and it will return the last element. If there are no elements in the array, it should return `-1`.\n\nYou may assume the array is the output of `JSON.parse`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [null, {}, 3]\n    **Output:** 3\n    **Explanation:** Calling nums.last() should return the last element: 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = []\n    **Output:** -1\n    **Explanation:** Because there are no elements, return -1.\n    \n\n \n\n**Constraints:**\n\n  * `arr` is a valid JSON array\n  * `0 <= arr.length <= 1000`",
+  "question": "Write code that enhances all arrays such that you can call the `array.last()` method on any array and it will return the last element. If there are no elements in the array, it should return `-1`.\n\nYou may assume the array is the output of `JSON.parse`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [null, {}, 3]\n    **Output:** 3\n    **Explanation:** Calling nums.last() should return the last element: 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = []\n    **Output:** -1\n    **Explanation:** Because there are no elements, return -1.",
+  "constraints": "**Constraints:**\n\n  * `arr` is a valid JSON array\n  * `0 <= arr.length <= 1000`",
+  "topics": [],
+  "total_accepted": 234019,
+  "total_submissions": 313666,
+  "acceptance_rate": "74.6%",
+  "similar_questions": [
+    {
+      "title": "Snail Traversal",
+      "slug": "snail-traversal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/snail-traversal/"
+    },
+    {
+      "title": "Array Upper Bound",
+      "slug": "array-upper-bound",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/array-upper-bound/"
+    }
+  ],
+  "hints": [
+    "Inside the Array.prototype.last function body, you have access to the \"this\" keyword. \"this\" is equal to the contents of the array in this case.",
+    "You can access elements in the array via this[0], this[1], etc. You can also access properties and method like this.length, this.forEach, etc."
+  ]
+}

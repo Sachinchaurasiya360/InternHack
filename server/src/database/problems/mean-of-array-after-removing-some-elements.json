@@ -1,0 +1,18 @@
+{
+  "id": "1619",
+  "title": "Mean of Array After Removing Some Elements",
+  "slug": "mean-of-array-after-removing-some-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>arr</code>, return <em>the mean of the remaining integers after removing the smallest <code>5%</code> and the largest <code>5%</code> of the elements.</em></p>\n\n<p>Answers within <code>10<sup>-5</sup></code> of the <strong>actual answer</strong> will be considered accepted.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3]\n<strong>Output:</strong> 2.00000\n<strong>Explanation:</strong> After erasing the minimum and the maximum values of this array, all elements are equal to 2, so the mean is 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [6,2,7,5,1,2,0,3,10,2,5,0,5,5,0,8,7,6,8,0]\n<strong>Output:</strong> 4.00000\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [6,0,7,0,7,5,7,8,3,4,0,7,8,1,6,8,1,1,2,4,8,1,9,5,4,3,8,5,10,8,6,6,1,0,6,10,8,2,3,4]\n<strong>Output:</strong> 4.77778\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>20 &lt;= arr.length &lt;= 1000</code></li>\n\t<li><code>arr.length</code><b> </b><strong>is a multiple</strong> of <code>20</code>.</li>\n\t<li><code><font face=\"monospace\">0 &lt;= arr[i] &lt;= 10<sup>5</sup></font></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr`, return _the mean of the remaining integers after removing the smallest`5%` and the largest `5%` of the elements._\n\nAnswers within `10-5` of the **actual answer** will be considered accepted.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3]\n    **Output:** 2.00000\n    **Explanation:** After erasing the minimum and the maximum values of this array, all elements are equal to 2, so the mean is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [6,2,7,5,1,2,0,3,10,2,5,0,5,5,0,8,7,6,8,0]\n    **Output:** 4.00000\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [6,0,7,0,7,5,7,8,3,4,0,7,8,1,6,8,1,1,2,4,8,1,9,5,4,3,8,5,10,8,6,6,1,0,6,10,8,2,3,4]\n    **Output:** 4.77778\n    \n\n \n\n**Constraints:**\n\n  * `20 <= arr.length <= 1000`\n  * `arr.length`******is a multiple** of `20`.\n  * `0 <= arr[i] <= 105`",
+  "question": "Given an integer array `arr`, return _the mean of the remaining integers after removing the smallest`5%` and the largest `5%` of the elements._\n\nAnswers within `10-5` of the **actual answer** will be considered accepted.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3]\n    **Output:** 2.00000\n    **Explanation:** After erasing the minimum and the maximum values of this array, all elements are equal to 2, so the mean is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [6,2,7,5,1,2,0,3,10,2,5,0,5,5,0,8,7,6,8,0]\n    **Output:** 4.00000\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [6,0,7,0,7,5,7,8,3,4,0,7,8,1,6,8,1,1,2,4,8,1,9,5,4,3,8,5,10,8,6,6,1,0,6,10,8,2,3,4]\n    **Output:** 4.77778",
+  "constraints": "**Constraints:**\n\n  * `20 <= arr.length <= 1000`\n  * `arr.length`******is a multiple** of `20`.\n  * `0 <= arr[i] <= 105`",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 83338,
+  "total_submissions": 116501,
+  "acceptance_rate": "71.5%",
+  "similar_questions": [],
+  "hints": ["Sort the given array.", "Remove the first and last 5% of the sorted array."]
+}

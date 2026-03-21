@@ -1,0 +1,27 @@
+{
+  "id": "3173",
+  "title": "Bitwise OR of Adjacent Elements",
+  "slug": "bitwise-or-of-adjacent-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Bit Manipulation"],
+  "total_accepted": 6438,
+  "total_submissions": 6796,
+  "acceptance_rate": "94.7%",
+  "similar_questions": [
+    {
+      "title": "Neighboring Bitwise XOR",
+      "slug": "neighboring-bitwise-xor",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/neighboring-bitwise-xor/"
+    }
+  ],
+  "hints": [
+    "Iterate over array and calculate each element of the resulting array using <code>|</code> operation."
+  ]
+}

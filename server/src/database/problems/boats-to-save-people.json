@@ -1,0 +1,18 @@
+{
+  "id": "881",
+  "title": "Boats to Save People",
+  "slug": "boats-to-save-people",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>people</code> where <code>people[i]</code> is the weight of the <code>i<sup>th</sup></code> person, and an <strong>infinite number of boats</strong> where each boat can carry a maximum weight of <code>limit</code>. Each boat carries at most two people at the same time, provided the sum of the weight of those people is at most <code>limit</code>.</p>\n\n<p>Return <em>the minimum number of boats to carry every given person</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> people = [1,2], limit = 3\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> 1 boat (1, 2)\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> people = [3,2,2,1], limit = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> 3 boats (1, 2), (2) and (3)\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> people = [3,5,3,4], limit = 5\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> 4 boats (3), (3), (4), (5)\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= people.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= people[i] &lt;= limit &lt;= 3 * 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `people` where `people[i]` is the weight of the `ith` person, and an **infinite number of boats** where each boat can carry a maximum weight of `limit`. Each boat carries at most two people at the same time, provided the sum of the weight of those people is at most `limit`.\n\nReturn _the minimum number of boats to carry every given person_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** people = [1,2], limit = 3\n    **Output:** 1\n    **Explanation:** 1 boat (1, 2)\n    \n\n**Example 2:**\n    \n    \n    **Input:** people = [3,2,2,1], limit = 3\n    **Output:** 3\n    **Explanation:** 3 boats (1, 2), (2) and (3)\n    \n\n**Example 3:**\n    \n    \n    **Input:** people = [3,5,3,4], limit = 5\n    **Output:** 4\n    **Explanation:** 4 boats (3), (3), (4), (5)\n    \n\n \n\n**Constraints:**\n\n  * `1 <= people.length <= 5 * 104`\n  * `1 <= people[i] <= limit <= 3 * 104`",
+  "question": "You are given an array `people` where `people[i]` is the weight of the `ith` person, and an **infinite number of boats** where each boat can carry a maximum weight of `limit`. Each boat carries at most two people at the same time, provided the sum of the weight of those people is at most `limit`.\n\nReturn _the minimum number of boats to carry every given person_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** people = [1,2], limit = 3\n    **Output:** 1\n    **Explanation:** 1 boat (1, 2)\n    \n\n**Example 2:**\n    \n    \n    **Input:** people = [3,2,2,1], limit = 3\n    **Output:** 3\n    **Explanation:** 3 boats (1, 2), (2) and (3)\n    \n\n**Example 3:**\n    \n    \n    **Input:** people = [3,5,3,4], limit = 5\n    **Output:** 4\n    **Explanation:** 4 boats (3), (3), (4), (5)",
+  "constraints": "**Constraints:**\n\n  * `1 <= people.length <= 5 * 104`\n  * `1 <= people[i] <= limit <= 3 * 104`",
+  "topics": ["Array", "Two Pointers", "Greedy", "Sorting"],
+  "total_accepted": 549887,
+  "total_submissions": 895334,
+  "acceptance_rate": "61.4%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "1660",
+  "title": "Correct a Binary Tree",
+  "slug": "correct-a-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 23000,
+  "total_submissions": 30960,
+  "acceptance_rate": "74.3%",
+  "similar_questions": [
+    {
+      "title": "Flatten Binary Tree to Linked List",
+      "slug": "flatten-binary-tree-to-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-binary-tree-to-linked-list/"
+    },
+    {
+      "title": "Flatten a Multilevel Doubly Linked List",
+      "slug": "flatten-a-multilevel-doubly-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/"
+    }
+  ],
+  "hints": [
+    "If you traverse the tree from right to left, the invalid node will point to a node that has already been visited."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "1990",
+  "title": "Count the Number of Experiments",
+  "slug": "count-the-number-of-experiments",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 9734,
+  "total_submissions": 19961,
+  "acceptance_rate": "48.8%",
+  "similar_questions": [],
+  "hints": []
+}

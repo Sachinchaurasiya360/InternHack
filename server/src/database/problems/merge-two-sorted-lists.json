@@ -1,0 +1,61 @@
+{
+  "id": "21",
+  "title": "Merge Two Sorted Lists",
+  "slug": "merge-two-sorted-lists",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the heads of two sorted linked lists <code>list1</code> and <code>list2</code>.</p>\n\n<p>Merge the two lists into one <strong>sorted</strong> list. The list should be made by splicing together the nodes of the first two lists.</p>\n\n<p>Return <em>the head of the merged linked list</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg\" style=\"width: 662px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> list1 = [1,2,4], list2 = [1,3,4]\n<strong>Output:</strong> [1,1,2,3,4,4]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> list1 = [], list2 = []\n<strong>Output:</strong> []\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> list1 = [], list2 = [0]\n<strong>Output:</strong> [0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in both lists is in the range <code>[0, 50]</code>.</li>\n\t<li><code>-100 &lt;= Node.val &lt;= 100</code></li>\n\t<li>Both <code>list1</code> and <code>list2</code> are sorted in <strong>non-decreasing</strong> order.</li>\n</ul>\n",
+  "content_markdown": "You are given the heads of two sorted linked lists `list1` and `list2`.\n\nMerge the two lists into one **sorted** list. The list should be made by splicing together the nodes of the first two lists.\n\nReturn _the head of the merged linked list_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg)\n    \n    \n    **Input:** list1 = [1,2,4], list2 = [1,3,4]\n    **Output:** [1,1,2,3,4,4]\n    \n\n**Example 2:**\n    \n    \n    **Input:** list1 = [], list2 = []\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** list1 = [], list2 = [0]\n    **Output:** [0]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in both lists is in the range `[0, 50]`.\n  * `-100 <= Node.val <= 100`\n  * Both `list1` and `list2` are sorted in **non-decreasing** order.",
+  "question": "You are given the heads of two sorted linked lists `list1` and `list2`.\n\nMerge the two lists into one **sorted** list. The list should be made by splicing together the nodes of the first two lists.\n\nReturn _the head of the merged linked list_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg)\n    \n    \n    **Input:** list1 = [1,2,4], list2 = [1,3,4]\n    **Output:** [1,1,2,3,4,4]\n    \n\n**Example 2:**\n    \n    \n    **Input:** list1 = [], list2 = []\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** list1 = [], list2 = [0]\n    **Output:** [0]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in both lists is in the range `[0, 50]`.\n  * `-100 <= Node.val <= 100`\n  * Both `list1` and `list2` are sorted in **non-decreasing** order.",
+  "topics": ["Linked List", "Recursion"],
+  "total_accepted": 6064354,
+  "total_submissions": 8924395,
+  "acceptance_rate": "68.0%",
+  "similar_questions": [
+    {
+      "title": "Merge k Sorted Lists",
+      "slug": "merge-k-sorted-lists",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/merge-k-sorted-lists/"
+    },
+    {
+      "title": "Merge Sorted Array",
+      "slug": "merge-sorted-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-sorted-array/"
+    },
+    {
+      "title": "Sort List",
+      "slug": "sort-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-list/"
+    },
+    {
+      "title": "Shortest Word Distance II",
+      "slug": "shortest-word-distance-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-word-distance-ii/"
+    },
+    {
+      "title": "Add Two Polynomials Represented as Linked Lists",
+      "slug": "add-two-polynomials-represented-as-linked-lists",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-polynomials-represented-as-linked-lists/"
+    },
+    {
+      "title": "Longest Common Subsequence Between Sorted Arrays",
+      "slug": "longest-common-subsequence-between-sorted-arrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-common-subsequence-between-sorted-arrays/"
+    },
+    {
+      "title": "Merge Two 2D Arrays by Summing Values",
+      "slug": "merge-two-2d-arrays-by-summing-values",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-two-2d-arrays-by-summing-values/"
+    }
+  ],
+  "hints": []
+}

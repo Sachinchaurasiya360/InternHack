@@ -1,0 +1,33 @@
+{
+  "id": "2094",
+  "title": "Finding 3-Digit Even Numbers",
+  "slug": "finding-3-digit-even-numbers",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>digits</code>, where each element is a digit. The array may contain duplicates.</p>\n\n<p>You need to find <strong>all</strong> the <strong>unique</strong> integers that follow the given requirements:</p>\n\n<ul>\n\t<li>The integer consists of the <strong>concatenation</strong> of <strong>three</strong> elements from <code>digits</code> in <strong>any</strong> arbitrary order.</li>\n\t<li>The integer does not have <strong>leading zeros</strong>.</li>\n\t<li>The integer is <strong>even</strong>.</li>\n</ul>\n\n<p>For example, if the given <code>digits</code> were <code>[1, 2, 3]</code>, integers <code>132</code> and <code>312</code> follow the requirements.</p>\n\n<p>Return <em>a <strong>sorted</strong> array of the unique integers.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> digits = [2,1,3,0]\n<strong>Output:</strong> [102,120,130,132,210,230,302,310,312,320]\n<strong>Explanation:</strong> All the possible integers that follow the requirements are in the output array. \nNotice that there are no <strong>odd</strong> integers or integers with <strong>leading zeros</strong>.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> digits = [2,2,8,8,2]\n<strong>Output:</strong> [222,228,282,288,822,828,882]\n<strong>Explanation:</strong> The same digit can be used as many times as it appears in digits. \nIn this example, the digit 8 is used twice each time in 288, 828, and 882. \n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> digits = [3,7,5]\n<strong>Output:</strong> []\n<strong>Explanation:</strong> No <strong>even</strong> integers can be formed using the given digits.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= digits.length &lt;= 100</code></li>\n\t<li><code>0 &lt;= digits[i] &lt;= 9</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `digits`, where each element is a digit. The array may contain duplicates.\n\nYou need to find **all** the **unique** integers that follow the given requirements:\n\n  * The integer consists of the **concatenation** of **three** elements from `digits` in **any** arbitrary order.\n  * The integer does not have **leading zeros**.\n  * The integer is **even**.\n\n\n\nFor example, if the given `digits` were `[1, 2, 3]`, integers `132` and `312` follow the requirements.\n\nReturn _a**sorted** array of the unique integers._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** digits = [2,1,3,0]\n    **Output:** [102,120,130,132,210,230,302,310,312,320]\n    **Explanation:** All the possible integers that follow the requirements are in the output array. \n    Notice that there are no **odd** integers or integers with **leading zeros**.\n    \n\n**Example 2:**\n    \n    \n    **Input:** digits = [2,2,8,8,2]\n    **Output:** [222,228,282,288,822,828,882]\n    **Explanation:** The same digit can be used as many times as it appears in digits. \n    In this example, the digit 8 is used twice each time in 288, 828, and 882. \n    \n\n**Example 3:**\n    \n    \n    **Input:** digits = [3,7,5]\n    **Output:** []\n    **Explanation:** No **even** integers can be formed using the given digits.\n    \n\n \n\n**Constraints:**\n\n  * `3 <= digits.length <= 100`\n  * `0 <= digits[i] <= 9`",
+  "question": "You are given an integer array `digits`, where each element is a digit. The array may contain duplicates.\n\nYou need to find **all** the **unique** integers that follow the given requirements:\n\n  * The integer consists of the **concatenation** of **three** elements from `digits` in **any** arbitrary order.\n  * The integer does not have **leading zeros**.\n  * The integer is **even**.\n\n\n\nFor example, if the given `digits` were `[1, 2, 3]`, integers `132` and `312` follow the requirements.\n\nReturn _a**sorted** array of the unique integers._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** digits = [2,1,3,0]\n    **Output:** [102,120,130,132,210,230,302,310,312,320]\n    **Explanation:** All the possible integers that follow the requirements are in the output array. \n    Notice that there are no **odd** integers or integers with **leading zeros**.\n    \n\n**Example 2:**\n    \n    \n    **Input:** digits = [2,2,8,8,2]\n    **Output:** [222,228,282,288,822,828,882]\n    **Explanation:** The same digit can be used as many times as it appears in digits. \n    In this example, the digit 8 is used twice each time in 288, 828, and 882. \n    \n\n**Example 3:**\n    \n    \n    **Input:** digits = [3,7,5]\n    **Output:** []\n    **Explanation:** No **even** integers can be formed using the given digits.",
+  "constraints": "**Constraints:**\n\n  * `3 <= digits.length <= 100`\n  * `0 <= digits[i] <= 9`",
+  "topics": ["Array", "Hash Table", "Recursion", "Sorting", "Enumeration"],
+  "total_accepted": 178908,
+  "total_submissions": 227007,
+  "acceptance_rate": "78.8%",
+  "similar_questions": [
+    {
+      "title": "Find Numbers with Even Number of Digits",
+      "slug": "find-numbers-with-even-number-of-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-numbers-with-even-number-of-digits/"
+    },
+    {
+      "title": "Unique 3-Digit Even Numbers",
+      "slug": "unique-3-digit-even-numbers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/unique-3-digit-even-numbers/"
+    }
+  ],
+  "hints": [
+    "The range of possible answers includes all even numbers between 100 and 999 inclusive. Could you check each possible answer to see if it could be formed from the digits in the array?"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "166",
+  "title": "Fraction to Recurring Decimal",
+  "slug": "fraction-to-recurring-decimal",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integers representing the <code>numerator</code> and <code>denominator</code> of a fraction, return <em>the fraction in string format</em>.</p>\n\n<p>If the fractional part is repeating, enclose the repeating part in parentheses</p>\n\n<p>If multiple answers are possible, return <strong>any of them</strong>.</p>\n\n<p>It is <strong>guaranteed</strong> that the length of the answer string is less than <code>10<sup>4</sup></code> for all the given inputs.</p>\n\n<p><strong>Note</strong> that if the fraction can be represented as a <em>finite length string</em>, you <strong>must</strong> return it.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> numerator = 1, denominator = 2\n<strong>Output:</strong> &quot;0.5&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> numerator = 2, denominator = 1\n<strong>Output:</strong> &quot;2&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> numerator = 4, denominator = 333\n<strong>Output:</strong> &quot;0.(012)&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-2<sup>31</sup> &lt;=&nbsp;numerator, denominator &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li><code>denominator != 0</code></li>\n</ul>\n",
+  "content_markdown": "Given two integers representing the `numerator` and `denominator` of a fraction, return _the fraction in string format_.\n\nIf the fractional part is repeating, enclose the repeating part in parentheses\n\nIf multiple answers are possible, return **any of them**.\n\nIt is **guaranteed** that the length of the answer string is less than `104` for all the given inputs.\n\n**Note** that if the fraction can be represented as a _finite length string_ , you **must** return it.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** numerator = 1, denominator = 2\n    **Output:** \"0.5\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** numerator = 2, denominator = 1\n    **Output:** \"2\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** numerator = 4, denominator = 333\n    **Output:** \"0.(012)\"\n    \n\n \n\n**Constraints:**\n\n  * `-231 <= numerator, denominator <= 231 - 1`\n  * `denominator != 0`",
+  "question": "Given two integers representing the `numerator` and `denominator` of a fraction, return _the fraction in string format_.\n\nIf the fractional part is repeating, enclose the repeating part in parentheses\n\nIf multiple answers are possible, return **any of them**.\n\nIt is **guaranteed** that the length of the answer string is less than `104` for all the given inputs.\n\n**Note** that if the fraction can be represented as a _finite length string_ , you **must** return it.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** numerator = 1, denominator = 2\n    **Output:** \"0.5\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** numerator = 2, denominator = 1\n    **Output:** \"2\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** numerator = 4, denominator = 333\n    **Output:** \"0.(012)\"",
+  "constraints": "**Constraints:**\n\n  * `-231 <= numerator, denominator <= 231 - 1`\n  * `denominator != 0`",
+  "topics": ["Hash Table", "Math", "String"],
+  "total_accepted": 356608,
+  "total_submissions": 1166223,
+  "acceptance_rate": "30.6%",
+  "similar_questions": [],
+  "hints": [
+    "No scary math, just apply elementary math knowledge. Still remember how to perform a <i>long division</i>?",
+    "Try a long division on 4/9, the repeating part is obvious. Now try 4/333. Do you see a pattern?",
+    "Notice that once the remainder starts repeating, so does the divided result.",
+    "Be wary of edge cases! List out as many test cases as you can think of and test your code thoroughly."
+  ]
+}

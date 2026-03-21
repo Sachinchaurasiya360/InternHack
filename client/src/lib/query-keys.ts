@@ -189,13 +189,14 @@ export const queryKeys = {
   // DSA Practice
   dsa: {
     topics: (filter?: string) => ["dsa", "topics", filter] as const,
-    topic: (slug: string) => ["dsa", "topic", slug] as const,
+    topic: (slug: string, page?: number, filters?: Record<string, string | undefined>) => ["dsa", "topic", slug, page, filters] as const,
+    problem: (slug: string) => ["dsa", "problem", slug] as const,
     progress: () => ["dsa", "progress"] as const,
     bookmarks: () => ["dsa", "bookmarks"] as const,
     companies: () => ["dsa", "companies"] as const,
-    company: (name: string) => ["dsa", "company", name] as const,
+    company: (name: string, page?: number) => ["dsa", "company", name, page] as const,
     patterns: () => ["dsa", "patterns"] as const,
-    pattern: (name: string) => ["dsa", "pattern", name] as const,
+    pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
   },
 };

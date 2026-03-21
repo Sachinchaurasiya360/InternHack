@@ -1,0 +1,28 @@
+{
+  "id": "2370",
+  "title": "Longest Ideal Subsequence",
+  "slug": "longest-ideal-subsequence",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting of lowercase letters and an integer <code>k</code>. We call a string <code>t</code> <strong>ideal</strong> if the following conditions are satisfied:</p>\n\n<ul>\n\t<li><code>t</code> is a <strong>subsequence</strong> of the string <code>s</code>.</li>\n\t<li>The absolute difference in the alphabet order of every two <strong>adjacent</strong> letters in <code>t</code> is less than or equal to <code>k</code>.</li>\n</ul>\n\n<p>Return <em>the length of the <strong>longest</strong> ideal string</em>.</p>\n\n<p>A <strong>subsequence</strong> is a string that can be derived from another string by deleting some or no characters without changing the order of the remaining characters.</p>\n\n<p><strong>Note</strong> that the alphabet order is not cyclic. For example, the absolute difference in the alphabet order of <code>&#39;a&#39;</code> and <code>&#39;z&#39;</code> is <code>25</code>, not <code>1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;acfgbd&quot;, k = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The longest ideal string is &quot;acbd&quot;. The length of this string is 4, so 4 is returned.\nNote that &quot;acfgbd&quot; is not ideal because &#39;c&#39; and &#39;f&#39; have a difference of 3 in alphabet order.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcd&quot;, k = 3\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The longest ideal string is &quot;abcd&quot;. The length of this string is 4, so 4 is returned.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= k &lt;= 25</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting of lowercase letters and an integer `k`. We call a string `t` **ideal** if the following conditions are satisfied:\n\n  * `t` is a **subsequence** of the string `s`.\n  * The absolute difference in the alphabet order of every two **adjacent** letters in `t` is less than or equal to `k`.\n\n\n\nReturn _the length of the**longest** ideal string_.\n\nA **subsequence** is a string that can be derived from another string by deleting some or no characters without changing the order of the remaining characters.\n\n**Note** that the alphabet order is not cyclic. For example, the absolute difference in the alphabet order of `'a'` and `'z'` is `25`, not `1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"acfgbd\", k = 2\n    **Output:** 4\n    **Explanation:** The longest ideal string is \"acbd\". The length of this string is 4, so 4 is returned.\n    Note that \"acfgbd\" is not ideal because 'c' and 'f' have a difference of 3 in alphabet order.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\", k = 3\n    **Output:** 4\n    **Explanation:** The longest ideal string is \"abcd\". The length of this string is 4, so 4 is returned.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `0 <= k <= 25`\n  * `s` consists of lowercase English letters.",
+  "question": "You are given a string `s` consisting of lowercase letters and an integer `k`. We call a string `t` **ideal** if the following conditions are satisfied:\n\n  * `t` is a **subsequence** of the string `s`.\n  * The absolute difference in the alphabet order of every two **adjacent** letters in `t` is less than or equal to `k`.\n\n\n\nReturn _the length of the**longest** ideal string_.\n\nA **subsequence** is a string that can be derived from another string by deleting some or no characters without changing the order of the remaining characters.\n\n**Note** that the alphabet order is not cyclic. For example, the absolute difference in the alphabet order of `'a'` and `'z'` is `25`, not `1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"acfgbd\", k = 2\n    **Output:** 4\n    **Explanation:** The longest ideal string is \"acbd\". The length of this string is 4, so 4 is returned.\n    Note that \"acfgbd\" is not ideal because 'c' and 'f' have a difference of 3 in alphabet order.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\", k = 3\n    **Output:** 4\n    **Explanation:** The longest ideal string is \"abcd\". The length of this string is 4, so 4 is returned.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `0 <= k <= 25`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Dynamic Programming"],
+  "total_accepted": 123844,
+  "total_submissions": 265475,
+  "acceptance_rate": "46.6%",
+  "similar_questions": [
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    }
+  ],
+  "hints": [
+    "How can you calculate the longest ideal subsequence that ends at a specific index i?",
+    "Can you calculate it for all positions i? How can you use previously calculated answers to calculate the answer for the next position?"
+  ]
+}

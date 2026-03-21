@@ -1,0 +1,40 @@
+{
+  "id": "1828",
+  "title": "Queries on Number of Points Inside a Circle",
+  "slug": "queries-on-number-of-points-inside-a-circle",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>points</code> where <code>points[i] = [x<sub>i</sub>, y<sub>i</sub>]</code> is the coordinates of the <code>i<sup>th</sup></code> point on a 2D plane. Multiple points can have the <strong>same</strong> coordinates.</p>\n\n<p>You are also given an array <code>queries</code> where <code>queries[j] = [x<sub>j</sub>, y<sub>j</sub>, r<sub>j</sub>]</code> describes a circle centered at <code>(x<sub>j</sub>, y<sub>j</sub>)</code> with a radius of <code>r<sub>j</sub></code>.</p>\n\n<p>For each query <code>queries[j]</code>, compute the number of points <strong>inside</strong> the <code>j<sup>th</sup></code> circle. Points <strong>on the border</strong> of the circle are considered <strong>inside</strong>.</p>\n\n<p>Return <em>an array </em><code>answer</code><em>, where </em><code>answer[j]</code><em> is the answer to the </em><code>j<sup>th</sup></code><em> query</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/25/chrome_2021-03-25_22-34-16.png\" style=\"width: 500px; height: 418px;\" />\n<pre>\n<strong>Input:</strong> points = [[1,3],[3,3],[5,3],[2,2]], queries = [[2,3,1],[4,3,1],[1,1,2]]\n<strong>Output:</strong> [3,2,2]\n<b>Explanation: </b>The points and circles are shown above.\nqueries[0] is the green circle, queries[1] is the red circle, and queries[2] is the blue circle.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/25/chrome_2021-03-25_22-42-07.png\" style=\"width: 500px; height: 390px;\" />\n<pre>\n<strong>Input:</strong> points = [[1,1],[2,2],[3,3],[4,4],[5,5]], queries = [[1,2,2],[2,2,2],[4,3,2],[4,3,3]]\n<strong>Output:</strong> [2,3,2,4]\n<b>Explanation: </b>The points and circles are shown above.\nqueries[0] is green, queries[1] is red, queries[2] is blue, and queries[3] is purple.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= points.length &lt;= 500</code></li>\n\t<li><code>points[i].length == 2</code></li>\n\t<li><code>0 &lt;= x<sub>​​​​​​i</sub>, y<sub>​​​​​​i</sub> &lt;= 500</code></li>\n\t<li><code>1 &lt;= queries.length &lt;= 500</code></li>\n\t<li><code>queries[j].length == 3</code></li>\n\t<li><code>0 &lt;= x<sub>j</sub>, y<sub>j</sub> &lt;= 500</code></li>\n\t<li><code>1 &lt;= r<sub>j</sub> &lt;= 500</code></li>\n\t<li>All coordinates are integers.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Could you find the answer for each query in better complexity than <code>O(n)</code>?</p>\n",
+  "content_markdown": "You are given an array `points` where `points[i] = [xi, yi]` is the coordinates of the `ith` point on a 2D plane. Multiple points can have the **same** coordinates.\n\nYou are also given an array `queries` where `queries[j] = [xj, yj, rj]` describes a circle centered at `(xj, yj)` with a radius of `rj`.\n\nFor each query `queries[j]`, compute the number of points **inside** the `jth` circle. Points **on the border** of the circle are considered **inside**.\n\nReturn _an array_`answer` _, where_`answer[j]`_is the answer to the_`jth` _query_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/25/chrome_2021-03-25_22-34-16.png)\n    \n    \n    **Input:** points = [[1,3],[3,3],[5,3],[2,2]], queries = [[2,3,1],[4,3,1],[1,1,2]]\n    **Output:** [3,2,2]\n    **Explanation:** The points and circles are shown above.\n    queries[0] is the green circle, queries[1] is the red circle, and queries[2] is the blue circle.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/25/chrome_2021-03-25_22-42-07.png)\n    \n    \n    **Input:** points = [[1,1],[2,2],[3,3],[4,4],[5,5]], queries = [[1,2,2],[2,2,2],[4,3,2],[4,3,3]]\n    **Output:** [2,3,2,4]\n    **Explanation:** The points and circles are shown above.\n    queries[0] is green, queries[1] is red, queries[2] is blue, and queries[3] is purple.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= points.length <= 500`\n  * `points[i].length == 2`\n  * `0 <= x​​​​​​i, y​​​​​​i <= 500`\n  * `1 <= queries.length <= 500`\n  * `queries[j].length == 3`\n  * `0 <= xj, yj <= 500`\n  * `1 <= rj <= 500`\n  * All coordinates are integers.\n\n\n\n \n\n**Follow up:** Could you find the answer for each query in better complexity than `O(n)`?",
+  "question": "You are given an array `points` where `points[i] = [xi, yi]` is the coordinates of the `ith` point on a 2D plane. Multiple points can have the **same** coordinates.\n\nYou are also given an array `queries` where `queries[j] = [xj, yj, rj]` describes a circle centered at `(xj, yj)` with a radius of `rj`.\n\nFor each query `queries[j]`, compute the number of points **inside** the `jth` circle. Points **on the border** of the circle are considered **inside**.\n\nReturn _an array_`answer` _, where_`answer[j]`_is the answer to the_`jth` _query_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/25/chrome_2021-03-25_22-34-16.png)\n    \n    \n    **Input:** points = [[1,3],[3,3],[5,3],[2,2]], queries = [[2,3,1],[4,3,1],[1,1,2]]\n    **Output:** [3,2,2]\n    **Explanation:** The points and circles are shown above.\n    queries[0] is the green circle, queries[1] is the red circle, and queries[2] is the blue circle.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/25/chrome_2021-03-25_22-42-07.png)\n    \n    \n    **Input:** points = [[1,1],[2,2],[3,3],[4,4],[5,5]], queries = [[1,2,2],[2,2,2],[4,3,2],[4,3,3]]\n    **Output:** [2,3,2,4]\n    **Explanation:** The points and circles are shown above.\n    queries[0] is green, queries[1] is red, queries[2] is blue, and queries[3] is purple.",
+  "constraints": "**Constraints:**\n\n  * `1 <= points.length <= 500`\n  * `points[i].length == 2`\n  * `0 <= x​​​​​​i, y​​​​​​i <= 500`\n  * `1 <= queries.length <= 500`\n  * `queries[j].length == 3`\n  * `0 <= xj, yj <= 500`\n  * `1 <= rj <= 500`\n  * All coordinates are integers.",
+  "topics": ["Array", "Math", "Geometry"],
+  "total_accepted": 94396,
+  "total_submissions": 108782,
+  "acceptance_rate": "86.8%",
+  "similar_questions": [
+    {
+      "title": "Count Lattice Points Inside a Circle",
+      "slug": "count-lattice-points-inside-a-circle",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-lattice-points-inside-a-circle/"
+    },
+    {
+      "title": "Count Number of Rectangles Containing Each Point",
+      "slug": "count-number-of-rectangles-containing-each-point",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-rectangles-containing-each-point/"
+    },
+    {
+      "title": "Check if the Rectangle Corner Is Reachable",
+      "slug": "check-if-the-rectangle-corner-is-reachable",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/check-if-the-rectangle-corner-is-reachable/"
+    }
+  ],
+  "hints": [
+    "For a point to be inside a circle, the euclidean distance between it and the circle's center needs to be less than or equal to the radius.",
+    "Brute force for each circle and iterate overall points and find those inside it."
+  ]
+}

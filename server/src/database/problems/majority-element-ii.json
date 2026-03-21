@@ -1,0 +1,41 @@
+{
+  "id": "229",
+  "title": "Majority Element II",
+  "slug": "majority-element-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array of size <code>n</code>, find all elements that appear more than <code>&lfloor; n/3 &rfloor;</code> times.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,3]\n<strong>Output:</strong> [3]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1]\n<strong>Output:</strong> [1]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2]\n<strong>Output:</strong> [1,2]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Could you solve the problem in linear time and in <code>O(1)</code> space?</p>\n",
+  "content_markdown": "Given an integer array of size `n`, find all elements that appear more than `⌊ n/3 ⌋` times.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,2,3]\n    **Output:** [3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** [1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2]\n    **Output:** [1,2]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 5 * 104`\n  * `-109 <= nums[i] <= 109`\n\n\n\n \n\n**Follow up:** Could you solve the problem in linear time and in `O(1)` space?",
+  "question": "Given an integer array of size `n`, find all elements that appear more than `⌊ n/3 ⌋` times.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,2,3]\n    **Output:** [3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** [1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2]\n    **Output:** [1,2]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 5 * 104`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Sorting", "Counting"],
+  "total_accepted": 1213988,
+  "total_submissions": 2174480,
+  "acceptance_rate": "55.8%",
+  "similar_questions": [
+    {
+      "title": "Majority Element",
+      "slug": "majority-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/majority-element/"
+    },
+    {
+      "title": "Check If a Number Is Majority Element in a Sorted Array",
+      "slug": "check-if-a-number-is-majority-element-in-a-sorted-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-a-number-is-majority-element-in-a-sorted-array/"
+    },
+    {
+      "title": "Most Frequent Even Element",
+      "slug": "most-frequent-even-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/most-frequent-even-element/"
+    }
+  ],
+  "hints": [
+    "Think about the possible number of elements that can appear more than ⌊ n/3 ⌋ times in the array.",
+    "It can be at most two. Why?",
+    "Consider using Boyer-Moore Voting Algorithm, which is efficient for finding elements that appear more than a certain threshold."
+  ]
+}

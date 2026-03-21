@@ -1,0 +1,27 @@
+{
+  "id": "1592",
+  "title": "Rearrange Spaces Between Words",
+  "slug": "rearrange-spaces-between-words",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>text</code> of words that are placed among some number of spaces. Each word consists of one or more lowercase English letters and are separated by at least one space. It&#39;s guaranteed that <code>text</code> <strong>contains at least one word</strong>.</p>\n\n<p>Rearrange the spaces so that there is an <strong>equal</strong> number of spaces between every pair of adjacent words and that number is <strong>maximized</strong>. If you cannot redistribute all the spaces equally, place the <strong>extra spaces at the end</strong>, meaning the returned string should be the same length as <code>text</code>.</p>\n\n<p>Return <em>the string after rearranging the spaces</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;  this   is  a sentence &quot;\n<strong>Output:</strong> &quot;this   is   a   sentence&quot;\n<strong>Explanation:</strong> There are a total of 9 spaces and 4 words. We can evenly divide the 9 spaces between the words: 9 / (4-1) = 3 spaces.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot; practice   makes   perfect&quot;\n<strong>Output:</strong> &quot;practice   makes   perfect &quot;\n<strong>Explanation:</strong> There are a total of 7 spaces and 3 words. 7 / (3-1) = 3 spaces plus 1 extra space. We place this extra space at the end of the string.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= text.length &lt;= 100</code></li>\n\t<li><code>text</code> consists of lowercase English letters and <code>&#39; &#39;</code>.</li>\n\t<li><code>text</code> contains at least one word.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `text` of words that are placed among some number of spaces. Each word consists of one or more lowercase English letters and are separated by at least one space. It's guaranteed that `text` **contains at least one word**.\n\nRearrange the spaces so that there is an **equal** number of spaces between every pair of adjacent words and that number is **maximized**. If you cannot redistribute all the spaces equally, place the **extra spaces at the end** , meaning the returned string should be the same length as `text`.\n\nReturn _the string after rearranging the spaces_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** text = \"  this   is  a sentence \"\n    **Output:** \"this   is   a   sentence\"\n    **Explanation:** There are a total of 9 spaces and 4 words. We can evenly divide the 9 spaces between the words: 9 / (4-1) = 3 spaces.\n    \n\n**Example 2:**\n    \n    \n    **Input:** text = \" practice   makes   perfect\"\n    **Output:** \"practice   makes   perfect \"\n    **Explanation:** There are a total of 7 spaces and 3 words. 7 / (3-1) = 3 spaces plus 1 extra space. We place this extra space at the end of the string.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= text.length <= 100`\n  * `text` consists of lowercase English letters and `' '`.\n  * `text` contains at least one word.",
+  "question": "You are given a string `text` of words that are placed among some number of spaces. Each word consists of one or more lowercase English letters and are separated by at least one space. It's guaranteed that `text` **contains at least one word**.\n\nRearrange the spaces so that there is an **equal** number of spaces between every pair of adjacent words and that number is **maximized**. If you cannot redistribute all the spaces equally, place the **extra spaces at the end** , meaning the returned string should be the same length as `text`.\n\nReturn _the string after rearranging the spaces_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** text = \"  this   is  a sentence \"\n    **Output:** \"this   is   a   sentence\"\n    **Explanation:** There are a total of 9 spaces and 4 words. We can evenly divide the 9 spaces between the words: 9 / (4-1) = 3 spaces.\n    \n\n**Example 2:**\n    \n    \n    **Input:** text = \" practice   makes   perfect\"\n    **Output:** \"practice   makes   perfect \"\n    **Explanation:** There are a total of 7 spaces and 3 words. 7 / (3-1) = 3 spaces plus 1 extra space. We place this extra space at the end of the string.",
+  "constraints": "**Constraints:**\n\n  * `1 <= text.length <= 100`\n  * `text` consists of lowercase English letters and `' '`.\n  * `text` contains at least one word.",
+  "topics": ["String"],
+  "total_accepted": 71902,
+  "total_submissions": 162890,
+  "acceptance_rate": "44.1%",
+  "similar_questions": [
+    {
+      "title": "Text Justification",
+      "slug": "text-justification",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/text-justification/"
+    }
+  ],
+  "hints": [
+    "Count the total number of spaces and words. Then use the integer division to determine the numbers of spaces to add between each word and at the end."
+  ]
+}

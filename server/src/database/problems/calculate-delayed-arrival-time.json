@@ -1,0 +1,21 @@
+{
+  "id": "2651",
+  "title": "Calculate Delayed Arrival Time",
+  "slug": "calculate-delayed-arrival-time",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>arrivalTime</code> denoting the arrival time of a train in hours, and another positive integer <code>delayedTime</code> denoting the amount of delay in hours.</p>\n\n<p>Return <em>the time when the train will arrive at the station.</em></p>\n\n<p>Note that the time in this problem is in 24-hours format.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arrivalTime = 15, delayedTime = 5 \n<strong>Output:</strong> 20 \n<strong>Explanation:</strong> Arrival time of the train was 15:00 hours. It is delayed by 5 hours. Now it will reach at 15+5 = 20 (20:00 hours).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arrivalTime = 13, delayedTime = 11\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> Arrival time of the train was 13:00 hours. It is delayed by 11 hours. Now it will reach at 13+11=24 (Which is denoted by 00:00 in 24 hours format so return 0).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arrivaltime &lt;&nbsp;24</code></li>\n\t<li><code>1 &lt;= delayedTime &lt;= 24</code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `arrivalTime` denoting the arrival time of a train in hours, and another positive integer `delayedTime` denoting the amount of delay in hours.\n\nReturn _the time when the train will arrive at the station._\n\nNote that the time in this problem is in 24-hours format.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arrivalTime = 15, delayedTime = 5 \n    **Output:** 20 \n    **Explanation:** Arrival time of the train was 15:00 hours. It is delayed by 5 hours. Now it will reach at 15+5 = 20 (20:00 hours).\n    \n\n**Example 2:**\n    \n    \n    **Input:** arrivalTime = 13, delayedTime = 11\n    **Output:** 0\n    **Explanation:** Arrival time of the train was 13:00 hours. It is delayed by 11 hours. Now it will reach at 13+11=24 (Which is denoted by 00:00 in 24 hours format so return 0).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arrivaltime < 24`\n  * `1 <= delayedTime <= 24`",
+  "question": "You are given a positive integer `arrivalTime` denoting the arrival time of a train in hours, and another positive integer `delayedTime` denoting the amount of delay in hours.\n\nReturn _the time when the train will arrive at the station._\n\nNote that the time in this problem is in 24-hours format.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arrivalTime = 15, delayedTime = 5 \n    **Output:** 20 \n    **Explanation:** Arrival time of the train was 15:00 hours. It is delayed by 5 hours. Now it will reach at 15+5 = 20 (20:00 hours).\n    \n\n**Example 2:**\n    \n    \n    **Input:** arrivalTime = 13, delayedTime = 11\n    **Output:** 0\n    **Explanation:** Arrival time of the train was 13:00 hours. It is delayed by 11 hours. Now it will reach at 13+11=24 (Which is denoted by 00:00 in 24 hours format so return 0).",
+  "constraints": "**Constraints:**\n\n  * `1 <= arrivaltime < 24`\n  * `1 <= delayedTime <= 24`",
+  "topics": ["Math"],
+  "total_accepted": 88378,
+  "total_submissions": 116863,
+  "acceptance_rate": "75.6%",
+  "similar_questions": [],
+  "hints": [
+    "Use the modulo operator to handle the case when the arrival time plus the delayed time goes beyond 24 hours.",
+    "If the arrival time plus the delayed time is greater than or equal to 24, you can also subtract 24 to get the time in the 24-hour format."
+  ]
+}

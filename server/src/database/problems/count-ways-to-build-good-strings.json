@@ -1,0 +1,28 @@
+{
+  "id": "2466",
+  "title": "Count Ways To Build Good Strings",
+  "slug": "count-ways-to-build-good-strings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the integers <code>zero</code>, <code>one</code>, <code>low</code>, and <code>high</code>, we can construct a string by starting with an empty string, and then at each step perform either of the following:</p>\n\n<ul>\n\t<li>Append the character <code>&#39;0&#39;</code> <code>zero</code> times.</li>\n\t<li>Append the character <code>&#39;1&#39;</code> <code>one</code> times.</li>\n</ul>\n\n<p>This can be performed any number of times.</p>\n\n<p>A <strong>good</strong> string is a string constructed by the above process having a <strong>length</strong> between <code>low</code> and <code>high</code> (<strong>inclusive</strong>).</p>\n\n<p>Return <em>the number of <strong>different</strong> good strings that can be constructed satisfying these properties.</em> Since the answer can be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> low = 3, high = 3, zero = 1, one = 1\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> \nOne possible valid good string is &quot;011&quot;. \nIt can be constructed as follows: &quot;&quot; -&gt; &quot;0&quot; -&gt; &quot;01&quot; -&gt; &quot;011&quot;. \nAll binary strings from &quot;000&quot; to &quot;111&quot; are good strings in this example.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> low = 2, high = 3, zero = 1, one = 2\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The good strings are &quot;00&quot;, &quot;11&quot;, &quot;000&quot;, &quot;110&quot;, and &quot;011&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= low&nbsp;&lt;= high&nbsp;&lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= zero, one &lt;= low</code></li>\n</ul>\n",
+  "content_markdown": "Given the integers `zero`, `one`, `low`, and `high`, we can construct a string by starting with an empty string, and then at each step perform either of the following:\n\n  * Append the character `'0'` `zero` times.\n  * Append the character `'1'` `one` times.\n\n\n\nThis can be performed any number of times.\n\nA **good** string is a string constructed by the above process having a **length** between `low` and `high` (**inclusive**).\n\nReturn _the number of**different** good strings that can be constructed satisfying these properties._ Since the answer can be large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** low = 3, high = 3, zero = 1, one = 1\n    **Output:** 8\n    **Explanation:** \n    One possible valid good string is \"011\". \n    It can be constructed as follows: \"\" -> \"0\" -> \"01\" -> \"011\". \n    All binary strings from \"000\" to \"111\" are good strings in this example.\n    \n\n**Example 2:**\n    \n    \n    **Input:** low = 2, high = 3, zero = 1, one = 2\n    **Output:** 5\n    **Explanation:** The good strings are \"00\", \"11\", \"000\", \"110\", and \"011\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= low <= high <= 105`\n  * `1 <= zero, one <= low`",
+  "question": "Given the integers `zero`, `one`, `low`, and `high`, we can construct a string by starting with an empty string, and then at each step perform either of the following:\n\n  * Append the character `'0'` `zero` times.\n  * Append the character `'1'` `one` times.\n\n\n\nThis can be performed any number of times.\n\nA **good** string is a string constructed by the above process having a **length** between `low` and `high` (**inclusive**).\n\nReturn _the number of**different** good strings that can be constructed satisfying these properties._ Since the answer can be large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** low = 3, high = 3, zero = 1, one = 1\n    **Output:** 8\n    **Explanation:** \n    One possible valid good string is \"011\". \n    It can be constructed as follows: \"\" -> \"0\" -> \"01\" -> \"011\". \n    All binary strings from \"000\" to \"111\" are good strings in this example.\n    \n\n**Example 2:**\n    \n    \n    **Input:** low = 2, high = 3, zero = 1, one = 2\n    **Output:** 5\n    **Explanation:** The good strings are \"00\", \"11\", \"000\", \"110\", and \"011\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= low <= high <= 105`\n  * `1 <= zero, one <= low`",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 179273,
+  "total_submissions": 304047,
+  "acceptance_rate": "59.0%",
+  "similar_questions": [
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/climbing-stairs/"
+    }
+  ],
+  "hints": [
+    "Calculate the number of good strings with length less or equal to some constant x.",
+    "Apply dynamic programming using the group size of consecutive zeros and ones."
+  ]
+}

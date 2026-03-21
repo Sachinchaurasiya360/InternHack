@@ -1,0 +1,67 @@
+{
+  "id": "236",
+  "title": "Lowest Common Ancestor of a Binary Tree",
+  "slug": "lowest-common-ancestor-of-a-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.</p>\n\n<p>According to the <a href=\"https://en.wikipedia.org/wiki/Lowest_common_ancestor\" target=\"_blank\">definition of LCA on Wikipedia</a>: &ldquo;The lowest common ancestor is defined between two nodes <code>p</code> and <code>q</code> as the lowest node in <code>T</code> that has both <code>p</code> and <code>q</code> as descendants (where we allow <b>a node to be a descendant of itself</b>).&rdquo;</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/14/binarytree.png\" style=\"width: 200px; height: 190px;\" />\n<pre>\n<strong>Input:</strong> root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The LCA of nodes 5 and 1 is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/14/binarytree.png\" style=\"width: 200px; height: 190px;\" />\n<pre>\n<strong>Input:</strong> root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [1,2], p = 1, q = 2\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[2, 10<sup>5</sup>]</code>.</li>\n\t<li><code>-10<sup>9</sup> &lt;= Node.val &lt;= 10<sup>9</sup></code></li>\n\t<li>All <code>Node.val</code> are <strong>unique</strong>.</li>\n\t<li><code>p != q</code></li>\n\t<li><code>p</code> and <code>q</code> will exist in the tree.</li>\n</ul>\n",
+  "content_markdown": "Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.\n\nAccording to the [definition of LCA on Wikipedia](<https://en.wikipedia.org/wiki/Lowest_common_ancestor>): “The lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow **a node to be a descendant of itself**).”\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)\n    \n    \n    **Input:** root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1\n    **Output:** 3\n    **Explanation:** The LCA of nodes 5 and 1 is 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)\n    \n    \n    **Input:** root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4\n    **Output:** 5\n    **Explanation:** The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [1,2], p = 1, q = 2\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 105]`.\n  * `-109 <= Node.val <= 109`\n  * All `Node.val` are **unique**.\n  * `p != q`\n  * `p` and `q` will exist in the tree.",
+  "question": "Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.\n\nAccording to the [definition of LCA on Wikipedia](<https://en.wikipedia.org/wiki/Lowest_common_ancestor>): “The lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow **a node to be a descendant of itself**).”",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)\n    \n    \n    **Input:** root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1\n    **Output:** 3\n    **Explanation:** The LCA of nodes 5 and 1 is 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)\n    \n    \n    **Input:** root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4\n    **Output:** 5\n    **Explanation:** The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [1,2], p = 1, q = 2\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 105]`.\n  * `-109 <= Node.val <= 109`\n  * All `Node.val` are **unique**.\n  * `p != q`\n  * `p` and `q` will exist in the tree.",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 2511996,
+  "total_submissions": 3652475,
+  "acceptance_rate": "68.8%",
+  "similar_questions": [
+    {
+      "title": "Lowest Common Ancestor of a Binary Search Tree",
+      "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/"
+    },
+    {
+      "title": "Smallest Common Region",
+      "slug": "smallest-common-region",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-common-region/"
+    },
+    {
+      "title": "Find Players With Zero or One Losses",
+      "slug": "find-players-with-zero-or-one-losses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-players-with-zero-or-one-losses/"
+    },
+    {
+      "title": "Lowest Common Ancestor of a Binary Tree II",
+      "slug": "lowest-common-ancestor-of-a-binary-tree-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/"
+    },
+    {
+      "title": "Lowest Common Ancestor of a Binary Tree III",
+      "slug": "lowest-common-ancestor-of-a-binary-tree-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/"
+    },
+    {
+      "title": "Lowest Common Ancestor of a Binary Tree IV",
+      "slug": "lowest-common-ancestor-of-a-binary-tree-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/"
+    },
+    {
+      "title": "Step-By-Step Directions From a Binary Tree Node to Another",
+      "slug": "step-by-step-directions-from-a-binary-tree-node-to-another",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/"
+    },
+    {
+      "title": "Cycle Length Queries in a Tree",
+      "slug": "cycle-length-queries-in-a-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/cycle-length-queries-in-a-tree/"
+    }
+  ],
+  "hints": []
+}

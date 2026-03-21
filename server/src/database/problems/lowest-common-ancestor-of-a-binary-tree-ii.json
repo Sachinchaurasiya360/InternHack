@@ -1,0 +1,46 @@
+{
+  "id": "1644",
+  "title": "Lowest Common Ancestor of a Binary Tree II",
+  "slug": "lowest-common-ancestor-of-a-binary-tree-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 119684,
+  "total_submissions": 172206,
+  "acceptance_rate": "69.5%",
+  "similar_questions": [
+    {
+      "title": "Lowest Common Ancestor of a Binary Search Tree",
+      "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/"
+    },
+    {
+      "title": "Lowest Common Ancestor of a Binary Tree",
+      "slug": "lowest-common-ancestor-of-a-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/"
+    },
+    {
+      "title": "Lowest Common Ancestor of a Binary Tree III",
+      "slug": "lowest-common-ancestor-of-a-binary-tree-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/"
+    },
+    {
+      "title": "Lowest Common Ancestor of a Binary Tree IV",
+      "slug": "lowest-common-ancestor-of-a-binary-tree-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/"
+    }
+  ],
+  "hints": [
+    "Traverse the graph visiting root, left, root, right, root to make an Euler Path",
+    "Return the node (LCA) that is at the lowest depth between p and q in the Euler Path"
+  ]
+}

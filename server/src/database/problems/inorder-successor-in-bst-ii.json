@@ -1,0 +1,25 @@
+{
+  "id": "510",
+  "title": "Inorder Successor in BST II",
+  "slug": "inorder-successor-in-bst-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 75649,
+  "total_submissions": 123842,
+  "acceptance_rate": "61.1%",
+  "similar_questions": [
+    {
+      "title": "Inorder Successor in BST",
+      "slug": "inorder-successor-in-bst",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/inorder-successor-in-bst/"
+    }
+  ],
+  "hints": []
+}

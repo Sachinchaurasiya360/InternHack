@@ -1,0 +1,37 @@
+{
+  "id": "373",
+  "title": "Find K Pairs with Smallest Sums",
+  "slug": "find-k-pairs-with-smallest-sums",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integer arrays <code>nums1</code> and <code>nums2</code> sorted in <strong>non-decreasing&nbsp;order</strong> and an integer <code>k</code>.</p>\n\n<p>Define a pair <code>(u, v)</code> which consists of one element from the first array and one element from the second array.</p>\n\n<p>Return <em>the</em> <code>k</code> <em>pairs</em> <code>(u<sub>1</sub>, v<sub>1</sub>), (u<sub>2</sub>, v<sub>2</sub>), ..., (u<sub>k</sub>, v<sub>k</sub>)</code> <em>with the smallest sums</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,7,11], nums2 = [2,4,6], k = 3\n<strong>Output:</strong> [[1,2],[1,4],[1,6]]\n<strong>Explanation:</strong> The first 3 pairs are returned from the sequence: [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,1,2], nums2 = [1,2,3], k = 2\n<strong>Output:</strong> [[1,1],[1,1]]\n<strong>Explanation:</strong> The first 2 pairs are returned from the sequence: [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length, nums2.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums1[i], nums2[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>nums1</code> and <code>nums2</code> both are sorted in <strong>non-decreasing order</strong>.</li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>4</sup></code></li>\n\t<li><code>k &lt;=&nbsp;nums1.length *&nbsp;nums2.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given two integer arrays `nums1` and `nums2` sorted in **non-decreasing  order** and an integer `k`.\n\nDefine a pair `(u, v)` which consists of one element from the first array and one element from the second array.\n\nReturn _the_ `k` _pairs_ `(u1, v1), (u2, v2), ..., (uk, vk)` _with the smallest sums_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [1,7,11], nums2 = [2,4,6], k = 3\n    **Output:** [[1,2],[1,4],[1,6]]\n    **Explanation:** The first 3 pairs are returned from the sequence: [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,1,2], nums2 = [1,2,3], k = 2\n    **Output:** [[1,1],[1,1]]\n    **Explanation:** The first 2 pairs are returned from the sequence: [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 105`\n  * `-109 <= nums1[i], nums2[i] <= 109`\n  * `nums1` and `nums2` both are sorted in **non-decreasing order**.\n  * `1 <= k <= 104`\n  * `k <= nums1.length * nums2.length`",
+  "question": "You are given two integer arrays `nums1` and `nums2` sorted in **non-decreasing  order** and an integer `k`.\n\nDefine a pair `(u, v)` which consists of one element from the first array and one element from the second array.\n\nReturn _the_ `k` _pairs_ `(u1, v1), (u2, v2), ..., (uk, vk)` _with the smallest sums_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [1,7,11], nums2 = [2,4,6], k = 3\n    **Output:** [[1,2],[1,4],[1,6]]\n    **Explanation:** The first 3 pairs are returned from the sequence: [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,1,2], nums2 = [1,2,3], k = 2\n    **Output:** [[1,1],[1,1]]\n    **Explanation:** The first 2 pairs are returned from the sequence: [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 105`\n  * `-109 <= nums1[i], nums2[i] <= 109`\n  * `nums1` and `nums2` both are sorted in **non-decreasing order**.\n  * `1 <= k <= 104`\n  * `k <= nums1.length * nums2.length`",
+  "topics": ["Array", "Heap (Priority Queue)"],
+  "total_accepted": 442200,
+  "total_submissions": 1063810,
+  "acceptance_rate": "41.6%",
+  "similar_questions": [
+    {
+      "title": "Kth Smallest Element in a Sorted Matrix",
+      "slug": "kth-smallest-element-in-a-sorted-matrix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/"
+    },
+    {
+      "title": "Find K-th Smallest Pair Distance",
+      "slug": "find-k-th-smallest-pair-distance",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-k-th-smallest-pair-distance/"
+    },
+    {
+      "title": "Kth Smallest Product of Two Sorted Arrays",
+      "slug": "kth-smallest-product-of-two-sorted-arrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/kth-smallest-product-of-two-sorted-arrays/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,29 @@
+{
+  "id": "2505",
+  "title": "Bitwise OR of All Subsequence Sums",
+  "slug": "bitwise-or-of-all-subsequence-sums",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Bit Manipulation", "Brainteaser", "Prefix Sum"],
+  "total_accepted": 4416,
+  "total_submissions": 6882,
+  "acceptance_rate": "64.2%",
+  "similar_questions": [
+    {
+      "title": "Bitwise ORs of Subarrays",
+      "slug": "bitwise-ors-of-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bitwise-ors-of-subarrays/"
+    }
+  ],
+  "hints": [
+    "Think of each bit separately, i.e. try to figure out if <code>i<sup>th</sup></code> bit is set in the answer.",
+    "<code>i<sup>th</sup></code> bit is set in the answer if it's set in one of the array elements or it can be made using some of them.",
+    "Try to sum up lower bits and make higher bits."
+  ]
+}

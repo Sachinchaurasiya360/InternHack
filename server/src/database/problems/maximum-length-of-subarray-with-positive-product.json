@@ -1,0 +1,22 @@
+{
+  "id": "1567",
+  "title": "Maximum Length of Subarray With Positive Product",
+  "slug": "maximum-length-of-subarray-with-positive-product",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>nums</code>, find the maximum length of a subarray where the product of all its elements is positive.</p>\n\n<p>A subarray of an array is a consecutive sequence of zero or more values taken out of that array.</p>\n\n<p>Return <em>the maximum length of a subarray with positive product</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,-2,-3,4]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The array nums already has a positive product of 24.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,1,-2,-3,-4]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The longest subarray with positive product is [1,-2,-3] which has a product of 6.\nNotice that we cannot include 0 in the subarray since that&#39;ll make the product 0 which is not positive.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,-2,-3,0,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The longest subarray with positive product is [-1,-2] or [-2,-3].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `nums`, find the maximum length of a subarray where the product of all its elements is positive.\n\nA subarray of an array is a consecutive sequence of zero or more values taken out of that array.\n\nReturn _the maximum length of a subarray with positive product_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,-2,-3,4]\n    **Output:** 4\n    **Explanation:** The array nums already has a positive product of 24.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1,-2,-3,-4]\n    **Output:** 3\n    **Explanation:** The longest subarray with positive product is [1,-2,-3] which has a product of 6.\n    Notice that we cannot include 0 in the subarray since that'll make the product 0 which is not positive.\n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,-2,-3,0,1]\n    **Output:** 2\n    **Explanation:** The longest subarray with positive product is [-1,-2] or [-2,-3].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`",
+  "question": "Given an array of integers `nums`, find the maximum length of a subarray where the product of all its elements is positive.\n\nA subarray of an array is a consecutive sequence of zero or more values taken out of that array.\n\nReturn _the maximum length of a subarray with positive product_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,-2,-3,4]\n    **Output:** 4\n    **Explanation:** The array nums already has a positive product of 24.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1,-2,-3,-4]\n    **Output:** 3\n    **Explanation:** The longest subarray with positive product is [1,-2,-3] which has a product of 6.\n    Notice that we cannot include 0 in the subarray since that'll make the product 0 which is not positive.\n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,-2,-3,0,1]\n    **Output:** 2\n    **Explanation:** The longest subarray with positive product is [-1,-2] or [-2,-3].",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array", "Dynamic Programming", "Greedy"],
+  "total_accepted": 110241,
+  "total_submissions": 246988,
+  "acceptance_rate": "44.6%",
+  "similar_questions": [],
+  "hints": [
+    "Split the whole array into subarrays by zeroes since a subarray with positive product cannot contain any zero.",
+    "If the subarray has even number of negative numbers, the whole subarray has positive product.",
+    "Otherwise, we have two choices, either - remove the prefix till the first negative element in this subarray, or remove the suffix starting from the last negative element in this subarray."
+  ]
+}

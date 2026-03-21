@@ -1,0 +1,43 @@
+{
+  "id": "345",
+  "title": "Reverse Vowels of a String",
+  "slug": "reverse-vowels-of-a-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, reverse only all the vowels in the string and return it.</p>\n\n<p>The vowels are <code>&#39;a&#39;</code>, <code>&#39;e&#39;</code>, <code>&#39;i&#39;</code>, <code>&#39;o&#39;</code>, and <code>&#39;u&#39;</code>, and they can appear in both lower and upper cases, more than once.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;IceCreAm&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;AceCreIm&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The vowels in <code>s</code> are <code>[&#39;I&#39;, &#39;e&#39;, &#39;e&#39;, &#39;A&#39;]</code>. On reversing the vowels, s becomes <code>&quot;AceCreIm&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;leetcode&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;leotcede&quot;</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 3 * 10<sup>5</sup></code></li>\n\t<li><code>s</code> consist of <strong>printable ASCII</strong> characters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, reverse only all the vowels in the string and return it.\n\nThe vowels are `'a'`, `'e'`, `'i'`, `'o'`, and `'u'`, and they can appear in both lower and upper cases, more than once.\n\n \n\n**Example 1:**\n\n**Input:** s = \"IceCreAm\"\n\n**Output:** \"AceCreIm\"\n\n**Explanation:**\n\nThe vowels in `s` are `['I', 'e', 'e', 'A']`. On reversing the vowels, s becomes `\"AceCreIm\"`.\n\n**Example 2:**\n\n**Input:** s = \"leetcode\"\n\n**Output:** \"leotcede\"\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 3 * 105`\n  * `s` consist of **printable ASCII** characters.",
+  "question": "Given a string `s`, reverse only all the vowels in the string and return it.\n\nThe vowels are `'a'`, `'e'`, `'i'`, `'o'`, and `'u'`, and they can appear in both lower and upper cases, more than once.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"IceCreAm\"\n\n**Output:** \"AceCreIm\"\n\n**Explanation:**\n\nThe vowels in `s` are `['I', 'e', 'e', 'A']`. On reversing the vowels, s becomes `\"AceCreIm\"`.\n\n**Example 2:**\n\n**Input:** s = \"leetcode\"\n\n**Output:** \"leotcede\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 3 * 105`\n  * `s` consist of **printable ASCII** characters.",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 1539675,
+  "total_submissions": 2537519,
+  "acceptance_rate": "60.7%",
+  "similar_questions": [
+    {
+      "title": "Reverse String",
+      "slug": "reverse-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-string/"
+    },
+    {
+      "title": "Remove Vowels from a String",
+      "slug": "remove-vowels-from-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-vowels-from-a-string/"
+    },
+    {
+      "title": "Faulty Keyboard",
+      "slug": "faulty-keyboard",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/faulty-keyboard/"
+    },
+    {
+      "title": "Sort Vowels in a String",
+      "slug": "sort-vowels-in-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-vowels-in-a-string/"
+    }
+  ],
+  "hints": []
+}

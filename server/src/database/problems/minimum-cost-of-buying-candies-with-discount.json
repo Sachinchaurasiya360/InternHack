@@ -1,0 +1,47 @@
+{
+  "id": "2144",
+  "title": "Minimum Cost of Buying Candies With Discount",
+  "slug": "minimum-cost-of-buying-candies-with-discount",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A shop is selling candies at a discount. For <strong>every two</strong> candies sold, the shop gives a <strong>third</strong> candy for <strong>free</strong>.</p>\n\n<p>The customer can choose <strong>any</strong> candy to take away for free as long as the cost of the chosen candy is less than or equal to the <strong>minimum</strong> cost of the two candies bought.</p>\n\n<ul>\n\t<li>For example, if there are <code>4</code> candies with costs <code>1</code>, <code>2</code>, <code>3</code>, and <code>4</code>, and the customer buys candies with costs <code>2</code> and <code>3</code>, they&nbsp;can take the candy with cost <code>1</code> for free, but not the candy with cost <code>4</code>.</li>\n</ul>\n\n<p>Given a <strong>0-indexed</strong> integer array <code>cost</code>, where <code>cost[i]</code> denotes the cost of the <code>i<sup>th</sup></code> candy, return <em>the <strong>minimum cost</strong> of buying <strong>all</strong> the candies</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> cost = [1,2,3]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> We buy the candies with costs 2 and 3, and take the candy with cost 1 for free.\nThe total cost of buying all candies is 2 + 3 = 5. This is the <strong>only</strong> way we can buy the candies.\nNote that we cannot buy candies with costs 1 and 3, and then take the candy with cost 2 for free.\nThe cost of the free candy has to be less than or equal to the minimum cost of the purchased candies.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> cost = [6,5,7,9,2,2]\n<strong>Output:</strong> 23\n<strong>Explanation:</strong> The way in which we can get the minimum cost is described below:\n- Buy candies with costs 9 and 7\n- Take the candy with cost 6 for free\n- We buy candies with costs 5 and 2\n- Take the last remaining candy with cost 2 for free\nHence, the minimum cost to buy all candies is 9 + 7 + 5 + 2 = 23.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> cost = [5,5]\n<strong>Output:</strong> 10\n<strong>Explanation:</strong> Since there are only 2 candies, we buy both of them. There is not a third candy we can take for free.\nHence, the minimum cost to buy all candies is 5 + 5 = 10.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= cost.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= cost[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "A shop is selling candies at a discount. For **every two** candies sold, the shop gives a **third** candy for **free**.\n\nThe customer can choose **any** candy to take away for free as long as the cost of the chosen candy is less than or equal to the **minimum** cost of the two candies bought.\n\n  * For example, if there are `4` candies with costs `1`, `2`, `3`, and `4`, and the customer buys candies with costs `2` and `3`, they can take the candy with cost `1` for free, but not the candy with cost `4`.\n\n\n\nGiven a **0-indexed** integer array `cost`, where `cost[i]` denotes the cost of the `ith` candy, return _the**minimum cost** of buying **all** the candies_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** cost = [1,2,3]\n    **Output:** 5\n    **Explanation:** We buy the candies with costs 2 and 3, and take the candy with cost 1 for free.\n    The total cost of buying all candies is 2 + 3 = 5. This is the **only** way we can buy the candies.\n    Note that we cannot buy candies with costs 1 and 3, and then take the candy with cost 2 for free.\n    The cost of the free candy has to be less than or equal to the minimum cost of the purchased candies.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cost = [6,5,7,9,2,2]\n    **Output:** 23\n    **Explanation:** The way in which we can get the minimum cost is described below:\n    - Buy candies with costs 9 and 7\n    - Take the candy with cost 6 for free\n    - We buy candies with costs 5 and 2\n    - Take the last remaining candy with cost 2 for free\n    Hence, the minimum cost to buy all candies is 9 + 7 + 5 + 2 = 23.\n    \n\n**Example 3:**\n    \n    \n    **Input:** cost = [5,5]\n    **Output:** 10\n    **Explanation:** Since there are only 2 candies, we buy both of them. There is not a third candy we can take for free.\n    Hence, the minimum cost to buy all candies is 5 + 5 = 10.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= cost.length <= 100`\n  * `1 <= cost[i] <= 100`",
+  "question": "A shop is selling candies at a discount. For **every two** candies sold, the shop gives a **third** candy for **free**.\n\nThe customer can choose **any** candy to take away for free as long as the cost of the chosen candy is less than or equal to the **minimum** cost of the two candies bought.\n\n  * For example, if there are `4` candies with costs `1`, `2`, `3`, and `4`, and the customer buys candies with costs `2` and `3`, they can take the candy with cost `1` for free, but not the candy with cost `4`.\n\n\n\nGiven a **0-indexed** integer array `cost`, where `cost[i]` denotes the cost of the `ith` candy, return _the**minimum cost** of buying **all** the candies_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** cost = [1,2,3]\n    **Output:** 5\n    **Explanation:** We buy the candies with costs 2 and 3, and take the candy with cost 1 for free.\n    The total cost of buying all candies is 2 + 3 = 5. This is the **only** way we can buy the candies.\n    Note that we cannot buy candies with costs 1 and 3, and then take the candy with cost 2 for free.\n    The cost of the free candy has to be less than or equal to the minimum cost of the purchased candies.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cost = [6,5,7,9,2,2]\n    **Output:** 23\n    **Explanation:** The way in which we can get the minimum cost is described below:\n    - Buy candies with costs 9 and 7\n    - Take the candy with cost 6 for free\n    - We buy candies with costs 5 and 2\n    - Take the last remaining candy with cost 2 for free\n    Hence, the minimum cost to buy all candies is 9 + 7 + 5 + 2 = 23.\n    \n\n**Example 3:**\n    \n    \n    **Input:** cost = [5,5]\n    **Output:** 10\n    **Explanation:** Since there are only 2 candies, we buy both of them. There is not a third candy we can take for free.\n    Hence, the minimum cost to buy all candies is 5 + 5 = 10.",
+  "constraints": "**Constraints:**\n\n  * `1 <= cost.length <= 100`\n  * `1 <= cost[i] <= 100`",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 78292,
+  "total_submissions": 124907,
+  "acceptance_rate": "62.7%",
+  "similar_questions": [
+    {
+      "title": "Array Partition",
+      "slug": "array-partition",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/array-partition/"
+    },
+    {
+      "title": "Minimum Absolute Difference",
+      "slug": "minimum-absolute-difference",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-absolute-difference/"
+    },
+    {
+      "title": "Minimum Number of Operations to Satisfy Conditions",
+      "slug": "minimum-number-of-operations-to-satisfy-conditions",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-satisfy-conditions/"
+    },
+    {
+      "title": "Check if Grid Satisfies Conditions",
+      "slug": "check-if-grid-satisfies-conditions",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-grid-satisfies-conditions/"
+    }
+  ],
+  "hints": [
+    "If we consider costs from high to low, what is the maximum cost of a single candy that we can get for free?",
+    "How can we generalize this approach to maximize the costs of the candies we get for free?",
+    "Can “sorting” the array help us find the minimum cost?"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "112",
+  "title": "Path Sum",
+  "slug": "path-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree and an integer <code>targetSum</code>, return <code>true</code> if the tree has a <strong>root-to-leaf</strong> path such that adding up all the values along the path equals <code>targetSum</code>.</p>\n\n<p>A <strong>leaf</strong> is a node with no children.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/18/pathsum1.jpg\" style=\"width: 500px; height: 356px;\" />\n<pre>\n<strong>Input:</strong> root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The root-to-leaf path with the target sum is shown.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/18/pathsum2.jpg\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3], targetSum = 5\n<strong>Output:</strong> false\n<strong>Explanation:</strong> There are two root-to-leaf paths in the tree:\n(1 --&gt; 2): The sum is 3.\n(1 --&gt; 3): The sum is 4.\nThere is no root-to-leaf path with sum = 5.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [], targetSum = 0\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Since the tree is empty, there are no root-to-leaf paths.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 5000]</code>.</li>\n\t<li><code>-1000 &lt;= Node.val &lt;= 1000</code></li>\n\t<li><code>-1000 &lt;= targetSum &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree and an integer `targetSum`, return `true` if the tree has a **root-to-leaf** path such that adding up all the values along the path equals `targetSum`.\n\nA **leaf** is a node with no children.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsum1.jpg)\n    \n    \n    **Input:** root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22\n    **Output:** true\n    **Explanation:** The root-to-leaf path with the target sum is shown.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsum2.jpg)\n    \n    \n    **Input:** root = [1,2,3], targetSum = 5\n    **Output:** false\n    **Explanation:** There are two root-to-leaf paths in the tree:\n    (1 --> 2): The sum is 3.\n    (1 --> 3): The sum is 4.\n    There is no root-to-leaf path with sum = 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [], targetSum = 0\n    **Output:** false\n    **Explanation:** Since the tree is empty, there are no root-to-leaf paths.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 5000]`.\n  * `-1000 <= Node.val <= 1000`\n  * `-1000 <= targetSum <= 1000`",
+  "question": "Given the `root` of a binary tree and an integer `targetSum`, return `true` if the tree has a **root-to-leaf** path such that adding up all the values along the path equals `targetSum`.\n\nA **leaf** is a node with no children.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsum1.jpg)\n    \n    \n    **Input:** root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22\n    **Output:** true\n    **Explanation:** The root-to-leaf path with the target sum is shown.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsum2.jpg)\n    \n    \n    **Input:** root = [1,2,3], targetSum = 5\n    **Output:** false\n    **Explanation:** There are two root-to-leaf paths in the tree:\n    (1 --> 2): The sum is 3.\n    (1 --> 3): The sum is 4.\n    There is no root-to-leaf path with sum = 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [], targetSum = 0\n    **Output:** false\n    **Explanation:** Since the tree is empty, there are no root-to-leaf paths.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 5000]`.\n  * `-1000 <= Node.val <= 1000`\n  * `-1000 <= targetSum <= 1000`",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 2079119,
+  "total_submissions": 3818048,
+  "acceptance_rate": "54.5%",
+  "similar_questions": [
+    {
+      "title": "Path Sum II",
+      "slug": "path-sum-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-sum-ii/"
+    },
+    {
+      "title": "Binary Tree Maximum Path Sum",
+      "slug": "binary-tree-maximum-path-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/binary-tree-maximum-path-sum/"
+    },
+    {
+      "title": "Sum Root to Leaf Numbers",
+      "slug": "sum-root-to-leaf-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-root-to-leaf-numbers/"
+    },
+    {
+      "title": "Path Sum III",
+      "slug": "path-sum-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-sum-iii/"
+    },
+    {
+      "title": "Path Sum IV",
+      "slug": "path-sum-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-sum-iv/"
+    }
+  ],
+  "hints": []
+}

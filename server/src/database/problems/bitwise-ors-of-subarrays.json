@@ -1,0 +1,45 @@
+{
+  "id": "898",
+  "title": "Bitwise ORs of Subarrays",
+  "slug": "bitwise-ors-of-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>arr</code>, return <em>the number of distinct bitwise ORs of all the non-empty subarrays of</em> <code>arr</code>.</p>\n\n<p>The bitwise OR of a subarray is the bitwise OR of each integer in the subarray. The bitwise OR of a subarray of one integer is that integer.</p>\n\n<p>A <strong>subarray</strong> is a contiguous non-empty sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [0]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> There is only one possible result: 0.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,1,2]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The possible subarrays are [1], [1], [2], [1, 1], [1, 2], [1, 1, 2].\nThese yield the results 1, 1, 2, 1, 3, 3.\nThere are 3 unique values, so the answer is 3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,4]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The possible results are 1, 2, 3, 4, 6, and 7.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr`, return _the number of distinct bitwise ORs of all the non-empty subarrays of_ `arr`.\n\nThe bitwise OR of a subarray is the bitwise OR of each integer in the subarray. The bitwise OR of a subarray of one integer is that integer.\n\nA **subarray** is a contiguous non-empty sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [0]\n    **Output:** 1\n    **Explanation:** There is only one possible result: 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,1,2]\n    **Output:** 3\n    **Explanation:** The possible subarrays are [1], [1], [2], [1, 1], [1, 2], [1, 1, 2].\n    These yield the results 1, 1, 2, 1, 3, 3.\n    There are 3 unique values, so the answer is 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1,2,4]\n    **Output:** 6\n    **Explanation:** The possible results are 1, 2, 3, 4, 6, and 7.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 5 * 104`\n  * `0 <= arr[i] <= 109`",
+  "question": "Given an integer array `arr`, return _the number of distinct bitwise ORs of all the non-empty subarrays of_ `arr`.\n\nThe bitwise OR of a subarray is the bitwise OR of each integer in the subarray. The bitwise OR of a subarray of one integer is that integer.\n\nA **subarray** is a contiguous non-empty sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [0]\n    **Output:** 1\n    **Explanation:** There is only one possible result: 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,1,2]\n    **Output:** 3\n    **Explanation:** The possible subarrays are [1], [1], [2], [1, 1], [1, 2], [1, 1, 2].\n    These yield the results 1, 1, 2, 1, 3, 3.\n    There are 3 unique values, so the answer is 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1,2,4]\n    **Output:** 6\n    **Explanation:** The possible results are 1, 2, 3, 4, 6, and 7.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 5 * 104`\n  * `0 <= arr[i] <= 109`",
+  "topics": ["Array", "Dynamic Programming", "Bit Manipulation"],
+  "total_accepted": 133091,
+  "total_submissions": 234391,
+  "acceptance_rate": "56.8%",
+  "similar_questions": [
+    {
+      "title": "Longest Nice Subarray",
+      "slug": "longest-nice-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-nice-subarray/"
+    },
+    {
+      "title": "Smallest Subarrays With Maximum Bitwise OR",
+      "slug": "smallest-subarrays-with-maximum-bitwise-or",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-subarrays-with-maximum-bitwise-or/"
+    },
+    {
+      "title": "Bitwise OR of All Subsequence Sums",
+      "slug": "bitwise-or-of-all-subsequence-sums",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bitwise-or-of-all-subsequence-sums/"
+    },
+    {
+      "title": "Find the Maximum Sequence Value of Array",
+      "slug": "find-the-maximum-sequence-value-of-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-maximum-sequence-value-of-array/"
+    }
+  ],
+  "hints": [
+    "Consider the the subarrays that end at index <code>i</code>. The number of unique bitwise OR for these subarrays is limited."
+  ]
+}

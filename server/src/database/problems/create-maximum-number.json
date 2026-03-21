@@ -1,0 +1,31 @@
+{
+  "id": "321",
+  "title": "Create Maximum Number",
+  "slug": "create-maximum-number",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integer arrays <code>nums1</code> and <code>nums2</code> of lengths <code>m</code> and <code>n</code> respectively. <code>nums1</code> and <code>nums2</code> represent the digits of two numbers. You are also given an integer <code>k</code>.</p>\n\n<p>Create the maximum number of length <code>k &lt;= m + n</code> from digits of the two numbers. The relative order of the digits from the same array must be preserved.</p>\n\n<p>Return an array of the <code>k</code> digits representing the answer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [3,4,6,5], nums2 = [9,1,2,5,8,3], k = 5\n<strong>Output:</strong> [9,8,6,5,3]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [6,7], nums2 = [6,0,4], k = 5\n<strong>Output:</strong> [6,7,6,0,4]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [3,9], nums2 = [8,9], k = 3\n<strong>Output:</strong> [9,8,9]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == nums1.length</code></li>\n\t<li><code>n == nums2.length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 500</code></li>\n\t<li><code>0 &lt;= nums1[i], nums2[i] &lt;= 9</code></li>\n\t<li><code>1 &lt;= k &lt;= m + n</code></li>\n\t<li><code>nums1</code> and <code>nums2</code> do not have leading zeros.</li>\n</ul>\n",
+  "content_markdown": "You are given two integer arrays `nums1` and `nums2` of lengths `m` and `n` respectively. `nums1` and `nums2` represent the digits of two numbers. You are also given an integer `k`.\n\nCreate the maximum number of length `k <= m + n` from digits of the two numbers. The relative order of the digits from the same array must be preserved.\n\nReturn an array of the `k` digits representing the answer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [3,4,6,5], nums2 = [9,1,2,5,8,3], k = 5\n    **Output:** [9,8,6,5,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [6,7], nums2 = [6,0,4], k = 5\n    **Output:** [6,7,6,0,4]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [3,9], nums2 = [8,9], k = 3\n    **Output:** [9,8,9]\n    \n\n \n\n**Constraints:**\n\n  * `m == nums1.length`\n  * `n == nums2.length`\n  * `1 <= m, n <= 500`\n  * `0 <= nums1[i], nums2[i] <= 9`\n  * `1 <= k <= m + n`\n  * `nums1` and `nums2` do not have leading zeros.",
+  "question": "You are given two integer arrays `nums1` and `nums2` of lengths `m` and `n` respectively. `nums1` and `nums2` represent the digits of two numbers. You are also given an integer `k`.\n\nCreate the maximum number of length `k <= m + n` from digits of the two numbers. The relative order of the digits from the same array must be preserved.\n\nReturn an array of the `k` digits representing the answer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [3,4,6,5], nums2 = [9,1,2,5,8,3], k = 5\n    **Output:** [9,8,6,5,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [6,7], nums2 = [6,0,4], k = 5\n    **Output:** [6,7,6,0,4]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [3,9], nums2 = [8,9], k = 3\n    **Output:** [9,8,9]",
+  "constraints": "**Constraints:**\n\n  * `m == nums1.length`\n  * `n == nums2.length`\n  * `1 <= m, n <= 500`\n  * `0 <= nums1[i], nums2[i] <= 9`\n  * `1 <= k <= m + n`\n  * `nums1` and `nums2` do not have leading zeros.",
+  "topics": ["Array", "Two Pointers", "Stack", "Greedy", "Monotonic Stack"],
+  "total_accepted": 83201,
+  "total_submissions": 240077,
+  "acceptance_rate": "34.7%",
+  "similar_questions": [
+    {
+      "title": "Remove K Digits",
+      "slug": "remove-k-digits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-k-digits/"
+    },
+    {
+      "title": "Maximum Swap",
+      "slug": "maximum-swap",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-swap/"
+    }
+  ],
+  "hints": []
+}

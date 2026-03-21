@@ -1,0 +1,25 @@
+{
+  "id": "701",
+  "title": "Insert into a Binary Search Tree",
+  "slug": "insert-into-a-binary-search-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> node of a binary search tree (BST) and a <code>value</code> to insert into the tree. Return <em>the root node of the BST after the insertion</em>. It is <strong>guaranteed</strong> that the new value does not exist in the original BST.</p>\n\n<p><strong>Notice</strong>&nbsp;that there may exist&nbsp;multiple valid ways for the&nbsp;insertion, as long as the tree remains a BST after insertion. You can return <strong>any of them</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/05/insertbst.jpg\" style=\"width: 752px; height: 221px;\" />\n<pre>\n<strong>Input:</strong> root = [4,2,7,1,3], val = 5\n<strong>Output:</strong> [4,2,7,1,3,5]\n<strong>Explanation:</strong> Another accepted tree is:\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/05/bst.jpg\" style=\"width: 352px; height: 301px;\" />\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [40,20,60,10,30,50,70], val = 25\n<strong>Output:</strong> [40,20,60,10,30,50,70,null,null,25]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [4,2,7,1,3,null,null,null,null,null,null], val = 5\n<strong>Output:</strong> [4,2,7,1,3,5]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in&nbsp;the tree will be in the range <code>[0,&nbsp;10<sup>4</sup>]</code>.</li>\n\t<li><code>-10<sup>8</sup> &lt;= Node.val &lt;= 10<sup>8</sup></code></li>\n\t<li>All the values <code>Node.val</code> are <strong>unique</strong>.</li>\n\t<li><code>-10<sup>8</sup> &lt;= val &lt;= 10<sup>8</sup></code></li>\n\t<li>It&#39;s <strong>guaranteed</strong> that <code>val</code> does not exist in the original BST.</li>\n</ul>\n",
+  "content_markdown": "You are given the `root` node of a binary search tree (BST) and a `value` to insert into the tree. Return _the root node of the BST after the insertion_. It is **guaranteed** that the new value does not exist in the original BST.\n\n**Notice**  that there may exist multiple valid ways for the insertion, as long as the tree remains a BST after insertion. You can return **any of them**.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/05/insertbst.jpg)\n    \n    \n    **Input:** root = [4,2,7,1,3], val = 5\n    **Output:** [4,2,7,1,3,5]\n    **Explanation:** Another accepted tree is:\n    ![](https://assets.leetcode.com/uploads/2020/10/05/bst.jpg)\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [40,20,60,10,30,50,70], val = 25\n    **Output:** [40,20,60,10,30,50,70,null,null,25]\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [4,2,7,1,3,null,null,null,null,null,null], val = 5\n    **Output:** [4,2,7,1,3,5]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree will be in the range `[0, 104]`.\n  * `-108 <= Node.val <= 108`\n  * All the values `Node.val` are **unique**.\n  * `-108 <= val <= 108`\n  * It's **guaranteed** that `val` does not exist in the original BST.",
+  "question": "You are given the `root` node of a binary search tree (BST) and a `value` to insert into the tree. Return _the root node of the BST after the insertion_. It is **guaranteed** that the new value does not exist in the original BST.\n\n**Notice**  that there may exist multiple valid ways for the insertion, as long as the tree remains a BST after insertion. You can return **any of them**.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/05/insertbst.jpg)\n    \n    \n    **Input:** root = [4,2,7,1,3], val = 5\n    **Output:** [4,2,7,1,3,5]\n    **Explanation:** Another accepted tree is:\n    ![](https://assets.leetcode.com/uploads/2020/10/05/bst.jpg)\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [40,20,60,10,30,50,70], val = 25\n    **Output:** [40,20,60,10,30,50,70,null,null,25]\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [4,2,7,1,3,null,null,null,null,null,null], val = 5\n    **Output:** [4,2,7,1,3,5]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree will be in the range `[0, 104]`.\n  * `-108 <= Node.val <= 108`\n  * All the values `Node.val` are **unique**.\n  * `-108 <= val <= 108`\n  * It's **guaranteed** that `val` does not exist in the original BST.",
+  "topics": ["Tree", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 834997,
+  "total_submissions": 1137988,
+  "acceptance_rate": "73.4%",
+  "similar_questions": [
+    {
+      "title": "Search in a Binary Search Tree",
+      "slug": "search-in-a-binary-search-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/search-in-a-binary-search-tree/"
+    }
+  ],
+  "hints": []
+}

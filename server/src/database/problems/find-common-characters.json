@@ -1,0 +1,25 @@
+{
+  "id": "1002",
+  "title": "Find Common Characters",
+  "slug": "find-common-characters",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string array <code>words</code>, return <em>an array of all characters that show up in all strings within the </em><code>words</code><em> (including duplicates)</em>. You may return the answer in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> words = [\"bella\",\"label\",\"roller\"]\n<strong>Output:</strong> [\"e\",\"l\",\"l\"]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> words = [\"cool\",\"lock\",\"cook\"]\n<strong>Output:</strong> [\"c\",\"o\"]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 100</code></li>\n\t<li><code>words[i]</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string array `words`, return _an array of all characters that show up in all strings within the_`words` _(including duplicates)_. You may return the answer in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"bella\",\"label\",\"roller\"]\n    **Output:** [\"e\",\"l\",\"l\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"cool\",\"lock\",\"cook\"]\n    **Output:** [\"c\",\"o\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 100`\n  * `1 <= words[i].length <= 100`\n  * `words[i]` consists of lowercase English letters.",
+  "question": "Given a string array `words`, return _an array of all characters that show up in all strings within the_`words` _(including duplicates)_. You may return the answer in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"bella\",\"label\",\"roller\"]\n    **Output:** [\"e\",\"l\",\"l\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"cool\",\"lock\",\"cook\"]\n    **Output:** [\"c\",\"o\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 100`\n  * `1 <= words[i].length <= 100`\n  * `words[i]` consists of lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String"],
+  "total_accepted": 425735,
+  "total_submissions": 570253,
+  "acceptance_rate": "74.7%",
+  "similar_questions": [
+    {
+      "title": "Intersection of Two Arrays II",
+      "slug": "intersection-of-two-arrays-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-two-arrays-ii/"
+    }
+  ],
+  "hints": []
+}

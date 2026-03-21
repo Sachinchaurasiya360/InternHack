@@ -1,0 +1,48 @@
+{
+  "id": "2355",
+  "title": "Maximum Number of Books You Can Take",
+  "slug": "maximum-number-of-books-you-can-take",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Stack", "Monotonic Stack"],
+  "total_accepted": 13376,
+  "total_submissions": 33906,
+  "acceptance_rate": "39.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    },
+    {
+      "title": "Maximum Ascending Subarray Sum",
+      "slug": "maximum-ascending-subarray-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-ascending-subarray-sum/"
+    },
+    {
+      "title": "Beautiful Towers II",
+      "slug": "beautiful-towers-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/beautiful-towers-ii/"
+    },
+    {
+      "title": "Beautiful Towers I",
+      "slug": "beautiful-towers-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/beautiful-towers-i/"
+    }
+  ],
+  "hints": [
+    "Create a dp array where dp[i] is the maximum number of books you can take if you can only take books from bookshelves 0 to i and you must take books from bookshelf i.",
+    "Keep taking as many books as you can (i.e. starting from bookshelf i and going backwards, you take arr[i], arr[i] - 1, arr[i] - 2, … books).",
+    "You may reach an index j where arr[j] < arr[i] - (i - j). Have we already found the maximum number of books you can take from bookshelves 0 to j? How do we quickly find such an index j?",
+    "Keep a stack of possible indices for j. If x is the number at the top of the stack, keep popping from the stack while arr[x] ≥ arr[i] - (i - x). This is because if the inequality mentioned before is true, x will never be an index j as index i will run out of items first."
+  ]
+}

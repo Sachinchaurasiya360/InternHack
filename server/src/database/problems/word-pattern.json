@@ -1,0 +1,37 @@
+{
+  "id": "290",
+  "title": "Word Pattern",
+  "slug": "word-pattern",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>pattern</code> and a string <code>s</code>, find if <code>s</code>&nbsp;follows the same pattern.</p>\n\n<p>Here <b>follow</b> means a full match, such that there is a bijection between a letter in <code>pattern</code> and a <b>non-empty</b> word in <code>s</code>. Specifically:</p>\n\n<ul>\n\t<li>Each letter in <code>pattern</code> maps to <strong>exactly</strong> one unique word in <code>s</code>.</li>\n\t<li>Each unique word in <code>s</code> maps to <strong>exactly</strong> one letter in <code>pattern</code>.</li>\n\t<li>No two letters map to the same word, and no two words map to the same letter.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">pattern = &quot;abba&quot;, s = &quot;dog cat cat dog&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The bijection can be established as:</p>\n\n<ul>\n\t<li><code>&#39;a&#39;</code> maps to <code>&quot;dog&quot;</code>.</li>\n\t<li><code>&#39;b&#39;</code> maps to <code>&quot;cat&quot;</code>.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">pattern = &quot;abba&quot;, s = &quot;dog cat cat fish&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">pattern = &quot;aaaa&quot;, s = &quot;dog cat cat dog&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= pattern.length &lt;= 300</code></li>\n\t<li><code>pattern</code> contains only lower-case English letters.</li>\n\t<li><code>1 &lt;= s.length &lt;= 3000</code></li>\n\t<li><code>s</code> contains only lowercase English letters and spaces <code>&#39; &#39;</code>.</li>\n\t<li><code>s</code> <strong>does not contain</strong> any leading or trailing spaces.</li>\n\t<li>All the words in <code>s</code> are separated by a <strong>single space</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given a `pattern` and a string `s`, find if `s` follows the same pattern.\n\nHere **follow** means a full match, such that there is a bijection between a letter in `pattern` and a **non-empty** word in `s`. Specifically:\n\n  * Each letter in `pattern` maps to **exactly** one unique word in `s`.\n  * Each unique word in `s` maps to **exactly** one letter in `pattern`.\n  * No two letters map to the same word, and no two words map to the same letter.\n\n\n\n \n\n**Example 1:**\n\n**Input:** pattern = \"abba\", s = \"dog cat cat dog\"\n\n**Output:** true\n\n**Explanation:**\n\nThe bijection can be established as:\n\n  * `'a'` maps to `\"dog\"`.\n  * `'b'` maps to `\"cat\"`.\n\n\n\n**Example 2:**\n\n**Input:** pattern = \"abba\", s = \"dog cat cat fish\"\n\n**Output:** false\n\n**Example 3:**\n\n**Input:** pattern = \"aaaa\", s = \"dog cat cat dog\"\n\n**Output:** false\n\n \n\n**Constraints:**\n\n  * `1 <= pattern.length <= 300`\n  * `pattern` contains only lower-case English letters.\n  * `1 <= s.length <= 3000`\n  * `s` contains only lowercase English letters and spaces `' '`.\n  * `s` **does not contain** any leading or trailing spaces.\n  * All the words in `s` are separated by a **single space**.",
+  "question": "Given a `pattern` and a string `s`, find if `s` follows the same pattern.\n\nHere **follow** means a full match, such that there is a bijection between a letter in `pattern` and a **non-empty** word in `s`. Specifically:\n\n  * Each letter in `pattern` maps to **exactly** one unique word in `s`.\n  * Each unique word in `s` maps to **exactly** one letter in `pattern`.\n  * No two letters map to the same word, and no two words map to the same letter.",
+  "examples": "**Example 1:**\n\n**Input:** pattern = \"abba\", s = \"dog cat cat dog\"\n\n**Output:** true\n\n**Explanation:**\n\nThe bijection can be established as:\n\n  * `'a'` maps to `\"dog\"`.\n  * `'b'` maps to `\"cat\"`.\n\n\n\n**Example 2:**\n\n**Input:** pattern = \"abba\", s = \"dog cat cat fish\"\n\n**Output:** false\n\n**Example 3:**\n\n**Input:** pattern = \"aaaa\", s = \"dog cat cat dog\"\n\n**Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= pattern.length <= 300`\n  * `pattern` contains only lower-case English letters.\n  * `1 <= s.length <= 3000`\n  * `s` contains only lowercase English letters and spaces `' '`.\n  * `s` **does not contain** any leading or trailing spaces.\n  * All the words in `s` are separated by a **single space**.",
+  "topics": ["Hash Table", "String"],
+  "total_accepted": 1080778,
+  "total_submissions": 2465660,
+  "acceptance_rate": "43.8%",
+  "similar_questions": [
+    {
+      "title": "Isomorphic Strings",
+      "slug": "isomorphic-strings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/isomorphic-strings/"
+    },
+    {
+      "title": "Word Pattern II",
+      "slug": "word-pattern-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/word-pattern-ii/"
+    },
+    {
+      "title": "Find and Replace Pattern",
+      "slug": "find-and-replace-pattern",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-and-replace-pattern/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,39 @@
+{
+  "id": "696",
+  "title": "Count Binary Substrings",
+  "slug": "count-binary-substrings",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary string <code>s</code>, return the number of non-empty substrings that have the same number of <code>0</code>&#39;s and <code>1</code>&#39;s, and all the <code>0</code>&#39;s and all the <code>1</code>&#39;s in these substrings are grouped consecutively.</p>\n\n<p>Substrings that occur multiple times are counted the number of times they occur.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;00110011&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> There are 6 substrings that have equal number of consecutive 1&#39;s and 0&#39;s: &quot;0011&quot;, &quot;01&quot;, &quot;1100&quot;, &quot;10&quot;, &quot;0011&quot;, and &quot;01&quot;.\nNotice that some of these substrings repeat and are counted the number of times they occur.\nAlso, &quot;00110011&quot; is not a valid substring because all the 0&#39;s (and 1&#39;s) are not grouped together.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;10101&quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> There are 4 substrings: &quot;10&quot;, &quot;01&quot;, &quot;10&quot;, &quot;01&quot; that have equal number of consecutive 1&#39;s and 0&#39;s.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a binary string `s`, return the number of non-empty substrings that have the same number of `0`'s and `1`'s, and all the `0`'s and all the `1`'s in these substrings are grouped consecutively.\n\nSubstrings that occur multiple times are counted the number of times they occur.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"00110011\"\n    **Output:** 6\n    **Explanation:** There are 6 substrings that have equal number of consecutive 1's and 0's: \"0011\", \"01\", \"1100\", \"10\", \"0011\", and \"01\".\n    Notice that some of these substrings repeat and are counted the number of times they occur.\n    Also, \"00110011\" is not a valid substring because all the 0's (and 1's) are not grouped together.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10101\"\n    **Output:** 4\n    **Explanation:** There are 4 substrings: \"10\", \"01\", \"10\", \"01\" that have equal number of consecutive 1's and 0's.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "question": "Given a binary string `s`, return the number of non-empty substrings that have the same number of `0`'s and `1`'s, and all the `0`'s and all the `1`'s in these substrings are grouped consecutively.\n\nSubstrings that occur multiple times are counted the number of times they occur.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"00110011\"\n    **Output:** 6\n    **Explanation:** There are 6 substrings that have equal number of consecutive 1's and 0's: \"0011\", \"01\", \"1100\", \"10\", \"0011\", and \"01\".\n    Notice that some of these substrings repeat and are counted the number of times they occur.\n    Also, \"00110011\" is not a valid substring because all the 0's (and 1's) are not grouped together.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10101\"\n    **Output:** 4\n    **Explanation:** There are 4 substrings: \"10\", \"01\", \"10\", \"01\" that have equal number of consecutive 1's and 0's.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 365281,
+  "total_submissions": 519701,
+  "acceptance_rate": "70.3%",
+  "similar_questions": [
+    {
+      "title": "Encode and Decode Strings",
+      "slug": "encode-and-decode-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/encode-and-decode-strings/"
+    },
+    {
+      "title": "Number of Substrings With Fixed Ratio",
+      "slug": "number-of-substrings-with-fixed-ratio",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-substrings-with-fixed-ratio/"
+    },
+    {
+      "title": "Count the Number of Substrings With Dominant Ones",
+      "slug": "count-the-number-of-substrings-with-dominant-ones",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-substrings-with-dominant-ones/"
+    }
+  ],
+  "hints": [
+    "How many valid binary substrings exist in \"000111\", and how many in \"11100\"?  What about \"00011100\"?"
+  ]
+}

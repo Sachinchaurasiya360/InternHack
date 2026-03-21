@@ -1,0 +1,48 @@
+{
+  "id": "2015",
+  "title": "Average Height of Buildings in Each Segment",
+  "slug": "average-height-of-buildings-in-each-segment",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sorting", "Heap (Priority Queue)", "Prefix Sum"],
+  "total_accepted": 2723,
+  "total_submissions": 4653,
+  "acceptance_rate": "58.5%",
+  "similar_questions": [
+    {
+      "title": "Average Waiting Time",
+      "slug": "average-waiting-time",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/average-waiting-time/"
+    },
+    {
+      "title": "Describe the Painting",
+      "slug": "describe-the-painting",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/describe-the-painting/"
+    },
+    {
+      "title": "Amount of New Area Painted Each Day",
+      "slug": "amount-of-new-area-painted-each-day",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/amount-of-new-area-painted-each-day/"
+    },
+    {
+      "title": "Divide Intervals Into Minimum Number of Groups",
+      "slug": "divide-intervals-into-minimum-number-of-groups",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/"
+    }
+  ],
+  "hints": [
+    "Try sorting the start and end points of each building.",
+    "The naive solution is to go through each position on the street and keep track of the sum of all the buildings at that position and the number of buildings at that position.",
+    "How could we optimize that solution to pass?",
+    "We don't need to go through every position, just the ones where a building starts or a building ends."
+  ]
+}

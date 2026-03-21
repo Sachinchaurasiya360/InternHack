@@ -1,0 +1,34 @@
+{
+  "id": "2016",
+  "title": "Maximum Difference Between Increasing Elements",
+  "slug": "maximum-difference-between-increasing-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>0-indexed</strong> integer array <code>nums</code> of size <code>n</code>, find the <strong>maximum difference</strong> between <code>nums[i]</code> and <code>nums[j]</code> (i.e., <code>nums[j] - nums[i]</code>), such that <code>0 &lt;= i &lt; j &lt; n</code> and <code>nums[i] &lt; nums[j]</code>.</p>\n\n<p>Return <em>the <strong>maximum difference</strong>. </em>If no such <code>i</code> and <code>j</code> exists, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [7,<strong><u>1</u></strong>,<strong><u>5</u></strong>,4]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\nThe maximum difference occurs with i = 1 and j = 2, nums[j] - nums[i] = 5 - 1 = 4.\nNote that with i = 1 and j = 0, the difference nums[j] - nums[i] = 7 - 1 = 6, but i &gt; j, so it is not valid.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [9,4,3,2]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong>\nThere is no i and j such that i &lt; j and nums[i] &lt; nums[j].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [<strong><u>1</u></strong>,5,2,<strong><u>10</u></strong>]\n<strong>Output:</strong> 9\n<strong>Explanation:</strong>\nThe maximum difference occurs with i = 0 and j = 3, nums[j] - nums[i] = 10 - 1 = 9.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>2 &lt;= n &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a **0-indexed** integer array `nums` of size `n`, find the **maximum difference** between `nums[i]` and `nums[j]` (i.e., `nums[j] - nums[i]`), such that `0 <= i < j < n` and `nums[i] < nums[j]`.\n\nReturn _the**maximum difference**. _If no such `i` and `j` exists, return `-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [7,**_1_** ,**_5_** ,4]\n    **Output:** 4\n    **Explanation:**\n    The maximum difference occurs with i = 1 and j = 2, nums[j] - nums[i] = 5 - 1 = 4.\n    Note that with i = 1 and j = 0, the difference nums[j] - nums[i] = 7 - 1 = 6, but i > j, so it is not valid.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [9,4,3,2]\n    **Output:** -1\n    **Explanation:**\n    There is no i and j such that i < j and nums[i] < nums[j].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [**_1_** ,5,2,**_10_**]\n    **Output:** 9\n    **Explanation:**\n    The maximum difference occurs with i = 0 and j = 3, nums[j] - nums[i] = 10 - 1 = 9.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `2 <= n <= 1000`\n  * `1 <= nums[i] <= 109`",
+  "question": "Given a **0-indexed** integer array `nums` of size `n`, find the **maximum difference** between `nums[i]` and `nums[j]` (i.e., `nums[j] - nums[i]`), such that `0 <= i < j < n` and `nums[i] < nums[j]`.\n\nReturn _the**maximum difference**. _If no such `i` and `j` exists, return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [7,**_1_** ,**_5_** ,4]\n    **Output:** 4\n    **Explanation:**\n    The maximum difference occurs with i = 1 and j = 2, nums[j] - nums[i] = 5 - 1 = 4.\n    Note that with i = 1 and j = 0, the difference nums[j] - nums[i] = 7 - 1 = 6, but i > j, so it is not valid.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [9,4,3,2]\n    **Output:** -1\n    **Explanation:**\n    There is no i and j such that i < j and nums[i] < nums[j].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [**_1_** ,5,2,**_10_**]\n    **Output:** 9\n    **Explanation:**\n    The maximum difference occurs with i = 0 and j = 3, nums[j] - nums[i] = 10 - 1 = 9.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `2 <= n <= 1000`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array"],
+  "total_accepted": 283912,
+  "total_submissions": 427248,
+  "acceptance_rate": "66.5%",
+  "similar_questions": [
+    {
+      "title": "Best Time to Buy and Sell Stock",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+    },
+    {
+      "title": "Two Furthest Houses With Different Colors",
+      "slug": "two-furthest-houses-with-different-colors",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-furthest-houses-with-different-colors/"
+    }
+  ],
+  "hints": [
+    "Could you keep track of the minimum element visited while traversing?",
+    "We have a potential candidate for the answer if the prefix min is less than nums[i]."
+  ]
+}

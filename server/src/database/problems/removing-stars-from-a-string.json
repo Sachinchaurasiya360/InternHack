@@ -1,0 +1,34 @@
+{
+  "id": "2390",
+  "title": "Removing Stars From a String",
+  "slug": "removing-stars-from-a-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code>, which contains stars <code>*</code>.</p>\n\n<p>In one operation, you can:</p>\n\n<ul>\n\t<li>Choose a star in <code>s</code>.</li>\n\t<li>Remove the closest <strong>non-star</strong> character to its <strong>left</strong>, as well as remove the star itself.</li>\n</ul>\n\n<p>Return <em>the string after <strong>all</strong> stars have been removed</em>.</p>\n\n<p><strong>Note:</strong></p>\n\n<ul>\n\t<li>The input will be generated such that the operation is always possible.</li>\n\t<li>It can be shown that the resulting string will always be unique.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;leet**cod*e&quot;\n<strong>Output:</strong> &quot;lecoe&quot;\n<strong>Explanation:</strong> Performing the removals from left to right:\n- The closest character to the 1<sup>st</sup> star is &#39;t&#39; in &quot;lee<strong><u>t</u></strong>**cod*e&quot;. s becomes &quot;lee*cod*e&quot;.\n- The closest character to the 2<sup>nd</sup> star is &#39;e&#39; in &quot;le<strong><u>e</u></strong>*cod*e&quot;. s becomes &quot;lecod*e&quot;.\n- The closest character to the 3<sup>rd</sup> star is &#39;d&#39; in &quot;leco<strong><u>d</u></strong>*e&quot;. s becomes &quot;lecoe&quot;.\nThere are no more stars, so we return &quot;lecoe&quot;.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;erase*****&quot;\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> The entire string is removed, so we return an empty string.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters and stars <code>*</code>.</li>\n\t<li>The operation above can be performed on <code>s</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s`, which contains stars `*`.\n\nIn one operation, you can:\n\n  * Choose a star in `s`.\n  * Remove the closest **non-star** character to its **left** , as well as remove the star itself.\n\n\n\nReturn _the string after**all** stars have been removed_.\n\n**Note:**\n\n  * The input will be generated such that the operation is always possible.\n  * It can be shown that the resulting string will always be unique.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"leet**cod*e\"\n    **Output:** \"lecoe\"\n    **Explanation:** Performing the removals from left to right:\n    - The closest character to the 1st star is 't' in \"lee** _t_** **cod*e\". s becomes \"lee*cod*e\".\n    - The closest character to the 2nd star is 'e' in \"le** _e_** *cod*e\". s becomes \"lecod*e\".\n    - The closest character to the 3rd star is 'd' in \"leco** _d_** *e\". s becomes \"lecoe\".\n    There are no more stars, so we return \"lecoe\".\n\n**Example 2:**\n    \n    \n    **Input:** s = \"erase*****\"\n    **Output:** \"\"\n    **Explanation:** The entire string is removed, so we return an empty string.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters and stars `*`.\n  * The operation above can be performed on `s`.",
+  "question": "You are given a string `s`, which contains stars `*`.\n\nIn one operation, you can:\n\n  * Choose a star in `s`.\n  * Remove the closest **non-star** character to its **left** , as well as remove the star itself.\n\n\n\nReturn _the string after**all** stars have been removed_.\n\n**Note:**\n\n  * The input will be generated such that the operation is always possible.\n  * It can be shown that the resulting string will always be unique.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"leet**cod*e\"\n    **Output:** \"lecoe\"\n    **Explanation:** Performing the removals from left to right:\n    - The closest character to the 1st star is 't' in \"lee** _t_** **cod*e\". s becomes \"lee*cod*e\".\n    - The closest character to the 2nd star is 'e' in \"le** _e_** *cod*e\". s becomes \"lecod*e\".\n    - The closest character to the 3rd star is 'd' in \"leco** _d_** *e\". s becomes \"lecoe\".\n    There are no more stars, so we return \"lecoe\".\n\n**Example 2:**\n    \n    \n    **Input:** s = \"erase*****\"\n    **Output:** \"\"\n    **Explanation:** The entire string is removed, so we return an empty string.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters and stars `*`.\n  * The operation above can be performed on `s`.",
+  "topics": ["String", "Stack", "Simulation"],
+  "total_accepted": 604496,
+  "total_submissions": 765379,
+  "acceptance_rate": "79.0%",
+  "similar_questions": [
+    {
+      "title": "Backspace String Compare",
+      "slug": "backspace-string-compare",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/backspace-string-compare/"
+    },
+    {
+      "title": "Remove All Adjacent Duplicates In String",
+      "slug": "remove-all-adjacent-duplicates-in-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/"
+    }
+  ],
+  "hints": [
+    "What data structure could we use to efficiently perform these removals?",
+    "Use a stack to store the characters. Pop one character off the stack at each star. Otherwise, we push the character onto the stack."
+  ]
+}

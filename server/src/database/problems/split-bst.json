@@ -1,0 +1,27 @@
+{
+  "id": "776",
+  "title": "Split BST",
+  "slug": "split-bst",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Binary Search Tree", "Recursion", "Binary Tree"],
+  "total_accepted": 112170,
+  "total_submissions": 136423,
+  "acceptance_rate": "82.2%",
+  "similar_questions": [
+    {
+      "title": "Delete Node in a BST",
+      "slug": "delete-node-in-a-bst",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-node-in-a-bst/"
+    }
+  ],
+  "hints": [
+    "Use recursion.  If root.val <= V, you split root.right into two halves, then join it's left half back on root.right."
+  ]
+}

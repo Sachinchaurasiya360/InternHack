@@ -1,0 +1,29 @@
+{
+  "id": "1297",
+  "title": "Maximum Number of Occurrences of a Substring",
+  "slug": "maximum-number-of-occurrences-of-a-substring",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return the maximum number of occurrences of <strong>any</strong> substring under the following rules:</p>\n\n<ul>\n\t<li>The number of unique characters in the substring must be less than or equal to <code>maxLetters</code>.</li>\n\t<li>The substring size must be between <code>minSize</code> and <code>maxSize</code> inclusive.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aababcaab&quot;, maxLetters = 2, minSize = 3, maxSize = 4\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Substring &quot;aab&quot; has 2 occurrences in the original string.\nIt satisfies the conditions, 2 unique letters and size 3 (between minSize and maxSize).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaaa&quot;, maxLetters = 1, minSize = 3, maxSize = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Substring &quot;aaa&quot; occur 2 times in the string. It can overlap.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= maxLetters &lt;= 26</code></li>\n\t<li><code>1 &lt;= minSize &lt;= maxSize &lt;= min(26, s.length)</code></li>\n\t<li><code>s</code> consists of only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return the maximum number of occurrences of **any** substring under the following rules:\n\n  * The number of unique characters in the substring must be less than or equal to `maxLetters`.\n  * The substring size must be between `minSize` and `maxSize` inclusive.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aababcaab\", maxLetters = 2, minSize = 3, maxSize = 4\n    **Output:** 2\n    **Explanation:** Substring \"aab\" has 2 occurrences in the original string.\n    It satisfies the conditions, 2 unique letters and size 3 (between minSize and maxSize).\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaaa\", maxLetters = 1, minSize = 3, maxSize = 3\n    **Output:** 2\n    **Explanation:** Substring \"aaa\" occur 2 times in the string. It can overlap.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `1 <= maxLetters <= 26`\n  * `1 <= minSize <= maxSize <= min(26, s.length)`\n  * `s` consists of only lowercase English letters.",
+  "question": "Given a string `s`, return the maximum number of occurrences of **any** substring under the following rules:\n\n  * The number of unique characters in the substring must be less than or equal to `maxLetters`.\n  * The substring size must be between `minSize` and `maxSize` inclusive.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aababcaab\", maxLetters = 2, minSize = 3, maxSize = 4\n    **Output:** 2\n    **Explanation:** Substring \"aab\" has 2 occurrences in the original string.\n    It satisfies the conditions, 2 unique letters and size 3 (between minSize and maxSize).\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaaa\", maxLetters = 1, minSize = 3, maxSize = 3\n    **Output:** 2\n    **Explanation:** Substring \"aaa\" occur 2 times in the string. It can overlap.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `1 <= maxLetters <= 26`\n  * `1 <= minSize <= maxSize <= min(26, s.length)`\n  * `s` consists of only lowercase English letters.",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 82448,
+  "total_submissions": 151840,
+  "acceptance_rate": "54.3%",
+  "similar_questions": [
+    {
+      "title": "Rearrange Characters to Make Target String",
+      "slug": "rearrange-characters-to-make-target-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/rearrange-characters-to-make-target-string/"
+    }
+  ],
+  "hints": [
+    "Check out the constraints, (maxSize <=26).",
+    "This means you can explore all substrings in O(n * 26).",
+    "Find the Maximum Number of Occurrences of a Substring with bruteforce."
+  ]
+}

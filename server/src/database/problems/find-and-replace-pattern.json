@@ -1,0 +1,31 @@
+{
+  "id": "890",
+  "title": "Find and Replace Pattern",
+  "slug": "find-and-replace-pattern",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a list of strings <code>words</code> and a string <code>pattern</code>, return <em>a list of</em> <code>words[i]</code> <em>that match</em> <code>pattern</code>. You may return the answer in <strong>any order</strong>.</p>\n\n<p>A word matches the pattern if there exists a permutation of letters <code>p</code> so that after replacing every letter <code>x</code> in the pattern with <code>p(x)</code>, we get the desired word.</p>\n\n<p>Recall that a permutation of letters is a bijection from letters to letters: every letter maps to another letter, and no two letters map to the same letter.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;abc&quot;,&quot;deq&quot;,&quot;mee&quot;,&quot;aqq&quot;,&quot;dkd&quot;,&quot;ccc&quot;], pattern = &quot;abb&quot;\n<strong>Output:</strong> [&quot;mee&quot;,&quot;aqq&quot;]\n<strong>Explanation:</strong> &quot;mee&quot; matches the pattern because there is a permutation {a -&gt; m, b -&gt; e, ...}. \n&quot;ccc&quot; does not match the pattern because {a -&gt; c, b -&gt; c, ...} is not a permutation, since a and b map to the same letter.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;a&quot;,&quot;b&quot;,&quot;c&quot;], pattern = &quot;a&quot;\n<strong>Output:</strong> [&quot;a&quot;,&quot;b&quot;,&quot;c&quot;]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= pattern.length &lt;= 20</code></li>\n\t<li><code>1 &lt;= words.length &lt;= 50</code></li>\n\t<li><code>words[i].length == pattern.length</code></li>\n\t<li><code>pattern</code> and <code>words[i]</code> are lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a list of strings `words` and a string `pattern`, return _a list of_ `words[i]` _that match_ `pattern`. You may return the answer in **any order**.\n\nA word matches the pattern if there exists a permutation of letters `p` so that after replacing every letter `x` in the pattern with `p(x)`, we get the desired word.\n\nRecall that a permutation of letters is a bijection from letters to letters: every letter maps to another letter, and no two letters map to the same letter.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"abc\",\"deq\",\"mee\",\"aqq\",\"dkd\",\"ccc\"], pattern = \"abb\"\n    **Output:** [\"mee\",\"aqq\"]\n    **Explanation:** \"mee\" matches the pattern because there is a permutation {a -> m, b -> e, ...}. \n    \"ccc\" does not match the pattern because {a -> c, b -> c, ...} is not a permutation, since a and b map to the same letter.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"a\",\"b\",\"c\"], pattern = \"a\"\n    **Output:** [\"a\",\"b\",\"c\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= pattern.length <= 20`\n  * `1 <= words.length <= 50`\n  * `words[i].length == pattern.length`\n  * `pattern` and `words[i]` are lowercase English letters.",
+  "question": "Given a list of strings `words` and a string `pattern`, return _a list of_ `words[i]` _that match_ `pattern`. You may return the answer in **any order**.\n\nA word matches the pattern if there exists a permutation of letters `p` so that after replacing every letter `x` in the pattern with `p(x)`, we get the desired word.\n\nRecall that a permutation of letters is a bijection from letters to letters: every letter maps to another letter, and no two letters map to the same letter.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"abc\",\"deq\",\"mee\",\"aqq\",\"dkd\",\"ccc\"], pattern = \"abb\"\n    **Output:** [\"mee\",\"aqq\"]\n    **Explanation:** \"mee\" matches the pattern because there is a permutation {a -> m, b -> e, ...}. \n    \"ccc\" does not match the pattern because {a -> c, b -> c, ...} is not a permutation, since a and b map to the same letter.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"a\",\"b\",\"c\"], pattern = \"a\"\n    **Output:** [\"a\",\"b\",\"c\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= pattern.length <= 20`\n  * `1 <= words.length <= 50`\n  * `words[i].length == pattern.length`\n  * `pattern` and `words[i]` are lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String"],
+  "total_accepted": 212698,
+  "total_submissions": 276282,
+  "acceptance_rate": "77.0%",
+  "similar_questions": [
+    {
+      "title": "Isomorphic Strings",
+      "slug": "isomorphic-strings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/isomorphic-strings/"
+    },
+    {
+      "title": "Word Pattern",
+      "slug": "word-pattern",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/word-pattern/"
+    }
+  ],
+  "hints": []
+}

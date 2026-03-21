@@ -1,0 +1,33 @@
+{
+  "id": "759",
+  "title": "Employee Free Time",
+  "slug": "employee-free-time",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sweep Line", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 176305,
+  "total_submissions": 242314,
+  "acceptance_rate": "72.8%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Interval List Intersections",
+      "slug": "interval-list-intersections",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/interval-list-intersections/"
+    }
+  ],
+  "hints": [
+    "Take all the intervals and do an \"events\" (or \"line sweep\") approach - an event of (x, OPEN) increases the number of active intervals, while (x, CLOSE) decreases it.\r\n\r\nProcessing in sorted order from left to right, if the number of active intervals is zero, then you crossed a region of common free time."
+  ]
+}

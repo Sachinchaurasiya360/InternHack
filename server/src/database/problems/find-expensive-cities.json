@@ -1,0 +1,18 @@
+{
+  "id": "2987",
+  "title": "Find Expensive Cities",
+  "slug": "find-expensive-cities",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 5669,
+  "total_submissions": 7369,
+  "acceptance_rate": "76.9%",
+  "similar_questions": [],
+  "hints": []
+}

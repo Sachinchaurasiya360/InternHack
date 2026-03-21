@@ -1,0 +1,25 @@
+{
+  "id": "1336",
+  "title": "Number of Transactions per Visit",
+  "slug": "number-of-transactions-per-visit",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 15650,
+  "total_submissions": 32771,
+  "acceptance_rate": "47.8%",
+  "similar_questions": [
+    {
+      "title": "Find the Missing IDs",
+      "slug": "find-the-missing-ids",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-missing-ids/"
+    }
+  ],
+  "hints": []
+}

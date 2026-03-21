@@ -1,0 +1,21 @@
+{
+  "id": "580",
+  "title": "Count Student Number in Departments",
+  "slug": "count-student-number-in-departments",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 78131,
+  "total_submissions": 130320,
+  "acceptance_rate": "60.0%",
+  "similar_questions": [],
+  "hints": [
+    "Still remember the difference between 'INNER JOIN' and 'OUTTER JOIN' in SQL?",
+    "Do you know other expressions using the 'COUNT' function besides 'COUNT(*)'?"
+  ]
+}

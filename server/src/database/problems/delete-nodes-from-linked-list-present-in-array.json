@@ -1,0 +1,40 @@
+{
+  "id": "3217",
+  "title": "Delete Nodes From Linked List Present in Array",
+  "slug": "delete-nodes-from-linked-list-present-in-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers <code>nums</code> and the <code>head</code> of a linked list. Return the <code>head</code> of the modified linked list after <strong>removing</strong> all nodes from the linked list that have a value that exists in <code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3], head = [1,2,3,4,5]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[4,5]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample0.png\" style=\"width: 400px; height: 66px;\" /></strong></p>\n\n<p>Remove the nodes with values 1, 2, and 3.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1], head = [1,2,1,2,1,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[2,2,2]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample1.png\" style=\"height: 62px; width: 450px;\" /></p>\n\n<p>Remove the nodes with value 1.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [5], head = [1,2,3,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1,2,3,4]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample2.png\" style=\"width: 400px; height: 83px;\" /></strong></p>\n\n<p>No node has value 5.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n\t<li>All elements in <code>nums</code> are unique.</li>\n\t<li>The number of nodes in the given list is in the range <code>[1, 10<sup>5</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 10<sup>5</sup></code></li>\n\t<li>The input is generated such that there is at least one node in the linked list that has a value not present in <code>nums</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `nums` and the `head` of a linked list. Return the `head` of the modified linked list after **removing** all nodes from the linked list that have a value that exists in `nums`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,3], head = [1,2,3,4,5]\n\n**Output:** [4,5]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample0.png)**\n\nRemove the nodes with values 1, 2, and 3.\n\n**Example 2:**\n\n**Input:** nums = [1], head = [1,2,1,2,1,2]\n\n**Output:** [2,2,2]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample1.png)\n\nRemove the nodes with value 1.\n\n**Example 3:**\n\n**Input:** nums = [5], head = [1,2,3,4]\n\n**Output:** [1,2,3,4]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample2.png)**\n\nNo node has value 5.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 105`\n  * All elements in `nums` are unique.\n  * The number of nodes in the given list is in the range `[1, 105]`.\n  * `1 <= Node.val <= 105`\n  * The input is generated such that there is at least one node in the linked list that has a value not present in `nums`.",
+  "question": "You are given an array of integers `nums` and the `head` of a linked list. Return the `head` of the modified linked list after **removing** all nodes from the linked list that have a value that exists in `nums`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,3], head = [1,2,3,4,5]\n\n**Output:** [4,5]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample0.png)**\n\nRemove the nodes with values 1, 2, and 3.\n\n**Example 2:**\n\n**Input:** nums = [1], head = [1,2,1,2,1,2]\n\n**Output:** [2,2,2]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample1.png)\n\nRemove the nodes with value 1.\n\n**Example 3:**\n\n**Input:** nums = [5], head = [1,2,3,4]\n\n**Output:** [1,2,3,4]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/06/11/linkedlistexample2.png)**\n\nNo node has value 5.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 105`\n  * All elements in `nums` are unique.\n  * The number of nodes in the given list is in the range `[1, 105]`.\n  * `1 <= Node.val <= 105`\n  * The input is generated such that there is at least one node in the linked list that has a value not present in `nums`.",
+  "topics": ["Array", "Hash Table", "Linked List"],
+  "total_accepted": 333888,
+  "total_submissions": 480356,
+  "acceptance_rate": "69.5%",
+  "similar_questions": [
+    {
+      "title": "Remove Linked List Elements",
+      "slug": "remove-linked-list-elements",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-linked-list-elements/"
+    },
+    {
+      "title": "Delete Node in a Linked List",
+      "slug": "delete-node-in-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-node-in-a-linked-list/"
+    },
+    {
+      "title": "Remove Nodes From Linked List",
+      "slug": "remove-nodes-from-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-nodes-from-linked-list/"
+    }
+  ],
+  "hints": [
+    "Add all elements of <code>nums</code> into a Set.",
+    "Scan the list to check if the current element should be deleted by checking the Set."
+  ]
+}

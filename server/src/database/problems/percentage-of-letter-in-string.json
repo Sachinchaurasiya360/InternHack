@@ -1,0 +1,28 @@
+{
+  "id": "2278",
+  "title": "Percentage of Letter in String",
+  "slug": "percentage-of-letter-in-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> and a character <code>letter</code>, return<em> the <strong>percentage</strong> of characters in </em><code>s</code><em> that equal </em><code>letter</code><em> <strong>rounded down</strong> to the nearest whole percent.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;foobar&quot;, letter = &quot;o&quot;\n<strong>Output:</strong> 33\n<strong>Explanation:</strong>\nThe percentage of characters in s that equal the letter &#39;o&#39; is 2 / 6 * 100% = 33% when rounded down, so we return 33.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;jjjj&quot;, letter = &quot;k&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong>\nThe percentage of characters in s that equal the letter &#39;k&#39; is 0%, so we return 0.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n\t<li><code>letter</code> is a lowercase English letter.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` and a character `letter`, return _the**percentage** of characters in _`s` _that equal_`letter` _**rounded down** to the nearest whole percent._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"foobar\", letter = \"o\"\n    **Output:** 33\n    **Explanation:**\n    The percentage of characters in s that equal the letter 'o' is 2 / 6 * 100% = 33% when rounded down, so we return 33.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"jjjj\", letter = \"k\"\n    **Output:** 0\n    **Explanation:**\n    The percentage of characters in s that equal the letter 'k' is 0%, so we return 0.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of lowercase English letters.\n  * `letter` is a lowercase English letter.",
+  "question": "Given a string `s` and a character `letter`, return _the**percentage** of characters in _`s` _that equal_`letter` _**rounded down** to the nearest whole percent._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"foobar\", letter = \"o\"\n    **Output:** 33\n    **Explanation:**\n    The percentage of characters in s that equal the letter 'o' is 2 / 6 * 100% = 33% when rounded down, so we return 33.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"jjjj\", letter = \"k\"\n    **Output:** 0\n    **Explanation:**\n    The percentage of characters in s that equal the letter 'k' is 0%, so we return 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of lowercase English letters.\n  * `letter` is a lowercase English letter.",
+  "topics": ["String"],
+  "total_accepted": 98608,
+  "total_submissions": 131363,
+  "acceptance_rate": "75.1%",
+  "similar_questions": [
+    {
+      "title": "Sort Characters By Frequency",
+      "slug": "sort-characters-by-frequency",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-characters-by-frequency/"
+    }
+  ],
+  "hints": [
+    "Can we count the number of occurrences of letter in s?",
+    "Recall that the percentage is calculated as (occurrences / total) * 100."
+  ]
+}

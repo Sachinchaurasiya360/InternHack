@@ -1,0 +1,37 @@
+{
+  "id": "3158",
+  "title": "Find the XOR of Numbers Which Appear Twice",
+  "slug": "find-the-xor-of-numbers-which-appear-twice",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code>, where each number in the array appears <strong>either</strong><em> </em>once<em> </em>or<em> </em>twice.</p>\n\n<p>Return the bitwise<em> </em><code>XOR</code> of all the numbers that appear twice in the array, or 0 if no number appears twice.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,1,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The only number that appears twice in&nbsp;<code>nums</code>&nbsp;is 1.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>No number appears twice in&nbsp;<code>nums</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,2,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Numbers 1 and 2 appeared twice. <code>1 XOR 2 == 3</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 50</code></li>\n\t<li>Each number in <code>nums</code> appears either once or twice.</li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums`, where each number in the array appears **either** __ once __ or __ twice.\n\nReturn the bitwise __`XOR` of all the numbers that appear twice in the array, or 0 if no number appears twice.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,1,3]\n\n**Output:** 1\n\n**Explanation:**\n\nThe only number that appears twice in `nums` is 1.\n\n**Example 2:**\n\n**Input:** nums = [1,2,3]\n\n**Output:** 0\n\n**Explanation:**\n\nNo number appears twice in `nums`.\n\n**Example 3:**\n\n**Input:** nums = [1,2,2,1]\n\n**Output:** 3\n\n**Explanation:**\n\nNumbers 1 and 2 appeared twice. `1 XOR 2 == 3`.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 50`\n  * Each number in `nums` appears either once or twice.",
+  "question": "You are given an array `nums`, where each number in the array appears **either** __ once __ or __ twice.\n\nReturn the bitwise __`XOR` of all the numbers that appear twice in the array, or 0 if no number appears twice.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,1,3]\n\n**Output:** 1\n\n**Explanation:**\n\nThe only number that appears twice in `nums` is 1.\n\n**Example 2:**\n\n**Input:** nums = [1,2,3]\n\n**Output:** 0\n\n**Explanation:**\n\nNo number appears twice in `nums`.\n\n**Example 3:**\n\n**Input:** nums = [1,2,2,1]\n\n**Output:** 3\n\n**Explanation:**\n\nNumbers 1 and 2 appeared twice. `1 XOR 2 == 3`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 50`\n  * Each number in `nums` appears either once or twice.",
+  "topics": ["Array", "Hash Table", "Bit Manipulation"],
+  "total_accepted": 75041,
+  "total_submissions": 95264,
+  "acceptance_rate": "78.8%",
+  "similar_questions": [
+    {
+      "title": "Single Number",
+      "slug": "single-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/single-number/"
+    },
+    {
+      "title": "Single Number II",
+      "slug": "single-number-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/single-number-ii/"
+    },
+    {
+      "title": "Single Number III",
+      "slug": "single-number-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/single-number-iii/"
+    }
+  ],
+  "hints": ["The constraints are small. Brute force checking each value in the array."]
+}

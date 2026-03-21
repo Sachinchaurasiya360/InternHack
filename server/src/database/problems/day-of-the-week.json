@@ -1,0 +1,22 @@
+{
+  "id": "1185",
+  "title": "Day of the Week",
+  "slug": "day-of-the-week",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a date, return the corresponding day of the week for that date.</p>\n\n<p>The input is given as three integers representing the <code>day</code>, <code>month</code> and <code>year</code> respectively.</p>\n\n<p>Return the answer as one of the following values&nbsp;<code>{&quot;Sunday&quot;, &quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;}</code>.</p>\n\n<p><strong>Note:</strong> January 1, 1971 was a Friday.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> day = 31, month = 8, year = 2019\n<strong>Output:</strong> &quot;Saturday&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> day = 18, month = 7, year = 1999\n<strong>Output:</strong> &quot;Sunday&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> day = 15, month = 8, year = 1993\n<strong>Output:</strong> &quot;Sunday&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The given dates are valid dates between the years <code>1971</code> and <code>2100</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a date, return the corresponding day of the week for that date.\n\nThe input is given as three integers representing the `day`, `month` and `year` respectively.\n\nReturn the answer as one of the following values `{\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"}`.\n\n**Note:** January 1, 1971 was a Friday.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** day = 31, month = 8, year = 2019\n    **Output:** \"Saturday\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** day = 18, month = 7, year = 1999\n    **Output:** \"Sunday\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** day = 15, month = 8, year = 1993\n    **Output:** \"Sunday\"\n    \n\n \n\n**Constraints:**\n\n  * The given dates are valid dates between the years `1971` and `2100`.",
+  "question": "Given a date, return the corresponding day of the week for that date.\n\nThe input is given as three integers representing the `day`, `month` and `year` respectively.\n\nReturn the answer as one of the following values `{\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"}`.\n\n**Note:** January 1, 1971 was a Friday.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** day = 31, month = 8, year = 2019\n    **Output:** \"Saturday\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** day = 18, month = 7, year = 1999\n    **Output:** \"Sunday\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** day = 15, month = 8, year = 1993\n    **Output:** \"Sunday\"",
+  "constraints": "**Constraints:**\n\n  * The given dates are valid dates between the years `1971` and `2100`.",
+  "topics": ["Math"],
+  "total_accepted": 88326,
+  "total_submissions": 149687,
+  "acceptance_rate": "59.0%",
+  "similar_questions": [],
+  "hints": [
+    "Sum up the number of days for the years before the given year.",
+    "Handle the case of a leap year.",
+    "Find the number of days for each month of the given year."
+  ]
+}

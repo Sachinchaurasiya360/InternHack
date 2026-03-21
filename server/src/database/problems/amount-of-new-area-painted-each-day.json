@@ -1,0 +1,42 @@
+{
+  "id": "2158",
+  "title": "Amount of New Area Painted Each Day",
+  "slug": "amount-of-new-area-painted-each-day",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Segment Tree", "Ordered Set"],
+  "total_accepted": 32883,
+  "total_submissions": 59163,
+  "acceptance_rate": "55.6%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Describe the Painting",
+      "slug": "describe-the-painting",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/describe-the-painting/"
+    },
+    {
+      "title": "Average Height of Buildings in Each Segment",
+      "slug": "average-height-of-buildings-in-each-segment",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/average-height-of-buildings-in-each-segment/"
+    }
+  ],
+  "hints": [
+    "What’s a good way to keep track of intervals that you have already painted?",
+    "Create an array of all 1’s, and when you have painted an interval, set the values in that interval to 0.",
+    "Using this array, how can you quickly calculate the amount of new area that you paint on a given day?",
+    "Calculate the sum of the new array in the interval that you paint."
+  ]
+}

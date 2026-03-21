@@ -1,0 +1,22 @@
+{
+  "id": "1180",
+  "title": "Count Substrings with Only One Distinct Letter",
+  "slug": "count-substrings-with-only-one-distinct-letter",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "String"],
+  "total_accepted": 31155,
+  "total_submissions": 38504,
+  "acceptance_rate": "80.9%",
+  "similar_questions": [],
+  "hints": [
+    "What if we divide the string into substrings containing only one distinct character with maximal lengths?",
+    "Now that you have sub-strings with only one distinct character, Try to come up with a formula that counts the number of its sub-strings.",
+    "Alternatively, Observe that the constraints are small so you can use brute force."
+  ]
+}

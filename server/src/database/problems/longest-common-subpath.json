@@ -1,0 +1,35 @@
+{
+  "id": "1923",
+  "title": "Longest Common Subpath",
+  "slug": "longest-common-subpath",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There is a country of <code>n</code> cities numbered from <code>0</code> to <code>n - 1</code>. In this country, there is a road connecting <b>every pair</b> of cities.</p>\n\n<p>There are <code>m</code> friends numbered from <code>0</code> to <code>m - 1</code> who are traveling through the country. Each one of them will take a path consisting of some cities. Each path is represented by an integer array that contains the visited cities in order. The path may contain a city <strong>more than once</strong>, but the same city will not be listed consecutively.</p>\n\n<p>Given an integer <code>n</code> and a 2D integer array <code>paths</code> where <code>paths[i]</code> is an integer array representing the path of the <code>i<sup>th</sup></code> friend, return <em>the length of the <strong>longest common subpath</strong> that is shared by <strong>every</strong> friend&#39;s path, or </em><code>0</code><em> if there is no common subpath at all</em>.</p>\n\n<p>A <strong>subpath</strong> of a path is a contiguous sequence of cities within that path.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5, paths = [[0,1,<u>2,3</u>,4],\n                       [<u>2,3</u>,4],\n                       [4,0,1,<u>2,3</u>]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The longest common subpath is [2,3].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, paths = [[0],[1],[2]]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There is no common subpath shared by the three paths.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5, paths = [[<u>0</u>,1,2,3,4],\n                       [4,3,2,1,<u>0</u>]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The possible longest common subpaths are [0], [1], [2], [3], and [4]. All have a length of 1.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>m == paths.length</code></li>\n\t<li><code>2 &lt;= m &lt;= 10<sup>5</sup></code></li>\n\t<li><code>sum(paths[i].length) &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= paths[i][j] &lt; n</code></li>\n\t<li>The same city is not listed multiple times consecutively in <code>paths[i]</code>.</li>\n</ul>\n",
+  "content_markdown": "There is a country of `n` cities numbered from `0` to `n - 1`. In this country, there is a road connecting **every pair** of cities.\n\nThere are `m` friends numbered from `0` to `m - 1` who are traveling through the country. Each one of them will take a path consisting of some cities. Each path is represented by an integer array that contains the visited cities in order. The path may contain a city **more than once** , but the same city will not be listed consecutively.\n\nGiven an integer `n` and a 2D integer array `paths` where `paths[i]` is an integer array representing the path of the `ith` friend, return _the length of the**longest common subpath** that is shared by **every** friend's path, or _`0` _if there is no common subpath at all_.\n\nA **subpath** of a path is a contiguous sequence of cities within that path.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5, paths = [[0,1,_2,3_ ,4],\n                           [_2,3_ ,4],\n                           [4,0,1,_2,3_]]\n    **Output:** 2\n    **Explanation:** The longest common subpath is [2,3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, paths = [[0],[1],[2]]\n    **Output:** 0\n    **Explanation:** There is no common subpath shared by the three paths.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 5, paths = [[_0_ ,1,2,3,4],\n                           [4,3,2,1,_0_]]\n    **Output:** 1\n    **Explanation:** The possible longest common subpaths are [0], [1], [2], [3], and [4]. All have a length of 1.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`\n  * `m == paths.length`\n  * `2 <= m <= 105`\n  * `sum(paths[i].length) <= 105`\n  * `0 <= paths[i][j] < n`\n  * The same city is not listed multiple times consecutively in `paths[i]`.",
+  "question": "There is a country of `n` cities numbered from `0` to `n - 1`. In this country, there is a road connecting **every pair** of cities.\n\nThere are `m` friends numbered from `0` to `m - 1` who are traveling through the country. Each one of them will take a path consisting of some cities. Each path is represented by an integer array that contains the visited cities in order. The path may contain a city **more than once** , but the same city will not be listed consecutively.\n\nGiven an integer `n` and a 2D integer array `paths` where `paths[i]` is an integer array representing the path of the `ith` friend, return _the length of the**longest common subpath** that is shared by **every** friend's path, or _`0` _if there is no common subpath at all_.\n\nA **subpath** of a path is a contiguous sequence of cities within that path.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5, paths = [[0,1,_2,3_ ,4],\n                           [_2,3_ ,4],\n                           [4,0,1,_2,3_]]\n    **Output:** 2\n    **Explanation:** The longest common subpath is [2,3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, paths = [[0],[1],[2]]\n    **Output:** 0\n    **Explanation:** There is no common subpath shared by the three paths.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 5, paths = [[_0_ ,1,2,3,4],\n                           [4,3,2,1,_0_]]\n    **Output:** 1\n    **Explanation:** The possible longest common subpaths are [0], [1], [2], [3], and [4]. All have a length of 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`\n  * `m == paths.length`\n  * `2 <= m <= 105`\n  * `sum(paths[i].length) <= 105`\n  * `0 <= paths[i][j] < n`\n  * The same city is not listed multiple times consecutively in `paths[i]`.",
+  "topics": ["Array", "Binary Search", "Rolling Hash", "Suffix Array", "Hash Function"],
+  "total_accepted": 9966,
+  "total_submissions": 33928,
+  "acceptance_rate": "29.4%",
+  "similar_questions": [
+    {
+      "title": "Reconstruct Itinerary",
+      "slug": "reconstruct-itinerary",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/reconstruct-itinerary/"
+    },
+    {
+      "title": "Maximum Length of Repeated Subarray",
+      "slug": "maximum-length-of-repeated-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-length-of-repeated-subarray/"
+    }
+  ],
+  "hints": [
+    "If there is a common path with length x, there is for sure a common path of length y where y < x.",
+    "We can use binary search over the answer with the range [0, min(path[i].length)].",
+    "Using binary search, we want to verify if we have a common path of length m. We can achieve this using hashing."
+  ]
+}

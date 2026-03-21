@@ -1,0 +1,28 @@
+{
+  "id": "1784",
+  "title": "Check if Binary String Has at Most One Segment of Ones",
+  "slug": "check-if-binary-string-has-at-most-one-segment-of-ones",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary string <code>s</code> <strong>​​​​​without leading zeros</strong>, return <code>true</code>​​​ <em>if </em><code>s</code><em> contains <strong>at most one contiguous segment of ones</strong></em>. Otherwise, return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1001&quot;\n<strong>Output:</strong> false\n<strong>Explanation: </strong>The ones do not form a contiguous segment.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;110&quot;\n<strong>Output:</strong> true</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s[i]</code>​​​​ is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n\t<li><code>s[0]</code> is&nbsp;<code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a binary string `s` **​​​​​without leading zeros** , return `true`​​​ _if_`s` _contains**at most one contiguous segment of ones**_. Otherwise, return `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"1001\"\n    **Output:** false\n    **Explanation:** The ones do not form a contiguous segment.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"110\"\n    **Output:** true\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s[i]`​​​​ is either `'0'` or `'1'`.\n  * `s[0]` is `'1'`.",
+  "question": "Given a binary string `s` **​​​​​without leading zeros** , return `true`​​​ _if_`s` _contains**at most one contiguous segment of ones**_. Otherwise, return `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"1001\"\n    **Output:** false\n    **Explanation:** The ones do not form a contiguous segment.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"110\"\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s[i]`​​​​ is either `'0'` or `'1'`.\n  * `s[0]` is `'1'`.",
+  "topics": ["String"],
+  "total_accepted": 58651,
+  "total_submissions": 148943,
+  "acceptance_rate": "39.4%",
+  "similar_questions": [
+    {
+      "title": "Longer Contiguous Segments of Ones than Zeros",
+      "slug": "longer-contiguous-segments-of-ones-than-zeros",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longer-contiguous-segments-of-ones-than-zeros/"
+    }
+  ],
+  "hints": [
+    "It's guaranteed to have at least one segment",
+    "The string size is small so you can count all segments of ones with no that have no adjacent ones."
+  ]
+}

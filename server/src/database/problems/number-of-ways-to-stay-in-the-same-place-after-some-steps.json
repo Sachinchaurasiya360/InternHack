@@ -1,0 +1,28 @@
+{
+  "id": "1269",
+  "title": "Number of Ways to Stay in the Same Place After Some Steps",
+  "slug": "number-of-ways-to-stay-in-the-same-place-after-some-steps",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You have a pointer at index <code>0</code> in an array of size <code>arrLen</code>. At each step, you can move 1 position to the left, 1 position to the right in the array, or stay in the same place (The pointer should not be placed outside the array at any time).</p>\n\n<p>Given two integers <code>steps</code> and <code>arrLen</code>, return the number of ways such that your pointer is still at index <code>0</code> after <strong>exactly</strong> <code>steps</code> steps. Since the answer may be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> steps = 3, arrLen = 2\n<strong>Output:</strong> 4\n<strong>Explanation: </strong>There are 4 differents ways to stay at index 0 after 3 steps.\nRight, Left, Stay\nStay, Right, Left\nRight, Stay, Left\nStay, Stay, Stay\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> steps = 2, arrLen = 4\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> There are 2 differents ways to stay at index 0 after 2 steps\nRight, Left\nStay, Stay\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> steps = 4, arrLen = 2\n<strong>Output:</strong> 8\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= steps &lt;= 500</code></li>\n\t<li><code>1 &lt;= arrLen &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You have a pointer at index `0` in an array of size `arrLen`. At each step, you can move 1 position to the left, 1 position to the right in the array, or stay in the same place (The pointer should not be placed outside the array at any time).\n\nGiven two integers `steps` and `arrLen`, return the number of ways such that your pointer is still at index `0` after **exactly** `steps` steps. Since the answer may be too large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** steps = 3, arrLen = 2\n    **Output:** 4\n    **Explanation:** There are 4 differents ways to stay at index 0 after 3 steps.\n    Right, Left, Stay\n    Stay, Right, Left\n    Right, Stay, Left\n    Stay, Stay, Stay\n    \n\n**Example 2:**\n    \n    \n    **Input:** steps = 2, arrLen = 4\n    **Output:** 2\n    **Explanation:** There are 2 differents ways to stay at index 0 after 2 steps\n    Right, Left\n    Stay, Stay\n    \n\n**Example 3:**\n    \n    \n    **Input:** steps = 4, arrLen = 2\n    **Output:** 8\n    \n\n \n\n**Constraints:**\n\n  * `1 <= steps <= 500`\n  * `1 <= arrLen <= 106`",
+  "question": "You have a pointer at index `0` in an array of size `arrLen`. At each step, you can move 1 position to the left, 1 position to the right in the array, or stay in the same place (The pointer should not be placed outside the array at any time).\n\nGiven two integers `steps` and `arrLen`, return the number of ways such that your pointer is still at index `0` after **exactly** `steps` steps. Since the answer may be too large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** steps = 3, arrLen = 2\n    **Output:** 4\n    **Explanation:** There are 4 differents ways to stay at index 0 after 3 steps.\n    Right, Left, Stay\n    Stay, Right, Left\n    Right, Stay, Left\n    Stay, Stay, Stay\n    \n\n**Example 2:**\n    \n    \n    **Input:** steps = 2, arrLen = 4\n    **Output:** 2\n    **Explanation:** There are 2 differents ways to stay at index 0 after 2 steps\n    Right, Left\n    Stay, Stay\n    \n\n**Example 3:**\n    \n    \n    **Input:** steps = 4, arrLen = 2\n    **Output:** 8",
+  "constraints": "**Constraints:**\n\n  * `1 <= steps <= 500`\n  * `1 <= arrLen <= 106`",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 102001,
+  "total_submissions": 204042,
+  "acceptance_rate": "50.0%",
+  "similar_questions": [
+    {
+      "title": "Number of Ways to Reach a Position After Exactly k Steps",
+      "slug": "number-of-ways-to-reach-a-position-after-exactly-k-steps",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-reach-a-position-after-exactly-k-steps/"
+    }
+  ],
+  "hints": [
+    "Try with Dynamic programming, dp(pos,steps): number of ways to back pos = 0 using exactly \"steps\" moves.",
+    "Notice that the computational complexity does not depend of \"arrlen\"."
+  ]
+}

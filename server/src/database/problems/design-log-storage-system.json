@@ -1,0 +1,25 @@
+{
+  "id": "635",
+  "title": "Design Log Storage System",
+  "slug": "design-log-storage-system",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Design", "Ordered Set"],
+  "total_accepted": 41426,
+  "total_submissions": 69910,
+  "acceptance_rate": "59.3%",
+  "similar_questions": [
+    {
+      "title": "Design In-Memory File System",
+      "slug": "design-in-memory-file-system",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/design-in-memory-file-system/"
+    }
+  ],
+  "hints": []
+}

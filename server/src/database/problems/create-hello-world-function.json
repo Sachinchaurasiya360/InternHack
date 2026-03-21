@@ -1,0 +1,18 @@
+{
+  "id": "2667",
+  "title": "Create Hello World Function",
+  "slug": "create-hello-world-function",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "Write a function&nbsp;<code>createHelloWorld</code>.&nbsp;It should return a new function that always returns&nbsp;<code>&quot;Hello World&quot;</code>.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> args = []\n<strong>Output:</strong> &quot;Hello World&quot;\n<strong>Explanation:</strong>\nconst f = createHelloWorld();\nf(); // &quot;Hello World&quot;\n\nThe function returned by createHelloWorld should always return &quot;Hello World&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> args = [{},null,42]\n<strong>Output:</strong> &quot;Hello World&quot;\n<strong>Explanation:</strong>\nconst f = createHelloWorld();\nf({}, null, 42); // &quot;Hello World&quot;\n\nAny arguments could be passed to the function but it should still always return &quot;Hello World&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= args.length &lt;= 10</code></li>\n</ul>\n",
+  "content_markdown": "Write a function `createHelloWorld`. It should return a new function that always returns `\"Hello World\"`. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** args = []\n    **Output:** \"Hello World\"\n    **Explanation:**\n    const f = createHelloWorld();\n    f(); // \"Hello World\"\n    \n    The function returned by createHelloWorld should always return \"Hello World\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** args = [{},null,42]\n    **Output:** \"Hello World\"\n    **Explanation:**\n    const f = createHelloWorld();\n    f({}, null, 42); // \"Hello World\"\n    \n    Any arguments could be passed to the function but it should still always return \"Hello World\".\n    \n\n \n\n**Constraints:**\n\n  * `0 <= args.length <= 10`",
+  "question": "Write a function `createHelloWorld`. It should return a new function that always returns `\"Hello World\"`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** args = []\n    **Output:** \"Hello World\"\n    **Explanation:**\n    const f = createHelloWorld();\n    f(); // \"Hello World\"\n    \n    The function returned by createHelloWorld should always return \"Hello World\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** args = [{},null,42]\n    **Output:** \"Hello World\"\n    **Explanation:**\n    const f = createHelloWorld();\n    f({}, null, 42); // \"Hello World\"\n    \n    Any arguments could be passed to the function but it should still always return \"Hello World\".",
+  "constraints": "**Constraints:**\n\n  * `0 <= args.length <= 10`",
+  "topics": [],
+  "total_accepted": 820306,
+  "total_submissions": 1000585,
+  "acceptance_rate": "82.0%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "1205",
+  "title": "Monthly Transactions II",
+  "slug": "monthly-transactions-ii",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 28257,
+  "total_submissions": 67227,
+  "acceptance_rate": "42.0%",
+  "similar_questions": [
+    {
+      "title": "Monthly Transactions I",
+      "slug": "monthly-transactions-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/monthly-transactions-i/"
+    }
+  ],
+  "hints": []
+}

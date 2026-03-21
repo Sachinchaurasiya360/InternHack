@@ -1,0 +1,22 @@
+{
+  "id": "1166",
+  "title": "Design File System",
+  "slug": "design-file-system",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Design", "Trie"],
+  "total_accepted": 89106,
+  "total_submissions": 136944,
+  "acceptance_rate": "65.1%",
+  "similar_questions": [],
+  "hints": [
+    "What if you think of a tree hierarchy for the files?.",
+    "A path is a node in the tree.",
+    "Use a hash table to store the valid paths along with their values."
+  ]
+}

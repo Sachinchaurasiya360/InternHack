@@ -1,0 +1,25 @@
+{
+  "id": "1242",
+  "title": "Web Crawler Multithreaded",
+  "slug": "web-crawler-multithreaded",
+  "difficulty": "Medium",
+  "category": "Concurrency",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Depth-First Search", "Breadth-First Search", "Concurrency"],
+  "total_accepted": 99131,
+  "total_submissions": 194453,
+  "acceptance_rate": "51.0%",
+  "similar_questions": [
+    {
+      "title": "Web Crawler",
+      "slug": "web-crawler",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/web-crawler/"
+    }
+  ],
+  "hints": []
+}

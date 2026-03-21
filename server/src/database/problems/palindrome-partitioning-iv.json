@@ -1,0 +1,46 @@
+{
+  "id": "1745",
+  "title": "Palindrome Partitioning IV",
+  "slug": "palindrome-partitioning-iv",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return <code>true</code> <em>if it is possible to split the string</em> <code>s</code> <em>into three <strong>non-empty</strong> palindromic substrings. Otherwise, return </em><code>false</code>.​​​​​</p>\n\n<p>A string is said to be palindrome if it the same string when reversed.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcbdd&quot;\n<strong>Output:</strong> true\n<strong>Explanation: </strong>&quot;abcbdd&quot; = &quot;a&quot; + &quot;bcb&quot; + &quot;dd&quot;, and all three substrings are palindromes.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bcbddxy&quot;\n<strong>Output:</strong> false\n<strong>Explanation: </strong>s cannot be split into 3 palindromes.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= s.length &lt;= 2000</code></li>\n\t<li><code>s</code>​​​​​​ consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return `true` _if it is possible to split the string_ `s` _into three**non-empty** palindromic substrings. Otherwise, return _`false`.​​​​​\n\nA string is said to be palindrome if it the same string when reversed.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abcbdd\"\n    **Output:** true\n    **Explanation:** \"abcbdd\" = \"a\" + \"bcb\" + \"dd\", and all three substrings are palindromes.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"bcbddxy\"\n    **Output:** false\n    **Explanation:** s cannot be split into 3 palindromes.\n    \n\n \n\n**Constraints:**\n\n  * `3 <= s.length <= 2000`\n  * `s`​​​​​​ consists only of lowercase English letters.",
+  "question": "Given a string `s`, return `true` _if it is possible to split the string_ `s` _into three**non-empty** palindromic substrings. Otherwise, return _`false`.​​​​​\n\nA string is said to be palindrome if it the same string when reversed.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abcbdd\"\n    **Output:** true\n    **Explanation:** \"abcbdd\" = \"a\" + \"bcb\" + \"dd\", and all three substrings are palindromes.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"bcbddxy\"\n    **Output:** false\n    **Explanation:** s cannot be split into 3 palindromes.",
+  "constraints": "**Constraints:**\n\n  * `3 <= s.length <= 2000`\n  * `s`​​​​​​ consists only of lowercase English letters.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 32305,
+  "total_submissions": 71489,
+  "acceptance_rate": "45.2%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Partitioning",
+      "slug": "palindrome-partitioning",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/palindrome-partitioning/"
+    },
+    {
+      "title": "Palindrome Partitioning II",
+      "slug": "palindrome-partitioning-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-partitioning-ii/"
+    },
+    {
+      "title": "Palindrome Partitioning III",
+      "slug": "palindrome-partitioning-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-partitioning-iii/"
+    },
+    {
+      "title": "Maximum Number of Non-overlapping Palindrome Substrings",
+      "slug": "maximum-number-of-non-overlapping-palindrome-substrings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-non-overlapping-palindrome-substrings/"
+    }
+  ],
+  "hints": [
+    "Preprocess checking palindromes in O(1)",
+    "Note that one string is a prefix and another one is a suffix you can try brute forcing the rest"
+  ]
+}

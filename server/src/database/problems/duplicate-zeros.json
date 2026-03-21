@@ -1,0 +1,23 @@
+{
+  "id": "1089",
+  "title": "Duplicate Zeros",
+  "slug": "duplicate-zeros",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a fixed-length integer array <code>arr</code>, duplicate each occurrence of zero, shifting the remaining elements to the right.</p>\n\n<p><strong>Note</strong> that elements beyond the length of the original array are not written. Do the above modifications to the input array in place and do not return anything.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,0,2,3,0,4,5,0]\n<strong>Output:</strong> [1,0,0,2,3,0,0,4]\n<strong>Explanation:</strong> After calling your function, the input array is modified to: [1,0,0,2,3,0,0,4]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3]\n<strong>Output:</strong> [1,2,3]\n<strong>Explanation:</strong> After calling your function, the input array is modified to: [1,2,3]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 9</code></li>\n</ul>\n",
+  "content_markdown": "Given a fixed-length integer array `arr`, duplicate each occurrence of zero, shifting the remaining elements to the right.\n\n**Note** that elements beyond the length of the original array are not written. Do the above modifications to the input array in place and do not return anything.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,0,2,3,0,4,5,0]\n    **Output:** [1,0,0,2,3,0,0,4]\n    **Explanation:** After calling your function, the input array is modified to: [1,0,0,2,3,0,0,4]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3]\n    **Output:** [1,2,3]\n    **Explanation:** After calling your function, the input array is modified to: [1,2,3]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `0 <= arr[i] <= 9`",
+  "question": "Given a fixed-length integer array `arr`, duplicate each occurrence of zero, shifting the remaining elements to the right.\n\n**Note** that elements beyond the length of the original array are not written. Do the above modifications to the input array in place and do not return anything.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,0,2,3,0,4,5,0]\n    **Output:** [1,0,0,2,3,0,0,4]\n    **Explanation:** After calling your function, the input array is modified to: [1,0,0,2,3,0,0,4]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3]\n    **Output:** [1,2,3]\n    **Explanation:** After calling your function, the input array is modified to: [1,2,3]",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `0 <= arr[i] <= 9`",
+  "topics": ["Array", "Two Pointers"],
+  "total_accepted": 542309,
+  "total_submissions": 1015738,
+  "acceptance_rate": "53.4%",
+  "similar_questions": [],
+  "hints": [
+    "This is a great introductory problem for understanding and working with the concept of in-place operations. The problem statement clearly states that we are to modify the array in-place. That does not mean we cannot use another array. We just don't have to return anything.",
+    "A better way to solve this would be without using additional space. The only reason the problem statement allows you to make modifications in place is that it hints at avoiding any additional memory.",
+    "The main problem with not using additional memory is that we might override elements due to the zero duplication requirement of the problem statement. How do we get around that?",
+    "If we had enough space available, we would be able to accommodate all the elements properly. The new length would be the original length of the array plus the number of zeros. Can we use this information somehow to solve the problem?"
+  ]
+}

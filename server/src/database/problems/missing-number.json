@@ -1,0 +1,55 @@
+{
+  "id": "268",
+  "title": "Missing Number",
+  "slug": "missing-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> containing <code>n</code> distinct numbers in the range <code>[0, n]</code>, return <em>the only number in the range that is missing from the array.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [3,0,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>n = 3</code> since there are 3 numbers, so all numbers are in the range <code>[0,3]</code>. 2 is the missing number in the range since it does not appear in <code>nums</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [0,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>n = 2</code> since there are 2 numbers, so all numbers are in the range <code>[0,2]</code>. 2 is the missing number in the range since it does not appear in <code>nums</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [9,6,4,2,3,5,7,0,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">8</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>n = 9</code> since there are 9 numbers, so all numbers are in the range <code>[0,9]</code>. 8 is the missing number in the range since it does not appear in <code>nums</code>.</p>\n</div>\n\n<div class=\"simple-translate-system-theme\" id=\"simple-translate\">\n<div>\n<div class=\"simple-translate-button isShow\" style=\"background-image: url(&quot;moz-extension://8a9ffb6b-7e69-4e93-aae1-436a1448eff6/icons/512.png&quot;); height: 22px; width: 22px; top: 318px; left: 36px;\">&nbsp;</div>\n\n<div class=\"simple-translate-panel \" style=\"width: 300px; height: 200px; top: 0px; left: 0px; font-size: 13px;\">\n<div class=\"simple-translate-result-wrapper\" style=\"overflow: hidden;\">\n<div class=\"simple-translate-move\" draggable=\"true\">&nbsp;</div>\n\n<div class=\"simple-translate-result-contents\">\n<p class=\"simple-translate-result\" dir=\"auto\">&nbsp;</p>\n\n<p class=\"simple-translate-candidate\" dir=\"auto\">&nbsp;</p>\n</div>\n</div>\n</div>\n</div>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= n</code></li>\n\t<li>All the numbers of <code>nums</code> are <strong>unique</strong>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Could you implement a solution using only <code>O(1)</code> extra space complexity and <code>O(n)</code> runtime complexity?</p>\n",
+  "content_markdown": "Given an array `nums` containing `n` distinct numbers in the range `[0, n]`, return _the only number in the range that is missing from the array._\n\n \n\n**Example 1:**\n\n**Input:** nums = [3,0,1]\n\n**Output:** 2\n\n**Explanation:**\n\n`n = 3` since there are 3 numbers, so all numbers are in the range `[0,3]`. 2 is the missing number in the range since it does not appear in `nums`.\n\n**Example 2:**\n\n**Input:** nums = [0,1]\n\n**Output:** 2\n\n**Explanation:**\n\n`n = 2` since there are 2 numbers, so all numbers are in the range `[0,2]`. 2 is the missing number in the range since it does not appear in `nums`.\n\n**Example 3:**\n\n**Input:** nums = [9,6,4,2,3,5,7,0,1]\n\n**Output:** 8\n\n**Explanation:**\n\n`n = 9` since there are 9 numbers, so all numbers are in the range `[0,9]`. 8 is the missing number in the range since it does not appear in `nums`.\n\n \n\n \n\n \n\n \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 104`\n  * `0 <= nums[i] <= n`\n  * All the numbers of `nums` are **unique**.\n\n\n\n \n\n**Follow up:** Could you implement a solution using only `O(1)` extra space complexity and `O(n)` runtime complexity?",
+  "question": "Given an array `nums` containing `n` distinct numbers in the range `[0, n]`, return _the only number in the range that is missing from the array._",
+  "examples": "**Example 1:**\n\n**Input:** nums = [3,0,1]\n\n**Output:** 2\n\n**Explanation:**\n\n`n = 3` since there are 3 numbers, so all numbers are in the range `[0,3]`. 2 is the missing number in the range since it does not appear in `nums`.\n\n**Example 2:**\n\n**Input:** nums = [0,1]\n\n**Output:** 2\n\n**Explanation:**\n\n`n = 2` since there are 2 numbers, so all numbers are in the range `[0,2]`. 2 is the missing number in the range since it does not appear in `nums`.\n\n**Example 3:**\n\n**Input:** nums = [9,6,4,2,3,5,7,0,1]\n\n**Output:** 8\n\n**Explanation:**\n\n`n = 9` since there are 9 numbers, so all numbers are in the range `[0,9]`. 8 is the missing number in the range since it does not appear in `nums`.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 104`\n  * `0 <= nums[i] <= n`\n  * All the numbers of `nums` are **unique**.",
+  "topics": ["Array", "Hash Table", "Math", "Binary Search", "Bit Manipulation", "Sorting"],
+  "total_accepted": 3756322,
+  "total_submissions": 5241702,
+  "acceptance_rate": "71.7%",
+  "similar_questions": [
+    {
+      "title": "First Missing Positive",
+      "slug": "first-missing-positive",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/first-missing-positive/"
+    },
+    {
+      "title": "Single Number",
+      "slug": "single-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/single-number/"
+    },
+    {
+      "title": "Find the Duplicate Number",
+      "slug": "find-the-duplicate-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-duplicate-number/"
+    },
+    {
+      "title": "Couples Holding Hands",
+      "slug": "couples-holding-hands",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/couples-holding-hands/"
+    },
+    {
+      "title": "Find Unique Binary String",
+      "slug": "find-unique-binary-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-unique-binary-string/"
+    },
+    {
+      "title": "Find the Largest Almost Missing Integer",
+      "slug": "find-the-largest-almost-missing-integer",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-largest-almost-missing-integer/"
+    }
+  ],
+  "hints": []
+}

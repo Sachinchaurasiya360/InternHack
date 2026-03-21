@@ -1,0 +1,18 @@
+{
+  "id": "1951",
+  "title": "All the Pairs With the Maximum Number of Common Followers",
+  "slug": "all-the-pairs-with-the-maximum-number-of-common-followers",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 14244,
+  "total_submissions": 20474,
+  "acceptance_rate": "69.6%",
+  "similar_questions": [],
+  "hints": []
+}

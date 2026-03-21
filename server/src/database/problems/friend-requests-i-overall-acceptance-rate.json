@@ -1,0 +1,21 @@
+{
+  "id": "597",
+  "title": "Friend Requests I: Overall Acceptance Rate",
+  "slug": "friend-requests-i-overall-acceptance-rate",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 86267,
+  "total_submissions": 209731,
+  "acceptance_rate": "41.1%",
+  "similar_questions": [],
+  "hints": [
+    "Still remember how to count the number of rows in a table?",
+    "What is the keyword to filter the duplicated records in a table?"
+  ]
+}

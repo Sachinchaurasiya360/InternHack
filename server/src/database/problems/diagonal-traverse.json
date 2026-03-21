@@ -1,0 +1,25 @@
+{
+  "id": "498",
+  "title": "Diagonal Traverse",
+  "slug": "diagonal-traverse",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> matrix <code>mat</code>, return <em>an array of all the elements of the array in a diagonal order</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/10/diag1-grid.jpg\" style=\"width: 334px; height: 334px;\" />\n<pre>\n<strong>Input:</strong> mat = [[1,2,3],[4,5,6],[7,8,9]]\n<strong>Output:</strong> [1,2,4,7,5,3,6,8,9]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> mat = [[1,2],[3,4]]\n<strong>Output:</strong> [1,2,3,4]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == mat.length</code></li>\n\t<li><code>n == mat[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= m * n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>5</sup> &lt;= mat[i][j] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` matrix `mat`, return _an array of all the elements of the array in a diagonal order_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/10/diag1-grid.jpg)\n    \n    \n    **Input:** mat = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** [1,2,4,7,5,3,6,8,9]\n    \n\n**Example 2:**\n    \n    \n    **Input:** mat = [[1,2],[3,4]]\n    **Output:** [1,2,3,4]\n    \n\n \n\n**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 104`\n  * `1 <= m * n <= 104`\n  * `-105 <= mat[i][j] <= 105`",
+  "question": "Given an `m x n` matrix `mat`, return _an array of all the elements of the array in a diagonal order_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/10/diag1-grid.jpg)\n    \n    \n    **Input:** mat = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** [1,2,4,7,5,3,6,8,9]\n    \n\n**Example 2:**\n    \n    \n    **Input:** mat = [[1,2],[3,4]]\n    **Output:** [1,2,3,4]",
+  "constraints": "**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 104`\n  * `1 <= m * n <= 104`\n  * `-105 <= mat[i][j] <= 105`",
+  "topics": ["Array", "Matrix", "Simulation"],
+  "total_accepted": 552434,
+  "total_submissions": 824196,
+  "acceptance_rate": "67.0%",
+  "similar_questions": [
+    {
+      "title": "Decode the Slanted Ciphertext",
+      "slug": "decode-the-slanted-ciphertext",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/decode-the-slanted-ciphertext/"
+    }
+  ],
+  "hints": []
+}

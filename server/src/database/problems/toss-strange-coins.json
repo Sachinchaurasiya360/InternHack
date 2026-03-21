@@ -1,0 +1,23 @@
+{
+  "id": "1230",
+  "title": "Toss Strange Coins",
+  "slug": "toss-strange-coins",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Dynamic Programming", "Probability and Statistics"],
+  "total_accepted": 22990,
+  "total_submissions": 39554,
+  "acceptance_rate": "58.1%",
+  "similar_questions": [],
+  "hints": [
+    "What about solving the problem with DP?",
+    "Use DP with two states dp[pos][cnt], where pos represents the pos-th coin and cnt is the number of heads seen so far.",
+    "You can do the transitions with a little bit math.",
+    "For the base case, when pos == n return (cnt == target) to filter out the invalid scenarios."
+  ]
+}

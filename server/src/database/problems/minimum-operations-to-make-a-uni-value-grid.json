@@ -1,0 +1,29 @@
+{
+  "id": "2033",
+  "title": "Minimum Operations to Make a Uni-Value Grid",
+  "slug": "minimum-operations-to-make-a-uni-value-grid",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D integer <code>grid</code> of size <code>m x n</code> and an integer <code>x</code>. In one operation, you can <strong>add</strong> <code>x</code> to or <strong>subtract</strong> <code>x</code> from any element in the <code>grid</code>.</p>\n\n<p>A <strong>uni-value grid</strong> is a grid where all the elements of it are equal.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of operations to make the grid <strong>uni-value</strong></em>. If it is not possible, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/09/21/gridtxt.png\" style=\"width: 164px; height: 165px;\" />\n<pre>\n<strong>Input:</strong> grid = [[2,4],[6,8]], x = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> We can make every element equal to 4 by doing the following: \n- Add x to 2 once.\n- Subtract x from 6 once.\n- Subtract x from 8 twice.\nA total of 4 operations were used.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/09/21/gridtxt-1.png\" style=\"width: 164px; height: 165px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,5],[2,3]], x = 1\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> We can make every element equal to 3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/09/21/gridtxt-2.png\" style=\"width: 164px; height: 165px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,2],[3,4]], x = 2\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> It is impossible to make every element equal.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= m * n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= x, grid[i][j] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a 2D integer `grid` of size `m x n` and an integer `x`. In one operation, you can **add** `x` to or **subtract** `x` from any element in the `grid`.\n\nA **uni-value grid** is a grid where all the elements of it are equal.\n\nReturn _the**minimum** number of operations to make the grid **uni-value**_. If it is not possible, return `-1`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/09/21/gridtxt.png)\n    \n    \n    **Input:** grid = [[2,4],[6,8]], x = 2\n    **Output:** 4\n    **Explanation:** We can make every element equal to 4 by doing the following: \n    - Add x to 2 once.\n    - Subtract x from 6 once.\n    - Subtract x from 8 twice.\n    A total of 4 operations were used.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/09/21/gridtxt-1.png)\n    \n    \n    **Input:** grid = [[1,5],[2,3]], x = 1\n    **Output:** 5\n    **Explanation:** We can make every element equal to 3.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2021/09/21/gridtxt-2.png)\n    \n    \n    **Input:** grid = [[1,2],[3,4]], x = 2\n    **Output:** -1\n    **Explanation:** It is impossible to make every element equal.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 105`\n  * `1 <= m * n <= 105`\n  * `1 <= x, grid[i][j] <= 104`",
+  "question": "You are given a 2D integer `grid` of size `m x n` and an integer `x`. In one operation, you can **add** `x` to or **subtract** `x` from any element in the `grid`.\n\nA **uni-value grid** is a grid where all the elements of it are equal.\n\nReturn _the**minimum** number of operations to make the grid **uni-value**_. If it is not possible, return `-1`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/09/21/gridtxt.png)\n    \n    \n    **Input:** grid = [[2,4],[6,8]], x = 2\n    **Output:** 4\n    **Explanation:** We can make every element equal to 4 by doing the following: \n    - Add x to 2 once.\n    - Subtract x from 6 once.\n    - Subtract x from 8 twice.\n    A total of 4 operations were used.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/09/21/gridtxt-1.png)\n    \n    \n    **Input:** grid = [[1,5],[2,3]], x = 1\n    **Output:** 5\n    **Explanation:** We can make every element equal to 3.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2021/09/21/gridtxt-2.png)\n    \n    \n    **Input:** grid = [[1,2],[3,4]], x = 2\n    **Output:** -1\n    **Explanation:** It is impossible to make every element equal.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 105`\n  * `1 <= m * n <= 105`\n  * `1 <= x, grid[i][j] <= 104`",
+  "topics": ["Array", "Math", "Sorting", "Matrix"],
+  "total_accepted": 141896,
+  "total_submissions": 210252,
+  "acceptance_rate": "67.5%",
+  "similar_questions": [
+    {
+      "title": "Minimum Moves to Equal Array Elements II",
+      "slug": "minimum-moves-to-equal-array-elements-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/"
+    }
+  ],
+  "hints": [
+    "Is it possible to make two integers a and b equal if they have different remainders dividing by x?",
+    "If it is possible, which number should you select to minimize the number of operations?",
+    "What if the elements are sorted?"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "2104",
+  "title": "Sum of Subarray Ranges",
+  "slug": "sum-of-subarray-ranges",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. The <strong>range</strong> of a subarray of <code>nums</code> is the difference between the largest and smallest element in the subarray.</p>\n\n<p>Return <em>the <strong>sum of all</strong> subarray ranges of </em><code>nums</code><em>.</em></p>\n\n<p>A subarray is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The 6 subarrays of nums are the following:\n[1], range = largest - smallest = 1 - 1 = 0 \n[2], range = 2 - 2 = 0\n[3], range = 3 - 3 = 0\n[1,2], range = 2 - 1 = 1\n[2,3], range = 3 - 2 = 1\n[1,2,3], range = 3 - 1 = 2\nSo the sum of all ranges is 0 + 0 + 0 + 1 + 1 + 2 = 4.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,3]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The 6 subarrays of nums are the following:\n[1], range = largest - smallest = 1 - 1 = 0\n[3], range = 3 - 3 = 0\n[3], range = 3 - 3 = 0\n[1,3], range = 3 - 1 = 2\n[3,3], range = 3 - 3 = 0\n[1,3,3], range = 3 - 1 = 2\nSo the sum of all ranges is 0 + 0 + 0 + 2 + 0 + 2 = 4.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,-2,-3,4,1]\n<strong>Output:</strong> 59\n<strong>Explanation:</strong> The sum of all subarray ranges of nums is 59.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow-up:</strong> Could you find a solution with <code>O(n)</code> time complexity?</p>\n",
+  "content_markdown": "You are given an integer array `nums`. The **range** of a subarray of `nums` is the difference between the largest and smallest element in the subarray.\n\nReturn _the**sum of all** subarray ranges of _`nums` _._\n\nA subarray is a contiguous **non-empty** sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 4\n    **Explanation:** The 6 subarrays of nums are the following:\n    [1], range = largest - smallest = 1 - 1 = 0 \n    [2], range = 2 - 2 = 0\n    [3], range = 3 - 3 = 0\n    [1,2], range = 2 - 1 = 1\n    [2,3], range = 3 - 2 = 1\n    [1,2,3], range = 3 - 1 = 2\n    So the sum of all ranges is 0 + 0 + 0 + 1 + 1 + 2 = 4.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,3]\n    **Output:** 4\n    **Explanation:** The 6 subarrays of nums are the following:\n    [1], range = largest - smallest = 1 - 1 = 0\n    [3], range = 3 - 3 = 0\n    [3], range = 3 - 3 = 0\n    [1,3], range = 3 - 1 = 2\n    [3,3], range = 3 - 3 = 0\n    [1,3,3], range = 3 - 1 = 2\n    So the sum of all ranges is 0 + 0 + 0 + 2 + 0 + 2 = 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [4,-2,-3,4,1]\n    **Output:** 59\n    **Explanation:** The sum of all subarray ranges of nums is 59.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-109 <= nums[i] <= 109`\n\n\n\n \n\n**Follow-up:** Could you find a solution with `O(n)` time complexity?",
+  "question": "You are given an integer array `nums`. The **range** of a subarray of `nums` is the difference between the largest and smallest element in the subarray.\n\nReturn _the**sum of all** subarray ranges of _`nums` _._\n\nA subarray is a contiguous **non-empty** sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 4\n    **Explanation:** The 6 subarrays of nums are the following:\n    [1], range = largest - smallest = 1 - 1 = 0 \n    [2], range = 2 - 2 = 0\n    [3], range = 3 - 3 = 0\n    [1,2], range = 2 - 1 = 1\n    [2,3], range = 3 - 2 = 1\n    [1,2,3], range = 3 - 1 = 2\n    So the sum of all ranges is 0 + 0 + 0 + 1 + 1 + 2 = 4.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,3]\n    **Output:** 4\n    **Explanation:** The 6 subarrays of nums are the following:\n    [1], range = largest - smallest = 1 - 1 = 0\n    [3], range = 3 - 3 = 0\n    [3], range = 3 - 3 = 0\n    [1,3], range = 3 - 1 = 2\n    [3,3], range = 3 - 3 = 0\n    [1,3,3], range = 3 - 1 = 2\n    So the sum of all ranges is 0 + 0 + 0 + 2 + 0 + 2 = 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [4,-2,-3,4,1]\n    **Output:** 59\n    **Explanation:** The sum of all subarray ranges of nums is 59.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 213201,
+  "total_submissions": 350872,
+  "acceptance_rate": "60.8%",
+  "similar_questions": [
+    {
+      "title": "Next Greater Element I",
+      "slug": "next-greater-element-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/next-greater-element-i/"
+    },
+    {
+      "title": "Sum of Subarray Minimums",
+      "slug": "sum-of-subarray-minimums",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-subarray-minimums/"
+    },
+    {
+      "title": "Number of Visible People in a Queue",
+      "slug": "number-of-visible-people-in-a-queue",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-visible-people-in-a-queue/"
+    },
+    {
+      "title": "Count Number of Homogenous Substrings",
+      "slug": "count-number-of-homogenous-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-homogenous-substrings/"
+    },
+    {
+      "title": "Sum of Total Strength of Wizards",
+      "slug": "sum-of-total-strength-of-wizards",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sum-of-total-strength-of-wizards/"
+    }
+  ],
+  "hints": [
+    "Can you get the max/min of a certain subarray by using the max/min of a smaller subarray within it?",
+    "Notice that the max of the subarray from index i to j is equal to max of (max of the subarray from index i to j-1) and nums[j]."
+  ]
+}

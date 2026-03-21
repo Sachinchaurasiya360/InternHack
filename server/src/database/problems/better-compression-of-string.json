@@ -1,0 +1,30 @@
+{
+  "id": "3167",
+  "title": "Better Compression of String",
+  "slug": "better-compression-of-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Sorting", "Counting"],
+  "total_accepted": 5755,
+  "total_submissions": 7646,
+  "acceptance_rate": "75.3%",
+  "similar_questions": [
+    {
+      "title": "String Compression",
+      "slug": "string-compression",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/string-compression/"
+    }
+  ],
+  "hints": [
+    "This is an implementation problem.",
+    "Try to extract each character with its corresponding frequency.",
+    "Sum the frequencies for a single character.",
+    "Sort characters and append them to a string in alphabetical order."
+  ]
+}

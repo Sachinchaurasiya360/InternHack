@@ -1,0 +1,25 @@
+{
+  "id": "306",
+  "title": "Additive Number",
+  "slug": "additive-number",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>An <strong>additive number</strong> is a string whose digits can form an <strong>additive sequence</strong>.</p>\n\n<p>A valid <strong>additive sequence</strong> should contain <strong>at least</strong> three numbers. Except for the first two numbers, each subsequent number in the sequence must be the sum of the preceding two.</p>\n\n<p>Given a string containing only digits, return <code>true</code> if it is an <strong>additive number</strong> or <code>false</code> otherwise.</p>\n\n<p><strong>Note:</strong> Numbers in the additive sequence <strong>cannot</strong> have leading zeros, so sequence <code>1, 2, 03</code> or <code>1, 02, 3</code> is invalid.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> &quot;112358&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> \nThe digits can form an additive sequence: 1, 1, 2, 3, 5, 8. \n1 + 1 = 2, 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> &quot;199100199&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> \nThe additive sequence is: 1, 99, 100, 199.&nbsp;\n1 + 99 = 100, 99 + 100 = 199\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num.length &lt;= 35</code></li>\n\t<li><code>num</code> consists only of digits.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> How would you handle overflow for very large input integers?</p>\n",
+  "content_markdown": "An **additive number** is a string whose digits can form an **additive sequence**.\n\nA valid **additive sequence** should contain **at least** three numbers. Except for the first two numbers, each subsequent number in the sequence must be the sum of the preceding two.\n\nGiven a string containing only digits, return `true` if it is an **additive number** or `false` otherwise.\n\n**Note:** Numbers in the additive sequence **cannot** have leading zeros, so sequence `1, 2, 03` or `1, 02, 3` is invalid.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \"112358\"\n    **Output:** true\n    **Explanation:** \n    The digits can form an additive sequence: 1, 1, 2, 3, 5, 8. \n    1 + 1 = 2, 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8\n    \n\n**Example 2:**\n    \n    \n    **Input:** \"199100199\"\n    **Output:** true\n    **Explanation:** \n    The additive sequence is: 1, 99, 100, 199. \n    1 + 99 = 100, 99 + 100 = 199\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num.length <= 35`\n  * `num` consists only of digits.\n\n\n\n \n\n**Follow up:** How would you handle overflow for very large input integers?",
+  "question": "An **additive number** is a string whose digits can form an **additive sequence**.\n\nA valid **additive sequence** should contain **at least** three numbers. Except for the first two numbers, each subsequent number in the sequence must be the sum of the preceding two.\n\nGiven a string containing only digits, return `true` if it is an **additive number** or `false` otherwise.\n\n**Note:** Numbers in the additive sequence **cannot** have leading zeros, so sequence `1, 2, 03` or `1, 02, 3` is invalid.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \"112358\"\n    **Output:** true\n    **Explanation:** \n    The digits can form an additive sequence: 1, 1, 2, 3, 5, 8. \n    1 + 1 = 2, 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8\n    \n\n**Example 2:**\n    \n    \n    **Input:** \"199100199\"\n    **Output:** true\n    **Explanation:** \n    The additive sequence is: 1, 99, 100, 199. \n    1 + 99 = 100, 99 + 100 = 199",
+  "constraints": "**Constraints:**\n\n  * `1 <= num.length <= 35`\n  * `num` consists only of digits.",
+  "topics": ["String", "Backtracking"],
+  "total_accepted": 116778,
+  "total_submissions": 348424,
+  "acceptance_rate": "33.5%",
+  "similar_questions": [
+    {
+      "title": "Split Array into Fibonacci Sequence",
+      "slug": "split-array-into-fibonacci-sequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/split-array-into-fibonacci-sequence/"
+    }
+  ],
+  "hints": []
+}

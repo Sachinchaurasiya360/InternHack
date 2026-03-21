@@ -1,0 +1,47 @@
+{
+  "id": "2544",
+  "title": "Alternating Digit Sum",
+  "slug": "alternating-digit-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>n</code>. Each digit of <code>n</code> has a sign according to the following rules:</p>\n\n<ul>\n\t<li>The <strong>most significant digit</strong> is assigned a <strong>positive</strong> sign.</li>\n\t<li>Each other digit has an opposite sign to its adjacent digits.</li>\n</ul>\n\n<p>Return <em>the sum of all digits with their corresponding sign</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 521\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> (+5) + (-2) + (+1) = 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 111\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> (+1) + (-1) + (+1) = 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 886996\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> (+8) + (-8) + (+6) + (-9) + (+9) + (-6) = 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<style type=\"text/css\">.spoilerbutton {display:block; border:dashed; padding: 0px 0px; margin:10px 0px; font-size:150%; font-weight: bold; color:#000000; background-color:cyan; outline:0; \n}\n.spoiler {overflow:hidden;}\n.spoiler > div {-webkit-transition: all 0s ease;-moz-transition: margin 0s ease;-o-transition: all 0s ease;transition: margin 0s ease;}\n.spoilerbutton[value=\"Show Message\"] + .spoiler > div {margin-top:-500%;}\n.spoilerbutton[value=\"Hide Message\"] + .spoiler {padding:5px;}\n</style>\n",
+  "content_markdown": "You are given a positive integer `n`. Each digit of `n` has a sign according to the following rules:\n\n  * The **most significant digit** is assigned a **positive** sign.\n  * Each other digit has an opposite sign to its adjacent digits.\n\n\n\nReturn _the sum of all digits with their corresponding sign_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 521\n    **Output:** 4\n    **Explanation:** (+5) + (-2) + (+1) = 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 111\n    **Output:** 1\n    **Explanation:** (+1) + (-1) + (+1) = 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 886996\n    **Output:** 0\n    **Explanation:** (+8) + (-8) + (+6) + (-9) + (+9) + (-6) = 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 109`",
+  "question": "You are given a positive integer `n`. Each digit of `n` has a sign according to the following rules:\n\n  * The **most significant digit** is assigned a **positive** sign.\n  * Each other digit has an opposite sign to its adjacent digits.\n\n\n\nReturn _the sum of all digits with their corresponding sign_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 521\n    **Output:** 4\n    **Explanation:** (+5) + (-2) + (+1) = 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 111\n    **Output:** 1\n    **Explanation:** (+1) + (-1) + (+1) = 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 886996\n    **Output:** 0\n    **Explanation:** (+8) + (-8) + (+6) + (-9) + (+9) + (-6) = 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 109`",
+  "topics": ["Math"],
+  "total_accepted": 99159,
+  "total_submissions": 143708,
+  "acceptance_rate": "69.0%",
+  "similar_questions": [
+    {
+      "title": "Add Digits",
+      "slug": "add-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-digits/"
+    },
+    {
+      "title": "Minimum Sum of Four Digit Number After Splitting Digits",
+      "slug": "minimum-sum-of-four-digit-number-after-splitting-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-sum-of-four-digit-number-after-splitting-digits/"
+    },
+    {
+      "title": "Separate the Digits in an Array",
+      "slug": "separate-the-digits-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/separate-the-digits-in-an-array/"
+    },
+    {
+      "title": "Compute Alternating Sum",
+      "slug": "compute-alternating-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/compute-alternating-sum/"
+    }
+  ],
+  "hints": [
+    "The first step is to loop over the digits. We can convert the integer into a string, an array of digits, or just loop over its digits.",
+    "Keep a variable sign that initially equals 1 and a variable answer that initially equals 0.",
+    "Each time you loop over a digit i, add sign * i to answer, then multiply sign by -1."
+  ]
+}

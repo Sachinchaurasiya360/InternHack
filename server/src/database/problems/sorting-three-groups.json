@@ -1,0 +1,22 @@
+{
+  "id": "2826",
+  "title": "Sorting Three Groups",
+  "slug": "sorting-three-groups",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. Each element in <code>nums</code> is 1, 2 or 3. In each operation, you can remove an element from&nbsp;<code>nums</code>. Return the <strong>minimum</strong> number of operations to make <code>nums</code> <strong>non-decreasing</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,1,3,2,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>One of the optimal solutions is to remove <code>nums[0]</code>, <code>nums[2]</code> and <code>nums[3]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,3,2,1,3,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>One of the optimal solutions is to remove <code>nums[1]</code> and <code>nums[2]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,2,2,2,3,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>nums</code> is already non-decreasing.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 3</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow-up:</strong> Can you come up with an algorithm that runs in <code>O(n)</code> time complexity?",
+  "content_markdown": "You are given an integer array `nums`. Each element in `nums` is 1, 2 or 3. In each operation, you can remove an element from `nums`. Return the **minimum** number of operations to make `nums` **non-decreasing**.\n\n \n\n**Example 1:**\n\n**Input:** nums = [2,1,3,2,1]\n\n**Output:** 3\n\n**Explanation:**\n\nOne of the optimal solutions is to remove `nums[0]`, `nums[2]` and `nums[3]`.\n\n**Example 2:**\n\n**Input:** nums = [1,3,2,1,3,3]\n\n**Output:** 2\n\n**Explanation:**\n\nOne of the optimal solutions is to remove `nums[1]` and `nums[2]`.\n\n**Example 3:**\n\n**Input:** nums = [2,2,2,2,3,3]\n\n**Output:** 0\n\n**Explanation:**\n\n`nums` is already non-decreasing.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 3`\n\n\n\n \n\n**Follow-up:** Can you come up with an algorithm that runs in `O(n)` time complexity?",
+  "question": "You are given an integer array `nums`. Each element in `nums` is 1, 2 or 3. In each operation, you can remove an element from `nums`. Return the **minimum** number of operations to make `nums` **non-decreasing**.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [2,1,3,2,1]\n\n**Output:** 3\n\n**Explanation:**\n\nOne of the optimal solutions is to remove `nums[0]`, `nums[2]` and `nums[3]`.\n\n**Example 2:**\n\n**Input:** nums = [1,3,2,1,3,3]\n\n**Output:** 2\n\n**Explanation:**\n\nOne of the optimal solutions is to remove `nums[1]` and `nums[2]`.\n\n**Example 3:**\n\n**Input:** nums = [2,2,2,2,3,3]\n\n**Output:** 0\n\n**Explanation:**\n\n`nums` is already non-decreasing.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 3`",
+  "topics": ["Array", "Binary Search", "Dynamic Programming"],
+  "total_accepted": 26081,
+  "total_submissions": 60842,
+  "acceptance_rate": "42.9%",
+  "similar_questions": [],
+  "hints": [
+    "The problem asks to change the array nums to make it sorted (i.e., all the 1s are on the left of 2s, and all the 2s are on the left of 3s.).",
+    "We can try all the possibilities to make nums indices range in [0, i) to 0 and [i, j) to 1 and [j, n) to 2. Note the ranges are left-close and right-open; each might be empty. Namely, 0 <= i <= j <= n.",
+    "Count the changes we need for each possibility by comparing the expected and original values at each index position."
+  ]
+}

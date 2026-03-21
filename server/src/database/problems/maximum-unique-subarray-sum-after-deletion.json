@@ -1,0 +1,28 @@
+{
+  "id": "3487",
+  "title": "Maximum Unique Subarray Sum After Deletion",
+  "slug": "maximum-unique-subarray-sum-after-deletion",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>.</p>\n\n<p>You are allowed to delete any number of elements from <code>nums</code> without making it <strong>empty</strong>. After performing the deletions, select a <span data-keyword=\"subarray-nonempty\">subarray</span> of <code>nums</code> such that:</p>\n\n<ol>\n\t<li>All elements in the subarray are <strong>unique</strong>.</li>\n\t<li>The sum of the elements in the subarray is <strong>maximized</strong>.</li>\n</ol>\n\n<p>Return the <strong>maximum sum</strong> of such a subarray.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3,4,5]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">15</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Select the entire array without deleting any element to obtain the maximum sum.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,1,0,1,1]</span></p>\n\n<p><strong>Output:</strong> 1</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Delete the element <code>nums[0] == 1</code>, <code>nums[1] == 1</code>, <code>nums[2] == 0</code>, and <code>nums[3] == 1</code>. Select the entire array <code>[1]</code> to obtain the maximum sum.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,-1,-2,1,0,-1]</span></p>\n\n<p><strong>Output:</strong> 3</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Delete the elements <code>nums[2] == -1</code> and <code>nums[3] == -2</code>, and select the subarray <code>[2, 1]</code> from <code>[1, 2, 1, 0, -1]</code> to obtain the maximum sum.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>-100 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`.\n\nYou are allowed to delete any number of elements from `nums` without making it **empty**. After performing the deletions, select a subarray of `nums` such that:\n\n  1. All elements in the subarray are **unique**.\n  2. The sum of the elements in the subarray is **maximized**.\n\n\n\nReturn the **maximum sum** of such a subarray.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,3,4,5]\n\n**Output:** 15\n\n**Explanation:**\n\nSelect the entire array without deleting any element to obtain the maximum sum.\n\n**Example 2:**\n\n**Input:** nums = [1,1,0,1,1]\n\n**Output:** 1\n\n**Explanation:**\n\nDelete the element `nums[0] == 1`, `nums[1] == 1`, `nums[2] == 0`, and `nums[3] == 1`. Select the entire array `[1]` to obtain the maximum sum.\n\n**Example 3:**\n\n**Input:** nums = [1,2,-1,-2,1,0,-1]\n\n**Output:** 3\n\n**Explanation:**\n\nDelete the elements `nums[2] == -1` and `nums[3] == -2`, and select the subarray `[2, 1]` from `[1, 2, 1, 0, -1]` to obtain the maximum sum.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `-100 <= nums[i] <= 100`",
+  "question": "You are given an integer array `nums`.\n\nYou are allowed to delete any number of elements from `nums` without making it **empty**. After performing the deletions, select a subarray of `nums` such that:\n\n  1. All elements in the subarray are **unique**.\n  2. The sum of the elements in the subarray is **maximized**.\n\n\n\nReturn the **maximum sum** of such a subarray.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,3,4,5]\n\n**Output:** 15\n\n**Explanation:**\n\nSelect the entire array without deleting any element to obtain the maximum sum.\n\n**Example 2:**\n\n**Input:** nums = [1,1,0,1,1]\n\n**Output:** 1\n\n**Explanation:**\n\nDelete the element `nums[0] == 1`, `nums[1] == 1`, `nums[2] == 0`, and `nums[3] == 1`. Select the entire array `[1]` to obtain the maximum sum.\n\n**Example 3:**\n\n**Input:** nums = [1,2,-1,-2,1,0,-1]\n\n**Output:** 3\n\n**Explanation:**\n\nDelete the elements `nums[2] == -1` and `nums[3] == -2`, and select the subarray `[2, 1]` from `[1, 2, 1, 0, -1]` to obtain the maximum sum.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `-100 <= nums[i] <= 100`",
+  "topics": ["Array", "Hash Table", "Greedy"],
+  "total_accepted": 157149,
+  "total_submissions": 388369,
+  "acceptance_rate": "40.5%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray Sum with One Deletion",
+      "slug": "maximum-subarray-sum-with-one-deletion",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/"
+    }
+  ],
+  "hints": [
+    "If the maximum element in the array is less than zero, the answer is the maximum element.",
+    "Otherwise, the answer is the sum of all unique values that are greater than or equal to zero."
+  ]
+}

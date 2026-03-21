@@ -1,0 +1,59 @@
+{
+  "id": "2090",
+  "title": "K Radius Subarray Averages",
+  "slug": "k-radius-subarray-averages",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>nums</code> of <code>n</code> integers, and an integer <code>k</code>.</p>\n\n<p>The <strong>k-radius average</strong> for a subarray of <code>nums</code> <strong>centered</strong> at some index <code>i</code> with the <strong>radius</strong> <code>k</code> is the average of <strong>all</strong> elements in <code>nums</code> between the indices <code>i - k</code> and <code>i + k</code> (<strong>inclusive</strong>). If there are less than <code>k</code> elements before <strong>or</strong> after the index <code>i</code>, then the <strong>k-radius average</strong> is <code>-1</code>.</p>\n\n<p>Build and return <em>an array </em><code>avgs</code><em> of length </em><code>n</code><em> where </em><code>avgs[i]</code><em> is the <strong>k-radius average</strong> for the subarray centered at index </em><code>i</code>.</p>\n\n<p>The <strong>average</strong> of <code>x</code> elements is the sum of the <code>x</code> elements divided by <code>x</code>, using <strong>integer division</strong>. The integer division truncates toward zero, which means losing its fractional part.</p>\n\n<ul>\n\t<li>For example, the average of four elements <code>2</code>, <code>3</code>, <code>1</code>, and <code>5</code> is <code>(2 + 3 + 1 + 5) / 4 = 11 / 4 = 2.75</code>, which truncates to <code>2</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/07/eg1.png\" style=\"width: 343px; height: 119px;\" />\n<pre>\n<strong>Input:</strong> nums = [7,4,3,9,1,8,5,2,6], k = 3\n<strong>Output:</strong> [-1,-1,-1,5,4,4,-1,-1,-1]\n<strong>Explanation:</strong>\n- avg[0], avg[1], and avg[2] are -1 because there are less than k elements <strong>before</strong> each index.\n- The sum of the subarray centered at index 3 with radius 3 is: 7 + 4 + 3 + 9 + 1 + 8 + 5 = 37.\n  Using <strong>integer division</strong>, avg[3] = 37 / 7 = 5.\n- For the subarray centered at index 4, avg[4] = (4 + 3 + 9 + 1 + 8 + 5 + 2) / 7 = 4.\n- For the subarray centered at index 5, avg[5] = (3 + 9 + 1 + 8 + 5 + 2 + 6) / 7 = 4.\n- avg[6], avg[7], and avg[8] are -1 because there are less than k elements <strong>after</strong> each index.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [100000], k = 0\n<strong>Output:</strong> [100000]\n<strong>Explanation:</strong>\n- The sum of the subarray centered at index 0 with radius 0 is: 100000.\n  avg[0] = 100000 / 1 = 100000.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [8], k = 100000\n<strong>Output:</strong> [-1]\n<strong>Explanation:</strong> \n- avg[0] is -1 because there are less than k elements before and after index 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i], k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `nums` of `n` integers, and an integer `k`.\n\nThe **k-radius average** for a subarray of `nums` **centered** at some index `i` with the **radius** `k` is the average of **all** elements in `nums` between the indices `i - k` and `i + k` (**inclusive**). If there are less than `k` elements before **or** after the index `i`, then the **k-radius average** is `-1`.\n\nBuild and return _an array_`avgs` _of length_`n` _where_`avgs[i]`_is the**k-radius average** for the subarray centered at index _`i`.\n\nThe **average** of `x` elements is the sum of the `x` elements divided by `x`, using **integer division**. The integer division truncates toward zero, which means losing its fractional part.\n\n  * For example, the average of four elements `2`, `3`, `1`, and `5` is `(2 + 3 + 1 + 5) / 4 = 11 / 4 = 2.75`, which truncates to `2`.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/07/eg1.png)\n    \n    \n    **Input:** nums = [7,4,3,9,1,8,5,2,6], k = 3\n    **Output:** [-1,-1,-1,5,4,4,-1,-1,-1]\n    **Explanation:**\n    - avg[0], avg[1], and avg[2] are -1 because there are less than k elements **before** each index.\n    - The sum of the subarray centered at index 3 with radius 3 is: 7 + 4 + 3 + 9 + 1 + 8 + 5 = 37.\n      Using **integer division** , avg[3] = 37 / 7 = 5.\n    - For the subarray centered at index 4, avg[4] = (4 + 3 + 9 + 1 + 8 + 5 + 2) / 7 = 4.\n    - For the subarray centered at index 5, avg[5] = (3 + 9 + 1 + 8 + 5 + 2 + 6) / 7 = 4.\n    - avg[6], avg[7], and avg[8] are -1 because there are less than k elements **after** each index.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [100000], k = 0\n    **Output:** [100000]\n    **Explanation:**\n    - The sum of the subarray centered at index 0 with radius 0 is: 100000.\n      avg[0] = 100000 / 1 = 100000.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [8], k = 100000\n    **Output:** [-1]\n    **Explanation:** \n    - avg[0] is -1 because there are less than k elements before and after index 0.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `0 <= nums[i], k <= 105`",
+  "question": "You are given a **0-indexed** array `nums` of `n` integers, and an integer `k`.\n\nThe **k-radius average** for a subarray of `nums` **centered** at some index `i` with the **radius** `k` is the average of **all** elements in `nums` between the indices `i - k` and `i + k` (**inclusive**). If there are less than `k` elements before **or** after the index `i`, then the **k-radius average** is `-1`.\n\nBuild and return _an array_`avgs` _of length_`n` _where_`avgs[i]`_is the**k-radius average** for the subarray centered at index _`i`.\n\nThe **average** of `x` elements is the sum of the `x` elements divided by `x`, using **integer division**. The integer division truncates toward zero, which means losing its fractional part.\n\n  * For example, the average of four elements `2`, `3`, `1`, and `5` is `(2 + 3 + 1 + 5) / 4 = 11 / 4 = 2.75`, which truncates to `2`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/07/eg1.png)\n    \n    \n    **Input:** nums = [7,4,3,9,1,8,5,2,6], k = 3\n    **Output:** [-1,-1,-1,5,4,4,-1,-1,-1]\n    **Explanation:**\n    - avg[0], avg[1], and avg[2] are -1 because there are less than k elements **before** each index.\n    - The sum of the subarray centered at index 3 with radius 3 is: 7 + 4 + 3 + 9 + 1 + 8 + 5 = 37.\n      Using **integer division** , avg[3] = 37 / 7 = 5.\n    - For the subarray centered at index 4, avg[4] = (4 + 3 + 9 + 1 + 8 + 5 + 2) / 7 = 4.\n    - For the subarray centered at index 5, avg[5] = (3 + 9 + 1 + 8 + 5 + 2 + 6) / 7 = 4.\n    - avg[6], avg[7], and avg[8] are -1 because there are less than k elements **after** each index.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [100000], k = 0\n    **Output:** [100000]\n    **Explanation:**\n    - The sum of the subarray centered at index 0 with radius 0 is: 100000.\n      avg[0] = 100000 / 1 = 100000.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [8], k = 100000\n    **Output:** [-1]\n    **Explanation:** \n    - avg[0] is -1 because there are less than k elements before and after index 0.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `0 <= nums[i], k <= 105`",
+  "topics": ["Array", "Sliding Window"],
+  "total_accepted": 194233,
+  "total_submissions": 421483,
+  "acceptance_rate": "46.1%",
+  "similar_questions": [
+    {
+      "title": "Minimum Size Subarray Sum",
+      "slug": "minimum-size-subarray-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-size-subarray-sum/"
+    },
+    {
+      "title": "Moving Average from Data Stream",
+      "slug": "moving-average-from-data-stream",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/moving-average-from-data-stream/"
+    },
+    {
+      "title": "Subarray Sum Equals K",
+      "slug": "subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sum-equals-k/"
+    },
+    {
+      "title": "Maximum Average Subarray I",
+      "slug": "maximum-average-subarray-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-average-subarray-i/"
+    },
+    {
+      "title": "Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold",
+      "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/"
+    },
+    {
+      "title": "Find the Grid of Region Average",
+      "slug": "find-the-grid-of-region-average",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-grid-of-region-average/"
+    }
+  ],
+  "hints": [
+    "To calculate the average of a subarray, you need the sum and the K. K is already given. How could you quickly calculate the sum of a subarray?",
+    "Use the Prefix Sums method to calculate the subarray sums.",
+    "It is possible that the sum of all the elements does not fit in a 32-bit integer type. Be sure to use a 64-bit integer type for the prefix sum array."
+  ]
+}

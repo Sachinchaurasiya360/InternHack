@@ -1,0 +1,34 @@
+{
+  "id": "2240",
+  "title": "Number of Ways to Buy Pens and Pencils",
+  "slug": "number-of-ways-to-buy-pens-and-pencils",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>total</code> indicating the amount of money you have. You are also given two integers <code>cost1</code> and <code>cost2</code> indicating the price of a pen and pencil respectively. You can spend <strong>part or all</strong> of your money to buy multiple quantities (or none) of each kind of writing utensil.</p>\n\n<p>Return <em>the <strong>number of distinct ways</strong> you can buy some number of pens and pencils.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> total = 20, cost1 = 10, cost2 = 5\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> The price of a pen is 10 and the price of a pencil is 5.\n- If you buy 0 pens, you can buy 0, 1, 2, 3, or 4 pencils.\n- If you buy 1 pen, you can buy 0, 1, or 2 pencils.\n- If you buy 2 pens, you cannot buy any pencils.\nThe total number of ways to buy pens and pencils is 5 + 3 + 1 = 9.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> total = 5, cost1 = 10, cost2 = 10\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The price of both pens and pencils are 10, which cost more than total, so you cannot buy any writing utensils. Therefore, there is only 1 way: buy 0 pens and 0 pencils.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= total, cost1, cost2 &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `total` indicating the amount of money you have. You are also given two integers `cost1` and `cost2` indicating the price of a pen and pencil respectively. You can spend **part or all** of your money to buy multiple quantities (or none) of each kind of writing utensil.\n\nReturn _the**number of distinct ways** you can buy some number of pens and pencils._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** total = 20, cost1 = 10, cost2 = 5\n    **Output:** 9\n    **Explanation:** The price of a pen is 10 and the price of a pencil is 5.\n    - If you buy 0 pens, you can buy 0, 1, 2, 3, or 4 pencils.\n    - If you buy 1 pen, you can buy 0, 1, or 2 pencils.\n    - If you buy 2 pens, you cannot buy any pencils.\n    The total number of ways to buy pens and pencils is 5 + 3 + 1 = 9.\n    \n\n**Example 2:**\n    \n    \n    **Input:** total = 5, cost1 = 10, cost2 = 10\n    **Output:** 1\n    **Explanation:** The price of both pens and pencils are 10, which cost more than total, so you cannot buy any writing utensils. Therefore, there is only 1 way: buy 0 pens and 0 pencils.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= total, cost1, cost2 <= 106`",
+  "question": "You are given an integer `total` indicating the amount of money you have. You are also given two integers `cost1` and `cost2` indicating the price of a pen and pencil respectively. You can spend **part or all** of your money to buy multiple quantities (or none) of each kind of writing utensil.\n\nReturn _the**number of distinct ways** you can buy some number of pens and pencils._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** total = 20, cost1 = 10, cost2 = 5\n    **Output:** 9\n    **Explanation:** The price of a pen is 10 and the price of a pencil is 5.\n    - If you buy 0 pens, you can buy 0, 1, 2, 3, or 4 pencils.\n    - If you buy 1 pen, you can buy 0, 1, or 2 pencils.\n    - If you buy 2 pens, you cannot buy any pencils.\n    The total number of ways to buy pens and pencils is 5 + 3 + 1 = 9.\n    \n\n**Example 2:**\n    \n    \n    **Input:** total = 5, cost1 = 10, cost2 = 10\n    **Output:** 1\n    **Explanation:** The price of both pens and pencils are 10, which cost more than total, so you cannot buy any writing utensils. Therefore, there is only 1 way: buy 0 pens and 0 pencils.",
+  "constraints": "**Constraints:**\n\n  * `1 <= total, cost1, cost2 <= 106`",
+  "topics": ["Math", "Enumeration"],
+  "total_accepted": 38499,
+  "total_submissions": 68033,
+  "acceptance_rate": "56.6%",
+  "similar_questions": [
+    {
+      "title": "Find Three Consecutive Integers That Sum to a Given Number",
+      "slug": "find-three-consecutive-integers-that-sum-to-a-given-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-three-consecutive-integers-that-sum-to-a-given-number/"
+    },
+    {
+      "title": "Count Integers With Even Digit Sum",
+      "slug": "count-integers-with-even-digit-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-integers-with-even-digit-sum/"
+    }
+  ],
+  "hints": [
+    "Fix the number of pencils purchased and calculate the number of ways to buy pens.",
+    "Sum up the number of ways to buy pens for each amount of pencils purchased to get the answer."
+  ]
+}

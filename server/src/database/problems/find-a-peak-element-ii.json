@@ -1,0 +1,38 @@
+{
+  "id": "1901",
+  "title": "Find a Peak Element II",
+  "slug": "find-a-peak-element-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A <strong>peak</strong> element in a 2D grid is an element that is <strong>strictly greater</strong> than all of its <strong>adjacent </strong>neighbors to the left, right, top, and bottom.</p>\n\n<p>Given a <strong>0-indexed</strong> <code>m x n</code> matrix <code>mat</code> where <strong>no two adjacent cells are equal</strong>, find <strong>any</strong> peak element <code>mat[i][j]</code> and return <em>the length 2 array </em><code>[i,j]</code>.</p>\n\n<p>You may assume that the entire matrix is surrounded by an <strong>outer perimeter</strong> with the value <code>-1</code> in each cell.</p>\n\n<p>You must write an algorithm that runs in <code>O(m log(n))</code> or <code>O(n log(m))</code> time.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/08/1.png\" style=\"width: 206px; height: 209px;\" /></p>\n\n<pre>\n<strong>Input:</strong> mat = [[1,4],[3,2]]\n<strong>Output:</strong> [0,1]\n<strong>Explanation:</strong>&nbsp;Both 3 and 4 are peak elements so [1,0] and [0,1] are both acceptable answers.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/07/3.png\" style=\"width: 254px; height: 257px;\" /></strong></p>\n\n<pre>\n<strong>Input:</strong> mat = [[10,20,15],[21,30,14],[7,16,32]]\n<strong>Output:</strong> [1,1]\n<strong>Explanation:</strong>&nbsp;Both 30 and 32 are peak elements so [1,1] and [2,2] are both acceptable answers.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == mat.length</code></li>\n\t<li><code>n == mat[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 500</code></li>\n\t<li><code>1 &lt;= mat[i][j] &lt;= 10<sup>5</sup></code></li>\n\t<li>No two adjacent cells are equal.</li>\n</ul>\n",
+  "content_markdown": "A **peak** element in a 2D grid is an element that is **strictly greater** than all of its **adjacent** neighbors to the left, right, top, and bottom.\n\nGiven a **0-indexed** `m x n` matrix `mat` where **no two adjacent cells are equal** , find **any** peak element `mat[i][j]` and return _the length 2 array_`[i,j]`.\n\nYou may assume that the entire matrix is surrounded by an **outer perimeter** with the value `-1` in each cell.\n\nYou must write an algorithm that runs in `O(m log(n))` or `O(n log(m))` time.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/06/08/1.png)\n    \n    \n    **Input:** mat = [[1,4],[3,2]]\n    **Output:** [0,1]\n    **Explanation:**  Both 3 and 4 are peak elements so [1,0] and [0,1] are both acceptable answers.\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2021/06/07/3.png)**\n    \n    \n    **Input:** mat = [[10,20,15],[21,30,14],[7,16,32]]\n    **Output:** [1,1]\n    **Explanation:**  Both 30 and 32 are peak elements so [1,1] and [2,2] are both acceptable answers.\n    \n\n \n\n**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 500`\n  * `1 <= mat[i][j] <= 105`\n  * No two adjacent cells are equal.",
+  "question": "A **peak** element in a 2D grid is an element that is **strictly greater** than all of its **adjacent** neighbors to the left, right, top, and bottom.\n\nGiven a **0-indexed** `m x n` matrix `mat` where **no two adjacent cells are equal** , find **any** peak element `mat[i][j]` and return _the length 2 array_`[i,j]`.\n\nYou may assume that the entire matrix is surrounded by an **outer perimeter** with the value `-1` in each cell.\n\nYou must write an algorithm that runs in `O(m log(n))` or `O(n log(m))` time.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/06/08/1.png)\n    \n    \n    **Input:** mat = [[1,4],[3,2]]\n    **Output:** [0,1]\n    **Explanation:**  Both 3 and 4 are peak elements so [1,0] and [0,1] are both acceptable answers.\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2021/06/07/3.png)**\n    \n    \n    **Input:** mat = [[10,20,15],[21,30,14],[7,16,32]]\n    **Output:** [1,1]\n    **Explanation:**  Both 30 and 32 are peak elements so [1,1] and [2,2] are both acceptable answers.",
+  "constraints": "**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 500`\n  * `1 <= mat[i][j] <= 105`\n  * No two adjacent cells are equal.",
+  "topics": ["Array", "Binary Search", "Matrix"],
+  "total_accepted": 173339,
+  "total_submissions": 318632,
+  "acceptance_rate": "54.4%",
+  "similar_questions": [
+    {
+      "title": "Find Peak Element",
+      "slug": "find-peak-element",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-peak-element/"
+    },
+    {
+      "title": "Find the Peaks",
+      "slug": "find-the-peaks",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-peaks/"
+    }
+  ],
+  "hints": [
+    "Let's assume that the width of the array is bigger than the height, otherwise, we will split in another direction.",
+    "Split the array into three parts: central column left side and right side.",
+    "Go through the central column and two neighbor columns and look for maximum.",
+    "If it's in the central column - this is our peak.",
+    "If it's on the left side, run this algorithm on subarray left_side + central_column.",
+    "If it's on the right side, run this algorithm on subarray right_side + central_column"
+  ]
+}

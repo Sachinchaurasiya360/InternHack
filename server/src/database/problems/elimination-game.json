@@ -1,0 +1,25 @@
+{
+  "id": "390",
+  "title": "Elimination Game",
+  "slug": "elimination-game",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You have a list <code>arr</code> of all integers in the range <code>[1, n]</code> sorted in a strictly increasing order. Apply the following algorithm on <code>arr</code>:</p>\n\n<ul>\n\t<li>Starting from left to right, remove the first number and every other number afterward until you reach the end of the list.</li>\n\t<li>Repeat the previous step again, but this time from right to left, remove the rightmost number and every other number from the remaining numbers.</li>\n\t<li>Keep repeating the steps again, alternating left to right and right to left, until a single number remains.</li>\n</ul>\n\n<p>Given the integer <code>n</code>, return <em>the last number that remains in</em> <code>arr</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 9\n<strong>Output:</strong> 6\n<strong>Explanation:</strong>\narr = [<u>1</u>, 2, <u>3</u>, 4, <u>5</u>, 6, <u>7</u>, 8, <u>9</u>]\narr = [2, <u>4</u>, 6, <u>8</u>]\narr = [<u>2</u>, 6]\narr = [6]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You have a list `arr` of all integers in the range `[1, n]` sorted in a strictly increasing order. Apply the following algorithm on `arr`:\n\n  * Starting from left to right, remove the first number and every other number afterward until you reach the end of the list.\n  * Repeat the previous step again, but this time from right to left, remove the rightmost number and every other number from the remaining numbers.\n  * Keep repeating the steps again, alternating left to right and right to left, until a single number remains.\n\n\n\nGiven the integer `n`, return _the last number that remains in_ `arr`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 9\n    **Output:** 6\n    **Explanation:**\n    arr = [_1_ , 2, _3_ , 4, _5_ , 6, _7_ , 8, _9_]\n    arr = [2, _4_ , 6, _8_]\n    arr = [_2_ , 6]\n    arr = [6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 109`",
+  "question": "You have a list `arr` of all integers in the range `[1, n]` sorted in a strictly increasing order. Apply the following algorithm on `arr`:\n\n  * Starting from left to right, remove the first number and every other number afterward until you reach the end of the list.\n  * Repeat the previous step again, but this time from right to left, remove the rightmost number and every other number from the remaining numbers.\n  * Keep repeating the steps again, alternating left to right and right to left, until a single number remains.\n\n\n\nGiven the integer `n`, return _the last number that remains in_ `arr`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 9\n    **Output:** 6\n    **Explanation:**\n    arr = [_1_ , 2, _3_ , 4, _5_ , 6, _7_ , 8, _9_]\n    arr = [2, _4_ , 6, _8_]\n    arr = [_2_ , 6]\n    arr = [6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 109`",
+  "topics": ["Math", "Recursion"],
+  "total_accepted": 104756,
+  "total_submissions": 227887,
+  "acceptance_rate": "46.0%",
+  "similar_questions": [
+    {
+      "title": "Min Max Game",
+      "slug": "min-max-game",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/min-max-game/"
+    }
+  ],
+  "hints": []
+}

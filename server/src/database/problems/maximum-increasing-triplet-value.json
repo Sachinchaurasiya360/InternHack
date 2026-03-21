@@ -1,0 +1,24 @@
+{
+  "id": "3073",
+  "title": "Maximum Increasing Triplet Value",
+  "slug": "maximum-increasing-triplet-value",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Ordered Set"],
+  "total_accepted": 1343,
+  "total_submissions": 3759,
+  "acceptance_rate": "35.7%",
+  "similar_questions": [],
+  "hints": [
+    "For each element, define <code>right[i]</code> as the value of the greatest element with an index greater than <code>i</code>.",
+    "Start iterating from the beginning, define a set containing the elements seen so far.",
+    "When you are at index <code>i</code>, use binary search on the set to find the greatest element on the left of index <code>i</code> that is smaller than <code>nums[i]</code> and name it <code>greatest_left</code>.",
+    "Also check that <code>nums[i] < right[i]</code>.",
+    "If the above conditions hold, then <code>ans = max(ans, greatest_left - nums[i] + right[i])</code>."
+  ]
+}

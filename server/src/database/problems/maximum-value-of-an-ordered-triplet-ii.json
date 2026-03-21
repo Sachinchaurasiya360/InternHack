@@ -1,0 +1,41 @@
+{
+  "id": "2874",
+  "title": "Maximum Value of an Ordered Triplet II",
+  "slug": "maximum-value-of-an-ordered-triplet-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>.</p>\n\n<p>Return <em><strong>the maximum value over all triplets of indices</strong></em> <code>(i, j, k)</code> <em>such that</em> <code>i &lt; j &lt; k</code><em>. </em>If all such triplets have a negative value, return <code>0</code>.</p>\n\n<p>The <strong>value of a triplet of indices</strong> <code>(i, j, k)</code> is equal to <code>(nums[i] - nums[j]) * nums[k]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [12,6,1,2,7]\n<strong>Output:</strong> 77\n<strong>Explanation:</strong> The value of the triplet (0, 2, 4) is (nums[0] - nums[2]) * nums[4] = 77.\nIt can be shown that there are no ordered triplets of indices with a value greater than 77. \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,10,3,4,19]\n<strong>Output:</strong> 133\n<strong>Explanation:</strong> The value of the triplet (1, 2, 4) is (nums[1] - nums[2]) * nums[4] = 133.\nIt can be shown that there are no ordered triplets of indices with a value greater than 133.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The only ordered triplet of indices (0, 1, 2) has a negative value of (nums[0] - nums[1]) * nums[2] = -3. Hence, the answer would be 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`.\n\nReturn _**the maximum value over all triplets of indices**_ `(i, j, k)` _such that_ `i < j < k` _._ If all such triplets have a negative value, return `0`.\n\nThe **value of a triplet of indices** `(i, j, k)` is equal to `(nums[i] - nums[j]) * nums[k]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [12,6,1,2,7]\n    **Output:** 77\n    **Explanation:** The value of the triplet (0, 2, 4) is (nums[0] - nums[2]) * nums[4] = 77.\n    It can be shown that there are no ordered triplets of indices with a value greater than 77. \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,10,3,4,19]\n    **Output:** 133\n    **Explanation:** The value of the triplet (1, 2, 4) is (nums[1] - nums[2]) * nums[4] = 133.\n    It can be shown that there are no ordered triplets of indices with a value greater than 133.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 0\n    **Explanation:** The only ordered triplet of indices (0, 1, 2) has a negative value of (nums[0] - nums[1]) * nums[2] = -3. Hence, the answer would be 0.\n    \n\n \n\n**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `1 <= nums[i] <= 106`",
+  "question": "You are given a **0-indexed** integer array `nums`.\n\nReturn _**the maximum value over all triplets of indices**_ `(i, j, k)` _such that_ `i < j < k` _._ If all such triplets have a negative value, return `0`.\n\nThe **value of a triplet of indices** `(i, j, k)` is equal to `(nums[i] - nums[j]) * nums[k]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [12,6,1,2,7]\n    **Output:** 77\n    **Explanation:** The value of the triplet (0, 2, 4) is (nums[0] - nums[2]) * nums[4] = 77.\n    It can be shown that there are no ordered triplets of indices with a value greater than 77. \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,10,3,4,19]\n    **Output:** 133\n    **Explanation:** The value of the triplet (1, 2, 4) is (nums[1] - nums[2]) * nums[4] = 133.\n    It can be shown that there are no ordered triplets of indices with a value greater than 133.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 0\n    **Explanation:** The only ordered triplet of indices (0, 1, 2) has a negative value of (nums[0] - nums[1]) * nums[2] = -3. Hence, the answer would be 0.",
+  "constraints": "**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `1 <= nums[i] <= 106`",
+  "topics": ["Array"],
+  "total_accepted": 158295,
+  "total_submissions": 280427,
+  "acceptance_rate": "56.4%",
+  "similar_questions": [
+    {
+      "title": "Trapping Rain Water",
+      "slug": "trapping-rain-water",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/trapping-rain-water/"
+    },
+    {
+      "title": "Sum of Beauty in the Array",
+      "slug": "sum-of-beauty-in-the-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-beauty-in-the-array/"
+    },
+    {
+      "title": "Minimum Sum of Mountain Triplets II",
+      "slug": "minimum-sum-of-mountain-triplets-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-sum-of-mountain-triplets-ii/"
+    }
+  ],
+  "hints": [
+    "Preprocess the prefix maximum array, <code>prefix_max[i] = max(nums[0], nums[1], …, nums[i])</code> and the suffix maximum array, <code>suffix_max[i] = max(nums[i], nums[i + 1], …, nums[n - 1])</code>.",
+    "For each index <code>j</code>, find two indices <code>i</code> and <code>k</code> such that <code>i < j < k</code> and <code>(nums[i] - nums[j]) * nums[k]</code> is the maximum, using the prefix and suffix maximum arrays.",
+    "For index <code>j</code>, the maximum triplet value is <code>(prefix_max[j - 1] - nums[j]) * suffix_max[j + 1]</code>."
+  ]
+}

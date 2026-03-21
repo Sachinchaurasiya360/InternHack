@@ -1,0 +1,18 @@
+{
+  "id": "1107",
+  "title": "New Users Daily Count",
+  "slug": "new-users-daily-count",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 44566,
+  "total_submissions": 99231,
+  "acceptance_rate": "44.9%",
+  "similar_questions": [],
+  "hints": []
+}

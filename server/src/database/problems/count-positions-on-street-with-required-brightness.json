@@ -1,0 +1,40 @@
+{
+  "id": "2237",
+  "title": "Count Positions on Street With Required Brightness",
+  "slug": "count-positions-on-street-with-required-brightness",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Prefix Sum"],
+  "total_accepted": 5029,
+  "total_submissions": 7990,
+  "acceptance_rate": "62.9%",
+  "similar_questions": [
+    {
+      "title": "Range Addition",
+      "slug": "range-addition",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-addition/"
+    },
+    {
+      "title": "Brightest Position on Street",
+      "slug": "brightest-position-on-street",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/brightest-position-on-street/"
+    },
+    {
+      "title": "Increment Submatrices by One",
+      "slug": "increment-submatrices-by-one",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/increment-submatrices-by-one/"
+    }
+  ],
+  "hints": [
+    "How can we find the brightness at every position on the street?",
+    "We can use a hash table to store the change in brightness from the previous position to the current position."
+  ]
+}

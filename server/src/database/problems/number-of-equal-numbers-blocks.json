@@ -1,0 +1,22 @@
+{
+  "id": "2936",
+  "title": "Number of Equal Numbers Blocks",
+  "slug": "number-of-equal-numbers-blocks",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Interactive"],
+  "total_accepted": 2396,
+  "total_submissions": 3838,
+  "acceptance_rate": "62.4%",
+  "similar_questions": [],
+  "hints": [
+    "Start from the beginning of the array <code>nums.at(0)</code>.",
+    "Do a binary search on the last index <code>last</code> such that <code>nums.at(0) == nums.at(last)</code>.",
+    "Continue this process until you get to the end of the array (<code>nums.size()</code>)."
+  ]
+}

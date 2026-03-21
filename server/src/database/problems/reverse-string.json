@@ -1,0 +1,33 @@
+{
+  "id": "344",
+  "title": "Reverse String",
+  "slug": "reverse-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Write a function that reverses a string. The input string is given as an array of characters <code>s</code>.</p>\n\n<p>You must do this by modifying the input array <a href=\"https://en.wikipedia.org/wiki/In-place_algorithm\" target=\"_blank\">in-place</a> with <code>O(1)</code> extra memory.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = [\"h\",\"e\",\"l\",\"l\",\"o\"]\n<strong>Output:</strong> [\"o\",\"l\",\"l\",\"e\",\"h\"]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = [\"H\",\"a\",\"n\",\"n\",\"a\",\"h\"]\n<strong>Output:</strong> [\"h\",\"a\",\"n\",\"n\",\"a\",\"H\"]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is a <a href=\"https://en.wikipedia.org/wiki/ASCII#Printable_characters\" target=\"_blank\">printable ascii character</a>.</li>\n</ul>\n",
+  "content_markdown": "Write a function that reverses a string. The input string is given as an array of characters `s`.\n\nYou must do this by modifying the input array [in-place](<https://en.wikipedia.org/wiki/In-place_algorithm>) with `O(1)` extra memory.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = [\"h\",\"e\",\"l\",\"l\",\"o\"]\n    **Output:** [\"o\",\"l\",\"l\",\"e\",\"h\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = [\"H\",\"a\",\"n\",\"n\",\"a\",\"h\"]\n    **Output:** [\"h\",\"a\",\"n\",\"n\",\"a\",\"H\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is a [printable ascii character](<https://en.wikipedia.org/wiki/ASCII#Printable_characters>).",
+  "question": "Write a function that reverses a string. The input string is given as an array of characters `s`.\n\nYou must do this by modifying the input array [in-place](<https://en.wikipedia.org/wiki/In-place_algorithm>) with `O(1)` extra memory.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = [\"h\",\"e\",\"l\",\"l\",\"o\"]\n    **Output:** [\"o\",\"l\",\"l\",\"e\",\"h\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = [\"H\",\"a\",\"n\",\"n\",\"a\",\"h\"]\n    **Output:** [\"h\",\"a\",\"n\",\"n\",\"a\",\"H\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is a [printable ascii character](<https://en.wikipedia.org/wiki/ASCII#Printable_characters>).",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 3709959,
+  "total_submissions": 4604826,
+  "acceptance_rate": "80.6%",
+  "similar_questions": [
+    {
+      "title": "Reverse Vowels of a String",
+      "slug": "reverse-vowels-of-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-vowels-of-a-string/"
+    },
+    {
+      "title": "Reverse String II",
+      "slug": "reverse-string-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-string-ii/"
+    }
+  ],
+  "hints": [
+    "The entire logic for reversing a string is based on using the opposite directional two-pointer approach!"
+  ]
+}

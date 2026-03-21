@@ -1,0 +1,28 @@
+{
+  "id": "1717",
+  "title": "Maximum Score From Removing Substrings",
+  "slug": "maximum-score-from-removing-substrings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> and two integers <code>x</code> and <code>y</code>. You can perform two types of operations any number of times.</p>\n\n<ul>\n\t<li>Remove substring <code>&quot;ab&quot;</code> and gain <code>x</code> points.\n\n\t<ul>\n\t\t<li>For example, when removing <code>&quot;ab&quot;</code> from <code>&quot;c<u>ab</u>xbae&quot;</code> it becomes <code>&quot;cxbae&quot;</code>.</li>\n\t</ul>\n\t</li>\n\t<li>Remove substring <code>&quot;ba&quot;</code> and gain <code>y</code> points.\n\t<ul>\n\t\t<li>For example, when removing <code>&quot;ba&quot;</code> from <code>&quot;cabx<u>ba</u>e&quot;</code> it becomes <code>&quot;cabxe&quot;</code>.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p>Return <em>the maximum points you can gain after applying the above operations on</em> <code>s</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;cdbcbbaaabab&quot;, x = 4, y = 5\n<strong>Output:</strong> 19\n<strong>Explanation:</strong>\n- Remove the &quot;ba&quot; underlined in &quot;cdbcbbaaa<u>ba</u>b&quot;. Now, s = &quot;cdbcbbaaab&quot; and 5 points are added to the score.\n- Remove the &quot;ab&quot; underlined in &quot;cdbcbbaa<u>ab</u>&quot;. Now, s = &quot;cdbcbbaa&quot; and 4 points are added to the score.\n- Remove the &quot;ba&quot; underlined in &quot;cdbcb<u>ba</u>a&quot;. Now, s = &quot;cdbcba&quot; and 5 points are added to the score.\n- Remove the &quot;ba&quot; underlined in &quot;cdbc<u>ba</u>&quot;. Now, s = &quot;cdbc&quot; and 5 points are added to the score.\nTotal score = 5 + 4 + 5 + 5 = 19.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aabbaaxybbaabb&quot;, x = 5, y = 4\n<strong>Output:</strong> 20\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= x, y &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` and two integers `x` and `y`. You can perform two types of operations any number of times.\n\n  * Remove substring `\"ab\"` and gain `x` points. \n    * For example, when removing `\"ab\"` from `\"c _ab_ xbae\"` it becomes `\"cxbae\"`.\n  * Remove substring `\"ba\"` and gain `y` points. \n    * For example, when removing `\"ba\"` from `\"cabx _ba_ e\"` it becomes `\"cabxe\"`.\n\n\n\nReturn _the maximum points you can gain after applying the above operations on_ `s`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"cdbcbbaaabab\", x = 4, y = 5\n    **Output:** 19\n    **Explanation:**\n    - Remove the \"ba\" underlined in \"cdbcbbaaa _ba_ b\". Now, s = \"cdbcbbaaab\" and 5 points are added to the score.\n    - Remove the \"ab\" underlined in \"cdbcbbaa _ab_ \". Now, s = \"cdbcbbaa\" and 4 points are added to the score.\n    - Remove the \"ba\" underlined in \"cdbcb _ba_ a\". Now, s = \"cdbcba\" and 5 points are added to the score.\n    - Remove the \"ba\" underlined in \"cdbc _ba_ \". Now, s = \"cdbc\" and 5 points are added to the score.\n    Total score = 5 + 4 + 5 + 5 = 19.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"aabbaaxybbaabb\", x = 5, y = 4\n    **Output:** 20\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `1 <= x, y <= 104`\n  * `s` consists of lowercase English letters.",
+  "question": "You are given a string `s` and two integers `x` and `y`. You can perform two types of operations any number of times.\n\n  * Remove substring `\"ab\"` and gain `x` points. \n    * For example, when removing `\"ab\"` from `\"c _ab_ xbae\"` it becomes `\"cxbae\"`.\n  * Remove substring `\"ba\"` and gain `y` points. \n    * For example, when removing `\"ba\"` from `\"cabx _ba_ e\"` it becomes `\"cabxe\"`.\n\n\n\nReturn _the maximum points you can gain after applying the above operations on_ `s`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"cdbcbbaaabab\", x = 4, y = 5\n    **Output:** 19\n    **Explanation:**\n    - Remove the \"ba\" underlined in \"cdbcbbaaa _ba_ b\". Now, s = \"cdbcbbaaab\" and 5 points are added to the score.\n    - Remove the \"ab\" underlined in \"cdbcbbaa _ab_ \". Now, s = \"cdbcbbaa\" and 4 points are added to the score.\n    - Remove the \"ba\" underlined in \"cdbcb _ba_ a\". Now, s = \"cdbcba\" and 5 points are added to the score.\n    - Remove the \"ba\" underlined in \"cdbc _ba_ \". Now, s = \"cdbc\" and 5 points are added to the score.\n    Total score = 5 + 4 + 5 + 5 = 19.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"aabbaaxybbaabb\", x = 5, y = 4\n    **Output:** 20",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `1 <= x, y <= 104`\n  * `s` consists of lowercase English letters.",
+  "topics": ["String", "Stack", "Greedy"],
+  "total_accepted": 242227,
+  "total_submissions": 363929,
+  "acceptance_rate": "66.6%",
+  "similar_questions": [
+    {
+      "title": "Count Words Obtained After Adding a Letter",
+      "slug": "count-words-obtained-after-adding-a-letter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-words-obtained-after-adding-a-letter/"
+    }
+  ],
+  "hints": [
+    "Note that it is always more optimal to take one type of substring before another",
+    "You can use a stack to handle erasures"
+  ]
+}

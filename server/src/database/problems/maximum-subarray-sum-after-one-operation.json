@@ -1,0 +1,29 @@
+{
+  "id": "1746",
+  "title": "Maximum Subarray Sum After One Operation",
+  "slug": "maximum-subarray-sum-after-one-operation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 13877,
+  "total_submissions": 21269,
+  "acceptance_rate": "65.2%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray/"
+    }
+  ],
+  "hints": [
+    "Think about dynamic programming",
+    "Define an array dp[nums.length][2], where dp[i][0] is the max subarray sum including nums[i] and without squaring any element.",
+    "dp[i][1] is the max subarray sum including nums[i] and having only one element squared."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "1791",
+  "title": "Find Center of Star Graph",
+  "slug": "find-center-of-star-graph",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>There is an undirected <strong>star</strong> graph consisting of <code>n</code> nodes labeled from <code>1</code> to <code>n</code>. A star graph is a graph where there is one <strong>center</strong> node and <strong>exactly</strong> <code>n - 1</code> edges that connect the center node with every other node.</p>\n\n<p>You are given a 2D integer array <code>edges</code> where each <code>edges[i] = [u<sub>i</sub>, v<sub>i</sub>]</code> indicates that there is an edge between the nodes <code>u<sub>i</sub></code> and <code>v<sub>i</sub></code>. Return the center of the given star graph.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/24/star_graph.png\" style=\"width: 331px; height: 321px;\" />\n<pre>\n<strong>Input:</strong> edges = [[1,2],[2,3],[4,2]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> As shown in the figure above, node 2 is connected to every other node, so 2 is the center.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> edges = [[1,2],[5,1],[1,3],[1,4]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>edges.length == n - 1</code></li>\n\t<li><code>edges[i].length == 2</code></li>\n\t<li><code>1 &lt;= u<sub>i,</sub> v<sub>i</sub> &lt;= n</code></li>\n\t<li><code>u<sub>i</sub> != v<sub>i</sub></code></li>\n\t<li>The given <code>edges</code> represent a valid star graph.</li>\n</ul>\n",
+  "content_markdown": "There is an undirected **star** graph consisting of `n` nodes labeled from `1` to `n`. A star graph is a graph where there is one **center** node and **exactly** `n - 1` edges that connect the center node with every other node.\n\nYou are given a 2D integer array `edges` where each `edges[i] = [ui, vi]` indicates that there is an edge between the nodes `ui` and `vi`. Return the center of the given star graph.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/24/star_graph.png)\n    \n    \n    **Input:** edges = [[1,2],[2,3],[4,2]]\n    **Output:** 2\n    **Explanation:** As shown in the figure above, node 2 is connected to every other node, so 2 is the center.\n    \n\n**Example 2:**\n    \n    \n    **Input:** edges = [[1,2],[5,1],[1,3],[1,4]]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `3 <= n <= 105`\n  * `edges.length == n - 1`\n  * `edges[i].length == 2`\n  * `1 <= ui, vi <= n`\n  * `ui != vi`\n  * The given `edges` represent a valid star graph.",
+  "question": "There is an undirected **star** graph consisting of `n` nodes labeled from `1` to `n`. A star graph is a graph where there is one **center** node and **exactly** `n - 1` edges that connect the center node with every other node.\n\nYou are given a 2D integer array `edges` where each `edges[i] = [ui, vi]` indicates that there is an edge between the nodes `ui` and `vi`. Return the center of the given star graph.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/24/star_graph.png)\n    \n    \n    **Input:** edges = [[1,2],[2,3],[4,2]]\n    **Output:** 2\n    **Explanation:** As shown in the figure above, node 2 is connected to every other node, so 2 is the center.\n    \n\n**Example 2:**\n    \n    \n    **Input:** edges = [[1,2],[5,1],[1,3],[1,4]]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `3 <= n <= 105`\n  * `edges.length == n - 1`\n  * `edges[i].length == 2`\n  * `1 <= ui, vi <= n`\n  * `ui != vi`\n  * The given `edges` represent a valid star graph.",
+  "topics": ["Graph Theory"],
+  "total_accepted": 433631,
+  "total_submissions": 500530,
+  "acceptance_rate": "86.6%",
+  "similar_questions": [
+    {
+      "title": "Maximum Star Sum of a Graph",
+      "slug": "maximum-star-sum-of-a-graph",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-star-sum-of-a-graph/"
+    }
+  ],
+  "hints": [
+    "The center is the only node that has more than one edge.",
+    "The center is also connected to all other nodes.",
+    "Any two edges must have a common node, which is the center."
+  ]
+}

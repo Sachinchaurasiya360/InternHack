@@ -1,0 +1,25 @@
+{
+  "id": "557",
+  "title": "Reverse Words in a String III",
+  "slug": "reverse-words-in-a-string-iii",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Let&#39;s take LeetCode contest&quot;\n<strong>Output:</strong> &quot;s&#39;teL ekat edoCteeL tsetnoc&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Mr Ding&quot;\n<strong>Output:</strong> &quot;rM gniD&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>s</code> contains printable <strong>ASCII</strong> characters.</li>\n\t<li><code>s</code> does not contain any leading or trailing spaces.</li>\n\t<li>There is <strong>at least one</strong> word in <code>s</code>.</li>\n\t<li>All the words in <code>s</code> are separated by a single space.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"Let's take LeetCode contest\"\n    **Output:** \"s'teL ekat edoCteeL tsetnoc\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Mr Ding\"\n    **Output:** \"rM gniD\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `s` contains printable **ASCII** characters.\n  * `s` does not contain any leading or trailing spaces.\n  * There is **at least one** word in `s`.\n  * All the words in `s` are separated by a single space.",
+  "question": "Given a string `s`, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"Let's take LeetCode contest\"\n    **Output:** \"s'teL ekat edoCteeL tsetnoc\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Mr Ding\"\n    **Output:** \"rM gniD\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `s` contains printable **ASCII** characters.\n  * `s` does not contain any leading or trailing spaces.\n  * There is **at least one** word in `s`.\n  * All the words in `s` are separated by a single space.",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 1115696,
+  "total_submissions": 1329204,
+  "acceptance_rate": "83.9%",
+  "similar_questions": [
+    {
+      "title": "Reverse String II",
+      "slug": "reverse-string-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-string-ii/"
+    }
+  ],
+  "hints": []
+}

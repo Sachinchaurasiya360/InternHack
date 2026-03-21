@@ -1,0 +1,48 @@
+{
+  "id": "564",
+  "title": "Find the Closest Palindrome",
+  "slug": "find-the-closest-palindrome",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>n</code> representing an integer, return <em>the closest integer (not including itself), which is a palindrome</em>. If there is a tie, return <em><strong>the smaller one</strong></em>.</p>\n\n<p>The closest is defined as the absolute difference minimized between two integers.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;123&quot;\n<strong>Output:</strong> &quot;121&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;1&quot;\n<strong>Output:</strong> &quot;0&quot;\n<strong>Explanation:</strong> 0 and 2 are the closest palindromes but we return the smallest which is 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n.length &lt;= 18</code></li>\n\t<li><code>n</code> consists of only digits.</li>\n\t<li><code>n</code> does not have leading zeros.</li>\n\t<li><code>n</code> is representing an integer in the range <code>[1, 10<sup>18</sup> - 1]</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `n` representing an integer, return _the closest integer (not including itself), which is a palindrome_. If there is a tie, return _**the smaller one**_.\n\nThe closest is defined as the absolute difference minimized between two integers.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = \"123\"\n    **Output:** \"121\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = \"1\"\n    **Output:** \"0\"\n    **Explanation:** 0 and 2 are the closest palindromes but we return the smallest which is 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n.length <= 18`\n  * `n` consists of only digits.\n  * `n` does not have leading zeros.\n  * `n` is representing an integer in the range `[1, 1018 - 1]`.",
+  "question": "Given a string `n` representing an integer, return _the closest integer (not including itself), which is a palindrome_. If there is a tie, return _**the smaller one**_.\n\nThe closest is defined as the absolute difference minimized between two integers.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = \"123\"\n    **Output:** \"121\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = \"1\"\n    **Output:** \"0\"\n    **Explanation:** 0 and 2 are the closest palindromes but we return the smallest which is 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n.length <= 18`\n  * `n` consists of only digits.\n  * `n` does not have leading zeros.\n  * `n` is representing an integer in the range `[1, 1018 - 1]`.",
+  "topics": ["Math", "String"],
+  "total_accepted": 136189,
+  "total_submissions": 427636,
+  "acceptance_rate": "31.8%",
+  "similar_questions": [
+    {
+      "title": "Find Palindrome With Fixed Length",
+      "slug": "find-palindrome-with-fixed-length",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-palindrome-with-fixed-length/"
+    },
+    {
+      "title": "Next Palindrome Using Same Digits",
+      "slug": "next-palindrome-using-same-digits",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/next-palindrome-using-same-digits/"
+    },
+    {
+      "title": "Find the Count of Good Integers",
+      "slug": "find-the-count-of-good-integers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-count-of-good-integers/"
+    },
+    {
+      "title": "Find the Largest Palindrome Divisible by K",
+      "slug": "find-the-largest-palindrome-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-largest-palindrome-divisible-by-k/"
+    }
+  ],
+  "hints": [
+    "Will brute force work for this problem? Think of something else.",
+    "Take some examples like 1234, 999,1000, etc and check their closest palindromes. How many different cases are possible?",
+    "Do we have to consider only left half or right half of the string or both?",
+    "Try to find the closest palindrome of these numbers- 12932, 99800, 12120. Did you observe something?"
+  ]
+}

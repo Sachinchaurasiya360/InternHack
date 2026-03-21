@@ -1,0 +1,34 @@
+{
+  "id": "1836",
+  "title": "Remove Duplicates From an Unsorted Linked List",
+  "slug": "remove-duplicates-from-an-unsorted-linked-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Linked List"],
+  "total_accepted": 39738,
+  "total_submissions": 52527,
+  "acceptance_rate": "75.7%",
+  "similar_questions": [
+    {
+      "title": "Remove Duplicates from Sorted List II",
+      "slug": "remove-duplicates-from-sorted-list-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/"
+    },
+    {
+      "title": "Remove Duplicates from Sorted List",
+      "slug": "remove-duplicates-from-sorted-list",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-list/"
+    }
+  ],
+  "hints": [
+    "Is there a way we can know beforehand which nodes to delete?",
+    "Count the number of appearances for each number."
+  ]
+}

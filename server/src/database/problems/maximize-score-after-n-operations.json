@@ -1,0 +1,29 @@
+{
+  "id": "1799",
+  "title": "Maximize Score After N Operations",
+  "slug": "maximize-score-after-n-operations",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given <code>nums</code>, an array of positive integers of size <code>2 * n</code>. You must perform <code>n</code> operations on this array.</p>\n\n<p>In the <code>i<sup>th</sup></code> operation <strong>(1-indexed)</strong>, you will:</p>\n\n<ul>\n\t<li>Choose two elements, <code>x</code> and <code>y</code>.</li>\n\t<li>Receive a score of <code>i * gcd(x, y)</code>.</li>\n\t<li>Remove <code>x</code> and <code>y</code> from <code>nums</code>.</li>\n</ul>\n\n<p>Return <em>the maximum score you can receive after performing </em><code>n</code><em> operations.</em></p>\n\n<p>The function <code>gcd(x, y)</code> is the greatest common divisor of <code>x</code> and <code>y</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>&nbsp;The optimal choice of operations is:\n(1 * gcd(1, 2)) = 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,4,6,8]\n<strong>Output:</strong> 11\n<strong>Explanation:</strong>&nbsp;The optimal choice of operations is:\n(1 * gcd(3, 6)) + (2 * gcd(4, 8)) = 3 + 8 = 11\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5,6]\n<strong>Output:</strong> 14\n<strong>Explanation:</strong>&nbsp;The optimal choice of operations is:\n(1 * gcd(1, 5)) + (2 * gcd(2, 4)) + (3 * gcd(3, 6)) = 1 + 4 + 9 = 14\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 7</code></li>\n\t<li><code>nums.length == 2 * n</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given `nums`, an array of positive integers of size `2 * n`. You must perform `n` operations on this array.\n\nIn the `ith` operation **(1-indexed)** , you will:\n\n  * Choose two elements, `x` and `y`.\n  * Receive a score of `i * gcd(x, y)`.\n  * Remove `x` and `y` from `nums`.\n\n\n\nReturn _the maximum score you can receive after performing_`n` _operations._\n\nThe function `gcd(x, y)` is the greatest common divisor of `x` and `y`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2]\n    **Output:** 1\n    **Explanation:**  The optimal choice of operations is:\n    (1 * gcd(1, 2)) = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,4,6,8]\n    **Output:** 11\n    **Explanation:**  The optimal choice of operations is:\n    (1 * gcd(3, 6)) + (2 * gcd(4, 8)) = 3 + 8 = 11\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4,5,6]\n    **Output:** 14\n    **Explanation:**  The optimal choice of operations is:\n    (1 * gcd(1, 5)) + (2 * gcd(2, 4)) + (3 * gcd(3, 6)) = 1 + 4 + 9 = 14\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 7`\n  * `nums.length == 2 * n`\n  * `1 <= nums[i] <= 106`",
+  "question": "You are given `nums`, an array of positive integers of size `2 * n`. You must perform `n` operations on this array.\n\nIn the `ith` operation **(1-indexed)** , you will:\n\n  * Choose two elements, `x` and `y`.\n  * Receive a score of `i * gcd(x, y)`.\n  * Remove `x` and `y` from `nums`.\n\n\n\nReturn _the maximum score you can receive after performing_`n` _operations._\n\nThe function `gcd(x, y)` is the greatest common divisor of `x` and `y`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2]\n    **Output:** 1\n    **Explanation:**  The optimal choice of operations is:\n    (1 * gcd(1, 2)) = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,4,6,8]\n    **Output:** 11\n    **Explanation:**  The optimal choice of operations is:\n    (1 * gcd(3, 6)) + (2 * gcd(4, 8)) = 3 + 8 = 11\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4,5,6]\n    **Output:** 14\n    **Explanation:**  The optimal choice of operations is:\n    (1 * gcd(1, 5)) + (2 * gcd(2, 4)) + (3 * gcd(3, 6)) = 1 + 4 + 9 = 14",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 7`\n  * `nums.length == 2 * n`\n  * `1 <= nums[i] <= 106`",
+  "topics": [
+    "Array",
+    "Math",
+    "Dynamic Programming",
+    "Backtracking",
+    "Bit Manipulation",
+    "Number Theory",
+    "Bitmask"
+  ],
+  "total_accepted": 69324,
+  "total_submissions": 119628,
+  "acceptance_rate": "57.9%",
+  "similar_questions": [],
+  "hints": [
+    "Find every way to split the array until n groups of 2. Brute force recursion is acceptable.",
+    "Calculate the gcd of every pair and greedily multiply the largest gcds."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "2597",
+  "title": "The Number of Beautiful Subsets",
+  "slug": "the-number-of-beautiful-subsets",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> of positive integers and a <strong>positive</strong> integer <code>k</code>.</p>\n\n<p>A subset of <code>nums</code> is <strong>beautiful</strong> if it does not contain two integers with an absolute difference equal to <code>k</code>.</p>\n\n<p>Return <em>the number of <strong>non-empty beautiful </strong>subsets of the array</em> <code>nums</code>.</p>\n\n<p>A <strong>subset</strong> of <code>nums</code> is an array that can be obtained by deleting some (possibly none) elements from <code>nums</code>. Two subsets are different if and only if the chosen indices to delete are different.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,4,6], k = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The beautiful subsets of the array nums are: [2], [4], [6], [2, 6].\nIt can be proved that there are only 4 beautiful subsets in the array [2,4,6].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1], k = 1\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The beautiful subset of the array nums is [1].\nIt can be proved that there is only 1 beautiful subset in the array [1].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 18</code></li>\n\t<li><code>1 &lt;= nums[i], k &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` of positive integers and a **positive** integer `k`.\n\nA subset of `nums` is **beautiful** if it does not contain two integers with an absolute difference equal to `k`.\n\nReturn _the number of**non-empty beautiful** subsets of the array_ `nums`.\n\nA **subset** of `nums` is an array that can be obtained by deleting some (possibly none) elements from `nums`. Two subsets are different if and only if the chosen indices to delete are different.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,4,6], k = 2\n    **Output:** 4\n    **Explanation:** The beautiful subsets of the array nums are: [2], [4], [6], [2, 6].\n    It can be proved that there are only 4 beautiful subsets in the array [2,4,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1], k = 1\n    **Output:** 1\n    **Explanation:** The beautiful subset of the array nums is [1].\n    It can be proved that there is only 1 beautiful subset in the array [1].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 18`\n  * `1 <= nums[i], k <= 1000`",
+  "question": "You are given an array `nums` of positive integers and a **positive** integer `k`.\n\nA subset of `nums` is **beautiful** if it does not contain two integers with an absolute difference equal to `k`.\n\nReturn _the number of**non-empty beautiful** subsets of the array_ `nums`.\n\nA **subset** of `nums` is an array that can be obtained by deleting some (possibly none) elements from `nums`. Two subsets are different if and only if the chosen indices to delete are different.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,4,6], k = 2\n    **Output:** 4\n    **Explanation:** The beautiful subsets of the array nums are: [2], [4], [6], [2, 6].\n    It can be proved that there are only 4 beautiful subsets in the array [2,4,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1], k = 1\n    **Output:** 1\n    **Explanation:** The beautiful subset of the array nums is [1].\n    It can be proved that there is only 1 beautiful subset in the array [1].",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 18`\n  * `1 <= nums[i], k <= 1000`",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Math",
+    "Dynamic Programming",
+    "Backtracking",
+    "Sorting",
+    "Combinatorics"
+  ],
+  "total_accepted": 130286,
+  "total_submissions": 255985,
+  "acceptance_rate": "50.9%",
+  "similar_questions": [
+    {
+      "title": "Construct the Lexicographically Largest Valid Sequence",
+      "slug": "construct-the-lexicographically-largest-valid-sequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/construct-the-lexicographically-largest-valid-sequence/"
+    }
+  ],
+  "hints": [
+    "Sort the array nums and create another array cnt of size nums[i].",
+    "Use backtracking to generate all the beautiful subsets. If cnt[nums[i] - k] is positive, then it is impossible to add nums[i] in the subset, and we just move to the next index. Otherwise, it is also possible to add nums[i] in the subset, in this case, increase cnt[nums[i]], and move to the next index.",
+    "Bonus: Can you solve the problem in O(n log n)?"
+  ]
+}

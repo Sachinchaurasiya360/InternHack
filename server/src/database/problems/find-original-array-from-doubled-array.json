@@ -1,0 +1,35 @@
+{
+  "id": "2007",
+  "title": "Find Original Array From Doubled Array",
+  "slug": "find-original-array-from-doubled-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>An integer array <code>original</code> is transformed into a <strong>doubled</strong> array <code>changed</code> by appending <strong>twice the value</strong> of every element in <code>original</code>, and then randomly <strong>shuffling</strong> the resulting array.</p>\n\n<p>Given an array <code>changed</code>, return <code>original</code><em> if </em><code>changed</code><em> is a <strong>doubled</strong> array. If </em><code>changed</code><em> is not a <strong>doubled</strong> array, return an empty array. The elements in</em> <code>original</code> <em>may be returned in <strong>any</strong> order</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> changed = [1,3,4,2,6,8]\n<strong>Output:</strong> [1,3,4]\n<strong>Explanation:</strong> One possible original array could be [1,3,4]:\n- Twice the value of 1 is 1 * 2 = 2.\n- Twice the value of 3 is 3 * 2 = 6.\n- Twice the value of 4 is 4 * 2 = 8.\nOther original arrays could be [4,3,1] or [3,1,4].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> changed = [6,3,0,1]\n<strong>Output:</strong> []\n<strong>Explanation:</strong> changed is not a doubled array.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> changed = [1]\n<strong>Output:</strong> []\n<strong>Explanation:</strong> changed is not a doubled array.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= changed.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= changed[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "An integer array `original` is transformed into a **doubled** array `changed` by appending **twice the value** of every element in `original`, and then randomly **shuffling** the resulting array.\n\nGiven an array `changed`, return `original` _if_`changed` _is a**doubled** array. If _`changed` _is not a**doubled** array, return an empty array. The elements in_ `original` _may be returned in**any** order_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** changed = [1,3,4,2,6,8]\n    **Output:** [1,3,4]\n    **Explanation:** One possible original array could be [1,3,4]:\n    - Twice the value of 1 is 1 * 2 = 2.\n    - Twice the value of 3 is 3 * 2 = 6.\n    - Twice the value of 4 is 4 * 2 = 8.\n    Other original arrays could be [4,3,1] or [3,1,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** changed = [6,3,0,1]\n    **Output:** []\n    **Explanation:** changed is not a doubled array.\n    \n\n**Example 3:**\n    \n    \n    **Input:** changed = [1]\n    **Output:** []\n    **Explanation:** changed is not a doubled array.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= changed.length <= 105`\n  * `0 <= changed[i] <= 105`",
+  "question": "An integer array `original` is transformed into a **doubled** array `changed` by appending **twice the value** of every element in `original`, and then randomly **shuffling** the resulting array.\n\nGiven an array `changed`, return `original` _if_`changed` _is a**doubled** array. If _`changed` _is not a**doubled** array, return an empty array. The elements in_ `original` _may be returned in**any** order_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** changed = [1,3,4,2,6,8]\n    **Output:** [1,3,4]\n    **Explanation:** One possible original array could be [1,3,4]:\n    - Twice the value of 1 is 1 * 2 = 2.\n    - Twice the value of 3 is 3 * 2 = 6.\n    - Twice the value of 4 is 4 * 2 = 8.\n    Other original arrays could be [4,3,1] or [3,1,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** changed = [6,3,0,1]\n    **Output:** []\n    **Explanation:** changed is not a doubled array.\n    \n\n**Example 3:**\n    \n    \n    **Input:** changed = [1]\n    **Output:** []\n    **Explanation:** changed is not a doubled array.",
+  "constraints": "**Constraints:**\n\n  * `1 <= changed.length <= 105`\n  * `0 <= changed[i] <= 105`",
+  "topics": ["Array", "Hash Table", "Greedy", "Sorting"],
+  "total_accepted": 154106,
+  "total_submissions": 378179,
+  "acceptance_rate": "40.7%",
+  "similar_questions": [
+    {
+      "title": "Array of Doubled Pairs",
+      "slug": "array-of-doubled-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/array-of-doubled-pairs/"
+    },
+    {
+      "title": "Recover the Original Array",
+      "slug": "recover-the-original-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/recover-the-original-array/"
+    }
+  ],
+  "hints": [
+    "If changed is a doubled array, you should be able to delete elements and their doubled values until the array is empty.",
+    "Which element is guaranteed to not be a doubled value? It is the smallest element.",
+    "After removing the smallest element and its double from changed, is there another number that is guaranteed to not be a doubled value?"
+  ]
+}

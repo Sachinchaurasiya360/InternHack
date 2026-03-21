@@ -1,0 +1,21 @@
+{
+  "id": "3174",
+  "title": "Clear Digits",
+  "slug": "clear-digits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code>.</p>\n\n<p>Your task is to remove <strong>all</strong> digits by doing this operation repeatedly:</p>\n\n<ul>\n\t<li>Delete the <em>first</em> digit and the <strong>closest</strong> <b>non-digit</b> character to its <em>left</em>.</li>\n</ul>\n\n<p>Return the resulting string after removing all digits.</p>\n\n<p><strong>Note</strong> that the operation <em>cannot</em> be performed on a digit that does not have any non-digit character to its left.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;abc&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;abc&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There is no digit in the string.<!-- notionvc: ff07e34f-b1d6-41fb-9f83-5d0ba3c1ecde --></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;cb34&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>First, we apply the operation on <code>s[2]</code>, and <code>s</code> becomes <code>&quot;c4&quot;</code>.</p>\n\n<p>Then we apply the operation on <code>s[1]</code>, and <code>s</code> becomes <code>&quot;&quot;</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists only of lowercase English letters and digits.</li>\n\t<li>The input is generated such that it is possible to delete all digits.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s`.\n\nYour task is to remove **all** digits by doing this operation repeatedly:\n\n  * Delete the _first_ digit and the **closest** **non-digit** character to its _left_.\n\n\n\nReturn the resulting string after removing all digits.\n\n**Note** that the operation _cannot_ be performed on a digit that does not have any non-digit character to its left.\n\n \n\n**Example 1:**\n\n**Input:** s = \"abc\"\n\n**Output:** \"abc\"\n\n**Explanation:**\n\nThere is no digit in the string.\n\n**Example 2:**\n\n**Input:** s = \"cb34\"\n\n**Output:** \"\"\n\n**Explanation:**\n\nFirst, we apply the operation on `s[2]`, and `s` becomes `\"c4\"`.\n\nThen we apply the operation on `s[1]`, and `s` becomes `\"\"`.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists only of lowercase English letters and digits.\n  * The input is generated such that it is possible to delete all digits.",
+  "question": "You are given a string `s`.\n\nYour task is to remove **all** digits by doing this operation repeatedly:\n\n  * Delete the _first_ digit and the **closest** **non-digit** character to its _left_.\n\n\n\nReturn the resulting string after removing all digits.\n\n**Note** that the operation _cannot_ be performed on a digit that does not have any non-digit character to its left.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"abc\"\n\n**Output:** \"abc\"\n\n**Explanation:**\n\nThere is no digit in the string.\n\n**Example 2:**\n\n**Input:** s = \"cb34\"\n\n**Output:** \"\"\n\n**Explanation:**\n\nFirst, we apply the operation on `s[2]`, and `s` becomes `\"c4\"`.\n\nThen we apply the operation on `s[1]`, and `s` becomes `\"\"`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists only of lowercase English letters and digits.\n  * The input is generated such that it is possible to delete all digits.",
+  "topics": ["String", "Stack", "Simulation"],
+  "total_accepted": 275003,
+  "total_submissions": 332685,
+  "acceptance_rate": "82.7%",
+  "similar_questions": [],
+  "hints": [
+    "Process string <code>s</code> from left to right, if <code>s[i]</code> is a digit, mark the nearest unmarked non-digit index to its left.",
+    "Delete all digits and all marked characters."
+  ]
+}

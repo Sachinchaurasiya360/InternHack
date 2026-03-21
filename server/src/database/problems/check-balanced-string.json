@@ -1,0 +1,25 @@
+{
+  "id": "3340",
+  "title": "Check Balanced String",
+  "slug": "check-balanced-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>num</code> consisting of only digits. A string of digits is called <b>balanced </b>if the sum of the digits at even indices is equal to the sum of digits at odd indices.</p>\n\n<p>Return <code>true</code> if <code>num</code> is <strong>balanced</strong>, otherwise return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> num<span class=\"example-io\"> = &quot;1234&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>The sum of digits at even indices is <code>1 + 3 == 4</code>, and the sum of digits at odd indices is <code>2 + 4 == 6</code>.</li>\n\t<li>Since 4 is not equal to 6, <code>num</code> is not balanced.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> num<span class=\"example-io\"> = &quot;24123&quot;</span></p>\n\n<p><strong>Output:</strong> true</p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>The sum of digits at even indices is <code>2 + 1 + 3 == 6</code>, and the sum of digits at odd indices is <code>4 + 2 == 6</code>.</li>\n\t<li>Since both are equal the <code>num</code> is balanced.</li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= num.length &lt;= 100</code></li>\n\t<li><code><font face=\"monospace\">num</font></code> consists of digits only</li>\n</ul>\n",
+  "content_markdown": "You are given a string `num` consisting of only digits. A string of digits is called **balanced** if the sum of the digits at even indices is equal to the sum of digits at odd indices.\n\nReturn `true` if `num` is **balanced** , otherwise return `false`.\n\n \n\n**Example 1:**\n\n**Input:** num = \"1234\"\n\n**Output:** false\n\n**Explanation:**\n\n  * The sum of digits at even indices is `1 + 3 == 4`, and the sum of digits at odd indices is `2 + 4 == 6`.\n  * Since 4 is not equal to 6, `num` is not balanced.\n\n\n\n**Example 2:**\n\n**Input:** num = \"24123\"\n\n**Output:** true\n\n**Explanation:**\n\n  * The sum of digits at even indices is `2 + 1 + 3 == 6`, and the sum of digits at odd indices is `4 + 2 == 6`.\n  * Since both are equal the `num` is balanced.\n\n\n\n \n\n**Constraints:**\n\n  * `2 <= num.length <= 100`\n  * `num` consists of digits only",
+  "question": "You are given a string `num` consisting of only digits. A string of digits is called **balanced** if the sum of the digits at even indices is equal to the sum of digits at odd indices.\n\nReturn `true` if `num` is **balanced** , otherwise return `false`.",
+  "examples": "**Example 1:**\n\n**Input:** num = \"1234\"\n\n**Output:** false\n\n**Explanation:**\n\n  * The sum of digits at even indices is `1 + 3 == 4`, and the sum of digits at odd indices is `2 + 4 == 6`.\n  * Since 4 is not equal to 6, `num` is not balanced.\n\n\n\n**Example 2:**\n\n**Input:** num = \"24123\"\n\n**Output:** true\n\n**Explanation:**\n\n  * The sum of digits at even indices is `2 + 1 + 3 == 6`, and the sum of digits at odd indices is `4 + 2 == 6`.\n  * Since both are equal the `num` is balanced.",
+  "constraints": "**Constraints:**\n\n  * `2 <= num.length <= 100`\n  * `num` consists of digits only",
+  "topics": ["String"],
+  "total_accepted": 74963,
+  "total_submissions": 90910,
+  "acceptance_rate": "82.5%",
+  "similar_questions": [
+    {
+      "title": "Balanced Binary Tree",
+      "slug": "balanced-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/balanced-binary-tree/"
+    }
+  ],
+  "hints": []
+}

@@ -147,12 +147,12 @@ export default function RegisterPage() {
           </div>
 
           {/* Google Sign-Up — prominent, top position */}
-          <div className="[&>div]:w-full [&_iframe]:w-full! [&>div>div]:w-full overflow-hidden">
+          <div className="[&>div]:w-full [&_iframe]:w-full! [&>div>div]:w-full [&>div>div>div]:w-full overflow-hidden">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => setError("Google sign-up failed")}
               size="large"
-              width="100%"
+              width={384}
               text="signup_with"
               shape="pill"
               theme="outline"

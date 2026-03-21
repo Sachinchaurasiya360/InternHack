@@ -1,0 +1,46 @@
+{
+  "id": "1977",
+  "title": "Number of Ways to Separate Numbers",
+  "slug": "number-of-ways-to-separate-numbers",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You wrote down many <strong>positive</strong> integers in a string called <code>num</code>. However, you realized that you forgot to add commas to seperate the different numbers. You remember that the list of integers was <strong>non-decreasing</strong> and that <strong>no</strong> integer had leading zeros.</p>\n\n<p>Return <em>the <strong>number of possible lists of integers</strong> that you could have written down to get the string </em><code>num</code>. Since the answer may be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;327&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You could have written down the numbers:\n3, 27\n327\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;094&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> No numbers can have leading zeros and all numbers must be positive.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;0&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> No numbers can have leading zeros and all numbers must be positive.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num.length &lt;= 3500</code></li>\n\t<li><code>num</code> consists of digits <code>&#39;0&#39;</code> through <code>&#39;9&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You wrote down many **positive** integers in a string called `num`. However, you realized that you forgot to add commas to seperate the different numbers. You remember that the list of integers was **non-decreasing** and that **no** integer had leading zeros.\n\nReturn _the**number of possible lists of integers** that you could have written down to get the string _`num`. Since the answer may be large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = \"327\"\n    **Output:** 2\n    **Explanation:** You could have written down the numbers:\n    3, 27\n    327\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"094\"\n    **Output:** 0\n    **Explanation:** No numbers can have leading zeros and all numbers must be positive.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = \"0\"\n    **Output:** 0\n    **Explanation:** No numbers can have leading zeros and all numbers must be positive.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num.length <= 3500`\n  * `num` consists of digits `'0'` through `'9'`.",
+  "question": "You wrote down many **positive** integers in a string called `num`. However, you realized that you forgot to add commas to seperate the different numbers. You remember that the list of integers was **non-decreasing** and that **no** integer had leading zeros.\n\nReturn _the**number of possible lists of integers** that you could have written down to get the string _`num`. Since the answer may be large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = \"327\"\n    **Output:** 2\n    **Explanation:** You could have written down the numbers:\n    3, 27\n    327\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"094\"\n    **Output:** 0\n    **Explanation:** No numbers can have leading zeros and all numbers must be positive.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = \"0\"\n    **Output:** 0\n    **Explanation:** No numbers can have leading zeros and all numbers must be positive.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num.length <= 3500`\n  * `num` consists of digits `'0'` through `'9'`.",
+  "topics": ["String", "Dynamic Programming", "Suffix Array"],
+  "total_accepted": 8467,
+  "total_submissions": 39120,
+  "acceptance_rate": "21.6%",
+  "similar_questions": [
+    {
+      "title": "Decode Ways",
+      "slug": "decode-ways",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/decode-ways/"
+    },
+    {
+      "title": "Decode Ways II",
+      "slug": "decode-ways-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/decode-ways-ii/"
+    },
+    {
+      "title": "Restore The Array",
+      "slug": "restore-the-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/restore-the-array/"
+    },
+    {
+      "title": "Number of Beautiful Partitions",
+      "slug": "number-of-beautiful-partitions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-beautiful-partitions/"
+    }
+  ],
+  "hints": [
+    "If we know the current number has d digits, how many digits can the previous number have?",
+    "Is there a quick way of calculating the number of possibilities for the previous number if we know that it must have less than or equal to d digits? Try to do some pre-processing."
+  ]
+}

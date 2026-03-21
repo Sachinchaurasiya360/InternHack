@@ -1,0 +1,41 @@
+{
+  "id": "2459",
+  "title": "Sort Array by Moving Items to Empty Space",
+  "slug": "sort-array-by-moving-items-to-empty-space",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Sorting"],
+  "total_accepted": 2917,
+  "total_submissions": 6381,
+  "acceptance_rate": "45.7%",
+  "similar_questions": [
+    {
+      "title": "Course Schedule II",
+      "slug": "course-schedule-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/course-schedule-ii/"
+    },
+    {
+      "title": "Strange Printer II",
+      "slug": "strange-printer-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/strange-printer-ii/"
+    },
+    {
+      "title": "Create Sorted Array through Instructions",
+      "slug": "create-sorted-array-through-instructions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/create-sorted-array-through-instructions/"
+    }
+  ],
+  "hints": [
+    "There are two possibilities for nums to be sorted. Find the minimum number of operations needed for the first possibility, then find the minimum number of operations needed for the second possibility. The answer is the minimum out of the two.",
+    "If the empty space is not at its ending position, then you can move the item that should be where the empty space is to the empty space.",
+    "If the empty space is at its ending position, then you need to move an out-of-place item to the empty space."
+  ]
+}

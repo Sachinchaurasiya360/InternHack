@@ -1,0 +1,31 @@
+{
+  "id": "28",
+  "title": "Find the Index of the First Occurrence in a String",
+  "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>needle</code> and <code>haystack</code>, return the index of the first occurrence of <code>needle</code> in <code>haystack</code>, or <code>-1</code> if <code>needle</code> is not part of <code>haystack</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> haystack = &quot;sadbutsad&quot;, needle = &quot;sad&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> &quot;sad&quot; occurs at index 0 and 6.\nThe first occurrence is at index 0, so we return 0.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> haystack = &quot;leetcode&quot;, needle = &quot;leeto&quot;\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> &quot;leeto&quot; did not occur in &quot;leetcode&quot;, so we return -1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= haystack.length, needle.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>haystack</code> and <code>needle</code> consist of only lowercase English characters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `needle` and `haystack`, return the index of the first occurrence of `needle` in `haystack`, or `-1` if `needle` is not part of `haystack`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** haystack = \"sadbutsad\", needle = \"sad\"\n    **Output:** 0\n    **Explanation:** \"sad\" occurs at index 0 and 6.\n    The first occurrence is at index 0, so we return 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** haystack = \"leetcode\", needle = \"leeto\"\n    **Output:** -1\n    **Explanation:** \"leeto\" did not occur in \"leetcode\", so we return -1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= haystack.length, needle.length <= 104`\n  * `haystack` and `needle` consist of only lowercase English characters.",
+  "question": "Given two strings `needle` and `haystack`, return the index of the first occurrence of `needle` in `haystack`, or `-1` if `needle` is not part of `haystack`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** haystack = \"sadbutsad\", needle = \"sad\"\n    **Output:** 0\n    **Explanation:** \"sad\" occurs at index 0 and 6.\n    The first occurrence is at index 0, so we return 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** haystack = \"leetcode\", needle = \"leeto\"\n    **Output:** -1\n    **Explanation:** \"leeto\" did not occur in \"leetcode\", so we return -1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= haystack.length, needle.length <= 104`\n  * `haystack` and `needle` consist of only lowercase English characters.",
+  "topics": ["Two Pointers", "String", "String Matching"],
+  "total_accepted": 3925482,
+  "total_submissions": 8483364,
+  "acceptance_rate": "46.3%",
+  "similar_questions": [
+    {
+      "title": "Shortest Palindrome",
+      "slug": "shortest-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/shortest-palindrome/"
+    },
+    {
+      "title": "Repeated Substring Pattern",
+      "slug": "repeated-substring-pattern",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/repeated-substring-pattern/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "245",
+  "title": "Shortest Word Distance III",
+  "slug": "shortest-word-distance-iii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String"],
+  "total_accepted": 93741,
+  "total_submissions": 157805,
+  "acceptance_rate": "59.4%",
+  "similar_questions": [
+    {
+      "title": "Shortest Word Distance",
+      "slug": "shortest-word-distance",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/shortest-word-distance/"
+    },
+    {
+      "title": "Shortest Word Distance II",
+      "slug": "shortest-word-distance-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-word-distance-ii/"
+    }
+  ],
+  "hints": []
+}

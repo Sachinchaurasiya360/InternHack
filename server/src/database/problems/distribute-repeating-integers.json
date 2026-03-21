@@ -1,0 +1,30 @@
+{
+  "id": "1655",
+  "title": "Distribute Repeating Integers",
+  "slug": "distribute-repeating-integers",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of <code>n</code> integers, <code>nums</code>, where there are at most <code>50</code> unique values in the array. You are also given an array of <code>m</code> customer order quantities, <code>quantity</code>, where <code>quantity[i]</code> is the amount of integers the <code>i<sup>th</sup></code> customer ordered. Determine if it is possible to distribute <code>nums</code> such that:</p>\n\n<ul>\n\t<li>The <code>i<sup>th</sup></code> customer gets <strong>exactly</strong> <code>quantity[i]</code> integers,</li>\n\t<li>The integers the <code>i<sup>th</sup></code> customer gets are <strong>all equal</strong>, and</li>\n\t<li>Every customer is satisfied.</li>\n</ul>\n\n<p>Return <code>true</code><em> if it is possible to distribute </em><code>nums</code><em> according to the above conditions</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4], quantity = [2]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The 0<sup>th</sup> customer cannot be given two different integers.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,3], quantity = [2]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The 0<sup>th</sup> customer is given [3,3]. The integers [1,2] are not used.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,2,2], quantity = [2,2]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The 0<sup>th</sup> customer is given [1,1], and the 1st customer is given [2,2].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li><code>m == quantity.length</code></li>\n\t<li><code>1 &lt;= m &lt;= 10</code></li>\n\t<li><code>1 &lt;= quantity[i] &lt;= 10<sup>5</sup></code></li>\n\t<li>There are at most <code>50</code> unique values in <code>nums</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of `n` integers, `nums`, where there are at most `50` unique values in the array. You are also given an array of `m` customer order quantities, `quantity`, where `quantity[i]` is the amount of integers the `ith` customer ordered. Determine if it is possible to distribute `nums` such that:\n\n  * The `ith` customer gets **exactly** `quantity[i]` integers,\n  * The integers the `ith` customer gets are **all equal** , and\n  * Every customer is satisfied.\n\n\n\nReturn `true` _if it is possible to distribute_`nums` _according to the above conditions_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4], quantity = [2]\n    **Output:** false\n    **Explanation:** The 0th customer cannot be given two different integers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,3], quantity = [2]\n    **Output:** true\n    **Explanation:** The 0th customer is given [3,3]. The integers [1,2] are not used.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,2,2], quantity = [2,2]\n    **Output:** true\n    **Explanation:** The 0th customer is given [1,1], and the 1st customer is given [2,2].\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i] <= 1000`\n  * `m == quantity.length`\n  * `1 <= m <= 10`\n  * `1 <= quantity[i] <= 105`\n  * There are at most `50` unique values in `nums`.",
+  "question": "You are given an array of `n` integers, `nums`, where there are at most `50` unique values in the array. You are also given an array of `m` customer order quantities, `quantity`, where `quantity[i]` is the amount of integers the `ith` customer ordered. Determine if it is possible to distribute `nums` such that:\n\n  * The `ith` customer gets **exactly** `quantity[i]` integers,\n  * The integers the `ith` customer gets are **all equal** , and\n  * Every customer is satisfied.\n\n\n\nReturn `true` _if it is possible to distribute_`nums` _according to the above conditions_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4], quantity = [2]\n    **Output:** false\n    **Explanation:** The 0th customer cannot be given two different integers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,3], quantity = [2]\n    **Output:** true\n    **Explanation:** The 0th customer is given [3,3]. The integers [1,2] are not used.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,2,2], quantity = [2,2]\n    **Output:** true\n    **Explanation:** The 0th customer is given [1,1], and the 1st customer is given [2,2].",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i] <= 1000`\n  * `m == quantity.length`\n  * `1 <= m <= 10`\n  * `1 <= quantity[i] <= 105`\n  * There are at most `50` unique values in `nums`.",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Dynamic Programming",
+    "Backtracking",
+    "Bit Manipulation",
+    "Counting",
+    "Bitmask"
+  ],
+  "total_accepted": 21022,
+  "total_submissions": 51971,
+  "acceptance_rate": "40.4%",
+  "similar_questions": [],
+  "hints": [
+    "Count the frequencies of each number. For example, if nums = [4,4,5,5,5], frequencies = [2,3].",
+    "Each customer wants all of their numbers to be the same. This means that each customer will be assigned to one number.",
+    "Use dynamic programming. Iterate through the numbers' frequencies, and choose some subset of customers to be assigned to this number."
+  ]
+}

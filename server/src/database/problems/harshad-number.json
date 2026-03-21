@@ -1,0 +1,20 @@
+{
+  "id": "3099",
+  "title": "Harshad Number",
+  "slug": "harshad-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>An integer divisible by the <strong>sum</strong> of its digits is said to be a <strong>Harshad</strong> number. You are given an integer <code>x</code>. Return<em> the sum of the digits </em>of<em> </em><code>x</code><em> </em>if<em> </em><code>x</code><em> </em>is a <strong>Harshad</strong> number, otherwise, return<em> </em><code>-1</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">x = 18</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">9</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The sum of digits of <code>x</code> is <code>9</code>. <code>18</code> is divisible by <code>9</code>. So <code>18</code> is a Harshad number and the answer is <code>9</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">x = 23</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">-1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The sum of digits of <code>x</code> is <code>5</code>. <code>23</code> is not divisible by <code>5</code>. So <code>23</code> is not a Harshad number and the answer is <code>-1</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= x &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "An integer divisible by the **sum** of its digits is said to be a **Harshad** number. You are given an integer `x`. Return _the sum of the digits_ of __`x` __ if __`x` __ is a **Harshad** number, otherwise, return __`-1` _._\n\n \n\n**Example 1:**\n\n**Input:** x = 18\n\n**Output:** 9\n\n**Explanation:**\n\nThe sum of digits of `x` is `9`. `18` is divisible by `9`. So `18` is a Harshad number and the answer is `9`.\n\n**Example 2:**\n\n**Input:** x = 23\n\n**Output:** -1\n\n**Explanation:**\n\nThe sum of digits of `x` is `5`. `23` is not divisible by `5`. So `23` is not a Harshad number and the answer is `-1`.\n\n \n\n**Constraints:**\n\n  * `1 <= x <= 100`",
+  "question": "An integer divisible by the **sum** of its digits is said to be a **Harshad** number. You are given an integer `x`. Return _the sum of the digits_ of __`x` __ if __`x` __ is a **Harshad** number, otherwise, return __`-1` _._",
+  "examples": "**Example 1:**\n\n**Input:** x = 18\n\n**Output:** 9\n\n**Explanation:**\n\nThe sum of digits of `x` is `9`. `18` is divisible by `9`. So `18` is a Harshad number and the answer is `9`.\n\n**Example 2:**\n\n**Input:** x = 23\n\n**Output:** -1\n\n**Explanation:**\n\nThe sum of digits of `x` is `5`. `23` is not divisible by `5`. So `23` is not a Harshad number and the answer is `-1`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= x <= 100`",
+  "topics": ["Math"],
+  "total_accepted": 106353,
+  "total_submissions": 127538,
+  "acceptance_rate": "83.4%",
+  "similar_questions": [],
+  "hints": [
+    "Use a while loop and divide <code>x</code> by <code>10</code> to find the sum of the digits of <code>x</code>."
+  ]
+}

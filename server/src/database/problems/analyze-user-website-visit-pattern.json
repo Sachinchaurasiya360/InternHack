@@ -1,0 +1,23 @@
+{
+  "id": "1152",
+  "title": "Analyze User Website Visit Pattern",
+  "slug": "analyze-user-website-visit-pattern",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Sorting"],
+  "total_accepted": 131006,
+  "total_submissions": 296143,
+  "acceptance_rate": "44.2%",
+  "similar_questions": [],
+  "hints": [
+    "Let's find for every user separately the websites he visited.",
+    "Consider all possible 3-sequences, find the number of distinct users who visited each of them.",
+    "How to check if some user visited some 3-sequence ?",
+    "Store for every user all the 3-sequence he visited."
+  ]
+}

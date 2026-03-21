@@ -1,0 +1,45 @@
+{
+  "id": "3291",
+  "title": "Minimum Number of Valid Strings to Form Target I",
+  "slug": "minimum-number-of-valid-strings-to-form-target-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of strings <code>words</code> and a string <code>target</code>.</p>\n\n<p>A string <code>x</code> is called <strong>valid</strong> if <code>x</code> is a <span data-keyword=\"string-prefix\">prefix</span> of <strong>any</strong> string in <code>words</code>.</p>\n\n<p>Return the <strong>minimum</strong> number of <strong>valid</strong> strings that can be <em>concatenated</em> to form <code>target</code>. If it is <strong>not</strong> possible to form <code>target</code>, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">words = [&quot;abc&quot;,&quot;aaaaa&quot;,&quot;bcdef&quot;], target = &quot;aabcdabc&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The target string can be formed by concatenating:</p>\n\n<ul>\n\t<li>Prefix of length 2 of <code>words[1]</code>, i.e. <code>&quot;aa&quot;</code>.</li>\n\t<li>Prefix of length 3 of <code>words[2]</code>, i.e. <code>&quot;bcd&quot;</code>.</li>\n\t<li>Prefix of length 3 of <code>words[0]</code>, i.e. <code>&quot;abc&quot;</code>.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">words = [&quot;abababab&quot;,&quot;ab&quot;], target = &quot;ababaababa&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The target string can be formed by concatenating:</p>\n\n<ul>\n\t<li>Prefix of length 5 of <code>words[0]</code>, i.e. <code>&quot;ababa&quot;</code>.</li>\n\t<li>Prefix of length 5 of <code>words[0]</code>, i.e. <code>&quot;ababa&quot;</code>.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">words = [&quot;abcdef&quot;], target = &quot;xyz&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">-1</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 5 * 10<sup>3</sup></code></li>\n\t<li>The input is generated such that <code>sum(words[i].length) &lt;= 10<sup>5</sup></code>.</li>\n\t<li><code>words[i]</code> consists only of lowercase English letters.</li>\n\t<li><code>1 &lt;= target.length &lt;= 5 * 10<sup>3</sup></code></li>\n\t<li><code>target</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of strings `words` and a string `target`.\n\nA string `x` is called **valid** if `x` is a prefix of **any** string in `words`.\n\nReturn the **minimum** number of **valid** strings that can be _concatenated_ to form `target`. If it is **not** possible to form `target`, return `-1`.\n\n \n\n**Example 1:**\n\n**Input:** words = [\"abc\",\"aaaaa\",\"bcdef\"], target = \"aabcdabc\"\n\n**Output:** 3\n\n**Explanation:**\n\nThe target string can be formed by concatenating:\n\n  * Prefix of length 2 of `words[1]`, i.e. `\"aa\"`.\n  * Prefix of length 3 of `words[2]`, i.e. `\"bcd\"`.\n  * Prefix of length 3 of `words[0]`, i.e. `\"abc\"`.\n\n\n\n**Example 2:**\n\n**Input:** words = [\"abababab\",\"ab\"], target = \"ababaababa\"\n\n**Output:** 2\n\n**Explanation:**\n\nThe target string can be formed by concatenating:\n\n  * Prefix of length 5 of `words[0]`, i.e. `\"ababa\"`.\n  * Prefix of length 5 of `words[0]`, i.e. `\"ababa\"`.\n\n\n\n**Example 3:**\n\n**Input:** words = [\"abcdef\"], target = \"xyz\"\n\n**Output:** -1\n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 100`\n  * `1 <= words[i].length <= 5 * 103`\n  * The input is generated such that `sum(words[i].length) <= 105`.\n  * `words[i]` consists only of lowercase English letters.\n  * `1 <= target.length <= 5 * 103`\n  * `target` consists only of lowercase English letters.",
+  "question": "You are given an array of strings `words` and a string `target`.\n\nA string `x` is called **valid** if `x` is a prefix of **any** string in `words`.\n\nReturn the **minimum** number of **valid** strings that can be _concatenated_ to form `target`. If it is **not** possible to form `target`, return `-1`.",
+  "examples": "**Example 1:**\n\n**Input:** words = [\"abc\",\"aaaaa\",\"bcdef\"], target = \"aabcdabc\"\n\n**Output:** 3\n\n**Explanation:**\n\nThe target string can be formed by concatenating:\n\n  * Prefix of length 2 of `words[1]`, i.e. `\"aa\"`.\n  * Prefix of length 3 of `words[2]`, i.e. `\"bcd\"`.\n  * Prefix of length 3 of `words[0]`, i.e. `\"abc\"`.\n\n\n\n**Example 2:**\n\n**Input:** words = [\"abababab\",\"ab\"], target = \"ababaababa\"\n\n**Output:** 2\n\n**Explanation:**\n\nThe target string can be formed by concatenating:\n\n  * Prefix of length 5 of `words[0]`, i.e. `\"ababa\"`.\n  * Prefix of length 5 of `words[0]`, i.e. `\"ababa\"`.\n\n\n\n**Example 3:**\n\n**Input:** words = [\"abcdef\"], target = \"xyz\"\n\n**Output:** -1",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 100`\n  * `1 <= words[i].length <= 5 * 103`\n  * The input is generated such that `sum(words[i].length) <= 105`.\n  * `words[i]` consists only of lowercase English letters.\n  * `1 <= target.length <= 5 * 103`\n  * `target` consists only of lowercase English letters.",
+  "topics": [
+    "Array",
+    "String",
+    "Binary Search",
+    "Dynamic Programming",
+    "Trie",
+    "Segment Tree",
+    "Rolling Hash",
+    "String Matching",
+    "Hash Function"
+  ],
+  "total_accepted": 14880,
+  "total_submissions": 68556,
+  "acceptance_rate": "21.7%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost to Convert String II",
+      "slug": "minimum-cost-to-convert-string-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-cost-to-convert-string-ii/"
+    },
+    {
+      "title": "Construct String with Minimum Cost",
+      "slug": "construct-string-with-minimum-cost",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/construct-string-with-minimum-cost/"
+    }
+  ],
+  "hints": [
+    "Let <code>dp[i]</code> be the minimum cost to form the prefix of length <code>i</code> of <code>target</code>.",
+    "If <code>target[(i + 1)..j]</code> matches any prefix, update the range <code>dp[(i + 1)..j]</code> to minimum between original value and <code>dp[i] + 1</code>.",
+    "Use a Trie to check prefix matching."
+  ]
+}

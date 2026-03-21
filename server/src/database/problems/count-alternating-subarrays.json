@@ -1,0 +1,22 @@
+{
+  "id": "3101",
+  "title": "Count Alternating Subarrays",
+  "slug": "count-alternating-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <span data-keyword=\"binary-array\">binary array</span> <code>nums</code>.</p>\n\n<p>We call a <span data-keyword=\"subarray-nonempty\">subarray</span> <strong>alternating</strong> if <strong>no</strong> two <strong>adjacent</strong> elements in the subarray have the <strong>same</strong> value.</p>\n\n<p>Return <em>the number of alternating subarrays in </em><code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [0,1,1,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The following subarrays are alternating: <code>[0]</code>, <code>[1]</code>, <code>[1]</code>, <code>[1]</code>, and <code>[0,1]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,0,1,0]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">10</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Every subarray of the array is alternating. There are 10 possible subarrays that we can choose.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>nums[i]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a binary array `nums`.\n\nWe call a subarray **alternating** if **no** two **adjacent** elements in the subarray have the **same** value.\n\nReturn _the number of alternating subarrays in_`nums`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [0,1,1,1]\n\n**Output:** 5\n\n**Explanation:**\n\nThe following subarrays are alternating: `[0]`, `[1]`, `[1]`, `[1]`, and `[0,1]`.\n\n**Example 2:**\n\n**Input:** nums = [1,0,1,0]\n\n**Output:** 10\n\n**Explanation:**\n\nEvery subarray of the array is alternating. There are 10 possible subarrays that we can choose.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is either `0` or `1`.",
+  "question": "You are given a binary array `nums`.\n\nWe call a subarray **alternating** if **no** two **adjacent** elements in the subarray have the **same** value.\n\nReturn _the number of alternating subarrays in_`nums`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [0,1,1,1]\n\n**Output:** 5\n\n**Explanation:**\n\nThe following subarrays are alternating: `[0]`, `[1]`, `[1]`, `[1]`, and `[0,1]`.\n\n**Example 2:**\n\n**Input:** nums = [1,0,1,0]\n\n**Output:** 10\n\n**Explanation:**\n\nEvery subarray of the array is alternating. There are 10 possible subarrays that we can choose.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is either `0` or `1`.",
+  "topics": ["Array", "Math"],
+  "total_accepted": 44673,
+  "total_submissions": 77929,
+  "acceptance_rate": "57.3%",
+  "similar_questions": [],
+  "hints": [
+    "Try using dynamic programming.",
+    "Let <code>dp[i]</code> be the number of alternating subarrays ending at index <code>i</code>.",
+    "The final answer is the sum of <code>dp[i]</code> over all  indices <code>i</code> from <code>0</code> to <code>n - 1</code>."
+  ]
+}

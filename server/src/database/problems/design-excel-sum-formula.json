@@ -1,0 +1,26 @@
+{
+  "id": "631",
+  "title": "Design Excel Sum Formula",
+  "slug": "design-excel-sum-formula",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Graph Theory",
+    "Design",
+    "Topological Sort",
+    "Matrix"
+  ],
+  "total_accepted": 31805,
+  "total_submissions": 79779,
+  "acceptance_rate": "39.9%",
+  "similar_questions": [],
+  "hints": []
+}

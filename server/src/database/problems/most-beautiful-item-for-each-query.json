@@ -1,0 +1,40 @@
+{
+  "id": "2070",
+  "title": "Most Beautiful Item for Each Query",
+  "slug": "most-beautiful-item-for-each-query",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D integer array <code>items</code> where <code>items[i] = [price<sub>i</sub>, beauty<sub>i</sub>]</code> denotes the <strong>price</strong> and <strong>beauty</strong> of an item respectively.</p>\n\n<p>You are also given a <strong>0-indexed</strong> integer array <code>queries</code>. For each <code>queries[j]</code>, you want to determine the <strong>maximum beauty</strong> of an item whose <strong>price</strong> is <strong>less than or equal</strong> to <code>queries[j]</code>. If no such item exists, then the answer to this query is <code>0</code>.</p>\n\n<p>Return <em>an array </em><code>answer</code><em> of the same length as </em><code>queries</code><em> where </em><code>answer[j]</code><em> is the answer to the </em><code>j<sup>th</sup></code><em> query</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> items = [[1,2],[3,2],[2,4],[5,6],[3,5]], queries = [1,2,3,4,5,6]\n<strong>Output:</strong> [2,4,5,5,6,6]\n<strong>Explanation:</strong>\n- For queries[0]=1, [1,2] is the only item which has price &lt;= 1. Hence, the answer for this query is 2.\n- For queries[1]=2, the items which can be considered are [1,2] and [2,4]. \n  The maximum beauty among them is 4.\n- For queries[2]=3 and queries[3]=4, the items which can be considered are [1,2], [3,2], [2,4], and [3,5].\n  The maximum beauty among them is 5.\n- For queries[4]=5 and queries[5]=6, all items can be considered.\n  Hence, the answer for them is the maximum beauty of all items, i.e., 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> items = [[1,2],[1,2],[1,3],[1,4]], queries = [1]\n<strong>Output:</strong> [4]\n<strong>Explanation:</strong> \nThe price of every item is equal to 1, so we choose the item with the maximum beauty 4. \nNote that multiple items can have the same price and/or beauty.  \n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> items = [[10,1000]], queries = [5]\n<strong>Output:</strong> [0]\n<strong>Explanation:</strong>\nNo item has a price less than or equal to 5, so no item can be chosen.\nHence, the answer to the query is 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= items.length, queries.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>items[i].length == 2</code></li>\n\t<li><code>1 &lt;= price<sub>i</sub>, beauty<sub>i</sub>, queries[j] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a 2D integer array `items` where `items[i] = [pricei, beautyi]` denotes the **price** and **beauty** of an item respectively.\n\nYou are also given a **0-indexed** integer array `queries`. For each `queries[j]`, you want to determine the **maximum beauty** of an item whose **price** is **less than or equal** to `queries[j]`. If no such item exists, then the answer to this query is `0`.\n\nReturn _an array_`answer` _of the same length as_`queries` _where_`answer[j]`_is the answer to the_`jth` _query_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** items = [[1,2],[3,2],[2,4],[5,6],[3,5]], queries = [1,2,3,4,5,6]\n    **Output:** [2,4,5,5,6,6]\n    **Explanation:**\n    - For queries[0]=1, [1,2] is the only item which has price <= 1. Hence, the answer for this query is 2.\n    - For queries[1]=2, the items which can be considered are [1,2] and [2,4]. \n      The maximum beauty among them is 4.\n    - For queries[2]=3 and queries[3]=4, the items which can be considered are [1,2], [3,2], [2,4], and [3,5].\n      The maximum beauty among them is 5.\n    - For queries[4]=5 and queries[5]=6, all items can be considered.\n      Hence, the answer for them is the maximum beauty of all items, i.e., 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** items = [[1,2],[1,2],[1,3],[1,4]], queries = [1]\n    **Output:** [4]\n    **Explanation:** \n    The price of every item is equal to 1, so we choose the item with the maximum beauty 4. \n    Note that multiple items can have the same price and/or beauty.  \n    \n\n**Example 3:**\n    \n    \n    **Input:** items = [[10,1000]], queries = [5]\n    **Output:** [0]\n    **Explanation:**\n    No item has a price less than or equal to 5, so no item can be chosen.\n    Hence, the answer to the query is 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= items.length, queries.length <= 105`\n  * `items[i].length == 2`\n  * `1 <= pricei, beautyi, queries[j] <= 109`",
+  "question": "You are given a 2D integer array `items` where `items[i] = [pricei, beautyi]` denotes the **price** and **beauty** of an item respectively.\n\nYou are also given a **0-indexed** integer array `queries`. For each `queries[j]`, you want to determine the **maximum beauty** of an item whose **price** is **less than or equal** to `queries[j]`. If no such item exists, then the answer to this query is `0`.\n\nReturn _an array_`answer` _of the same length as_`queries` _where_`answer[j]`_is the answer to the_`jth` _query_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** items = [[1,2],[3,2],[2,4],[5,6],[3,5]], queries = [1,2,3,4,5,6]\n    **Output:** [2,4,5,5,6,6]\n    **Explanation:**\n    - For queries[0]=1, [1,2] is the only item which has price <= 1. Hence, the answer for this query is 2.\n    - For queries[1]=2, the items which can be considered are [1,2] and [2,4]. \n      The maximum beauty among them is 4.\n    - For queries[2]=3 and queries[3]=4, the items which can be considered are [1,2], [3,2], [2,4], and [3,5].\n      The maximum beauty among them is 5.\n    - For queries[4]=5 and queries[5]=6, all items can be considered.\n      Hence, the answer for them is the maximum beauty of all items, i.e., 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** items = [[1,2],[1,2],[1,3],[1,4]], queries = [1]\n    **Output:** [4]\n    **Explanation:** \n    The price of every item is equal to 1, so we choose the item with the maximum beauty 4. \n    Note that multiple items can have the same price and/or beauty.  \n    \n\n**Example 3:**\n    \n    \n    **Input:** items = [[10,1000]], queries = [5]\n    **Output:** [0]\n    **Explanation:**\n    No item has a price less than or equal to 5, so no item can be chosen.\n    Hence, the answer to the query is 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= items.length, queries.length <= 105`\n  * `items[i].length == 2`\n  * `1 <= pricei, beautyi, queries[j] <= 109`",
+  "topics": ["Array", "Binary Search", "Sorting"],
+  "total_accepted": 129195,
+  "total_submissions": 208030,
+  "acceptance_rate": "62.1%",
+  "similar_questions": [
+    {
+      "title": "Closest Room",
+      "slug": "closest-room",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/closest-room/"
+    },
+    {
+      "title": "Find the Score of All Prefixes of an Array",
+      "slug": "find-the-score-of-all-prefixes-of-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-score-of-all-prefixes-of-an-array/"
+    },
+    {
+      "title": "Maximum Sum Queries",
+      "slug": "maximum-sum-queries",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-sum-queries/"
+    }
+  ],
+  "hints": [
+    "Can we process the queries in a smart order to avoid repeatedly checking the same items?",
+    "How can we use the answer to a query for other queries?"
+  ]
+}

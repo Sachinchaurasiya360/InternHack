@@ -1,0 +1,40 @@
+{
+  "id": "1968",
+  "title": "Array With Elements Not Equal to Average of Neighbors",
+  "slug": "array-with-elements-not-equal-to-average-of-neighbors",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>nums</code> of <strong>distinct</strong> integers. You want to rearrange the elements in the array such that every element in the rearranged array is <strong>not</strong> equal to the <strong>average</strong> of its neighbors.</p>\n\n<p>More formally, the rearranged array should have the property such that for every <code>i</code> in the range <code>1 &lt;= i &lt; nums.length - 1</code>, <code>(nums[i-1] + nums[i+1]) / 2</code> is <strong>not</strong> equal to <code>nums[i]</code>.</p>\n\n<p>Return <em><strong>any</strong> rearrangement of </em><code>nums</code><em> that meets the requirements</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5]\n<strong>Output:</strong> [1,2,4,5,3]\n<strong>Explanation:</strong>\nWhen i=1, nums[i] = 2, and the average of its neighbors is (1+4) / 2 = 2.5.\nWhen i=2, nums[i] = 4, and the average of its neighbors is (2+5) / 2 = 3.5.\nWhen i=3, nums[i] = 5, and the average of its neighbors is (4+3) / 2 = 3.5.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [6,2,0,9,7]\n<strong>Output:</strong> [9,7,6,2,0]\n<strong>Explanation:</strong>\nWhen i=1, nums[i] = 7, and the average of its neighbors is (9+6) / 2 = 7.5.\nWhen i=2, nums[i] = 6, and the average of its neighbors is (7+2) / 2 = 4.5.\nWhen i=3, nums[i] = 2, and the average of its neighbors is (6+0) / 2 = 3.\nNote that the original array [6,2,0,9,7] also satisfies the conditions.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `nums` of **distinct** integers. You want to rearrange the elements in the array such that every element in the rearranged array is **not** equal to the **average** of its neighbors.\n\nMore formally, the rearranged array should have the property such that for every `i` in the range `1 <= i < nums.length - 1`, `(nums[i-1] + nums[i+1]) / 2` is **not** equal to `nums[i]`.\n\nReturn _**any** rearrangement of _`nums` _that meets the requirements_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** [1,2,4,5,3]\n    **Explanation:**\n    When i=1, nums[i] = 2, and the average of its neighbors is (1+4) / 2 = 2.5.\n    When i=2, nums[i] = 4, and the average of its neighbors is (2+5) / 2 = 3.5.\n    When i=3, nums[i] = 5, and the average of its neighbors is (4+3) / 2 = 3.5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [6,2,0,9,7]\n    **Output:** [9,7,6,2,0]\n    **Explanation:**\n    When i=1, nums[i] = 7, and the average of its neighbors is (9+6) / 2 = 7.5.\n    When i=2, nums[i] = 6, and the average of its neighbors is (7+2) / 2 = 4.5.\n    When i=3, nums[i] = 2, and the average of its neighbors is (6+0) / 2 = 3.\n    Note that the original array [6,2,0,9,7] also satisfies the conditions.\n\n \n\n**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `0 <= nums[i] <= 105`",
+  "question": "You are given a **0-indexed** array `nums` of **distinct** integers. You want to rearrange the elements in the array such that every element in the rearranged array is **not** equal to the **average** of its neighbors.\n\nMore formally, the rearranged array should have the property such that for every `i` in the range `1 <= i < nums.length - 1`, `(nums[i-1] + nums[i+1]) / 2` is **not** equal to `nums[i]`.\n\nReturn _**any** rearrangement of _`nums` _that meets the requirements_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** [1,2,4,5,3]\n    **Explanation:**\n    When i=1, nums[i] = 2, and the average of its neighbors is (1+4) / 2 = 2.5.\n    When i=2, nums[i] = 4, and the average of its neighbors is (2+5) / 2 = 3.5.\n    When i=3, nums[i] = 5, and the average of its neighbors is (4+3) / 2 = 3.5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [6,2,0,9,7]\n    **Output:** [9,7,6,2,0]\n    **Explanation:**\n    When i=1, nums[i] = 7, and the average of its neighbors is (9+6) / 2 = 7.5.\n    When i=2, nums[i] = 6, and the average of its neighbors is (7+2) / 2 = 4.5.\n    When i=3, nums[i] = 2, and the average of its neighbors is (6+0) / 2 = 3.\n    Note that the original array [6,2,0,9,7] also satisfies the conditions.",
+  "constraints": "**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `0 <= nums[i] <= 105`",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 48977,
+  "total_submissions": 96781,
+  "acceptance_rate": "50.6%",
+  "similar_questions": [
+    {
+      "title": "Wiggle Sort",
+      "slug": "wiggle-sort",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/wiggle-sort/"
+    },
+    {
+      "title": "Wiggle Sort II",
+      "slug": "wiggle-sort-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/wiggle-sort-ii/"
+    },
+    {
+      "title": "Design Neighbor Sum Service",
+      "slug": "design-neighbor-sum-service",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/design-neighbor-sum-service/"
+    }
+  ],
+  "hints": [
+    "A number can be the average of its neighbors if one neighbor is smaller than the number and the other is greater than the number.",
+    "We can put numbers smaller than the median on odd indices and the rest on even indices."
+  ]
+}

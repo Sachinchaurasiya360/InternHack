@@ -1,0 +1,35 @@
+{
+  "id": "1235",
+  "title": "Maximum Profit in Job Scheduling",
+  "slug": "maximum-profit-in-job-scheduling",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>We have <code>n</code> jobs, where every job is scheduled to be done from <code>startTime[i]</code> to <code>endTime[i]</code>, obtaining a profit of <code>profit[i]</code>.</p>\n\n<p>You&#39;re given the <code>startTime</code>, <code>endTime</code> and <code>profit</code> arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.</p>\n\n<p>If you choose a job that ends at time <code>X</code> you will be able to start another job that starts at time <code>X</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/10/10/sample1_1584.png\" style=\"width: 380px; height: 154px;\" /></strong></p>\n\n<pre>\n<strong>Input:</strong> startTime = [1,2,3,3], endTime = [3,4,5,6], profit = [50,10,40,70]\n<strong>Output:</strong> 120\n<strong>Explanation:</strong> The subset chosen is the first and fourth job. \nTime range [1-3]+[3-6] , we get profit of 120 = 50 + 70.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/10/10/sample22_1584.png\" style=\"width: 600px; height: 112px;\" /> </strong></p>\n\n<pre>\n<strong>Input:</strong> startTime = [1,2,3,4,6], endTime = [3,5,10,6,9], profit = [20,20,100,70,60]\n<strong>Output:</strong> 150\n<strong>Explanation:</strong> The subset chosen is the first, fourth and fifth job. \nProfit obtained 150 = 20 + 70 + 60.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/10/10/sample3_1584.png\" style=\"width: 400px; height: 112px;\" /></strong></p>\n\n<pre>\n<strong>Input:</strong> startTime = [1,1,1], endTime = [2,3,4], profit = [5,6,4]\n<strong>Output:</strong> 6\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= startTime.length == endTime.length == profit.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= startTime[i] &lt; endTime[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= profit[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "We have `n` jobs, where every job is scheduled to be done from `startTime[i]` to `endTime[i]`, obtaining a profit of `profit[i]`.\n\nYou're given the `startTime`, `endTime` and `profit` arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.\n\nIf you choose a job that ends at time `X` you will be able to start another job that starts at time `X`.\n\n \n\n**Example 1:**\n\n**![](https://assets.leetcode.com/uploads/2019/10/10/sample1_1584.png)**\n    \n    \n    **Input:** startTime = [1,2,3,3], endTime = [3,4,5,6], profit = [50,10,40,70]\n    **Output:** 120\n    **Explanation:** The subset chosen is the first and fourth job. \n    Time range [1-3]+[3-6] , we get profit of 120 = 50 + 70.\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2019/10/10/sample22_1584.png)**\n    \n    \n    **Input:** startTime = [1,2,3,4,6], endTime = [3,5,10,6,9], profit = [20,20,100,70,60]\n    **Output:** 150\n    **Explanation:** The subset chosen is the first, fourth and fifth job. \n    Profit obtained 150 = 20 + 70 + 60.\n    \n\n**Example 3:**\n\n**![](https://assets.leetcode.com/uploads/2019/10/10/sample3_1584.png)**\n    \n    \n    **Input:** startTime = [1,1,1], endTime = [2,3,4], profit = [5,6,4]\n    **Output:** 6\n    \n\n \n\n**Constraints:**\n\n  * `1 <= startTime.length == endTime.length == profit.length <= 5 * 104`\n  * `1 <= startTime[i] < endTime[i] <= 109`\n  * `1 <= profit[i] <= 104`",
+  "question": "We have `n` jobs, where every job is scheduled to be done from `startTime[i]` to `endTime[i]`, obtaining a profit of `profit[i]`.\n\nYou're given the `startTime`, `endTime` and `profit` arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.\n\nIf you choose a job that ends at time `X` you will be able to start another job that starts at time `X`.",
+  "examples": "**Example 1:**\n\n**![](https://assets.leetcode.com/uploads/2019/10/10/sample1_1584.png)**\n    \n    \n    **Input:** startTime = [1,2,3,3], endTime = [3,4,5,6], profit = [50,10,40,70]\n    **Output:** 120\n    **Explanation:** The subset chosen is the first and fourth job. \n    Time range [1-3]+[3-6] , we get profit of 120 = 50 + 70.\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2019/10/10/sample22_1584.png)**\n    \n    \n    **Input:** startTime = [1,2,3,4,6], endTime = [3,5,10,6,9], profit = [20,20,100,70,60]\n    **Output:** 150\n    **Explanation:** The subset chosen is the first, fourth and fifth job. \n    Profit obtained 150 = 20 + 70 + 60.\n    \n\n**Example 3:**\n\n**![](https://assets.leetcode.com/uploads/2019/10/10/sample3_1584.png)**\n    \n    \n    **Input:** startTime = [1,1,1], endTime = [2,3,4], profit = [5,6,4]\n    **Output:** 6",
+  "constraints": "**Constraints:**\n\n  * `1 <= startTime.length == endTime.length == profit.length <= 5 * 104`\n  * `1 <= startTime[i] < endTime[i] <= 109`\n  * `1 <= profit[i] <= 104`",
+  "topics": ["Array", "Binary Search", "Dynamic Programming", "Sorting"],
+  "total_accepted": 409820,
+  "total_submissions": 750107,
+  "acceptance_rate": "54.6%",
+  "similar_questions": [
+    {
+      "title": "Maximum Earnings From Taxi",
+      "slug": "maximum-earnings-from-taxi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-earnings-from-taxi/"
+    },
+    {
+      "title": "Two Best Non-Overlapping Events",
+      "slug": "two-best-non-overlapping-events",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/two-best-non-overlapping-events/"
+    }
+  ],
+  "hints": [
+    "Think on DP.",
+    "Sort the elements by starting time, then define the dp[i] as the maximum profit taking elements from the suffix starting at i.",
+    "Use binarySearch (lower_bound/upper_bound on C++) to get the next index for the DP transition."
+  ]
+}

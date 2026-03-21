@@ -1,0 +1,46 @@
+{
+  "id": "1696",
+  "title": "Jump Game VI",
+  "slug": "jump-game-vi",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code> and an integer <code>k</code>.</p>\n\n<p>You are initially standing at index <code>0</code>. In one move, you can jump at most <code>k</code> steps forward without going outside the boundaries of the array. That is, you can jump from index <code>i</code> to any index in the range <code>[i + 1, min(n - 1, i + k)]</code> <strong>inclusive</strong>.</p>\n\n<p>You want to reach the last index of the array (index <code>n - 1</code>). Your <strong>score</strong> is the <strong>sum</strong> of all <code>nums[j]</code> for each index <code>j</code> you visited in the array.</p>\n\n<p>Return <em>the <strong>maximum score</strong> you can get</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [<u>1</u>,<u>-1</u>,-2,<u>4</u>,-7,<u>3</u>], k = 2\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> You can choose your jumps forming the subsequence [1,-1,4,3] (underlined above). The sum is 7.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [<u>10</u>,-5,-2,<u>4</u>,0,<u>3</u>], k = 3\n<strong>Output:</strong> 17\n<strong>Explanation:</strong> You can choose your jumps forming the subsequence [10,4,3] (underlined above). The sum is 17.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,-5,-20,4,-1,3,-6,-3], k = 2\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length, k &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums` and an integer `k`.\n\nYou are initially standing at index `0`. In one move, you can jump at most `k` steps forward without going outside the boundaries of the array. That is, you can jump from index `i` to any index in the range `[i + 1, min(n - 1, i + k)]` **inclusive**.\n\nYou want to reach the last index of the array (index `n - 1`). Your **score** is the **sum** of all `nums[j]` for each index `j` you visited in the array.\n\nReturn _the**maximum score** you can get_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [_1_ ,_-1_ ,-2,_4_ ,-7,_3_], k = 2\n    **Output:** 7\n    **Explanation:** You can choose your jumps forming the subsequence [1,-1,4,3] (underlined above). The sum is 7.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [_10_ ,-5,-2,_4_ ,0,_3_], k = 3\n    **Output:** 17\n    **Explanation:** You can choose your jumps forming the subsequence [10,4,3] (underlined above). The sum is 17.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,-5,-20,4,-1,3,-6,-3], k = 2\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length, k <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "question": "You are given a **0-indexed** integer array `nums` and an integer `k`.\n\nYou are initially standing at index `0`. In one move, you can jump at most `k` steps forward without going outside the boundaries of the array. That is, you can jump from index `i` to any index in the range `[i + 1, min(n - 1, i + k)]` **inclusive**.\n\nYou want to reach the last index of the array (index `n - 1`). Your **score** is the **sum** of all `nums[j]` for each index `j` you visited in the array.\n\nReturn _the**maximum score** you can get_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [_1_ ,_-1_ ,-2,_4_ ,-7,_3_], k = 2\n    **Output:** 7\n    **Explanation:** You can choose your jumps forming the subsequence [1,-1,4,3] (underlined above). The sum is 7.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [_10_ ,-5,-2,_4_ ,0,_3_], k = 3\n    **Output:** 17\n    **Explanation:** You can choose your jumps forming the subsequence [10,4,3] (underlined above). The sum is 17.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,-5,-20,4,-1,3,-6,-3], k = 2\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length, k <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "topics": ["Array", "Dynamic Programming", "Queue", "Heap (Priority Queue)", "Monotonic Queue"],
+  "total_accepted": 127142,
+  "total_submissions": 274162,
+  "acceptance_rate": "46.4%",
+  "similar_questions": [
+    {
+      "title": "Sliding Window Maximum",
+      "slug": "sliding-window-maximum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sliding-window-maximum/"
+    },
+    {
+      "title": "Jump Game VII",
+      "slug": "jump-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vii/"
+    },
+    {
+      "title": "Jump Game VIII",
+      "slug": "jump-game-viii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-viii/"
+    },
+    {
+      "title": "Maximize Value of Function in a Ball Passing Game",
+      "slug": "maximize-value-of-function-in-a-ball-passing-game",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximize-value-of-function-in-a-ball-passing-game/"
+    }
+  ],
+  "hints": [
+    "Let dp[i] be \"the maximum score to reach the end starting at index i\". The answer for dp[i] is nums[i] + max{dp[i+j]} for 1 <= j <= k. That gives an O(n*k) solution.",
+    "Instead of checking every j for every i, keep track of the largest dp[i] values in a heap and calculate dp[i] from right to left. When the largest value in the heap is out of bounds of the current index, remove it and keep checking."
+  ]
+}

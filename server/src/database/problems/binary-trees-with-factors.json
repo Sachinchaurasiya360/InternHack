@@ -1,0 +1,18 @@
+{
+  "id": "823",
+  "title": "Binary Trees With Factors",
+  "slug": "binary-trees-with-factors",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of unique integers, <code>arr</code>, where each integer <code>arr[i]</code> is strictly greater than <code>1</code>.</p>\n\n<p>We make a binary tree using these integers, and each number may be used for any number of times. Each non-leaf node&#39;s value should be equal to the product of the values of its children.</p>\n\n<p>Return <em>the number of binary trees we can make</em>. The answer may be too large so return the answer <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,4]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can make these trees: <code>[2], [4], [4, 2, 2]</code></pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,4,5,10]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> We can make these trees: <code>[2], [4], [5], [10], [4, 2, 2], [10, 2, 5], [10, 5, 2]</code>.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 1000</code></li>\n\t<li><code>2 &lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n\t<li>All the values of <code>arr</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given an array of unique integers, `arr`, where each integer `arr[i]` is strictly greater than `1`.\n\nWe make a binary tree using these integers, and each number may be used for any number of times. Each non-leaf node's value should be equal to the product of the values of its children.\n\nReturn _the number of binary trees we can make_. The answer may be too large so return the answer **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [2,4]\n    **Output:** 3\n    **Explanation:** We can make these trees: [2], [4], [4, 2, 2]\n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,4,5,10]\n    **Output:** 7\n    **Explanation:** We can make these trees: [2], [4], [5], [10], [4, 2, 2], [10, 2, 5], [10, 5, 2].\n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 1000`\n  * `2 <= arr[i] <= 109`\n  * All the values of `arr` are **unique**.",
+  "question": "Given an array of unique integers, `arr`, where each integer `arr[i]` is strictly greater than `1`.\n\nWe make a binary tree using these integers, and each number may be used for any number of times. Each non-leaf node's value should be equal to the product of the values of its children.\n\nReturn _the number of binary trees we can make_. The answer may be too large so return the answer **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [2,4]\n    **Output:** 3\n    **Explanation:** We can make these trees: [2], [4], [4, 2, 2]\n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,4,5,10]\n    **Output:** 7\n    **Explanation:** We can make these trees: [2], [4], [5], [10], [4, 2, 2], [10, 2, 5], [10, 5, 2].",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 1000`\n  * `2 <= arr[i] <= 109`\n  * All the values of `arr` are **unique**.",
+  "topics": ["Array", "Hash Table", "Dynamic Programming", "Sorting"],
+  "total_accepted": 159046,
+  "total_submissions": 299717,
+  "acceptance_rate": "53.1%",
+  "similar_questions": [],
+  "hints": []
+}

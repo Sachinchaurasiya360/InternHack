@@ -1,0 +1,21 @@
+{
+  "id": "1015",
+  "title": "Smallest Integer Divisible by K",
+  "slug": "smallest-integer-divisible-by-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer <code>k</code>, you need to find the <strong>length</strong> of the <strong>smallest</strong> positive integer <code>n</code> such that <code>n</code> is divisible by <code>k</code>, and <code>n</code> only contains the digit <code>1</code>.</p>\n\n<p>Return <em>the <strong>length</strong> of </em><code>n</code>. If there is no such <code>n</code>, return -1.</p>\n\n<p><strong>Note:</strong> <code>n</code> may not fit in a 64-bit signed integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 1\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The smallest answer is n = 1, which has length 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 2\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There is no such positive integer n divisible by 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The smallest answer is n = 111, which has length 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer `k`, you need to find the **length** of the **smallest** positive integer `n` such that `n` is divisible by `k`, and `n` only contains the digit `1`.\n\nReturn _the**length** of _`n`. If there is no such `n`, return -1.\n\n**Note:** `n` may not fit in a 64-bit signed integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** k = 1\n    **Output:** 1\n    **Explanation:** The smallest answer is n = 1, which has length 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** k = 2\n    **Output:** -1\n    **Explanation:** There is no such positive integer n divisible by 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** k = 3\n    **Output:** 3\n    **Explanation:** The smallest answer is n = 111, which has length 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= 105`",
+  "question": "Given a positive integer `k`, you need to find the **length** of the **smallest** positive integer `n` such that `n` is divisible by `k`, and `n` only contains the digit `1`.\n\nReturn _the**length** of _`n`. If there is no such `n`, return -1.\n\n**Note:** `n` may not fit in a 64-bit signed integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** k = 1\n    **Output:** 1\n    **Explanation:** The smallest answer is n = 1, which has length 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** k = 2\n    **Output:** -1\n    **Explanation:** There is no such positive integer n divisible by 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** k = 3\n    **Output:** 3\n    **Explanation:** The smallest answer is n = 111, which has length 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= 105`",
+  "topics": ["Hash Table", "Math"],
+  "total_accepted": 182713,
+  "total_submissions": 336604,
+  "acceptance_rate": "54.3%",
+  "similar_questions": [],
+  "hints": [
+    "11111 = 1111 * 10 + 1\r\nWe only need to store remainders modulo K.",
+    "If we never get a remainder of 0, why would that happen, and how would we know that?"
+  ]
+}

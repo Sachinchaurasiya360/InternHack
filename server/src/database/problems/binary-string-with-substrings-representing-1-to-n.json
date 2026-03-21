@@ -1,0 +1,18 @@
+{
+  "id": "1016",
+  "title": "Binary String With Substrings Representing 1 To N",
+  "slug": "binary-string-with-substrings-representing-1-to-n",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary string <code>s</code> and a positive integer <code>n</code>, return <code>true</code><em> if the binary representation of all the integers in the range </em><code>[1, n]</code><em> are <strong>substrings</strong> of </em><code>s</code><em>, or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>A <strong>substring</strong> is a contiguous sequence of characters within a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"0110\", n = 3\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"0110\", n = 4\n<strong>Output:</strong> false\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a binary string `s` and a positive integer `n`, return `true` _if the binary representation of all the integers in the range_`[1, n]`_are**substrings** of _`s` _, or_`false` _otherwise_.\n\nA **substring** is a contiguous sequence of characters within a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"0110\", n = 3\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"0110\", n = 4\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'0'` or `'1'`.\n  * `1 <= n <= 109`",
+  "question": "Given a binary string `s` and a positive integer `n`, return `true` _if the binary representation of all the integers in the range_`[1, n]`_are**substrings** of _`s` _, or_`false` _otherwise_.\n\nA **substring** is a contiguous sequence of characters within a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"0110\", n = 3\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"0110\", n = 4\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'0'` or `'1'`.\n  * `1 <= n <= 109`",
+  "topics": ["Hash Table", "String", "Bit Manipulation", "Sliding Window"],
+  "total_accepted": 48581,
+  "total_submissions": 83184,
+  "acceptance_rate": "58.4%",
+  "similar_questions": [],
+  "hints": ["We only need to check substrings of length at most 30, because 10^9 has 30 bits."]
+}

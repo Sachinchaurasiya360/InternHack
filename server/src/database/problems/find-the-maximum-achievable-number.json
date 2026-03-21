@@ -1,0 +1,20 @@
+{
+  "id": "2769",
+  "title": "Find the Maximum Achievable Number",
+  "slug": "find-the-maximum-achievable-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integers, <code>num</code> and <code>t</code>. A <strong>number </strong><code>x</code><strong> </strong>is<strong> achievable</strong> if it can become equal to <code>num</code> after applying the following operation <strong>at most</strong> <code>t</code> times:</p>\n\n<ul>\n\t<li>Increase or decrease <code>x</code> by <code>1</code>, and <em>simultaneously</em> increase or decrease <code>num</code> by <code>1</code>.</li>\n</ul>\n\n<p>Return the <strong>maximum </strong>possible value of <code>x</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">num = 4, t = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Apply the following operation once to make the maximum achievable number equal to <code>num</code>:</p>\n\n<ul>\n\t<li>Decrease the maximum achievable number by 1, and increase <code>num</code> by 1.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">num = 3, t = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">7</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Apply the following operation twice to make the maximum achievable number equal to <code>num</code>:</p>\n\n<ul>\n\t<li>Decrease the maximum achievable number by 1, and increase <code>num</code> by 1.</li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num, t&nbsp;&lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "Given two integers, `num` and `t`. A **number**`x`**** is**achievable** if it can become equal to `num` after applying the following operation **at most** `t` times:\n\n  * Increase or decrease `x` by `1`, and _simultaneously_ increase or decrease `num` by `1`.\n\n\n\nReturn the **maximum** possible value of `x`.\n\n \n\n**Example 1:**\n\n**Input:** num = 4, t = 1\n\n**Output:** 6\n\n**Explanation:**\n\nApply the following operation once to make the maximum achievable number equal to `num`:\n\n  * Decrease the maximum achievable number by 1, and increase `num` by 1.\n\n\n\n**Example 2:**\n\n**Input:** num = 3, t = 2\n\n**Output:** 7\n\n**Explanation:**\n\nApply the following operation twice to make the maximum achievable number equal to `num`:\n\n  * Decrease the maximum achievable number by 1, and increase `num` by 1.\n\n\n\n \n\n**Constraints:**\n\n  * `1 <= num, t <= 50`",
+  "question": "Given two integers, `num` and `t`. A **number**`x`**** is**achievable** if it can become equal to `num` after applying the following operation **at most** `t` times:\n\n  * Increase or decrease `x` by `1`, and _simultaneously_ increase or decrease `num` by `1`.\n\n\n\nReturn the **maximum** possible value of `x`.",
+  "examples": "**Example 1:**\n\n**Input:** num = 4, t = 1\n\n**Output:** 6\n\n**Explanation:**\n\nApply the following operation once to make the maximum achievable number equal to `num`:\n\n  * Decrease the maximum achievable number by 1, and increase `num` by 1.\n\n\n\n**Example 2:**\n\n**Input:** num = 3, t = 2\n\n**Output:** 7\n\n**Explanation:**\n\nApply the following operation twice to make the maximum achievable number equal to `num`:\n\n  * Decrease the maximum achievable number by 1, and increase `num` by 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num, t <= 50`",
+  "topics": ["Math"],
+  "total_accepted": 199726,
+  "total_submissions": 218980,
+  "acceptance_rate": "91.2%",
+  "similar_questions": [],
+  "hints": [
+    "Let x be the answer, it’s always optimal to decrease x in each operation and increase nums."
+  ]
+}

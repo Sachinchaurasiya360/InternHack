@@ -1,0 +1,43 @@
+{
+  "id": "583",
+  "title": "Delete Operation for Two Strings",
+  "slug": "delete-operation-for-two-strings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>word1</code> and <code>word2</code>, return <em>the minimum number of <strong>steps</strong> required to make</em> <code>word1</code> <em>and</em> <code>word2</code> <em>the same</em>.</p>\n\n<p>In one <strong>step</strong>, you can delete exactly one character in either string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = &quot;sea&quot;, word2 = &quot;eat&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You need one step to make &quot;sea&quot; to &quot;ea&quot; and another step to make &quot;eat&quot; to &quot;ea&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = &quot;leetcode&quot;, word2 = &quot;etco&quot;\n<strong>Output:</strong> 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word1.length, word2.length &lt;= 500</code></li>\n\t<li><code>word1</code> and <code>word2</code> consist of only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `word1` and `word2`, return _the minimum number of**steps** required to make_ `word1` _and_ `word2` _the same_.\n\nIn one **step** , you can delete exactly one character in either string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word1 = \"sea\", word2 = \"eat\"\n    **Output:** 2\n    **Explanation:** You need one step to make \"sea\" to \"ea\" and another step to make \"eat\" to \"ea\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** word1 = \"leetcode\", word2 = \"etco\"\n    **Output:** 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= word1.length, word2.length <= 500`\n  * `word1` and `word2` consist of only lowercase English letters.",
+  "question": "Given two strings `word1` and `word2`, return _the minimum number of**steps** required to make_ `word1` _and_ `word2` _the same_.\n\nIn one **step** , you can delete exactly one character in either string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word1 = \"sea\", word2 = \"eat\"\n    **Output:** 2\n    **Explanation:** You need one step to make \"sea\" to \"ea\" and another step to make \"eat\" to \"ea\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** word1 = \"leetcode\", word2 = \"etco\"\n    **Output:** 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= word1.length, word2.length <= 500`\n  * `word1` and `word2` consist of only lowercase English letters.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 379002,
+  "total_submissions": 580674,
+  "acceptance_rate": "65.3%",
+  "similar_questions": [
+    {
+      "title": "Edit Distance",
+      "slug": "edit-distance",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/edit-distance/"
+    },
+    {
+      "title": "Minimum ASCII Delete Sum for Two Strings",
+      "slug": "minimum-ascii-delete-sum-for-two-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-ascii-delete-sum-for-two-strings/"
+    },
+    {
+      "title": "Longest Common Subsequence",
+      "slug": "longest-common-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-common-subsequence/"
+    },
+    {
+      "title": "Make Three Strings Equal",
+      "slug": "make-three-strings-equal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/make-three-strings-equal/"
+    }
+  ],
+  "hints": []
+}

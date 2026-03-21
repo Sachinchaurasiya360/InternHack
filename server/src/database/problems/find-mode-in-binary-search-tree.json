@@ -1,0 +1,25 @@
+{
+  "id": "501",
+  "title": "Find Mode in Binary Search Tree",
+  "slug": "find-mode-in-binary-search-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary search tree (BST) with duplicates, return <em>all the <a href=\"https://en.wikipedia.org/wiki/Mode_(statistics)\" target=\"_blank\">mode(s)</a> (i.e., the most frequently occurred element) in it</em>.</p>\n\n<p>If the tree has more than one mode, return them in <strong>any order</strong>.</p>\n\n<p>Assume a BST is defined as follows:</p>\n\n<ul>\n\t<li>The left subtree of a node contains only nodes with keys <strong>less than or equal to</strong> the node&#39;s key.</li>\n\t<li>The right subtree of a node contains only nodes with keys <strong>greater than or equal to</strong> the node&#39;s key.</li>\n\t<li>Both the left and right subtrees must also be binary search trees.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/11/mode-tree.jpg\" style=\"width: 142px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> root = [1,null,2,2]\n<strong>Output:</strong> [2]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [0]\n<strong>Output:</strong> [0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-10<sup>5</sup> &lt;= Node.val &lt;= 10<sup>5</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Could you do that without using any extra space? (Assume that the implicit stack space incurred due to recursion does not count).",
+  "content_markdown": "Given the `root` of a binary search tree (BST) with duplicates, return _all the[mode(s)](<https://en.wikipedia.org/wiki/Mode_\\(statistics\\)>) (i.e., the most frequently occurred element) in it_.\n\nIf the tree has more than one mode, return them in **any order**.\n\nAssume a BST is defined as follows:\n\n  * The left subtree of a node contains only nodes with keys **less than or equal to** the node's key.\n  * The right subtree of a node contains only nodes with keys **greater than or equal to** the node's key.\n  * Both the left and right subtrees must also be binary search trees.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/11/mode-tree.jpg)\n    \n    \n    **Input:** root = [1,null,2,2]\n    **Output:** [2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [0]\n    **Output:** [0]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-105 <= Node.val <= 105`\n\n\n\n \n\n**Follow up:** Could you do that without using any extra space? (Assume that the implicit stack space incurred due to recursion does not count).",
+  "question": "Given the `root` of a binary search tree (BST) with duplicates, return _all the[mode(s)](<https://en.wikipedia.org/wiki/Mode_\\(statistics\\)>) (i.e., the most frequently occurred element) in it_.\n\nIf the tree has more than one mode, return them in **any order**.\n\nAssume a BST is defined as follows:\n\n  * The left subtree of a node contains only nodes with keys **less than or equal to** the node's key.\n  * The right subtree of a node contains only nodes with keys **greater than or equal to** the node's key.\n  * Both the left and right subtrees must also be binary search trees.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/11/mode-tree.jpg)\n    \n    \n    **Input:** root = [1,null,2,2]\n    **Output:** [2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [0]\n    **Output:** [0]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-105 <= Node.val <= 105`",
+  "topics": ["Tree", "Depth-First Search", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 385195,
+  "total_submissions": 658695,
+  "acceptance_rate": "58.5%",
+  "similar_questions": [
+    {
+      "title": "Validate Binary Search Tree",
+      "slug": "validate-binary-search-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/validate-binary-search-tree/"
+    }
+  ],
+  "hints": []
+}

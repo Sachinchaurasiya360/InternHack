@@ -1,0 +1,22 @@
+{
+  "id": "3730",
+  "title": "Maximum Calories Burnt from Jumps",
+  "slug": "maximum-calories-burnt-from-jumps",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Greedy", "Sorting"],
+  "total_accepted": 677,
+  "total_submissions": 916,
+  "acceptance_rate": "73.9%",
+  "similar_questions": [],
+  "hints": [
+    "Sort <code>heights</code> and greedily distribute the values.",
+    "Place larger values from the back of the sorted <code>heights</code> in non-increasing order at the even indices.",
+    "Place smaller values from the front of the sorted <code>heights</code> in non-decreasing order at the odd indices."
+  ]
+}

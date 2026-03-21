@@ -1,0 +1,28 @@
+{
+  "id": "3157",
+  "title": "Find the Level of Tree with Minimum Sum",
+  "slug": "find-the-level-of-tree-with-minimum-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 3166,
+  "total_submissions": 4553,
+  "acceptance_rate": "69.5%",
+  "similar_questions": [
+    {
+      "title": "Kth Largest Sum in a Binary Tree",
+      "slug": "kth-largest-sum-in-a-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-largest-sum-in-a-binary-tree/"
+    }
+  ],
+  "hints": [
+    "Run a DFS on the tree and update an array sum where sum[i] is the sum for level i.",
+    "The answer is the first minimum element of sum."
+  ]
+}

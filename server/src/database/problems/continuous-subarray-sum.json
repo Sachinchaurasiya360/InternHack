@@ -1,0 +1,43 @@
+{
+  "id": "523",
+  "title": "Continuous Subarray Sum",
+  "slug": "continuous-subarray-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array nums and an integer k, return <code>true</code> <em>if </em><code>nums</code><em> has a <strong>good subarray</strong> or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>A <strong>good subarray</strong> is a subarray where:</p>\n\n<ul>\n\t<li>its length is <strong>at least two</strong>, and</li>\n\t<li>the sum of the elements of the subarray is a multiple of <code>k</code>.</li>\n</ul>\n\n<p><strong>Note</strong> that:</p>\n\n<ul>\n\t<li>A <strong>subarray</strong> is a contiguous part of the array.</li>\n\t<li>An integer <code>x</code> is a multiple of <code>k</code> if there exists an integer <code>n</code> such that <code>x = n * k</code>. <code>0</code> is <strong>always</strong> a multiple of <code>k</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [23,<u>2,4</u>,6,7], k = 6\n<strong>Output:</strong> true\n<strong>Explanation:</strong> [2, 4] is a continuous subarray of size 2 whose elements sum up to 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [<u>23,2,6,4,7</u>], k = 6\n<strong>Output:</strong> true\n<strong>Explanation:</strong> [23, 2, 6, 4, 7] is an continuous subarray of size 5 whose elements sum up to 42.\n42 is a multiple of 6 because 42 = 7 * 6 and 7 is an integer.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [23,2,6,4,7], k = 13\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>0 &lt;= sum(nums[i]) &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li><code>1 &lt;= k &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array nums and an integer k, return `true` _if_`nums` _has a**good subarray** or _`false` _otherwise_.\n\nA **good subarray** is a subarray where:\n\n  * its length is **at least two** , and\n  * the sum of the elements of the subarray is a multiple of `k`.\n\n\n\n**Note** that:\n\n  * A **subarray** is a contiguous part of the array.\n  * An integer `x` is a multiple of `k` if there exists an integer `n` such that `x = n * k`. `0` is **always** a multiple of `k`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [23,_2,4_ ,6,7], k = 6\n    **Output:** true\n    **Explanation:** [2, 4] is a continuous subarray of size 2 whose elements sum up to 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [_23,2,6,4,7_], k = 6\n    **Output:** true\n    **Explanation:** [23, 2, 6, 4, 7] is an continuous subarray of size 5 whose elements sum up to 42.\n    42 is a multiple of 6 because 42 = 7 * 6 and 7 is an integer.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [23,2,6,4,7], k = 13\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`\n  * `0 <= sum(nums[i]) <= 231 - 1`\n  * `1 <= k <= 231 - 1`",
+  "question": "Given an integer array nums and an integer k, return `true` _if_`nums` _has a**good subarray** or _`false` _otherwise_.\n\nA **good subarray** is a subarray where:\n\n  * its length is **at least two** , and\n  * the sum of the elements of the subarray is a multiple of `k`.\n\n\n\n**Note** that:\n\n  * A **subarray** is a contiguous part of the array.\n  * An integer `x` is a multiple of `k` if there exists an integer `n` such that `x = n * k`. `0` is **always** a multiple of `k`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [23,_2,4_ ,6,7], k = 6\n    **Output:** true\n    **Explanation:** [2, 4] is a continuous subarray of size 2 whose elements sum up to 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [_23,2,6,4,7_], k = 6\n    **Output:** true\n    **Explanation:** [23, 2, 6, 4, 7] is an continuous subarray of size 5 whose elements sum up to 42.\n    42 is a multiple of 6 because 42 = 7 * 6 and 7 is an integer.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [23,2,6,4,7], k = 13\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`\n  * `0 <= sum(nums[i]) <= 231 - 1`\n  * `1 <= k <= 231 - 1`",
+  "topics": ["Array", "Hash Table", "Math", "Prefix Sum"],
+  "total_accepted": 754103,
+  "total_submissions": 2415333,
+  "acceptance_rate": "31.2%",
+  "similar_questions": [
+    {
+      "title": "Subarray Sum Equals K",
+      "slug": "subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sum-equals-k/"
+    },
+    {
+      "title": "Minimum Number of Operations to Make Array Continuous",
+      "slug": "minimum-number-of-operations-to-make-array-continuous",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/"
+    },
+    {
+      "title": "Intervals Between Identical Elements",
+      "slug": "intervals-between-identical-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/intervals-between-identical-elements/"
+    },
+    {
+      "title": "Apply Operations to Make All Array Elements Equal to Zero",
+      "slug": "apply-operations-to-make-all-array-elements-equal-to-zero",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/apply-operations-to-make-all-array-elements-equal-to-zero/"
+    }
+  ],
+  "hints": []
+}

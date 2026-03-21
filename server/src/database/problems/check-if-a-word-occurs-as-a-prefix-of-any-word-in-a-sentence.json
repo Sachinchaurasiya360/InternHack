@@ -1,0 +1,35 @@
+{
+  "id": "1455",
+  "title": "Check If a Word Occurs As a Prefix of Any Word in a Sentence",
+  "slug": "check-if-a-word-occurs-as-a-prefix-of-any-word-in-a-sentence",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>sentence</code> that consists of some words separated by a <strong>single space</strong>, and a <code>searchWord</code>, check if <code>searchWord</code> is a prefix of any word in <code>sentence</code>.</p>\n\n<p>Return <em>the index of the word in </em><code>sentence</code><em> (<strong>1-indexed</strong>) where </em><code>searchWord</code><em> is a prefix of this word</em>. If <code>searchWord</code> is a prefix of more than one word, return the index of the first word <strong>(minimum index)</strong>. If there is no such word return <code>-1</code>.</p>\n\n<p>A <strong>prefix</strong> of a string <code>s</code> is any leading contiguous substring of <code>s</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> sentence = &quot;i love eating burger&quot;, searchWord = &quot;burg&quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> &quot;burg&quot; is prefix of &quot;burger&quot; which is the 4th word in the sentence.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> sentence = &quot;this problem is an easy problem&quot;, searchWord = &quot;pro&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> &quot;pro&quot; is prefix of &quot;problem&quot; which is the 2nd and the 6th word in the sentence, but we return 2 as it&#39;s the minimal index.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> sentence = &quot;i am tired&quot;, searchWord = &quot;you&quot;\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> &quot;you&quot; is not a prefix of any word in the sentence.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= sentence.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= searchWord.length &lt;= 10</code></li>\n\t<li><code>sentence</code> consists of lowercase English letters and spaces.</li>\n\t<li><code>searchWord</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a `sentence` that consists of some words separated by a **single space** , and a `searchWord`, check if `searchWord` is a prefix of any word in `sentence`.\n\nReturn _the index of the word in_`sentence` _(**1-indexed**) where _`searchWord` _is a prefix of this word_. If `searchWord` is a prefix of more than one word, return the index of the first word **(minimum index)**. If there is no such word return `-1`.\n\nA **prefix** of a string `s` is any leading contiguous substring of `s`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** sentence = \"i love eating burger\", searchWord = \"burg\"\n    **Output:** 4\n    **Explanation:** \"burg\" is prefix of \"burger\" which is the 4th word in the sentence.\n    \n\n**Example 2:**\n    \n    \n    **Input:** sentence = \"this problem is an easy problem\", searchWord = \"pro\"\n    **Output:** 2\n    **Explanation:** \"pro\" is prefix of \"problem\" which is the 2nd and the 6th word in the sentence, but we return 2 as it's the minimal index.\n    \n\n**Example 3:**\n    \n    \n    **Input:** sentence = \"i am tired\", searchWord = \"you\"\n    **Output:** -1\n    **Explanation:** \"you\" is not a prefix of any word in the sentence.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= sentence.length <= 100`\n  * `1 <= searchWord.length <= 10`\n  * `sentence` consists of lowercase English letters and spaces.\n  * `searchWord` consists of lowercase English letters.",
+  "question": "Given a `sentence` that consists of some words separated by a **single space** , and a `searchWord`, check if `searchWord` is a prefix of any word in `sentence`.\n\nReturn _the index of the word in_`sentence` _(**1-indexed**) where _`searchWord` _is a prefix of this word_. If `searchWord` is a prefix of more than one word, return the index of the first word **(minimum index)**. If there is no such word return `-1`.\n\nA **prefix** of a string `s` is any leading contiguous substring of `s`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** sentence = \"i love eating burger\", searchWord = \"burg\"\n    **Output:** 4\n    **Explanation:** \"burg\" is prefix of \"burger\" which is the 4th word in the sentence.\n    \n\n**Example 2:**\n    \n    \n    **Input:** sentence = \"this problem is an easy problem\", searchWord = \"pro\"\n    **Output:** 2\n    **Explanation:** \"pro\" is prefix of \"problem\" which is the 2nd and the 6th word in the sentence, but we return 2 as it's the minimal index.\n    \n\n**Example 3:**\n    \n    \n    **Input:** sentence = \"i am tired\", searchWord = \"you\"\n    **Output:** -1\n    **Explanation:** \"you\" is not a prefix of any word in the sentence.",
+  "constraints": "**Constraints:**\n\n  * `1 <= sentence.length <= 100`\n  * `1 <= searchWord.length <= 10`\n  * `sentence` consists of lowercase English letters and spaces.\n  * `searchWord` consists of lowercase English letters.",
+  "topics": ["Two Pointers", "String", "String Matching"],
+  "total_accepted": 236133,
+  "total_submissions": 343397,
+  "acceptance_rate": "68.8%",
+  "similar_questions": [
+    {
+      "title": "Counting Words With a Given Prefix",
+      "slug": "counting-words-with-a-given-prefix",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/counting-words-with-a-given-prefix/"
+    },
+    {
+      "title": "Count Prefixes of a Given String",
+      "slug": "count-prefixes-of-a-given-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-prefixes-of-a-given-string/"
+    }
+  ],
+  "hints": [
+    "First extract the words of the sentence.",
+    "Check for each word if searchWord occurs at index 0, if so return the index of this word (1-indexed)",
+    "If searchWord doesn't exist as a prefix of any word return the default value (-1)."
+  ]
+}

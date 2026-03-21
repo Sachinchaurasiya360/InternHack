@@ -1,0 +1,18 @@
+{
+  "id": "961",
+  "title": "N-Repeated Element in Size 2N Array",
+  "slug": "n-repeated-element-in-size-2n-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> with the following properties:</p>\n\n<ul>\n\t<li><code>nums.length == 2 * n</code>.</li>\n\t<li><code>nums</code> contains <code>n + 1</code> <strong>unique</strong> values, <code>n</code> of which occur <strong>exactly once</strong> in the array.</li>\n\t<li>Exactly one element of <code>nums</code> is repeated <code>n</code> times.</li>\n</ul>\n\n<p>Return <em>the element that is repeated </em><code>n</code><em> times</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,3,3]\n<strong>Output:</strong> 3\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [2,1,2,5,3,2]\n<strong>Output:</strong> 2\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> nums = [5,1,5,2,5,3,5,4]\n<strong>Output:</strong> 5\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n &lt;= 5000</code></li>\n\t<li><code>nums.length == 2 * n</code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>nums</code> contains <code>n + 1</code> <strong>unique</strong> elements and one of them is repeated exactly <code>n</code> times.</li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` with the following properties:\n\n  * `nums.length == 2 * n`.\n  * `nums` contains `n + 1` **unique** values, `n` of which occur **exactly once** in the array.\n  * Exactly one element of `nums` is repeated `n` times.\n\n\n\nReturn _the element that is repeated_`n` _times_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,3]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1,2,5,3,2]\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [5,1,5,2,5,3,5,4]\n    **Output:** 5\n    \n\n \n\n**Constraints:**\n\n  * `2 <= n <= 5000`\n  * `nums.length == 2 * n`\n  * `0 <= nums[i] <= 104`\n  * `nums` contains `n + 1` **unique** elements and one of them is repeated exactly `n` times.",
+  "question": "You are given an integer array `nums` with the following properties:\n\n  * `nums.length == 2 * n`.\n  * `nums` contains `n + 1` **unique** values, `n` of which occur **exactly once** in the array.\n  * Exactly one element of `nums` is repeated `n` times.\n\n\n\nReturn _the element that is repeated_`n` _times_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,3]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1,2,5,3,2]\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [5,1,5,2,5,3,5,4]\n    **Output:** 5",
+  "constraints": "**Constraints:**\n\n  * `2 <= n <= 5000`\n  * `nums.length == 2 * n`\n  * `0 <= nums[i] <= 104`\n  * `nums` contains `n + 1` **unique** elements and one of them is repeated exactly `n` times.",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 465302,
+  "total_submissions": 582779,
+  "acceptance_rate": "79.8%",
+  "similar_questions": [],
+  "hints": []
+}

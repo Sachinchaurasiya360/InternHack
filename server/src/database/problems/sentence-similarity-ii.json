@@ -1,0 +1,46 @@
+{
+  "id": "737",
+  "title": "Sentence Similarity II",
+  "slug": "sentence-similarity-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find"
+  ],
+  "total_accepted": 78575,
+  "total_submissions": 153635,
+  "acceptance_rate": "51.1%",
+  "similar_questions": [
+    {
+      "title": "Number of Provinces",
+      "slug": "number-of-provinces",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-provinces/"
+    },
+    {
+      "title": "Accounts Merge",
+      "slug": "accounts-merge",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/accounts-merge/"
+    },
+    {
+      "title": "Sentence Similarity",
+      "slug": "sentence-similarity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sentence-similarity/"
+    }
+  ],
+  "hints": [
+    "Consider the graphs where each pair in \"pairs\" is an edge.  Two words are similar if they are the same, or are in the same connected component of this graph."
+  ]
+}

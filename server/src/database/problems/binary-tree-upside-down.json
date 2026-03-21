@@ -1,0 +1,25 @@
+{
+  "id": "156",
+  "title": "Binary Tree Upside Down",
+  "slug": "binary-tree-upside-down",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 118555,
+  "total_submissions": 181402,
+  "acceptance_rate": "65.4%",
+  "similar_questions": [
+    {
+      "title": "Reverse Linked List",
+      "slug": "reverse-linked-list",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-linked-list/"
+    }
+  ],
+  "hints": []
+}

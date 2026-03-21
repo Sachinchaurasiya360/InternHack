@@ -1,0 +1,18 @@
+{
+  "id": "2990",
+  "title": "Loan Types",
+  "slug": "loan-types",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 6006,
+  "total_submissions": 9405,
+  "acceptance_rate": "63.9%",
+  "similar_questions": [],
+  "hints": []
+}

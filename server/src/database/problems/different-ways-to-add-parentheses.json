@@ -1,0 +1,49 @@
+{
+  "id": "241",
+  "title": "Different Ways to Add Parentheses",
+  "slug": "different-ways-to-add-parentheses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>expression</code> of numbers and operators, return <em>all possible results from computing all the different possible ways to group numbers and operators</em>. You may return the answer in <strong>any order</strong>.</p>\n\n<p>The test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed <code>10<sup>4</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> expression = &quot;2-1-1&quot;\n<strong>Output:</strong> [0,2]\n<strong>Explanation:</strong>\n((2-1)-1) = 0 \n(2-(1-1)) = 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> expression = &quot;2*3-4*5&quot;\n<strong>Output:</strong> [-34,-14,-10,-10,10]\n<strong>Explanation:</strong>\n(2*(3-(4*5))) = -34 \n((2*3)-(4*5)) = -14 \n((2*(3-4))*5) = -10 \n(2*((3-4)*5)) = -10 \n(((2*3)-4)*5) = 10\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= expression.length &lt;= 20</code></li>\n\t<li><code>expression</code> consists of digits and the operator <code>&#39;+&#39;</code>, <code>&#39;-&#39;</code>, and <code>&#39;*&#39;</code>.</li>\n\t<li>All the integer values in the input expression are in the range <code>[0, 99]</code>.</li>\n\t<li>The integer values in the input expression do not have a leading <code>&#39;-&#39;</code> or <code>&#39;+&#39;</code> denoting the sign.</li>\n</ul>\n",
+  "content_markdown": "Given a string `expression` of numbers and operators, return _all possible results from computing all the different possible ways to group numbers and operators_. You may return the answer in **any order**.\n\nThe test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed `104`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** expression = \"2-1-1\"\n    **Output:** [0,2]\n    **Explanation:**\n    ((2-1)-1) = 0 \n    (2-(1-1)) = 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** expression = \"2*3-4*5\"\n    **Output:** [-34,-14,-10,-10,10]\n    **Explanation:**\n    (2*(3-(4*5))) = -34 \n    ((2*3)-(4*5)) = -14 \n    ((2*(3-4))*5) = -10 \n    (2*((3-4)*5)) = -10 \n    (((2*3)-4)*5) = 10\n    \n\n \n\n**Constraints:**\n\n  * `1 <= expression.length <= 20`\n  * `expression` consists of digits and the operator `'+'`, `'-'`, and `'*'`.\n  * All the integer values in the input expression are in the range `[0, 99]`.\n  * The integer values in the input expression do not have a leading `'-'` or `'+'` denoting the sign.",
+  "question": "Given a string `expression` of numbers and operators, return _all possible results from computing all the different possible ways to group numbers and operators_. You may return the answer in **any order**.\n\nThe test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed `104`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** expression = \"2-1-1\"\n    **Output:** [0,2]\n    **Explanation:**\n    ((2-1)-1) = 0 \n    (2-(1-1)) = 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** expression = \"2*3-4*5\"\n    **Output:** [-34,-14,-10,-10,10]\n    **Explanation:**\n    (2*(3-(4*5))) = -34 \n    ((2*3)-(4*5)) = -14 \n    ((2*(3-4))*5) = -10 \n    (2*((3-4)*5)) = -10 \n    (((2*3)-4)*5) = 10",
+  "constraints": "**Constraints:**\n\n  * `1 <= expression.length <= 20`\n  * `expression` consists of digits and the operator `'+'`, `'-'`, and `'*'`.\n  * All the integer values in the input expression are in the range `[0, 99]`.\n  * The integer values in the input expression do not have a leading `'-'` or `'+'` denoting the sign.",
+  "topics": ["Math", "String", "Dynamic Programming", "Recursion", "Memoization"],
+  "total_accepted": 373437,
+  "total_submissions": 511013,
+  "acceptance_rate": "73.1%",
+  "similar_questions": [
+    {
+      "title": "Unique Binary Search Trees II",
+      "slug": "unique-binary-search-trees-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-binary-search-trees-ii/"
+    },
+    {
+      "title": "Basic Calculator",
+      "slug": "basic-calculator",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/basic-calculator/"
+    },
+    {
+      "title": "Expression Add Operators",
+      "slug": "expression-add-operators",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/expression-add-operators/"
+    },
+    {
+      "title": "The Score of Students Solving Math Expression",
+      "slug": "the-score-of-students-solving-math-expression",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/the-score-of-students-solving-math-expression/"
+    },
+    {
+      "title": "Minimize Result by Adding Parentheses to Expression",
+      "slug": "minimize-result-by-adding-parentheses-to-expression",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-result-by-adding-parentheses-to-expression/"
+    }
+  ],
+  "hints": []
+}

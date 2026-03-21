@@ -1,0 +1,40 @@
+{
+  "id": "2206",
+  "title": "Divide Array Into Equal Pairs",
+  "slug": "divide-array-into-equal-pairs",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> consisting of <code>2 * n</code> integers.</p>\n\n<p>You need to divide <code>nums</code> into <code>n</code> pairs such that:</p>\n\n<ul>\n\t<li>Each element belongs to <strong>exactly one</strong> pair.</li>\n\t<li>The elements present in a pair are <strong>equal</strong>.</li>\n</ul>\n\n<p>Return <code>true</code> <em>if nums can be divided into</em> <code>n</code> <em>pairs, otherwise return</em> <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,3,2,2,2]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> \nThere are 6 elements in nums, so they should be divided into 6 / 2 = 3 pairs.\nIf nums is divided into the pairs (2, 2), (3, 3), and (2, 2), it will satisfy all the conditions.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> \nThere is no way to divide nums into 4 / 2 = 2 pairs such that the pairs satisfy every condition.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>nums.length == 2 * n</code></li>\n\t<li><code>1 &lt;= n &lt;= 500</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 500</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` consisting of `2 * n` integers.\n\nYou need to divide `nums` into `n` pairs such that:\n\n  * Each element belongs to **exactly one** pair.\n  * The elements present in a pair are **equal**.\n\n\n\nReturn `true` _if nums can be divided into_ `n` _pairs, otherwise return_ `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,2,3,2,2,2]\n    **Output:** true\n    **Explanation:** \n    There are 6 elements in nums, so they should be divided into 6 / 2 = 3 pairs.\n    If nums is divided into the pairs (2, 2), (3, 3), and (2, 2), it will satisfy all the conditions.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** false\n    **Explanation:** \n    There is no way to divide nums into 4 / 2 = 2 pairs such that the pairs satisfy every condition.\n    \n\n \n\n**Constraints:**\n\n  * `nums.length == 2 * n`\n  * `1 <= n <= 500`\n  * `1 <= nums[i] <= 500`",
+  "question": "You are given an integer array `nums` consisting of `2 * n` integers.\n\nYou need to divide `nums` into `n` pairs such that:\n\n  * Each element belongs to **exactly one** pair.\n  * The elements present in a pair are **equal**.\n\n\n\nReturn `true` _if nums can be divided into_ `n` _pairs, otherwise return_ `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,2,3,2,2,2]\n    **Output:** true\n    **Explanation:** \n    There are 6 elements in nums, so they should be divided into 6 / 2 = 3 pairs.\n    If nums is divided into the pairs (2, 2), (3, 3), and (2, 2), it will satisfy all the conditions.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** false\n    **Explanation:** \n    There is no way to divide nums into 4 / 2 = 2 pairs such that the pairs satisfy every condition.",
+  "constraints": "**Constraints:**\n\n  * `nums.length == 2 * n`\n  * `1 <= n <= 500`\n  * `1 <= nums[i] <= 500`",
+  "topics": ["Array", "Hash Table", "Bit Manipulation", "Counting"],
+  "total_accepted": 299431,
+  "total_submissions": 377906,
+  "acceptance_rate": "79.2%",
+  "similar_questions": [
+    {
+      "title": "Sort Array by Increasing Frequency",
+      "slug": "sort-array-by-increasing-frequency",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-increasing-frequency/"
+    },
+    {
+      "title": "Distribute Elements Into Two Arrays I",
+      "slug": "distribute-elements-into-two-arrays-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/distribute-elements-into-two-arrays-i/"
+    },
+    {
+      "title": "Distribute Elements Into Two Arrays II",
+      "slug": "distribute-elements-into-two-arrays-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/distribute-elements-into-two-arrays-ii/"
+    }
+  ],
+  "hints": [
+    "For any number x in the range [1, 500], count the number of elements in nums whose values are equal to x.",
+    "The elements with equal value can be divided completely into pairs if and only if their count is even."
+  ]
+}

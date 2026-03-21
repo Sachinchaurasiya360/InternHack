@@ -1,0 +1,22 @@
+{
+  "id": "1059",
+  "title": "All Paths from Source Lead to Destination",
+  "slug": "all-paths-from-source-lead-to-destination",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Graph Theory", "Topological Sort"],
+  "total_accepted": 74586,
+  "total_submissions": 201369,
+  "acceptance_rate": "37.0%",
+  "similar_questions": [],
+  "hints": [
+    "What if we can reach to a cycle from the source node?",
+    "Then the answer will be false, because we eventually get trapped in the cycle forever.",
+    "What if the we can't reach to a cycle from the source node? Then we need to ensure that from all visited nodes from source the unique node with indegree = 0 is the destination node."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "1679",
+  "title": "Max Number of K-Sum Pairs",
+  "slug": "max-number-of-k-sum-pairs",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and an integer <code>k</code>.</p>\n\n<p>In one operation, you can pick two numbers from the array whose sum equals <code>k</code> and remove them from the array.</p>\n\n<p>Return <em>the maximum number of operations you can perform on the array</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4], k = 5\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Starting with nums = [1,2,3,4]:\n- Remove numbers 1 and 4, then nums = [2,3]\n- Remove numbers 2 and 3, then nums = []\nThere are no more pairs that sum up to 5, hence a total of 2 operations.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,1,3,4,3], k = 6\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Starting with nums = [3,1,3,4,3]:\n- Remove the first two 3&#39;s, then nums = [1,4,3]\nThere are no more pairs that sum up to 6, hence a total of 1 operation.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and an integer `k`.\n\nIn one operation, you can pick two numbers from the array whose sum equals `k` and remove them from the array.\n\nReturn _the maximum number of operations you can perform on the array_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 5\n    **Output:** 2\n    **Explanation:** Starting with nums = [1,2,3,4]:\n    - Remove numbers 1 and 4, then nums = [2,3]\n    - Remove numbers 2 and 3, then nums = []\n    There are no more pairs that sum up to 5, hence a total of 2 operations.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,3,4,3], k = 6\n    **Output:** 1\n    **Explanation:** Starting with nums = [3,1,3,4,3]:\n    - Remove the first two 3's, then nums = [1,4,3]\n    There are no more pairs that sum up to 6, hence a total of 1 operation.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "question": "You are given an integer array `nums` and an integer `k`.\n\nIn one operation, you can pick two numbers from the array whose sum equals `k` and remove them from the array.\n\nReturn _the maximum number of operations you can perform on the array_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 5\n    **Output:** 2\n    **Explanation:** Starting with nums = [1,2,3,4]:\n    - Remove numbers 1 and 4, then nums = [2,3]\n    - Remove numbers 2 and 3, then nums = []\n    There are no more pairs that sum up to 5, hence a total of 2 operations.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,3,4,3], k = 6\n    **Output:** 1\n    **Explanation:** Starting with nums = [3,1,3,4,3]:\n    - Remove the first two 3's, then nums = [1,4,3]\n    There are no more pairs that sum up to 6, hence a total of 1 operation.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "topics": ["Array", "Hash Table", "Two Pointers", "Sorting"],
+  "total_accepted": 584201,
+  "total_submissions": 1027079,
+  "acceptance_rate": "56.9%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "Count Good Meals",
+      "slug": "count-good-meals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-good-meals/"
+    },
+    {
+      "title": "Divide Players Into Teams of Equal Skill",
+      "slug": "divide-players-into-teams-of-equal-skill",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/divide-players-into-teams-of-equal-skill/"
+    }
+  ],
+  "hints": [
+    "The abstract problem asks to count the number of disjoint pairs with a given sum k.",
+    "For each possible value x, it can be paired up with k - x.",
+    "The number of such pairs equals to  min(count(x), count(k-x)), unless that x = k / 2, where the number of such pairs will be floor(count(x) / 2)."
+  ]
+}

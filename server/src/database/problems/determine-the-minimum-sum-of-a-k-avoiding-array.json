@@ -1,0 +1,23 @@
+{
+  "id": "2829",
+  "title": "Determine the Minimum Sum of a k-avoiding Array",
+  "slug": "determine-the-minimum-sum-of-a-k-avoiding-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integers,&nbsp;<code>n</code> and <code>k</code>.</p>\n\n<p>An array of <strong>distinct</strong> positive integers is called a <b>k-avoiding</b> array if there does not exist any pair of distinct elements that sum to <code>k</code>.</p>\n\n<p>Return <em>the <strong>minimum</strong> possible sum of a k-avoiding array of length </em><code>n</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5, k = 4\n<strong>Output:</strong> 18\n<strong>Explanation:</strong> Consider the k-avoiding array [1,2,4,5,6], which has a sum of 18.\nIt can be proven that there is no k-avoiding array with a sum less than 18.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, k = 6\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can construct the array [1,2], which has a sum of 3.\nIt can be proven that there is no k-avoiding array with a sum less than 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n, k &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "You are given two integers, `n` and `k`.\n\nAn array of **distinct** positive integers is called a **k-avoiding** array if there does not exist any pair of distinct elements that sum to `k`.\n\nReturn _the**minimum** possible sum of a k-avoiding array of length _`n`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5, k = 4\n    **Output:** 18\n    **Explanation:** Consider the k-avoiding array [1,2,4,5,6], which has a sum of 18.\n    It can be proven that there is no k-avoiding array with a sum less than 18.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2, k = 6\n    **Output:** 3\n    **Explanation:** We can construct the array [1,2], which has a sum of 3.\n    It can be proven that there is no k-avoiding array with a sum less than 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n, k <= 50`",
+  "question": "You are given two integers, `n` and `k`.\n\nAn array of **distinct** positive integers is called a **k-avoiding** array if there does not exist any pair of distinct elements that sum to `k`.\n\nReturn _the**minimum** possible sum of a k-avoiding array of length _`n`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5, k = 4\n    **Output:** 18\n    **Explanation:** Consider the k-avoiding array [1,2,4,5,6], which has a sum of 18.\n    It can be proven that there is no k-avoiding array with a sum less than 18.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2, k = 6\n    **Output:** 3\n    **Explanation:** We can construct the array [1,2], which has a sum of 3.\n    It can be proven that there is no k-avoiding array with a sum less than 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n, k <= 50`",
+  "topics": ["Math", "Greedy"],
+  "total_accepted": 40110,
+  "total_submissions": 66255,
+  "acceptance_rate": "60.5%",
+  "similar_questions": [],
+  "hints": [
+    "<div class=\"_1l1MA\">Try to start with the smallest possible integers.</div>",
+    "<div class=\"_1l1MA\">Check if the current number can be added to the array.</div>",
+    "<div class=\"_1l1MA\">To check if the current number can be added, keep track of already added numbers in a set.</div>",
+    "<div class=\"_1l1MA\">If the number <code>i</code> is added to the array, then <code>i + k</code> can not be added.</div>"
+  ]
+}

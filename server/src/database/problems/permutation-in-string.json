@@ -1,0 +1,38 @@
+{
+  "id": "567",
+  "title": "Permutation in String",
+  "slug": "permutation-in-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s1</code> and <code>s2</code>, return <code>true</code> if <code>s2</code> contains a <span data-keyword=\"permutation-string\">permutation</span> of <code>s1</code>, or <code>false</code> otherwise.</p>\n\n<p>In other words, return <code>true</code> if one of <code>s1</code>&#39;s permutations is the substring of <code>s2</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;ab&quot;, s2 = &quot;eidbaooo&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> s2 contains one permutation of s1 (&quot;ba&quot;).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;ab&quot;, s2 = &quot;eidboaoo&quot;\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s1.length, s2.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s1</code> and <code>s2</code> consist of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.\n\nIn other words, return `true` if one of `s1`'s permutations is the substring of `s2`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s1 = \"ab\", s2 = \"eidbaooo\"\n    **Output:** true\n    **Explanation:** s2 contains one permutation of s1 (\"ba\").\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"ab\", s2 = \"eidboaoo\"\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 104`\n  * `s1` and `s2` consist of lowercase English letters.",
+  "question": "Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.\n\nIn other words, return `true` if one of `s1`'s permutations is the substring of `s2`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s1 = \"ab\", s2 = \"eidbaooo\"\n    **Output:** true\n    **Explanation:** s2 contains one permutation of s1 (\"ba\").\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"ab\", s2 = \"eidboaoo\"\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 104`\n  * `s1` and `s2` consist of lowercase English letters.",
+  "topics": ["Hash Table", "Two Pointers", "String", "Sliding Window"],
+  "total_accepted": 1436135,
+  "total_submissions": 2963750,
+  "acceptance_rate": "48.5%",
+  "similar_questions": [
+    {
+      "title": "Minimum Window Substring",
+      "slug": "minimum-window-substring",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-window-substring/"
+    },
+    {
+      "title": "Find All Anagrams in a String",
+      "slug": "find-all-anagrams-in-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-anagrams-in-a-string/"
+    }
+  ],
+  "hints": [
+    "Obviously, brute force will result in TLE. Think of something else.",
+    "How will you check whether one string is a permutation of another string?",
+    "One way is to sort the string and then compare. But, Is there a better way?",
+    "If one string is a permutation of another string then they must have one common metric. What is that?",
+    "Both strings must have same character frequencies, if  one is permutation of another. Which data structure should be used to store frequencies?",
+    "What about hash table?  An array of size 26?"
+  ]
+}

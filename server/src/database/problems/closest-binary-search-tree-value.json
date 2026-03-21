@@ -1,0 +1,43 @@
+{
+  "id": "270",
+  "title": "Closest Binary Search Tree Value",
+  "slug": "closest-binary-search-tree-value",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Binary Search", "Tree", "Depth-First Search", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 449309,
+  "total_submissions": 912145,
+  "acceptance_rate": "49.3%",
+  "similar_questions": [
+    {
+      "title": "Count Complete Tree Nodes",
+      "slug": "count-complete-tree-nodes",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-complete-tree-nodes/"
+    },
+    {
+      "title": "Closest Binary Search Tree Value II",
+      "slug": "closest-binary-search-tree-value-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/closest-binary-search-tree-value-ii/"
+    },
+    {
+      "title": "Search in a Binary Search Tree",
+      "slug": "search-in-a-binary-search-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/search-in-a-binary-search-tree/"
+    },
+    {
+      "title": "Closest Nodes Queries in a Binary Search Tree",
+      "slug": "closest-nodes-queries-in-a-binary-search-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/closest-nodes-queries-in-a-binary-search-tree/"
+    }
+  ],
+  "hints": []
+}

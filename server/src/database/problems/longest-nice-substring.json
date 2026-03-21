@@ -1,0 +1,25 @@
+{
+  "id": "1763",
+  "title": "Longest Nice Substring",
+  "slug": "longest-nice-substring",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A string <code>s</code> is <strong>nice</strong> if, for every letter of the alphabet that <code>s</code> contains, it appears <strong>both</strong> in uppercase and lowercase. For example, <code>&quot;abABB&quot;</code> is nice because <code>&#39;A&#39;</code> and <code>&#39;a&#39;</code> appear, and <code>&#39;B&#39;</code> and <code>&#39;b&#39;</code> appear. However, <code>&quot;abA&quot;</code> is not because <code>&#39;b&#39;</code> appears, but <code>&#39;B&#39;</code> does not.</p>\n\n<p>Given a string <code>s</code>, return <em>the longest <strong>substring</strong> of <code>s</code> that is <strong>nice</strong>. If there are multiple, return the substring of the <strong>earliest</strong> occurrence. If there are none, return an empty string</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;YazaAay&quot;\n<strong>Output:</strong> &quot;aAa&quot;\n<strong>Explanation: </strong>&quot;aAa&quot; is a nice string because &#39;A/a&#39; is the only letter of the alphabet in s, and both &#39;A&#39; and &#39;a&#39; appear.\n&quot;aAa&quot; is the longest nice substring.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Bb&quot;\n<strong>Output:</strong> &quot;Bb&quot;\n<strong>Explanation:</strong> &quot;Bb&quot; is a nice string because both &#39;B&#39; and &#39;b&#39; appear. The whole string is a substring.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;c&quot;\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> There are no nice substrings.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of uppercase and lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "A string `s` is **nice** if, for every letter of the alphabet that `s` contains, it appears **both** in uppercase and lowercase. For example, `\"abABB\"` is nice because `'A'` and `'a'` appear, and `'B'` and `'b'` appear. However, `\"abA\"` is not because `'b'` appears, but `'B'` does not.\n\nGiven a string `s`, return _the longest**substring** of `s` that is **nice**. If there are multiple, return the substring of the **earliest** occurrence. If there are none, return an empty string_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"YazaAay\"\n    **Output:** \"aAa\"\n    **Explanation:** \"aAa\" is a nice string because 'A/a' is the only letter of the alphabet in s, and both 'A' and 'a' appear.\n    \"aAa\" is the longest nice substring.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Bb\"\n    **Output:** \"Bb\"\n    **Explanation:** \"Bb\" is a nice string because both 'B' and 'b' appear. The whole string is a substring.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"c\"\n    **Output:** \"\"\n    **Explanation:** There are no nice substrings.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of uppercase and lowercase English letters.",
+  "question": "A string `s` is **nice** if, for every letter of the alphabet that `s` contains, it appears **both** in uppercase and lowercase. For example, `\"abABB\"` is nice because `'A'` and `'a'` appear, and `'B'` and `'b'` appear. However, `\"abA\"` is not because `'b'` appears, but `'B'` does not.\n\nGiven a string `s`, return _the longest**substring** of `s` that is **nice**. If there are multiple, return the substring of the **earliest** occurrence. If there are none, return an empty string_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"YazaAay\"\n    **Output:** \"aAa\"\n    **Explanation:** \"aAa\" is a nice string because 'A/a' is the only letter of the alphabet in s, and both 'A' and 'a' appear.\n    \"aAa\" is the longest nice substring.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Bb\"\n    **Output:** \"Bb\"\n    **Explanation:** \"Bb\" is a nice string because both 'B' and 'b' appear. The whole string is a substring.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"c\"\n    **Output:** \"\"\n    **Explanation:** There are no nice substrings.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of uppercase and lowercase English letters.",
+  "topics": ["Hash Table", "String", "Divide and Conquer", "Bit Manipulation", "Sliding Window"],
+  "total_accepted": 92488,
+  "total_submissions": 145051,
+  "acceptance_rate": "63.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Good Paths",
+      "slug": "number-of-good-paths",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-good-paths/"
+    }
+  ],
+  "hints": ["Brute force and check each substring to see if it is nice."]
+}

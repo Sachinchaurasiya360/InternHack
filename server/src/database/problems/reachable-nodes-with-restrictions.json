@@ -1,0 +1,43 @@
+{
+  "id": "2368",
+  "title": "Reachable Nodes With Restrictions",
+  "slug": "reachable-nodes-with-restrictions",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is an undirected tree with <code>n</code> nodes labeled from <code>0</code> to <code>n - 1</code> and <code>n - 1</code> edges.</p>\n\n<p>You are given a 2D integer array <code>edges</code> of length <code>n - 1</code> where <code>edges[i] = [a<sub>i</sub>, b<sub>i</sub>]</code> indicates that there is an edge between nodes <code>a<sub>i</sub></code> and <code>b<sub>i</sub></code> in the tree. You are also given an integer array <code>restricted</code> which represents <strong>restricted</strong> nodes.</p>\n\n<p>Return <em>the <strong>maximum</strong> number of nodes you can reach from node </em><code>0</code><em> without visiting a restricted node.</em></p>\n\n<p>Note that node <code>0</code> will <strong>not</strong> be a restricted node.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/06/15/ex1drawio.png\" style=\"width: 402px; height: 322px;\" />\n<pre>\n<strong>Input:</strong> n = 7, edges = [[0,1],[1,2],[3,1],[4,0],[0,5],[5,6]], restricted = [4,5]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The diagram above shows the tree.\nWe have that [0,1,2,3] are the only nodes that can be reached from node 0 without visiting a restricted node.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/06/15/ex2drawio.png\" style=\"width: 412px; height: 312px;\" />\n<pre>\n<strong>Input:</strong> n = 7, edges = [[0,1],[0,2],[0,5],[0,4],[3,2],[6,5]], restricted = [4,2,1]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The diagram above shows the tree.\nWe have that [0,5,6] are the only nodes that can be reached from node 0 without visiting a restricted node.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>edges.length == n - 1</code></li>\n\t<li><code>edges[i].length == 2</code></li>\n\t<li><code>0 &lt;= a<sub>i</sub>, b<sub>i</sub> &lt; n</code></li>\n\t<li><code>a<sub>i</sub> != b<sub>i</sub></code></li>\n\t<li><code>edges</code> represents a valid tree.</li>\n\t<li><code>1 &lt;= restricted.length &lt; n</code></li>\n\t<li><code>1 &lt;= restricted[i] &lt; n</code></li>\n\t<li>All the values of <code>restricted</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "There is an undirected tree with `n` nodes labeled from `0` to `n - 1` and `n - 1` edges.\n\nYou are given a 2D integer array `edges` of length `n - 1` where `edges[i] = [ai, bi]` indicates that there is an edge between nodes `ai` and `bi` in the tree. You are also given an integer array `restricted` which represents **restricted** nodes.\n\nReturn _the**maximum** number of nodes you can reach from node _`0` _without visiting a restricted node._\n\nNote that node `0` will **not** be a restricted node.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/06/15/ex1drawio.png)\n    \n    \n    **Input:** n = 7, edges = [[0,1],[1,2],[3,1],[4,0],[0,5],[5,6]], restricted = [4,5]\n    **Output:** 4\n    **Explanation:** The diagram above shows the tree.\n    We have that [0,1,2,3] are the only nodes that can be reached from node 0 without visiting a restricted node.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/06/15/ex2drawio.png)\n    \n    \n    **Input:** n = 7, edges = [[0,1],[0,2],[0,5],[0,4],[3,2],[6,5]], restricted = [4,2,1]\n    **Output:** 3\n    **Explanation:** The diagram above shows the tree.\n    We have that [0,5,6] are the only nodes that can be reached from node 0 without visiting a restricted node.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= n <= 105`\n  * `edges.length == n - 1`\n  * `edges[i].length == 2`\n  * `0 <= ai, bi < n`\n  * `ai != bi`\n  * `edges` represents a valid tree.\n  * `1 <= restricted.length < n`\n  * `1 <= restricted[i] < n`\n  * All the values of `restricted` are **unique**.",
+  "question": "There is an undirected tree with `n` nodes labeled from `0` to `n - 1` and `n - 1` edges.\n\nYou are given a 2D integer array `edges` of length `n - 1` where `edges[i] = [ai, bi]` indicates that there is an edge between nodes `ai` and `bi` in the tree. You are also given an integer array `restricted` which represents **restricted** nodes.\n\nReturn _the**maximum** number of nodes you can reach from node _`0` _without visiting a restricted node._\n\nNote that node `0` will **not** be a restricted node.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/06/15/ex1drawio.png)\n    \n    \n    **Input:** n = 7, edges = [[0,1],[1,2],[3,1],[4,0],[0,5],[5,6]], restricted = [4,5]\n    **Output:** 4\n    **Explanation:** The diagram above shows the tree.\n    We have that [0,1,2,3] are the only nodes that can be reached from node 0 without visiting a restricted node.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/06/15/ex2drawio.png)\n    \n    \n    **Input:** n = 7, edges = [[0,1],[0,2],[0,5],[0,4],[3,2],[6,5]], restricted = [4,2,1]\n    **Output:** 3\n    **Explanation:** The diagram above shows the tree.\n    We have that [0,5,6] are the only nodes that can be reached from node 0 without visiting a restricted node.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n <= 105`\n  * `edges.length == n - 1`\n  * `edges[i].length == 2`\n  * `0 <= ai, bi < n`\n  * `ai != bi`\n  * `edges` represents a valid tree.\n  * `1 <= restricted.length < n`\n  * `1 <= restricted[i] < n`\n  * All the values of `restricted` are **unique**.",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Graph Theory"
+  ],
+  "total_accepted": 85531,
+  "total_submissions": 142087,
+  "acceptance_rate": "60.2%",
+  "similar_questions": [
+    {
+      "title": "Open the Lock",
+      "slug": "open-the-lock",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/open-the-lock/"
+    },
+    {
+      "title": "Minimum Jumps to Reach Home",
+      "slug": "minimum-jumps-to-reach-home",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-jumps-to-reach-home/"
+    }
+  ],
+  "hints": [
+    "Can we find all the reachable nodes in a single traversal?",
+    "Traverse the graph from node 0 while avoiding the nodes in restricted and do not revisit nodes that have been visited.",
+    "Keep count of how many nodes are visited in total."
+  ]
+}

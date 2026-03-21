@@ -1,0 +1,31 @@
+{
+  "id": "1549",
+  "title": "The Most Recent Orders for Each Product",
+  "slug": "the-most-recent-orders-for-each-product",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 38566,
+  "total_submissions": 59360,
+  "acceptance_rate": "65.0%",
+  "similar_questions": [
+    {
+      "title": "The Most Recent Three Orders",
+      "slug": "the-most-recent-three-orders",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-most-recent-three-orders/"
+    },
+    {
+      "title": "The Most Frequently Ordered Products for Each Customer",
+      "slug": "the-most-frequently-ordered-products-for-each-customer",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-most-frequently-ordered-products-for-each-customer/"
+    }
+  ],
+  "hints": []
+}

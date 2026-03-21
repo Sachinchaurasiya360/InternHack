@@ -1,0 +1,24 @@
+{
+  "id": "2898",
+  "title": "Maximum Linear Stock Score",
+  "slug": "maximum-linear-stock-score",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 1330,
+  "total_submissions": 2165,
+  "acceptance_rate": "61.4%",
+  "similar_questions": [],
+  "hints": [
+    "Let's look at the condition as: <code>prices[indexes[i]] - indexes[i] == prices[indexes[j]] - indexes[j]</code>.",
+    "So now we define a new array named <code>group</code> and is constructed as <code>group[i] = prices[i] - i</code>.",
+    "A subarray of <code>prices</code> is linear if they belong to the same group.",
+    "Since all elements are positive, if we choose some index <code>i</code>, the optimum way is to choose all elements from <code>group[i]</code>.",
+    "So for each group, we calculate the sum of its prices and the answer would be the maximum sum over all groups."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "2232",
+  "title": "Minimize Result by Adding Parentheses to Expression",
+  "slug": "minimize-result-by-adding-parentheses-to-expression",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> string <code>expression</code> of the form <code>&quot;&lt;num1&gt;+&lt;num2&gt;&quot;</code> where <code>&lt;num1&gt;</code> and <code>&lt;num2&gt;</code> represent positive integers.</p>\n\n<p>Add a pair of parentheses to <code>expression</code> such that after the addition of parentheses, <code>expression</code> is a <strong>valid</strong> mathematical expression and evaluates to the <strong>smallest</strong> possible value. The left parenthesis <strong>must</strong> be added to the left of <code>&#39;+&#39;</code> and the right parenthesis <strong>must</strong> be added to the right of <code>&#39;+&#39;</code>.</p>\n\n<p>Return <code>expression</code><em> after adding a pair of parentheses such that </em><code>expression</code><em> evaluates to the <strong>smallest</strong> possible value.</em> If there are multiple answers that yield the same result, return any of them.</p>\n\n<p>The input has been generated such that the original value of <code>expression</code>, and the value of <code>expression</code> after adding any pair of parentheses that meets the requirements fits within a signed 32-bit integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> expression = &quot;247+38&quot;\n<strong>Output:</strong> &quot;2(47+38)&quot;\n<strong>Explanation:</strong> The <code>expression</code> evaluates to 2 * (47 + 38) = 2 * 85 = 170.\nNote that &quot;2(4)7+38&quot; is invalid because the right parenthesis must be to the right of the <code>&#39;+&#39;</code>.\nIt can be shown that 170 is the smallest possible value.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> expression = &quot;12+34&quot;\n<strong>Output:</strong> &quot;1(2+3)4&quot;\n<strong>Explanation:</strong> The expression evaluates to 1 * (2 + 3) * 4 = 1 * 5 * 4 = 20.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> expression = &quot;999+999&quot;\n<strong>Output:</strong> &quot;(999+999)&quot;\n<strong>Explanation:</strong> The <code>expression</code> evaluates to 999 + 999 = 1998.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= expression.length &lt;= 10</code></li>\n\t<li><code>expression</code> consists of digits from <code>&#39;1&#39;</code> to <code>&#39;9&#39;</code> and <code>&#39;+&#39;</code>.</li>\n\t<li><code>expression</code> starts and ends with digits.</li>\n\t<li><code>expression</code> contains exactly one <code>&#39;+&#39;</code>.</li>\n\t<li>The original value of <code>expression</code>, and the value of <code>expression</code> after adding any pair of parentheses that meets the requirements fits within a signed 32-bit integer.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** string `expression` of the form `\"<num1>+<num2>\"` where `<num1>` and `<num2>` represent positive integers.\n\nAdd a pair of parentheses to `expression` such that after the addition of parentheses, `expression` is a **valid** mathematical expression and evaluates to the **smallest** possible value. The left parenthesis **must** be added to the left of `'+'` and the right parenthesis **must** be added to the right of `'+'`.\n\nReturn `expression` _after adding a pair of parentheses such that_`expression` _evaluates to the**smallest** possible value._ If there are multiple answers that yield the same result, return any of them.\n\nThe input has been generated such that the original value of `expression`, and the value of `expression` after adding any pair of parentheses that meets the requirements fits within a signed 32-bit integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** expression = \"247+38\"\n    **Output:** \"2(47+38)\"\n    **Explanation:** The expression evaluates to 2 * (47 + 38) = 2 * 85 = 170.\n    Note that \"2(4)7+38\" is invalid because the right parenthesis must be to the right of the '+'.\n    It can be shown that 170 is the smallest possible value.\n    \n\n**Example 2:**\n    \n    \n    **Input:** expression = \"12+34\"\n    **Output:** \"1(2+3)4\"\n    **Explanation:** The expression evaluates to 1 * (2 + 3) * 4 = 1 * 5 * 4 = 20.\n    \n\n**Example 3:**\n    \n    \n    **Input:** expression = \"999+999\"\n    **Output:** \"(999+999)\"\n    **Explanation:** The expression evaluates to 999 + 999 = 1998.\n    \n\n \n\n**Constraints:**\n\n  * `3 <= expression.length <= 10`\n  * `expression` consists of digits from `'1'` to `'9'` and `'+'`.\n  * `expression` starts and ends with digits.\n  * `expression` contains exactly one `'+'`.\n  * The original value of `expression`, and the value of `expression` after adding any pair of parentheses that meets the requirements fits within a signed 32-bit integer.",
+  "question": "You are given a **0-indexed** string `expression` of the form `\"<num1>+<num2>\"` where `<num1>` and `<num2>` represent positive integers.\n\nAdd a pair of parentheses to `expression` such that after the addition of parentheses, `expression` is a **valid** mathematical expression and evaluates to the **smallest** possible value. The left parenthesis **must** be added to the left of `'+'` and the right parenthesis **must** be added to the right of `'+'`.\n\nReturn `expression` _after adding a pair of parentheses such that_`expression` _evaluates to the**smallest** possible value._ If there are multiple answers that yield the same result, return any of them.\n\nThe input has been generated such that the original value of `expression`, and the value of `expression` after adding any pair of parentheses that meets the requirements fits within a signed 32-bit integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** expression = \"247+38\"\n    **Output:** \"2(47+38)\"\n    **Explanation:** The expression evaluates to 2 * (47 + 38) = 2 * 85 = 170.\n    Note that \"2(4)7+38\" is invalid because the right parenthesis must be to the right of the '+'.\n    It can be shown that 170 is the smallest possible value.\n    \n\n**Example 2:**\n    \n    \n    **Input:** expression = \"12+34\"\n    **Output:** \"1(2+3)4\"\n    **Explanation:** The expression evaluates to 1 * (2 + 3) * 4 = 1 * 5 * 4 = 20.\n    \n\n**Example 3:**\n    \n    \n    **Input:** expression = \"999+999\"\n    **Output:** \"(999+999)\"\n    **Explanation:** The expression evaluates to 999 + 999 = 1998.",
+  "constraints": "**Constraints:**\n\n  * `3 <= expression.length <= 10`\n  * `expression` consists of digits from `'1'` to `'9'` and `'+'`.\n  * `expression` starts and ends with digits.\n  * `expression` contains exactly one `'+'`.\n  * The original value of `expression`, and the value of `expression` after adding any pair of parentheses that meets the requirements fits within a signed 32-bit integer.",
+  "topics": ["String", "Enumeration"],
+  "total_accepted": 26653,
+  "total_submissions": 39068,
+  "acceptance_rate": "68.2%",
+  "similar_questions": [
+    {
+      "title": "Basic Calculator",
+      "slug": "basic-calculator",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/basic-calculator/"
+    },
+    {
+      "title": "Different Ways to Add Parentheses",
+      "slug": "different-ways-to-add-parentheses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/different-ways-to-add-parentheses/"
+    },
+    {
+      "title": "Solve the Equation",
+      "slug": "solve-the-equation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/solve-the-equation/"
+    }
+  ],
+  "hints": [
+    "The maximum length of expression is very low. We can try every possible spot to place the parentheses.",
+    "Every possibility of expression is of the form a * (b + c) * d where a, b, c, d represent integers. Note the edge cases where a and/or d do not exist, in which case use 1 instead of them."
+  ]
+}

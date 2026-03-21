@@ -1,0 +1,31 @@
+{
+  "id": "35",
+  "title": "Search Insert Position",
+  "slug": "search-insert-position",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.</p>\n\n<p>You must&nbsp;write an algorithm with&nbsp;<code>O(log n)</code> runtime complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,5,6], target = 5\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,5,6], target = 2\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,5,6], target = 7\n<strong>Output:</strong> 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>nums</code> contains <strong>distinct</strong> values sorted in <strong>ascending</strong> order.</li>\n\t<li><code>-10<sup>4</sup> &lt;= target &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.\n\nYou must write an algorithm with `O(log n)` runtime complexity.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,5,6], target = 5\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,5,6], target = 2\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,3,5,6], target = 7\n    **Output:** 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-104 <= nums[i] <= 104`\n  * `nums` contains **distinct** values sorted in **ascending** order.\n  * `-104 <= target <= 104`",
+  "question": "Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.\n\nYou must write an algorithm with `O(log n)` runtime complexity.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,5,6], target = 5\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,5,6], target = 2\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,3,5,6], target = 7\n    **Output:** 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-104 <= nums[i] <= 104`\n  * `nums` contains **distinct** values sorted in **ascending** order.\n  * `-104 <= target <= 104`",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 4566751,
+  "total_submissions": 8998809,
+  "acceptance_rate": "50.7%",
+  "similar_questions": [
+    {
+      "title": "First Bad Version",
+      "slug": "first-bad-version",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/first-bad-version/"
+    },
+    {
+      "title": "Minimum Operations to Exceed Threshold Value I",
+      "slug": "minimum-operations-to-exceed-threshold-value-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-operations-to-exceed-threshold-value-i/"
+    }
+  ],
+  "hints": []
+}

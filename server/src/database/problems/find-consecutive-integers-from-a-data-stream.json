@@ -1,0 +1,28 @@
+{
+  "id": "2526",
+  "title": "Find Consecutive Integers from a Data Stream",
+  "slug": "find-consecutive-integers-from-a-data-stream",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>For a stream of integers, implement a data structure that checks if the last <code>k</code> integers parsed in the stream are <strong>equal</strong> to <code>value</code>.</p>\n\n<p>Implement the <strong>DataStream</strong> class:</p>\n\n<ul>\n\t<li><code>DataStream(int value, int k)</code> Initializes the object with an empty integer stream and the two integers <code>value</code> and <code>k</code>.</li>\n\t<li><code>boolean consec(int num)</code> Adds <code>num</code> to the stream of integers. Returns <code>true</code> if the last <code>k</code> integers are equal to <code>value</code>, and <code>false</code> otherwise. If there are less than <code>k</code> integers, the condition does not hold true, so returns <code>false</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;DataStream&quot;, &quot;consec&quot;, &quot;consec&quot;, &quot;consec&quot;, &quot;consec&quot;]\n[[4, 3], [4], [4], [4], [3]]\n<strong>Output</strong>\n[null, false, false, true, false]\n\n<strong>Explanation</strong>\nDataStream dataStream = new DataStream(4, 3); //value = 4, k = 3 \ndataStream.consec(4); // Only 1 integer is parsed, so returns False. \ndataStream.consec(4); // Only 2 integers are parsed.\n                      // Since 2 is less than k, returns False. \ndataStream.consec(4); // The 3 integers parsed are all equal to value, so returns True. \ndataStream.consec(3); // The last k integers parsed in the stream are [4,4,3].\n                      // Since 3 is not equal to value, it returns False.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= value, num &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>5</sup></code></li>\n\t<li>At most <code>10<sup>5</sup></code> calls will be made to <code>consec</code>.</li>\n</ul>\n",
+  "content_markdown": "For a stream of integers, implement a data structure that checks if the last `k` integers parsed in the stream are **equal** to `value`.\n\nImplement the **DataStream** class:\n\n  * `DataStream(int value, int k)` Initializes the object with an empty integer stream and the two integers `value` and `k`.\n  * `boolean consec(int num)` Adds `num` to the stream of integers. Returns `true` if the last `k` integers are equal to `value`, and `false` otherwise. If there are less than `k` integers, the condition does not hold true, so returns `false`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"DataStream\", \"consec\", \"consec\", \"consec\", \"consec\"]\n    [[4, 3], [4], [4], [4], [3]]\n    **Output**\n    [null, false, false, true, false]\n    \n    **Explanation**\n    DataStream dataStream = new DataStream(4, 3); //value = 4, k = 3 \n    dataStream.consec(4); // Only 1 integer is parsed, so returns False. \n    dataStream.consec(4); // Only 2 integers are parsed.\n                          // Since 2 is less than k, returns False. \n    dataStream.consec(4); // The 3 integers parsed are all equal to value, so returns True. \n    dataStream.consec(3); // The last k integers parsed in the stream are [4,4,3].\n                          // Since 3 is not equal to value, it returns False.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= value, num <= 109`\n  * `1 <= k <= 105`\n  * At most `105` calls will be made to `consec`.",
+  "question": "For a stream of integers, implement a data structure that checks if the last `k` integers parsed in the stream are **equal** to `value`.\n\nImplement the **DataStream** class:\n\n  * `DataStream(int value, int k)` Initializes the object with an empty integer stream and the two integers `value` and `k`.\n  * `boolean consec(int num)` Adds `num` to the stream of integers. Returns `true` if the last `k` integers are equal to `value`, and `false` otherwise. If there are less than `k` integers, the condition does not hold true, so returns `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"DataStream\", \"consec\", \"consec\", \"consec\", \"consec\"]\n    [[4, 3], [4], [4], [4], [3]]\n    **Output**\n    [null, false, false, true, false]\n    \n    **Explanation**\n    DataStream dataStream = new DataStream(4, 3); //value = 4, k = 3 \n    dataStream.consec(4); // Only 1 integer is parsed, so returns False. \n    dataStream.consec(4); // Only 2 integers are parsed.\n                          // Since 2 is less than k, returns False. \n    dataStream.consec(4); // The 3 integers parsed are all equal to value, so returns True. \n    dataStream.consec(3); // The last k integers parsed in the stream are [4,4,3].\n                          // Since 3 is not equal to value, it returns False.",
+  "constraints": "**Constraints:**\n\n  * `1 <= value, num <= 109`\n  * `1 <= k <= 105`\n  * At most `105` calls will be made to `consec`.",
+  "topics": ["Hash Table", "Design", "Queue", "Counting", "Data Stream"],
+  "total_accepted": 36499,
+  "total_submissions": 71833,
+  "acceptance_rate": "50.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Zero-Filled Subarrays",
+      "slug": "number-of-zero-filled-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-zero-filled-subarrays/"
+    }
+  ],
+  "hints": [
+    "Keep track of the last integer which is not equal to <code>value</code>.",
+    "Use a queue-type data structure to store the last <code>k</code> integers."
+  ]
+}

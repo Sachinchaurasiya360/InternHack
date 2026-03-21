@@ -1,0 +1,28 @@
+{
+  "id": "1442",
+  "title": "Count Triplets That Can Form Two Arrays of Equal XOR",
+  "slug": "count-triplets-that-can-form-two-arrays-of-equal-xor",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>arr</code>.</p>\n\n<p>We want to select three indices <code>i</code>, <code>j</code> and <code>k</code> where <code>(0 &lt;= i &lt; j &lt;= k &lt; arr.length)</code>.</p>\n\n<p>Let&#39;s define <code>a</code> and <code>b</code> as follows:</p>\n\n<ul>\n\t<li><code>a = arr[i] ^ arr[i + 1] ^ ... ^ arr[j - 1]</code></li>\n\t<li><code>b = arr[j] ^ arr[j + 1] ^ ... ^ arr[k]</code></li>\n</ul>\n\n<p>Note that <strong>^</strong> denotes the <strong>bitwise-xor</strong> operation.</p>\n\n<p>Return <em>the number of triplets</em> (<code>i</code>, <code>j</code> and <code>k</code>) Where <code>a == b</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,3,1,6,7]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The triplets are (0,1,2), (0,2,2), (2,3,4) and (2,4,4)\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,1,1,1,1]\n<strong>Output:</strong> 10\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 300</code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `arr`.\n\nWe want to select three indices `i`, `j` and `k` where `(0 <= i < j <= k < arr.length)`.\n\nLet's define `a` and `b` as follows:\n\n  * `a = arr[i] ^ arr[i + 1] ^ ... ^ arr[j - 1]`\n  * `b = arr[j] ^ arr[j + 1] ^ ... ^ arr[k]`\n\n\n\nNote that **^** denotes the **bitwise-xor** operation.\n\nReturn _the number of triplets_ (`i`, `j` and `k`) Where `a == b`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [2,3,1,6,7]\n    **Output:** 4\n    **Explanation:** The triplets are (0,1,2), (0,2,2), (2,3,4) and (2,4,4)\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,1,1,1,1]\n    **Output:** 10\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 300`\n  * `1 <= arr[i] <= 108`",
+  "question": "Given an array of integers `arr`.\n\nWe want to select three indices `i`, `j` and `k` where `(0 <= i < j <= k < arr.length)`.\n\nLet's define `a` and `b` as follows:\n\n  * `a = arr[i] ^ arr[i + 1] ^ ... ^ arr[j - 1]`\n  * `b = arr[j] ^ arr[j + 1] ^ ... ^ arr[k]`\n\n\n\nNote that **^** denotes the **bitwise-xor** operation.\n\nReturn _the number of triplets_ (`i`, `j` and `k`) Where `a == b`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [2,3,1,6,7]\n    **Output:** 4\n    **Explanation:** The triplets are (0,1,2), (0,2,2), (2,3,4) and (2,4,4)\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,1,1,1,1]\n    **Output:** 10",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 300`\n  * `1 <= arr[i] <= 108`",
+  "topics": ["Array", "Hash Table", "Math", "Bit Manipulation", "Prefix Sum"],
+  "total_accepted": 140664,
+  "total_submissions": 165793,
+  "acceptance_rate": "84.8%",
+  "similar_questions": [
+    {
+      "title": "Find The Original Array of Prefix Xor",
+      "slug": "find-the-original-array-of-prefix-xor",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-original-array-of-prefix-xor/"
+    }
+  ],
+  "hints": [
+    "We are searching for sub-array of length ≥ 2 and we need to split it to 2 non-empty arrays so that the xor of the first array is equal to the xor of the second array. This is equivalent to searching for sub-array with xor = 0.",
+    "Keep the prefix xor of arr in another array, check the xor of all sub-arrays in O(n^2), if the xor of sub-array of length x is 0 add x-1 to the answer."
+  ]
+}

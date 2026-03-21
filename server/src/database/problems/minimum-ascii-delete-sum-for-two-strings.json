@@ -1,0 +1,37 @@
+{
+  "id": "712",
+  "title": "Minimum ASCII Delete Sum for Two Strings",
+  "slug": "minimum-ascii-delete-sum-for-two-strings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s1</code> and&nbsp;<code>s2</code>, return <em>the lowest <strong>ASCII</strong> sum of deleted characters to make two strings equal</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;sea&quot;, s2 = &quot;eat&quot;\n<strong>Output:</strong> 231\n<strong>Explanation:</strong> Deleting &quot;s&quot; from &quot;sea&quot; adds the ASCII value of &quot;s&quot; (115) to the sum.\nDeleting &quot;t&quot; from &quot;eat&quot; adds 116 to the sum.\nAt the end, both strings are equal, and 115 + 116 = 231 is the minimum sum possible to achieve this.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;delete&quot;, s2 = &quot;leet&quot;\n<strong>Output:</strong> 403\n<strong>Explanation:</strong> Deleting &quot;dee&quot; from &quot;delete&quot; to turn the string into &quot;let&quot;,\nadds 100[d] + 101[e] + 101[e] to the sum.\nDeleting &quot;e&quot; from &quot;leet&quot; adds 101[e] to the sum.\nAt the end, both strings are equal to &quot;let&quot;, and the answer is 100+101+101+101 = 403.\nIf instead we turned both strings into &quot;lee&quot; or &quot;eet&quot;, we would get answers of 433 or 417, which are higher.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s1.length, s2.length &lt;= 1000</code></li>\n\t<li><code>s1</code> and <code>s2</code> consist of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `s1` and `s2`, return _the lowest**ASCII** sum of deleted characters to make two strings equal_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s1 = \"sea\", s2 = \"eat\"\n    **Output:** 231\n    **Explanation:** Deleting \"s\" from \"sea\" adds the ASCII value of \"s\" (115) to the sum.\n    Deleting \"t\" from \"eat\" adds 116 to the sum.\n    At the end, both strings are equal, and 115 + 116 = 231 is the minimum sum possible to achieve this.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"delete\", s2 = \"leet\"\n    **Output:** 403\n    **Explanation:** Deleting \"dee\" from \"delete\" to turn the string into \"let\",\n    adds 100[d] + 101[e] + 101[e] to the sum.\n    Deleting \"e\" from \"leet\" adds 101[e] to the sum.\n    At the end, both strings are equal to \"let\", and the answer is 100+101+101+101 = 403.\n    If instead we turned both strings into \"lee\" or \"eet\", we would get answers of 433 or 417, which are higher.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 1000`\n  * `s1` and `s2` consist of lowercase English letters.",
+  "question": "Given two strings `s1` and `s2`, return _the lowest**ASCII** sum of deleted characters to make two strings equal_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s1 = \"sea\", s2 = \"eat\"\n    **Output:** 231\n    **Explanation:** Deleting \"s\" from \"sea\" adds the ASCII value of \"s\" (115) to the sum.\n    Deleting \"t\" from \"eat\" adds 116 to the sum.\n    At the end, both strings are equal, and 115 + 116 = 231 is the minimum sum possible to achieve this.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"delete\", s2 = \"leet\"\n    **Output:** 403\n    **Explanation:** Deleting \"dee\" from \"delete\" to turn the string into \"let\",\n    adds 100[d] + 101[e] + 101[e] to the sum.\n    Deleting \"e\" from \"leet\" adds 101[e] to the sum.\n    At the end, both strings are equal to \"let\", and the answer is 100+101+101+101 = 403.\n    If instead we turned both strings into \"lee\" or \"eet\", we would get answers of 433 or 417, which are higher.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 1000`\n  * `s1` and `s2` consist of lowercase English letters.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 272597,
+  "total_submissions": 384531,
+  "acceptance_rate": "70.9%",
+  "similar_questions": [
+    {
+      "title": "Edit Distance",
+      "slug": "edit-distance",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/edit-distance/"
+    },
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    },
+    {
+      "title": "Delete Operation for Two Strings",
+      "slug": "delete-operation-for-two-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-operation-for-two-strings/"
+    }
+  ],
+  "hints": ["Let dp(i, j) be the answer for inputs s1[i:] and s2[j:]."]
+}

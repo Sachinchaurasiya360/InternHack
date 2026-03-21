@@ -1,0 +1,21 @@
+{
+  "id": "1822",
+  "title": "Sign of the Product of an Array",
+  "slug": "sign-of-the-product-of-an-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Implement a function <code>signFunc(x)</code> that returns:</p>\n\n<ul>\n\t<li><code>1</code> if <code>x</code> is positive.</li>\n\t<li><code>-1</code> if <code>x</code> is negative.</li>\n\t<li><code>0</code> if <code>x</code> is equal to <code>0</code>.</li>\n</ul>\n\n<p>You are given an integer array <code>nums</code>. Let <code>product</code> be the product of all values in the array <code>nums</code>.</p>\n\n<p>Return <code>signFunc(product)</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,-2,-3,-4,3,2,1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The product of all values in the array is 144, and signFunc(144) = 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,5,0,2,-3]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The product of all values in the array is 0, and signFunc(0) = 0\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,1,-1,1,-1]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> The product of all values in the array is -1, and signFunc(-1) = -1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>-100 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Implement a function `signFunc(x)` that returns:\n\n  * `1` if `x` is positive.\n  * `-1` if `x` is negative.\n  * `0` if `x` is equal to `0`.\n\n\n\nYou are given an integer array `nums`. Let `product` be the product of all values in the array `nums`.\n\nReturn `signFunc(product)`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [-1,-2,-3,-4,3,2,1]\n    **Output:** 1\n    **Explanation:** The product of all values in the array is 144, and signFunc(144) = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,0,2,-3]\n    **Output:** 0\n    **Explanation:** The product of all values in the array is 0, and signFunc(0) = 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,1,-1,1,-1]\n    **Output:** -1\n    **Explanation:** The product of all values in the array is -1, and signFunc(-1) = -1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-100 <= nums[i] <= 100`",
+  "question": "Implement a function `signFunc(x)` that returns:\n\n  * `1` if `x` is positive.\n  * `-1` if `x` is negative.\n  * `0` if `x` is equal to `0`.\n\n\n\nYou are given an integer array `nums`. Let `product` be the product of all values in the array `nums`.\n\nReturn `signFunc(product)`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [-1,-2,-3,-4,3,2,1]\n    **Output:** 1\n    **Explanation:** The product of all values in the array is 144, and signFunc(144) = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,0,2,-3]\n    **Output:** 0\n    **Explanation:** The product of all values in the array is 0, and signFunc(0) = 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,1,-1,1,-1]\n    **Output:** -1\n    **Explanation:** The product of all values in the array is -1, and signFunc(-1) = -1",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-100 <= nums[i] <= 100`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 432840,
+  "total_submissions": 667652,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [],
+  "hints": [
+    "If there is a 0 in the array the answer is 0",
+    "To avoid overflow make all the negative numbers -1 and all positive numbers 1 and calculate the prod"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "1055",
+  "title": "Shortest Way to Form String",
+  "slug": "shortest-way-to-form-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Two Pointers", "String", "Binary Search", "Greedy"],
+  "total_accepted": 109930,
+  "total_submissions": 178600,
+  "acceptance_rate": "61.6%",
+  "similar_questions": [
+    {
+      "title": "Is Subsequence",
+      "slug": "is-subsequence",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/is-subsequence/"
+    },
+    {
+      "title": "Number of Matching Subsequences",
+      "slug": "number-of-matching-subsequences",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-matching-subsequences/"
+    }
+  ],
+  "hints": [
+    "Which conditions have to been met in order to be impossible to form the target string?",
+    "If there exists a character in the target string which doesn't exist in the source string then it will be impossible to form the target string.",
+    "Assuming we are in the case which is possible to form the target string, how can we assure the minimum number of used subsequences of source?",
+    "For each used subsequence try to match the leftmost character of the current subsequence with the leftmost character of the target string, if they match then erase both character otherwise erase just the subsequence character whenever the current subsequence gets empty, reset it to a new copy of subsequence and increment the count, do this until the target sequence gets empty. Finally return the count."
+  ]
+}

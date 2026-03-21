@@ -1,0 +1,31 @@
+{
+  "id": "60",
+  "title": "Permutation Sequence",
+  "slug": "permutation-sequence",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>The set <code>[1, 2, 3, ...,&nbsp;n]</code> contains a total of <code>n!</code> unique permutations.</p>\n\n<p>By listing and labeling all of the permutations in order, we get the following sequence for <code>n = 3</code>:</p>\n\n<ol>\n\t<li><code>&quot;123&quot;</code></li>\n\t<li><code>&quot;132&quot;</code></li>\n\t<li><code>&quot;213&quot;</code></li>\n\t<li><code>&quot;231&quot;</code></li>\n\t<li><code>&quot;312&quot;</code></li>\n\t<li><code>&quot;321&quot;</code></li>\n</ol>\n\n<p>Given <code>n</code> and <code>k</code>, return the <code>k<sup>th</sup></code> permutation sequence.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> n = 3, k = 3\n<strong>Output:</strong> \"213\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> n = 4, k = 9\n<strong>Output:</strong> \"2314\"\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> n = 3, k = 1\n<strong>Output:</strong> \"123\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 9</code></li>\n\t<li><code>1 &lt;= k &lt;= n!</code></li>\n</ul>\n",
+  "content_markdown": "The set `[1, 2, 3, ..., n]` contains a total of `n!` unique permutations.\n\nBy listing and labeling all of the permutations in order, we get the following sequence for `n = 3`:\n\n  1. `\"123\"`\n  2. `\"132\"`\n  3. `\"213\"`\n  4. `\"231\"`\n  5. `\"312\"`\n  6. `\"321\"`\n\n\n\nGiven `n` and `k`, return the `kth` permutation sequence.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 3, k = 3\n    **Output:** \"213\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 4, k = 9\n    **Output:** \"2314\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3, k = 1\n    **Output:** \"123\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 9`\n  * `1 <= k <= n!`",
+  "question": "The set `[1, 2, 3, ..., n]` contains a total of `n!` unique permutations.\n\nBy listing and labeling all of the permutations in order, we get the following sequence for `n = 3`:\n\n  1. `\"123\"`\n  2. `\"132\"`\n  3. `\"213\"`\n  4. `\"231\"`\n  5. `\"312\"`\n  6. `\"321\"`\n\n\n\nGiven `n` and `k`, return the `kth` permutation sequence.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 3, k = 3\n    **Output:** \"213\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 4, k = 9\n    **Output:** \"2314\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3, k = 1\n    **Output:** \"123\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 9`\n  * `1 <= k <= n!`",
+  "topics": ["Math", "Recursion"],
+  "total_accepted": 554441,
+  "total_submissions": 1062249,
+  "acceptance_rate": "52.2%",
+  "similar_questions": [
+    {
+      "title": "Next Permutation",
+      "slug": "next-permutation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/next-permutation/"
+    },
+    {
+      "title": "Permutations",
+      "slug": "permutations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/permutations/"
+    }
+  ],
+  "hints": []
+}

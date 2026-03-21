@@ -1,0 +1,28 @@
+{
+  "id": "2533",
+  "title": "Number of Good Binary Strings",
+  "slug": "number-of-good-binary-strings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 7647,
+  "total_submissions": 14488,
+  "acceptance_rate": "52.8%",
+  "similar_questions": [
+    {
+      "title": "Special Binary String",
+      "slug": "special-binary-string",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/special-binary-string/"
+    }
+  ],
+  "hints": [
+    "If we maintain DP(i, x) where i denotes the length and x denotes the last written integer (0 or 1), then it is not hard to solve in O(maxLength * max(zeroGroup, oneGroup)).",
+    "Notice that from DP(i, 0) we only have a transition to DP(j, 1) where (j - i) mod oneGroup == 0 and j > i. Similarly with DP(i,1). So we can use prefix sum to optimize our DP and solve it in O(maxLength)."
+  ]
+}

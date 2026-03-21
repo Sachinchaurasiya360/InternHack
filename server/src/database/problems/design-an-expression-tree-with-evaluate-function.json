@@ -1,0 +1,36 @@
+{
+  "id": "1628",
+  "title": "Design an Expression Tree With Evaluate Function",
+  "slug": "design-an-expression-tree-with-evaluate-function",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Stack", "Tree", "Design", "Binary Tree"],
+  "total_accepted": 29526,
+  "total_submissions": 35788,
+  "acceptance_rate": "82.5%",
+  "similar_questions": [
+    {
+      "title": "Minimum Flips in Binary Tree to Get Result",
+      "slug": "minimum-flips-in-binary-tree-to-get-result",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-flips-in-binary-tree-to-get-result/"
+    },
+    {
+      "title": "Evaluate Boolean Binary Tree",
+      "slug": "evaluate-boolean-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/evaluate-boolean-binary-tree/"
+    }
+  ],
+  "hints": [
+    "Apply the concept of Polymorphism to get a good design",
+    "Implement the Node class using NumericNode and OperatorNode classes.",
+    "NumericNode only maintains the value and evaluate returns this value.",
+    "OperatorNode Maintains the left and right nodes representing the left and right operands, and the evaluate function applies the operator to them."
+  ]
+}

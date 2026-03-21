@@ -1,0 +1,37 @@
+{
+  "id": "280",
+  "title": "Wiggle Sort",
+  "slug": "wiggle-sort",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 157748,
+  "total_submissions": 230577,
+  "acceptance_rate": "68.4%",
+  "similar_questions": [
+    {
+      "title": "Sort Colors",
+      "slug": "sort-colors",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-colors/"
+    },
+    {
+      "title": "Wiggle Sort II",
+      "slug": "wiggle-sort-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/wiggle-sort-ii/"
+    },
+    {
+      "title": "Array With Elements Not Equal to Average of Neighbors",
+      "slug": "array-with-elements-not-equal-to-average-of-neighbors",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/array-with-elements-not-equal-to-average-of-neighbors/"
+    }
+  ],
+  "hints": []
+}

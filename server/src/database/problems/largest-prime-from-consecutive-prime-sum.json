@@ -1,0 +1,22 @@
+{
+  "id": "3770",
+  "title": "Largest Prime from Consecutive Prime Sum",
+  "slug": "largest-prime-from-consecutive-prime-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code>.</p>\n\n<p>Return the <strong>largest <span data-keyword=\"prime-number\">prime number</span></strong> less than or equal to <code>n</code> that can be expressed as the <strong>sum</strong> of one or more <strong>consecutive prime numbers</strong> starting from 2. If no such number exists, return 0.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 20</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">17</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The prime numbers less than or equal to <code>n = 20</code> which are consecutive prime sums are:</p>\n\n<ul>\n\t<li>\n\t<p><code>2 = 2</code></p>\n\t</li>\n\t<li>\n\t<p><code>5 = 2 + 3</code></p>\n\t</li>\n\t<li>\n\t<p><code>17 = 2 + 3 + 5 + 7</code></p>\n\t</li>\n</ul>\n\n<p>The largest is 17, so it is the answer.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The only consecutive prime sum less than or equal to 2 is 2 itself.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 5 * 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n`.\n\nReturn the **largest prime number** less than or equal to `n` that can be expressed as the **sum** of one or more **consecutive prime numbers** starting from 2. If no such number exists, return 0.\n\n \n\n**Example 1:**\n\n**Input:** n = 20\n\n**Output:** 17\n\n**Explanation:**\n\nThe prime numbers less than or equal to `n = 20` which are consecutive prime sums are:\n\n  * `2 = 2`\n\n  * `5 = 2 + 3`\n\n  * `17 = 2 + 3 + 5 + 7`\n\n\n\n\nThe largest is 17, so it is the answer.\n\n**Example 2:**\n\n**Input:** n = 2\n\n**Output:** 2\n\n**Explanation:**\n\nThe only consecutive prime sum less than or equal to 2 is 2 itself.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 5 * 105`",
+  "question": "You are given an integer `n`.\n\nReturn the **largest prime number** less than or equal to `n` that can be expressed as the **sum** of one or more **consecutive prime numbers** starting from 2. If no such number exists, return 0.",
+  "examples": "**Example 1:**\n\n**Input:** n = 20\n\n**Output:** 17\n\n**Explanation:**\n\nThe prime numbers less than or equal to `n = 20` which are consecutive prime sums are:\n\n  * `2 = 2`\n\n  * `5 = 2 + 3`\n\n  * `17 = 2 + 3 + 5 + 7`\n\n\n\n\nThe largest is 17, so it is the answer.\n\n**Example 2:**\n\n**Input:** n = 2\n\n**Output:** 2\n\n**Explanation:**\n\nThe only consecutive prime sum less than or equal to 2 is 2 itself.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 5 * 105`",
+  "topics": ["Array", "Math", "Number Theory"],
+  "total_accepted": 24201,
+  "total_submissions": 62181,
+  "acceptance_rate": "38.9%",
+  "similar_questions": [],
+  "hints": [
+    "Generate all prime numbers up to <code>n</code> (use sieve or trial division).",
+    "Compute consecutive sums starting from 2 until the sum exceeds <code>n</code>.",
+    "Find the largest sum that is also a prime."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "223",
+  "title": "Rectangle Area",
+  "slug": "rectangle-area",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the coordinates of two <strong>rectilinear</strong> rectangles in a 2D plane, return <em>the total area covered by the two rectangles</em>.</p>\n\n<p>The first rectangle is defined by its <strong>bottom-left</strong> corner <code>(ax1, ay1)</code> and its <strong>top-right</strong> corner <code>(ax2, ay2)</code>.</p>\n\n<p>The second rectangle is defined by its <strong>bottom-left</strong> corner <code>(bx1, by1)</code> and its <strong>top-right</strong> corner <code>(bx2, by2)</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"Rectangle Area\" src=\"https://assets.leetcode.com/uploads/2021/05/08/rectangle-plane.png\" style=\"width: 700px; height: 365px;\" />\n<pre>\n<strong>Input:</strong> ax1 = -3, ay1 = 0, ax2 = 3, ay2 = 4, bx1 = 0, by1 = -1, bx2 = 9, by2 = 2\n<strong>Output:</strong> 45\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> ax1 = -2, ay1 = -2, ax2 = 2, ay2 = 2, bx1 = -2, by1 = -2, bx2 = 2, by2 = 2\n<strong>Output:</strong> 16\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-10<sup>4</sup> &lt;= ax1 &lt;= ax2 &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= ay1 &lt;= ay2 &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= bx1 &lt;= bx2 &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= by1 &lt;= by2 &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given the coordinates of two **rectilinear** rectangles in a 2D plane, return _the total area covered by the two rectangles_.\n\nThe first rectangle is defined by its **bottom-left** corner `(ax1, ay1)` and its **top-right** corner `(ax2, ay2)`.\n\nThe second rectangle is defined by its **bottom-left** corner `(bx1, by1)` and its **top-right** corner `(bx2, by2)`.\n\n \n\n**Example 1:**\n\n![Rectangle Area](https://assets.leetcode.com/uploads/2021/05/08/rectangle-plane.png)\n    \n    \n    **Input:** ax1 = -3, ay1 = 0, ax2 = 3, ay2 = 4, bx1 = 0, by1 = -1, bx2 = 9, by2 = 2\n    **Output:** 45\n    \n\n**Example 2:**\n    \n    \n    **Input:** ax1 = -2, ay1 = -2, ax2 = 2, ay2 = 2, bx1 = -2, by1 = -2, bx2 = 2, by2 = 2\n    **Output:** 16\n    \n\n \n\n**Constraints:**\n\n  * `-104 <= ax1 <= ax2 <= 104`\n  * `-104 <= ay1 <= ay2 <= 104`\n  * `-104 <= bx1 <= bx2 <= 104`\n  * `-104 <= by1 <= by2 <= 104`",
+  "question": "Given the coordinates of two **rectilinear** rectangles in a 2D plane, return _the total area covered by the two rectangles_.\n\nThe first rectangle is defined by its **bottom-left** corner `(ax1, ay1)` and its **top-right** corner `(ax2, ay2)`.\n\nThe second rectangle is defined by its **bottom-left** corner `(bx1, by1)` and its **top-right** corner `(bx2, by2)`.",
+  "examples": "**Example 1:**\n\n![Rectangle Area](https://assets.leetcode.com/uploads/2021/05/08/rectangle-plane.png)\n    \n    \n    **Input:** ax1 = -3, ay1 = 0, ax2 = 3, ay2 = 4, bx1 = 0, by1 = -1, bx2 = 9, by2 = 2\n    **Output:** 45\n    \n\n**Example 2:**\n    \n    \n    **Input:** ax1 = -2, ay1 = -2, ax2 = 2, ay2 = 2, bx1 = -2, by1 = -2, bx2 = 2, by2 = 2\n    **Output:** 16",
+  "constraints": "**Constraints:**\n\n  * `-104 <= ax1 <= ax2 <= 104`\n  * `-104 <= ay1 <= ay2 <= 104`\n  * `-104 <= bx1 <= bx2 <= 104`\n  * `-104 <= by1 <= by2 <= 104`",
+  "topics": ["Math", "Geometry"],
+  "total_accepted": 278602,
+  "total_submissions": 568808,
+  "acceptance_rate": "49.0%",
+  "similar_questions": [
+    {
+      "title": "Rectangle Overlap",
+      "slug": "rectangle-overlap",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/rectangle-overlap/"
+    },
+    {
+      "title": "Find the Number of Ways to Place People II",
+      "slug": "find-the-number-of-ways-to-place-people-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-number-of-ways-to-place-people-ii/"
+    },
+    {
+      "title": "Find the Number of Ways to Place People I",
+      "slug": "find-the-number-of-ways-to-place-people-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-number-of-ways-to-place-people-i/"
+    },
+    {
+      "title": "Find the Largest Area of Square Inside Two Rectangles",
+      "slug": "find-the-largest-area-of-square-inside-two-rectangles",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-largest-area-of-square-inside-two-rectangles/"
+    }
+  ],
+  "hints": []
+}

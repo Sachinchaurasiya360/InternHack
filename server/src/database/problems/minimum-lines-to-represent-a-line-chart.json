@@ -1,0 +1,34 @@
+{
+  "id": "2280",
+  "title": "Minimum Lines to Represent a Line Chart",
+  "slug": "minimum-lines-to-represent-a-line-chart",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D integer array <code>stockPrices</code> where <code>stockPrices[i] = [day<sub>i</sub>, price<sub>i</sub>]</code> indicates the price of the stock on day <code>day<sub>i</sub></code> is <code>price<sub>i</sub></code>. A <strong>line chart</strong> is created from the array by plotting the points on an XY plane with the X-axis representing the day and the Y-axis representing the price and connecting adjacent points. One such example is shown below:</p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/03/30/1920px-pushkin_population_historysvg.png\" style=\"width: 500px; height: 313px;\" />\n<p>Return <em>the <strong>minimum number of lines</strong> needed to represent the line chart</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/03/30/ex0.png\" style=\"width: 400px; height: 400px;\" />\n<pre>\n<strong>Input:</strong> stockPrices = [[1,7],[2,6],[3,5],[4,4],[5,4],[6,3],[7,2],[8,1]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nThe diagram above represents the input, with the X-axis representing the day and Y-axis representing the price.\nThe following 3 lines can be drawn to represent the line chart:\n- Line 1 (in red) from (1,7) to (4,4) passing through (1,7), (2,6), (3,5), and (4,4).\n- Line 2 (in blue) from (4,4) to (5,4).\n- Line 3 (in green) from (5,4) to (8,1) passing through (5,4), (6,3), (7,2), and (8,1).\nIt can be shown that it is not possible to represent the line chart using less than 3 lines.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/03/30/ex1.png\" style=\"width: 325px; height: 325px;\" />\n<pre>\n<strong>Input:</strong> stockPrices = [[3,4],[1,2],[7,8],[2,3]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nAs shown in the diagram above, the line chart can be represented with a single line.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= stockPrices.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>stockPrices[i].length == 2</code></li>\n\t<li><code>1 &lt;= day<sub>i</sub>, price<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li>All <code>day<sub>i</sub></code> are <strong>distinct</strong>.</li>\n</ul>\n",
+  "content_markdown": "You are given a 2D integer array `stockPrices` where `stockPrices[i] = [dayi, pricei]` indicates the price of the stock on day `dayi` is `pricei`. A **line chart** is created from the array by plotting the points on an XY plane with the X-axis representing the day and the Y-axis representing the price and connecting adjacent points. One such example is shown below:\n\n![](https://assets.leetcode.com/uploads/2022/03/30/1920px-pushkin_population_historysvg.png)\n\nReturn _the**minimum number of lines** needed to represent the line chart_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/03/30/ex0.png)\n    \n    \n    **Input:** stockPrices = [[1,7],[2,6],[3,5],[4,4],[5,4],[6,3],[7,2],[8,1]]\n    **Output:** 3\n    **Explanation:**\n    The diagram above represents the input, with the X-axis representing the day and Y-axis representing the price.\n    The following 3 lines can be drawn to represent the line chart:\n    - Line 1 (in red) from (1,7) to (4,4) passing through (1,7), (2,6), (3,5), and (4,4).\n    - Line 2 (in blue) from (4,4) to (5,4).\n    - Line 3 (in green) from (5,4) to (8,1) passing through (5,4), (6,3), (7,2), and (8,1).\n    It can be shown that it is not possible to represent the line chart using less than 3 lines.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/03/30/ex1.png)\n    \n    \n    **Input:** stockPrices = [[3,4],[1,2],[7,8],[2,3]]\n    **Output:** 1\n    **Explanation:**\n    As shown in the diagram above, the line chart can be represented with a single line.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= stockPrices.length <= 105`\n  * `stockPrices[i].length == 2`\n  * `1 <= dayi, pricei <= 109`\n  * All `dayi` are **distinct**.",
+  "question": "You are given a 2D integer array `stockPrices` where `stockPrices[i] = [dayi, pricei]` indicates the price of the stock on day `dayi` is `pricei`. A **line chart** is created from the array by plotting the points on an XY plane with the X-axis representing the day and the Y-axis representing the price and connecting adjacent points. One such example is shown below:\n\n![](https://assets.leetcode.com/uploads/2022/03/30/1920px-pushkin_population_historysvg.png)\n\nReturn _the**minimum number of lines** needed to represent the line chart_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/03/30/ex0.png)\n    \n    \n    **Input:** stockPrices = [[1,7],[2,6],[3,5],[4,4],[5,4],[6,3],[7,2],[8,1]]\n    **Output:** 3\n    **Explanation:**\n    The diagram above represents the input, with the X-axis representing the day and Y-axis representing the price.\n    The following 3 lines can be drawn to represent the line chart:\n    - Line 1 (in red) from (1,7) to (4,4) passing through (1,7), (2,6), (3,5), and (4,4).\n    - Line 2 (in blue) from (4,4) to (5,4).\n    - Line 3 (in green) from (5,4) to (8,1) passing through (5,4), (6,3), (7,2), and (8,1).\n    It can be shown that it is not possible to represent the line chart using less than 3 lines.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/03/30/ex1.png)\n    \n    \n    **Input:** stockPrices = [[3,4],[1,2],[7,8],[2,3]]\n    **Output:** 1\n    **Explanation:**\n    As shown in the diagram above, the line chart can be represented with a single line.",
+  "constraints": "**Constraints:**\n\n  * `1 <= stockPrices.length <= 105`\n  * `stockPrices[i].length == 2`\n  * `1 <= dayi, pricei <= 109`\n  * All `dayi` are **distinct**.",
+  "topics": ["Array", "Math", "Geometry", "Sorting", "Number Theory"],
+  "total_accepted": 31988,
+  "total_submissions": 119049,
+  "acceptance_rate": "26.9%",
+  "similar_questions": [
+    {
+      "title": "Max Points on a Line",
+      "slug": "max-points-on-a-line",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/max-points-on-a-line/"
+    },
+    {
+      "title": "Minimum Number of Lines to Cover Points",
+      "slug": "minimum-number-of-lines-to-cover-points",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-lines-to-cover-points/"
+    }
+  ],
+  "hints": [
+    "When will three adjacent points lie on the same line? How can we generalize this for all points?",
+    "Will calculating the slope of lines connecting adjacent points help us find the answer?"
+  ]
+}

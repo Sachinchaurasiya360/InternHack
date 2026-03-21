@@ -1,0 +1,55 @@
+{
+  "id": "9",
+  "title": "Palindrome Number",
+  "slug": "palindrome-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>x</code>, return <code>true</code><em> if </em><code>x</code><em> is a </em><span data-keyword=\"palindrome-integer\"><em><strong>palindrome</strong></em></span><em>, and </em><code>false</code><em> otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 121\n<strong>Output:</strong> true\n<strong>Explanation:</strong> 121 reads as 121 from left to right and from right to left.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = -121\n<strong>Output:</strong> false\n<strong>Explanation:</strong> From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 10\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Reads 01 from right to left. Therefore it is not a palindrome.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-2<sup>31</sup>&nbsp;&lt;= x &lt;= 2<sup>31</sup>&nbsp;- 1</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Could you solve it without converting the integer to a string?",
+  "content_markdown": "Given an integer `x`, return `true` _if_`x` _is a_ _**palindrome**_ _, and_`false` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** x = 121\n    **Output:** true\n    **Explanation:** 121 reads as 121 from left to right and from right to left.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = -121\n    **Output:** false\n    **Explanation:** From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.\n    \n\n**Example 3:**\n    \n    \n    **Input:** x = 10\n    **Output:** false\n    **Explanation:** Reads 01 from right to left. Therefore it is not a palindrome.\n    \n\n \n\n**Constraints:**\n\n  * `-231 <= x <= 231 - 1`\n\n\n\n \n\n**Follow up:** Could you solve it without converting the integer to a string?",
+  "question": "Given an integer `x`, return `true` _if_`x` _is a_ _**palindrome**_ _, and_`false` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** x = 121\n    **Output:** true\n    **Explanation:** 121 reads as 121 from left to right and from right to left.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = -121\n    **Output:** false\n    **Explanation:** From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.\n    \n\n**Example 3:**\n    \n    \n    **Input:** x = 10\n    **Output:** false\n    **Explanation:** Reads 01 from right to left. Therefore it is not a palindrome.",
+  "constraints": "**Constraints:**\n\n  * `-231 <= x <= 231 - 1`",
+  "topics": ["Math"],
+  "total_accepted": 7796886,
+  "total_submissions": 12937113,
+  "acceptance_rate": "60.3%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Linked List",
+      "slug": "palindrome-linked-list",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-linked-list/"
+    },
+    {
+      "title": "Find Palindrome With Fixed Length",
+      "slug": "find-palindrome-with-fixed-length",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-palindrome-with-fixed-length/"
+    },
+    {
+      "title": "Strictly Palindromic Number",
+      "slug": "strictly-palindromic-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/strictly-palindromic-number/"
+    },
+    {
+      "title": "  Count Symmetric Integers",
+      "slug": "count-symmetric-integers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-symmetric-integers/"
+    },
+    {
+      "title": "Find the Count of Good Integers",
+      "slug": "find-the-count-of-good-integers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-count-of-good-integers/"
+    },
+    {
+      "title": "Find the Largest Palindrome Divisible by K",
+      "slug": "find-the-largest-palindrome-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-largest-palindrome-divisible-by-k/"
+    }
+  ],
+  "hints": ["Beware of overflow when you reverse the integer."]
+}

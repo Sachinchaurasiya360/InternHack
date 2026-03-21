@@ -1,0 +1,36 @@
+{
+  "id": "1885",
+  "title": "Count Pairs in Two Arrays",
+  "slug": "count-pairs-in-two-arrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 12087,
+  "total_submissions": 20023,
+  "acceptance_rate": "60.4%",
+  "similar_questions": [
+    {
+      "title": "Max Value of Equation",
+      "slug": "max-value-of-equation",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/max-value-of-equation/"
+    },
+    {
+      "title": "Substrings That Begin and End With the Same Letter",
+      "slug": "substrings-that-begin-and-end-with-the-same-letter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/substrings-that-begin-and-end-with-the-same-letter/"
+    }
+  ],
+  "hints": [
+    "We can write it as nums1[i] - nums2[i] > nums2[j] - nums1[j] instead of nums1[i] + nums1[j] > nums2[i] + nums2[j].",
+    "Store nums1[idx] - nums2[idx] in a data structure.",
+    "Store nums2[idx] - nums1[idx] in a different data structure.",
+    "For each integer in the first data structure, count the number of the strictly smaller integers in the second data structure with a larger index in the original array."
+  ]
+}

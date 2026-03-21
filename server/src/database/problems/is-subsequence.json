@@ -1,0 +1,43 @@
+{
+  "id": "392",
+  "title": "Is Subsequence",
+  "slug": "is-subsequence",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s</code> and <code>t</code>, return <code>true</code><em> if </em><code>s</code><em> is a <strong>subsequence</strong> of </em><code>t</code><em>, or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>A <strong>subsequence</strong> of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (i.e., <code>&quot;ace&quot;</code> is a subsequence of <code>&quot;<u>a</u>b<u>c</u>d<u>e</u>&quot;</code> while <code>&quot;aec&quot;</code> is not).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"abc\", t = \"ahbgdc\"\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"axc\", t = \"ahbgdc\"\n<strong>Output:</strong> false\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>0 &lt;= t.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> and <code>t</code> consist only of lowercase English letters.</li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Suppose there are lots of incoming <code>s</code>, say <code>s<sub>1</sub>, s<sub>2</sub>, ..., s<sub>k</sub></code> where <code>k &gt;= 10<sup>9</sup></code>, and you want to check one by one to see if <code>t</code> has its subsequence. In this scenario, how would you change your code?",
+  "content_markdown": "Given two strings `s` and `t`, return `true` _if_`s` _is a**subsequence** of _`t` _, or_`false` _otherwise_.\n\nA **subsequence** of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (i.e., `\"ace\"` is a subsequence of `\"_a_ b _c_ d _e_ \"` while `\"aec\"` is not).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abc\", t = \"ahbgdc\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"axc\", t = \"ahbgdc\"\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `0 <= s.length <= 100`\n  * `0 <= t.length <= 104`\n  * `s` and `t` consist only of lowercase English letters.\n\n\n\n \n\n**Follow up:** Suppose there are lots of incoming `s`, say `s1, s2, ..., sk` where `k >= 109`, and you want to check one by one to see if `t` has its subsequence. In this scenario, how would you change your code?",
+  "question": "Given two strings `s` and `t`, return `true` _if_`s` _is a**subsequence** of _`t` _, or_`false` _otherwise_.\n\nA **subsequence** of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (i.e., `\"ace\"` is a subsequence of `\"_a_ b _c_ d _e_ \"` while `\"aec\"` is not).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abc\", t = \"ahbgdc\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"axc\", t = \"ahbgdc\"\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `0 <= s.length <= 100`\n  * `0 <= t.length <= 104`\n  * `s` and `t` consist only of lowercase English letters.",
+  "topics": ["Two Pointers", "String", "Dynamic Programming"],
+  "total_accepted": 2411503,
+  "total_submissions": 4934836,
+  "acceptance_rate": "48.9%",
+  "similar_questions": [
+    {
+      "title": "Number of Matching Subsequences",
+      "slug": "number-of-matching-subsequences",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-matching-subsequences/"
+    },
+    {
+      "title": "Shortest Way to Form String",
+      "slug": "shortest-way-to-form-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-way-to-form-string/"
+    },
+    {
+      "title": "Append Characters to String to Make Subsequence",
+      "slug": "append-characters-to-string-to-make-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/append-characters-to-string-to-make-subsequence/"
+    },
+    {
+      "title": "Make String a Subsequence Using Cyclic Increments",
+      "slug": "make-string-a-subsequence-using-cyclic-increments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/make-string-a-subsequence-using-cyclic-increments/"
+    }
+  ],
+  "hints": []
+}

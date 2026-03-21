@@ -1,0 +1,35 @@
+{
+  "id": "2389",
+  "title": "Longest Subsequence With Limited Sum",
+  "slug": "longest-subsequence-with-limited-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> of length <code>n</code>, and an integer array <code>queries</code> of length <code>m</code>.</p>\n\n<p>Return <em>an array </em><code>answer</code><em> of length </em><code>m</code><em> where </em><code>answer[i]</code><em> is the <strong>maximum</strong> size of a <strong>subsequence</strong> that you can take from </em><code>nums</code><em> such that the <strong>sum</strong> of its elements is less than or equal to </em><code>queries[i]</code>.</p>\n\n<p>A <strong>subsequence</strong> is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,5,2,1], queries = [3,10,21]\n<strong>Output:</strong> [2,3,4]\n<strong>Explanation:</strong> We answer the queries as follows:\n- The subsequence [2,1] has a sum less than or equal to 3. It can be proven that 2 is the maximum size of such a subsequence, so answer[0] = 2.\n- The subsequence [4,5,1] has a sum less than or equal to 10. It can be proven that 3 is the maximum size of such a subsequence, so answer[1] = 3.\n- The subsequence [4,5,2,1] has a sum less than or equal to 21. It can be proven that 4 is the maximum size of such a subsequence, so answer[2] = 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3,4,5], queries = [1]\n<strong>Output:</strong> [0]\n<strong>Explanation:</strong> The empty subsequence is the only subsequence that has a sum less than or equal to 1, so answer[0] = 0.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>m == queries.length</code></li>\n\t<li><code>1 &lt;= n, m &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i], queries[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` of length `n`, and an integer array `queries` of length `m`.\n\nReturn _an array_`answer` _of length_`m` _where_`answer[i]`_is the**maximum** size of a **subsequence** that you can take from _`nums` _such that the**sum** of its elements is less than or equal to _`queries[i]`.\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,5,2,1], queries = [3,10,21]\n    **Output:** [2,3,4]\n    **Explanation:** We answer the queries as follows:\n    - The subsequence [2,1] has a sum less than or equal to 3. It can be proven that 2 is the maximum size of such a subsequence, so answer[0] = 2.\n    - The subsequence [4,5,1] has a sum less than or equal to 10. It can be proven that 3 is the maximum size of such a subsequence, so answer[1] = 3.\n    - The subsequence [4,5,2,1] has a sum less than or equal to 21. It can be proven that 4 is the maximum size of such a subsequence, so answer[2] = 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,3,4,5], queries = [1]\n    **Output:** [0]\n    **Explanation:** The empty subsequence is the only subsequence that has a sum less than or equal to 1, so answer[0] = 0.\n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `m == queries.length`\n  * `1 <= n, m <= 1000`\n  * `1 <= nums[i], queries[i] <= 106`",
+  "question": "You are given an integer array `nums` of length `n`, and an integer array `queries` of length `m`.\n\nReturn _an array_`answer` _of length_`m` _where_`answer[i]`_is the**maximum** size of a **subsequence** that you can take from _`nums` _such that the**sum** of its elements is less than or equal to _`queries[i]`.\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,5,2,1], queries = [3,10,21]\n    **Output:** [2,3,4]\n    **Explanation:** We answer the queries as follows:\n    - The subsequence [2,1] has a sum less than or equal to 3. It can be proven that 2 is the maximum size of such a subsequence, so answer[0] = 2.\n    - The subsequence [4,5,1] has a sum less than or equal to 10. It can be proven that 3 is the maximum size of such a subsequence, so answer[1] = 3.\n    - The subsequence [4,5,2,1] has a sum less than or equal to 21. It can be proven that 4 is the maximum size of such a subsequence, so answer[2] = 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,3,4,5], queries = [1]\n    **Output:** [0]\n    **Explanation:** The empty subsequence is the only subsequence that has a sum less than or equal to 1, so answer[0] = 0.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `m == queries.length`\n  * `1 <= n, m <= 1000`\n  * `1 <= nums[i], queries[i] <= 106`",
+  "topics": ["Array", "Binary Search", "Greedy", "Sorting", "Prefix Sum"],
+  "total_accepted": 161465,
+  "total_submissions": 219943,
+  "acceptance_rate": "73.4%",
+  "similar_questions": [
+    {
+      "title": "How Many Numbers Are Smaller Than the Current Number",
+      "slug": "how-many-numbers-are-smaller-than-the-current-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/"
+    },
+    {
+      "title": "Successful Pairs of Spells and Potions",
+      "slug": "successful-pairs-of-spells-and-potions",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/successful-pairs-of-spells-and-potions/"
+    }
+  ],
+  "hints": [
+    "Solve each query independently.",
+    "When solving a query, which elements of nums should you choose to make the subsequence as long as possible?",
+    "Choose the smallest elements in nums that add up to a sum less than the query."
+  ]
+}

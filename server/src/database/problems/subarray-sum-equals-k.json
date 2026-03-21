@@ -1,0 +1,72 @@
+{
+  "id": "560",
+  "title": "Subarray Sum Equals K",
+  "slug": "subarray-sum-equals-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>nums</code> and an integer <code>k</code>, return <em>the total number of subarrays whose sum equals to</em> <code>k</code>.</p>\n\n<p>A subarray is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,1,1], k = 2\n<strong>Output:</strong> 2\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,3], k = 3\n<strong>Output:</strong> 2\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>-1000 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li><code>-10<sup>7</sup> &lt;= k &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `nums` and an integer `k`, return _the total number of subarrays whose sum equals to_ `k`.\n\nA subarray is a contiguous **non-empty** sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,1,1], k = 2\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3], k = 3\n    **Output:** 2\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `-1000 <= nums[i] <= 1000`\n  * `-107 <= k <= 107`",
+  "question": "Given an array of integers `nums` and an integer `k`, return _the total number of subarrays whose sum equals to_ `k`.\n\nA subarray is a contiguous **non-empty** sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,1,1], k = 2\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3], k = 3\n    **Output:** 2",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `-1000 <= nums[i] <= 1000`\n  * `-107 <= k <= 107`",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 2298094,
+  "total_submissions": 4906521,
+  "acceptance_rate": "46.8%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "Continuous Subarray Sum",
+      "slug": "continuous-subarray-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/continuous-subarray-sum/"
+    },
+    {
+      "title": "Subarray Product Less Than K",
+      "slug": "subarray-product-less-than-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-product-less-than-k/"
+    },
+    {
+      "title": "Find Pivot Index",
+      "slug": "find-pivot-index",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-pivot-index/"
+    },
+    {
+      "title": "Subarray Sums Divisible by K",
+      "slug": "subarray-sums-divisible-by-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sums-divisible-by-k/"
+    },
+    {
+      "title": "Minimum Operations to Reduce X to Zero",
+      "slug": "minimum-operations-to-reduce-x-to-zero",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/"
+    },
+    {
+      "title": "K Radius Subarray Averages",
+      "slug": "k-radius-subarray-averages",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-radius-subarray-averages/"
+    },
+    {
+      "title": "Maximum Sum Score of Array",
+      "slug": "maximum-sum-score-of-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-sum-score-of-array/"
+    }
+  ],
+  "hints": [
+    "Will Brute force work here? Try to optimize it.",
+    "Can we optimize it by using some extra space?",
+    "What about storing sum frequencies in a hash table? Will it be useful?",
+    "sum(i,j)=sum(0,j)-sum(0,i), where sum(i,j) represents the sum of all the elements from index i to j-1.\r\n\r\nCan we use this property to optimize it."
+  ]
+}

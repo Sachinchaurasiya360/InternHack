@@ -1,0 +1,31 @@
+{
+  "id": "1469",
+  "title": "Find All The Lonely Nodes",
+  "slug": "find-all-the-lonely-nodes",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 61227,
+  "total_submissions": 72806,
+  "acceptance_rate": "84.1%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Tilt",
+      "slug": "binary-tree-tilt",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-tilt/"
+    },
+    {
+      "title": "Univalued Binary Tree",
+      "slug": "univalued-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/univalued-binary-tree/"
+    }
+  ],
+  "hints": ["Do a simple tree traversal, try to check if the current node is lonely or not."]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "2005",
+  "title": "Subtree Removal Game with Fibonacci Tree",
+  "slug": "subtree-removal-game-with-fibonacci-tree",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming", "Tree", "Binary Tree", "Game Theory"],
+  "total_accepted": 908,
+  "total_submissions": 1569,
+  "acceptance_rate": "57.9%",
+  "similar_questions": [
+    {
+      "title": "Game of Nim",
+      "slug": "game-of-nim",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/game-of-nim/"
+    }
+  ],
+  "hints": [
+    "How can game theory help us solve this problem?",
+    "Think about the Sprague–Grundy theorem and the Colon Principle",
+    "The Grundy value of a node is the nim sum of the Grundy values of its children."
+  ]
+}

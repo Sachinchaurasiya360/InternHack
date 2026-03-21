@@ -1,0 +1,25 @@
+{
+  "id": "997",
+  "title": "Find the Town Judge",
+  "slug": "find-the-town-judge",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>In a town, there are <code>n</code> people labeled from <code>1</code> to <code>n</code>. There is a rumor that one of these people is secretly the town judge.</p>\n\n<p>If the town judge exists, then:</p>\n\n<ol>\n\t<li>The town judge trusts nobody.</li>\n\t<li>Everybody (except for the town judge) trusts the town judge.</li>\n\t<li>There is exactly one person that satisfies properties <strong>1</strong> and <strong>2</strong>.</li>\n</ol>\n\n<p>You are given an array <code>trust</code> where <code>trust[i] = [a<sub>i</sub>, b<sub>i</sub>]</code> representing that the person labeled <code>a<sub>i</sub></code> trusts the person labeled <code>b<sub>i</sub></code>. If a trust relationship does not exist in <code>trust</code> array, then such a trust relationship does not exist.</p>\n\n<p>Return <em>the label of the town judge if the town judge exists and can be identified, or return </em><code>-1</code><em> otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, trust = [[1,2]]\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, trust = [[1,3],[2,3]]\n<strong>Output:</strong> 3\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, trust = [[1,3],[2,3],[3,1]]\n<strong>Output:</strong> -1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n\t<li><code>0 &lt;= trust.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>trust[i].length == 2</code></li>\n\t<li>All the pairs of <code>trust</code> are <strong>unique</strong>.</li>\n\t<li><code>a<sub>i</sub> != b<sub>i</sub></code></li>\n\t<li><code>1 &lt;= a<sub>i</sub>, b<sub>i</sub> &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "In a town, there are `n` people labeled from `1` to `n`. There is a rumor that one of these people is secretly the town judge.\n\nIf the town judge exists, then:\n\n  1. The town judge trusts nobody.\n  2. Everybody (except for the town judge) trusts the town judge.\n  3. There is exactly one person that satisfies properties **1** and **2**.\n\n\n\nYou are given an array `trust` where `trust[i] = [ai, bi]` representing that the person labeled `ai` trusts the person labeled `bi`. If a trust relationship does not exist in `trust` array, then such a trust relationship does not exist.\n\nReturn _the label of the town judge if the town judge exists and can be identified, or return_`-1` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2, trust = [[1,2]]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, trust = [[1,3],[2,3]]\n    **Output:** 3\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3, trust = [[1,3],[2,3],[3,1]]\n    **Output:** -1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `0 <= trust.length <= 104`\n  * `trust[i].length == 2`\n  * All the pairs of `trust` are **unique**.\n  * `ai != bi`\n  * `1 <= ai, bi <= n`",
+  "question": "In a town, there are `n` people labeled from `1` to `n`. There is a rumor that one of these people is secretly the town judge.\n\nIf the town judge exists, then:\n\n  1. The town judge trusts nobody.\n  2. Everybody (except for the town judge) trusts the town judge.\n  3. There is exactly one person that satisfies properties **1** and **2**.\n\n\n\nYou are given an array `trust` where `trust[i] = [ai, bi]` representing that the person labeled `ai` trusts the person labeled `bi`. If a trust relationship does not exist in `trust` array, then such a trust relationship does not exist.\n\nReturn _the label of the town judge if the town judge exists and can be identified, or return_`-1` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2, trust = [[1,2]]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, trust = [[1,3],[2,3]]\n    **Output:** 3\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3, trust = [[1,3],[2,3],[3,1]]\n    **Output:** -1",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `0 <= trust.length <= 104`\n  * `trust[i].length == 2`\n  * All the pairs of `trust` are **unique**.\n  * `ai != bi`\n  * `1 <= ai, bi <= n`",
+  "topics": ["Array", "Hash Table", "Graph Theory"],
+  "total_accepted": 736817,
+  "total_submissions": 1458085,
+  "acceptance_rate": "50.5%",
+  "similar_questions": [
+    {
+      "title": "Find the Celebrity",
+      "slug": "find-the-celebrity",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-celebrity/"
+    }
+  ],
+  "hints": []
+}

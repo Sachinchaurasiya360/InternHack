@@ -1,0 +1,18 @@
+{
+  "id": "2988",
+  "title": "Manager of the Largest Department",
+  "slug": "manager-of-the-largest-department",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 4488,
+  "total_submissions": 5560,
+  "acceptance_rate": "80.7%",
+  "similar_questions": [],
+  "hints": []
+}

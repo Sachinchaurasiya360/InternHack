@@ -1,0 +1,23 @@
+{
+  "id": "3496",
+  "title": "Maximize Score After Pair Deletions",
+  "slug": "maximize-score-after-pair-deletions",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 1099,
+  "total_submissions": 2080,
+  "acceptance_rate": "52.8%",
+  "similar_questions": [],
+  "hints": [
+    "The number of operations is <code>floor((n - 1) / 2)</code>, so the number of remaining elements is <code>n - 2 * floor((n - 1) / 2)</code>.",
+    "There will be either 1 or 2 elements remaining.",
+    "If there is 1 element remaining, let it be the minimum element.",
+    "If there are 2 elements remaining, let them be the adjacent elements with the minimum sum."
+  ]
+}

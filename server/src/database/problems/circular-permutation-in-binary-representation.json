@@ -1,0 +1,21 @@
+{
+  "id": "1238",
+  "title": "Circular Permutation in Binary Representation",
+  "slug": "circular-permutation-in-binary-representation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given 2 integers <code>n</code> and <code>start</code>. Your task is return <strong>any</strong> permutation <code>p</code>&nbsp;of <code>(0,1,2.....,2^n -1) </code>such that :</p>\r\n\r\n<ul>\r\n\t<li><code>p[0] = start</code></li>\r\n\t<li><code>p[i]</code> and <code>p[i+1]</code>&nbsp;differ by only one bit in their binary representation.</li>\r\n\t<li><code>p[0]</code> and <code>p[2^n -1]</code>&nbsp;must also differ by only one bit in their binary representation.</li>\r\n</ul>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> n = 2, start = 3\r\n<strong>Output:</strong> [3,2,0,1]\r\n<strong>Explanation:</strong> The binary representation of the permutation is (11,10,00,01). \r\nAll the adjacent element differ by one bit. Another valid permutation is [3,1,0,2]\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> n = 3, start = 2\r\n<strong>Output:</strong> [2,6,7,5,4,0,1,3]\r\n<strong>Explanation:</strong> The binary representation of the permutation is (010,110,111,101,100,000,001,011).\r\n</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>1 &lt;= n &lt;= 16</code></li>\r\n\t<li><code>0 &lt;= start&nbsp;&lt;&nbsp;2 ^ n</code></li>\r\n</ul>",
+  "content_markdown": "Given 2 integers `n` and `start`. Your task is return **any** permutation `p` of `(0,1,2.....,2^n -1) `such that :\n\n  * `p[0] = start`\n  * `p[i]` and `p[i+1]` differ by only one bit in their binary representation.\n  * `p[0]` and `p[2^n -1]` must also differ by only one bit in their binary representation.\n\n\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** n = 2, start = 3\r\n    **Output:** [3,2,0,1]\r\n    **Explanation:** The binary representation of the permutation is (11,10,00,01). \r\n    All the adjacent element differ by one bit. Another valid permutation is [3,1,0,2]\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** n = 3, start = 2\r\n    **Output:** [2,6,7,5,4,0,1,3]\r\n    **Explanation:** The binary representation of the permutation is (010,110,111,101,100,000,001,011).\r\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 16`\n  * `0 <= start < 2 ^ n`",
+  "question": "Given 2 integers `n` and `start`. Your task is return **any** permutation `p` of `(0,1,2.....,2^n -1) `such that :\n\n  * `p[0] = start`\n  * `p[i]` and `p[i+1]` differ by only one bit in their binary representation.\n  * `p[0]` and `p[2^n -1]` must also differ by only one bit in their binary representation.",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** n = 2, start = 3\r\n    **Output:** [3,2,0,1]\r\n    **Explanation:** The binary representation of the permutation is (11,10,00,01). \r\n    All the adjacent element differ by one bit. Another valid permutation is [3,1,0,2]\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** n = 3, start = 2\r\n    **Output:** [2,6,7,5,4,0,1,3]\r\n    **Explanation:** The binary representation of the permutation is (010,110,111,101,100,000,001,011).",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 16`\n  * `0 <= start < 2 ^ n`",
+  "topics": ["Math", "Backtracking", "Bit Manipulation"],
+  "total_accepted": 24125,
+  "total_submissions": 33246,
+  "acceptance_rate": "72.6%",
+  "similar_questions": [],
+  "hints": [
+    "Use gray code to generate a n-bit sequence.",
+    "Rotate the sequence such that its first element is start."
+  ]
+}

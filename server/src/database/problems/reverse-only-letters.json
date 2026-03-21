@@ -1,0 +1,33 @@
+{
+  "id": "917",
+  "title": "Reverse Only Letters",
+  "slug": "reverse-only-letters",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, reverse the string according to the following rules:</p>\n\n<ul>\n\t<li>All the characters that are not English letters remain in the same position.</li>\n\t<li>All the English letters (lowercase or uppercase) should be reversed.</li>\n</ul>\n\n<p>Return <code>s</code><em> after reversing it</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"ab-cd\"\n<strong>Output:</strong> \"dc-ba\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"a-bC-dEf-ghIj\"\n<strong>Output:</strong> \"j-Ih-gfE-dCba\"\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> s = \"Test1ng-Leet=code-Q!\"\n<strong>Output:</strong> \"Qedo1ct-eeLg=ntse-T!\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of characters with ASCII values in the range <code>[33, 122]</code>.</li>\n\t<li><code>s</code> does not contain <code>&#39;\\&quot;&#39;</code> or <code>&#39;\\\\&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, reverse the string according to the following rules:\n\n  * All the characters that are not English letters remain in the same position.\n  * All the English letters (lowercase or uppercase) should be reversed.\n\n\n\nReturn `s` _after reversing it_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"ab-cd\"\n    **Output:** \"dc-ba\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a-bC-dEf-ghIj\"\n    **Output:** \"j-Ih-gfE-dCba\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"Test1ng-Leet=code-Q!\"\n    **Output:** \"Qedo1ct-eeLg=ntse-T!\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of characters with ASCII values in the range `[33, 122]`.\n  * `s` does not contain `'\\\"'` or `'\\\\'`.",
+  "question": "Given a string `s`, reverse the string according to the following rules:\n\n  * All the characters that are not English letters remain in the same position.\n  * All the English letters (lowercase or uppercase) should be reversed.\n\n\n\nReturn `s` _after reversing it_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"ab-cd\"\n    **Output:** \"dc-ba\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a-bC-dEf-ghIj\"\n    **Output:** \"j-Ih-gfE-dCba\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"Test1ng-Leet=code-Q!\"\n    **Output:** \"Qedo1ct-eeLg=ntse-T!\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of characters with ASCII values in the range `[33, 122]`.\n  * `s` does not contain `'\\\"'` or `'\\\\'`.",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 318988,
+  "total_submissions": 467977,
+  "acceptance_rate": "68.2%",
+  "similar_questions": [
+    {
+      "title": "Faulty Keyboard",
+      "slug": "faulty-keyboard",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/faulty-keyboard/"
+    },
+    {
+      "title": "Reverse Letters Then Special Characters in a String",
+      "slug": "reverse-letters-then-special-characters-in-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-letters-then-special-characters-in-a-string/"
+    }
+  ],
+  "hints": [
+    "This problem is exactly like reversing a normal string except that there are certain characters that we have to simply skip. That should be easy enough to do if you know how to reverse a string using the two-pointer approach."
+  ]
+}

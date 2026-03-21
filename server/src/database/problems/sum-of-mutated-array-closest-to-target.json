@@ -1,0 +1,22 @@
+{
+  "id": "1300",
+  "title": "Sum of Mutated Array Closest to Target",
+  "slug": "sum-of-mutated-array-closest-to-target",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>arr</code> and a target value <code>target</code>, return the integer <code>value</code> such that when we change all the integers larger than <code>value</code> in the given array to be equal to <code>value</code>, the sum of the array gets as close as possible (in absolute difference) to <code>target</code>.</p>\n\n<p>In case of a tie, return the minimum such integer.</p>\n\n<p>Notice that the answer is not neccesarilly a number from <code>arr</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,9,3], target = 10\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> When using 3 arr converts to [3, 3, 3] which sums 9 and that&#39;s the optimal answer.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,3,5], target = 10\n<strong>Output:</strong> 5\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [60864,25176,27249,21296,20204], target = 56803\n<strong>Output:</strong> 11361\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= arr[i], target &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr` and a target value `target`, return the integer `value` such that when we change all the integers larger than `value` in the given array to be equal to `value`, the sum of the array gets as close as possible (in absolute difference) to `target`.\n\nIn case of a tie, return the minimum such integer.\n\nNotice that the answer is not neccesarilly a number from `arr`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [4,9,3], target = 10\n    **Output:** 3\n    **Explanation:** When using 3 arr converts to [3, 3, 3] which sums 9 and that's the optimal answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,3,5], target = 10\n    **Output:** 5\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [60864,25176,27249,21296,20204], target = 56803\n    **Output:** 11361\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `1 <= arr[i], target <= 105`",
+  "question": "Given an integer array `arr` and a target value `target`, return the integer `value` such that when we change all the integers larger than `value` in the given array to be equal to `value`, the sum of the array gets as close as possible (in absolute difference) to `target`.\n\nIn case of a tie, return the minimum such integer.\n\nNotice that the answer is not neccesarilly a number from `arr`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [4,9,3], target = 10\n    **Output:** 3\n    **Explanation:** When using 3 arr converts to [3, 3, 3] which sums 9 and that's the optimal answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,3,5], target = 10\n    **Output:** 5\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [60864,25176,27249,21296,20204], target = 56803\n    **Output:** 11361",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `1 <= arr[i], target <= 105`",
+  "topics": ["Array", "Binary Search", "Sorting"],
+  "total_accepted": 48726,
+  "total_submissions": 105564,
+  "acceptance_rate": "46.2%",
+  "similar_questions": [],
+  "hints": [
+    "If you draw a graph with the value on one axis and the absolute difference between the target and the array sum, what will you get?",
+    "That graph is uni-modal.",
+    "Use ternary search on that graph to find the best value."
+  ]
+}

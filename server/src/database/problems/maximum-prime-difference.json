@@ -1,0 +1,21 @@
+{
+  "id": "3115",
+  "title": "Maximum Prime Difference",
+  "slug": "maximum-prime-difference",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>.</p>\n\n<p>Return an integer that is the <strong>maximum</strong> distance between the <strong>indices</strong> of two (not necessarily different) prime numbers in <code>nums</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [4,2,9,5,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong> <code>nums[1]</code>, <code>nums[3]</code>, and <code>nums[4]</code> are prime. So the answer is <code>|4 - 1| = 3</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [4,8,2,8]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong> <code>nums[2]</code> is prime. Because there is just one prime number, the answer is <code>|2 - 2| = 0</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 3 * 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 100</code></li>\n\t<li>The input is generated such that the number of prime numbers in the <code>nums</code> is at least one.</li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`.\n\nReturn an integer that is the **maximum** distance between the **indices** of two (not necessarily different) prime numbers in `nums` _._\n\n \n\n**Example 1:**\n\n**Input:** nums = [4,2,9,5,3]\n\n**Output:** 3\n\n**Explanation:** `nums[1]`, `nums[3]`, and `nums[4]` are prime. So the answer is `|4 - 1| = 3`.\n\n**Example 2:**\n\n**Input:** nums = [4,8,2,8]\n\n**Output:** 0\n\n**Explanation:** `nums[2]` is prime. Because there is just one prime number, the answer is `|2 - 2| = 0`.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 3 * 105`\n  * `1 <= nums[i] <= 100`\n  * The input is generated such that the number of prime numbers in the `nums` is at least one.",
+  "question": "You are given an integer array `nums`.\n\nReturn an integer that is the **maximum** distance between the **indices** of two (not necessarily different) prime numbers in `nums` _._",
+  "examples": "**Example 1:**\n\n**Input:** nums = [4,2,9,5,3]\n\n**Output:** 3\n\n**Explanation:** `nums[1]`, `nums[3]`, and `nums[4]` are prime. So the answer is `|4 - 1| = 3`.\n\n**Example 2:**\n\n**Input:** nums = [4,8,2,8]\n\n**Output:** 0\n\n**Explanation:** `nums[2]` is prime. Because there is just one prime number, the answer is `|2 - 2| = 0`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 3 * 105`\n  * `1 <= nums[i] <= 100`\n  * The input is generated such that the number of prime numbers in the `nums` is at least one.",
+  "topics": ["Array", "Math", "Number Theory"],
+  "total_accepted": 49844,
+  "total_submissions": 85072,
+  "acceptance_rate": "58.6%",
+  "similar_questions": [],
+  "hints": [
+    "Find all prime numbers in the <code>nums</code>.",
+    "Find the first and the last prime number in the <code>nums</code>."
+  ]
+}

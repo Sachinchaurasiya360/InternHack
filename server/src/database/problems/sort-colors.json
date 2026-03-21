@@ -1,0 +1,41 @@
+{
+  "id": "75",
+  "title": "Sort Colors",
+  "slug": "sort-colors",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> with <code>n</code> objects colored red, white, or blue, sort them <strong><a href=\"https://en.wikipedia.org/wiki/In-place_algorithm\" target=\"_blank\">in-place</a> </strong>so that objects of the same color are adjacent, with the colors in the order red, white, and blue.</p>\n\n<p>We will use the integers <code>0</code>, <code>1</code>, and <code>2</code> to represent the color red, white, and blue, respectively.</p>\n\n<p>You must solve this problem without using the library&#39;s sort function.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,0,2,1,1,0]\n<strong>Output:</strong> [0,0,1,1,2,2]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,0,1]\n<strong>Output:</strong> [0,1,2]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 300</code></li>\n\t<li><code>nums[i]</code> is either <code>0</code>, <code>1</code>, or <code>2</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong>&nbsp;Could you come up with a one-pass algorithm using only&nbsp;constant extra space?</p>\n",
+  "content_markdown": "Given an array `nums` with `n` objects colored red, white, or blue, sort them **[in-place](<https://en.wikipedia.org/wiki/In-place_algorithm>) **so that objects of the same color are adjacent, with the colors in the order red, white, and blue.\n\nWe will use the integers `0`, `1`, and `2` to represent the color red, white, and blue, respectively.\n\nYou must solve this problem without using the library's sort function.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,0,2,1,1,0]\n    **Output:** [0,0,1,1,2,2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,0,1]\n    **Output:** [0,1,2]\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 300`\n  * `nums[i]` is either `0`, `1`, or `2`.\n\n\n\n \n\n**Follow up:**  Could you come up with a one-pass algorithm using only constant extra space?",
+  "question": "Given an array `nums` with `n` objects colored red, white, or blue, sort them **[in-place](<https://en.wikipedia.org/wiki/In-place_algorithm>) **so that objects of the same color are adjacent, with the colors in the order red, white, and blue.\n\nWe will use the integers `0`, `1`, and `2` to represent the color red, white, and blue, respectively.\n\nYou must solve this problem without using the library's sort function.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,0,2,1,1,0]\n    **Output:** [0,0,1,1,2,2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,0,1]\n    **Output:** [0,1,2]",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 300`\n  * `nums[i]` is either `0`, `1`, or `2`.",
+  "topics": ["Array", "Two Pointers", "Sorting"],
+  "total_accepted": 3586822,
+  "total_submissions": 5183538,
+  "acceptance_rate": "69.2%",
+  "similar_questions": [
+    {
+      "title": "Sort List",
+      "slug": "sort-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-list/"
+    },
+    {
+      "title": "Wiggle Sort",
+      "slug": "wiggle-sort",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/wiggle-sort/"
+    },
+    {
+      "title": "Wiggle Sort II",
+      "slug": "wiggle-sort-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/wiggle-sort-ii/"
+    }
+  ],
+  "hints": [
+    "A rather straight forward solution is a two-pass algorithm using counting sort.",
+    "Iterate the array counting number of 0's, 1's, and 2's.",
+    "Overwrite array with the total number of 0's, then 1's and followed by 2's."
+  ]
+}

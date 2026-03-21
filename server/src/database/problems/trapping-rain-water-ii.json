@@ -1,0 +1,31 @@
+{
+  "id": "407",
+  "title": "Trapping Rain Water II",
+  "slug": "trapping-rain-water-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> integer matrix <code>heightMap</code> representing the height of each unit cell in a 2D elevation map, return <em>the volume of water it can trap after raining</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/08/trap1-3d.jpg\" style=\"width: 361px; height: 321px;\" />\n<pre>\n<strong>Input:</strong> heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> After the rain, water is trapped between the blocks.\nWe have two small ponds 1 and 3 units trapped.\nThe total volume of water trapped is 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/08/trap2-3d.jpg\" style=\"width: 401px; height: 321px;\" />\n<pre>\n<strong>Input:</strong> heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]\n<strong>Output:</strong> 10\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == heightMap.length</code></li>\n\t<li><code>n == heightMap[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>0 &lt;= heightMap[i][j] &lt;= 2 * 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` integer matrix `heightMap` representing the height of each unit cell in a 2D elevation map, return _the volume of water it can trap after raining_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/08/trap1-3d.jpg)\n    \n    \n    **Input:** heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]\n    **Output:** 4\n    **Explanation:** After the rain, water is trapped between the blocks.\n    We have two small ponds 1 and 3 units trapped.\n    The total volume of water trapped is 4.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/08/trap2-3d.jpg)\n    \n    \n    **Input:** heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]\n    **Output:** 10\n    \n\n \n\n**Constraints:**\n\n  * `m == heightMap.length`\n  * `n == heightMap[i].length`\n  * `1 <= m, n <= 200`\n  * `0 <= heightMap[i][j] <= 2 * 104`",
+  "question": "Given an `m x n` integer matrix `heightMap` representing the height of each unit cell in a 2D elevation map, return _the volume of water it can trap after raining_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/08/trap1-3d.jpg)\n    \n    \n    **Input:** heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]\n    **Output:** 4\n    **Explanation:** After the rain, water is trapped between the blocks.\n    We have two small ponds 1 and 3 units trapped.\n    The total volume of water trapped is 4.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/08/trap2-3d.jpg)\n    \n    \n    **Input:** heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]\n    **Output:** 10",
+  "constraints": "**Constraints:**\n\n  * `m == heightMap.length`\n  * `n == heightMap[i].length`\n  * `1 <= m, n <= 200`\n  * `0 <= heightMap[i][j] <= 2 * 104`",
+  "topics": ["Array", "Breadth-First Search", "Heap (Priority Queue)", "Matrix"],
+  "total_accepted": 263660,
+  "total_submissions": 411949,
+  "acceptance_rate": "64.0%",
+  "similar_questions": [
+    {
+      "title": "Trapping Rain Water",
+      "slug": "trapping-rain-water",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/trapping-rain-water/"
+    },
+    {
+      "title": "Maximum Number of Points From Grid Queries",
+      "slug": "maximum-number-of-points-from-grid-queries",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-points-from-grid-queries/"
+    }
+  ],
+  "hints": []
+}

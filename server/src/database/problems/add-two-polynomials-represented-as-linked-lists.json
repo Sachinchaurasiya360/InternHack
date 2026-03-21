@@ -1,0 +1,41 @@
+{
+  "id": "1634",
+  "title": "Add Two Polynomials Represented as Linked Lists",
+  "slug": "add-two-polynomials-represented-as-linked-lists",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Linked List", "Math", "Two Pointers"],
+  "total_accepted": 16381,
+  "total_submissions": 26849,
+  "acceptance_rate": "61.0%",
+  "similar_questions": [
+    {
+      "title": "Add Two Numbers",
+      "slug": "add-two-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-numbers/"
+    },
+    {
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-two-sorted-lists/"
+    },
+    {
+      "title": "Add Two Numbers II",
+      "slug": "add-two-numbers-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-numbers-ii/"
+    }
+  ],
+  "hints": [
+    "Process both linked lists at the same time",
+    "If the current power of the two heads is equal, add this power with the sum of the coefficients to the answer list.",
+    "If one head has a larger power, add this power to the answer list and move only this head."
+  ]
+}

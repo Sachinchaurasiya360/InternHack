@@ -1,0 +1,37 @@
+{
+  "id": "190",
+  "title": "Reverse Bits",
+  "slug": "reverse-bits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Reverse bits of a given 32 bits signed integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 43261596</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">964176192</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<table>\n\t<tbody>\n\t\t<tr>\n\t\t\t<th>Integer</th>\n\t\t\t<th>Binary</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>43261596</td>\n\t\t\t<td>00000010100101000001111010011100</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>964176192</td>\n\t\t\t<td>00111001011110000010100101000000</td>\n\t\t</tr>\n\t</tbody>\n</table>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 2147483644</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1073741822</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<table>\n\t<tbody>\n\t\t<tr>\n\t\t\t<th>Integer</th>\n\t\t\t<th>Binary</th>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>2147483644</td>\n\t\t\t<td>01111111111111111111111111111100</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>1073741822</td>\n\t\t\t<td>00111111111111111111111111111110</td>\n\t\t</tr>\n\t</tbody>\n</table>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 2<sup>31</sup> - 2</code></li>\n\t<li><code>n</code> is even.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> If this function is called many times, how would you optimize it?</p>\n",
+  "content_markdown": "Reverse bits of a given 32 bits signed integer.\n\n \n\n**Example 1:**\n\n**Input:** n = 43261596\n\n**Output:** 964176192\n\n**Explanation:**\n\nInteger | Binary  \n---|---  \n43261596 | 00000010100101000001111010011100  \n964176192 | 00111001011110000010100101000000  \n  \n**Example 2:**\n\n**Input:** n = 2147483644\n\n**Output:** 1073741822\n\n**Explanation:**\n\nInteger | Binary  \n---|---  \n2147483644 | 01111111111111111111111111111100  \n1073741822 | 00111111111111111111111111111110  \n  \n \n\n**Constraints:**\n\n  * `0 <= n <= 231 - 2`\n  * `n` is even.\n\n\n\n \n\n**Follow up:** If this function is called many times, how would you optimize it?",
+  "question": "Reverse bits of a given 32 bits signed integer.",
+  "examples": "**Example 1:**\n\n**Input:** n = 43261596\n\n**Output:** 964176192\n\n**Explanation:**\n\nInteger | Binary  \n---|---  \n43261596 | 00000010100101000001111010011100  \n964176192 | 00111001011110000010100101000000  \n  \n**Example 2:**\n\n**Input:** n = 2147483644\n\n**Output:** 1073741822\n\n**Explanation:**\n\nInteger | Binary  \n---|---  \n2147483644 | 01111111111111111111111111111100  \n1073741822 | 00111111111111111111111111111110",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 231 - 2`\n  * `n` is even.",
+  "topics": ["Divide and Conquer", "Bit Manipulation"],
+  "total_accepted": 1302166,
+  "total_submissions": 1920664,
+  "acceptance_rate": "67.8%",
+  "similar_questions": [
+    {
+      "title": "Reverse Integer",
+      "slug": "reverse-integer",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reverse-integer/"
+    },
+    {
+      "title": "Number of 1 Bits",
+      "slug": "number-of-1-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-1-bits/"
+    },
+    {
+      "title": "A Number After a Double Reversal",
+      "slug": "a-number-after-a-double-reversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/a-number-after-a-double-reversal/"
+    }
+  ],
+  "hints": []
+}

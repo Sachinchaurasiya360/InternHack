@@ -1,0 +1,31 @@
+{
+  "id": "2869",
+  "title": "Minimum Operations to Collect Elements",
+  "slug": "minimum-operations-to-collect-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> of positive integers and an integer <code>k</code>.</p>\n\n<p>In one operation, you can remove the last element of the array and add it to your collection.</p>\n\n<p>Return <em>the <strong>minimum number of operations</strong> needed to collect elements</em> <code>1, 2, ..., k</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,1,5,4,2], k = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> After 4 operations, we collect elements 2, 4, 5, and 1, in this order. Our collection contains elements 1 and 2. Hence, the answer is 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,1,5,4,2], k = 5\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> After 5 operations, we collect elements 2, 4, 5, 1, and 3, in this order. Our collection contains elements 1 through 5. Hence, the answer is 5.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,5,3,1], k = 3\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> After 4 operations, we collect elements 1, 3, 5, and 2, in this order. Our collection contains elements 1 through 3. Hence, the answer is 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= nums.length</code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length</code></li>\n\t<li>The input is generated such that you can collect elements <code>1, 2, ..., k</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` of positive integers and an integer `k`.\n\nIn one operation, you can remove the last element of the array and add it to your collection.\n\nReturn _the**minimum number of operations** needed to collect elements_ `1, 2, ..., k`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,1,5,4,2], k = 2\n    **Output:** 4\n    **Explanation:** After 4 operations, we collect elements 2, 4, 5, and 1, in this order. Our collection contains elements 1 and 2. Hence, the answer is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,5,4,2], k = 5\n    **Output:** 5\n    **Explanation:** After 5 operations, we collect elements 2, 4, 5, 1, and 3, in this order. Our collection contains elements 1 through 5. Hence, the answer is 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,2,5,3,1], k = 3\n    **Output:** 4\n    **Explanation:** After 4 operations, we collect elements 1, 3, 5, and 2, in this order. Our collection contains elements 1 through 3. Hence, the answer is 4.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= nums.length`\n  * `1 <= k <= nums.length`\n  * The input is generated such that you can collect elements `1, 2, ..., k`.",
+  "question": "You are given an array `nums` of positive integers and an integer `k`.\n\nIn one operation, you can remove the last element of the array and add it to your collection.\n\nReturn _the**minimum number of operations** needed to collect elements_ `1, 2, ..., k`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,1,5,4,2], k = 2\n    **Output:** 4\n    **Explanation:** After 4 operations, we collect elements 2, 4, 5, and 1, in this order. Our collection contains elements 1 and 2. Hence, the answer is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,1,5,4,2], k = 5\n    **Output:** 5\n    **Explanation:** After 5 operations, we collect elements 2, 4, 5, 1, and 3, in this order. Our collection contains elements 1 through 5. Hence, the answer is 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,2,5,3,1], k = 3\n    **Output:** 4\n    **Explanation:** After 4 operations, we collect elements 1, 3, 5, and 2, in this order. Our collection contains elements 1 through 3. Hence, the answer is 4.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= nums.length`\n  * `1 <= k <= nums.length`\n  * The input is generated such that you can collect elements `1, 2, ..., k`.",
+  "topics": ["Array", "Hash Table", "Bit Manipulation"],
+  "total_accepted": 49313,
+  "total_submissions": 79250,
+  "acceptance_rate": "62.2%",
+  "similar_questions": [
+    {
+      "title": "Build an Array With Stack Operations",
+      "slug": "build-an-array-with-stack-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/build-an-array-with-stack-operations/"
+    }
+  ],
+  "hints": [
+    "Use an occurrence array.",
+    "Iterate over the elements in reverse order.",
+    "If the current element <code>nums[i]</code> is not marked in the occurrence array and <code>nums[i] &lt;= k</code>, mark <code>nums[i]</code>.",
+    "Keep track of how many integers you have marked.",
+    "Return the current index as soon as the number of marked integers becomes equal to <code>k</code>."
+  ]
+}

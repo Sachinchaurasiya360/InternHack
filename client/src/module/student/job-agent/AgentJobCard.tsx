@@ -15,14 +15,14 @@ export function AgentJobCard({ job }: Props) {
   const workMode = job.workMode ? WORK_MODE_CONFIG[job.workMode] : null;
 
   return (
-    <div className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-3.5 flex flex-col hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-sm transition-all">
+    <div className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-3.5 flex flex-col hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-sm transition-all">
       {/* Header row */}
       <div className="flex items-start gap-3 mb-2.5">
         <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0 text-gray-700 dark:text-gray-300 text-sm font-bold">
           {job.company?.charAt(0) || "?"}
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-gray-950 dark:group-hover:text-white transition-colors">
             {job.title}
           </h4>
           <span className="text-xs text-gray-500 dark:text-gray-400">{job.company}</span>
@@ -74,7 +74,7 @@ export function AgentJobCard({ job }: Props) {
           href={job.applicationUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-auto inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/15 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors no-underline"
+          className="mt-auto inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-xs font-medium text-gray-950 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors no-underline"
         >
           View & Apply <ExternalLink className="w-3 h-3" />
         </a>

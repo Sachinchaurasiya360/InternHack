@@ -1,0 +1,29 @@
+{
+  "id": "2852",
+  "title": "Sum of Remoteness of All Cells",
+  "slug": "sum-of-remoteness-of-all-cells",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Matrix"
+  ],
+  "total_accepted": 6510,
+  "total_submissions": 9190,
+  "acceptance_rate": "70.8%",
+  "similar_questions": [],
+  "hints": [
+    "We consider each cell of <code>grid</code> a node on a graph, and there is an edge between two nodes if one of them doesn't contain <code>-1</code> and they share an edge on the grid.",
+    "We find the connected components of said graph.",
+    "The nodes of each connected component have the same value for <code>R</code> and it's the sum of the values of all nodes in other connected components."
+  ]
+}

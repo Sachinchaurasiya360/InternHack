@@ -1,0 +1,22 @@
+{
+  "id": "578",
+  "title": "Get Highest Answer Rate Question",
+  "slug": "get-highest-answer-rate-question",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 68496,
+  "total_submissions": 171080,
+  "acceptance_rate": "40.0%",
+  "similar_questions": [],
+  "hints": [
+    "Try to find all question ids by group",
+    "Try to find each group answer number and show number.",
+    "Rank all the rates (answer/(answer+show)) and return the max one"
+  ]
+}

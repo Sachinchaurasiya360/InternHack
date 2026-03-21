@@ -1,0 +1,40 @@
+{
+  "id": "1911",
+  "title": "Maximum Alternating Subsequence Sum",
+  "slug": "maximum-alternating-subsequence-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>The <strong>alternating sum</strong> of a <strong>0-indexed</strong> array is defined as the <strong>sum</strong> of the elements at <strong>even</strong> indices <strong>minus</strong> the <strong>sum</strong> of the elements at <strong>odd</strong> indices.</p>\r\n\r\n<ul>\r\n\t<li>For example, the alternating sum of <code>[4,2,5,3]</code> is <code>(4 + 5) - (2 + 3) = 4</code>.</li>\r\n</ul>\r\n\r\n<p>Given an array <code>nums</code>, return <em>the <strong>maximum alternating sum</strong> of any subsequence of </em><code>nums</code><em> (after <strong>reindexing</strong> the elements of the subsequence)</em>.</p>\r\n\r\n<ul>\r\n</ul>\r\n\r\n<p>A <strong>subsequence</strong> of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements&#39; relative order. For example, <code>[2,7,4]</code> is a subsequence of <code>[4,<u>2</u>,3,<u>7</u>,2,1,<u>4</u>]</code> (the underlined elements), while <code>[2,4,2]</code> is not.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [<u>4</u>,<u>2</u>,<u>5</u>,3]\r\n<strong>Output:</strong> 7\r\n<strong>Explanation:</strong> It is optimal to choose the subsequence [4,2,5] with alternating sum (4 + 5) - 2 = 7.\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [5,6,7,<u>8</u>]\r\n<strong>Output:</strong> 8\r\n<strong>Explanation:</strong> It is optimal to choose the subsequence [8] with alternating sum 8.\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 3:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [<u>6</u>,2,<u>1</u>,2,4,<u>5</u>]\r\n<strong>Output:</strong> 10\r\n<strong>Explanation:</strong> It is optimal to choose the subsequence [6,1,5] with alternating sum (6 + 5) - 1 = 10.\r\n</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\r\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\r\n</ul>",
+  "content_markdown": "The **alternating sum** of a **0-indexed** array is defined as the **sum** of the elements at **even** indices **minus** the **sum** of the elements at **odd** indices.\n\n  * For example, the alternating sum of `[4,2,5,3]` is `(4 + 5) - (2 + 3) = 4`.\n\n\n\nGiven an array `nums`, return _the**maximum alternating sum** of any subsequence of _`nums` _(after**reindexing** the elements of the subsequence)_.\n\n\n\n\nA **subsequence** of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order. For example, `[2,7,4]` is a subsequence of `[4,_2_ ,3,_7_ ,2,1,_4_]` (the underlined elements), while `[2,4,2]` is not.\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** nums = [_4_ ,_2_ ,_5_ ,3]\r\n    **Output:** 7\r\n    **Explanation:** It is optimal to choose the subsequence [4,2,5] with alternating sum (4 + 5) - 2 = 7.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** nums = [5,6,7,_8_]\r\n    **Output:** 8\r\n    **Explanation:** It is optimal to choose the subsequence [8] with alternating sum 8.\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** nums = [_6_ ,2,_1_ ,2,4,_5_]\r\n    **Output:** 10\r\n    **Explanation:** It is optimal to choose the subsequence [6,1,5] with alternating sum (6 + 5) - 1 = 10.\r\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 105`",
+  "question": "The **alternating sum** of a **0-indexed** array is defined as the **sum** of the elements at **even** indices **minus** the **sum** of the elements at **odd** indices.\n\n  * For example, the alternating sum of `[4,2,5,3]` is `(4 + 5) - (2 + 3) = 4`.\n\n\n\nGiven an array `nums`, return _the**maximum alternating sum** of any subsequence of _`nums` _(after**reindexing** the elements of the subsequence)_.\n\n\n\n\nA **subsequence** of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order. For example, `[2,7,4]` is a subsequence of `[4,_2_ ,3,_7_ ,2,1,_4_]` (the underlined elements), while `[2,4,2]` is not.",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** nums = [_4_ ,_2_ ,_5_ ,3]\r\n    **Output:** 7\r\n    **Explanation:** It is optimal to choose the subsequence [4,2,5] with alternating sum (4 + 5) - 2 = 7.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** nums = [5,6,7,_8_]\r\n    **Output:** 8\r\n    **Explanation:** It is optimal to choose the subsequence [8] with alternating sum 8.\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** nums = [_6_ ,2,_1_ ,2,4,_5_]\r\n    **Output:** 10\r\n    **Explanation:** It is optimal to choose the subsequence [6,1,5] with alternating sum (6 + 5) - 1 = 10.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 105`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 62701,
+  "total_submissions": 106224,
+  "acceptance_rate": "59.0%",
+  "similar_questions": [
+    {
+      "title": "Maximum Alternating Subarray Sum",
+      "slug": "maximum-alternating-subarray-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-alternating-subarray-sum/"
+    },
+    {
+      "title": "Maximum Element-Sum of a Complete Subset of Indices",
+      "slug": "maximum-element-sum-of-a-complete-subset-of-indices",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-element-sum-of-a-complete-subset-of-indices/"
+    },
+    {
+      "title": "Maximum Product of Subsequences With an Alternating Sum Equal to K",
+      "slug": "maximum-product-of-subsequences-with-an-alternating-sum-equal-to-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-product-of-subsequences-with-an-alternating-sum-equal-to-k/"
+    }
+  ],
+  "hints": [
+    "Is only tracking a single sum enough to solve the problem?",
+    "How does tracking an odd sum and an even sum reduce the number of states?"
+  ]
+}

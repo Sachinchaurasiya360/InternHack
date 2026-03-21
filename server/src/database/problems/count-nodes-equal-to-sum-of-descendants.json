@@ -1,0 +1,40 @@
+{
+  "id": "1973",
+  "title": "Count Nodes Equal to Sum of Descendants",
+  "slug": "count-nodes-equal-to-sum-of-descendants",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 15796,
+  "total_submissions": 20421,
+  "acceptance_rate": "77.4%",
+  "similar_questions": [
+    {
+      "title": "Most Frequent Subtree Sum",
+      "slug": "most-frequent-subtree-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/most-frequent-subtree-sum/"
+    },
+    {
+      "title": "Maximum Average Subtree",
+      "slug": "maximum-average-subtree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-average-subtree/"
+    },
+    {
+      "title": "Count Nodes Equal to Average of Subtree",
+      "slug": "count-nodes-equal-to-average-of-subtree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-nodes-equal-to-average-of-subtree/"
+    }
+  ],
+  "hints": [
+    "Can we reuse previously calculated information?",
+    "How can we calculate the sum of the current subtree using the sum of the child's subtree?"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "478",
+  "title": "Generate Random Point in a Circle",
+  "slug": "generate-random-point-in-a-circle",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the radius and the position of the center of a circle, implement the function <code>randPoint</code> which generates a uniform random point inside the circle.</p>\n\n<p>Implement the <code>Solution</code> class:</p>\n\n<ul>\n\t<li><code>Solution(double radius, double x_center, double y_center)</code> initializes the object with the radius of the circle <code>radius</code> and the position of the center <code>(x_center, y_center)</code>.</li>\n\t<li><code>randPoint()</code> returns a random point inside the circle. A point on the circumference of the circle is considered to be in the circle. The answer is returned as an array <code>[x, y]</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;Solution&quot;, &quot;randPoint&quot;, &quot;randPoint&quot;, &quot;randPoint&quot;]\n[[1.0, 0.0, 0.0], [], [], []]\n<strong>Output</strong>\n[null, [-0.02493, -0.38077], [0.82314, 0.38945], [0.36572, 0.17248]]\n\n<strong>Explanation</strong>\nSolution solution = new Solution(1.0, 0.0, 0.0);\nsolution.randPoint(); // return [-0.02493, -0.38077]\nsolution.randPoint(); // return [0.82314, 0.38945]\nsolution.randPoint(); // return [0.36572, 0.17248]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;&nbsp;radius &lt;= 10<sup>8</sup></code></li>\n\t<li><code>-10<sup>7</sup> &lt;= x_center, y_center &lt;= 10<sup>7</sup></code></li>\n\t<li>At most <code>3 * 10<sup>4</sup></code> calls will be made to <code>randPoint</code>.</li>\n</ul>\n",
+  "content_markdown": "Given the radius and the position of the center of a circle, implement the function `randPoint` which generates a uniform random point inside the circle.\n\nImplement the `Solution` class:\n\n  * `Solution(double radius, double x_center, double y_center)` initializes the object with the radius of the circle `radius` and the position of the center `(x_center, y_center)`.\n  * `randPoint()` returns a random point inside the circle. A point on the circumference of the circle is considered to be in the circle. The answer is returned as an array `[x, y]`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"Solution\", \"randPoint\", \"randPoint\", \"randPoint\"]\n    [[1.0, 0.0, 0.0], [], [], []]\n    **Output**\n    [null, [-0.02493, -0.38077], [0.82314, 0.38945], [0.36572, 0.17248]]\n    \n    **Explanation**\n    Solution solution = new Solution(1.0, 0.0, 0.0);\n    solution.randPoint(); // return [-0.02493, -0.38077]\n    solution.randPoint(); // return [0.82314, 0.38945]\n    solution.randPoint(); // return [0.36572, 0.17248]\n    \n\n \n\n**Constraints:**\n\n  * `0 < radius <= 108`\n  * `-107 <= x_center, y_center <= 107`\n  * At most `3 * 104` calls will be made to `randPoint`.",
+  "question": "Given the radius and the position of the center of a circle, implement the function `randPoint` which generates a uniform random point inside the circle.\n\nImplement the `Solution` class:\n\n  * `Solution(double radius, double x_center, double y_center)` initializes the object with the radius of the circle `radius` and the position of the center `(x_center, y_center)`.\n  * `randPoint()` returns a random point inside the circle. A point on the circumference of the circle is considered to be in the circle. The answer is returned as an array `[x, y]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"Solution\", \"randPoint\", \"randPoint\", \"randPoint\"]\n    [[1.0, 0.0, 0.0], [], [], []]\n    **Output**\n    [null, [-0.02493, -0.38077], [0.82314, 0.38945], [0.36572, 0.17248]]\n    \n    **Explanation**\n    Solution solution = new Solution(1.0, 0.0, 0.0);\n    solution.randPoint(); // return [-0.02493, -0.38077]\n    solution.randPoint(); // return [0.82314, 0.38945]\n    solution.randPoint(); // return [0.36572, 0.17248]",
+  "constraints": "**Constraints:**\n\n  * `0 < radius <= 108`\n  * `-107 <= x_center, y_center <= 107`\n  * At most `3 * 104` calls will be made to `randPoint`.",
+  "topics": ["Math", "Geometry", "Rejection Sampling", "Randomized"],
+  "total_accepted": 53075,
+  "total_submissions": 124989,
+  "acceptance_rate": "42.5%",
+  "similar_questions": [
+    {
+      "title": "Random Point in Non-overlapping Rectangles",
+      "slug": "random-point-in-non-overlapping-rectangles",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/random-point-in-non-overlapping-rectangles/"
+    }
+  ],
+  "hints": []
+}

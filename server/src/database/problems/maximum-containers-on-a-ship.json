@@ -1,0 +1,21 @@
+{
+  "id": "3492",
+  "title": "Maximum Containers on a Ship",
+  "slug": "maximum-containers-on-a-ship",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>n</code> representing an <code>n x n</code> cargo deck on a ship. Each cell on the deck can hold one container with a weight of <strong>exactly</strong> <code>w</code>.</p>\n\n<p>However, the total weight of all containers, if loaded onto the deck, must not exceed the ship&#39;s maximum weight capacity, <code>maxWeight</code>.</p>\n\n<p>Return the <strong>maximum</strong> number of containers that can be loaded onto the ship.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 2, w = 3, maxWeight = 15</span></p>\n\n<p><strong>Output:</strong> 4</p>\n\n<p><strong>Explanation: </strong></p>\n\n<p>The deck has 4 cells, and each container weighs 3. The total weight of loading all containers is 12, which does not exceed <code>maxWeight</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3, w = 5, maxWeight = 20</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation: </strong></p>\n\n<p>The deck has 9 cells, and each container weighs 5. The maximum number of containers that can be loaded without exceeding <code>maxWeight</code> is 4.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n\t<li><code>1 &lt;= w &lt;= 1000</code></li>\n\t<li><code>1 &lt;= maxWeight &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `n` representing an `n x n` cargo deck on a ship. Each cell on the deck can hold one container with a weight of **exactly** `w`.\n\nHowever, the total weight of all containers, if loaded onto the deck, must not exceed the ship's maximum weight capacity, `maxWeight`.\n\nReturn the **maximum** number of containers that can be loaded onto the ship.\n\n \n\n**Example 1:**\n\n**Input:** n = 2, w = 3, maxWeight = 15\n\n**Output:** 4\n\n**Explanation:**\n\nThe deck has 4 cells, and each container weighs 3. The total weight of loading all containers is 12, which does not exceed `maxWeight`.\n\n**Example 2:**\n\n**Input:** n = 3, w = 5, maxWeight = 20\n\n**Output:** 4\n\n**Explanation:**\n\nThe deck has 9 cells, and each container weighs 5. The maximum number of containers that can be loaded without exceeding `maxWeight` is 4.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `1 <= w <= 1000`\n  * `1 <= maxWeight <= 109`",
+  "question": "You are given a positive integer `n` representing an `n x n` cargo deck on a ship. Each cell on the deck can hold one container with a weight of **exactly** `w`.\n\nHowever, the total weight of all containers, if loaded onto the deck, must not exceed the ship's maximum weight capacity, `maxWeight`.\n\nReturn the **maximum** number of containers that can be loaded onto the ship.",
+  "examples": "**Example 1:**\n\n**Input:** n = 2, w = 3, maxWeight = 15\n\n**Output:** 4\n\n**Explanation:**\n\nThe deck has 4 cells, and each container weighs 3. The total weight of loading all containers is 12, which does not exceed `maxWeight`.\n\n**Example 2:**\n\n**Input:** n = 3, w = 5, maxWeight = 20\n\n**Output:** 4\n\n**Explanation:**\n\nThe deck has 9 cells, and each container weighs 5. The maximum number of containers that can be loaded without exceeding `maxWeight` is 4.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `1 <= w <= 1000`\n  * `1 <= maxWeight <= 109`",
+  "topics": ["Math"],
+  "total_accepted": 49442,
+  "total_submissions": 65766,
+  "acceptance_rate": "75.2%",
+  "similar_questions": [],
+  "hints": [
+    "What are the limits on the number of containers?",
+    "We can load at most <code>min(n * n, maxWeight / w)</code> containers."
+  ]
+}

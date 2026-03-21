@@ -1,0 +1,21 @@
+{
+  "id": "3221",
+  "title": "Maximum Array Hopping Score II",
+  "slug": "maximum-array-hopping-score-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Stack", "Greedy", "Monotonic Stack"],
+  "total_accepted": 1120,
+  "total_submissions": 1881,
+  "acceptance_rate": "59.5%",
+  "similar_questions": [],
+  "hints": [
+    "It’s always optimal to jump to index <code>j</code> with the maximum value.",
+    "Keep an array <code>suffixMax</code> and store the maximum of each suffix of the array along with its index."
+  ]
+}

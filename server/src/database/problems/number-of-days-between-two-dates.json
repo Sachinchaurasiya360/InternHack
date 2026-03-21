@@ -1,0 +1,30 @@
+{
+  "id": "1360",
+  "title": "Number of Days Between Two Dates",
+  "slug": "number-of-days-between-two-dates",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Write a program to count the number of days between two dates.</p>\n\n<p>The two dates are given as strings, their format is <code>YYYY-MM-DD</code>&nbsp;as shown in the examples.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> date1 = \"2019-06-29\", date2 = \"2019-06-30\"\n<strong>Output:</strong> 1\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> date1 = \"2020-01-15\", date2 = \"2019-12-31\"\n<strong>Output:</strong> 15\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The given dates are valid&nbsp;dates between the years <code>1971</code> and <code>2100</code>.</li>\n</ul>\n",
+  "content_markdown": "Write a program to count the number of days between two dates.\n\nThe two dates are given as strings, their format is `YYYY-MM-DD` as shown in the examples.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** date1 = \"2019-06-29\", date2 = \"2019-06-30\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** date1 = \"2020-01-15\", date2 = \"2019-12-31\"\n    **Output:** 15\n    \n\n \n\n**Constraints:**\n\n  * The given dates are valid dates between the years `1971` and `2100`.",
+  "question": "Write a program to count the number of days between two dates.\n\nThe two dates are given as strings, their format is `YYYY-MM-DD` as shown in the examples.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** date1 = \"2019-06-29\", date2 = \"2019-06-30\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** date1 = \"2020-01-15\", date2 = \"2019-12-31\"\n    **Output:** 15",
+  "constraints": "**Constraints:**\n\n  * The given dates are valid dates between the years `1971` and `2100`.",
+  "topics": ["Math", "String"],
+  "total_accepted": 72369,
+  "total_submissions": 138190,
+  "acceptance_rate": "52.4%",
+  "similar_questions": [
+    {
+      "title": "Count Days Spent Together",
+      "slug": "count-days-spent-together",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-days-spent-together/"
+    }
+  ],
+  "hints": [
+    "Create a function f(date) that counts the number of days from 1900-01-01 to date. How can we calculate the answer ?",
+    "The answer is just |f(date1) - f(date2)|.",
+    "How to construct f(date) ?",
+    "For each year from 1900 to year - 1 sum up 365 or 366 in case of leap years. Then sum up for each month the number of days, consider the case when the current year is leap, finally sum up the days."
+  ]
+}

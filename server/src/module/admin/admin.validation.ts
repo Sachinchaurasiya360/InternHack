@@ -143,50 +143,27 @@ export const dsaTopicQuerySchema = z.object({
   search: z.string().optional(),
 });
 
-const dsaProblemInputSchema = z.object({
-  title: z.string().min(1).max(300),
-  difficulty: z.string().default("Easy"),
-  leetcodeUrl: z.string().optional().or(z.literal("")),
-  gfgUrl: z.string().optional().or(z.literal("")),
-  articleUrl: z.string().optional().or(z.literal("")),
-  videoUrl: z.string().optional().or(z.literal("")),
-  hackerrankUrl: z.string().optional().or(z.literal("")),
-  codechefUrl: z.string().optional().or(z.literal("")),
-  tags: z.array(z.string()).default([]),
-  companies: z.array(z.string()).default([]),
-  hints: z.string().optional(),
-  sheets: z.array(z.string()).default([]),
-  orderIndex: z.number().int().min(0),
-});
-
-const dsaSubTopicInputSchema = z.object({
-  name: z.string().min(1).max(200),
-  orderIndex: z.number().int().min(0),
-  problems: z.array(dsaProblemInputSchema).default([]),
-});
-
 export const createDsaTopicSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().max(2000).optional(),
   orderIndex: z.number().int().min(0),
-  subTopics: z.array(dsaSubTopicInputSchema).default([]),
 });
 
 export const updateDsaTopicSchema = createDsaTopicSchema.partial();
 
-export const createDsaProblemSchema = dsaProblemInputSchema.extend({
-  subTopicId: z.number().int().positive(),
+export const createDsaProblemSchema = z.object({
+  title: z.string().min(1).max(300),
+  slug: z.string().min(1).max(300),
+  difficulty: z.string().default("Easy"),
+  leetcodeUrl: z.string().optional().or(z.literal("")),
+  gfgUrl: z.string().optional().or(z.literal("")),
+  tags: z.array(z.string()).default([]),
+  companies: z.array(z.string()).default([]),
+  hints: z.array(z.string()).default([]),
+  description: z.string().optional(),
 });
 
 export const updateDsaProblemSchema = createDsaProblemSchema.partial();
-
-export const createDsaSubTopicSchema = z.object({
-  name: z.string().min(1).max(200),
-  orderIndex: z.number().int().min(0),
-  topicId: z.number().int().positive(),
-});
-
-export const updateDsaSubTopicSchema = createDsaSubTopicSchema.partial();
 
 // ==================== APTITUDE MANAGEMENT ====================
 

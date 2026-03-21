@@ -1,0 +1,20 @@
+{
+  "id": "758",
+  "title": "Bold Words in String",
+  "slug": "bold-words-in-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Trie", "String Matching"],
+  "total_accepted": 20770,
+  "total_submissions": 39548,
+  "acceptance_rate": "52.5%",
+  "similar_questions": [],
+  "hints": [
+    "First, determine which letters are bold and store that information in mask[i] = if i-th character is bold.\r\nThen, insert the tags at the beginning and end of groups.  The start of a group is if and only if (mask[i] and (i == 0 or not mask[i-1])), and the end of a group is similar."
+  ]
+}

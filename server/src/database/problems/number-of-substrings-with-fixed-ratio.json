@@ -1,0 +1,30 @@
+{
+  "id": "2489",
+  "title": "Number of Substrings With Fixed Ratio",
+  "slug": "number-of-substrings-with-fixed-ratio",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Math", "String", "Prefix Sum"],
+  "total_accepted": 1691,
+  "total_submissions": 2964,
+  "acceptance_rate": "57.1%",
+  "similar_questions": [
+    {
+      "title": "Count Binary Substrings",
+      "slug": "count-binary-substrings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-binary-substrings/"
+    }
+  ],
+  "hints": [
+    "Let Func(i) denote the number of 0’s in the prefix [0…i]. We want to find the number of pairs of indices L and R such that Func(R) - Func(L) : R - L - Func(R) + Func(L) = num1 : num2.",
+    "It is better to simplify the formula.",
+    "Func(R) * (num1 + num2) - R * num1 = Func(L) * (num1 + num2) - L * num1.",
+    "Iterate from left to right and use a hash map to count the number of indices having the same value for the above formula."
+  ]
+}

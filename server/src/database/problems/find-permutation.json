@@ -1,0 +1,25 @@
+{
+  "id": "484",
+  "title": "Find Permutation",
+  "slug": "find-permutation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String", "Stack", "Greedy"],
+  "total_accepted": 43117,
+  "total_submissions": 64430,
+  "acceptance_rate": "66.9%",
+  "similar_questions": [
+    {
+      "title": "Using a Robot to Print the Lexicographically Smallest String",
+      "slug": "using-a-robot-to-print-the-lexicographically-smallest-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/using-a-robot-to-print-the-lexicographically-smallest-string/"
+    }
+  ],
+  "hints": []
+}

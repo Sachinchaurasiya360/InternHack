@@ -1,0 +1,77 @@
+{
+  "id": "41",
+  "title": "First Missing Positive",
+  "slug": "first-missing-positive",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an unsorted integer array <code>nums</code>. Return the <em>smallest positive integer</em> that is <em>not present</em> in <code>nums</code>.</p>\n\n<p>You must implement an algorithm that runs in <code>O(n)</code> time and uses <code>O(1)</code> auxiliary space.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,0]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The numbers in the range [1,2] are all in the array.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,4,-1,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> 1 is in the array but 2 is missing.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [7,8,9,11,12]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The smallest positive integer 1 is missing.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given an unsorted integer array `nums`. Return the _smallest positive integer_ that is _not present_ in `nums`.\n\nYou must implement an algorithm that runs in `O(n)` time and uses `O(1)` auxiliary space.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,0]\n    **Output:** 3\n    **Explanation:** The numbers in the range [1,2] are all in the array.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,4,-1,1]\n    **Output:** 2\n    **Explanation:** 1 is in the array but 2 is missing.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [7,8,9,11,12]\n    **Output:** 1\n    **Explanation:** The smallest positive integer 1 is missing.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-231 <= nums[i] <= 231 - 1`",
+  "question": "Given an unsorted integer array `nums`. Return the _smallest positive integer_ that is _not present_ in `nums`.\n\nYou must implement an algorithm that runs in `O(n)` time and uses `O(1)` auxiliary space.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,0]\n    **Output:** 3\n    **Explanation:** The numbers in the range [1,2] are all in the array.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,4,-1,1]\n    **Output:** 2\n    **Explanation:** 1 is in the array but 2 is missing.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [7,8,9,11,12]\n    **Output:** 1\n    **Explanation:** The smallest positive integer 1 is missing.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-231 <= nums[i] <= 231 - 1`",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 1698854,
+  "total_submissions": 4001294,
+  "acceptance_rate": "42.5%",
+  "similar_questions": [
+    {
+      "title": "Missing Number",
+      "slug": "missing-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/missing-number/"
+    },
+    {
+      "title": "Find the Duplicate Number",
+      "slug": "find-the-duplicate-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-duplicate-number/"
+    },
+    {
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+    },
+    {
+      "title": "Couples Holding Hands",
+      "slug": "couples-holding-hands",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/couples-holding-hands/"
+    },
+    {
+      "title": "Smallest Number in Infinite Set",
+      "slug": "smallest-number-in-infinite-set",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-number-in-infinite-set/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range I",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-i/"
+    },
+    {
+      "title": "Smallest Missing Non-negative Integer After Operations",
+      "slug": "smallest-missing-non-negative-integer-after-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-missing-non-negative-integer-after-operations/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range II",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-ii/"
+    },
+    {
+      "title": "Smallest Missing Integer Greater Than Sequential Prefix Sum",
+      "slug": "smallest-missing-integer-greater-than-sequential-prefix-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/smallest-missing-integer-greater-than-sequential-prefix-sum/"
+    }
+  ],
+  "hints": [
+    "Think about how you would solve the problem in non-constant space.  Can you apply that logic to the existing space?",
+    "We don't care about duplicates or non-positive integers",
+    "Remember that O(2n) = O(n)"
+  ]
+}

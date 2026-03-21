@@ -1,0 +1,18 @@
+{
+  "id": "483",
+  "title": "Smallest Good Base",
+  "slug": "smallest-good-base",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code> represented as a string, return <em>the smallest <strong>good base</strong> of</em> <code>n</code>.</p>\n\n<p>We call <code>k &gt;= 2</code> a <strong>good base</strong> of <code>n</code>, if all digits of <code>n</code> base <code>k</code> are <code>1</code>&#39;s.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;13&quot;\n<strong>Output:</strong> &quot;3&quot;\n<strong>Explanation:</strong> 13 base 3 is 111.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;4681&quot;\n<strong>Output:</strong> &quot;8&quot;\n<strong>Explanation:</strong> 4681 base 8 is 11111.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;1000000000000000000&quot;\n<strong>Output:</strong> &quot;999999999999999999&quot;\n<strong>Explanation:</strong> 1000000000000000000 base 999999999999999999 is 11.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n</code> is an integer in the range <code>[3, 10<sup>18</sup>]</code>.</li>\n\t<li><code>n</code> does not contain any leading zeros.</li>\n</ul>\n",
+  "content_markdown": "Given an integer `n` represented as a string, return _the smallest**good base** of_ `n`.\n\nWe call `k >= 2` a **good base** of `n`, if all digits of `n` base `k` are `1`'s.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = \"13\"\n    **Output:** \"3\"\n    **Explanation:** 13 base 3 is 111.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = \"4681\"\n    **Output:** \"8\"\n    **Explanation:** 4681 base 8 is 11111.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = \"1000000000000000000\"\n    **Output:** \"999999999999999999\"\n    **Explanation:** 1000000000000000000 base 999999999999999999 is 11.\n    \n\n \n\n**Constraints:**\n\n  * `n` is an integer in the range `[3, 1018]`.\n  * `n` does not contain any leading zeros.",
+  "question": "Given an integer `n` represented as a string, return _the smallest**good base** of_ `n`.\n\nWe call `k >= 2` a **good base** of `n`, if all digits of `n` base `k` are `1`'s.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = \"13\"\n    **Output:** \"3\"\n    **Explanation:** 13 base 3 is 111.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = \"4681\"\n    **Output:** \"8\"\n    **Explanation:** 4681 base 8 is 11111.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = \"1000000000000000000\"\n    **Output:** \"999999999999999999\"\n    **Explanation:** 1000000000000000000 base 999999999999999999 is 11.",
+  "constraints": "**Constraints:**\n\n  * `n` is an integer in the range `[3, 1018]`.\n  * `n` does not contain any leading zeros.",
+  "topics": ["Math", "Binary Search"],
+  "total_accepted": 30552,
+  "total_submissions": 67117,
+  "acceptance_rate": "45.5%",
+  "similar_questions": [],
+  "hints": []
+}

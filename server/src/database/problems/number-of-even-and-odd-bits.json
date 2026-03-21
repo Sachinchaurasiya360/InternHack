@@ -1,0 +1,28 @@
+{
+  "id": "2595",
+  "title": "Number of Even and Odd Bits",
+  "slug": "number-of-even-and-odd-bits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>positive</strong> integer <code>n</code>.</p>\n\n<p>Let <code>even</code> denote the number of even indices in the binary representation of <code>n</code> with value 1.</p>\n\n<p>Let <code>odd</code> denote the number of odd indices in the binary representation of <code>n</code> with value 1.</p>\n\n<p>Note that bits are indexed from <strong>right to left</strong> in the binary representation of a number.</p>\n\n<p>Return the array <code>[even, odd]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 50</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1,2]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The binary representation of 50 is <code>110010</code>.</p>\n\n<p>It contains 1 on indices 1, 4, and 5.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[0,1]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The binary representation of 2 is <code>10</code>.</p>\n\n<p>It contains 1 only on index 1.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **positive** integer `n`.\n\nLet `even` denote the number of even indices in the binary representation of `n` with value 1.\n\nLet `odd` denote the number of odd indices in the binary representation of `n` with value 1.\n\nNote that bits are indexed from **right to left** in the binary representation of a number.\n\nReturn the array `[even, odd]`.\n\n \n\n**Example 1:**\n\n**Input:** n = 50\n\n**Output:** [1,2]\n\n**Explanation:**\n\nThe binary representation of 50 is `110010`.\n\nIt contains 1 on indices 1, 4, and 5.\n\n**Example 2:**\n\n**Input:** n = 2\n\n**Output:** [0,1]\n\n**Explanation:**\n\nThe binary representation of 2 is `10`.\n\nIt contains 1 only on index 1.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "question": "You are given a **positive** integer `n`.\n\nLet `even` denote the number of even indices in the binary representation of `n` with value 1.\n\nLet `odd` denote the number of odd indices in the binary representation of `n` with value 1.\n\nNote that bits are indexed from **right to left** in the binary representation of a number.\n\nReturn the array `[even, odd]`.",
+  "examples": "**Example 1:**\n\n**Input:** n = 50\n\n**Output:** [1,2]\n\n**Explanation:**\n\nThe binary representation of 50 is `110010`.\n\nIt contains 1 on indices 1, 4, and 5.\n\n**Example 2:**\n\n**Input:** n = 2\n\n**Output:** [0,1]\n\n**Explanation:**\n\nThe binary representation of 2 is `10`.\n\nIt contains 1 only on index 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "topics": ["Bit Manipulation"],
+  "total_accepted": 67887,
+  "total_submissions": 92533,
+  "acceptance_rate": "73.4%",
+  "similar_questions": [
+    {
+      "title": "Find Numbers with Even Number of Digits",
+      "slug": "find-numbers-with-even-number-of-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-numbers-with-even-number-of-digits/"
+    }
+  ],
+  "hints": [
+    "Maintain two integer variables, even and odd, to count the number of even and odd indices in the binary representation of integer n.",
+    "Divide n by 2 while n is positive, and if n modulo 2 is 1, add 1 to its corresponding variable."
+  ]
+}

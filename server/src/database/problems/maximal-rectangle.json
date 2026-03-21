@@ -1,0 +1,37 @@
+{
+  "id": "85",
+  "title": "Maximal Rectangle",
+  "slug": "maximal-rectangle",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>rows x cols</code>&nbsp;binary <code>matrix</code> filled with <code>0</code>&#39;s and <code>1</code>&#39;s, find the largest rectangle containing only <code>1</code>&#39;s and return <em>its area</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/14/maximal.jpg\" style=\"width: 402px; height: 322px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[&quot;1&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;],[&quot;1&quot;,&quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;],[&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;],[&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;]]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The maximal rectangle is shown in the above picture.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[&quot;0&quot;]]\n<strong>Output:</strong> 0\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[&quot;1&quot;]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>rows == matrix.length</code></li>\n\t<li><code>cols == matrix[i].length</code></li>\n\t<li><code>1 &lt;= rows, cols &lt;= 200</code></li>\n\t<li><code>matrix[i][j]</code> is <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a `rows x cols` binary `matrix` filled with `0`'s and `1`'s, find the largest rectangle containing only `1`'s and return _its area_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/14/maximal.jpg)\n    \n    \n    **Input:** matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]]\n    **Output:** 6\n    **Explanation:** The maximal rectangle is shown in the above picture.\n    \n\n**Example 2:**\n    \n    \n    **Input:** matrix = [[\"0\"]]\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[\"1\"]]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `rows == matrix.length`\n  * `cols == matrix[i].length`\n  * `1 <= rows, cols <= 200`\n  * `matrix[i][j]` is `'0'` or `'1'`.",
+  "question": "Given a `rows x cols` binary `matrix` filled with `0`'s and `1`'s, find the largest rectangle containing only `1`'s and return _its area_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/14/maximal.jpg)\n    \n    \n    **Input:** matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]]\n    **Output:** 6\n    **Explanation:** The maximal rectangle is shown in the above picture.\n    \n\n**Example 2:**\n    \n    \n    **Input:** matrix = [[\"0\"]]\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[\"1\"]]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `rows == matrix.length`\n  * `cols == matrix[i].length`\n  * `1 <= rows, cols <= 200`\n  * `matrix[i][j]` is `'0'` or `'1'`.",
+  "topics": ["Array", "Dynamic Programming", "Stack", "Matrix", "Monotonic Stack"],
+  "total_accepted": 778656,
+  "total_submissions": 1339579,
+  "acceptance_rate": "58.1%",
+  "similar_questions": [
+    {
+      "title": "Largest Rectangle in Histogram",
+      "slug": "largest-rectangle-in-histogram",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/"
+    },
+    {
+      "title": "Maximal Square",
+      "slug": "maximal-square",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximal-square/"
+    },
+    {
+      "title": "Find Sorted Submatrices With Maximum Element at Most K",
+      "slug": "find-sorted-submatrices-with-maximum-element-at-most-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-sorted-submatrices-with-maximum-element-at-most-k/"
+    }
+  ],
+  "hints": []
+}

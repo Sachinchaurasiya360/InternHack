@@ -1,0 +1,29 @@
+{
+  "id": "3281",
+  "title": "Maximize Score of Numbers in Ranges",
+  "slug": "maximize-score-of-numbers-in-ranges",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers <code>start</code> and an integer <code>d</code>, representing <code>n</code> intervals <code>[start[i], start[i] + d]</code>.</p>\n\n<p>You are asked to choose <code>n</code> integers where the <code>i<sup>th</sup></code> integer must belong to the <code>i<sup>th</sup></code> interval. The <strong>score</strong> of the chosen integers is defined as the <strong>minimum</strong> absolute difference between any two integers that have been chosen.</p>\n\n<p>Return the <strong>maximum</strong> <em>possible score</em> of the chosen integers.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">start = [6,0,3], d = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The maximum possible score can be obtained by choosing integers: 8, 0, and 4. The score of these chosen integers is <code>min(|8 - 0|, |8 - 4|, |0 - 4|)</code> which equals 4.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">start = [2,6,13,13], d = 5</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The maximum possible score can be obtained by choosing integers: 2, 7, 13, and 18. The score of these chosen integers is <code>min(|2 - 7|, |2 - 13|, |2 - 18|, |7 - 13|, |7 - 18|, |13 - 18|)</code> which equals 5.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= start.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= start[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>0 &lt;= d &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `start` and an integer `d`, representing `n` intervals `[start[i], start[i] + d]`.\n\nYou are asked to choose `n` integers where the `ith` integer must belong to the `ith` interval. The **score** of the chosen integers is defined as the **minimum** absolute difference between any two integers that have been chosen.\n\nReturn the **maximum** _possible score_ of the chosen integers.\n\n \n\n**Example 1:**\n\n**Input:** start = [6,0,3], d = 2\n\n**Output:** 4\n\n**Explanation:**\n\nThe maximum possible score can be obtained by choosing integers: 8, 0, and 4. The score of these chosen integers is `min(|8 - 0|, |8 - 4|, |0 - 4|)` which equals 4.\n\n**Example 2:**\n\n**Input:** start = [2,6,13,13], d = 5\n\n**Output:** 5\n\n**Explanation:**\n\nThe maximum possible score can be obtained by choosing integers: 2, 7, 13, and 18. The score of these chosen integers is `min(|2 - 7|, |2 - 13|, |2 - 18|, |7 - 13|, |7 - 18|, |13 - 18|)` which equals 5.\n\n \n\n**Constraints:**\n\n  * `2 <= start.length <= 105`\n  * `0 <= start[i] <= 109`\n  * `0 <= d <= 109`",
+  "question": "You are given an array of integers `start` and an integer `d`, representing `n` intervals `[start[i], start[i] + d]`.\n\nYou are asked to choose `n` integers where the `ith` integer must belong to the `ith` interval. The **score** of the chosen integers is defined as the **minimum** absolute difference between any two integers that have been chosen.\n\nReturn the **maximum** _possible score_ of the chosen integers.",
+  "examples": "**Example 1:**\n\n**Input:** start = [6,0,3], d = 2\n\n**Output:** 4\n\n**Explanation:**\n\nThe maximum possible score can be obtained by choosing integers: 8, 0, and 4. The score of these chosen integers is `min(|8 - 0|, |8 - 4|, |0 - 4|)` which equals 4.\n\n**Example 2:**\n\n**Input:** start = [2,6,13,13], d = 5\n\n**Output:** 5\n\n**Explanation:**\n\nThe maximum possible score can be obtained by choosing integers: 2, 7, 13, and 18. The score of these chosen integers is `min(|2 - 7|, |2 - 13|, |2 - 18|, |7 - 13|, |7 - 18|, |13 - 18|)` which equals 5.",
+  "constraints": "**Constraints:**\n\n  * `2 <= start.length <= 105`\n  * `0 <= start[i] <= 109`\n  * `0 <= d <= 109`",
+  "topics": ["Array", "Binary Search", "Greedy", "Sorting"],
+  "total_accepted": 23485,
+  "total_submissions": 66053,
+  "acceptance_rate": "35.6%",
+  "similar_questions": [
+    {
+      "title": "Find K-th Smallest Pair Distance",
+      "slug": "find-k-th-smallest-pair-distance",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-k-th-smallest-pair-distance/"
+    }
+  ],
+  "hints": [
+    "Can we use binary search here?",
+    "Suppose that the answer is <code>x</code>. We can find a valid configuration of integers by sorting <code>start</code>, the first integer should be <code>start[0]</code>, then each subsequent integer should be the smallest one in <code>[start[i], start[i] + d]</code> that is greater than <code>last_chosen_value + x</code>.",
+    "Binary search over <code>x</code>"
+  ]
+}

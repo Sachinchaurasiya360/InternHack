@@ -1,0 +1,25 @@
+{
+  "id": "632",
+  "title": "Smallest Range Covering Elements from K Lists",
+  "slug": "smallest-range-covering-elements-from-k-lists",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You have <code>k</code> lists of sorted integers in <strong>non-decreasing&nbsp;order</strong>. Find the <b>smallest</b> range that includes at least one number from each of the <code>k</code> lists.</p>\n\n<p>We define the range <code>[a, b]</code> is smaller than range <code>[c, d]</code> if <code>b - a &lt; d - c</code> <strong>or</strong> <code>a &lt; c</code> if <code>b - a == d - c</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [[4,10,15,24,26],[0,9,12,20],[5,18,22,30]]\n<strong>Output:</strong> [20,24]\n<strong>Explanation: </strong>\nList 1: [4, 10, 15, 24,26], 24 is in range [20,24].\nList 2: [0, 9, 12, 20], 20 is in range [20,24].\nList 3: [5, 18, 22, 30], 22 is in range [20,24].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [[1,2,3],[1,2,3],[1,2,3]]\n<strong>Output:</strong> [1,1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>nums.length == k</code></li>\n\t<li><code>1 &lt;= k &lt;= 3500</code></li>\n\t<li><code>1 &lt;= nums[i].length &lt;= 50</code></li>\n\t<li><code>-10<sup>5</sup> &lt;= nums[i][j] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>nums[i]</code>&nbsp;is sorted in <strong>non-decreasing</strong> order.</li>\n</ul>\n",
+  "content_markdown": "You have `k` lists of sorted integers in **non-decreasing  order**. Find the **smallest** range that includes at least one number from each of the `k` lists.\n\nWe define the range `[a, b]` is smaller than range `[c, d]` if `b - a < d - c` **or** `a < c` if `b - a == d - c`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [[4,10,15,24,26],[0,9,12,20],[5,18,22,30]]\n    **Output:** [20,24]\n    **Explanation:**\n    List 1: [4, 10, 15, 24,26], 24 is in range [20,24].\n    List 2: [0, 9, 12, 20], 20 is in range [20,24].\n    List 3: [5, 18, 22, 30], 22 is in range [20,24].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [[1,2,3],[1,2,3],[1,2,3]]\n    **Output:** [1,1]\n    \n\n \n\n**Constraints:**\n\n  * `nums.length == k`\n  * `1 <= k <= 3500`\n  * `1 <= nums[i].length <= 50`\n  * `-105 <= nums[i][j] <= 105`\n  * `nums[i]` is sorted in **non-decreasing** order.",
+  "question": "You have `k` lists of sorted integers in **non-decreasing  order**. Find the **smallest** range that includes at least one number from each of the `k` lists.\n\nWe define the range `[a, b]` is smaller than range `[c, d]` if `b - a < d - c` **or** `a < c` if `b - a == d - c`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [[4,10,15,24,26],[0,9,12,20],[5,18,22,30]]\n    **Output:** [20,24]\n    **Explanation:**\n    List 1: [4, 10, 15, 24,26], 24 is in range [20,24].\n    List 2: [0, 9, 12, 20], 20 is in range [20,24].\n    List 3: [5, 18, 22, 30], 22 is in range [20,24].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [[1,2,3],[1,2,3],[1,2,3]]\n    **Output:** [1,1]",
+  "constraints": "**Constraints:**\n\n  * `nums.length == k`\n  * `1 <= k <= 3500`\n  * `1 <= nums[i].length <= 50`\n  * `-105 <= nums[i][j] <= 105`\n  * `nums[i]` is sorted in **non-decreasing** order.",
+  "topics": ["Array", "Hash Table", "Greedy", "Sliding Window", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 239348,
+  "total_submissions": 341607,
+  "acceptance_rate": "70.1%",
+  "similar_questions": [
+    {
+      "title": "Minimum Window Substring",
+      "slug": "minimum-window-substring",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-window-substring/"
+    }
+  ],
+  "hints": []
+}

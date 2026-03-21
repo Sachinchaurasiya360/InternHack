@@ -1,0 +1,23 @@
+{
+  "id": "562",
+  "title": "Longest Line of Consecutive One in Matrix",
+  "slug": "longest-line-of-consecutive-one-in-matrix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 80892,
+  "total_submissions": 159925,
+  "acceptance_rate": "50.6%",
+  "similar_questions": [],
+  "hints": [
+    "One solution is to count ones in each direction separately and find the longest line. Don't you think  it will take too much lines of code?",
+    "Is it possible to use some extra space to make the solution simple?",
+    "Can we use dynamic programming to make use of intermediate results?",
+    "Think of a 3D array which can be used to store the longest line obtained so far for each direction."
+  ]
+}

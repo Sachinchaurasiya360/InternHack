@@ -1,0 +1,35 @@
+{
+  "id": "3149",
+  "title": "Find the Minimum Cost Array Permutation",
+  "slug": "find-the-minimum-cost-array-permutation",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> which is a <span data-keyword=\"permutation\">permutation</span> of <code>[0, 1, 2, ..., n - 1]</code>. The <strong>score</strong> of any permutation of <code>[0, 1, 2, ..., n - 1]</code> named <code>perm</code> is defined as:</p>\n\n<p><code>score(perm) = |perm[0] - nums[perm[1]]| + |perm[1] - nums[perm[2]]| + ... + |perm[n - 1] - nums[perm[0]]|</code></p>\n\n<p>Return the permutation <code>perm</code> which has the <strong>minimum</strong> possible score. If <em>multiple</em> permutations exist with this score, return the one that is <span data-keyword=\"lexicographically-smaller-array\">lexicographically smallest</span> among them.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,0,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[0,1,2]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/04/04/example0gif.gif\" style=\"width: 235px; height: 235px;\" /></strong></p>\n\n<p>The lexicographically smallest permutation with minimum cost is <code>[0,1,2]</code>. The cost of this permutation is <code>|0 - 0| + |1 - 2| + |2 - 1| = 2</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [0,2,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[0,2,1]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/04/04/example1gif.gif\" style=\"width: 235px; height: 235px;\" /></strong></p>\n\n<p>The lexicographically smallest permutation with minimum cost is <code>[0,2,1]</code>. The cost of this permutation is <code>|0 - 1| + |2 - 2| + |1 - 0| = 2</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n == nums.length &lt;= 14</code></li>\n\t<li><code>nums</code> is a permutation of <code>[0, 1, 2, ..., n - 1]</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` which is a permutation of `[0, 1, 2, ..., n - 1]`. The **score** of any permutation of `[0, 1, 2, ..., n - 1]` named `perm` is defined as:\n\n`score(perm) = |perm[0] - nums[perm[1]]| + |perm[1] - nums[perm[2]]| + ... + |perm[n - 1] - nums[perm[0]]|`\n\nReturn the permutation `perm` which has the **minimum** possible score. If _multiple_ permutations exist with this score, return the one that is lexicographically smallest among them.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,0,2]\n\n**Output:** [0,1,2]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/04/04/example0gif.gif)**\n\nThe lexicographically smallest permutation with minimum cost is `[0,1,2]`. The cost of this permutation is `|0 - 0| + |1 - 2| + |2 - 1| = 2`.\n\n**Example 2:**\n\n**Input:** nums = [0,2,1]\n\n**Output:** [0,2,1]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/04/04/example1gif.gif)**\n\nThe lexicographically smallest permutation with minimum cost is `[0,2,1]`. The cost of this permutation is `|0 - 1| + |2 - 2| + |1 - 0| = 2`.\n\n \n\n**Constraints:**\n\n  * `2 <= n == nums.length <= 14`\n  * `nums` is a permutation of `[0, 1, 2, ..., n - 1]`.",
+  "question": "You are given an array `nums` which is a permutation of `[0, 1, 2, ..., n - 1]`. The **score** of any permutation of `[0, 1, 2, ..., n - 1]` named `perm` is defined as:\n\n`score(perm) = |perm[0] - nums[perm[1]]| + |perm[1] - nums[perm[2]]| + ... + |perm[n - 1] - nums[perm[0]]|`\n\nReturn the permutation `perm` which has the **minimum** possible score. If _multiple_ permutations exist with this score, return the one that is lexicographically smallest among them.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,0,2]\n\n**Output:** [0,1,2]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/04/04/example0gif.gif)**\n\nThe lexicographically smallest permutation with minimum cost is `[0,1,2]`. The cost of this permutation is `|0 - 0| + |1 - 2| + |2 - 1| = 2`.\n\n**Example 2:**\n\n**Input:** nums = [0,2,1]\n\n**Output:** [0,2,1]\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/04/04/example1gif.gif)**\n\nThe lexicographically smallest permutation with minimum cost is `[0,2,1]`. The cost of this permutation is `|0 - 1| + |2 - 2| + |1 - 0| = 2`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n == nums.length <= 14`\n  * `nums` is a permutation of `[0, 1, 2, ..., n - 1]`.",
+  "topics": ["Array", "Dynamic Programming", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 7017,
+  "total_submissions": 27673,
+  "acceptance_rate": "25.4%",
+  "similar_questions": [
+    {
+      "title": "Shortest Path Visiting All Nodes",
+      "slug": "shortest-path-visiting-all-nodes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/shortest-path-visiting-all-nodes/"
+    },
+    {
+      "title": "Find the Shortest Superstring",
+      "slug": "find-the-shortest-superstring",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-shortest-superstring/"
+    }
+  ],
+  "hints": [
+    "The score function is cyclic, so we can always set <code>perm[0] = 0</code> for the smallest lexical order.",
+    "It’s similar to the Traveling Salesman Problem. Use Dynamic Programming.",
+    "Use a bitmask to track which elements have been assigned to <code>perm</code>."
+  ]
+}

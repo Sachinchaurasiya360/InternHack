@@ -1,0 +1,18 @@
+{
+  "id": "476",
+  "title": "Number Complement",
+  "slug": "number-complement",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>The <strong>complement</strong> of an integer is the integer you get when you flip all the <code>0</code>&#39;s to <code>1</code>&#39;s and all the <code>1</code>&#39;s to <code>0</code>&#39;s in its binary representation.</p>\n\n<ul>\n\t<li>For example, The integer <code>5</code> is <code>&quot;101&quot;</code> in binary and its <strong>complement</strong> is <code>&quot;010&quot;</code> which is the integer <code>2</code>.</li>\n</ul>\n\n<p>Given an integer <code>num</code>, return <em>its complement</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 5\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The binary representation of 5 is 101 (no leading zero bits), and its complement is 010. So you need to output 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 1\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The binary representation of 1 is 1 (no leading zero bits), and its complement is 0. So you need to output 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num &lt; 2<sup>31</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as 1009: <a href=\"https://leetcode.com/problems/complement-of-base-10-integer/\" target=\"_blank\">https://leetcode.com/problems/complement-of-base-10-integer/</a></p>\n",
+  "content_markdown": "The **complement** of an integer is the integer you get when you flip all the `0`'s to `1`'s and all the `1`'s to `0`'s in its binary representation.\n\n  * For example, The integer `5` is `\"101\"` in binary and its **complement** is `\"010\"` which is the integer `2`.\n\n\n\nGiven an integer `num`, return _its complement_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 5\n    **Output:** 2\n    **Explanation:** The binary representation of 5 is 101 (no leading zero bits), and its complement is 010. So you need to output 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 1\n    **Output:** 0\n    **Explanation:** The binary representation of 1 is 1 (no leading zero bits), and its complement is 0. So you need to output 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num < 231`\n\n\n\n \n\n**Note:** This question is the same as 1009: <https://leetcode.com/problems/complement-of-base-10-integer/>",
+  "question": "The **complement** of an integer is the integer you get when you flip all the `0`'s to `1`'s and all the `1`'s to `0`'s in its binary representation.\n\n  * For example, The integer `5` is `\"101\"` in binary and its **complement** is `\"010\"` which is the integer `2`.\n\n\n\nGiven an integer `num`, return _its complement_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 5\n    **Output:** 2\n    **Explanation:** The binary representation of 5 is 101 (no leading zero bits), and its complement is 010. So you need to output 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 1\n    **Output:** 0\n    **Explanation:** The binary representation of 1 is 1 (no leading zero bits), and its complement is 0. So you need to output 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num < 231`\n\n\n\n \n\n**Note:** This question is the same as 1009: <https://leetcode.com/problems/complement-of-base-10-integer/>",
+  "topics": ["Bit Manipulation"],
+  "total_accepted": 538760,
+  "total_submissions": 764842,
+  "acceptance_rate": "70.4%",
+  "similar_questions": [],
+  "hints": []
+}

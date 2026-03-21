@@ -1,0 +1,29 @@
+{
+  "id": "3323",
+  "title": "Minimize Connected Groups by Inserting Interval",
+  "slug": "minimize-connected-groups-by-inserting-interval",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Sliding Window", "Sorting"],
+  "total_accepted": 1419,
+  "total_submissions": 2819,
+  "acceptance_rate": "50.3%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    }
+  ],
+  "hints": [
+    "Sort the intervals.",
+    "Merge all the mergeable intervals.",
+    "For each interval, binary search the latest interval that it can be merged with by adding exactly one interval."
+  ]
+}

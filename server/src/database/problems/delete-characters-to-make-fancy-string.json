@@ -1,0 +1,28 @@
+{
+  "id": "1957",
+  "title": "Delete Characters to Make Fancy String",
+  "slug": "delete-characters-to-make-fancy-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A <strong>fancy string</strong> is a string where no <strong>three</strong> <strong>consecutive</strong> characters are equal.</p>\n\n<p>Given a string <code>s</code>, delete the <strong>minimum</strong> possible number of characters from <code>s</code> to make it <strong>fancy</strong>.</p>\n\n<p>Return <em>the final string after the deletion</em>. It can be shown that the answer will always be <strong>unique</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;le<u>e</u>etcode&quot;\n<strong>Output:</strong> &quot;leetcode&quot;\n<strong>Explanation:</strong>\nRemove an &#39;e&#39; from the first group of &#39;e&#39;s to create &quot;leetcode&quot;.\nNo three consecutive characters are equal, so return &quot;leetcode&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;<u>a</u>aab<u>aa</u>aa&quot;\n<strong>Output:</strong> &quot;aabaa&quot;\n<strong>Explanation:</strong>\nRemove an &#39;a&#39; from the first group of &#39;a&#39;s to create &quot;aabaaaa&quot;.\nRemove two &#39;a&#39;s from the second group of &#39;a&#39;s to create &quot;aabaa&quot;.\nNo three consecutive characters are equal, so return &quot;aabaa&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aab&quot;\n<strong>Output:</strong> &quot;aab&quot;\n<strong>Explanation:</strong> No three consecutive characters are equal, so return &quot;aab&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "A **fancy string** is a string where no **three** **consecutive** characters are equal.\n\nGiven a string `s`, delete the **minimum** possible number of characters from `s` to make it **fancy**.\n\nReturn _the final string after the deletion_. It can be shown that the answer will always be **unique**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"le _e_ etcode\"\n    **Output:** \"leetcode\"\n    **Explanation:**\n    Remove an 'e' from the first group of 'e's to create \"leetcode\".\n    No three consecutive characters are equal, so return \"leetcode\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"_a_ aab _aa_ aa\"\n    **Output:** \"aabaa\"\n    **Explanation:**\n    Remove an 'a' from the first group of 'a's to create \"aabaaaa\".\n    Remove two 'a's from the second group of 'a's to create \"aabaa\".\n    No three consecutive characters are equal, so return \"aabaa\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** \"aab\"\n    **Explanation:** No three consecutive characters are equal, so return \"aab\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists only of lowercase English letters.",
+  "question": "A **fancy string** is a string where no **three** **consecutive** characters are equal.\n\nGiven a string `s`, delete the **minimum** possible number of characters from `s` to make it **fancy**.\n\nReturn _the final string after the deletion_. It can be shown that the answer will always be **unique**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"le _e_ etcode\"\n    **Output:** \"leetcode\"\n    **Explanation:**\n    Remove an 'e' from the first group of 'e's to create \"leetcode\".\n    No three consecutive characters are equal, so return \"leetcode\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"_a_ aab _aa_ aa\"\n    **Output:** \"aabaa\"\n    **Explanation:**\n    Remove an 'a' from the first group of 'a's to create \"aabaaaa\".\n    Remove two 'a's from the second group of 'a's to create \"aabaa\".\n    No three consecutive characters are equal, so return \"aabaa\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** \"aab\"\n    **Explanation:** No three consecutive characters are equal, so return \"aab\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists only of lowercase English letters.",
+  "topics": ["String"],
+  "total_accepted": 339902,
+  "total_submissions": 458693,
+  "acceptance_rate": "74.1%",
+  "similar_questions": [
+    {
+      "title": "Find Maximum Removals From Source String",
+      "slug": "find-maximum-removals-from-source-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-maximum-removals-from-source-string/"
+    }
+  ],
+  "hints": [
+    "What's the optimal way to delete characters if three or more consecutive characters are equal?",
+    "If three or more consecutive characters are equal, keep two of them and delete the rest."
+  ]
+}

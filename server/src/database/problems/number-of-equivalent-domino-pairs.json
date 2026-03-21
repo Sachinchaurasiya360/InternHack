@@ -1,0 +1,21 @@
+{
+  "id": "1128",
+  "title": "Number of Equivalent Domino Pairs",
+  "slug": "number-of-equivalent-domino-pairs",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a list of <code>dominoes</code>, <code>dominoes[i] = [a, b]</code> is <strong>equivalent to</strong> <code>dominoes[j] = [c, d]</code> if and only if either (<code>a == c</code> and <code>b == d</code>), or (<code>a == d</code> and <code>b == c</code>) - that is, one domino can be rotated to be equal to another domino.</p>\n\n<p>Return <em>the number of pairs </em><code>(i, j)</code><em> for which </em><code>0 &lt;= i &lt; j &lt; dominoes.length</code><em>, and </em><code>dominoes[i]</code><em> is <strong>equivalent to</strong> </em><code>dominoes[j]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> dominoes = [[1,2],[2,1],[3,4],[5,6]]\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> dominoes = [[1,2],[1,2],[1,1],[1,2],[2,2]]\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= dominoes.length &lt;= 4 * 10<sup>4</sup></code></li>\n\t<li><code>dominoes[i].length == 2</code></li>\n\t<li><code>1 &lt;= dominoes[i][j] &lt;= 9</code></li>\n</ul>\n",
+  "content_markdown": "Given a list of `dominoes`, `dominoes[i] = [a, b]` is **equivalent to** `dominoes[j] = [c, d]` if and only if either (`a == c` and `b == d`), or (`a == d` and `b == c`) - that is, one domino can be rotated to be equal to another domino.\n\nReturn _the number of pairs_`(i, j)`_for which_`0 <= i < j < dominoes.length` _, and_`dominoes[i]`_is**equivalent to** _`dominoes[j]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** dominoes = [[1,2],[2,1],[3,4],[5,6]]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** dominoes = [[1,2],[1,2],[1,1],[1,2],[2,2]]\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `1 <= dominoes.length <= 4 * 104`\n  * `dominoes[i].length == 2`\n  * `1 <= dominoes[i][j] <= 9`",
+  "question": "Given a list of `dominoes`, `dominoes[i] = [a, b]` is **equivalent to** `dominoes[j] = [c, d]` if and only if either (`a == c` and `b == d`), or (`a == d` and `b == c`) - that is, one domino can be rotated to be equal to another domino.\n\nReturn _the number of pairs_`(i, j)`_for which_`0 <= i < j < dominoes.length` _, and_`dominoes[i]`_is**equivalent to** _`dominoes[j]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** dominoes = [[1,2],[2,1],[3,4],[5,6]]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** dominoes = [[1,2],[1,2],[1,1],[1,2],[2,2]]\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `1 <= dominoes.length <= 4 * 104`\n  * `dominoes[i].length == 2`\n  * `1 <= dominoes[i][j] <= 9`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 201917,
+  "total_submissions": 332928,
+  "acceptance_rate": "60.6%",
+  "similar_questions": [],
+  "hints": [
+    "For each domino j, find the number of dominoes you've already seen (dominoes i with i < j) that are equivalent.",
+    "You can keep track of what you've seen using a hashmap."
+  ]
+}

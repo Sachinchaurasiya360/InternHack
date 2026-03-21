@@ -1,0 +1,46 @@
+{
+  "id": "2385",
+  "title": "Amount of Time for Binary Tree to Be Infected",
+  "slug": "amount-of-time-for-binary-tree-to-be-infected",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> of a binary tree with <strong>unique</strong> values, and an integer <code>start</code>. At minute <code>0</code>, an <strong>infection</strong> starts from the node with value <code>start</code>.</p>\n\n<p>Each minute, a node becomes infected if:</p>\n\n<ul>\n\t<li>The node is currently uninfected.</li>\n\t<li>The node is adjacent to an infected node.</li>\n</ul>\n\n<p>Return <em>the number of minutes needed for the entire tree to be infected.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/06/25/image-20220625231744-1.png\" style=\"width: 400px; height: 306px;\" />\n<pre>\n<strong>Input:</strong> root = [1,5,3,null,4,10,6,9,2], start = 3\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The following nodes are infected during:\n- Minute 0: Node 3\n- Minute 1: Nodes 1, 10 and 6\n- Minute 2: Node 5\n- Minute 3: Node 4\n- Minute 4: Nodes 9 and 2\nIt takes 4 minutes for the whole tree to be infected so we return 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/06/25/image-20220625231812-2.png\" style=\"width: 75px; height: 66px;\" />\n<pre>\n<strong>Input:</strong> root = [1], start = 1\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> At minute 0, the only node in the tree is infected so we return 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 10<sup>5</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 10<sup>5</sup></code></li>\n\t<li>Each node has a <strong>unique</strong> value.</li>\n\t<li>A node with a value of <code>start</code> exists in the tree.</li>\n</ul>\n",
+  "content_markdown": "You are given the `root` of a binary tree with **unique** values, and an integer `start`. At minute `0`, an **infection** starts from the node with value `start`.\n\nEach minute, a node becomes infected if:\n\n  * The node is currently uninfected.\n  * The node is adjacent to an infected node.\n\n\n\nReturn _the number of minutes needed for the entire tree to be infected._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/06/25/image-20220625231744-1.png)\n    \n    \n    **Input:** root = [1,5,3,null,4,10,6,9,2], start = 3\n    **Output:** 4\n    **Explanation:** The following nodes are infected during:\n    - Minute 0: Node 3\n    - Minute 1: Nodes 1, 10 and 6\n    - Minute 2: Node 5\n    - Minute 3: Node 4\n    - Minute 4: Nodes 9 and 2\n    It takes 4 minutes for the whole tree to be infected so we return 4.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/06/25/image-20220625231812-2.png)\n    \n    \n    **Input:** root = [1], start = 1\n    **Output:** 0\n    **Explanation:** At minute 0, the only node in the tree is infected so we return 0.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 105]`.\n  * `1 <= Node.val <= 105`\n  * Each node has a **unique** value.\n  * A node with a value of `start` exists in the tree.",
+  "question": "You are given the `root` of a binary tree with **unique** values, and an integer `start`. At minute `0`, an **infection** starts from the node with value `start`.\n\nEach minute, a node becomes infected if:\n\n  * The node is currently uninfected.\n  * The node is adjacent to an infected node.\n\n\n\nReturn _the number of minutes needed for the entire tree to be infected._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/06/25/image-20220625231744-1.png)\n    \n    \n    **Input:** root = [1,5,3,null,4,10,6,9,2], start = 3\n    **Output:** 4\n    **Explanation:** The following nodes are infected during:\n    - Minute 0: Node 3\n    - Minute 1: Nodes 1, 10 and 6\n    - Minute 2: Node 5\n    - Minute 3: Node 4\n    - Minute 4: Nodes 9 and 2\n    It takes 4 minutes for the whole tree to be infected so we return 4.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/06/25/image-20220625231812-2.png)\n    \n    \n    **Input:** root = [1], start = 1\n    **Output:** 0\n    **Explanation:** At minute 0, the only node in the tree is infected so we return 0.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 105]`.\n  * `1 <= Node.val <= 105`\n  * Each node has a **unique** value.\n  * A node with a value of `start` exists in the tree.",
+  "topics": ["Hash Table", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 200722,
+  "total_submissions": 308159,
+  "acceptance_rate": "65.1%",
+  "similar_questions": [
+    {
+      "title": "Maximum Depth of Binary Tree",
+      "slug": "maximum-depth-of-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/"
+    },
+    {
+      "title": "Shortest Path to Get Food",
+      "slug": "shortest-path-to-get-food",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-path-to-get-food/"
+    },
+    {
+      "title": "All Nodes Distance K in Binary Tree",
+      "slug": "all-nodes-distance-k-in-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/"
+    },
+    {
+      "title": "Count the Number of Infection Sequences",
+      "slug": "count-the-number-of-infection-sequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-the-number-of-infection-sequences/"
+    }
+  ],
+  "hints": [
+    "Convert the tree to an undirected graph to make it easier to handle.",
+    "Use BFS starting at the start node to find the distance between each node and the start node. The answer is the maximum distance."
+  ]
+}

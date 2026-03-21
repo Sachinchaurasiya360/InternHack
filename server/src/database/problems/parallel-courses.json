@@ -1,0 +1,41 @@
+{
+  "id": "1136",
+  "title": "Parallel Courses",
+  "slug": "parallel-courses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Graph Theory", "Topological Sort"],
+  "total_accepted": 107786,
+  "total_submissions": 173705,
+  "acceptance_rate": "62.1%",
+  "similar_questions": [
+    {
+      "title": "Course Schedule II",
+      "slug": "course-schedule-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/course-schedule-ii/"
+    },
+    {
+      "title": "Parallel Courses II",
+      "slug": "parallel-courses-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/parallel-courses-ii/"
+    },
+    {
+      "title": "Parallel Courses III",
+      "slug": "parallel-courses-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/parallel-courses-iii/"
+    }
+  ],
+  "hints": [
+    "Try to think of it as a graph problem. It will be impossible to study all the courses if the graph had a cycle.",
+    "The graph is a directed acyclic graph (DAG). The answer is the longes path in this DAG.",
+    "You can use DP to find the longest path in the DAG."
+  ]
+}

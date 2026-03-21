@@ -1,0 +1,28 @@
+{
+  "id": "1688",
+  "title": "Count of Matches in Tournament",
+  "slug": "count-of-matches-in-tournament",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code>, the number of teams in a tournament that has strange rules:</p>\n\n<ul>\n\t<li>If the current number of teams is <strong>even</strong>, each team gets paired with another team. A total of <code>n / 2</code> matches are played, and <code>n / 2</code> teams advance to the next round.</li>\n\t<li>If the current number of teams is <strong>odd</strong>, one team randomly advances in the tournament, and the rest gets paired. A total of <code>(n - 1) / 2</code> matches are played, and <code>(n - 1) / 2 + 1</code> teams advance to the next round.</li>\n</ul>\n\n<p>Return <em>the number of matches played in the tournament until a winner is decided.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 7\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> Details of the tournament: \n- 1st Round: Teams = 7, Matches = 3, and 4 teams advance.\n- 2nd Round: Teams = 4, Matches = 2, and 2 teams advance.\n- 3rd Round: Teams = 2, Matches = 1, and 1 team is declared the winner.\nTotal number of matches = 3 + 2 + 1 = 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 14\n<strong>Output:</strong> 13\n<strong>Explanation:</strong> Details of the tournament:\n- 1st Round: Teams = 14, Matches = 7, and 7 teams advance.\n- 2nd Round: Teams = 7, Matches = 3, and 4 teams advance.\n- 3rd Round: Teams = 4, Matches = 2, and 2 teams advance.\n- 4th Round: Teams = 2, Matches = 1, and 1 team is declared the winner.\nTotal number of matches = 7 + 3 + 2 + 1 = 13.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 200</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n`, the number of teams in a tournament that has strange rules:\n\n  * If the current number of teams is **even** , each team gets paired with another team. A total of `n / 2` matches are played, and `n / 2` teams advance to the next round.\n  * If the current number of teams is **odd** , one team randomly advances in the tournament, and the rest gets paired. A total of `(n - 1) / 2` matches are played, and `(n - 1) / 2 + 1` teams advance to the next round.\n\n\n\nReturn _the number of matches played in the tournament until a winner is decided._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 7\n    **Output:** 6\n    **Explanation:** Details of the tournament: \n    - 1st Round: Teams = 7, Matches = 3, and 4 teams advance.\n    - 2nd Round: Teams = 4, Matches = 2, and 2 teams advance.\n    - 3rd Round: Teams = 2, Matches = 1, and 1 team is declared the winner.\n    Total number of matches = 3 + 2 + 1 = 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 14\n    **Output:** 13\n    **Explanation:** Details of the tournament:\n    - 1st Round: Teams = 14, Matches = 7, and 7 teams advance.\n    - 2nd Round: Teams = 7, Matches = 3, and 4 teams advance.\n    - 3rd Round: Teams = 4, Matches = 2, and 2 teams advance.\n    - 4th Round: Teams = 2, Matches = 1, and 1 team is declared the winner.\n    Total number of matches = 7 + 3 + 2 + 1 = 13.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 200`",
+  "question": "You are given an integer `n`, the number of teams in a tournament that has strange rules:\n\n  * If the current number of teams is **even** , each team gets paired with another team. A total of `n / 2` matches are played, and `n / 2` teams advance to the next round.\n  * If the current number of teams is **odd** , one team randomly advances in the tournament, and the rest gets paired. A total of `(n - 1) / 2` matches are played, and `(n - 1) / 2 + 1` teams advance to the next round.\n\n\n\nReturn _the number of matches played in the tournament until a winner is decided._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 7\n    **Output:** 6\n    **Explanation:** Details of the tournament: \n    - 1st Round: Teams = 7, Matches = 3, and 4 teams advance.\n    - 2nd Round: Teams = 4, Matches = 2, and 2 teams advance.\n    - 3rd Round: Teams = 2, Matches = 1, and 1 team is declared the winner.\n    Total number of matches = 3 + 2 + 1 = 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 14\n    **Output:** 13\n    **Explanation:** Details of the tournament:\n    - 1st Round: Teams = 14, Matches = 7, and 7 teams advance.\n    - 2nd Round: Teams = 7, Matches = 3, and 4 teams advance.\n    - 3rd Round: Teams = 4, Matches = 2, and 2 teams advance.\n    - 4th Round: Teams = 2, Matches = 1, and 1 team is declared the winner.\n    Total number of matches = 7 + 3 + 2 + 1 = 13.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 200`",
+  "topics": ["Math", "Simulation"],
+  "total_accepted": 317556,
+  "total_submissions": 367794,
+  "acceptance_rate": "86.3%",
+  "similar_questions": [
+    {
+      "title": "Count Distinct Numbers on Board",
+      "slug": "count-distinct-numbers-on-board",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-distinct-numbers-on-board/"
+    }
+  ],
+  "hints": [
+    "Simulate the tournament as given in the statement.",
+    "Be careful when handling odd integers."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3133",
+  "title": "Minimum Array End",
+  "slug": "minimum-array-end",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integers <code>n</code> and <code>x</code>. You have to construct an array of <strong>positive</strong> integers <code>nums</code> of size <code>n</code> where for every <code>0 &lt;= i &lt; n - 1</code>, <code>nums[i + 1]</code> is <strong>greater than</strong> <code>nums[i]</code>, and the result of the bitwise <code>AND</code> operation between all elements of <code>nums</code> is <code>x</code>.</p>\n\n<p>Return the <strong>minimum</strong> possible value of <code>nums[n - 1]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3, x = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>nums</code> can be <code>[4,5,6]</code> and its last element is 6.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 2, x = 7</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">15</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>nums</code> can be <code>[7,15]</code> and its last element is 15.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n, x &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two integers `n` and `x`. You have to construct an array of **positive** integers `nums` of size `n` where for every `0 <= i < n - 1`, `nums[i + 1]` is **greater than** `nums[i]`, and the result of the bitwise `AND` operation between all elements of `nums` is `x`.\n\nReturn the **minimum** possible value of `nums[n - 1]`.\n\n \n\n**Example 1:**\n\n**Input:** n = 3, x = 4\n\n**Output:** 6\n\n**Explanation:**\n\n`nums` can be `[4,5,6]` and its last element is 6.\n\n**Example 2:**\n\n**Input:** n = 2, x = 7\n\n**Output:** 15\n\n**Explanation:**\n\n`nums` can be `[7,15]` and its last element is 15.\n\n \n\n**Constraints:**\n\n  * `1 <= n, x <= 108`",
+  "question": "You are given two integers `n` and `x`. You have to construct an array of **positive** integers `nums` of size `n` where for every `0 <= i < n - 1`, `nums[i + 1]` is **greater than** `nums[i]`, and the result of the bitwise `AND` operation between all elements of `nums` is `x`.\n\nReturn the **minimum** possible value of `nums[n - 1]`.",
+  "examples": "**Example 1:**\n\n**Input:** n = 3, x = 4\n\n**Output:** 6\n\n**Explanation:**\n\n`nums` can be `[4,5,6]` and its last element is 6.\n\n**Example 2:**\n\n**Input:** n = 2, x = 7\n\n**Output:** 15\n\n**Explanation:**\n\n`nums` can be `[7,15]` and its last element is 15.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n, x <= 108`",
+  "topics": ["Bit Manipulation"],
+  "total_accepted": 109664,
+  "total_submissions": 197749,
+  "acceptance_rate": "55.5%",
+  "similar_questions": [],
+  "hints": [
+    "Each element of the array should be obtained by “merging” <code>x</code> and <code>v</code> where <code>v = 0, 1, 2, …(n - 1)</code>.",
+    "To merge <code>x</code> with another number <code>v</code>, keep the set bits of <code>x</code> untouched, for all the other bits, fill the set bits of <code>v</code> from right to left in order one by one.",
+    "So the final answer is the “merge” of <code>x</code> and <code>n - 1</code>."
+  ]
+}

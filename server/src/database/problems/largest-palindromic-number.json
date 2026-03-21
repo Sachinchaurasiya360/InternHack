@@ -1,0 +1,30 @@
+{
+  "id": "2384",
+  "title": "Largest Palindromic Number",
+  "slug": "largest-palindromic-number",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>num</code> consisting of digits only.</p>\n\n<p>Return <em>the <strong>largest palindromic</strong> integer (in the form of a string) that can be formed using digits taken from </em><code>num</code>. It should not contain <strong>leading zeroes</strong>.</p>\n\n<p><strong>Notes:</strong></p>\n\n<ul>\n\t<li>You do <strong>not</strong> need to use all the digits of <code>num</code>, but you must use <strong>at least</strong> one digit.</li>\n\t<li>The digits can be reordered.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;444947137&quot;\n<strong>Output:</strong> &quot;7449447&quot;\n<strong>Explanation:</strong> \nUse the digits &quot;4449477&quot; from &quot;<u><strong>44494</strong></u><u><strong>7</strong></u>13<u><strong>7</strong></u>&quot; to form the palindromic integer &quot;7449447&quot;.\nIt can be shown that &quot;7449447&quot; is the largest palindromic integer that can be formed.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;00009&quot;\n<strong>Output:</strong> &quot;9&quot;\n<strong>Explanation:</strong> \nIt can be shown that &quot;9&quot; is the largest palindromic integer that can be formed.\nNote that the integer returned should not contain leading zeroes.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>num</code> consists of digits.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `num` consisting of digits only.\n\nReturn _the**largest palindromic** integer (in the form of a string) that can be formed using digits taken from _`num`. It should not contain **leading zeroes**.\n\n**Notes:**\n\n  * You do **not** need to use all the digits of `num`, but you must use **at least** one digit.\n  * The digits can be reordered.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = \"444947137\"\n    **Output:** \"7449447\"\n    **Explanation:** \n    Use the digits \"4449477\" from \"_**44494**_ _**7**_ 13 _**7**_ \" to form the palindromic integer \"7449447\".\n    It can be shown that \"7449447\" is the largest palindromic integer that can be formed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"00009\"\n    **Output:** \"9\"\n    **Explanation:** \n    It can be shown that \"9\" is the largest palindromic integer that can be formed.\n    Note that the integer returned should not contain leading zeroes.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num.length <= 105`\n  * `num` consists of digits.",
+  "question": "You are given a string `num` consisting of digits only.\n\nReturn _the**largest palindromic** integer (in the form of a string) that can be formed using digits taken from _`num`. It should not contain **leading zeroes**.\n\n**Notes:**\n\n  * You do **not** need to use all the digits of `num`, but you must use **at least** one digit.\n  * The digits can be reordered.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = \"444947137\"\n    **Output:** \"7449447\"\n    **Explanation:** \n    Use the digits \"4449477\" from \"_**44494**_ _**7**_ 13 _**7**_ \" to form the palindromic integer \"7449447\".\n    It can be shown that \"7449447\" is the largest palindromic integer that can be formed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"00009\"\n    **Output:** \"9\"\n    **Explanation:** \n    It can be shown that \"9\" is the largest palindromic integer that can be formed.\n    Note that the integer returned should not contain leading zeroes.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num.length <= 105`\n  * `num` consists of digits.",
+  "topics": ["Hash Table", "String", "Greedy", "Counting"],
+  "total_accepted": 53068,
+  "total_submissions": 143329,
+  "acceptance_rate": "37.0%",
+  "similar_questions": [
+    {
+      "title": "Longest Palindrome",
+      "slug": "longest-palindrome",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-palindrome/"
+    }
+  ],
+  "hints": [
+    "In order to form a valid palindrome, other than the middle digit in an odd-length palindrome, every digit needs to exist on both sides.",
+    "A longer palindrome implies a larger valued palindrome. For palindromes of the same length, the larger digits should occur first.",
+    "We can count the occurrences of each digit and build the palindrome starting from the ends. Starting from the larger digits, if there are still at least 2 occurrences of a digit, we can place these digits on each side.",
+    "Make sure to consider the special case for the center digit (if any) and zeroes. There should not be leading zeroes."
+  ]
+}

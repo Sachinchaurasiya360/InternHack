@@ -1,0 +1,57 @@
+{
+  "id": "485",
+  "title": "Max Consecutive Ones",
+  "slug": "max-consecutive-ones",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary array <code>nums</code>, return <em>the maximum number of consecutive </em><code>1</code><em>&#39;s in the array</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,0,1,1,1]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The first two digits or the last three digits are consecutive 1s. The maximum number of consecutive 1s is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,0,1,1,0,1]\n<strong>Output:</strong> 2\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>nums[i]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a binary array `nums`, return _the maximum number of consecutive_`1` _' s in the array_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,1,0,1,1,1]\n    **Output:** 3\n    **Explanation:** The first two digits or the last three digits are consecutive 1s. The maximum number of consecutive 1s is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,0,1,1,0,1]\n    **Output:** 2\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is either `0` or `1`.",
+  "question": "Given a binary array `nums`, return _the maximum number of consecutive_`1` _' s in the array_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,1,0,1,1,1]\n    **Output:** 3\n    **Explanation:** The first two digits or the last three digits are consecutive 1s. The maximum number of consecutive 1s is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,0,1,1,0,1]\n    **Output:** 2",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is either `0` or `1`.",
+  "topics": ["Array"],
+  "total_accepted": 2155161,
+  "total_submissions": 3334098,
+  "acceptance_rate": "64.6%",
+  "similar_questions": [
+    {
+      "title": "Max Consecutive Ones II",
+      "slug": "max-consecutive-ones-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-consecutive-ones-ii/"
+    },
+    {
+      "title": "Max Consecutive Ones III",
+      "slug": "max-consecutive-ones-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-consecutive-ones-iii/"
+    },
+    {
+      "title": "Consecutive Characters",
+      "slug": "consecutive-characters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/consecutive-characters/"
+    },
+    {
+      "title": "Longer Contiguous Segments of Ones than Zeros",
+      "slug": "longer-contiguous-segments-of-ones-than-zeros",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longer-contiguous-segments-of-ones-than-zeros/"
+    },
+    {
+      "title": "Length of the Longest Alphabetical Continuous Substring",
+      "slug": "length-of-the-longest-alphabetical-continuous-substring",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/length-of-the-longest-alphabetical-continuous-substring/"
+    },
+    {
+      "title": "Maximum Enemy Forts That Can Be Captured",
+      "slug": "maximum-enemy-forts-that-can-be-captured",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-enemy-forts-that-can-be-captured/"
+    }
+  ],
+  "hints": [
+    "You need to think about two things as far as any window is concerned. One is the starting point for the window. How do you detect that a new window of 1s has started? The next part is detecting the ending point for this window.\r\n\r\nHow do you detect the ending point for an existing window? If you figure these two things out, you will be able to detect the windows of consecutive ones. All that remains afterward is to find the longest such window and return the size."
+  ]
+}

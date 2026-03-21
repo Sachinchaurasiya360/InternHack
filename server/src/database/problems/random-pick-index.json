@@ -1,0 +1,37 @@
+{
+  "id": "398",
+  "title": "Random Pick Index",
+  "slug": "random-pick-index",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> with possible <strong>duplicates</strong>, randomly output the index of a given <code>target</code> number. You can assume that the given target number must exist in the array.</p>\n\n<p>Implement the <code>Solution</code> class:</p>\n\n<ul>\n\t<li><code>Solution(int[] nums)</code> Initializes the object with the array <code>nums</code>.</li>\n\t<li><code>int pick(int target)</code> Picks a random index <code>i</code> from <code>nums</code> where <code>nums[i] == target</code>. If there are multiple valid i&#39;s, then each index should have an equal probability of returning.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;Solution&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;]\n[[[1, 2, 3, 3, 3]], [3], [1], [3]]\n<strong>Output</strong>\n[null, 4, 0, 2]\n\n<strong>Explanation</strong>\nSolution solution = new Solution([1, 2, 3, 3, 3]);\nsolution.pick(3); // It should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.\nsolution.pick(1); // It should return 0. Since in the array only nums[0] is equal to 1.\nsolution.pick(3); // It should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li><code>target</code> is an integer from <code>nums</code>.</li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>pick</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` with possible **duplicates** , randomly output the index of a given `target` number. You can assume that the given target number must exist in the array.\n\nImplement the `Solution` class:\n\n  * `Solution(int[] nums)` Initializes the object with the array `nums`.\n  * `int pick(int target)` Picks a random index `i` from `nums` where `nums[i] == target`. If there are multiple valid i's, then each index should have an equal probability of returning.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"Solution\", \"pick\", \"pick\", \"pick\"]\n    [[[1, 2, 3, 3, 3]], [3], [1], [3]]\n    **Output**\n    [null, 4, 0, 2]\n    \n    **Explanation**\n    Solution solution = new Solution([1, 2, 3, 3, 3]);\n    solution.pick(3); // It should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.\n    solution.pick(1); // It should return 0. Since in the array only nums[0] is equal to 1.\n    solution.pick(3); // It should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `-231 <= nums[i] <= 231 - 1`\n  * `target` is an integer from `nums`.\n  * At most `104` calls will be made to `pick`.",
+  "question": "Given an integer array `nums` with possible **duplicates** , randomly output the index of a given `target` number. You can assume that the given target number must exist in the array.\n\nImplement the `Solution` class:\n\n  * `Solution(int[] nums)` Initializes the object with the array `nums`.\n  * `int pick(int target)` Picks a random index `i` from `nums` where `nums[i] == target`. If there are multiple valid i's, then each index should have an equal probability of returning.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"Solution\", \"pick\", \"pick\", \"pick\"]\n    [[[1, 2, 3, 3, 3]], [3], [1], [3]]\n    **Output**\n    [null, 4, 0, 2]\n    \n    **Explanation**\n    Solution solution = new Solution([1, 2, 3, 3, 3]);\n    solution.pick(3); // It should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.\n    solution.pick(1); // It should return 0. Since in the array only nums[0] is equal to 1.\n    solution.pick(3); // It should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `-231 <= nums[i] <= 231 - 1`\n  * `target` is an integer from `nums`.\n  * At most `104` calls will be made to `pick`.",
+  "topics": ["Hash Table", "Math", "Reservoir Sampling", "Randomized"],
+  "total_accepted": 303095,
+  "total_submissions": 466382,
+  "acceptance_rate": "65.0%",
+  "similar_questions": [
+    {
+      "title": "Linked List Random Node",
+      "slug": "linked-list-random-node",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/linked-list-random-node/"
+    },
+    {
+      "title": "Random Pick with Blacklist",
+      "slug": "random-pick-with-blacklist",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/random-pick-with-blacklist/"
+    },
+    {
+      "title": "Random Pick with Weight",
+      "slug": "random-pick-with-weight",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/random-pick-with-weight/"
+    }
+  ],
+  "hints": []
+}

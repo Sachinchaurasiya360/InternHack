@@ -1,0 +1,21 @@
+{
+  "id": "1788",
+  "title": "Maximize the Beauty of the Garden",
+  "slug": "maximize-the-beauty-of-the-garden",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Greedy", "Prefix Sum"],
+  "total_accepted": 2761,
+  "total_submissions": 4272,
+  "acceptance_rate": "64.6%",
+  "similar_questions": [],
+  "hints": [
+    "Consider every possible beauty and its first and last index in flowers.",
+    "Remove all flowers with negative beauties within those indices."
+  ]
+}

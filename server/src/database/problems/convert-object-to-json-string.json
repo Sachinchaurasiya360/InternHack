@@ -1,0 +1,47 @@
+{
+  "id": "2633",
+  "title": "Convert Object to JSON String",
+  "slug": "convert-object-to-json-string",
+  "difficulty": "Medium",
+  "category": "JavaScript",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [],
+  "total_accepted": 13870,
+  "total_submissions": 17776,
+  "acceptance_rate": "78.0%",
+  "similar_questions": [
+    {
+      "title": "JSON Deep Equal",
+      "slug": "json-deep-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/json-deep-equal/"
+    },
+    {
+      "title": "Flatten Deeply Nested Array",
+      "slug": "flatten-deeply-nested-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-deeply-nested-array/"
+    },
+    {
+      "title": "Array of Objects to Matrix",
+      "slug": "array-of-objects-to-matrix",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/array-of-objects-to-matrix/"
+    },
+    {
+      "title": "Differences Between Two Objects",
+      "slug": "differences-between-two-objects",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/differences-between-two-objects/"
+    }
+  ],
+  "hints": [
+    "Consider the 4 possibilities. The object could be an array, an object, a string, or another type.",
+    "Think about the problem recursively. If you know how to convert any sub-data into a string, how could you use it to convert the entire data into a string?",
+    "If the data is a string, it's just the value surrounded by double quotes. If the data is another type, its just String(data). If the data is an array, it's the recursively stringified value of each item separated by commas. If the data is an object, it's a series of key-value pairs where each value is the recursively stringified value."
+  ]
+}

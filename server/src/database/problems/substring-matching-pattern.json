@@ -1,0 +1,25 @@
+{
+  "id": "3407",
+  "title": "Substring Matching Pattern",
+  "slug": "substring-matching-pattern",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> and a pattern string <code>p</code>, where <code>p</code> contains <strong>exactly one</strong> <code>&#39;*&#39;</code> character.</p>\n\n<p>The <code>&#39;*&#39;</code> in <code>p</code> can be replaced with any sequence of zero or more characters.</p>\n\n<p>Return <code>true</code> if <code>p</code> can be made a <span data-keyword=\"substring-nonempty\">substring</span> of <code>s</code>, and <code>false</code> otherwise.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;leetcode&quot;, p = &quot;ee*e&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>By replacing the <code>&#39;*&#39;</code> with <code>&quot;tcod&quot;</code>, the substring <code>&quot;eetcode&quot;</code> matches the pattern.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;car&quot;, p = &quot;c*v&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There is no substring matching the pattern.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;luck&quot;, p = &quot;u*&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The substrings <code>&quot;u&quot;</code>, <code>&quot;uc&quot;</code>, and <code>&quot;uck&quot;</code> match the pattern.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= p.length &lt;= 50 </code></li>\n\t<li><code>s</code> contains only lowercase English letters.</li>\n\t<li><code>p</code> contains only lowercase English letters and exactly one <code>&#39;*&#39;</code></li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` and a pattern string `p`, where `p` contains **exactly one** `'*'` character.\n\nThe `'*'` in `p` can be replaced with any sequence of zero or more characters.\n\nReturn `true` if `p` can be made a substring of `s`, and `false` otherwise.\n\n \n\n**Example 1:**\n\n**Input:** s = \"leetcode\", p = \"ee*e\"\n\n**Output:** true\n\n**Explanation:**\n\nBy replacing the `'*'` with `\"tcod\"`, the substring `\"eetcode\"` matches the pattern.\n\n**Example 2:**\n\n**Input:** s = \"car\", p = \"c*v\"\n\n**Output:** false\n\n**Explanation:**\n\nThere is no substring matching the pattern.\n\n**Example 3:**\n\n**Input:** s = \"luck\", p = \"u*\"\n\n**Output:** true\n\n**Explanation:**\n\nThe substrings `\"u\"`, `\"uc\"`, and `\"uck\"` match the pattern.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 50`\n  * `1 <= p.length <= 50 `\n  * `s` contains only lowercase English letters.\n  * `p` contains only lowercase English letters and exactly one `'*'`",
+  "question": "You are given a string `s` and a pattern string `p`, where `p` contains **exactly one** `'*'` character.\n\nThe `'*'` in `p` can be replaced with any sequence of zero or more characters.\n\nReturn `true` if `p` can be made a substring of `s`, and `false` otherwise.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"leetcode\", p = \"ee*e\"\n\n**Output:** true\n\n**Explanation:**\n\nBy replacing the `'*'` with `\"tcod\"`, the substring `\"eetcode\"` matches the pattern.\n\n**Example 2:**\n\n**Input:** s = \"car\", p = \"c*v\"\n\n**Output:** false\n\n**Explanation:**\n\nThere is no substring matching the pattern.\n\n**Example 3:**\n\n**Input:** s = \"luck\", p = \"u*\"\n\n**Output:** true\n\n**Explanation:**\n\nThe substrings `\"u\"`, `\"uc\"`, and `\"uck\"` match the pattern.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 50`\n  * `1 <= p.length <= 50 `\n  * `s` contains only lowercase English letters.\n  * `p` contains only lowercase English letters and exactly one `'*'`",
+  "topics": ["String", "String Matching"],
+  "total_accepted": 37492,
+  "total_submissions": 132293,
+  "acceptance_rate": "28.3%",
+  "similar_questions": [
+    {
+      "title": "Wildcard Matching",
+      "slug": "wildcard-matching",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/wildcard-matching/"
+    }
+  ],
+  "hints": ["Divide the pattern in two strings and search in the string."]
+}

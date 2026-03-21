@@ -1,0 +1,28 @@
+{
+  "id": "1780",
+  "title": "Check if Number is a Sum of Powers of Three",
+  "slug": "check-if-number-is-a-sum-of-powers-of-three",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <code>true</code> <em>if it is possible to represent </em><code>n</code><em> as the sum of distinct powers of three.</em> Otherwise, return <code>false</code>.</p>\n\n<p>An integer <code>y</code> is a power of three if there exists an integer <code>x</code> such that <code>y == 3<sup>x</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 12\n<strong>Output:</strong> true\n<strong>Explanation:</strong> 12 = 3<sup>1</sup> + 3<sup>2</sup>\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 91\n<strong>Output:</strong> true\n<strong>Explanation:</strong> 91 = 3<sup>0</sup> + 3<sup>2</sup> + 3<sup>4</sup>\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 21\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, return `true` _if it is possible to represent_`n` _as the sum of distinct powers of three._ Otherwise, return `false`.\n\nAn integer `y` is a power of three if there exists an integer `x` such that `y == 3x`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 12\n    **Output:** true\n    **Explanation:** 12 = 31 + 32\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 91\n    **Output:** true\n    **Explanation:** 91 = 30 + 32 + 34\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 21\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 107`",
+  "question": "Given an integer `n`, return `true` _if it is possible to represent_`n` _as the sum of distinct powers of three._ Otherwise, return `false`.\n\nAn integer `y` is a power of three if there exists an integer `x` such that `y == 3x`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 12\n    **Output:** true\n    **Explanation:** 12 = 31 + 32\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 91\n    **Output:** true\n    **Explanation:** 91 = 30 + 32 + 34\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 21\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 107`",
+  "topics": ["Math"],
+  "total_accepted": 214647,
+  "total_submissions": 270394,
+  "acceptance_rate": "79.4%",
+  "similar_questions": [
+    {
+      "title": "Power of Three",
+      "slug": "power-of-three",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/power-of-three/"
+    }
+  ],
+  "hints": [
+    "Let's note that the maximum power of 3 you'll use in your soln is 3^16",
+    "The number can not be represented as a sum of powers of 3 if it's ternary presentation has a 2 in it"
+  ]
+}

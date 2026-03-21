@@ -1,0 +1,20 @@
+{
+  "id": "1359",
+  "title": "Count All Valid Pickup and Delivery Options",
+  "slug": "count-all-valid-pickup-and-delivery-options",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given <code>n</code> orders, each order consists of a pickup and a delivery service.</p>\n\n<p>Count all valid pickup/delivery possible sequences such that delivery(i) is always after of&nbsp;pickup(i).&nbsp;</p>\n\n<p>Since the answer&nbsp;may be too large,&nbsp;return it modulo&nbsp;10^9 + 7.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Unique order (P1, D1), Delivery 1 always is after of Pickup 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> All possible orders: \n(P1,P2,D1,D2), (P1,P2,D2,D1), (P1,D1,P2,D2), (P2,P1,D1,D2), (P2,P1,D2,D1) and (P2,D2,P1,D1).\nThis is an invalid order (P1,D2,P2,D1) because Pickup 2 is after of Delivery 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> 90\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 500</code></li>\n</ul>\n",
+  "content_markdown": "Given `n` orders, each order consists of a pickup and a delivery service.\n\nCount all valid pickup/delivery possible sequences such that delivery(i) is always after of pickup(i). \n\nSince the answer may be too large, return it modulo 10^9 + 7.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1\n    **Explanation:** Unique order (P1, D1), Delivery 1 always is after of Pickup 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** 6\n    **Explanation:** All possible orders: \n    (P1,P2,D1,D2), (P1,P2,D2,D1), (P1,D1,P2,D2), (P2,P1,D1,D2), (P2,P1,D2,D1) and (P2,D2,P1,D1).\n    This is an invalid order (P1,D2,P2,D1) because Pickup 2 is after of Delivery 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3\n    **Output:** 90\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 500`",
+  "question": "Given `n` orders, each order consists of a pickup and a delivery service.\n\nCount all valid pickup/delivery possible sequences such that delivery(i) is always after of pickup(i). \n\nSince the answer may be too large, return it modulo 10^9 + 7.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1\n    **Explanation:** Unique order (P1, D1), Delivery 1 always is after of Pickup 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** 6\n    **Explanation:** All possible orders: \n    (P1,P2,D1,D2), (P1,P2,D2,D1), (P1,D1,P2,D2), (P2,P1,D1,D2), (P2,P1,D2,D1) and (P2,D2,P1,D1).\n    This is an invalid order (P1,D2,P2,D1) because Pickup 2 is after of Delivery 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3\n    **Output:** 90",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 500`",
+  "topics": ["Math", "Dynamic Programming", "Combinatorics"],
+  "total_accepted": 133837,
+  "total_submissions": 206328,
+  "acceptance_rate": "64.9%",
+  "similar_questions": [],
+  "hints": [
+    "Use the permutation and combination theory to add one (P, D) pair each time until n pairs."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "3780",
+  "title": "Maximum Sum of Three Numbers Divisible by Three",
+  "slug": "maximum-sum-of-three-numbers-divisible-by-three",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>.</p>\n\n<p>Your task is to choose <strong>exactly three</strong> integers from <code>nums</code> such that their sum is divisible by three.</p>\n\n<p>Return the <strong>maximum</strong> possible sum of such a triplet. If no such triplet exists, return 0.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [4,2,3,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">9</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The valid triplets whose sum is divisible by 3 are:</p>\n\n<ul>\n\t<li><code>(4, 2, 3)</code> with a sum of <code>4 + 2 + 3 = 9</code>.</li>\n\t<li><code>(2, 3, 1)</code> with a sum of <code>2 + 3 + 1 = 6</code>.</li>\n</ul>\n\n<p>Thus, the answer is 9.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,1,5]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>No triplet forms a sum divisible by 3, so the answer is 0.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`.\n\nYour task is to choose **exactly three** integers from `nums` such that their sum is divisible by three.\n\nReturn the **maximum** possible sum of such a triplet. If no such triplet exists, return 0.\n\n \n\n**Example 1:**\n\n**Input:** nums = [4,2,3,1]\n\n**Output:** 9\n\n**Explanation:**\n\nThe valid triplets whose sum is divisible by 3 are:\n\n  * `(4, 2, 3)` with a sum of `4 + 2 + 3 = 9`.\n  * `(2, 3, 1)` with a sum of `2 + 3 + 1 = 6`.\n\n\n\nThus, the answer is 9.\n\n**Example 2:**\n\n**Input:** nums = [2,1,5]\n\n**Output:** 0\n\n**Explanation:**\n\nNo triplet forms a sum divisible by 3, so the answer is 0.\n\n \n\n**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `1 <= nums[i] <= 105`",
+  "question": "You are given an integer array `nums`.\n\nYour task is to choose **exactly three** integers from `nums` such that their sum is divisible by three.\n\nReturn the **maximum** possible sum of such a triplet. If no such triplet exists, return 0.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [4,2,3,1]\n\n**Output:** 9\n\n**Explanation:**\n\nThe valid triplets whose sum is divisible by 3 are:\n\n  * `(4, 2, 3)` with a sum of `4 + 2 + 3 = 9`.\n  * `(2, 3, 1)` with a sum of `2 + 3 + 1 = 6`.\n\n\n\nThus, the answer is 9.\n\n**Example 2:**\n\n**Input:** nums = [2,1,5]\n\n**Output:** 0\n\n**Explanation:**\n\nNo triplet forms a sum divisible by 3, so the answer is 0.",
+  "constraints": "**Constraints:**\n\n  * `3 <= nums.length <= 105`\n  * `1 <= nums[i] <= 105`",
+  "topics": ["Array", "Greedy", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 21901,
+  "total_submissions": 45872,
+  "acceptance_rate": "47.7%",
+  "similar_questions": [],
+  "hints": [
+    "Split numbers into groups by <code>x % 3</code>.",
+    "Only four valid combinations for <code>sum % 3 == 0</code>.",
+    "Possible combinations are <code>0 + 0 + 0</code>, <code>1 + 1 + 1</code>, <code>2 + 2 + 2</code>, <code>0 + 1 + 2</code>.",
+    "Sort groups descending, try each combo using top values."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "2345",
+  "title": "Finding the Number of Visible Mountains",
+  "slug": "finding-the-number-of-visible-mountains",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Stack", "Sorting", "Monotonic Stack"],
+  "total_accepted": 13066,
+  "total_submissions": 35154,
+  "acceptance_rate": "37.2%",
+  "similar_questions": [
+    {
+      "title": "Buildings With an Ocean View",
+      "slug": "buildings-with-an-ocean-view",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/buildings-with-an-ocean-view/"
+    }
+  ],
+  "hints": [
+    "How can we efficiently find for each mountain the relevant mountains to compare itself against to check whether or not it would be visible?",
+    "Do you notice a pattern after sorting the peaks by their x-coordinates?",
+    "After sorting, process the peaks sequentially and use a monotonic stack to store currently visible mountains."
+  ]
+}

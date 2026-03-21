@@ -1,0 +1,35 @@
+{
+  "id": "1590",
+  "title": "Make Sum Divisible by P",
+  "slug": "make-sum-divisible-by-p",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of positive integers <code>nums</code>, remove the <strong>smallest</strong> subarray (possibly <strong>empty</strong>) such that the <strong>sum</strong> of the remaining elements is divisible by <code>p</code>. It is <strong>not</strong> allowed to remove the whole array.</p>\n\n<p>Return <em>the length of the smallest subarray that you need to remove, or </em><code>-1</code><em> if it&#39;s impossible</em>.</p>\n\n<p>A <strong>subarray</strong> is defined as a contiguous block of elements in the array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,1,4,2], p = 6\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The sum of the elements in nums is 10, which is not divisible by 6. We can remove the subarray [4], and the sum of the remaining elements is 6, which is divisible by 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [6,3,5,2], p = 9\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We cannot remove a single element to get a sum divisible by 9. The best way is to remove the subarray [5,2], leaving us with [6,3] with sum 9.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3], p = 3\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> Here the sum is 6. which is already divisible by 3. Thus we do not need to remove anything.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= p &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of positive integers `nums`, remove the **smallest** subarray (possibly **empty**) such that the **sum** of the remaining elements is divisible by `p`. It is **not** allowed to remove the whole array.\n\nReturn _the length of the smallest subarray that you need to remove, or_`-1` _if it 's impossible_.\n\nA **subarray** is defined as a contiguous block of elements in the array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,1,4,2], p = 6\n    **Output:** 1\n    **Explanation:** The sum of the elements in nums is 10, which is not divisible by 6. We can remove the subarray [4], and the sum of the remaining elements is 6, which is divisible by 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [6,3,5,2], p = 9\n    **Output:** 2\n    **Explanation:** We cannot remove a single element to get a sum divisible by 9. The best way is to remove the subarray [5,2], leaving us with [6,3] with sum 9.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3], p = 3\n    **Output:** 0\n    **Explanation:** Here the sum is 6. which is already divisible by 3. Thus we do not need to remove anything.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= p <= 109`",
+  "question": "Given an array of positive integers `nums`, remove the **smallest** subarray (possibly **empty**) such that the **sum** of the remaining elements is divisible by `p`. It is **not** allowed to remove the whole array.\n\nReturn _the length of the smallest subarray that you need to remove, or_`-1` _if it 's impossible_.\n\nA **subarray** is defined as a contiguous block of elements in the array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,1,4,2], p = 6\n    **Output:** 1\n    **Explanation:** The sum of the elements in nums is 10, which is not divisible by 6. We can remove the subarray [4], and the sum of the remaining elements is 6, which is divisible by 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [6,3,5,2], p = 9\n    **Output:** 2\n    **Explanation:** We cannot remove a single element to get a sum divisible by 9. The best way is to remove the subarray [5,2], leaving us with [6,3] with sum 9.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3], p = 3\n    **Output:** 0\n    **Explanation:** Here the sum is 6. which is already divisible by 3. Thus we do not need to remove anything.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= p <= 109`",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 222477,
+  "total_submissions": 522090,
+  "acceptance_rate": "42.6%",
+  "similar_questions": [
+    {
+      "title": "Subarray Sums Divisible by K",
+      "slug": "subarray-sums-divisible-by-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sums-divisible-by-k/"
+    },
+    {
+      "title": "Find the Divisibility Array of a String",
+      "slug": "find-the-divisibility-array-of-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-divisibility-array-of-a-string/"
+    }
+  ],
+  "hints": [
+    "Use prefix sums to calculate the subarray sums.",
+    "Suppose you know the remainder for the sum of the entire array. How does removing a subarray affect that remainder? What remainder does the subarray need to have in order to make the rest of the array sum up to be divisible by k?",
+    "Use a map to keep track of the rightmost index for every prefix sum % p."
+  ]
+}

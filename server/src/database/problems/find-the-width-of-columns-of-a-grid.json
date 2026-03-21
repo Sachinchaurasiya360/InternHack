@@ -1,0 +1,28 @@
+{
+  "id": "2639",
+  "title": "Find the Width of Columns of a Grid",
+  "slug": "find-the-width-of-columns-of-a-grid",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> <code>m x n</code> integer matrix <code>grid</code>. The width of a column is the maximum <strong>length </strong>of its integers.</p>\n\n<ul>\n\t<li>For example, if <code>grid = [[-10], [3], [12]]</code>, the width of the only column is <code>3</code> since <code>-10</code> is of length <code>3</code>.</li>\n</ul>\n\n<p>Return <em>an integer array</em> <code>ans</code> <em>of size</em> <code>n</code> <em>where</em> <code>ans[i]</code> <em>is the width of the</em> <code>i<sup>th</sup></code> <em>column</em>.</p>\n\n<p>The <strong>length</strong> of an integer <code>x</code> with <code>len</code> digits is equal to <code>len</code> if <code>x</code> is non-negative, and <code>len + 1</code> otherwise.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[1],[22],[333]]\n<strong>Output:</strong> [3]\n<strong>Explanation:</strong> In the 0<sup>th</sup> column, 333 is of length 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[-15,1,3],[15,7,12],[5,6,-2]]\n<strong>Output:</strong> [3,1,2]\n<strong>Explanation:</strong> \nIn the 0<sup>th</sup> column, only -15 is of length 3.\nIn the 1<sup>st</sup> column, all integers are of length 1. \nIn the 2<sup>nd</sup> column, both 12 and -2 are of length 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 100 </code></li>\n\t<li><code>-10<sup>9</sup> &lt;= grid[r][c] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** `m x n` integer matrix `grid`. The width of a column is the maximum **length** of its integers.\n\n  * For example, if `grid = [[-10], [3], [12]]`, the width of the only column is `3` since `-10` is of length `3`.\n\n\n\nReturn _an integer array_ `ans` _of size_ `n` _where_ `ans[i]` _is the width of the_ `ith` _column_.\n\nThe **length** of an integer `x` with `len` digits is equal to `len` if `x` is non-negative, and `len + 1` otherwise.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** grid = [[1],[22],[333]]\n    **Output:** [3]\n    **Explanation:** In the 0th column, 333 is of length 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[-15,1,3],[15,7,12],[5,6,-2]]\n    **Output:** [3,1,2]\n    **Explanation:** \n    In the 0th column, only -15 is of length 3.\n    In the 1st column, all integers are of length 1. \n    In the 2nd column, both 12 and -2 are of length 2.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 100 `\n  * `-109 <= grid[r][c] <= 109`",
+  "question": "You are given a **0-indexed** `m x n` integer matrix `grid`. The width of a column is the maximum **length** of its integers.\n\n  * For example, if `grid = [[-10], [3], [12]]`, the width of the only column is `3` since `-10` is of length `3`.\n\n\n\nReturn _an integer array_ `ans` _of size_ `n` _where_ `ans[i]` _is the width of the_ `ith` _column_.\n\nThe **length** of an integer `x` with `len` digits is equal to `len` if `x` is non-negative, and `len + 1` otherwise.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** grid = [[1],[22],[333]]\n    **Output:** [3]\n    **Explanation:** In the 0th column, 333 is of length 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[-15,1,3],[15,7,12],[5,6,-2]]\n    **Output:** [3,1,2]\n    **Explanation:** \n    In the 0th column, only -15 is of length 3.\n    In the 1st column, all integers are of length 1. \n    In the 2nd column, both 12 and -2 are of length 2.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 100 `\n  * `-109 <= grid[r][c] <= 109`",
+  "topics": ["Array", "Matrix"],
+  "total_accepted": 40153,
+  "total_submissions": 57034,
+  "acceptance_rate": "70.4%",
+  "similar_questions": [
+    {
+      "title": "Next Greater Numerically Balanced Number",
+      "slug": "next-greater-numerically-balanced-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/next-greater-numerically-balanced-number/"
+    }
+  ],
+  "hints": [
+    "You can find the length of a number by dividing it by 10 and then rounding it down again and again until this number becomes equal to 0. Add 1 if this number is negative.",
+    "Traverse the matrix column-wise to find the maximum length in each column."
+  ]
+}

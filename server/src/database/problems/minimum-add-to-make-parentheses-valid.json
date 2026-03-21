@@ -1,0 +1,25 @@
+{
+  "id": "921",
+  "title": "Minimum Add to Make Parentheses Valid",
+  "slug": "minimum-add-to-make-parentheses-valid",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A parentheses string is valid if and only if:</p>\n\n<ul>\n\t<li>It is the empty string,</li>\n\t<li>It can be written as <code>AB</code> (<code>A</code> concatenated with <code>B</code>), where <code>A</code> and <code>B</code> are valid strings, or</li>\n\t<li>It can be written as <code>(A)</code>, where <code>A</code> is a valid string.</li>\n</ul>\n\n<p>You are given a parentheses string <code>s</code>. In one move, you can insert a parenthesis at any position of the string.</p>\n\n<ul>\n\t<li>For example, if <code>s = &quot;()))&quot;</code>, you can insert an opening parenthesis to be <code>&quot;(<strong>(</strong>)))&quot;</code> or a closing parenthesis to be <code>&quot;())<strong>)</strong>)&quot;</code>.</li>\n</ul>\n\n<p>Return <em>the minimum number of moves required to make </em><code>s</code><em> valid</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;())&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(((&quot;\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;(&#39;</code> or <code>&#39;)&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "A parentheses string is valid if and only if:\n\n  * It is the empty string,\n  * It can be written as `AB` (`A` concatenated with `B`), where `A` and `B` are valid strings, or\n  * It can be written as `(A)`, where `A` is a valid string.\n\n\n\nYou are given a parentheses string `s`. In one move, you can insert a parenthesis at any position of the string.\n\n  * For example, if `s = \"()))\"`, you can insert an opening parenthesis to be `\"(**(**)))\"` or a closing parenthesis to be `\"())**)**)\"`.\n\n\n\nReturn _the minimum number of moves required to make_`s` _valid_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"())\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(((\"\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'('` or `')'`.",
+  "question": "A parentheses string is valid if and only if:\n\n  * It is the empty string,\n  * It can be written as `AB` (`A` concatenated with `B`), where `A` and `B` are valid strings, or\n  * It can be written as `(A)`, where `A` is a valid string.\n\n\n\nYou are given a parentheses string `s`. In one move, you can insert a parenthesis at any position of the string.\n\n  * For example, if `s = \"()))\"`, you can insert an opening parenthesis to be `\"(**(**)))\"` or a closing parenthesis to be `\"())**)**)\"`.\n\n\n\nReturn _the minimum number of moves required to make_`s` _valid_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"())\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(((\"\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'('` or `')'`.",
+  "topics": ["String", "Stack", "Greedy"],
+  "total_accepted": 690194,
+  "total_submissions": 927210,
+  "acceptance_rate": "74.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Swaps to Make the String Balanced",
+      "slug": "minimum-number-of-swaps-to-make-the-string-balanced",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-swaps-to-make-the-string-balanced/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "1611",
+  "title": "Minimum One Bit Operations to Make Integers Zero",
+  "slug": "minimum-one-bit-operations-to-make-integers-zero",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, you must transform it into <code>0</code> using the following operations any number of times:</p>\n\n<ul>\n\t<li>Change the rightmost (<code>0<sup>th</sup></code>) bit in the binary representation of <code>n</code>.</li>\n\t<li>Change the <code>i<sup>th</sup></code> bit in the binary representation of <code>n</code> if the <code>(i-1)<sup>th</sup></code> bit is set to <code>1</code> and the <code>(i-2)<sup>th</sup></code> through <code>0<sup>th</sup></code> bits are set to <code>0</code>.</li>\n</ul>\n\n<p>Return <em>the minimum number of operations to transform </em><code>n</code><em> into </em><code>0</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The binary representation of 3 is &quot;11&quot;.\n&quot;<u>1</u>1&quot; -&gt; &quot;<u>0</u>1&quot; with the 2<sup>nd</sup> operation since the 0<sup>th</sup> bit is 1.\n&quot;0<u>1</u>&quot; -&gt; &quot;0<u>0</u>&quot; with the 1<sup>st</sup> operation.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 6\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The binary representation of 6 is &quot;110&quot;.\n&quot;<u>1</u>10&quot; -&gt; &quot;<u>0</u>10&quot; with the 2<sup>nd</sup> operation since the 1<sup>st</sup> bit is 1 and 0<sup>th</sup> through 0<sup>th</sup> bits are 0.\n&quot;01<u>0</u>&quot; -&gt; &quot;01<u>1</u>&quot; with the 1<sup>st</sup> operation.\n&quot;0<u>1</u>1&quot; -&gt; &quot;0<u>0</u>1&quot; with the 2<sup>nd</sup> operation since the 0<sup>th</sup> bit is 1.\n&quot;00<u>1</u>&quot; -&gt; &quot;00<u>0</u>&quot; with the 1<sup>st</sup> operation.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, you must transform it into `0` using the following operations any number of times:\n\n  * Change the rightmost (`0th`) bit in the binary representation of `n`.\n  * Change the `ith` bit in the binary representation of `n` if the `(i-1)th` bit is set to `1` and the `(i-2)th` through `0th` bits are set to `0`.\n\n\n\nReturn _the minimum number of operations to transform_`n` _into_`0` _._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** The binary representation of 3 is \"11\".\n    \"_1_ 1\" -> \"_0_ 1\" with the 2nd operation since the 0th bit is 1.\n    \"0 _1_ \" -> \"0 _0_ \" with the 1st operation.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 6\n    **Output:** 4\n    **Explanation:** The binary representation of 6 is \"110\".\n    \"_1_ 10\" -> \"_0_ 10\" with the 2nd operation since the 1st bit is 1 and 0th through 0th bits are 0.\n    \"01 _0_ \" -> \"01 _1_ \" with the 1st operation.\n    \"0 _1_ 1\" -> \"0 _0_ 1\" with the 2nd operation since the 0th bit is 1.\n    \"00 _1_ \" -> \"00 _0_ \" with the 1st operation.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= n <= 109`",
+  "question": "Given an integer `n`, you must transform it into `0` using the following operations any number of times:\n\n  * Change the rightmost (`0th`) bit in the binary representation of `n`.\n  * Change the `ith` bit in the binary representation of `n` if the `(i-1)th` bit is set to `1` and the `(i-2)th` through `0th` bits are set to `0`.\n\n\n\nReturn _the minimum number of operations to transform_`n` _into_`0` _._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** The binary representation of 3 is \"11\".\n    \"_1_ 1\" -> \"_0_ 1\" with the 2nd operation since the 0th bit is 1.\n    \"0 _1_ \" -> \"0 _0_ \" with the 1st operation.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 6\n    **Output:** 4\n    **Explanation:** The binary representation of 6 is \"110\".\n    \"_1_ 10\" -> \"_0_ 10\" with the 2nd operation since the 1st bit is 1 and 0th through 0th bits are 0.\n    \"01 _0_ \" -> \"01 _1_ \" with the 1st operation.\n    \"0 _1_ 1\" -> \"0 _0_ 1\" with the 2nd operation since the 0th bit is 1.\n    \"00 _1_ \" -> \"00 _0_ \" with the 1st operation.",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 109`",
+  "topics": ["Math", "Dynamic Programming", "Bit Manipulation", "Recursion", "Memoization"],
+  "total_accepted": 120147,
+  "total_submissions": 153135,
+  "acceptance_rate": "78.5%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Operations to Make Array Continuous",
+      "slug": "minimum-number-of-operations-to-make-array-continuous",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/"
+    },
+    {
+      "title": "Apply Bitwise Operations to Make Strings Equal",
+      "slug": "apply-bitwise-operations-to-make-strings-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/apply-bitwise-operations-to-make-strings-equal/"
+    }
+  ],
+  "hints": [
+    "The fastest way to convert n to zero is to remove all set bits starting from the leftmost one. Try some simple examples to learn the rule of how many steps are needed to remove one set bit.",
+    "consider n=2^k case first, then solve for all n."
+  ]
+}

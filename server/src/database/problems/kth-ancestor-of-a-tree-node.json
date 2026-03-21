@@ -1,0 +1,36 @@
+{
+  "id": "1483",
+  "title": "Kth Ancestor of a Tree Node",
+  "slug": "kth-ancestor-of-a-tree-node",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a tree with <code>n</code> nodes numbered from <code>0</code> to <code>n - 1</code> in the form of a parent array <code>parent</code> where <code>parent[i]</code> is the parent of <code>i<sup>th</sup></code> node. The root of the tree is node <code>0</code>. Find the <code>k<sup>th</sup></code> ancestor of a given node.</p>\n\n<p>The <code>k<sup>th</sup></code> ancestor of a tree node is the <code>k<sup>th</sup></code> node in the path from that node to the root node.</p>\n\n<p>Implement the <code>TreeAncestor</code> class:</p>\n\n<ul>\n\t<li><code>TreeAncestor(int n, int[] parent)</code> Initializes the object with the number of nodes in the tree and the parent array.</li>\n\t<li><code>int getKthAncestor(int node, int k)</code> return the <code>k<sup>th</sup></code> ancestor of the given node <code>node</code>. If there is no such ancestor, return <code>-1</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/08/28/1528_ex1.png\" style=\"width: 396px; height: 262px;\" />\n<pre>\n<strong>Input</strong>\n[&quot;TreeAncestor&quot;, &quot;getKthAncestor&quot;, &quot;getKthAncestor&quot;, &quot;getKthAncestor&quot;]\n[[7, [-1, 0, 0, 1, 1, 2, 2]], [3, 1], [5, 2], [6, 3]]\n<strong>Output</strong>\n[null, 1, 0, -1]\n\n<strong>Explanation</strong>\nTreeAncestor treeAncestor = new TreeAncestor(7, [-1, 0, 0, 1, 1, 2, 2]);\ntreeAncestor.getKthAncestor(3, 1); // returns 1 which is the parent of 3\ntreeAncestor.getKthAncestor(5, 2); // returns 0 which is the grandparent of 5\ntreeAncestor.getKthAncestor(6, 3); // returns -1 because there is no such ancestor</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= n &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>parent.length == n</code></li>\n\t<li><code>parent[0] == -1</code></li>\n\t<li><code>0 &lt;= parent[i] &lt; n</code> for all <code>0 &lt; i &lt; n</code></li>\n\t<li><code>0 &lt;= node &lt; n</code></li>\n\t<li>There will be at most <code>5 * 10<sup>4</sup></code> queries.</li>\n</ul>\n",
+  "content_markdown": "You are given a tree with `n` nodes numbered from `0` to `n - 1` in the form of a parent array `parent` where `parent[i]` is the parent of `ith` node. The root of the tree is node `0`. Find the `kth` ancestor of a given node.\n\nThe `kth` ancestor of a tree node is the `kth` node in the path from that node to the root node.\n\nImplement the `TreeAncestor` class:\n\n  * `TreeAncestor(int n, int[] parent)` Initializes the object with the number of nodes in the tree and the parent array.\n  * `int getKthAncestor(int node, int k)` return the `kth` ancestor of the given node `node`. If there is no such ancestor, return `-1`.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/08/28/1528_ex1.png)\n    \n    \n    **Input**\n    [\"TreeAncestor\", \"getKthAncestor\", \"getKthAncestor\", \"getKthAncestor\"]\n    [[7, [-1, 0, 0, 1, 1, 2, 2]], [3, 1], [5, 2], [6, 3]]\n    **Output**\n    [null, 1, 0, -1]\n    \n    **Explanation**\n    TreeAncestor treeAncestor = new TreeAncestor(7, [-1, 0, 0, 1, 1, 2, 2]);\n    treeAncestor.getKthAncestor(3, 1); // returns 1 which is the parent of 3\n    treeAncestor.getKthAncestor(5, 2); // returns 0 which is the grandparent of 5\n    treeAncestor.getKthAncestor(6, 3); // returns -1 because there is no such ancestor\n\n \n\n**Constraints:**\n\n  * `1 <= k <= n <= 5 * 104`\n  * `parent.length == n`\n  * `parent[0] == -1`\n  * `0 <= parent[i] < n` for all `0 < i < n`\n  * `0 <= node < n`\n  * There will be at most `5 * 104` queries.",
+  "question": "You are given a tree with `n` nodes numbered from `0` to `n - 1` in the form of a parent array `parent` where `parent[i]` is the parent of `ith` node. The root of the tree is node `0`. Find the `kth` ancestor of a given node.\n\nThe `kth` ancestor of a tree node is the `kth` node in the path from that node to the root node.\n\nImplement the `TreeAncestor` class:\n\n  * `TreeAncestor(int n, int[] parent)` Initializes the object with the number of nodes in the tree and the parent array.\n  * `int getKthAncestor(int node, int k)` return the `kth` ancestor of the given node `node`. If there is no such ancestor, return `-1`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/08/28/1528_ex1.png)\n    \n    \n    **Input**\n    [\"TreeAncestor\", \"getKthAncestor\", \"getKthAncestor\", \"getKthAncestor\"]\n    [[7, [-1, 0, 0, 1, 1, 2, 2]], [3, 1], [5, 2], [6, 3]]\n    **Output**\n    [null, 1, 0, -1]\n    \n    **Explanation**\n    TreeAncestor treeAncestor = new TreeAncestor(7, [-1, 0, 0, 1, 1, 2, 2]);\n    treeAncestor.getKthAncestor(3, 1); // returns 1 which is the parent of 3\n    treeAncestor.getKthAncestor(5, 2); // returns 0 which is the grandparent of 5\n    treeAncestor.getKthAncestor(6, 3); // returns -1 because there is no such ancestor",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= n <= 5 * 104`\n  * `parent.length == n`\n  * `parent[0] == -1`\n  * `0 <= parent[i] < n` for all `0 < i < n`\n  * `0 <= node < n`\n  * There will be at most `5 * 104` queries.",
+  "topics": [
+    "Binary Search",
+    "Dynamic Programming",
+    "Bit Manipulation",
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Design"
+  ],
+  "total_accepted": 50884,
+  "total_submissions": 136942,
+  "acceptance_rate": "37.2%",
+  "similar_questions": [
+    {
+      "title": "Minimum Edge Weight Equilibrium Queries in a Tree",
+      "slug": "minimum-edge-weight-equilibrium-queries-in-a-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-edge-weight-equilibrium-queries-in-a-tree/"
+    }
+  ],
+  "hints": [
+    "The queries must be answered efficiently to avoid time limit exceeded verdict.",
+    "Use sparse table (dynamic programming application) to travel the tree upwards in a fast way."
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "1011",
+  "title": "Capacity To Ship Packages Within D Days",
+  "slug": "capacity-to-ship-packages-within-d-days",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A conveyor belt has packages that must be shipped from one port to another within <code>days</code> days.</p>\n\n<p>The <code>i<sup>th</sup></code> package on the conveyor belt has a weight of <code>weights[i]</code>. Each day, we load the ship with packages on the conveyor belt (in the order given by <code>weights</code>). We may not load more weight than the maximum weight capacity of the ship.</p>\n\n<p>Return the least weight capacity of the ship that will result in all the packages on the conveyor belt being shipped within <code>days</code> days.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> weights = [1,2,3,4,5,6,7,8,9,10], days = 5\n<strong>Output:</strong> 15\n<strong>Explanation:</strong> A ship capacity of 15 is the minimum to ship all the packages in 5 days like this:\n1st day: 1, 2, 3, 4, 5\n2nd day: 6, 7\n3rd day: 8\n4th day: 9\n5th day: 10\n\nNote that the cargo must be shipped in the order given, so using a ship of capacity 14 and splitting the packages into parts like (2, 3, 4, 5), (1, 6, 7), (8), (9), (10) is not allowed.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> weights = [3,2,2,4,1,4], days = 3\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> A ship capacity of 6 is the minimum to ship all the packages in 3 days like this:\n1st day: 3, 2\n2nd day: 2, 4\n3rd day: 1, 4\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> weights = [1,2,3,1,1], days = 4\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\n1st day: 1\n2nd day: 2\n3rd day: 3\n4th day: 1, 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= days &lt;= weights.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= weights[i] &lt;= 500</code></li>\n</ul>\n",
+  "content_markdown": "A conveyor belt has packages that must be shipped from one port to another within `days` days.\n\nThe `ith` package on the conveyor belt has a weight of `weights[i]`. Each day, we load the ship with packages on the conveyor belt (in the order given by `weights`). We may not load more weight than the maximum weight capacity of the ship.\n\nReturn the least weight capacity of the ship that will result in all the packages on the conveyor belt being shipped within `days` days.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** weights = [1,2,3,4,5,6,7,8,9,10], days = 5\n    **Output:** 15\n    **Explanation:** A ship capacity of 15 is the minimum to ship all the packages in 5 days like this:\n    1st day: 1, 2, 3, 4, 5\n    2nd day: 6, 7\n    3rd day: 8\n    4th day: 9\n    5th day: 10\n    \n    Note that the cargo must be shipped in the order given, so using a ship of capacity 14 and splitting the packages into parts like (2, 3, 4, 5), (1, 6, 7), (8), (9), (10) is not allowed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** weights = [3,2,2,4,1,4], days = 3\n    **Output:** 6\n    **Explanation:** A ship capacity of 6 is the minimum to ship all the packages in 3 days like this:\n    1st day: 3, 2\n    2nd day: 2, 4\n    3rd day: 1, 4\n    \n\n**Example 3:**\n    \n    \n    **Input:** weights = [1,2,3,1,1], days = 4\n    **Output:** 3\n    **Explanation:**\n    1st day: 1\n    2nd day: 2\n    3rd day: 3\n    4th day: 1, 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= days <= weights.length <= 5 * 104`\n  * `1 <= weights[i] <= 500`",
+  "question": "A conveyor belt has packages that must be shipped from one port to another within `days` days.\n\nThe `ith` package on the conveyor belt has a weight of `weights[i]`. Each day, we load the ship with packages on the conveyor belt (in the order given by `weights`). We may not load more weight than the maximum weight capacity of the ship.\n\nReturn the least weight capacity of the ship that will result in all the packages on the conveyor belt being shipped within `days` days.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** weights = [1,2,3,4,5,6,7,8,9,10], days = 5\n    **Output:** 15\n    **Explanation:** A ship capacity of 15 is the minimum to ship all the packages in 5 days like this:\n    1st day: 1, 2, 3, 4, 5\n    2nd day: 6, 7\n    3rd day: 8\n    4th day: 9\n    5th day: 10\n    \n    Note that the cargo must be shipped in the order given, so using a ship of capacity 14 and splitting the packages into parts like (2, 3, 4, 5), (1, 6, 7), (8), (9), (10) is not allowed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** weights = [3,2,2,4,1,4], days = 3\n    **Output:** 6\n    **Explanation:** A ship capacity of 6 is the minimum to ship all the packages in 3 days like this:\n    1st day: 3, 2\n    2nd day: 2, 4\n    3rd day: 1, 4\n    \n\n**Example 3:**\n    \n    \n    **Input:** weights = [1,2,3,1,1], days = 4\n    **Output:** 3\n    **Explanation:**\n    1st day: 1\n    2nd day: 2\n    3rd day: 3\n    4th day: 1, 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= days <= weights.length <= 5 * 104`\n  * `1 <= weights[i] <= 500`",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 730052,
+  "total_submissions": 992931,
+  "acceptance_rate": "73.5%",
+  "similar_questions": [
+    {
+      "title": "Split Array Largest Sum",
+      "slug": "split-array-largest-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-largest-sum/"
+    },
+    {
+      "title": "Divide Chocolate",
+      "slug": "divide-chocolate",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/divide-chocolate/"
+    },
+    {
+      "title": "Cutting Ribbons",
+      "slug": "cutting-ribbons",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/cutting-ribbons/"
+    },
+    {
+      "title": "Minimized Maximum of Products Distributed to Any Store",
+      "slug": "minimized-maximum-of-products-distributed-to-any-store",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/"
+    },
+    {
+      "title": "Maximum Bags With Full Capacity of Rocks",
+      "slug": "maximum-bags-with-full-capacity-of-rocks",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-bags-with-full-capacity-of-rocks/"
+    },
+    {
+      "title": "Minimum Total Distance Traveled",
+      "slug": "minimum-total-distance-traveled",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-total-distance-traveled/"
+    }
+  ],
+  "hints": [
+    "Binary search on the answer.  We need a function possible(capacity) which returns true if and only if we can do the task in D days."
+  ]
+}

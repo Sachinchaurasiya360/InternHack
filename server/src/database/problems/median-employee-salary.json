@@ -1,0 +1,29 @@
+{
+  "id": "569",
+  "title": "Median Employee Salary",
+  "slug": "median-employee-salary",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 50367,
+  "total_submissions": 76457,
+  "acceptance_rate": "65.9%",
+  "similar_questions": [
+    {
+      "title": "Find Median Given Frequency of Numbers",
+      "slug": "find-median-given-frequency-of-numbers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-median-given-frequency-of-numbers/"
+    }
+  ],
+  "hints": [
+    "Still remember how to select the sum which group by one column?",
+    "Try to think about how to get the median from a sorted list.",
+    "How to get the median one item for odd number list while how to get the median two items for even number list, try to unify them."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "554",
+  "title": "Brick Wall",
+  "slug": "brick-wall",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a rectangular brick wall in front of you with <code>n</code> rows of bricks. The <code>i<sup>th</sup></code> row has some number of bricks each of the same height (i.e., one unit) but they can be of different widths. The total width of each row is the same.</p>\n\n<p>Draw a vertical line from the top to the bottom and cross the least bricks. If your line goes through the edge of a brick, then the brick is not considered as crossed. You cannot draw a line just along one of the two vertical edges of the wall, in which case the line will obviously cross no bricks.</p>\n\n<p>Given the 2D array <code>wall</code> that contains the information about the wall, return <em>the minimum number of crossed bricks after drawing such a vertical line</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2025/01/17/a.png\" style=\"width: 400px; height: 384px;\" />\n<pre>\n<strong>Input:</strong> wall = [[1,2,2,1],[3,1,2],[1,3,2],[2,4],[3,1,2],[1,3,1,1]]\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> wall = [[1],[1],[1]]\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == wall.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= wall[i].length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= sum(wall[i].length) &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>sum(wall[i])</code> is the same for each row <code>i</code>.</li>\n\t<li><code>1 &lt;= wall[i][j] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "There is a rectangular brick wall in front of you with `n` rows of bricks. The `ith` row has some number of bricks each of the same height (i.e., one unit) but they can be of different widths. The total width of each row is the same.\n\nDraw a vertical line from the top to the bottom and cross the least bricks. If your line goes through the edge of a brick, then the brick is not considered as crossed. You cannot draw a line just along one of the two vertical edges of the wall, in which case the line will obviously cross no bricks.\n\nGiven the 2D array `wall` that contains the information about the wall, return _the minimum number of crossed bricks after drawing such a vertical line_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2025/01/17/a.png)\n    \n    \n    **Input:** wall = [[1,2,2,1],[3,1,2],[1,3,2],[2,4],[3,1,2],[1,3,1,1]]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** wall = [[1],[1],[1]]\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `n == wall.length`\n  * `1 <= n <= 104`\n  * `1 <= wall[i].length <= 104`\n  * `1 <= sum(wall[i].length) <= 2 * 104`\n  * `sum(wall[i])` is the same for each row `i`.\n  * `1 <= wall[i][j] <= 231 - 1`",
+  "question": "There is a rectangular brick wall in front of you with `n` rows of bricks. The `ith` row has some number of bricks each of the same height (i.e., one unit) but they can be of different widths. The total width of each row is the same.\n\nDraw a vertical line from the top to the bottom and cross the least bricks. If your line goes through the edge of a brick, then the brick is not considered as crossed. You cannot draw a line just along one of the two vertical edges of the wall, in which case the line will obviously cross no bricks.\n\nGiven the 2D array `wall` that contains the information about the wall, return _the minimum number of crossed bricks after drawing such a vertical line_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2025/01/17/a.png)\n    \n    \n    **Input:** wall = [[1,2,2,1],[3,1,2],[1,3,2],[2,4],[3,1,2],[1,3,1,1]]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** wall = [[1],[1],[1]]\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `n == wall.length`\n  * `1 <= n <= 104`\n  * `1 <= wall[i].length <= 104`\n  * `1 <= sum(wall[i].length) <= 2 * 104`\n  * `sum(wall[i])` is the same for each row `i`.\n  * `1 <= wall[i][j] <= 231 - 1`",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 169470,
+  "total_submissions": 302622,
+  "acceptance_rate": "56.0%",
+  "similar_questions": [
+    {
+      "title": "Number of Ways to Build Sturdy Brick Wall",
+      "slug": "number-of-ways-to-build-sturdy-brick-wall",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-build-sturdy-brick-wall/"
+    }
+  ],
+  "hints": []
+}

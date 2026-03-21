@@ -1,0 +1,18 @@
+{
+  "id": "3135",
+  "title": "Equalize Strings by Adding or Removing Characters at Ends",
+  "slug": "equalize-strings-by-adding-or-removing-characters-at-ends",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Binary Search", "Dynamic Programming", "Sliding Window", "Hash Function"],
+  "total_accepted": 1415,
+  "total_submissions": 2501,
+  "acceptance_rate": "56.6%",
+  "similar_questions": [],
+  "hints": []
+}

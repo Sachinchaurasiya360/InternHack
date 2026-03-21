@@ -1,0 +1,37 @@
+{
+  "id": "22",
+  "title": "Generate Parentheses",
+  "slug": "generate-parentheses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given <code>n</code> pairs of parentheses, write a function to <em>generate all combinations of well-formed parentheses</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> n = 3\n<strong>Output:</strong> [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> n = 1\n<strong>Output:</strong> [\"()\"]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 8</code></li>\n</ul>\n",
+  "content_markdown": "Given `n` pairs of parentheses, write a function to _generate all combinations of well-formed parentheses_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [\"()\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 8`",
+  "question": "Given `n` pairs of parentheses, write a function to _generate all combinations of well-formed parentheses_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [\"()\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 8`",
+  "topics": ["String", "Dynamic Programming", "Backtracking"],
+  "total_accepted": 2783341,
+  "total_submissions": 3555186,
+  "acceptance_rate": "78.3%",
+  "similar_questions": [
+    {
+      "title": "Letter Combinations of a Phone Number",
+      "slug": "letter-combinations-of-a-phone-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/"
+    },
+    {
+      "title": "Valid Parentheses",
+      "slug": "valid-parentheses",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-parentheses/"
+    },
+    {
+      "title": "Check if a Parentheses String Can Be Valid",
+      "slug": "check-if-a-parentheses-string-can-be-valid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/"
+    }
+  ],
+  "hints": []
+}

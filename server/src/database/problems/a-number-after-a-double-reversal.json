@@ -1,0 +1,33 @@
+{
+  "id": "2119",
+  "title": "A Number After a Double Reversal",
+  "slug": "a-number-after-a-double-reversal",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p><strong>Reversing</strong> an integer means to reverse all its digits.</p>\n\n<ul>\n\t<li>For example, reversing <code>2021</code> gives <code>1202</code>. Reversing <code>12300</code> gives <code>321</code> as the <strong>leading zeros are not retained</strong>.</li>\n</ul>\n\n<p>Given an integer <code>num</code>, <strong>reverse</strong> <code>num</code> to get <code>reversed1</code>, <strong>then reverse</strong> <code>reversed1</code> to get <code>reversed2</code>. Return <code>true</code> <em>if</em> <code>reversed2</code> <em>equals</em> <code>num</code>. Otherwise return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 526\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Reverse num to get 625, then reverse 625 to get 526, which equals num.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 1800\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Reverse num to get 81, then reverse 81 to get 18, which does not equal num.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 0\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Reverse num to get 0, then reverse 0 to get 0, which equals num.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= num &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "**Reversing** an integer means to reverse all its digits.\n\n  * For example, reversing `2021` gives `1202`. Reversing `12300` gives `321` as the **leading zeros are not retained**.\n\n\n\nGiven an integer `num`, **reverse** `num` to get `reversed1`, **then reverse** `reversed1` to get `reversed2`. Return `true` _if_ `reversed2` _equals_ `num`. Otherwise return `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 526\n    **Output:** true\n    **Explanation:** Reverse num to get 625, then reverse 625 to get 526, which equals num.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 1800\n    **Output:** false\n    **Explanation:** Reverse num to get 81, then reverse 81 to get 18, which does not equal num.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 0\n    **Output:** true\n    **Explanation:** Reverse num to get 0, then reverse 0 to get 0, which equals num.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= num <= 106`",
+  "question": "**Reversing** an integer means to reverse all its digits.\n\n  * For example, reversing `2021` gives `1202`. Reversing `12300` gives `321` as the **leading zeros are not retained**.\n\n\n\nGiven an integer `num`, **reverse** `num` to get `reversed1`, **then reverse** `reversed1` to get `reversed2`. Return `true` _if_ `reversed2` _equals_ `num`. Otherwise return `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 526\n    **Output:** true\n    **Explanation:** Reverse num to get 625, then reverse 625 to get 526, which equals num.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 1800\n    **Output:** false\n    **Explanation:** Reverse num to get 81, then reverse 81 to get 18, which does not equal num.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 0\n    **Output:** true\n    **Explanation:** Reverse num to get 0, then reverse 0 to get 0, which equals num.",
+  "constraints": "**Constraints:**\n\n  * `0 <= num <= 106`",
+  "topics": ["Math"],
+  "total_accepted": 151774,
+  "total_submissions": 185077,
+  "acceptance_rate": "82.0%",
+  "similar_questions": [
+    {
+      "title": "Reverse Integer",
+      "slug": "reverse-integer",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reverse-integer/"
+    },
+    {
+      "title": "Reverse Bits",
+      "slug": "reverse-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-bits/"
+    }
+  ],
+  "hints": [
+    "Other than the number 0 itself, any number that ends with 0 would lose some digits permanently when reversed."
+  ]
+}

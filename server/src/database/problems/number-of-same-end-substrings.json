@@ -1,0 +1,21 @@
+{
+  "id": "2955",
+  "title": "Number of Same-End Substrings",
+  "slug": "number-of-same-end-substrings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Counting", "Prefix Sum"],
+  "total_accepted": 8944,
+  "total_submissions": 14515,
+  "acceptance_rate": "61.6%",
+  "similar_questions": [],
+  "hints": [
+    "If there are <code>t</code> occurrences of a character in a substring, there exists <code>t * (t + 1) / 2</code> Same-End substrings with that character.",
+    "Try to calculate the number of occurrences of a character in a substring in <code>O(1)</code> using partial sum."
+  ]
+}

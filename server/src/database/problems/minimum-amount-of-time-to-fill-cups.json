@@ -1,0 +1,46 @@
+{
+  "id": "2335",
+  "title": "Minimum Amount of Time to Fill Cups",
+  "slug": "minimum-amount-of-time-to-fill-cups",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You have a water dispenser that can dispense cold, warm, and hot water. Every second, you can either fill up <code>2</code> cups with <strong>different</strong> types of water, or <code>1</code> cup of any type of water.</p>\n\n<p>You are given a <strong>0-indexed</strong> integer array <code>amount</code> of length <code>3</code> where <code>amount[0]</code>, <code>amount[1]</code>, and <code>amount[2]</code> denote the number of cold, warm, and hot water cups you need to fill respectively. Return <em>the <strong>minimum</strong> number of seconds needed to fill up all the cups</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> amount = [1,4,2]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> One way to fill up the cups is:\nSecond 1: Fill up a cold cup and a warm cup.\nSecond 2: Fill up a warm cup and a hot cup.\nSecond 3: Fill up a warm cup and a hot cup.\nSecond 4: Fill up a warm cup.\nIt can be proven that 4 is the minimum number of seconds needed.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> amount = [5,4,4]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> One way to fill up the cups is:\nSecond 1: Fill up a cold cup, and a hot cup.\nSecond 2: Fill up a cold cup, and a warm cup.\nSecond 3: Fill up a cold cup, and a warm cup.\nSecond 4: Fill up a warm cup, and a hot cup.\nSecond 5: Fill up a cold cup, and a hot cup.\nSecond 6: Fill up a cold cup, and a warm cup.\nSecond 7: Fill up a hot cup.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> amount = [5,0,0]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> Every second, we fill up a cold cup.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>amount.length == 3</code></li>\n\t<li><code>0 &lt;= amount[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You have a water dispenser that can dispense cold, warm, and hot water. Every second, you can either fill up `2` cups with **different** types of water, or `1` cup of any type of water.\n\nYou are given a **0-indexed** integer array `amount` of length `3` where `amount[0]`, `amount[1]`, and `amount[2]` denote the number of cold, warm, and hot water cups you need to fill respectively. Return _the**minimum** number of seconds needed to fill up all the cups_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** amount = [1,4,2]\n    **Output:** 4\n    **Explanation:** One way to fill up the cups is:\n    Second 1: Fill up a cold cup and a warm cup.\n    Second 2: Fill up a warm cup and a hot cup.\n    Second 3: Fill up a warm cup and a hot cup.\n    Second 4: Fill up a warm cup.\n    It can be proven that 4 is the minimum number of seconds needed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** amount = [5,4,4]\n    **Output:** 7\n    **Explanation:** One way to fill up the cups is:\n    Second 1: Fill up a cold cup, and a hot cup.\n    Second 2: Fill up a cold cup, and a warm cup.\n    Second 3: Fill up a cold cup, and a warm cup.\n    Second 4: Fill up a warm cup, and a hot cup.\n    Second 5: Fill up a cold cup, and a hot cup.\n    Second 6: Fill up a cold cup, and a warm cup.\n    Second 7: Fill up a hot cup.\n    \n\n**Example 3:**\n    \n    \n    **Input:** amount = [5,0,0]\n    **Output:** 5\n    **Explanation:** Every second, we fill up a cold cup.\n    \n\n \n\n**Constraints:**\n\n  * `amount.length == 3`\n  * `0 <= amount[i] <= 100`",
+  "question": "You have a water dispenser that can dispense cold, warm, and hot water. Every second, you can either fill up `2` cups with **different** types of water, or `1` cup of any type of water.\n\nYou are given a **0-indexed** integer array `amount` of length `3` where `amount[0]`, `amount[1]`, and `amount[2]` denote the number of cold, warm, and hot water cups you need to fill respectively. Return _the**minimum** number of seconds needed to fill up all the cups_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** amount = [1,4,2]\n    **Output:** 4\n    **Explanation:** One way to fill up the cups is:\n    Second 1: Fill up a cold cup and a warm cup.\n    Second 2: Fill up a warm cup and a hot cup.\n    Second 3: Fill up a warm cup and a hot cup.\n    Second 4: Fill up a warm cup.\n    It can be proven that 4 is the minimum number of seconds needed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** amount = [5,4,4]\n    **Output:** 7\n    **Explanation:** One way to fill up the cups is:\n    Second 1: Fill up a cold cup, and a hot cup.\n    Second 2: Fill up a cold cup, and a warm cup.\n    Second 3: Fill up a cold cup, and a warm cup.\n    Second 4: Fill up a warm cup, and a hot cup.\n    Second 5: Fill up a cold cup, and a hot cup.\n    Second 6: Fill up a cold cup, and a warm cup.\n    Second 7: Fill up a hot cup.\n    \n\n**Example 3:**\n    \n    \n    **Input:** amount = [5,0,0]\n    **Output:** 5\n    **Explanation:** Every second, we fill up a cold cup.",
+  "constraints": "**Constraints:**\n\n  * `amount.length == 3`\n  * `0 <= amount[i] <= 100`",
+  "topics": ["Array", "Greedy", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 66736,
+  "total_submissions": 111162,
+  "acceptance_rate": "60.0%",
+  "similar_questions": [
+    {
+      "title": "Construct Target Array With Multiple Sums",
+      "slug": "construct-target-array-with-multiple-sums",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/construct-target-array-with-multiple-sums/"
+    },
+    {
+      "title": "Maximum Score From Removing Stones",
+      "slug": "maximum-score-from-removing-stones",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-score-from-removing-stones/"
+    },
+    {
+      "title": "Maximum Running Time of N Computers",
+      "slug": "maximum-running-time-of-n-computers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-running-time-of-n-computers/"
+    },
+    {
+      "title": "Minimum Cost to Make Array Equal",
+      "slug": "minimum-cost-to-make-array-equal",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-cost-to-make-array-equal/"
+    }
+  ],
+  "hints": [
+    "To minimize the amount of time needed, you want to fill up as many cups as possible in each second. This means that you want to maximize the number of seconds where you are filling up two cups.",
+    "You always want to fill up the two types of water with the most unfilled cups."
+  ]
+}

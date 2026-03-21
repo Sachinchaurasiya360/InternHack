@@ -1,0 +1,22 @@
+{
+  "id": "1058",
+  "title": "Minimize Rounding Error to Meet Target",
+  "slug": "minimize-rounding-error-to-meet-target",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "String", "Greedy", "Sorting"],
+  "total_accepted": 11279,
+  "total_submissions": 24629,
+  "acceptance_rate": "45.8%",
+  "similar_questions": [],
+  "hints": [
+    "If we have integer values in the array then we just need to subtract the target those integer values, so we reduced the problem.",
+    "Similarly if we have non integer values we have two options to put them flor(value) or ceil(value) = floor(value) + 1, so the idea is to just subtract floor(value).",
+    "Now the problem is different for each position we can sum just add 0 or 1 in order to sum the target, minimizing the deltas. This can be solved with DP."
+  ]
+}

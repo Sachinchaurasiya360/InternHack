@@ -1,0 +1,25 @@
+{
+  "id": "934",
+  "title": "Shortest Bridge",
+  "slug": "shortest-bridge",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>n x n</code> binary matrix <code>grid</code> where <code>1</code> represents land and <code>0</code> represents water.</p>\n\n<p>An <strong>island</strong> is a 4-directionally connected group of <code>1</code>&#39;s not connected to any other <code>1</code>&#39;s. There are <strong>exactly two islands</strong> in <code>grid</code>.</p>\n\n<p>You may change <code>0</code>&#39;s to <code>1</code>&#39;s to connect the two islands to form <strong>one island</strong>.</p>\n\n<p>Return <em>the smallest number of </em><code>0</code><em>&#39;s you must flip to connect the two islands</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[0,1],[1,0]]\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[0,1,0],[0,0,0],[0,0,1]]\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == grid.length == grid[i].length</code></li>\n\t<li><code>2 &lt;= n &lt;= 100</code></li>\n\t<li><code>grid[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n\t<li>There are exactly two islands in <code>grid</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an `n x n` binary matrix `grid` where `1` represents land and `0` represents water.\n\nAn **island** is a 4-directionally connected group of `1`'s not connected to any other `1`'s. There are **exactly two islands** in `grid`.\n\nYou may change `0`'s to `1`'s to connect the two islands to form **one island**.\n\nReturn _the smallest number of_`0` _' s you must flip to connect the two islands_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** grid = [[0,1],[1,0]]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[0,1,0],[0,0,0],[0,0,1]]\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** grid = [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `2 <= n <= 100`\n  * `grid[i][j]` is either `0` or `1`.\n  * There are exactly two islands in `grid`.",
+  "question": "You are given an `n x n` binary matrix `grid` where `1` represents land and `0` represents water.\n\nAn **island** is a 4-directionally connected group of `1`'s not connected to any other `1`'s. There are **exactly two islands** in `grid`.\n\nYou may change `0`'s to `1`'s to connect the two islands to form **one island**.\n\nReturn _the smallest number of_`0` _' s you must flip to connect the two islands_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** grid = [[0,1],[1,0]]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[0,1,0],[0,0,0],[0,0,1]]\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** grid = [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `2 <= n <= 100`\n  * `grid[i][j]` is either `0` or `1`.\n  * There are exactly two islands in `grid`.",
+  "topics": ["Array", "Depth-First Search", "Breadth-First Search", "Matrix"],
+  "total_accepted": 271707,
+  "total_submissions": 458375,
+  "acceptance_rate": "59.3%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Operations to Make X and Y Equal",
+      "slug": "minimum-number-of-operations-to-make-x-and-y-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-x-and-y-equal/"
+    }
+  ],
+  "hints": []
+}

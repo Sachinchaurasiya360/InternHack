@@ -1,0 +1,40 @@
+{
+  "id": "2406",
+  "title": "Divide Intervals Into Minimum Number of Groups",
+  "slug": "divide-intervals-into-minimum-number-of-groups",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D integer array <code>intervals</code> where <code>intervals[i] = [left<sub>i</sub>, right<sub>i</sub>]</code> represents the <strong>inclusive</strong> interval <code>[left<sub>i</sub>, right<sub>i</sub>]</code>.</p>\n\n<p>You have to divide the intervals into one or more <strong>groups</strong> such that each interval is in <strong>exactly</strong> one group, and no two intervals that are in the same group <strong>intersect</strong> each other.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of groups you need to make</em>.</p>\n\n<p>Two intervals <strong>intersect</strong> if there is at least one common number between them. For example, the intervals <code>[1, 5]</code> and <code>[5, 8]</code> intersect.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> intervals = [[5,10],[6,8],[1,5],[2,3],[1,10]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can divide the intervals into the following groups:\n- Group 1: [1, 5], [6, 8].\n- Group 2: [2, 3], [5, 10].\n- Group 3: [1, 10].\nIt can be proven that it is not possible to divide the intervals into fewer than 3 groups.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> intervals = [[1,3],[5,6],[8,10],[11,13]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> None of the intervals overlap, so we can put all of them in one group.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= intervals.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>intervals[i].length == 2</code></li>\n\t<li><code>1 &lt;= left<sub>i</sub> &lt;= right<sub>i</sub> &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a 2D integer array `intervals` where `intervals[i] = [lefti, righti]` represents the **inclusive** interval `[lefti, righti]`.\n\nYou have to divide the intervals into one or more **groups** such that each interval is in **exactly** one group, and no two intervals that are in the same group **intersect** each other.\n\nReturn _the**minimum** number of groups you need to make_.\n\nTwo intervals **intersect** if there is at least one common number between them. For example, the intervals `[1, 5]` and `[5, 8]` intersect.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** intervals = [[5,10],[6,8],[1,5],[2,3],[1,10]]\n    **Output:** 3\n    **Explanation:** We can divide the intervals into the following groups:\n    - Group 1: [1, 5], [6, 8].\n    - Group 2: [2, 3], [5, 10].\n    - Group 3: [1, 10].\n    It can be proven that it is not possible to divide the intervals into fewer than 3 groups.\n    \n\n**Example 2:**\n    \n    \n    **Input:** intervals = [[1,3],[5,6],[8,10],[11,13]]\n    **Output:** 1\n    **Explanation:** None of the intervals overlap, so we can put all of them in one group.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= intervals.length <= 105`\n  * `intervals[i].length == 2`\n  * `1 <= lefti <= righti <= 106`",
+  "question": "You are given a 2D integer array `intervals` where `intervals[i] = [lefti, righti]` represents the **inclusive** interval `[lefti, righti]`.\n\nYou have to divide the intervals into one or more **groups** such that each interval is in **exactly** one group, and no two intervals that are in the same group **intersect** each other.\n\nReturn _the**minimum** number of groups you need to make_.\n\nTwo intervals **intersect** if there is at least one common number between them. For example, the intervals `[1, 5]` and `[5, 8]` intersect.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** intervals = [[5,10],[6,8],[1,5],[2,3],[1,10]]\n    **Output:** 3\n    **Explanation:** We can divide the intervals into the following groups:\n    - Group 1: [1, 5], [6, 8].\n    - Group 2: [2, 3], [5, 10].\n    - Group 3: [1, 10].\n    It can be proven that it is not possible to divide the intervals into fewer than 3 groups.\n    \n\n**Example 2:**\n    \n    \n    **Input:** intervals = [[1,3],[5,6],[8,10],[11,13]]\n    **Output:** 1\n    **Explanation:** None of the intervals overlap, so we can put all of them in one group.",
+  "constraints": "**Constraints:**\n\n  * `1 <= intervals.length <= 105`\n  * `intervals[i].length == 2`\n  * `1 <= lefti <= righti <= 106`",
+  "topics": ["Array", "Two Pointers", "Greedy", "Sorting", "Heap (Priority Queue)", "Prefix Sum"],
+  "total_accepted": 142297,
+  "total_submissions": 223856,
+  "acceptance_rate": "63.6%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Minimum Number of Frogs Croaking",
+      "slug": "minimum-number-of-frogs-croaking",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-frogs-croaking/"
+    },
+    {
+      "title": "Average Height of Buildings in Each Segment",
+      "slug": "average-height-of-buildings-in-each-segment",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/average-height-of-buildings-in-each-segment/"
+    }
+  ],
+  "hints": [
+    "Can you find a different way to describe the question?",
+    "The minimum number of groups we need is equivalent to the maximum number of intervals that overlap at some point. How can you find that?"
+  ]
+}

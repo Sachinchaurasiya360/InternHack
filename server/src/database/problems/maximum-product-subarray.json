@@ -1,0 +1,49 @@
+{
+  "id": "152",
+  "title": "Maximum Product Subarray",
+  "slug": "maximum-product-subarray",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, find a <span data-keyword=\"subarray-nonempty\">subarray</span> that has the largest product, and return <em>the product</em>.</p>\n\n<p>The test cases are generated so that the answer will fit in a <strong>32-bit</strong> integer.</p>\n\n<p><strong>Note</strong> that the product of an array with a single element is the value of that element.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3,-2,4]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> [2,3] has the largest product 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-2,0,-1]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The result cannot be 2, because [-2,-1] is not a subarray.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>\n\t<li>The product of any subarray of <code>nums</code> is <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, find a subarray that has the largest product, and return _the product_.\n\nThe test cases are generated so that the answer will fit in a **32-bit** integer.\n\n**Note** that the product of an array with a single element is the value of that element.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,3,-2,4]\n    **Output:** 6\n    **Explanation:** [2,3] has the largest product 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-2,0,-1]\n    **Output:** 0\n    **Explanation:** The result cannot be 2, because [-2,-1] is not a subarray.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `-10 <= nums[i] <= 10`\n  * The product of any subarray of `nums` is **guaranteed** to fit in a **32-bit** integer.",
+  "question": "Given an integer array `nums`, find a subarray that has the largest product, and return _the product_.\n\nThe test cases are generated so that the answer will fit in a **32-bit** integer.\n\n**Note** that the product of an array with a single element is the value of that element.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,3,-2,4]\n    **Output:** 6\n    **Explanation:** [2,3] has the largest product 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-2,0,-1]\n    **Output:** 0\n    **Explanation:** The result cannot be 2, because [-2,-1] is not a subarray.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `-10 <= nums[i] <= 10`\n  * The product of any subarray of `nums` is **guaranteed** to fit in a **32-bit** integer.",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 1949406,
+  "total_submissions": 5411810,
+  "acceptance_rate": "36.0%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray/"
+    },
+    {
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber/"
+    },
+    {
+      "title": "Product of Array Except Self",
+      "slug": "product-of-array-except-self",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/product-of-array-except-self/"
+    },
+    {
+      "title": "Maximum Product of Three Numbers",
+      "slug": "maximum-product-of-three-numbers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-product-of-three-numbers/"
+    },
+    {
+      "title": "Subarray Product Less Than K",
+      "slug": "subarray-product-less-than-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-product-less-than-k/"
+    }
+  ],
+  "hints": []
+}

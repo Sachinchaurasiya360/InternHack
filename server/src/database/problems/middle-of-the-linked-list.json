@@ -1,0 +1,31 @@
+{
+  "id": "876",
+  "title": "Middle of the Linked List",
+  "slug": "middle-of-the-linked-list",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a singly linked list, return <em>the middle node of the linked list</em>.</p>\n\n<p>If there are two middle nodes, return <strong>the second middle</strong> node.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/07/23/lc-midlist1.jpg\" style=\"width: 544px; height: 65px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2,3,4,5]\n<strong>Output:</strong> [3,4,5]\n<strong>Explanation:</strong> The middle node of the list is node 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/07/23/lc-midlist2.jpg\" style=\"width: 664px; height: 65px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2,3,4,5,6]\n<strong>Output:</strong> [4,5,6]\n<strong>Explanation:</strong> Since the list has two middle nodes with values 3 and 4, we return the second one.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is in the range <code>[1, 100]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given the `head` of a singly linked list, return _the middle node of the linked list_.\n\nIf there are two middle nodes, return **the second middle** node.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/07/23/lc-midlist1.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5]\n    **Output:** [3,4,5]\n    **Explanation:** The middle node of the list is node 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/07/23/lc-midlist2.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5,6]\n    **Output:** [4,5,6]\n    **Explanation:** Since the list has two middle nodes with values 3 and 4, we return the second one.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is in the range `[1, 100]`.\n  * `1 <= Node.val <= 100`",
+  "question": "Given the `head` of a singly linked list, return _the middle node of the linked list_.\n\nIf there are two middle nodes, return **the second middle** node.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/07/23/lc-midlist1.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5]\n    **Output:** [3,4,5]\n    **Explanation:** The middle node of the list is node 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/07/23/lc-midlist2.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5,6]\n    **Output:** [4,5,6]\n    **Explanation:** Since the list has two middle nodes with values 3 and 4, we return the second one.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is in the range `[1, 100]`.\n  * `1 <= Node.val <= 100`",
+  "topics": ["Linked List", "Two Pointers"],
+  "total_accepted": 2923718,
+  "total_submissions": 3583981,
+  "acceptance_rate": "81.6%",
+  "similar_questions": [
+    {
+      "title": "Delete the Middle Node of a Linked List",
+      "slug": "delete-the-middle-node-of-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/"
+    },
+    {
+      "title": "Maximum Twin Sum of a Linked List",
+      "slug": "maximum-twin-sum-of-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/"
+    }
+  ],
+  "hints": []
+}

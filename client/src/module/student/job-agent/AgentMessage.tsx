@@ -47,7 +47,7 @@ export function AgentMessage({ role, content, jobs }: Props) {
         className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
           isUser
             ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
-            : "bg-indigo-600 text-white"
+            : "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
         }`}
       >
         {isUser ? (

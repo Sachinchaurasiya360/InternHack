@@ -1,0 +1,37 @@
+{
+  "id": "409",
+  "title": "Longest Palindrome",
+  "slug": "longest-palindrome",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> which consists of lowercase or uppercase letters, return the length of the <strong>longest <span data-keyword=\"palindrome-string\">palindrome</span></strong>&nbsp;that can be built with those letters.</p>\n\n<p>Letters are <strong>case sensitive</strong>, for example, <code>&quot;Aa&quot;</code> is not considered a palindrome.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abccccdd&quot;\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> One longest palindrome that can be built is &quot;dccaccd&quot;, whose length is 7.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The longest palindrome that can be built is &quot;a&quot;, whose length is 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 2000</code></li>\n\t<li><code>s</code> consists of lowercase <strong>and/or</strong> uppercase English&nbsp;letters only.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` which consists of lowercase or uppercase letters, return the length of the **longest palindrome** that can be built with those letters.\n\nLetters are **case sensitive** , for example, `\"Aa\"` is not considered a palindrome.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abccccdd\"\n    **Output:** 7\n    **Explanation:** One longest palindrome that can be built is \"dccaccd\", whose length is 7.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\"\n    **Output:** 1\n    **Explanation:** The longest palindrome that can be built is \"a\", whose length is 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` consists of lowercase **and/or** uppercase English letters only.",
+  "question": "Given a string `s` which consists of lowercase or uppercase letters, return the length of the **longest palindrome** that can be built with those letters.\n\nLetters are **case sensitive** , for example, `\"Aa\"` is not considered a palindrome.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abccccdd\"\n    **Output:** 7\n    **Explanation:** One longest palindrome that can be built is \"dccaccd\", whose length is 7.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\"\n    **Output:** 1\n    **Explanation:** The longest palindrome that can be built is \"a\", whose length is 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` consists of lowercase **and/or** uppercase English letters only.",
+  "topics": ["Hash Table", "String", "Greedy"],
+  "total_accepted": 1031092,
+  "total_submissions": 1846279,
+  "acceptance_rate": "55.8%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Permutation",
+      "slug": "palindrome-permutation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-permutation/"
+    },
+    {
+      "title": "Longest Palindrome by Concatenating Two Letter Words",
+      "slug": "longest-palindrome-by-concatenating-two-letter-words",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-palindrome-by-concatenating-two-letter-words/"
+    },
+    {
+      "title": "Largest Palindromic Number",
+      "slug": "largest-palindromic-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/largest-palindromic-number/"
+    }
+  ],
+  "hints": []
+}

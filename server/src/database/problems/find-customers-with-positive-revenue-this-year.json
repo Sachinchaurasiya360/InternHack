@@ -1,0 +1,18 @@
+{
+  "id": "1821",
+  "title": "Find Customers With Positive Revenue this Year",
+  "slug": "find-customers-with-positive-revenue-this-year",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 36569,
+  "total_submissions": 41701,
+  "acceptance_rate": "87.7%",
+  "similar_questions": [],
+  "hints": []
+}

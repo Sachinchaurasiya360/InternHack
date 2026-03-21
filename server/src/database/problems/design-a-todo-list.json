@@ -1,0 +1,18 @@
+{
+  "id": "2590",
+  "title": "Design a Todo List",
+  "slug": "design-a-todo-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Design", "Sorting"],
+  "total_accepted": 4155,
+  "total_submissions": 6951,
+  "acceptance_rate": "59.8%",
+  "similar_questions": [],
+  "hints": []
+}

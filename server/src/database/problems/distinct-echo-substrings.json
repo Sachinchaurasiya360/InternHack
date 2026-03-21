@@ -1,0 +1,29 @@
+{
+  "id": "1316",
+  "title": "Distinct Echo Substrings",
+  "slug": "distinct-echo-substrings",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Return the number of <strong>distinct</strong> non-empty substrings of <code>text</code>&nbsp;that can be written as the concatenation of some string with itself (i.e. it can be written as <code>a + a</code>&nbsp;where <code>a</code> is some string).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;abcabcabc&quot;\n<strong>Output:</strong> 3\n<b>Explanation: </b>The 3 substrings are &quot;abcabc&quot;, &quot;bcabca&quot; and &quot;cabcab&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;leetcodeleetcode&quot;\n<strong>Output:</strong> 2\n<b>Explanation: </b>The 2 substrings are &quot;ee&quot; and &quot;leetcodeleetcode&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= text.length &lt;= 2000</code></li>\n\t<li><code>text</code>&nbsp;has only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Return the number of **distinct** non-empty substrings of `text` that can be written as the concatenation of some string with itself (i.e. it can be written as `a + a` where `a` is some string).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** text = \"abcabcabc\"\n    **Output:** 3\n    **Explanation:** The 3 substrings are \"abcabc\", \"bcabca\" and \"cabcab\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** text = \"leetcodeleetcode\"\n    **Output:** 2\n    **Explanation:** The 2 substrings are \"ee\" and \"leetcodeleetcode\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= text.length <= 2000`\n  * `text` has only lowercase English letters.",
+  "question": "Return the number of **distinct** non-empty substrings of `text` that can be written as the concatenation of some string with itself (i.e. it can be written as `a + a` where `a` is some string).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** text = \"abcabcabc\"\n    **Output:** 3\n    **Explanation:** The 3 substrings are \"abcabc\", \"bcabca\" and \"cabcab\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** text = \"leetcodeleetcode\"\n    **Output:** 2\n    **Explanation:** The 2 substrings are \"ee\" and \"leetcodeleetcode\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= text.length <= 2000`\n  * `text` has only lowercase English letters.",
+  "topics": ["String", "Trie", "Rolling Hash", "Hash Function"],
+  "total_accepted": 21825,
+  "total_submissions": 41201,
+  "acceptance_rate": "53.0%",
+  "similar_questions": [
+    {
+      "title": "Find Substring With Given Hash Value",
+      "slug": "find-substring-with-given-hash-value",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-substring-with-given-hash-value/"
+    }
+  ],
+  "hints": [
+    "Given a substring of the text, how to check if it can be written as the concatenation of a string with itself ?",
+    "We can do that in linear time, a faster way is to use hashing.",
+    "Try all substrings and use hashing to check them."
+  ]
+}

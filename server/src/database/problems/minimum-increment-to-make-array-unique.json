@@ -1,0 +1,37 @@
+{
+  "id": "945",
+  "title": "Minimum Increment to Make Array Unique",
+  "slug": "minimum-increment-to-make-array-unique",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. In one move, you can pick an index <code>i</code> where <code>0 &lt;= i &lt; nums.length</code> and increment <code>nums[i]</code> by <code>1</code>.</p>\n\n<p>Return <em>the minimum number of moves to make every value in </em><code>nums</code><em> <strong>unique</strong></em>.</p>\n\n<p>The test cases are generated so that the answer fits in a 32-bit integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,2]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> After 1 move, the array could be [1, 2, 3].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,1,2,1,7]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> After 6 moves, the array could be [3, 4, 1, 2, 5, 7].\nIt can be shown that it is impossible for the array to have all unique values with 5 or less moves.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`. In one move, you can pick an index `i` where `0 <= i < nums.length` and increment `nums[i]` by `1`.\n\nReturn _the minimum number of moves to make every value in_`nums` _**unique**_.\n\nThe test cases are generated so that the answer fits in a 32-bit integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2]\n    **Output:** 1\n    **Explanation:** After 1 move, the array could be [1, 2, 3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,1,2,1,7]\n    **Output:** 6\n    **Explanation:** After 6 moves, the array could be [3, 4, 1, 2, 5, 7].\n    It can be shown that it is impossible for the array to have all unique values with 5 or less moves.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 105`",
+  "question": "You are given an integer array `nums`. In one move, you can pick an index `i` where `0 <= i < nums.length` and increment `nums[i]` by `1`.\n\nReturn _the minimum number of moves to make every value in_`nums` _**unique**_.\n\nThe test cases are generated so that the answer fits in a 32-bit integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2]\n    **Output:** 1\n    **Explanation:** After 1 move, the array could be [1, 2, 3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,1,2,1,7]\n    **Output:** 6\n    **Explanation:** After 6 moves, the array could be [3, 4, 1, 2, 5, 7].\n    It can be shown that it is impossible for the array to have all unique values with 5 or less moves.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 105`",
+  "topics": ["Array", "Greedy", "Sorting", "Counting"],
+  "total_accepted": 268028,
+  "total_submissions": 442440,
+  "acceptance_rate": "60.6%",
+  "similar_questions": [
+    {
+      "title": "Minimum Operations to Make the Array Increasing",
+      "slug": "minimum-operations-to-make-the-array-increasing",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-the-array-increasing/"
+    },
+    {
+      "title": "Maximum Product After K Increments",
+      "slug": "maximum-product-after-k-increments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-after-k-increments/"
+    },
+    {
+      "title": "Minimum Number of Operations to Make Elements in Array Distinct",
+      "slug": "minimum-number-of-operations-to-make-elements-in-array-distinct",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-elements-in-array-distinct/"
+    }
+  ],
+  "hints": []
+}

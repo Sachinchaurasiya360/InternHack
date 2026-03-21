@@ -1,0 +1,21 @@
+{
+  "id": "3088",
+  "title": "Make String Anti-palindrome",
+  "slug": "make-string-anti-palindrome",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Greedy", "Sorting", "Counting Sort"],
+  "total_accepted": 938,
+  "total_submissions": 2035,
+  "acceptance_rate": "46.1%",
+  "similar_questions": [],
+  "hints": [
+    "Sort the string.",
+    "Check if there are equivalent characters in the middle, if there are, shift the ones from the right side more to the right until they don't overlap."
+  ]
+}

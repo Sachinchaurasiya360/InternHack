@@ -1,0 +1,46 @@
+{
+  "id": "2077",
+  "title": "Paths in Maze That Lead to Same Room",
+  "slug": "paths-in-maze-that-lead-to-same-room",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Graph Theory"],
+  "total_accepted": 6364,
+  "total_submissions": 11272,
+  "acceptance_rate": "56.5%",
+  "similar_questions": [
+    {
+      "title": "Number of Connected Components in an Undirected Graph",
+      "slug": "number-of-connected-components-in-an-undirected-graph",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/"
+    },
+    {
+      "title": "Reachable Nodes In Subdivided Graph",
+      "slug": "reachable-nodes-in-subdivided-graph",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/reachable-nodes-in-subdivided-graph/"
+    },
+    {
+      "title": "Distance to a Cycle in Undirected Graph",
+      "slug": "distance-to-a-cycle-in-undirected-graph",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/distance-to-a-cycle-in-undirected-graph/"
+    },
+    {
+      "title": "Find if Path Exists in Graph",
+      "slug": "find-if-path-exists-in-graph",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-if-path-exists-in-graph/"
+    }
+  ],
+  "hints": [
+    "If the path starts at room i, what properties must the other two rooms in the cycle have?",
+    "The other two rooms must be connected to room i, and must be connected to each other."
+  ]
+}

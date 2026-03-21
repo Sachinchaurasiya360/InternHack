@@ -1,0 +1,29 @@
+{
+  "id": "3317",
+  "title": "Find the Number of Possible Ways for an Event",
+  "slug": "find-the-number-of-possible-ways-for-an-event",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given three integers <code>n</code>, <code>x</code>, and <code>y</code>.</p>\n\n<p>An event is being held for <code>n</code> performers. When a performer arrives, they are <strong>assigned</strong> to one of the <code>x</code> stages. All performers assigned to the <strong>same</strong> stage will perform together as a band, though some stages <em>might</em> remain <strong>empty</strong>.</p>\n\n<p>After all performances are completed, the jury will <strong>award</strong> each band a score in the range <code>[1, y]</code>.</p>\n\n<p>Return the <strong>total</strong> number of possible ways the event can take place.</p>\n\n<p>Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p><strong>Note</strong> that two events are considered to have been held <strong>differently</strong> if <strong>either</strong> of the following conditions is satisfied:</p>\n\n<ul>\n\t<li><strong>Any</strong> performer is <em>assigned</em> a different stage.</li>\n\t<li><strong>Any</strong> band is <em>awarded</em> a different score.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 1, x = 2, y = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>There are 2 ways to assign a stage to the performer.</li>\n\t<li>The jury can award a score of either 1, 2, or 3 to the only band.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 5, x = 2, y = 1</span></p>\n\n<p><strong>Output:</strong> 32</p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>Each performer will be assigned either stage 1 or stage 2.</li>\n\t<li>All bands will be awarded a score of 1.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3, x = 3, y = 4</span></p>\n\n<p><strong>Output:</strong> 684</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n, x, y &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given three integers `n`, `x`, and `y`.\n\nAn event is being held for `n` performers. When a performer arrives, they are **assigned** to one of the `x` stages. All performers assigned to the **same** stage will perform together as a band, though some stages _might_ remain **empty**.\n\nAfter all performances are completed, the jury will **award** each band a score in the range `[1, y]`.\n\nReturn the **total** number of possible ways the event can take place.\n\nSince the answer may be very large, return it **modulo** `109 + 7`.\n\n**Note** that two events are considered to have been held **differently** if **either** of the following conditions is satisfied:\n\n  * **Any** performer is _assigned_ a different stage.\n  * **Any** band is _awarded_ a different score.\n\n\n\n \n\n**Example 1:**\n\n**Input:** n = 1, x = 2, y = 3\n\n**Output:** 6\n\n**Explanation:**\n\n  * There are 2 ways to assign a stage to the performer.\n  * The jury can award a score of either 1, 2, or 3 to the only band.\n\n\n\n**Example 2:**\n\n**Input:** n = 5, x = 2, y = 1\n\n**Output:** 32\n\n**Explanation:**\n\n  * Each performer will be assigned either stage 1 or stage 2.\n  * All bands will be awarded a score of 1.\n\n\n\n**Example 3:**\n\n**Input:** n = 3, x = 3, y = 4\n\n**Output:** 684\n\n \n\n**Constraints:**\n\n  * `1 <= n, x, y <= 1000`",
+  "question": "You are given three integers `n`, `x`, and `y`.\n\nAn event is being held for `n` performers. When a performer arrives, they are **assigned** to one of the `x` stages. All performers assigned to the **same** stage will perform together as a band, though some stages _might_ remain **empty**.\n\nAfter all performances are completed, the jury will **award** each band a score in the range `[1, y]`.\n\nReturn the **total** number of possible ways the event can take place.\n\nSince the answer may be very large, return it **modulo** `109 + 7`.\n\n**Note** that two events are considered to have been held **differently** if **either** of the following conditions is satisfied:\n\n  * **Any** performer is _assigned_ a different stage.\n  * **Any** band is _awarded_ a different score.",
+  "examples": "**Example 1:**\n\n**Input:** n = 1, x = 2, y = 3\n\n**Output:** 6\n\n**Explanation:**\n\n  * There are 2 ways to assign a stage to the performer.\n  * The jury can award a score of either 1, 2, or 3 to the only band.\n\n\n\n**Example 2:**\n\n**Input:** n = 5, x = 2, y = 1\n\n**Output:** 32\n\n**Explanation:**\n\n  * Each performer will be assigned either stage 1 or stage 2.\n  * All bands will be awarded a score of 1.\n\n\n\n**Example 3:**\n\n**Input:** n = 3, x = 3, y = 4\n\n**Output:** 684",
+  "constraints": "**Constraints:**\n\n  * `1 <= n, x, y <= 1000`",
+  "topics": ["Math", "Dynamic Programming", "Combinatorics"],
+  "total_accepted": 5250,
+  "total_submissions": 15040,
+  "acceptance_rate": "34.9%",
+  "similar_questions": [
+    {
+      "title": "Kth Smallest Amount With Single Denomination Combination",
+      "slug": "kth-smallest-amount-with-single-denomination-combination",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/kth-smallest-amount-with-single-denomination-combination/"
+    }
+  ],
+  "hints": [
+    "Fix the number of stages.",
+    "Assign the Performers to the stages.",
+    "Use inclusion-exclusion to ensure that no stage has 0 performers."
+  ]
+}

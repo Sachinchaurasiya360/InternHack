@@ -1,0 +1,46 @@
+{
+  "id": "63",
+  "title": "Unique Paths II",
+  "slug": "unique-paths-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> integer array <code>grid</code>. There is a robot initially located at the <b>top-left corner</b> (i.e., <code>grid[0][0]</code>). The robot tries to move to the <strong>bottom-right corner</strong> (i.e., <code>grid[m - 1][n - 1]</code>). The robot can only move either down or right at any point in time.</p>\n\n<p>An obstacle and space are marked as <code>1</code> or <code>0</code> respectively in <code>grid</code>. A path that the robot takes cannot include <strong>any</strong> square that is an obstacle.</p>\n\n<p>Return <em>the number of possible unique paths that the robot can take to reach the bottom-right corner</em>.</p>\n\n<p>The testcases are generated so that the answer will be less than or equal to <code>2 * 10<sup>9</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/04/robot1.jpg\" style=\"width: 242px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> There is one obstacle in the middle of the 3x3 grid above.\nThere are two ways to reach the bottom-right corner:\n1. Right -&gt; Right -&gt; Down -&gt; Down\n2. Down -&gt; Down -&gt; Right -&gt; Right\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/04/robot2.jpg\" style=\"width: 162px; height: 162px;\" />\n<pre>\n<strong>Input:</strong> obstacleGrid = [[0,1],[0,0]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == obstacleGrid.length</code></li>\n\t<li><code>n == obstacleGrid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 100</code></li>\n\t<li><code>obstacleGrid[i][j]</code> is <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` integer array `grid`. There is a robot initially located at the **top-left corner** (i.e., `grid[0][0]`). The robot tries to move to the **bottom-right corner** (i.e., `grid[m - 1][n - 1]`). The robot can only move either down or right at any point in time.\n\nAn obstacle and space are marked as `1` or `0` respectively in `grid`. A path that the robot takes cannot include **any** square that is an obstacle.\n\nReturn _the number of possible unique paths that the robot can take to reach the bottom-right corner_.\n\nThe testcases are generated so that the answer will be less than or equal to `2 * 109`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/robot1.jpg)\n    \n    \n    **Input:** obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]\n    **Output:** 2\n    **Explanation:** There is one obstacle in the middle of the 3x3 grid above.\n    There are two ways to reach the bottom-right corner:\n    1. Right -> Right -> Down -> Down\n    2. Down -> Down -> Right -> Right\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/robot2.jpg)\n    \n    \n    **Input:** obstacleGrid = [[0,1],[0,0]]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `m == obstacleGrid.length`\n  * `n == obstacleGrid[i].length`\n  * `1 <= m, n <= 100`\n  * `obstacleGrid[i][j]` is `0` or `1`.",
+  "question": "You are given an `m x n` integer array `grid`. There is a robot initially located at the **top-left corner** (i.e., `grid[0][0]`). The robot tries to move to the **bottom-right corner** (i.e., `grid[m - 1][n - 1]`). The robot can only move either down or right at any point in time.\n\nAn obstacle and space are marked as `1` or `0` respectively in `grid`. A path that the robot takes cannot include **any** square that is an obstacle.\n\nReturn _the number of possible unique paths that the robot can take to reach the bottom-right corner_.\n\nThe testcases are generated so that the answer will be less than or equal to `2 * 109`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/robot1.jpg)\n    \n    \n    **Input:** obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]\n    **Output:** 2\n    **Explanation:** There is one obstacle in the middle of the 3x3 grid above.\n    There are two ways to reach the bottom-right corner:\n    1. Right -> Right -> Down -> Down\n    2. Down -> Down -> Right -> Right\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/robot2.jpg)\n    \n    \n    **Input:** obstacleGrid = [[0,1],[0,0]]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `m == obstacleGrid.length`\n  * `n == obstacleGrid[i].length`\n  * `1 <= m, n <= 100`\n  * `obstacleGrid[i][j]` is `0` or `1`.",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 1434309,
+  "total_submissions": 3247680,
+  "acceptance_rate": "44.2%",
+  "similar_questions": [
+    {
+      "title": "Unique Paths",
+      "slug": "unique-paths",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-paths/"
+    },
+    {
+      "title": "Unique Paths III",
+      "slug": "unique-paths-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/unique-paths-iii/"
+    },
+    {
+      "title": "Minimum Path Cost in a Grid",
+      "slug": "minimum-path-cost-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-cost-in-a-grid/"
+    },
+    {
+      "title": "Paths in Matrix Whose Sum Is Divisible by K",
+      "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paths-in-matrix-whose-sum-is-divisible-by-k/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming since, from each cell, you can move to the right or down.",
+    "assume dp[i][j] is the number of unique paths to reach (i, j). dp[i][j] = dp[i][j -1] + dp[i - 1][j]. Be careful when you encounter an obstacle. set its value in dp to 0."
+  ]
+}

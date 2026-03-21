@@ -1,0 +1,34 @@
+{
+  "id": "2491",
+  "title": "Divide Players Into Teams of Equal Skill",
+  "slug": "divide-players-into-teams-of-equal-skill",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer array <code>skill</code> of <strong>even</strong> length <code>n</code> where <code>skill[i]</code> denotes the skill of the <code>i<sup>th</sup></code> player. Divide the players into <code>n / 2</code> teams of size <code>2</code> such that the total skill of each team is <strong>equal</strong>.</p>\n\n<p>The <strong>chemistry</strong> of a team is equal to the <strong>product</strong> of the skills of the players on that team.</p>\n\n<p>Return <em>the sum of the <strong>chemistry</strong> of all the teams, or return </em><code>-1</code><em> if there is no way to divide the players into teams such that the total skill of each team is equal.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> skill = [3,2,5,1,3,4]\n<strong>Output:</strong> 22\n<strong>Explanation:</strong> \nDivide the players into the following teams: (1, 5), (2, 4), (3, 3), where each team has a total skill of 6.\nThe sum of the chemistry of all the teams is: 1 * 5 + 2 * 4 + 3 * 3 = 5 + 8 + 9 = 22.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> skill = [3,4]\n<strong>Output:</strong> 12\n<strong>Explanation:</strong> \nThe two players form a team with a total skill of 7.\nThe chemistry of the team is 3 * 4 = 12.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> skill = [1,1,2,3]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> \nThere is no way to divide the players into teams such that the total skill of each team is equal.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= skill.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>skill.length</code> is even.</li>\n\t<li><code>1 &lt;= skill[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer array `skill` of **even** length `n` where `skill[i]` denotes the skill of the `ith` player. Divide the players into `n / 2` teams of size `2` such that the total skill of each team is **equal**.\n\nThe **chemistry** of a team is equal to the **product** of the skills of the players on that team.\n\nReturn _the sum of the**chemistry** of all the teams, or return _`-1` _if there is no way to divide the players into teams such that the total skill of each team is equal._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** skill = [3,2,5,1,3,4]\n    **Output:** 22\n    **Explanation:** \n    Divide the players into the following teams: (1, 5), (2, 4), (3, 3), where each team has a total skill of 6.\n    The sum of the chemistry of all the teams is: 1 * 5 + 2 * 4 + 3 * 3 = 5 + 8 + 9 = 22.\n    \n\n**Example 2:**\n    \n    \n    **Input:** skill = [3,4]\n    **Output:** 12\n    **Explanation:** \n    The two players form a team with a total skill of 7.\n    The chemistry of the team is 3 * 4 = 12.\n    \n\n**Example 3:**\n    \n    \n    **Input:** skill = [1,1,2,3]\n    **Output:** -1\n    **Explanation:** \n    There is no way to divide the players into teams such that the total skill of each team is equal.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= skill.length <= 105`\n  * `skill.length` is even.\n  * `1 <= skill[i] <= 1000`",
+  "question": "You are given a positive integer array `skill` of **even** length `n` where `skill[i]` denotes the skill of the `ith` player. Divide the players into `n / 2` teams of size `2` such that the total skill of each team is **equal**.\n\nThe **chemistry** of a team is equal to the **product** of the skills of the players on that team.\n\nReturn _the sum of the**chemistry** of all the teams, or return _`-1` _if there is no way to divide the players into teams such that the total skill of each team is equal._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** skill = [3,2,5,1,3,4]\n    **Output:** 22\n    **Explanation:** \n    Divide the players into the following teams: (1, 5), (2, 4), (3, 3), where each team has a total skill of 6.\n    The sum of the chemistry of all the teams is: 1 * 5 + 2 * 4 + 3 * 3 = 5 + 8 + 9 = 22.\n    \n\n**Example 2:**\n    \n    \n    **Input:** skill = [3,4]\n    **Output:** 12\n    **Explanation:** \n    The two players form a team with a total skill of 7.\n    The chemistry of the team is 3 * 4 = 12.\n    \n\n**Example 3:**\n    \n    \n    **Input:** skill = [1,1,2,3]\n    **Output:** -1\n    **Explanation:** \n    There is no way to divide the players into teams such that the total skill of each team is equal.",
+  "constraints": "**Constraints:**\n\n  * `2 <= skill.length <= 105`\n  * `skill.length` is even.\n  * `1 <= skill[i] <= 1000`",
+  "topics": ["Array", "Hash Table", "Two Pointers", "Sorting"],
+  "total_accepted": 200614,
+  "total_submissions": 291103,
+  "acceptance_rate": "68.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Moves to Equal Array Elements",
+      "slug": "minimum-moves-to-equal-array-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements/"
+    },
+    {
+      "title": "Max Number of K-Sum Pairs",
+      "slug": "max-number-of-k-sum-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-number-of-k-sum-pairs/"
+    }
+  ],
+  "hints": [
+    "Try sorting the skill array.",
+    "It is always optimal to pair the weakest available player with the strongest available player."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "761",
+  "title": "Special Binary String",
+  "slug": "special-binary-string",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p><strong>Special binary strings</strong> are binary strings with the following two properties:</p>\n\n<ul>\n\t<li>The number of <code>0</code>&#39;s is equal to the number of <code>1</code>&#39;s.</li>\n\t<li>Every prefix of the binary string has at least as many <code>1</code>&#39;s as <code>0</code>&#39;s.</li>\n</ul>\n\n<p>You are given a <strong>special binary</strong> string <code>s</code>.</p>\n\n<p>A move consists of choosing two consecutive, non-empty, special substrings of <code>s</code>, and swapping them. Two strings are consecutive if the last character of the first string is exactly one index before the first character of the second string.</p>\n\n<p>Return <em>the lexicographically largest resulting string possible after applying the mentioned operations on the string</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;11011000&quot;\n<strong>Output:</strong> &quot;11100100&quot;\n<strong>Explanation:</strong> The strings &quot;10&quot; [occuring at s[1]] and &quot;1100&quot; [at s[3]] are swapped.\nThis is the lexicographically largest string possible after some number of swaps.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;10&quot;\n<strong>Output:</strong> &quot;10&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 50</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n\t<li><code>s</code> is a special binary string.</li>\n</ul>\n",
+  "content_markdown": "**Special binary strings** are binary strings with the following two properties:\n\n  * The number of `0`'s is equal to the number of `1`'s.\n  * Every prefix of the binary string has at least as many `1`'s as `0`'s.\n\n\n\nYou are given a **special binary** string `s`.\n\nA move consists of choosing two consecutive, non-empty, special substrings of `s`, and swapping them. Two strings are consecutive if the last character of the first string is exactly one index before the first character of the second string.\n\nReturn _the lexicographically largest resulting string possible after applying the mentioned operations on the string_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"11011000\"\n    **Output:** \"11100100\"\n    **Explanation:** The strings \"10\" [occuring at s[1]] and \"1100\" [at s[3]] are swapped.\n    This is the lexicographically largest string possible after some number of swaps.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10\"\n    **Output:** \"10\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 50`\n  * `s[i]` is either `'0'` or `'1'`.\n  * `s` is a special binary string.",
+  "question": "**Special binary strings** are binary strings with the following two properties:\n\n  * The number of `0`'s is equal to the number of `1`'s.\n  * Every prefix of the binary string has at least as many `1`'s as `0`'s.\n\n\n\nYou are given a **special binary** string `s`.\n\nA move consists of choosing two consecutive, non-empty, special substrings of `s`, and swapping them. Two strings are consecutive if the last character of the first string is exactly one index before the first character of the second string.\n\nReturn _the lexicographically largest resulting string possible after applying the mentioned operations on the string_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"11011000\"\n    **Output:** \"11100100\"\n    **Explanation:** The strings \"10\" [occuring at s[1]] and \"1100\" [at s[3]] are swapped.\n    This is the lexicographically largest string possible after some number of swaps.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10\"\n    **Output:** \"10\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 50`\n  * `s[i]` is either `'0'` or `'1'`.\n  * `s` is a special binary string.",
+  "topics": ["String", "Divide and Conquer", "Sorting"],
+  "total_accepted": 94090,
+  "total_submissions": 118702,
+  "acceptance_rate": "79.3%",
+  "similar_questions": [
+    {
+      "title": "Valid Parenthesis String",
+      "slug": "valid-parenthesis-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/valid-parenthesis-string/"
+    },
+    {
+      "title": "Number of Good Binary Strings",
+      "slug": "number-of-good-binary-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-good-binary-strings/"
+    }
+  ],
+  "hints": [
+    "Draw a line from (x, y) to (x+1, y+1) if we see a \"1\", else to (x+1, y-1).\r\nA special substring is just a line that starts and ends at the same y-coordinate, and that is the lowest y-coordinate reached.\r\nCall a mountain a special substring with no special prefixes - ie. only at the beginning and end is the lowest y-coordinate reached.\r\nIf F is the answer function, and S has mountain decomposition M1,M2,M3,...,Mk,  then the answer is:\r\nreverse_sorted(F(M1), F(M2), ..., F(Mk)).\r\nHowever, you'll also need to deal with the case that S is a mountain, such as 11011000 -> 11100100."
+  ]
+}

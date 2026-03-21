@@ -1,0 +1,35 @@
+{
+  "id": "2514",
+  "title": "Count Anagrams",
+  "slug": "count-anagrams",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> containing one or more words. Every consecutive pair of words is separated by a single space <code>&#39; &#39;</code>.</p>\n\n<p>A string <code>t</code> is an <strong>anagram</strong> of string <code>s</code> if the <code>i<sup>th</sup></code> word of <code>t</code> is a <strong>permutation</strong> of the <code>i<sup>th</sup></code> word of <code>s</code>.</p>\n\n<ul>\n\t<li>For example, <code>&quot;acb dfe&quot;</code> is an anagram of <code>&quot;abc def&quot;</code>, but <code>&quot;def cab&quot;</code>&nbsp;and <code>&quot;adc bef&quot;</code> are not.</li>\n</ul>\n\n<p>Return <em>the number of <strong>distinct anagrams</strong> of </em><code>s</code>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;too hot&quot;\n<strong>Output:</strong> 18\n<strong>Explanation:</strong> Some of the anagrams of the given string are &quot;too hot&quot;, &quot;oot hot&quot;, &quot;oto toh&quot;, &quot;too toh&quot;, and &quot;too oht&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> There is only one anagram possible for the given string.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters and spaces <code>&#39; &#39;</code>.</li>\n\t<li>There is single space between consecutive words.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` containing one or more words. Every consecutive pair of words is separated by a single space `' '`.\n\nA string `t` is an **anagram** of string `s` if the `ith` word of `t` is a **permutation** of the `ith` word of `s`.\n\n  * For example, `\"acb dfe\"` is an anagram of `\"abc def\"`, but `\"def cab\"` and `\"adc bef\"` are not.\n\n\n\nReturn _the number of**distinct anagrams** of _`s`. Since the answer may be very large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"too hot\"\n    **Output:** 18\n    **Explanation:** Some of the anagrams of the given string are \"too hot\", \"oot hot\", \"oto toh\", \"too toh\", and \"too oht\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aa\"\n    **Output:** 1\n    **Explanation:** There is only one anagram possible for the given string.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters and spaces `' '`.\n  * There is single space between consecutive words.",
+  "question": "You are given a string `s` containing one or more words. Every consecutive pair of words is separated by a single space `' '`.\n\nA string `t` is an **anagram** of string `s` if the `ith` word of `t` is a **permutation** of the `ith` word of `s`.\n\n  * For example, `\"acb dfe\"` is an anagram of `\"abc def\"`, but `\"def cab\"` and `\"adc bef\"` are not.\n\n\n\nReturn _the number of**distinct anagrams** of _`s`. Since the answer may be very large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"too hot\"\n    **Output:** 18\n    **Explanation:** Some of the anagrams of the given string are \"too hot\", \"oot hot\", \"oto toh\", \"too toh\", and \"too oht\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aa\"\n    **Output:** 1\n    **Explanation:** There is only one anagram possible for the given string.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters and spaces `' '`.\n  * There is single space between consecutive words.",
+  "topics": ["Hash Table", "Math", "String", "Combinatorics", "Counting"],
+  "total_accepted": 19511,
+  "total_submissions": 52751,
+  "acceptance_rate": "37.0%",
+  "similar_questions": [
+    {
+      "title": "Group Anagrams",
+      "slug": "group-anagrams",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-anagrams/"
+    },
+    {
+      "title": "Count Ways to Build Rooms in an Ant Colony",
+      "slug": "count-ways-to-build-rooms-in-an-ant-colony",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-ways-to-build-rooms-in-an-ant-colony/"
+    }
+  ],
+  "hints": [
+    "For each word, can you count the number of permutations possible if all characters are distinct?",
+    "How to reduce overcounting when letters are repeated?",
+    "The product of the counts of distinct permutations of all words will give the final answer."
+  ]
+}

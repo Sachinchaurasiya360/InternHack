@@ -1,0 +1,18 @@
+{
+  "id": "3054",
+  "title": "Binary Tree Nodes",
+  "slug": "binary-tree-nodes",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 3753,
+  "total_submissions": 4778,
+  "acceptance_rate": "78.5%",
+  "similar_questions": [],
+  "hints": []
+}

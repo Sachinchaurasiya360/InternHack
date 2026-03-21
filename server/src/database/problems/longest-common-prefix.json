@@ -1,0 +1,43 @@
+{
+  "id": "14",
+  "title": "Longest Common Prefix",
+  "slug": "longest-common-prefix",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Write a function to find the longest common prefix string amongst an array of strings.</p>\n\n<p>If there is no common prefix, return an empty string <code>&quot;&quot;</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> strs = [&quot;flower&quot;,&quot;flow&quot;,&quot;flight&quot;]\n<strong>Output:</strong> &quot;fl&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> strs = [&quot;dog&quot;,&quot;racecar&quot;,&quot;car&quot;]\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> There is no common prefix among the input strings.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= strs.length &lt;= 200</code></li>\n\t<li><code>0 &lt;= strs[i].length &lt;= 200</code></li>\n\t<li><code>strs[i]</code> consists of only lowercase English letters if it is non-empty.</li>\n</ul>\n",
+  "content_markdown": "Write a function to find the longest common prefix string amongst an array of strings.\n\nIf there is no common prefix, return an empty string `\"\"`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** strs = [\"flower\",\"flow\",\"flight\"]\n    **Output:** \"fl\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"dog\",\"racecar\",\"car\"]\n    **Output:** \"\"\n    **Explanation:** There is no common prefix among the input strings.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= strs.length <= 200`\n  * `0 <= strs[i].length <= 200`\n  * `strs[i]` consists of only lowercase English letters if it is non-empty.",
+  "question": "Write a function to find the longest common prefix string amongst an array of strings.\n\nIf there is no common prefix, return an empty string `\"\"`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** strs = [\"flower\",\"flow\",\"flight\"]\n    **Output:** \"fl\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"dog\",\"racecar\",\"car\"]\n    **Output:** \"\"\n    **Explanation:** There is no common prefix among the input strings.",
+  "constraints": "**Constraints:**\n\n  * `1 <= strs.length <= 200`\n  * `0 <= strs[i].length <= 200`\n  * `strs[i]` consists of only lowercase English letters if it is non-empty.",
+  "topics": ["Array", "String", "Trie"],
+  "total_accepted": 5535552,
+  "total_submissions": 11746281,
+  "acceptance_rate": "47.1%",
+  "similar_questions": [
+    {
+      "title": "Smallest Missing Integer Greater Than Sequential Prefix Sum",
+      "slug": "smallest-missing-integer-greater-than-sequential-prefix-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/smallest-missing-integer-greater-than-sequential-prefix-sum/"
+    },
+    {
+      "title": "Find the Length of the Longest Common Prefix",
+      "slug": "find-the-length-of-the-longest-common-prefix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-length-of-the-longest-common-prefix/"
+    },
+    {
+      "title": "Longest Common Suffix Queries",
+      "slug": "longest-common-suffix-queries",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-common-suffix-queries/"
+    },
+    {
+      "title": "Longest Common Prefix After at Most One Removal",
+      "slug": "longest-common-prefix-after-at-most-one-removal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-common-prefix-after-at-most-one-removal/"
+    }
+  ],
+  "hints": []
+}

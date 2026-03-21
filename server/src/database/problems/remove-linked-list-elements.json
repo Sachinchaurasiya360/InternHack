@@ -1,0 +1,55 @@
+{
+  "id": "203",
+  "title": "Remove Linked List Elements",
+  "slug": "remove-linked-list-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a linked list and an integer <code>val</code>, remove all the nodes of the linked list that has <code>Node.val == val</code>, and return <em>the new head</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/06/removelinked-list.jpg\" style=\"width: 500px; height: 142px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2,6,3,4,5,6], val = 6\n<strong>Output:</strong> [1,2,3,4,5]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> head = [], val = 1\n<strong>Output:</strong> []\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> head = [7,7,7,7], val = 7\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is in the range <code>[0, 10<sup>4</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 50</code></li>\n\t<li><code>0 &lt;= val &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "Given the `head` of a linked list and an integer `val`, remove all the nodes of the linked list that has `Node.val == val`, and return _the new head_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/06/removelinked-list.jpg)\n    \n    \n    **Input:** head = [1,2,6,3,4,5,6], val = 6\n    **Output:** [1,2,3,4,5]\n    \n\n**Example 2:**\n    \n    \n    **Input:** head = [], val = 1\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** head = [7,7,7,7], val = 7\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 104]`.\n  * `1 <= Node.val <= 50`\n  * `0 <= val <= 50`",
+  "question": "Given the `head` of a linked list and an integer `val`, remove all the nodes of the linked list that has `Node.val == val`, and return _the new head_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/06/removelinked-list.jpg)\n    \n    \n    **Input:** head = [1,2,6,3,4,5,6], val = 6\n    **Output:** [1,2,3,4,5]\n    \n\n**Example 2:**\n    \n    \n    **Input:** head = [], val = 1\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** head = [7,7,7,7], val = 7\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 104]`.\n  * `1 <= Node.val <= 50`\n  * `0 <= val <= 50`",
+  "topics": ["Linked List", "Recursion"],
+  "total_accepted": 1557854,
+  "total_submissions": 2889878,
+  "acceptance_rate": "53.9%",
+  "similar_questions": [
+    {
+      "title": "Remove Element",
+      "slug": "remove-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-element/"
+    },
+    {
+      "title": "Delete Node in a Linked List",
+      "slug": "delete-node-in-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-node-in-a-linked-list/"
+    },
+    {
+      "title": "Delete the Middle Node of a Linked List",
+      "slug": "delete-the-middle-node-of-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/"
+    },
+    {
+      "title": "Delete Nodes From Linked List Present in Array",
+      "slug": "delete-nodes-from-linked-list-present-in-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-nodes-from-linked-list-present-in-array/"
+    },
+    {
+      "title": "Convert Doubly Linked List to Array I",
+      "slug": "convert-doubly-linked-list-to-array-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/convert-doubly-linked-list-to-array-i/"
+    },
+    {
+      "title": "Convert Doubly Linked List to Array II",
+      "slug": "convert-doubly-linked-list-to-array-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/convert-doubly-linked-list-to-array-ii/"
+    }
+  ],
+  "hints": []
+}

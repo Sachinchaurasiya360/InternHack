@@ -1,0 +1,25 @@
+{
+  "id": "836",
+  "title": "Rectangle Overlap",
+  "slug": "rectangle-overlap",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>An axis-aligned rectangle is represented as a list <code>[x1, y1, x2, y2]</code>, where <code>(x1, y1)</code> is the coordinate of its bottom-left corner, and <code>(x2, y2)</code> is the coordinate of its top-right corner. Its top and bottom edges are parallel to the X-axis, and its left and right edges are parallel to the Y-axis.</p>\n\n<p>Two rectangles overlap if the area of their intersection is <strong>positive</strong>. To be clear, two rectangles that only touch at the corner or edges do not overlap.</p>\n\n<p>Given two axis-aligned rectangles <code>rec1</code> and <code>rec2</code>, return <code>true</code><em> if they overlap, otherwise return </em><code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> rec1 = [0,0,2,2], rec2 = [1,1,3,3]\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> rec1 = [0,0,1,1], rec2 = [1,0,2,1]\n<strong>Output:</strong> false\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> rec1 = [0,0,1,1], rec2 = [2,2,3,3]\n<strong>Output:</strong> false\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>rec1.length == 4</code></li>\n\t<li><code>rec2.length == 4</code></li>\n\t<li><code>-10<sup>9</sup> &lt;= rec1[i], rec2[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>rec1</code> and <code>rec2</code> represent a valid rectangle with a non-zero area.</li>\n</ul>\n",
+  "content_markdown": "An axis-aligned rectangle is represented as a list `[x1, y1, x2, y2]`, where `(x1, y1)` is the coordinate of its bottom-left corner, and `(x2, y2)` is the coordinate of its top-right corner. Its top and bottom edges are parallel to the X-axis, and its left and right edges are parallel to the Y-axis.\n\nTwo rectangles overlap if the area of their intersection is **positive**. To be clear, two rectangles that only touch at the corner or edges do not overlap.\n\nGiven two axis-aligned rectangles `rec1` and `rec2`, return `true` _if they overlap, otherwise return_`false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** rec1 = [0,0,2,2], rec2 = [1,1,3,3]\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** rec1 = [0,0,1,1], rec2 = [1,0,2,1]\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** rec1 = [0,0,1,1], rec2 = [2,2,3,3]\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `rec1.length == 4`\n  * `rec2.length == 4`\n  * `-109 <= rec1[i], rec2[i] <= 109`\n  * `rec1` and `rec2` represent a valid rectangle with a non-zero area.",
+  "question": "An axis-aligned rectangle is represented as a list `[x1, y1, x2, y2]`, where `(x1, y1)` is the coordinate of its bottom-left corner, and `(x2, y2)` is the coordinate of its top-right corner. Its top and bottom edges are parallel to the X-axis, and its left and right edges are parallel to the Y-axis.\n\nTwo rectangles overlap if the area of their intersection is **positive**. To be clear, two rectangles that only touch at the corner or edges do not overlap.\n\nGiven two axis-aligned rectangles `rec1` and `rec2`, return `true` _if they overlap, otherwise return_`false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** rec1 = [0,0,2,2], rec2 = [1,1,3,3]\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** rec1 = [0,0,1,1], rec2 = [1,0,2,1]\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** rec1 = [0,0,1,1], rec2 = [2,2,3,3]\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `rec1.length == 4`\n  * `rec2.length == 4`\n  * `-109 <= rec1[i], rec2[i] <= 109`\n  * `rec1` and `rec2` represent a valid rectangle with a non-zero area.",
+  "topics": ["Math", "Geometry"],
+  "total_accepted": 180764,
+  "total_submissions": 388825,
+  "acceptance_rate": "46.5%",
+  "similar_questions": [
+    {
+      "title": "Rectangle Area",
+      "slug": "rectangle-area",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rectangle-area/"
+    }
+  ],
+  "hints": []
+}

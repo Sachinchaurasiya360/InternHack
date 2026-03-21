@@ -1,0 +1,28 @@
+{
+  "id": "1931",
+  "title": "Painting a Grid With Three Different Colors",
+  "slug": "painting-a-grid-with-three-different-colors",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integers <code>m</code> and <code>n</code>. Consider an <code>m x n</code> grid where each cell is initially white. You can paint each cell <strong>red</strong>, <strong>green</strong>, or <strong>blue</strong>. All cells <strong>must</strong> be painted.</p>\n\n<p>Return<em> the number of ways to color the grid with <strong>no two adjacent cells having the same color</strong></em>. Since the answer can be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/22/colorthegrid.png\" style=\"width: 200px; height: 50px;\" />\n<pre>\n<strong>Input:</strong> m = 1, n = 1\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The three possible colorings are shown in the image above.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/22/copy-of-colorthegrid.png\" style=\"width: 321px; height: 121px;\" />\n<pre>\n<strong>Input:</strong> m = 1, n = 2\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The six possible colorings are shown in the image above.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> m = 5, n = 5\n<strong>Output:</strong> 580986\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= m &lt;= 5</code></li>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given two integers `m` and `n`. Consider an `m x n` grid where each cell is initially white. You can paint each cell **red** , **green** , or **blue**. All cells **must** be painted.\n\nReturn _the number of ways to color the grid with**no two adjacent cells having the same color**_. Since the answer can be very large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/06/22/colorthegrid.png)\n    \n    \n    **Input:** m = 1, n = 1\n    **Output:** 3\n    **Explanation:** The three possible colorings are shown in the image above.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/06/22/copy-of-colorthegrid.png)\n    \n    \n    **Input:** m = 1, n = 2\n    **Output:** 6\n    **Explanation:** The six possible colorings are shown in the image above.\n    \n\n**Example 3:**\n    \n    \n    **Input:** m = 5, n = 5\n    **Output:** 580986\n    \n\n \n\n**Constraints:**\n\n  * `1 <= m <= 5`\n  * `1 <= n <= 1000`",
+  "question": "You are given two integers `m` and `n`. Consider an `m x n` grid where each cell is initially white. You can paint each cell **red** , **green** , or **blue**. All cells **must** be painted.\n\nReturn _the number of ways to color the grid with**no two adjacent cells having the same color**_. Since the answer can be very large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/06/22/colorthegrid.png)\n    \n    \n    **Input:** m = 1, n = 1\n    **Output:** 3\n    **Explanation:** The three possible colorings are shown in the image above.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/06/22/copy-of-colorthegrid.png)\n    \n    \n    **Input:** m = 1, n = 2\n    **Output:** 6\n    **Explanation:** The six possible colorings are shown in the image above.\n    \n\n**Example 3:**\n    \n    \n    **Input:** m = 5, n = 5\n    **Output:** 580986",
+  "constraints": "**Constraints:**\n\n  * `1 <= m <= 5`\n  * `1 <= n <= 1000`",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 75372,
+  "total_submissions": 97546,
+  "acceptance_rate": "77.3%",
+  "similar_questions": [
+    {
+      "title": "Number of Ways to Paint N × 3 Grid",
+      "slug": "number-of-ways-to-paint-n-3-grid",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-ways-to-paint-n-3-grid/"
+    }
+  ],
+  "hints": [
+    "Represent each colored column by a bitmask based on each cell color.",
+    "Use bitmasks DP with state (currentCell, prevColumn)."
+  ]
+}

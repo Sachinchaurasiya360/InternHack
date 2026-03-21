@@ -1,0 +1,41 @@
+{
+  "id": "2403",
+  "title": "Minimum Time to Kill All Monsters",
+  "slug": "minimum-time-to-kill-all-monsters",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 1853,
+  "total_submissions": 3239,
+  "acceptance_rate": "57.2%",
+  "similar_questions": [
+    {
+      "title": "Closest Room",
+      "slug": "closest-room",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/closest-room/"
+    },
+    {
+      "title": "Eliminate Maximum Number of Monsters",
+      "slug": "eliminate-maximum-number-of-monsters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/eliminate-maximum-number-of-monsters/"
+    },
+    {
+      "title": "Number of Ways to Build Sturdy Brick Wall",
+      "slug": "number-of-ways-to-build-sturdy-brick-wall",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-build-sturdy-brick-wall/"
+    }
+  ],
+  "hints": [
+    "Each monster can only have two states. They are either alive or dead.",
+    "We can use bitmasks to represent every possible combination of alive and dead monsters.",
+    "Let dp[mask] represent the minimum number of days needed to reach the state mask."
+  ]
+}

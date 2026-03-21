@@ -1,0 +1,27 @@
+{
+  "id": "3184",
+  "title": "Count Pairs That Form a Complete Day I",
+  "slug": "count-pairs-that-form-a-complete-day-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>hours</code> representing times in <strong>hours</strong>, return an integer denoting the number of pairs <code>i</code>, <code>j</code> where <code>i &lt; j</code> and <code>hours[i] + hours[j]</code> forms a <strong>complete day</strong>.</p>\n\n<p>A <strong>complete day</strong> is defined as a time duration that is an <strong>exact</strong> <strong>multiple</strong> of 24 hours.</p>\n\n<p>For example, 1 day is 24 hours, 2 days is 48 hours, 3 days is 72 hours, and so on.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">hours = [12,12,30,24,24]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The pairs of indices that form a complete day are <code>(0, 1)</code> and <code>(3, 4)</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">hours = [72,48,24,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The pairs of indices that form a complete day are <code>(0, 1)</code>, <code>(0, 2)</code>, and <code>(1, 2)</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= hours.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= hours[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `hours` representing times in **hours** , return an integer denoting the number of pairs `i`, `j` where `i < j` and `hours[i] + hours[j]` forms a **complete day**.\n\nA **complete day** is defined as a time duration that is an **exact** **multiple** of 24 hours.\n\nFor example, 1 day is 24 hours, 2 days is 48 hours, 3 days is 72 hours, and so on.\n\n \n\n**Example 1:**\n\n**Input:** hours = [12,12,30,24,24]\n\n**Output:** 2\n\n**Explanation:**\n\nThe pairs of indices that form a complete day are `(0, 1)` and `(3, 4)`.\n\n**Example 2:**\n\n**Input:** hours = [72,48,24,3]\n\n**Output:** 3\n\n**Explanation:**\n\nThe pairs of indices that form a complete day are `(0, 1)`, `(0, 2)`, and `(1, 2)`.\n\n \n\n**Constraints:**\n\n  * `1 <= hours.length <= 100`\n  * `1 <= hours[i] <= 109`",
+  "question": "Given an integer array `hours` representing times in **hours** , return an integer denoting the number of pairs `i`, `j` where `i < j` and `hours[i] + hours[j]` forms a **complete day**.\n\nA **complete day** is defined as a time duration that is an **exact** **multiple** of 24 hours.\n\nFor example, 1 day is 24 hours, 2 days is 48 hours, 3 days is 72 hours, and so on.",
+  "examples": "**Example 1:**\n\n**Input:** hours = [12,12,30,24,24]\n\n**Output:** 2\n\n**Explanation:**\n\nThe pairs of indices that form a complete day are `(0, 1)` and `(3, 4)`.\n\n**Example 2:**\n\n**Input:** hours = [72,48,24,3]\n\n**Output:** 3\n\n**Explanation:**\n\nThe pairs of indices that form a complete day are `(0, 1)`, `(0, 2)`, and `(1, 2)`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= hours.length <= 100`\n  * `1 <= hours[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 74860,
+  "total_submissions": 95941,
+  "acceptance_rate": "78.0%",
+  "similar_questions": [
+    {
+      "title": "Check If Array Pairs Are Divisible by k",
+      "slug": "check-if-array-pairs-are-divisible-by-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-array-pairs-are-divisible-by-k/"
+    }
+  ],
+  "hints": [
+    "Brute force all pairs <code>(i, j)</code> and check if they form a valid complete day. It is considered a complete day if <code>(hours[i] + hours[j]) % 24 == 0</code>."
+  ]
+}

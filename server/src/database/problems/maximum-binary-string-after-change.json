@@ -1,0 +1,27 @@
+{
+  "id": "1702",
+  "title": "Maximum Binary String After Change",
+  "slug": "maximum-binary-string-after-change",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a binary string <code>binary</code> consisting of only <code>0</code>&#39;s or <code>1</code>&#39;s. You can apply each of the following operations any number of times:</p>\n\n<ul>\n\t<li>Operation 1: If the number contains the substring <code>&quot;00&quot;</code>, you can replace it with <code>&quot;10&quot;</code>.\n\n\t<ul>\n\t\t<li>For example, <code>&quot;<u>00</u>010&quot; -&gt; &quot;<u>10</u>010</code>&quot;</li>\n\t</ul>\n\t</li>\n\t<li>Operation 2: If the number contains the substring <code>&quot;10&quot;</code>, you can replace it with <code>&quot;01&quot;</code>.\n\t<ul>\n\t\t<li>For example, <code>&quot;000<u>10</u>&quot; -&gt; &quot;000<u>01</u>&quot;</code></li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><em>Return the <strong>maximum binary string</strong> you can obtain after any number of operations. Binary string <code>x</code> is greater than binary string <code>y</code> if <code>x</code>&#39;s decimal representation is greater than <code>y</code>&#39;s decimal representation.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> binary = &quot;000110&quot;\n<strong>Output:</strong> &quot;111011&quot;\n<strong>Explanation:</strong> A valid transformation sequence can be:\n&quot;0001<u>10</u>&quot; -&gt; &quot;0001<u>01</u>&quot; \n&quot;<u>00</u>0101&quot; -&gt; &quot;<u>10</u>0101&quot; \n&quot;1<u>00</u>101&quot; -&gt; &quot;1<u>10</u>101&quot; \n&quot;110<u>10</u>1&quot; -&gt; &quot;110<u>01</u>1&quot; \n&quot;11<u>00</u>11&quot; -&gt; &quot;11<u>10</u>11&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> binary = &quot;01&quot;\n<strong>Output:</strong> &quot;01&quot;\n<strong>Explanation:</strong>&nbsp;&quot;01&quot; cannot be transformed any further.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= binary.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>binary</code> consist of <code>&#39;0&#39;</code> and <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a binary string `binary` consisting of only `0`'s or `1`'s. You can apply each of the following operations any number of times:\n\n  * Operation 1: If the number contains the substring `\"00\"`, you can replace it with `\"10\"`. \n    * For example, `\"_00_ 010\" -> \"_10_ 010`\"\n  * Operation 2: If the number contains the substring `\"10\"`, you can replace it with `\"01\"`. \n    * For example, `\"000 _10_ \" -> \"000 _01_ \"`\n\n\n\n_Return the**maximum binary string** you can obtain after any number of operations. Binary string `x` is greater than binary string `y` if `x`'s decimal representation is greater than `y`'s decimal representation._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** binary = \"000110\"\n    **Output:** \"111011\"\n    **Explanation:** A valid transformation sequence can be:\n    \"0001 _10_ \" -> \"0001 _01_ \" \n    \"_00_ 0101\" -> \"_10_ 0101\" \n    \"1 _00_ 101\" -> \"1 _10_ 101\" \n    \"110 _10_ 1\" -> \"110 _01_ 1\" \n    \"11 _00_ 11\" -> \"11 _10_ 11\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** binary = \"01\"\n    **Output:** \"01\"\n    **Explanation:**  \"01\" cannot be transformed any further.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= binary.length <= 105`\n  * `binary` consist of `'0'` and `'1'`.",
+  "question": "You are given a binary string `binary` consisting of only `0`'s or `1`'s. You can apply each of the following operations any number of times:\n\n  * Operation 1: If the number contains the substring `\"00\"`, you can replace it with `\"10\"`. \n    * For example, `\"_00_ 010\" -> \"_10_ 010`\"\n  * Operation 2: If the number contains the substring `\"10\"`, you can replace it with `\"01\"`. \n    * For example, `\"000 _10_ \" -> \"000 _01_ \"`\n\n\n\n_Return the**maximum binary string** you can obtain after any number of operations. Binary string `x` is greater than binary string `y` if `x`'s decimal representation is greater than `y`'s decimal representation._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** binary = \"000110\"\n    **Output:** \"111011\"\n    **Explanation:** A valid transformation sequence can be:\n    \"0001 _10_ \" -> \"0001 _01_ \" \n    \"_00_ 0101\" -> \"_10_ 0101\" \n    \"1 _00_ 101\" -> \"1 _10_ 101\" \n    \"110 _10_ 1\" -> \"110 _01_ 1\" \n    \"11 _00_ 11\" -> \"11 _10_ 11\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** binary = \"01\"\n    **Output:** \"01\"\n    **Explanation:**  \"01\" cannot be transformed any further.",
+  "constraints": "**Constraints:**\n\n  * `1 <= binary.length <= 105`\n  * `binary` consist of `'0'` and `'1'`.",
+  "topics": ["String", "Greedy"],
+  "total_accepted": 17687,
+  "total_submissions": 36839,
+  "acceptance_rate": "48.0%",
+  "similar_questions": [
+    {
+      "title": "Longest Binary Subsequence Less Than or Equal to K",
+      "slug": "longest-binary-subsequence-less-than-or-equal-to-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-binary-subsequence-less-than-or-equal-to-k/"
+    }
+  ],
+  "hints": [
+    "Note that with the operations, you can always make the string only contain at most 1 zero."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "1794",
+  "title": "Count Pairs of Equal Substrings With Minimum Difference",
+  "slug": "count-pairs-of-equal-substrings-with-minimum-difference",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Greedy"],
+  "total_accepted": 2457,
+  "total_submissions": 3839,
+  "acceptance_rate": "64.0%",
+  "similar_questions": [],
+  "hints": [
+    "If the chosen substrings are of size larger than 1, then you can remove all but the first character from both substrings, and you'll get equal substrings of size 1, with the same a but less j. Hence, it's always optimal to choose substrings of size 1.",
+    "If you choose a specific letter, then it's optimal to choose its first occurrence in firstString, and its last occurrence in secondString, to minimize j-a."
+  ]
+}

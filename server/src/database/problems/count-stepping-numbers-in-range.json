@@ -1,0 +1,30 @@
+{
+  "id": "2801",
+  "title": "Count Stepping Numbers in Range",
+  "slug": "count-stepping-numbers-in-range",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given two positive integers <code>low</code> and <code>high</code> represented as strings, find the count of <strong>stepping numbers</strong> in the inclusive range <code>[low, high]</code>.</p>\n\n<p>A <strong>stepping number</strong> is an integer such that all of its adjacent digits have an absolute difference of <strong>exactly</strong> <code>1</code>.</p>\n\n<p>Return <em>an integer denoting the count of stepping numbers in the inclusive range</em> <code>[low, high]</code><em>. </em></p>\n\n<p>Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p><strong>Note:</strong> A stepping number should not have a leading zero.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> low = &quot;1&quot;, high = &quot;11&quot;\n<strong>Output:</strong> 10\n<strong>Explanation: </strong>The stepping numbers in the range [1,11] are 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10. There are a total of 10 stepping numbers in the range. Hence, the output is 10.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> low = &quot;90&quot;, high = &quot;101&quot;\n<strong>Output:</strong> 2\n<strong>Explanation: </strong>The stepping numbers in the range [90,101] are 98 and 101. There are a total of 2 stepping numbers in the range. Hence, the output is 2. </pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= int(low) &lt;= int(high) &lt; 10<sup>100</sup></code></li>\n\t<li><code>1 &lt;= low.length, high.length &lt;= 100</code></li>\n\t<li><code>low</code> and <code>high</code> consist of only digits.</li>\n\t<li><code>low</code> and <code>high</code> don&#39;t have any leading zeros.</li>\n</ul>\n",
+  "content_markdown": "Given two positive integers `low` and `high` represented as strings, find the count of **stepping numbers** in the inclusive range `[low, high]`.\n\nA **stepping number** is an integer such that all of its adjacent digits have an absolute difference of **exactly** `1`.\n\nReturn _an integer denoting the count of stepping numbers in the inclusive range_ `[low, high]`_._\n\nSince the answer may be very large, return it **modulo** `109 + 7`.\n\n**Note:** A stepping number should not have a leading zero.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** low = \"1\", high = \"11\"\n    **Output:** 10\n    **Explanation:** The stepping numbers in the range [1,11] are 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10. There are a total of 10 stepping numbers in the range. Hence, the output is 10.\n\n**Example 2:**\n    \n    \n    **Input:** low = \"90\", high = \"101\"\n    **Output:** 2\n    **Explanation:** The stepping numbers in the range [90,101] are 98 and 101. There are a total of 2 stepping numbers in the range. Hence, the output is 2. \n\n \n\n**Constraints:**\n\n  * `1 <= int(low) <= int(high) < 10100`\n  * `1 <= low.length, high.length <= 100`\n  * `low` and `high` consist of only digits.\n  * `low` and `high` don't have any leading zeros.",
+  "question": "Given two positive integers `low` and `high` represented as strings, find the count of **stepping numbers** in the inclusive range `[low, high]`.\n\nA **stepping number** is an integer such that all of its adjacent digits have an absolute difference of **exactly** `1`.\n\nReturn _an integer denoting the count of stepping numbers in the inclusive range_ `[low, high]`_._\n\nSince the answer may be very large, return it **modulo** `109 + 7`.\n\n**Note:** A stepping number should not have a leading zero.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** low = \"1\", high = \"11\"\n    **Output:** 10\n    **Explanation:** The stepping numbers in the range [1,11] are 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10. There are a total of 10 stepping numbers in the range. Hence, the output is 10.\n\n**Example 2:**\n    \n    \n    **Input:** low = \"90\", high = \"101\"\n    **Output:** 2\n    **Explanation:** The stepping numbers in the range [90,101] are 98 and 101. There are a total of 2 stepping numbers in the range. Hence, the output is 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= int(low) <= int(high) < 10100`\n  * `1 <= low.length, high.length <= 100`\n  * `low` and `high` consist of only digits.\n  * `low` and `high` don't have any leading zeros.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 10706,
+  "total_submissions": 38553,
+  "acceptance_rate": "27.8%",
+  "similar_questions": [
+    {
+      "title": "Stepping Numbers",
+      "slug": "stepping-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stepping-numbers/"
+    }
+  ],
+  "hints": [
+    "Calculate the number of stepping numbers in the range [1, high] and subtract the number of stepping numbers in the range [1, low - 1].",
+    "The main problem is calculating the number of stepping numbers in the range [1, x].",
+    "First, calculate the number of stepping numbers shorter than x in length, which can be done using dynamic programming. (dp[i][j] is the number of i-digit stepping numbers ending with digit j).",
+    "Finally, calculate the number of stepping numbers that have the same length as x similarly. However, this time we need to maintain whether the prefix (in string) is smaller than or equal to x in the DP state."
+  ]
+}

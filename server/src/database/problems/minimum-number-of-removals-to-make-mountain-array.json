@@ -1,0 +1,64 @@
+{
+  "id": "1671",
+  "title": "Minimum Number of Removals to Make Mountain Array",
+  "slug": "minimum-number-of-removals-to-make-mountain-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You may recall that an array <code>arr</code> is a <strong>mountain array</strong> if and only if:</p>\n\n<ul>\n\t<li><code>arr.length &gt;= 3</code></li>\n\t<li>There exists some index <code>i</code> (<strong>0-indexed</strong>) with <code>0 &lt; i &lt; arr.length - 1</code> such that:\n\t<ul>\n\t\t<li><code>arr[0] &lt; arr[1] &lt; ... &lt; arr[i - 1] &lt; arr[i]</code></li>\n\t\t<li><code>arr[i] &gt; arr[i + 1] &gt; ... &gt; arr[arr.length - 1]</code></li>\n\t</ul>\n\t</li>\n</ul>\n\n<p>Given an integer array <code>nums</code>​​​, return <em>the <strong>minimum</strong> number of elements to remove to make </em><code>nums<em>​​​</em></code><em> </em><em>a <strong>mountain array</strong>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,1]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The array itself is a mountain array so we do not need to remove any elements.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,1,1,5,6,2,3,1]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> One solution is to remove the elements at indices 0, 1, and 5, making the array nums = [1,5,6,3,1].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li>It is guaranteed that you can make a mountain array out of <code>nums</code>.</li>\n</ul>\n",
+  "content_markdown": "You may recall that an array `arr` is a **mountain array** if and only if:\n\n  * `arr.length >= 3`\n  * There exists some index `i` (**0-indexed**) with `0 < i < arr.length - 1` such that: \n    * `arr[0] < arr[1] < ... < arr[i - 1] < arr[i]`\n    * `arr[i] > arr[i + 1] > ... > arr[arr.length - 1]`\n\n\n\nGiven an integer array `nums`​​​, return _the**minimum** number of elements to remove to make _`nums _​​​_` ___a**mountain array**._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,1]\n    **Output:** 0\n    **Explanation:** The array itself is a mountain array so we do not need to remove any elements.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1,1,5,6,2,3,1]\n    **Output:** 3\n    **Explanation:** One solution is to remove the elements at indices 0, 1, and 5, making the array nums = [1,5,6,3,1].\n    \n\n \n\n**Constraints:**\n\n  * `3 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 109`\n  * It is guaranteed that you can make a mountain array out of `nums`.",
+  "question": "You may recall that an array `arr` is a **mountain array** if and only if:\n\n  * `arr.length >= 3`\n  * There exists some index `i` (**0-indexed**) with `0 < i < arr.length - 1` such that: \n    * `arr[0] < arr[1] < ... < arr[i - 1] < arr[i]`\n    * `arr[i] > arr[i + 1] > ... > arr[arr.length - 1]`\n\n\n\nGiven an integer array `nums`​​​, return _the**minimum** number of elements to remove to make _`nums _​​​_` ___a**mountain array**._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,1]\n    **Output:** 0\n    **Explanation:** The array itself is a mountain array so we do not need to remove any elements.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1,1,5,6,2,3,1]\n    **Output:** 3\n    **Explanation:** One solution is to remove the elements at indices 0, 1, and 5, making the array nums = [1,5,6,3,1].",
+  "constraints": "**Constraints:**\n\n  * `3 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 109`\n  * It is guaranteed that you can make a mountain array out of `nums`.",
+  "topics": ["Array", "Binary Search", "Dynamic Programming", "Greedy"],
+  "total_accepted": 122087,
+  "total_submissions": 222788,
+  "acceptance_rate": "54.8%",
+  "similar_questions": [
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    },
+    {
+      "title": "Longest Mountain in Array",
+      "slug": "longest-mountain-in-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-mountain-in-array/"
+    },
+    {
+      "title": "Peak Index in a Mountain Array",
+      "slug": "peak-index-in-a-mountain-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/peak-index-in-a-mountain-array/"
+    },
+    {
+      "title": "Valid Mountain Array",
+      "slug": "valid-mountain-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-mountain-array/"
+    },
+    {
+      "title": "Find in Mountain Array",
+      "slug": "find-in-mountain-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-in-mountain-array/"
+    },
+    {
+      "title": "Beautiful Towers II",
+      "slug": "beautiful-towers-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/beautiful-towers-ii/"
+    },
+    {
+      "title": "Beautiful Towers I",
+      "slug": "beautiful-towers-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/beautiful-towers-i/"
+    }
+  ],
+  "hints": [
+    "Think the opposite direction instead of minimum elements to remove the maximum mountain subsequence",
+    "Think of LIS it's kind of close"
+  ]
+}

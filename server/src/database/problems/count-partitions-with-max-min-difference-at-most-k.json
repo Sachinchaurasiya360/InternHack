@@ -1,0 +1,36 @@
+{
+  "id": "3578",
+  "title": "Count Partitions With Max-Min Difference at Most K",
+  "slug": "count-partitions-with-max-min-difference-at-most-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and an integer <code>k</code>. Your task is to partition <code>nums</code> into one or more <strong>non-empty</strong> contiguous segments such that in each segment, the difference between its <strong>maximum</strong> and <strong>minimum</strong> elements is <strong>at most</strong> <code>k</code>.</p>\n\n<p>Return the total number of ways to partition <code>nums</code> under this condition.</p>\n\n<p>Since the answer may be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [9,4,1,3,7], k = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There are 6 valid partitions where the difference between the maximum and minimum elements in each segment is at most <code>k = 4</code>:</p>\n\n<ul>\n\t<li><code>[[9], [4], [1], [3], [7]]</code></li>\n\t<li><code>[[9], [4], [1], [3, 7]]</code></li>\n\t<li><code>[[9], [4], [1, 3], [7]]</code></li>\n\t<li><code>[[9], [4, 1], [3], [7]]</code></li>\n\t<li><code>[[9], [4, 1], [3, 7]]</code></li>\n\t<li><code>[[9], [4, 1, 3], [7]]</code></li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [3,3,4], k = 0</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There are 2 valid partitions that satisfy the given conditions:</p>\n\n<ul>\n\t<li><code>[[3], [3], [4]]</code></li>\n\t<li><code>[[3, 3], [4]]</code></li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>0 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and an integer `k`. Your task is to partition `nums` into one or more **non-empty** contiguous segments such that in each segment, the difference between its **maximum** and **minimum** elements is **at most** `k`.\n\nReturn the total number of ways to partition `nums` under this condition.\n\nSince the answer may be too large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [9,4,1,3,7], k = 4\n\n**Output:** 6\n\n**Explanation:**\n\nThere are 6 valid partitions where the difference between the maximum and minimum elements in each segment is at most `k = 4`:\n\n  * `[[9], [4], [1], [3], [7]]`\n  * `[[9], [4], [1], [3, 7]]`\n  * `[[9], [4], [1, 3], [7]]`\n  * `[[9], [4, 1], [3], [7]]`\n  * `[[9], [4, 1], [3, 7]]`\n  * `[[9], [4, 1, 3], [7]]`\n\n\n\n**Example 2:**\n\n**Input:** nums = [3,3,4], k = 0\n\n**Output:** 2\n\n**Explanation:**\n\nThere are 2 valid partitions that satisfy the given conditions:\n\n  * `[[3], [3], [4]]`\n  * `[[3, 3], [4]]`\n\n\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 5 * 104`\n  * `1 <= nums[i] <= 109`\n  * `0 <= k <= 109`",
+  "question": "You are given an integer array `nums` and an integer `k`. Your task is to partition `nums` into one or more **non-empty** contiguous segments such that in each segment, the difference between its **maximum** and **minimum** elements is **at most** `k`.\n\nReturn the total number of ways to partition `nums` under this condition.\n\nSince the answer may be too large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [9,4,1,3,7], k = 4\n\n**Output:** 6\n\n**Explanation:**\n\nThere are 6 valid partitions where the difference between the maximum and minimum elements in each segment is at most `k = 4`:\n\n  * `[[9], [4], [1], [3], [7]]`\n  * `[[9], [4], [1], [3, 7]]`\n  * `[[9], [4], [1, 3], [7]]`\n  * `[[9], [4, 1], [3], [7]]`\n  * `[[9], [4, 1], [3, 7]]`\n  * `[[9], [4, 1, 3], [7]]`\n\n\n\n**Example 2:**\n\n**Input:** nums = [3,3,4], k = 0\n\n**Output:** 2\n\n**Explanation:**\n\nThere are 2 valid partitions that satisfy the given conditions:\n\n  * `[[3], [3], [4]]`\n  * `[[3, 3], [4]]`",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 5 * 104`\n  * `1 <= nums[i] <= 109`\n  * `0 <= k <= 109`",
+  "topics": [
+    "Array",
+    "Dynamic Programming",
+    "Queue",
+    "Sliding Window",
+    "Prefix Sum",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 64728,
+  "total_submissions": 110024,
+  "acceptance_rate": "58.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Great Partitions",
+      "slug": "number-of-great-partitions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-great-partitions/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming.",
+    "Let <code>dp[idx]</code> be the count of ways to partition the array with the last partition ending at index <code>idx</code>.",
+    "Try using a sliding window; we can track the minimum and maximum in the window using deques."
+  ]
+}

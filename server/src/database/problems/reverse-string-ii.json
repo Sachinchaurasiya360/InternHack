@@ -1,0 +1,37 @@
+{
+  "id": "541",
+  "title": "Reverse String II",
+  "slug": "reverse-string-ii",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> and an integer <code>k</code>, reverse the first <code>k</code> characters for every <code>2k</code> characters counting from the start of the string.</p>\n\n<p>If there are fewer than <code>k</code> characters left, reverse all of them. If there are less than <code>2k</code> but greater than or equal to <code>k</code> characters, then reverse the first <code>k</code> characters and leave the other as original.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"abcdefg\", k = 2\n<strong>Output:</strong> \"bacdfeg\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"abcd\", k = 2\n<strong>Output:</strong> \"bacd\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of only lowercase English letters.</li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a string `s` and an integer `k`, reverse the first `k` characters for every `2k` characters counting from the start of the string.\n\nIf there are fewer than `k` characters left, reverse all of them. If there are less than `2k` but greater than or equal to `k` characters, then reverse the first `k` characters and leave the other as original.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abcdefg\", k = 2\n    **Output:** \"bacdfeg\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\", k = 2\n    **Output:** \"bacd\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of only lowercase English letters.\n  * `1 <= k <= 104`",
+  "question": "Given a string `s` and an integer `k`, reverse the first `k` characters for every `2k` characters counting from the start of the string.\n\nIf there are fewer than `k` characters left, reverse all of them. If there are less than `2k` but greater than or equal to `k` characters, then reverse the first `k` characters and leave the other as original.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abcdefg\", k = 2\n    **Output:** \"bacdfeg\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\", k = 2\n    **Output:** \"bacd\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of only lowercase English letters.\n  * `1 <= k <= 104`",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 372505,
+  "total_submissions": 697804,
+  "acceptance_rate": "53.4%",
+  "similar_questions": [
+    {
+      "title": "Reverse String",
+      "slug": "reverse-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-string/"
+    },
+    {
+      "title": "Reverse Words in a String III",
+      "slug": "reverse-words-in-a-string-iii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-words-in-a-string-iii/"
+    },
+    {
+      "title": "Faulty Keyboard",
+      "slug": "faulty-keyboard",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/faulty-keyboard/"
+    }
+  ],
+  "hints": []
+}

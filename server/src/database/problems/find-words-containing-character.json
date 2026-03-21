@@ -1,0 +1,25 @@
+{
+  "id": "2942",
+  "title": "Find Words Containing Character",
+  "slug": "find-words-containing-character",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array of strings <code>words</code> and a character <code>x</code>.</p>\n\n<p>Return <em>an <strong>array of indices</strong> representing the words that contain the character </em><code>x</code>.</p>\n\n<p><strong>Note</strong> that the returned array may be in <strong>any</strong> order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;leet&quot;,&quot;code&quot;], x = &quot;e&quot;\n<strong>Output:</strong> [0,1]\n<strong>Explanation:</strong> &quot;e&quot; occurs in both words: &quot;l<strong><u>ee</u></strong>t&quot;, and &quot;cod<u><strong>e</strong></u>&quot;. Hence, we return indices 0 and 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;abc&quot;,&quot;bcd&quot;,&quot;aaaa&quot;,&quot;cbc&quot;], x = &quot;a&quot;\n<strong>Output:</strong> [0,2]\n<strong>Explanation:</strong> &quot;a&quot; occurs in &quot;<strong><u>a</u></strong>bc&quot;, and &quot;<u><strong>aaaa</strong></u>&quot;. Hence, we return indices 0 and 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;abc&quot;,&quot;bcd&quot;,&quot;aaaa&quot;,&quot;cbc&quot;], x = &quot;z&quot;\n<strong>Output:</strong> []\n<strong>Explanation:</strong> &quot;z&quot; does not occur in any of the words. Hence, we return an empty array.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 50</code></li>\n\t<li><code>x</code> is a lowercase English letter.</li>\n\t<li><code>words[i]</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array of strings `words` and a character `x`.\n\nReturn _an**array of indices** representing the words that contain the character _`x`.\n\n**Note** that the returned array may be in **any** order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"leet\",\"code\"], x = \"e\"\n    **Output:** [0,1]\n    **Explanation:** \"e\" occurs in both words: \"l** _ee_** t\", and \"cod _**e**_ \". Hence, we return indices 0 and 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"abc\",\"bcd\",\"aaaa\",\"cbc\"], x = \"a\"\n    **Output:** [0,2]\n    **Explanation:** \"a\" occurs in \"**_a_** bc\", and \"_**aaaa**_ \". Hence, we return indices 0 and 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** words = [\"abc\",\"bcd\",\"aaaa\",\"cbc\"], x = \"z\"\n    **Output:** []\n    **Explanation:** \"z\" does not occur in any of the words. Hence, we return an empty array.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 50`\n  * `1 <= words[i].length <= 50`\n  * `x` is a lowercase English letter.\n  * `words[i]` consists only of lowercase English letters.",
+  "question": "You are given a **0-indexed** array of strings `words` and a character `x`.\n\nReturn _an**array of indices** representing the words that contain the character _`x`.\n\n**Note** that the returned array may be in **any** order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"leet\",\"code\"], x = \"e\"\n    **Output:** [0,1]\n    **Explanation:** \"e\" occurs in both words: \"l** _ee_** t\", and \"cod _**e**_ \". Hence, we return indices 0 and 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"abc\",\"bcd\",\"aaaa\",\"cbc\"], x = \"a\"\n    **Output:** [0,2]\n    **Explanation:** \"a\" occurs in \"**_a_** bc\", and \"_**aaaa**_ \". Hence, we return indices 0 and 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** words = [\"abc\",\"bcd\",\"aaaa\",\"cbc\"], x = \"z\"\n    **Output:** []\n    **Explanation:** \"z\" does not occur in any of the words. Hence, we return an empty array.",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 50`\n  * `1 <= words[i].length <= 50`\n  * `x` is a lowercase English letter.\n  * `words[i]` consists only of lowercase English letters.",
+  "topics": ["Array", "String"],
+  "total_accepted": 385297,
+  "total_submissions": 426166,
+  "acceptance_rate": "90.4%",
+  "similar_questions": [
+    {
+      "title": "Find Target Indices After Sorting Array",
+      "slug": "find-target-indices-after-sorting-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-target-indices-after-sorting-array/"
+    }
+  ],
+  "hints": ["Use two nested loops."]
+}

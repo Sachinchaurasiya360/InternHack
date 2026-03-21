@@ -305,27 +305,36 @@ export default function EmailCampaignTab() {
               </div>
             )}
 
-            {chatHistory.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+            {chatHistory.map((msg, i) => {
+              const text = (
+                msg.content
+                  .replace(/<email_subject>[\s\S]*?<\/email_subject>/g, "")
+                  .replace(/<email_body>[\s\S]*?<\/email_body>/g, "")
+                  .trim() ||
+                "I've generated an email template for you! You can proceed to the next step."
+              );
+              const parts = text.split(/(\*\*[^*]+\*\*)/g);
+              return (
                 <div
-                  className={`max-w-[80%] rounded-xl px-4 py-2.5 text-sm whitespace-pre-wrap ${
-                    msg.role === "user"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-                  }`}
+                  key={i}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {/* Strip template tags for display */}
-                  {msg.content
-                    .replace(/<email_subject>[\s\S]*?<\/email_subject>/g, "")
-                    .replace(/<email_body>[\s\S]*?<\/email_body>/g, "")
-                    .trim() ||
-                    "I've generated an email template for you! You can proceed to the next step."}
+                  <div
+                    className={`max-w-[80%] rounded-xl px-4 py-2.5 text-sm whitespace-pre-wrap ${
+                      msg.role === "user"
+                        ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                    }`}
+                  >
+                    {parts.map((part, j) =>
+                      part.startsWith("**") && part.endsWith("**")
+                        ? <strong key={j}>{part.slice(2, -2)}</strong>
+                        : part
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {chatMutation.isPending && (
               <div className="flex justify-start">

@@ -1,0 +1,21 @@
+{
+  "id": "3423",
+  "title": "Maximum Difference Between Adjacent Elements in a Circular Array",
+  "slug": "maximum-difference-between-adjacent-elements-in-a-circular-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>circular</strong> array <code>nums</code>, find the <b>maximum</b> absolute difference between adjacent elements.</p>\n\n<p><strong>Note</strong>: In a circular array, the first and last elements are adjacent.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Because <code>nums</code> is circular, <code>nums[0]</code> and <code>nums[2]</code> are adjacent. They have the maximum absolute difference of <code>|4 - 1| = 3</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [-5,-10,-5]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The adjacent elements <code>nums[0]</code> and <code>nums[1]</code> have the maximum absolute difference of <code>|-5 - (-10)| = 5</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>-100 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given a **circular** array `nums`, find the **maximum** absolute difference between adjacent elements.\n\n**Note** : In a circular array, the first and last elements are adjacent.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,4]\n\n**Output:** 3\n\n**Explanation:**\n\nBecause `nums` is circular, `nums[0]` and `nums[2]` are adjacent. They have the maximum absolute difference of `|4 - 1| = 3`.\n\n**Example 2:**\n\n**Input:** nums = [-5,-10,-5]\n\n**Output:** 5\n\n**Explanation:**\n\nThe adjacent elements `nums[0]` and `nums[1]` have the maximum absolute difference of `|-5 - (-10)| = 5`.\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `-100 <= nums[i] <= 100`",
+  "question": "Given a **circular** array `nums`, find the **maximum** absolute difference between adjacent elements.\n\n**Note** : In a circular array, the first and last elements are adjacent.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,4]\n\n**Output:** 3\n\n**Explanation:**\n\nBecause `nums` is circular, `nums[0]` and `nums[2]` are adjacent. They have the maximum absolute difference of `|4 - 1| = 3`.\n\n**Example 2:**\n\n**Input:** nums = [-5,-10,-5]\n\n**Output:** 5\n\n**Explanation:**\n\nThe adjacent elements `nums[0]` and `nums[1]` have the maximum absolute difference of `|-5 - (-10)| = 5`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `-100 <= nums[i] <= 100`",
+  "topics": ["Array"],
+  "total_accepted": 166706,
+  "total_submissions": 220237,
+  "acceptance_rate": "75.7%",
+  "similar_questions": [],
+  "hints": [
+    "Traverse from the second element to the last element and check the difference of every adjacent pair.",
+    "The edge case is to check the difference between the first and last elements."
+  ]
+}

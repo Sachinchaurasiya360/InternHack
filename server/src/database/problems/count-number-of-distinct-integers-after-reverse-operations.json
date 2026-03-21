@@ -1,0 +1,28 @@
+{
+  "id": "2442",
+  "title": "Count Number of Distinct Integers After Reverse Operations",
+  "slug": "count-number-of-distinct-integers-after-reverse-operations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> consisting of <strong>positive</strong> integers.</p>\n\n<p>You have to take each integer in the array, <strong>reverse its digits</strong>, and add it to the end of the array. You should apply this operation to the original integers in <code>nums</code>.</p>\n\n<p>Return <em>the number of <strong>distinct</strong> integers in the final array</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,13,10,12,31]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> After including the reverse of each number, the resulting array is [1,13,10,12,31,<u>1,31,1,21,13</u>].\nThe reversed integers that were added to the end of the array are underlined. Note that for the integer 10, after reversing it, it becomes 01 which is just 1.\nThe number of distinct integers in this array is 6 (The numbers 1, 10, 12, 13, 21, and 31).</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,2,2]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> After including the reverse of each number, the resulting array is [2,2,2,<u>2,2,2</u>].\nThe number of distinct integers in this array is 1 (The number 2).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` consisting of **positive** integers.\n\nYou have to take each integer in the array, **reverse its digits** , and add it to the end of the array. You should apply this operation to the original integers in `nums`.\n\nReturn _the number of**distinct** integers in the final array_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,13,10,12,31]\n    **Output:** 6\n    **Explanation:** After including the reverse of each number, the resulting array is [1,13,10,12,31,_1,31,1,21,13_].\n    The reversed integers that were added to the end of the array are underlined. Note that for the integer 10, after reversing it, it becomes 01 which is just 1.\n    The number of distinct integers in this array is 6 (The numbers 1, 10, 12, 13, 21, and 31).\n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,2]\n    **Output:** 1\n    **Explanation:** After including the reverse of each number, the resulting array is [2,2,2,_2,2,2_].\n    The number of distinct integers in this array is 1 (The number 2).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 106`",
+  "question": "You are given an array `nums` consisting of **positive** integers.\n\nYou have to take each integer in the array, **reverse its digits** , and add it to the end of the array. You should apply this operation to the original integers in `nums`.\n\nReturn _the number of**distinct** integers in the final array_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,13,10,12,31]\n    **Output:** 6\n    **Explanation:** After including the reverse of each number, the resulting array is [1,13,10,12,31,_1,31,1,21,13_].\n    The reversed integers that were added to the end of the array are underlined. Note that for the integer 10, after reversing it, it becomes 01 which is just 1.\n    The number of distinct integers in this array is 6 (The numbers 1, 10, 12, 13, 21, and 31).\n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,2]\n    **Output:** 1\n    **Explanation:** After including the reverse of each number, the resulting array is [2,2,2,_2,2,2_].\n    The number of distinct integers in this array is 1 (The number 2).",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 106`",
+  "topics": ["Array", "Hash Table", "Math", "Counting"],
+  "total_accepted": 98682,
+  "total_submissions": 121340,
+  "acceptance_rate": "81.3%",
+  "similar_questions": [
+    {
+      "title": "Reverse Integer",
+      "slug": "reverse-integer",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reverse-integer/"
+    }
+  ],
+  "hints": [
+    "What data structure allows us to insert numbers and find the number of distinct numbers in it?",
+    "Try using a set, insert all the numbers and their reverse into it, and return its size."
+  ]
+}

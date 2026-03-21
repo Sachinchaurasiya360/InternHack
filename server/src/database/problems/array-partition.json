@@ -1,0 +1,42 @@
+{
+  "id": "561",
+  "title": "Array Partition",
+  "slug": "array-partition",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> of <code>2n</code> integers, group these integers into <code>n</code> pairs <code>(a<sub>1</sub>, b<sub>1</sub>), (a<sub>2</sub>, b<sub>2</sub>), ..., (a<sub>n</sub>, b<sub>n</sub>)</code> such that the sum of <code>min(a<sub>i</sub>, b<sub>i</sub>)</code> for all <code>i</code> is <strong>maximized</strong>. Return<em> the maximized sum</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,4,3,2]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> All possible pairings (ignoring the ordering of elements) are:\n1. (1, 4), (2, 3) -&gt; min(1, 4) + min(2, 3) = 1 + 2 = 3\n2. (1, 3), (2, 4) -&gt; min(1, 3) + min(2, 4) = 1 + 2 = 3\n3. (1, 2), (3, 4) -&gt; min(1, 2) + min(3, 4) = 1 + 3 = 4\nSo the maximum possible sum is 4.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [6,2,6,5,1,2]\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> The optimal pairing is (2, 1), (2, 5), (6, 6). min(2, 1) + min(2, 5) + min(6, 6) = 1 + 2 + 6 = 9.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>nums.length == 2 * n</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` of `2n` integers, group these integers into `n` pairs `(a1, b1), (a2, b2), ..., (an, bn)` such that the sum of `min(ai, bi)` for all `i` is **maximized**. Return _the maximized sum_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,4,3,2]\n    **Output:** 4\n    **Explanation:** All possible pairings (ignoring the ordering of elements) are:\n    1. (1, 4), (2, 3) -> min(1, 4) + min(2, 3) = 1 + 2 = 3\n    2. (1, 3), (2, 4) -> min(1, 3) + min(2, 4) = 1 + 2 = 3\n    3. (1, 2), (3, 4) -> min(1, 2) + min(3, 4) = 1 + 3 = 4\n    So the maximum possible sum is 4.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [6,2,6,5,1,2]\n    **Output:** 9\n    **Explanation:** The optimal pairing is (2, 1), (2, 5), (6, 6). min(2, 1) + min(2, 5) + min(6, 6) = 1 + 2 + 6 = 9.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 104`\n  * `nums.length == 2 * n`\n  * `-104 <= nums[i] <= 104`",
+  "question": "Given an integer array `nums` of `2n` integers, group these integers into `n` pairs `(a1, b1), (a2, b2), ..., (an, bn)` such that the sum of `min(ai, bi)` for all `i` is **maximized**. Return _the maximized sum_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,4,3,2]\n    **Output:** 4\n    **Explanation:** All possible pairings (ignoring the ordering of elements) are:\n    1. (1, 4), (2, 3) -> min(1, 4) + min(2, 3) = 1 + 2 = 3\n    2. (1, 3), (2, 4) -> min(1, 3) + min(2, 4) = 1 + 2 = 3\n    3. (1, 2), (3, 4) -> min(1, 2) + min(3, 4) = 1 + 3 = 4\n    So the maximum possible sum is 4.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [6,2,6,5,1,2]\n    **Output:** 9\n    **Explanation:** The optimal pairing is (2, 1), (2, 5), (6, 6). min(2, 1) + min(2, 5) + min(6, 6) = 1 + 2 + 6 = 9.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 104`\n  * `nums.length == 2 * n`\n  * `-104 <= nums[i] <= 104`",
+  "topics": ["Array", "Greedy", "Sorting", "Counting Sort"],
+  "total_accepted": 656707,
+  "total_submissions": 805836,
+  "acceptance_rate": "81.5%",
+  "similar_questions": [
+    {
+      "title": "Minimum Difference Between Highest and Lowest of K Scores",
+      "slug": "minimum-difference-between-highest-and-lowest-of-k-scores",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-difference-between-highest-and-lowest-of-k-scores/"
+    },
+    {
+      "title": "Minimum Cost of Buying Candies With Discount",
+      "slug": "minimum-cost-of-buying-candies-with-discount",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-cost-of-buying-candies-with-discount/"
+    },
+    {
+      "title": "All Divisions With the Highest Score of a Binary Array",
+      "slug": "all-divisions-with-the-highest-score-of-a-binary-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/"
+    }
+  ],
+  "hints": [
+    "Obviously, brute force won't help here. Think of something else, take some example like 1,2,3,4.",
+    "How will you make pairs to get the result? There must be some pattern.",
+    "Did you observe that- Minimum element gets add into the result in sacrifice of maximum element.",
+    "Still won't able to find pairs? Sort the array and try to find the pattern."
+  ]
+}

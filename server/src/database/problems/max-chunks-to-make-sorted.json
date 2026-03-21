@@ -1,0 +1,27 @@
+{
+  "id": "769",
+  "title": "Max Chunks To Make Sorted",
+  "slug": "max-chunks-to-make-sorted",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>arr</code> of length <code>n</code> that represents a permutation of the integers in the range <code>[0, n - 1]</code>.</p>\n\n<p>We split <code>arr</code> into some number of <strong>chunks</strong> (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.</p>\n\n<p>Return <em>the largest number of chunks we can make to sort the array</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,3,2,1,0]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nSplitting into two or more chunks will not return the required result.\nFor example, splitting into [4, 3], [2, 1, 0] will result in [3, 4, 0, 1, 2], which isn&#39;t sorted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,0,2,3,4]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\nWe can split into two chunks, such as [1, 0], [2, 3, 4].\nHowever, splitting into [1, 0], [2], [3], [4] is the highest number of chunks possible.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == arr.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10</code></li>\n\t<li><code>0 &lt;= arr[i] &lt; n</code></li>\n\t<li>All the elements of <code>arr</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `arr` of length `n` that represents a permutation of the integers in the range `[0, n - 1]`.\n\nWe split `arr` into some number of **chunks** (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.\n\nReturn _the largest number of chunks we can make to sort the array_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [4,3,2,1,0]\n    **Output:** 1\n    **Explanation:**\n    Splitting into two or more chunks will not return the required result.\n    For example, splitting into [4, 3], [2, 1, 0] will result in [3, 4, 0, 1, 2], which isn't sorted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,0,2,3,4]\n    **Output:** 4\n    **Explanation:**\n    We can split into two chunks, such as [1, 0], [2, 3, 4].\n    However, splitting into [1, 0], [2], [3], [4] is the highest number of chunks possible.\n    \n\n \n\n**Constraints:**\n\n  * `n == arr.length`\n  * `1 <= n <= 10`\n  * `0 <= arr[i] < n`\n  * All the elements of `arr` are **unique**.",
+  "question": "You are given an integer array `arr` of length `n` that represents a permutation of the integers in the range `[0, n - 1]`.\n\nWe split `arr` into some number of **chunks** (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.\n\nReturn _the largest number of chunks we can make to sort the array_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [4,3,2,1,0]\n    **Output:** 1\n    **Explanation:**\n    Splitting into two or more chunks will not return the required result.\n    For example, splitting into [4, 3], [2, 1, 0] will result in [3, 4, 0, 1, 2], which isn't sorted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,0,2,3,4]\n    **Output:** 4\n    **Explanation:**\n    We can split into two chunks, such as [1, 0], [2, 3, 4].\n    However, splitting into [1, 0], [2], [3], [4] is the highest number of chunks possible.",
+  "constraints": "**Constraints:**\n\n  * `n == arr.length`\n  * `1 <= n <= 10`\n  * `0 <= arr[i] < n`\n  * All the elements of `arr` are **unique**.",
+  "topics": ["Array", "Stack", "Greedy", "Sorting", "Monotonic Stack"],
+  "total_accepted": 235653,
+  "total_submissions": 367438,
+  "acceptance_rate": "64.1%",
+  "similar_questions": [
+    {
+      "title": "Max Chunks To Make Sorted II",
+      "slug": "max-chunks-to-make-sorted-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/max-chunks-to-make-sorted-ii/"
+    }
+  ],
+  "hints": [
+    "The first chunk can be found as the smallest k for which A[:k+1] == [0, 1, 2, ...k]; then we repeat this process."
+  ]
+}

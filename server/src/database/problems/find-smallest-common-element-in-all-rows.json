@@ -1,0 +1,30 @@
+{
+  "id": "1198",
+  "title": "Find Smallest Common Element in All Rows",
+  "slug": "find-smallest-common-element-in-all-rows",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Binary Search", "Matrix", "Counting"],
+  "total_accepted": 55124,
+  "total_submissions": 71780,
+  "acceptance_rate": "76.8%",
+  "similar_questions": [
+    {
+      "title": "Intersection of Multiple Arrays",
+      "slug": "intersection-of-multiple-arrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-multiple-arrays/"
+    }
+  ],
+  "hints": [
+    "Notice that each row has no duplicates.",
+    "Is counting the frequency of elements enough to find the answer?",
+    "Use a data structure to count the frequency of elements.",
+    "Find an element whose frequency equals the number of rows."
+  ]
+}

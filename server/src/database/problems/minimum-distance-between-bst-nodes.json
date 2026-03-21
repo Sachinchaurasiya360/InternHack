@@ -1,0 +1,31 @@
+{
+  "id": "783",
+  "title": "Minimum Distance Between BST Nodes",
+  "slug": "minimum-distance-between-bst-nodes",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a Binary Search Tree (BST), return <em>the minimum difference between the values of any two different nodes in the tree</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/05/bst1.jpg\" style=\"width: 292px; height: 301px;\" />\n<pre>\n<strong>Input:</strong> root = [4,2,6,1,3]\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/05/bst2.jpg\" style=\"width: 282px; height: 301px;\" />\n<pre>\n<strong>Input:</strong> root = [1,0,48,null,null,12,49]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[2, 100]</code>.</li>\n\t<li><code>0 &lt;= Node.val &lt;= 10<sup>5</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as 530: <a href=\"https://leetcode.com/problems/minimum-absolute-difference-in-bst/\" target=\"_blank\">https://leetcode.com/problems/minimum-absolute-difference-in-bst/</a></p>\n",
+  "content_markdown": "Given the `root` of a Binary Search Tree (BST), return _the minimum difference between the values of any two different nodes in the tree_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/05/bst1.jpg)\n    \n    \n    **Input:** root = [4,2,6,1,3]\n    **Output:** 1\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/02/05/bst2.jpg)\n    \n    \n    **Input:** root = [1,0,48,null,null,12,49]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 100]`.\n  * `0 <= Node.val <= 105`\n\n\n\n \n\n**Note:** This question is the same as 530: <https://leetcode.com/problems/minimum-absolute-difference-in-bst/>",
+  "question": "Given the `root` of a Binary Search Tree (BST), return _the minimum difference between the values of any two different nodes in the tree_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/05/bst1.jpg)\n    \n    \n    **Input:** root = [4,2,6,1,3]\n    **Output:** 1\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/02/05/bst2.jpg)\n    \n    \n    **Input:** root = [1,0,48,null,null,12,49]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 100]`.\n  * `0 <= Node.val <= 105`\n\n\n\n \n\n**Note:** This question is the same as 530: <https://leetcode.com/problems/minimum-absolute-difference-in-bst/>",
+  "topics": [
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Binary Search Tree",
+    "Binary Tree"
+  ],
+  "total_accepted": 321038,
+  "total_submissions": 525446,
+  "acceptance_rate": "61.1%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Inorder Traversal",
+      "slug": "binary-tree-inorder-traversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/"
+    }
+  ],
+  "hints": []
+}

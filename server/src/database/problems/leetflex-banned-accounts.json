@@ -1,0 +1,18 @@
+{
+  "id": "1747",
+  "title": "Leetflex Banned Accounts",
+  "slug": "leetflex-banned-accounts",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 30331,
+  "total_submissions": 49080,
+  "acceptance_rate": "61.8%",
+  "similar_questions": [],
+  "hints": []
+}

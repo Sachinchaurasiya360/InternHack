@@ -1,0 +1,37 @@
+{
+  "id": "2998",
+  "title": "Minimum Number of Operations to Make X and Y Equal",
+  "slug": "minimum-number-of-operations-to-make-x-and-y-equal",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two positive integers <code>x</code> and <code>y</code>.</p>\n\n<p>In one operation, you can do one of the four following operations:</p>\n\n<ol>\n\t<li>Divide <code>x</code> by <code>11</code> if <code>x</code> is a multiple of <code>11</code>.</li>\n\t<li>Divide <code>x</code> by <code>5</code> if <code>x</code> is a multiple of <code>5</code>.</li>\n\t<li>Decrement <code>x</code> by <code>1</code>.</li>\n\t<li>Increment <code>x</code> by <code>1</code>.</li>\n</ol>\n\n<p>Return <em>the <strong>minimum</strong> number of operations required to make </em> <code>x</code> <i>and</i> <code>y</code> equal.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 26, y = 1\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can make 26 equal to 1 by applying the following operations: \n1. Decrement x by 1\n2. Divide x by 5\n3. Divide x by 5\nIt can be shown that 3 is the minimum number of operations required to make 26 equal to 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 54, y = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> We can make 54 equal to 2 by applying the following operations: \n1. Increment x by 1\n2. Divide x by 11 \n3. Divide x by 5\n4. Increment x by 1\nIt can be shown that 4 is the minimum number of operations required to make 54 equal to 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 25, y = 30\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> We can make 25 equal to 30 by applying the following operations: \n1. Increment x by 1\n2. Increment x by 1\n3. Increment x by 1\n4. Increment x by 1\n5. Increment x by 1\nIt can be shown that 5 is the minimum number of operations required to make 25 equal to 30.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= x, y &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two positive integers `x` and `y`.\n\nIn one operation, you can do one of the four following operations:\n\n  1. Divide `x` by `11` if `x` is a multiple of `11`.\n  2. Divide `x` by `5` if `x` is a multiple of `5`.\n  3. Decrement `x` by `1`.\n  4. Increment `x` by `1`.\n\n\n\nReturn _the**minimum** number of operations required to make _ `x` _and_ `y` equal.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** x = 26, y = 1\n    **Output:** 3\n    **Explanation:** We can make 26 equal to 1 by applying the following operations: \n    1. Decrement x by 1\n    2. Divide x by 5\n    3. Divide x by 5\n    It can be shown that 3 is the minimum number of operations required to make 26 equal to 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 54, y = 2\n    **Output:** 4\n    **Explanation:** We can make 54 equal to 2 by applying the following operations: \n    1. Increment x by 1\n    2. Divide x by 11 \n    3. Divide x by 5\n    4. Increment x by 1\n    It can be shown that 4 is the minimum number of operations required to make 54 equal to 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** x = 25, y = 30\n    **Output:** 5\n    **Explanation:** We can make 25 equal to 30 by applying the following operations: \n    1. Increment x by 1\n    2. Increment x by 1\n    3. Increment x by 1\n    4. Increment x by 1\n    5. Increment x by 1\n    It can be shown that 5 is the minimum number of operations required to make 25 equal to 30.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= x, y <= 104`",
+  "question": "You are given two positive integers `x` and `y`.\n\nIn one operation, you can do one of the four following operations:\n\n  1. Divide `x` by `11` if `x` is a multiple of `11`.\n  2. Divide `x` by `5` if `x` is a multiple of `5`.\n  3. Decrement `x` by `1`.\n  4. Increment `x` by `1`.\n\n\n\nReturn _the**minimum** number of operations required to make _ `x` _and_ `y` equal.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** x = 26, y = 1\n    **Output:** 3\n    **Explanation:** We can make 26 equal to 1 by applying the following operations: \n    1. Decrement x by 1\n    2. Divide x by 5\n    3. Divide x by 5\n    It can be shown that 3 is the minimum number of operations required to make 26 equal to 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 54, y = 2\n    **Output:** 4\n    **Explanation:** We can make 54 equal to 2 by applying the following operations: \n    1. Increment x by 1\n    2. Divide x by 11 \n    3. Divide x by 5\n    4. Increment x by 1\n    It can be shown that 4 is the minimum number of operations required to make 54 equal to 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** x = 25, y = 30\n    **Output:** 5\n    **Explanation:** We can make 25 equal to 30 by applying the following operations: \n    1. Increment x by 1\n    2. Increment x by 1\n    3. Increment x by 1\n    4. Increment x by 1\n    5. Increment x by 1\n    It can be shown that 5 is the minimum number of operations required to make 25 equal to 30.",
+  "constraints": "**Constraints:**\n\n  * `1 <= x, y <= 104`",
+  "topics": ["Dynamic Programming", "Breadth-First Search", "Memoization"],
+  "total_accepted": 27912,
+  "total_submissions": 57620,
+  "acceptance_rate": "48.4%",
+  "similar_questions": [
+    {
+      "title": "Shortest Bridge",
+      "slug": "shortest-bridge",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-bridge/"
+    },
+    {
+      "title": "Minimum Moves to Spread Stones Over Grid",
+      "slug": "minimum-moves-to-spread-stones-over-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-spread-stones-over-grid/"
+    }
+  ],
+  "hints": [
+    "The only way to make <code>x</code> larger is to increase it by <code>1</code> so if <code>y >= x</code> the answer is <code>y - x</code>.",
+    "For <code>y < x</code>, <code>x - y</code> is always a candidate answer since we can repeatedly decrease <code>x</code> by one to reach <code>y</code>.",
+    "We can also increase <code>x</code> and then use the division operations. For example, if <code>x = 10</code> and <code>y = 1</code>, we can increment <code>x</code> by <code>1</code> then divide it by <code>11</code>.",
+    "Find an upper bound <code>U</code> on the maximum value of <code>x</code> we will reach an optimal solution. Since all values of <code>x</code> will be in the range <code>[1, U]</code>, we can use BFS to find the answer.",
+    "One possible upper bound on <code>x</code> is <code>U = x + (x - y) </code>. To reach any number strictly greater than <code>U</code> from <code>x</code>, we will need more than <code>x - y</code> operations which is not optimal since we can always reach <code>y</code> in <code>x - y</code> operations."
+  ]
+}

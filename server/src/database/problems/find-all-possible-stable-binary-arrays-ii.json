@@ -1,0 +1,35 @@
+{
+  "id": "3130",
+  "title": "Find All Possible Stable Binary Arrays II",
+  "slug": "find-all-possible-stable-binary-arrays-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given 3 positive integers <code>zero</code>, <code>one</code>, and <code>limit</code>.</p>\n\n<p>A <span data-keyword=\"binary-array\">binary array</span> <code>arr</code> is called <strong>stable</strong> if:</p>\n\n<ul>\n\t<li>The number of occurrences of 0 in <code>arr</code> is <strong>exactly </strong><code>zero</code>.</li>\n\t<li>The number of occurrences of 1 in <code>arr</code> is <strong>exactly</strong> <code>one</code>.</li>\n\t<li>Each <span data-keyword=\"subarray-nonempty\">subarray</span> of <code>arr</code> with a size greater than <code>limit</code> must contain <strong>both </strong>0 and 1.</li>\n</ul>\n\n<p>Return the <em>total</em> number of <strong>stable</strong> binary arrays.</p>\n\n<p>Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">zero = 1, one = 1, limit = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The two possible stable binary arrays are <code>[1,0]</code> and <code>[0,1]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">zero = 1, one = 2, limit = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The only possible stable binary array is <code>[1,0,1]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">zero = 3, one = 3, limit = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">14</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>All the possible stable binary arrays are <code>[0,0,1,0,1,1]</code>, <code>[0,0,1,1,0,1]</code>, <code>[0,1,0,0,1,1]</code>, <code>[0,1,0,1,0,1]</code>, <code>[0,1,0,1,1,0]</code>, <code>[0,1,1,0,0,1]</code>, <code>[0,1,1,0,1,0]</code>, <code>[1,0,0,1,0,1]</code>, <code>[1,0,0,1,1,0]</code>, <code>[1,0,1,0,0,1]</code>, <code>[1,0,1,0,1,0]</code>, <code>[1,0,1,1,0,0]</code>, <code>[1,1,0,0,1,0]</code>, and <code>[1,1,0,1,0,0]</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= zero, one, limit &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given 3 positive integers `zero`, `one`, and `limit`.\n\nA binary array `arr` is called **stable** if:\n\n  * The number of occurrences of 0 in `arr` is **exactly**`zero`.\n  * The number of occurrences of 1 in `arr` is **exactly** `one`.\n  * Each subarray of `arr` with a size greater than `limit` must contain **both** 0 and 1.\n\n\n\nReturn the _total_ number of **stable** binary arrays.\n\nSince the answer may be very large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n**Input:** zero = 1, one = 1, limit = 2\n\n**Output:** 2\n\n**Explanation:**\n\nThe two possible stable binary arrays are `[1,0]` and `[0,1]`.\n\n**Example 2:**\n\n**Input:** zero = 1, one = 2, limit = 1\n\n**Output:** 1\n\n**Explanation:**\n\nThe only possible stable binary array is `[1,0,1]`.\n\n**Example 3:**\n\n**Input:** zero = 3, one = 3, limit = 2\n\n**Output:** 14\n\n**Explanation:**\n\nAll the possible stable binary arrays are `[0,0,1,0,1,1]`, `[0,0,1,1,0,1]`, `[0,1,0,0,1,1]`, `[0,1,0,1,0,1]`, `[0,1,0,1,1,0]`, `[0,1,1,0,0,1]`, `[0,1,1,0,1,0]`, `[1,0,0,1,0,1]`, `[1,0,0,1,1,0]`, `[1,0,1,0,0,1]`, `[1,0,1,0,1,0]`, `[1,0,1,1,0,0]`, `[1,1,0,0,1,0]`, and `[1,1,0,1,0,0]`.\n\n \n\n**Constraints:**\n\n  * `1 <= zero, one, limit <= 1000`",
+  "question": "You are given 3 positive integers `zero`, `one`, and `limit`.\n\nA binary array `arr` is called **stable** if:\n\n  * The number of occurrences of 0 in `arr` is **exactly**`zero`.\n  * The number of occurrences of 1 in `arr` is **exactly** `one`.\n  * Each subarray of `arr` with a size greater than `limit` must contain **both** 0 and 1.\n\n\n\nReturn the _total_ number of **stable** binary arrays.\n\nSince the answer may be very large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n**Input:** zero = 1, one = 1, limit = 2\n\n**Output:** 2\n\n**Explanation:**\n\nThe two possible stable binary arrays are `[1,0]` and `[0,1]`.\n\n**Example 2:**\n\n**Input:** zero = 1, one = 2, limit = 1\n\n**Output:** 1\n\n**Explanation:**\n\nThe only possible stable binary array is `[1,0,1]`.\n\n**Example 3:**\n\n**Input:** zero = 3, one = 3, limit = 2\n\n**Output:** 14\n\n**Explanation:**\n\nAll the possible stable binary arrays are `[0,0,1,0,1,1]`, `[0,0,1,1,0,1]`, `[0,1,0,0,1,1]`, `[0,1,0,1,0,1]`, `[0,1,0,1,1,0]`, `[0,1,1,0,0,1]`, `[0,1,1,0,1,0]`, `[1,0,0,1,0,1]`, `[1,0,0,1,1,0]`, `[1,0,1,0,0,1]`, `[1,0,1,0,1,0]`, `[1,0,1,1,0,0]`, `[1,1,0,0,1,0]`, and `[1,1,0,1,0,0]`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= zero, one, limit <= 1000`",
+  "topics": ["Dynamic Programming", "Prefix Sum"],
+  "total_accepted": 4393,
+  "total_submissions": 15920,
+  "acceptance_rate": "27.6%",
+  "similar_questions": [
+    {
+      "title": "Contiguous Array",
+      "slug": "contiguous-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/contiguous-array/"
+    },
+    {
+      "title": "Binary Subarrays With Sum",
+      "slug": "binary-subarrays-with-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-subarrays-with-sum/"
+    }
+  ],
+  "hints": [
+    "Let <code>dp[x][y][z = 0/1]</code> be the number of stable arrays with exactly <code>x</code> zeros, <code>y</code> ones, and the last element is <code>z</code>. (0 or 1).\r\n<code>dp[x][y][0] + dp[x][y][1]</code> is the answer for given <code>(x, y)</code>.",
+    "If we have already placed <code>x</code> 1 and <code>y</code> 0, if we place a group of <code>k</code> 0, the number of ways is <code>dp[x-k][y][1]</code>. We can place a group with size <code>i</code>, where <code>i</code> varies from 1 to <code>min(limit, zero - x)</code>.\r\nSimilarly, we can solve by placing a group of ones.",
+    "Speed up the calculation using prefix arrays to store the sum of <code>dp</code> states."
+  ]
+}

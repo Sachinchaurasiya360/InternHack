@@ -1,0 +1,31 @@
+{
+  "id": "24",
+  "title": "Swap Nodes in Pairs",
+  "slug": "swap-nodes-in-pairs",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a&nbsp;linked list, swap every two adjacent nodes and return its head. You must solve the problem without&nbsp;modifying the values in the list&#39;s nodes (i.e., only nodes themselves may be changed.)</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">head = [1,2,3,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[2,1,4,3]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/03/swap_ex1.jpg\" style=\"width: 422px; height: 222px;\" /></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">head = []</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[]</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">head = [1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1]</span></p>\n</div>\n\n<p><strong class=\"example\">Example 4:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">head = [1,2,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[2,1,3]</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the&nbsp;list&nbsp;is in the range <code>[0, 100]</code>.</li>\n\t<li><code>0 &lt;= Node.val &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)\n\n \n\n**Example 1:**\n\n**Input:** head = [1,2,3,4]\n\n**Output:** [2,1,4,3]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/swap_ex1.jpg)\n\n**Example 2:**\n\n**Input:** head = []\n\n**Output:** []\n\n**Example 3:**\n\n**Input:** head = [1]\n\n**Output:** [1]\n\n**Example 4:**\n\n**Input:** head = [1,2,3]\n\n**Output:** [2,1,3]\n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 100]`.\n  * `0 <= Node.val <= 100`",
+  "question": "Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)",
+  "examples": "**Example 1:**\n\n**Input:** head = [1,2,3,4]\n\n**Output:** [2,1,4,3]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2020/10/03/swap_ex1.jpg)\n\n**Example 2:**\n\n**Input:** head = []\n\n**Output:** []\n\n**Example 3:**\n\n**Input:** head = [1]\n\n**Output:** [1]\n\n**Example 4:**\n\n**Input:** head = [1,2,3]\n\n**Output:** [2,1,3]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 100]`.\n  * `0 <= Node.val <= 100`",
+  "topics": ["Linked List", "Recursion"],
+  "total_accepted": 1863449,
+  "total_submissions": 2701315,
+  "acceptance_rate": "69.0%",
+  "similar_questions": [
+    {
+      "title": "Reverse Nodes in k-Group",
+      "slug": "reverse-nodes-in-k-group",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/reverse-nodes-in-k-group/"
+    },
+    {
+      "title": "Swapping Nodes in a Linked List",
+      "slug": "swapping-nodes-in-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/swapping-nodes-in-a-linked-list/"
+    }
+  ],
+  "hints": []
+}

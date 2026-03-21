@@ -1,0 +1,55 @@
+{
+  "id": "259",
+  "title": "3Sum Smaller",
+  "slug": "3sum-smaller",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 173837,
+  "total_submissions": 338741,
+  "acceptance_rate": "51.3%",
+  "similar_questions": [
+    {
+      "title": "3Sum",
+      "slug": "3sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/3sum/"
+    },
+    {
+      "title": "3Sum Closest",
+      "slug": "3sum-closest",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/3sum-closest/"
+    },
+    {
+      "title": "Valid Triangle Number",
+      "slug": "valid-triangle-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/valid-triangle-number/"
+    },
+    {
+      "title": "Two Sum Less Than K",
+      "slug": "two-sum-less-than-k",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum-less-than-k/"
+    },
+    {
+      "title": "Maximize Greatness of an Array",
+      "slug": "maximize-greatness-of-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-greatness-of-an-array/"
+    },
+    {
+      "title": "Find Polygon With the Largest Perimeter",
+      "slug": "find-polygon-with-the-largest-perimeter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-polygon-with-the-largest-perimeter/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,27 @@
+{
+  "id": "3289",
+  "title": "The Two Sneaky Numbers of Digitville",
+  "slug": "the-two-sneaky-numbers-of-digitville",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>In the town of Digitville, there was a list of numbers called <code>nums</code> containing integers from <code>0</code> to <code>n - 1</code>. Each number was supposed to appear <strong>exactly once</strong> in the list, however, <strong>two</strong> mischievous numbers sneaked in an <em>additional time</em>, making the list longer than usual.<!-- notionvc: c37cfb04-95eb-4273-85d5-3c52d0525b95 --></p>\n\n<p>As the town detective, your task is to find these two sneaky numbers. Return an array of size <strong>two</strong> containing the two numbers (in <em>any order</em>), so peace can return to Digitville.<!-- notionvc: 345db5be-c788-4828-9836-eefed31c982f --></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [0,1,1,0]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[0,1]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The numbers 0 and 1 each appear twice in the array.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [0,3,2,1,3,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[2,3]</span></p>\n\n<p><strong>Explanation: </strong></p>\n\n<p>The numbers 2 and 3 each appear twice in the array.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [7,1,5,4,3,4,6,0,9,5,8,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[4,5]</span></p>\n\n<p><strong>Explanation: </strong></p>\n\n<p>The numbers 4 and 5 each appear twice in the array.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li data-stringify-border=\"0\" data-stringify-indent=\"1\"><code>2 &lt;= n &lt;= 100</code></li>\n\t<li data-stringify-border=\"0\" data-stringify-indent=\"1\"><code>nums.length == n + 2</code></li>\n\t<li data-stringify-border=\"0\" data-stringify-indent=\"1\"><code data-stringify-type=\"code\">0 &lt;= nums[i] &lt; n</code></li>\n\t<li data-stringify-border=\"0\" data-stringify-indent=\"1\">The input is generated such that <code>nums</code> contains <strong>exactly</strong> two repeated elements.</li>\n</ul>\n",
+  "content_markdown": "In the town of Digitville, there was a list of numbers called `nums` containing integers from `0` to `n - 1`. Each number was supposed to appear **exactly once** in the list, however, **two** mischievous numbers sneaked in an _additional time_ , making the list longer than usual.\n\nAs the town detective, your task is to find these two sneaky numbers. Return an array of size **two** containing the two numbers (in _any order_), so peace can return to Digitville.\n\n \n\n**Example 1:**\n\n**Input:** nums = [0,1,1,0]\n\n**Output:** [0,1]\n\n**Explanation:**\n\nThe numbers 0 and 1 each appear twice in the array.\n\n**Example 2:**\n\n**Input:** nums = [0,3,2,1,3,2]\n\n**Output:** [2,3]\n\n**Explanation:**\n\nThe numbers 2 and 3 each appear twice in the array.\n\n**Example 3:**\n\n**Input:** nums = [7,1,5,4,3,4,6,0,9,5,8,2]\n\n**Output:** [4,5]\n\n**Explanation:**\n\nThe numbers 4 and 5 each appear twice in the array.\n\n \n\n**Constraints:**\n\n  * `2 <= n <= 100`\n  * `nums.length == n + 2`\n  * `0 <= nums[i] < n`\n  * The input is generated such that `nums` contains **exactly** two repeated elements.",
+  "question": "In the town of Digitville, there was a list of numbers called `nums` containing integers from `0` to `n - 1`. Each number was supposed to appear **exactly once** in the list, however, **two** mischievous numbers sneaked in an _additional time_ , making the list longer than usual.\n\nAs the town detective, your task is to find these two sneaky numbers. Return an array of size **two** containing the two numbers (in _any order_), so peace can return to Digitville.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [0,1,1,0]\n\n**Output:** [0,1]\n\n**Explanation:**\n\nThe numbers 0 and 1 each appear twice in the array.\n\n**Example 2:**\n\n**Input:** nums = [0,3,2,1,3,2]\n\n**Output:** [2,3]\n\n**Explanation:**\n\nThe numbers 2 and 3 each appear twice in the array.\n\n**Example 3:**\n\n**Input:** nums = [7,1,5,4,3,4,6,0,9,5,8,2]\n\n**Output:** [4,5]\n\n**Explanation:**\n\nThe numbers 4 and 5 each appear twice in the array.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n <= 100`\n  * `nums.length == n + 2`\n  * `0 <= nums[i] < n`\n  * The input is generated such that `nums` contains **exactly** two repeated elements.",
+  "topics": ["Array", "Hash Table", "Math"],
+  "total_accepted": 247814,
+  "total_submissions": 275701,
+  "acceptance_rate": "89.9%",
+  "similar_questions": [
+    {
+      "title": "Find All Duplicates in an Array",
+      "slug": "find-all-duplicates-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-duplicates-in-an-array/"
+    }
+  ],
+  "hints": [
+    "To solve the problem without the extra space, we need to think about how many times each number occurs in relation to the index."
+  ]
+}

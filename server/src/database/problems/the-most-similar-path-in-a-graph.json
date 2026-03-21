@@ -1,0 +1,21 @@
+{
+  "id": "1548",
+  "title": "The Most Similar Path in a Graph",
+  "slug": "the-most-similar-path-in-a-graph",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Dynamic Programming", "Graph Theory"],
+  "total_accepted": 17864,
+  "total_submissions": 30075,
+  "acceptance_rate": "59.4%",
+  "similar_questions": [],
+  "hints": [
+    "Create an array dp where dp[i][j] is the min edit distance for the path starting at node i and compared to index j of the targetPath.",
+    "Traverse the dp array to obtain a valid answer."
+  ]
+}

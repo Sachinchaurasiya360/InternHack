@@ -1,0 +1,18 @@
+{
+  "id": "1623",
+  "title": "All Valid Triplets That Can Represent a Country",
+  "slug": "all-valid-triplets-that-can-represent-a-country",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 23195,
+  "total_submissions": 28665,
+  "acceptance_rate": "80.9%",
+  "similar_questions": [],
+  "hints": []
+}

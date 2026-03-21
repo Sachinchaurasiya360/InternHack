@@ -1,0 +1,18 @@
+{
+  "id": "2159",
+  "title": "Order Two Columns Independently",
+  "slug": "order-two-columns-independently",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 10686,
+  "total_submissions": 17386,
+  "acceptance_rate": "61.5%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,35 @@
+{
+  "id": "2131",
+  "title": "Longest Palindrome by Concatenating Two Letter Words",
+  "slug": "longest-palindrome-by-concatenating-two-letter-words",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of strings <code>words</code>. Each element of <code>words</code> consists of <strong>two</strong> lowercase English letters.</p>\n\n<p>Create the <strong>longest possible palindrome</strong> by selecting some elements from <code>words</code> and concatenating them in <strong>any order</strong>. Each element can be selected <strong>at most once</strong>.</p>\n\n<p>Return <em>the <strong>length</strong> of the longest palindrome that you can create</em>. If it is impossible to create any palindrome, return <code>0</code>.</p>\n\n<p>A <strong>palindrome</strong> is a string that reads the same forward and backward.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;lc&quot;,&quot;cl&quot;,&quot;gg&quot;]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> One longest palindrome is &quot;lc&quot; + &quot;gg&quot; + &quot;cl&quot; = &quot;lcggcl&quot;, of length 6.\nNote that &quot;clgglc&quot; is another longest palindrome that can be created.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;ab&quot;,&quot;ty&quot;,&quot;yt&quot;,&quot;lc&quot;,&quot;cl&quot;,&quot;ab&quot;]\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> One longest palindrome is &quot;ty&quot; + &quot;lc&quot; + &quot;cl&quot; + &quot;yt&quot; = &quot;tylcclyt&quot;, of length 8.\nNote that &quot;lcyttycl&quot; is another longest palindrome that can be created.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;cc&quot;,&quot;ll&quot;,&quot;xx&quot;]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> One longest palindrome is &quot;cc&quot;, of length 2.\nNote that &quot;ll&quot; is another longest palindrome that can be created, and so is &quot;xx&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>words[i].length == 2</code></li>\n\t<li><code>words[i]</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of strings `words`. Each element of `words` consists of **two** lowercase English letters.\n\nCreate the **longest possible palindrome** by selecting some elements from `words` and concatenating them in **any order**. Each element can be selected **at most once**.\n\nReturn _the**length** of the longest palindrome that you can create_. If it is impossible to create any palindrome, return `0`.\n\nA **palindrome** is a string that reads the same forward and backward.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"lc\",\"cl\",\"gg\"]\n    **Output:** 6\n    **Explanation:** One longest palindrome is \"lc\" + \"gg\" + \"cl\" = \"lcggcl\", of length 6.\n    Note that \"clgglc\" is another longest palindrome that can be created.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"ab\",\"ty\",\"yt\",\"lc\",\"cl\",\"ab\"]\n    **Output:** 8\n    **Explanation:** One longest palindrome is \"ty\" + \"lc\" + \"cl\" + \"yt\" = \"tylcclyt\", of length 8.\n    Note that \"lcyttycl\" is another longest palindrome that can be created.\n    \n\n**Example 3:**\n    \n    \n    **Input:** words = [\"cc\",\"ll\",\"xx\"]\n    **Output:** 2\n    **Explanation:** One longest palindrome is \"cc\", of length 2.\n    Note that \"ll\" is another longest palindrome that can be created, and so is \"xx\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 105`\n  * `words[i].length == 2`\n  * `words[i]` consists of lowercase English letters.",
+  "question": "You are given an array of strings `words`. Each element of `words` consists of **two** lowercase English letters.\n\nCreate the **longest possible palindrome** by selecting some elements from `words` and concatenating them in **any order**. Each element can be selected **at most once**.\n\nReturn _the**length** of the longest palindrome that you can create_. If it is impossible to create any palindrome, return `0`.\n\nA **palindrome** is a string that reads the same forward and backward.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"lc\",\"cl\",\"gg\"]\n    **Output:** 6\n    **Explanation:** One longest palindrome is \"lc\" + \"gg\" + \"cl\" = \"lcggcl\", of length 6.\n    Note that \"clgglc\" is another longest palindrome that can be created.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"ab\",\"ty\",\"yt\",\"lc\",\"cl\",\"ab\"]\n    **Output:** 8\n    **Explanation:** One longest palindrome is \"ty\" + \"lc\" + \"cl\" + \"yt\" = \"tylcclyt\", of length 8.\n    Note that \"lcyttycl\" is another longest palindrome that can be created.\n    \n\n**Example 3:**\n    \n    \n    **Input:** words = [\"cc\",\"ll\",\"xx\"]\n    **Output:** 2\n    **Explanation:** One longest palindrome is \"cc\", of length 2.\n    Note that \"ll\" is another longest palindrome that can be created, and so is \"xx\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 105`\n  * `words[i].length == 2`\n  * `words[i]` consists of lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String", "Greedy", "Counting"],
+  "total_accepted": 242440,
+  "total_submissions": 452768,
+  "acceptance_rate": "53.5%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Pairs",
+      "slug": "palindrome-pairs",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-pairs/"
+    },
+    {
+      "title": "Longest Palindrome",
+      "slug": "longest-palindrome",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-palindrome/"
+    }
+  ],
+  "hints": [
+    "A palindrome must be mirrored over the center. Suppose we have a palindrome. If we prepend the word \"ab\" on the left, what must we append on the right to keep it a palindrome?",
+    "We must append \"ba\" on the right. The number of times we can do this is the minimum of (occurrences of \"ab\") and (occurrences of \"ba\").",
+    "For words that are already palindromes, e.g. \"aa\", we can prepend and append these in pairs as described in the previous hint. We can also use exactly one in the middle to form an even longer palindrome."
+  ]
+}

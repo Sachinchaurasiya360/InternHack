@@ -1,0 +1,49 @@
+{
+  "id": "66",
+  "title": "Plus One",
+  "slug": "plus-one",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>large integer</strong> represented as an integer array <code>digits</code>, where each <code>digits[i]</code> is the <code>i<sup>th</sup></code> digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading <code>0</code>&#39;s.</p>\n\n<p>Increment the large integer by one and return <em>the resulting array of digits</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> digits = [1,2,3]\n<strong>Output:</strong> [1,2,4]\n<strong>Explanation:</strong> The array represents the integer 123.\nIncrementing by one gives 123 + 1 = 124.\nThus, the result should be [1,2,4].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> digits = [4,3,2,1]\n<strong>Output:</strong> [4,3,2,2]\n<strong>Explanation:</strong> The array represents the integer 4321.\nIncrementing by one gives 4321 + 1 = 4322.\nThus, the result should be [4,3,2,2].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> digits = [9]\n<strong>Output:</strong> [1,0]\n<strong>Explanation:</strong> The array represents the integer 9.\nIncrementing by one gives 9 + 1 = 10.\nThus, the result should be [1,0].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= digits.length &lt;= 100</code></li>\n\t<li><code>0 &lt;= digits[i] &lt;= 9</code></li>\n\t<li><code>digits</code> does not contain any leading <code>0</code>&#39;s.</li>\n</ul>\n",
+  "content_markdown": "You are given a **large integer** represented as an integer array `digits`, where each `digits[i]` is the `ith` digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading `0`'s.\n\nIncrement the large integer by one and return _the resulting array of digits_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** digits = [1,2,3]\n    **Output:** [1,2,4]\n    **Explanation:** The array represents the integer 123.\n    Incrementing by one gives 123 + 1 = 124.\n    Thus, the result should be [1,2,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** digits = [4,3,2,1]\n    **Output:** [4,3,2,2]\n    **Explanation:** The array represents the integer 4321.\n    Incrementing by one gives 4321 + 1 = 4322.\n    Thus, the result should be [4,3,2,2].\n    \n\n**Example 3:**\n    \n    \n    **Input:** digits = [9]\n    **Output:** [1,0]\n    **Explanation:** The array represents the integer 9.\n    Incrementing by one gives 9 + 1 = 10.\n    Thus, the result should be [1,0].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= digits.length <= 100`\n  * `0 <= digits[i] <= 9`\n  * `digits` does not contain any leading `0`'s.",
+  "question": "You are given a **large integer** represented as an integer array `digits`, where each `digits[i]` is the `ith` digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading `0`'s.\n\nIncrement the large integer by one and return _the resulting array of digits_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** digits = [1,2,3]\n    **Output:** [1,2,4]\n    **Explanation:** The array represents the integer 123.\n    Incrementing by one gives 123 + 1 = 124.\n    Thus, the result should be [1,2,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** digits = [4,3,2,1]\n    **Output:** [4,3,2,2]\n    **Explanation:** The array represents the integer 4321.\n    Incrementing by one gives 4321 + 1 = 4322.\n    Thus, the result should be [4,3,2,2].\n    \n\n**Example 3:**\n    \n    \n    **Input:** digits = [9]\n    **Output:** [1,0]\n    **Explanation:** The array represents the integer 9.\n    Incrementing by one gives 9 + 1 = 10.\n    Thus, the result should be [1,0].",
+  "constraints": "**Constraints:**\n\n  * `1 <= digits.length <= 100`\n  * `0 <= digits[i] <= 9`\n  * `digits` does not contain any leading `0`'s.",
+  "topics": ["Array", "Math"],
+  "total_accepted": 3611570,
+  "total_submissions": 7286745,
+  "acceptance_rate": "49.6%",
+  "similar_questions": [
+    {
+      "title": "Multiply Strings",
+      "slug": "multiply-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/multiply-strings/"
+    },
+    {
+      "title": "Add Binary",
+      "slug": "add-binary",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-binary/"
+    },
+    {
+      "title": "Plus One Linked List",
+      "slug": "plus-one-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/plus-one-linked-list/"
+    },
+    {
+      "title": "Add to Array-Form of Integer",
+      "slug": "add-to-array-form-of-integer",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-to-array-form-of-integer/"
+    },
+    {
+      "title": "Minimum Operations to Reduce an Integer to 0",
+      "slug": "minimum-operations-to-reduce-an-integer-to-0",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-reduce-an-integer-to-0/"
+    }
+  ],
+  "hints": []
+}

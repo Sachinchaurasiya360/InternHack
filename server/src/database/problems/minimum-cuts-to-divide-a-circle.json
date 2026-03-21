@@ -1,0 +1,34 @@
+{
+  "id": "2481",
+  "title": "Minimum Cuts to Divide a Circle",
+  "slug": "minimum-cuts-to-divide-a-circle",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A <strong>valid cut</strong> in a circle can be:</p>\n\n<ul>\n\t<li>A cut that is represented by a straight line that touches two points on the edge of the circle and passes through its center, or</li>\n\t<li>A cut that is represented by a straight line that touches one point on the edge of the circle and its center.</li>\n</ul>\n\n<p>Some valid and invalid cuts are shown in the figures below.</p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/10/29/alldrawio.png\" style=\"width: 450px; height: 174px;\" />\n<p>Given the integer <code>n</code>, return <em>the <strong>minimum</strong> number of cuts needed to divide a circle into </em><code>n</code><em> equal slices</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/10/24/11drawio.png\" style=\"width: 200px; height: 200px;\" />\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> \nThe above figure shows how cutting the circle twice through the middle divides it into 4 equal slices.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/10/24/22drawio.png\" style=\"width: 200px; height: 201px;\" />\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nAt least 3 cuts are needed to divide the circle into 3 equal slices. \nIt can be shown that less than 3 cuts cannot result in 3 slices of equal size and shape.\nAlso note that the first cut will not divide the circle into distinct parts.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "A **valid cut** in a circle can be:\n\n  * A cut that is represented by a straight line that touches two points on the edge of the circle and passes through its center, or\n  * A cut that is represented by a straight line that touches one point on the edge of the circle and its center.\n\n\n\nSome valid and invalid cuts are shown in the figures below.\n\n![](https://assets.leetcode.com/uploads/2022/10/29/alldrawio.png)\n\nGiven the integer `n`, return _the**minimum** number of cuts needed to divide a circle into _`n` _equal slices_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/10/24/11drawio.png)\n    \n    \n    **Input:** n = 4\n    **Output:** 2\n    **Explanation:** \n    The above figure shows how cutting the circle twice through the middle divides it into 4 equal slices.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/10/24/22drawio.png)\n    \n    \n    **Input:** n = 3\n    **Output:** 3\n    **Explanation:**\n    At least 3 cuts are needed to divide the circle into 3 equal slices. \n    It can be shown that less than 3 cuts cannot result in 3 slices of equal size and shape.\n    Also note that the first cut will not divide the circle into distinct parts.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 100`",
+  "question": "A **valid cut** in a circle can be:\n\n  * A cut that is represented by a straight line that touches two points on the edge of the circle and passes through its center, or\n  * A cut that is represented by a straight line that touches one point on the edge of the circle and its center.\n\n\n\nSome valid and invalid cuts are shown in the figures below.\n\n![](https://assets.leetcode.com/uploads/2022/10/29/alldrawio.png)\n\nGiven the integer `n`, return _the**minimum** number of cuts needed to divide a circle into _`n` _equal slices_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/10/24/11drawio.png)\n    \n    \n    **Input:** n = 4\n    **Output:** 2\n    **Explanation:** \n    The above figure shows how cutting the circle twice through the middle divides it into 4 equal slices.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/10/24/22drawio.png)\n    \n    \n    **Input:** n = 3\n    **Output:** 3\n    **Explanation:**\n    At least 3 cuts are needed to divide the circle into 3 equal slices. \n    It can be shown that less than 3 cuts cannot result in 3 slices of equal size and shape.\n    Also note that the first cut will not divide the circle into distinct parts.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 100`",
+  "topics": ["Math", "Geometry"],
+  "total_accepted": 71422,
+  "total_submissions": 127376,
+  "acceptance_rate": "56.1%",
+  "similar_questions": [
+    {
+      "title": "Smallest Even Multiple",
+      "slug": "smallest-even-multiple",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/smallest-even-multiple/"
+    },
+    {
+      "title": "Count Total Number of Colored Cells",
+      "slug": "count-total-number-of-colored-cells",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-total-number-of-colored-cells/"
+    }
+  ],
+  "hints": [
+    "Think about odd and even values separately.",
+    "When will we not have to cut the circle at all?"
+  ]
+}

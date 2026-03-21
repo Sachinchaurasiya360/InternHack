@@ -1,0 +1,55 @@
+{
+  "id": "136",
+  "title": "Single Number",
+  "slug": "single-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>non-empty</strong>&nbsp;array of integers <code>nums</code>, every element appears <em>twice</em> except for one. Find that single one.</p>\n\n<p>You must&nbsp;implement a solution with a linear runtime complexity and use&nbsp;only constant&nbsp;extra space.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,2,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [4,1,2,1,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>-3 * 10<sup>4</sup> &lt;= nums[i] &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li>Each element in the array appears twice except for one element which appears only once.</li>\n</ul>\n",
+  "content_markdown": "Given a **non-empty**  array of integers `nums`, every element appears _twice_ except for one. Find that single one.\n\nYou must implement a solution with a linear runtime complexity and use only constant extra space.\n\n \n\n**Example 1:**\n\n**Input:** nums = [2,2,1]\n\n**Output:** 1\n\n**Example 2:**\n\n**Input:** nums = [4,1,2,1,2]\n\n**Output:** 4\n\n**Example 3:**\n\n**Input:** nums = [1]\n\n**Output:** 1\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-3 * 104 <= nums[i] <= 3 * 104`\n  * Each element in the array appears twice except for one element which appears only once.",
+  "question": "Given a **non-empty**  array of integers `nums`, every element appears _twice_ except for one. Find that single one.\n\nYou must implement a solution with a linear runtime complexity and use only constant extra space.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [2,2,1]\n\n**Output:** 1\n\n**Example 2:**\n\n**Input:** nums = [4,1,2,1,2]\n\n**Output:** 4\n\n**Example 3:**\n\n**Input:** nums = [1]\n\n**Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-3 * 104 <= nums[i] <= 3 * 104`\n  * Each element in the array appears twice except for one element which appears only once.",
+  "topics": ["Array", "Bit Manipulation"],
+  "total_accepted": 4410213,
+  "total_submissions": 5700891,
+  "acceptance_rate": "77.4%",
+  "similar_questions": [
+    {
+      "title": "Single Number II",
+      "slug": "single-number-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/single-number-ii/"
+    },
+    {
+      "title": "Single Number III",
+      "slug": "single-number-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/single-number-iii/"
+    },
+    {
+      "title": "Missing Number",
+      "slug": "missing-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/missing-number/"
+    },
+    {
+      "title": "Find the Duplicate Number",
+      "slug": "find-the-duplicate-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-duplicate-number/"
+    },
+    {
+      "title": "Find the Difference",
+      "slug": "find-the-difference",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-difference/"
+    },
+    {
+      "title": "Find the XOR of Numbers Which Appear Twice",
+      "slug": "find-the-xor-of-numbers-which-appear-twice",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-xor-of-numbers-which-appear-twice/"
+    }
+  ],
+  "hints": ["Think about the XOR (^) operator's property."]
+}

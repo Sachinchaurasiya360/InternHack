@@ -1,0 +1,31 @@
+{
+  "id": "186",
+  "title": "Reverse Words in a String II",
+  "slug": "reverse-words-in-a-string-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 180094,
+  "total_submissions": 318204,
+  "acceptance_rate": "56.6%",
+  "similar_questions": [
+    {
+      "title": "Reverse Words in a String",
+      "slug": "reverse-words-in-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reverse-words-in-a-string/"
+    },
+    {
+      "title": "Rotate Array",
+      "slug": "rotate-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rotate-array/"
+    }
+  ],
+  "hints": []
+}

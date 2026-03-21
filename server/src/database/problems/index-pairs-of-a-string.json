@@ -1,0 +1,18 @@
+{
+  "id": "1065",
+  "title": "Index Pairs of a String",
+  "slug": "index-pairs-of-a-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String", "Trie", "Sorting"],
+  "total_accepted": 31211,
+  "total_submissions": 45488,
+  "acceptance_rate": "68.6%",
+  "similar_questions": [],
+  "hints": ["For each string of the set, look for matches and store those matches indices."]
+}

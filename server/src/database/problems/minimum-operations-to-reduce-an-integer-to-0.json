@@ -1,0 +1,29 @@
+{
+  "id": "2571",
+  "title": "Minimum Operations to Reduce an Integer to 0",
+  "slug": "minimum-operations-to-reduce-an-integer-to-0",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>n</code>, you can do the following operation <strong>any</strong> number of times:</p>\n\n<ul>\n\t<li>Add or subtract a <strong>power</strong> of <code>2</code> from <code>n</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>minimum</strong> number of operations to make </em><code>n</code><em> equal to </em><code>0</code>.</p>\n\n<p>A number <code>x</code> is power of <code>2</code> if <code>x == 2<sup>i</sup></code>&nbsp;where <code>i &gt;= 0</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 39\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can do the following operations:\n- Add 2<sup>0</sup> = 1 to n, so now n = 40.\n- Subtract 2<sup>3</sup> = 8 from n, so now n = 32.\n- Subtract 2<sup>5</sup> = 32 from n, so now n = 0.\nIt can be shown that 3 is the minimum number of operations we need to make n equal to 0.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 54\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can do the following operations:\n- Add 2<sup>1</sup> = 2 to n, so now n = 56.\n- Add 2<sup>3</sup> = 8 to n, so now n = 64.\n- Subtract 2<sup>6</sup> = 64 from n, so now n = 0.\nSo the minimum number of operations is 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `n`, you can do the following operation **any** number of times:\n\n  * Add or subtract a **power** of `2` from `n`.\n\n\n\nReturn _the**minimum** number of operations to make _`n` _equal to_`0`.\n\nA number `x` is power of `2` if `x == 2i` where `i >= 0` _._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 39\n    **Output:** 3\n    **Explanation:** We can do the following operations:\n    - Add 20 = 1 to n, so now n = 40.\n    - Subtract 23 = 8 from n, so now n = 32.\n    - Subtract 25 = 32 from n, so now n = 0.\n    It can be shown that 3 is the minimum number of operations we need to make n equal to 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 54\n    **Output:** 3\n    **Explanation:** We can do the following operations:\n    - Add 21 = 2 to n, so now n = 56.\n    - Add 23 = 8 to n, so now n = 64.\n    - Subtract 26 = 64 from n, so now n = 0.\n    So the minimum number of operations is 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`",
+  "question": "You are given a positive integer `n`, you can do the following operation **any** number of times:\n\n  * Add or subtract a **power** of `2` from `n`.\n\n\n\nReturn _the**minimum** number of operations to make _`n` _equal to_`0`.\n\nA number `x` is power of `2` if `x == 2i` where `i >= 0` _._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 39\n    **Output:** 3\n    **Explanation:** We can do the following operations:\n    - Add 20 = 1 to n, so now n = 40.\n    - Subtract 23 = 8 from n, so now n = 32.\n    - Subtract 25 = 32 from n, so now n = 0.\n    It can be shown that 3 is the minimum number of operations we need to make n equal to 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 54\n    **Output:** 3\n    **Explanation:** We can do the following operations:\n    - Add 21 = 2 to n, so now n = 56.\n    - Add 23 = 8 to n, so now n = 64.\n    - Subtract 26 = 64 from n, so now n = 0.\n    So the minimum number of operations is 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`",
+  "topics": ["Dynamic Programming", "Greedy", "Bit Manipulation"],
+  "total_accepted": 50746,
+  "total_submissions": 83067,
+  "acceptance_rate": "61.1%",
+  "similar_questions": [
+    {
+      "title": "Plus One",
+      "slug": "plus-one",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/plus-one/"
+    }
+  ],
+  "hints": [
+    "Can we set/unset the bits in binary representation?",
+    "If there are multiple adjacent ones, how can we optimally add and subtract in 2 operations such that all ones get unset?",
+    "Bonus: Try to solve the problem with higher constraints: n ≤ 10^18."
+  ]
+}

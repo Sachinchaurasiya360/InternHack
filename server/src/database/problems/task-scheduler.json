@@ -1,0 +1,59 @@
+{
+  "id": "621",
+  "title": "Task Scheduler",
+  "slug": "task-scheduler",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of CPU <code>tasks</code>, each labeled with a letter from A to Z, and a number <code>n</code>. Each CPU interval can be idle or allow the completion of one task. Tasks can be completed in any order, but there&#39;s a constraint: there has to be a gap of <strong>at least</strong> <code>n</code> intervals between two tasks with the same label.</p>\n\n<p>Return the <strong>minimum</strong> number of CPU intervals required to complete all tasks.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\" style=\"\n    border-color: var(--border-tertiary);\n    border-left-width: 2px;\n    color: var(--text-secondary);\n    font-size: .875rem;\n    margin-bottom: 1rem;\n    margin-top: 1rem;\n    overflow: visible;\n    padding-left: 1rem;\n\">\n<p><strong>Input:</strong> <span class=\"example-io\" style=\"\n    font-family: Menlo,sans-serif;\n    font-size: 0.85rem;\n\">tasks = [&quot;A&quot;,&quot;A&quot;,&quot;A&quot;,&quot;B&quot;,&quot;B&quot;,&quot;B&quot;], n = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\" style=\"\nfont-family: Menlo,sans-serif;\nfont-size: 0.85rem;\n\">8</span></p>\n\n<p><strong>Explanation:</strong> A possible sequence is: A -&gt; B -&gt; idle -&gt; A -&gt; B -&gt; idle -&gt; A -&gt; B.</p>\n\n<p>After completing task A, you must wait two intervals before doing A again. The same applies to task B. In the 3<sup>rd</sup> interval, neither A nor B can be done, so you idle. By the 4<sup>th</sup> interval, you can do A again as 2 intervals have passed.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\" style=\"\n    border-color: var(--border-tertiary);\n    border-left-width: 2px;\n    color: var(--text-secondary);\n    font-size: .875rem;\n    margin-bottom: 1rem;\n    margin-top: 1rem;\n    overflow: visible;\n    padding-left: 1rem;\n\">\n<p><strong>Input:</strong> <span class=\"example-io\" style=\"\n    font-family: Menlo,sans-serif;\n    font-size: 0.85rem;\n\">tasks = [&quot;A&quot;,&quot;C&quot;,&quot;A&quot;,&quot;B&quot;,&quot;D&quot;,&quot;B&quot;], n = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\" style=\"\n    font-family: Menlo,sans-serif;\n    font-size: 0.85rem;\n\">6</span></p>\n\n<p><strong>Explanation:</strong> A possible sequence is: A -&gt; B -&gt; C -&gt; D -&gt; A -&gt; B.</p>\n\n<p>With a cooling interval of 1, you can repeat a task after just one other task.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\" style=\"\n    border-color: var(--border-tertiary);\n    border-left-width: 2px;\n    color: var(--text-secondary);\n    font-size: .875rem;\n    margin-bottom: 1rem;\n    margin-top: 1rem;\n    overflow: visible;\n    padding-left: 1rem;\n\">\n<p><strong>Input:</strong> <span class=\"example-io\" style=\"\n    font-family: Menlo,sans-serif;\n    font-size: 0.85rem;\n\">tasks = [&quot;A&quot;,&quot;A&quot;,&quot;A&quot;, &quot;B&quot;,&quot;B&quot;,&quot;B&quot;], n = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\" style=\"\n    font-family: Menlo,sans-serif;\n    font-size: 0.85rem;\n\">10</span></p>\n\n<p><strong>Explanation:</strong> A possible sequence is: A -&gt; B -&gt; idle -&gt; idle -&gt; A -&gt; B -&gt; idle -&gt; idle -&gt; A -&gt; B.</p>\n\n<p>There are only two types of tasks, A and B, which need to be separated by 3 intervals. This leads to idling twice between repetitions of these tasks.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= tasks.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>tasks[i]</code> is an uppercase English letter.</li>\n\t<li><code>0 &lt;= n &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of CPU `tasks`, each labeled with a letter from A to Z, and a number `n`. Each CPU interval can be idle or allow the completion of one task. Tasks can be completed in any order, but there's a constraint: there has to be a gap of **at least** `n` intervals between two tasks with the same label.\n\nReturn the **minimum** number of CPU intervals required to complete all tasks.\n\n \n\n**Example 1:**\n\n**Input:** tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 2\n\n**Output:** 8\n\n**Explanation:** A possible sequence is: A -> B -> idle -> A -> B -> idle -> A -> B.\n\nAfter completing task A, you must wait two intervals before doing A again. The same applies to task B. In the 3rd interval, neither A nor B can be done, so you idle. By the 4th interval, you can do A again as 2 intervals have passed.\n\n**Example 2:**\n\n**Input:** tasks = [\"A\",\"C\",\"A\",\"B\",\"D\",\"B\"], n = 1\n\n**Output:** 6\n\n**Explanation:** A possible sequence is: A -> B -> C -> D -> A -> B.\n\nWith a cooling interval of 1, you can repeat a task after just one other task.\n\n**Example 3:**\n\n**Input:** tasks = [\"A\",\"A\",\"A\", \"B\",\"B\",\"B\"], n = 3\n\n**Output:** 10\n\n**Explanation:** A possible sequence is: A -> B -> idle -> idle -> A -> B -> idle -> idle -> A -> B.\n\nThere are only two types of tasks, A and B, which need to be separated by 3 intervals. This leads to idling twice between repetitions of these tasks.\n\n \n\n**Constraints:**\n\n  * `1 <= tasks.length <= 104`\n  * `tasks[i]` is an uppercase English letter.\n  * `0 <= n <= 100`",
+  "question": "You are given an array of CPU `tasks`, each labeled with a letter from A to Z, and a number `n`. Each CPU interval can be idle or allow the completion of one task. Tasks can be completed in any order, but there's a constraint: there has to be a gap of **at least** `n` intervals between two tasks with the same label.\n\nReturn the **minimum** number of CPU intervals required to complete all tasks.",
+  "examples": "**Example 1:**\n\n**Input:** tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 2\n\n**Output:** 8\n\n**Explanation:** A possible sequence is: A -> B -> idle -> A -> B -> idle -> A -> B.\n\nAfter completing task A, you must wait two intervals before doing A again. The same applies to task B. In the 3rd interval, neither A nor B can be done, so you idle. By the 4th interval, you can do A again as 2 intervals have passed.\n\n**Example 2:**\n\n**Input:** tasks = [\"A\",\"C\",\"A\",\"B\",\"D\",\"B\"], n = 1\n\n**Output:** 6\n\n**Explanation:** A possible sequence is: A -> B -> C -> D -> A -> B.\n\nWith a cooling interval of 1, you can repeat a task after just one other task.\n\n**Example 3:**\n\n**Input:** tasks = [\"A\",\"A\",\"A\", \"B\",\"B\",\"B\"], n = 3\n\n**Output:** 10\n\n**Explanation:** A possible sequence is: A -> B -> idle -> idle -> A -> B -> idle -> idle -> A -> B.\n\nThere are only two types of tasks, A and B, which need to be separated by 3 intervals. This leads to idling twice between repetitions of these tasks.",
+  "constraints": "**Constraints:**\n\n  * `1 <= tasks.length <= 104`\n  * `tasks[i]` is an uppercase English letter.\n  * `0 <= n <= 100`",
+  "topics": ["Array", "Hash Table", "Greedy", "Sorting", "Heap (Priority Queue)", "Counting"],
+  "total_accepted": 932052,
+  "total_submissions": 1486824,
+  "acceptance_rate": "62.7%",
+  "similar_questions": [
+    {
+      "title": "Rearrange String k Distance Apart",
+      "slug": "rearrange-string-k-distance-apart",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/rearrange-string-k-distance-apart/"
+    },
+    {
+      "title": "Reorganize String",
+      "slug": "reorganize-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reorganize-string/"
+    },
+    {
+      "title": "Maximum Number of Weeks for Which You Can Work",
+      "slug": "maximum-number-of-weeks-for-which-you-can-work",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-weeks-for-which-you-can-work/"
+    },
+    {
+      "title": "Find Minimum Time to Finish All Jobs II",
+      "slug": "find-minimum-time-to-finish-all-jobs-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs-ii/"
+    },
+    {
+      "title": "Task Scheduler II",
+      "slug": "task-scheduler-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/task-scheduler-ii/"
+    },
+    {
+      "title": "Generate Schedule",
+      "slug": "generate-schedule",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/generate-schedule/"
+    }
+  ],
+  "hints": [
+    "There are many different solutions for this problem, including a greedy algorithm.",
+    "For every cycle, find the most frequent letter that can be placed in this cycle. After placing, decrease the frequency of that letter by one.",
+    "Use Priority Queue."
+  ]
+}

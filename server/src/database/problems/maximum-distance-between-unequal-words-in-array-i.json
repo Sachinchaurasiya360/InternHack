@@ -1,0 +1,18 @@
+{
+  "id": "3696",
+  "title": "Maximum Distance Between Unequal Words in Array I",
+  "slug": "maximum-distance-between-unequal-words-in-array-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String"],
+  "total_accepted": 936,
+  "total_submissions": 1135,
+  "acceptance_rate": "82.5%",
+  "similar_questions": [],
+  "hints": ["Use bruteforce"]
+}

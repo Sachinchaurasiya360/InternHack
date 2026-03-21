@@ -1,0 +1,43 @@
+{
+  "id": "67",
+  "title": "Add Binary",
+  "slug": "add-binary",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two binary strings <code>a</code> and <code>b</code>, return <em>their sum as a binary string</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> a = \"11\", b = \"1\"\n<strong>Output:</strong> \"100\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> a = \"1010\", b = \"1011\"\n<strong>Output:</strong> \"10101\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= a.length, b.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>a</code> and <code>b</code> consist&nbsp;only of <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code> characters.</li>\n\t<li>Each string does not contain leading zeros except for the zero itself.</li>\n</ul>\n",
+  "content_markdown": "Given two binary strings `a` and `b`, return _their sum as a binary string_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** a = \"11\", b = \"1\"\n    **Output:** \"100\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = \"1010\", b = \"1011\"\n    **Output:** \"10101\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= a.length, b.length <= 104`\n  * `a` and `b` consist only of `'0'` or `'1'` characters.\n  * Each string does not contain leading zeros except for the zero itself.",
+  "question": "Given two binary strings `a` and `b`, return _their sum as a binary string_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** a = \"11\", b = \"1\"\n    **Output:** \"100\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = \"1010\", b = \"1011\"\n    **Output:** \"10101\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= a.length, b.length <= 104`\n  * `a` and `b` consist only of `'0'` or `'1'` characters.\n  * Each string does not contain leading zeros except for the zero itself.",
+  "topics": ["Math", "String", "Bit Manipulation", "Simulation"],
+  "total_accepted": 2270108,
+  "total_submissions": 3937182,
+  "acceptance_rate": "57.7%",
+  "similar_questions": [
+    {
+      "title": "Add Two Numbers",
+      "slug": "add-two-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-numbers/"
+    },
+    {
+      "title": "Multiply Strings",
+      "slug": "multiply-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/multiply-strings/"
+    },
+    {
+      "title": "Plus One",
+      "slug": "plus-one",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/plus-one/"
+    },
+    {
+      "title": "Add to Array-Form of Integer",
+      "slug": "add-to-array-form-of-integer",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-to-array-form-of-integer/"
+    }
+  ],
+  "hints": []
+}

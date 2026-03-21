@@ -1,0 +1,55 @@
+{
+  "id": "295",
+  "title": "Find Median from Data Stream",
+  "slug": "find-median-from-data-stream",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>The <strong>median</strong> is the middle value in an ordered integer list. If the size of the list is even, there is no middle value, and the median is the mean of the two middle values.</p>\n\n<ul>\n\t<li>For example, for <code>arr = [2,3,4]</code>, the median is <code>3</code>.</li>\n\t<li>For example, for <code>arr = [2,3]</code>, the median is <code>(2 + 3) / 2 = 2.5</code>.</li>\n</ul>\n\n<p>Implement the MedianFinder class:</p>\n\n<ul>\n\t<li><code>MedianFinder()</code> initializes the <code>MedianFinder</code> object.</li>\n\t<li><code>void addNum(int num)</code> adds the integer <code>num</code> from the data stream to the data structure.</li>\n\t<li><code>double findMedian()</code> returns the median of all elements so far. Answers within <code>10<sup>-5</sup></code> of the actual answer will be accepted.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;MedianFinder&quot;, &quot;addNum&quot;, &quot;addNum&quot;, &quot;findMedian&quot;, &quot;addNum&quot;, &quot;findMedian&quot;]\n[[], [1], [2], [], [3], []]\n<strong>Output</strong>\n[null, null, null, 1.5, null, 2.0]\n\n<strong>Explanation</strong>\nMedianFinder medianFinder = new MedianFinder();\nmedianFinder.addNum(1);    // arr = [1]\nmedianFinder.addNum(2);    // arr = [1, 2]\nmedianFinder.findMedian(); // return 1.5 (i.e., (1 + 2) / 2)\nmedianFinder.addNum(3);    // arr[1, 2, 3]\nmedianFinder.findMedian(); // return 2.0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-10<sup>5</sup> &lt;= num &lt;= 10<sup>5</sup></code></li>\n\t<li>There will be at least one element in the data structure before calling <code>findMedian</code>.</li>\n\t<li>At most <code>5 * 10<sup>4</sup></code> calls will be made to <code>addNum</code> and <code>findMedian</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong></p>\n\n<ul>\n\t<li>If all integer numbers from the stream are in the range <code>[0, 100]</code>, how would you optimize your solution?</li>\n\t<li>If <code>99%</code> of all integer numbers from the stream are in the range <code>[0, 100]</code>, how would you optimize your solution?</li>\n</ul>\n",
+  "content_markdown": "The **median** is the middle value in an ordered integer list. If the size of the list is even, there is no middle value, and the median is the mean of the two middle values.\n\n  * For example, for `arr = [2,3,4]`, the median is `3`.\n  * For example, for `arr = [2,3]`, the median is `(2 + 3) / 2 = 2.5`.\n\n\n\nImplement the MedianFinder class:\n\n  * `MedianFinder()` initializes the `MedianFinder` object.\n  * `void addNum(int num)` adds the integer `num` from the data stream to the data structure.\n  * `double findMedian()` returns the median of all elements so far. Answers within `10-5` of the actual answer will be accepted.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"MedianFinder\", \"addNum\", \"addNum\", \"findMedian\", \"addNum\", \"findMedian\"]\n    [[], [1], [2], [], [3], []]\n    **Output**\n    [null, null, null, 1.5, null, 2.0]\n    \n    **Explanation**\n    MedianFinder medianFinder = new MedianFinder();\n    medianFinder.addNum(1);    // arr = [1]\n    medianFinder.addNum(2);    // arr = [1, 2]\n    medianFinder.findMedian(); // return 1.5 (i.e., (1 + 2) / 2)\n    medianFinder.addNum(3);    // arr[1, 2, 3]\n    medianFinder.findMedian(); // return 2.0\n    \n\n \n\n**Constraints:**\n\n  * `-105 <= num <= 105`\n  * There will be at least one element in the data structure before calling `findMedian`.\n  * At most `5 * 104` calls will be made to `addNum` and `findMedian`.\n\n\n\n \n\n**Follow up:**\n\n  * If all integer numbers from the stream are in the range `[0, 100]`, how would you optimize your solution?\n  * If `99%` of all integer numbers from the stream are in the range `[0, 100]`, how would you optimize your solution?",
+  "question": "The **median** is the middle value in an ordered integer list. If the size of the list is even, there is no middle value, and the median is the mean of the two middle values.\n\n  * For example, for `arr = [2,3,4]`, the median is `3`.\n  * For example, for `arr = [2,3]`, the median is `(2 + 3) / 2 = 2.5`.\n\n\n\nImplement the MedianFinder class:\n\n  * `MedianFinder()` initializes the `MedianFinder` object.\n  * `void addNum(int num)` adds the integer `num` from the data stream to the data structure.\n  * `double findMedian()` returns the median of all elements so far. Answers within `10-5` of the actual answer will be accepted.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"MedianFinder\", \"addNum\", \"addNum\", \"findMedian\", \"addNum\", \"findMedian\"]\n    [[], [1], [2], [], [3], []]\n    **Output**\n    [null, null, null, 1.5, null, 2.0]\n    \n    **Explanation**\n    MedianFinder medianFinder = new MedianFinder();\n    medianFinder.addNum(1);    // arr = [1]\n    medianFinder.addNum(2);    // arr = [1, 2]\n    medianFinder.findMedian(); // return 1.5 (i.e., (1 + 2) / 2)\n    medianFinder.addNum(3);    // arr[1, 2, 3]\n    medianFinder.findMedian(); // return 2.0",
+  "constraints": "**Constraints:**\n\n  * `-105 <= num <= 105`\n  * There will be at least one element in the data structure before calling `findMedian`.\n  * At most `5 * 104` calls will be made to `addNum` and `findMedian`.",
+  "topics": ["Two Pointers", "Design", "Sorting", "Heap (Priority Queue)", "Data Stream"],
+  "total_accepted": 1176671,
+  "total_submissions": 2171332,
+  "acceptance_rate": "54.2%",
+  "similar_questions": [
+    {
+      "title": "Sliding Window Median",
+      "slug": "sliding-window-median",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sliding-window-median/"
+    },
+    {
+      "title": "Finding MK Average",
+      "slug": "finding-mk-average",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/finding-mk-average/"
+    },
+    {
+      "title": "Sequentially Ordinal Rank Tracker",
+      "slug": "sequentially-ordinal-rank-tracker",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sequentially-ordinal-rank-tracker/"
+    },
+    {
+      "title": "Minimum Operations to Make Median of Array Equal to K",
+      "slug": "minimum-operations-to-make-median-of-array-equal-to-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-median-of-array-equal-to-k/"
+    },
+    {
+      "title": "Minimum Operations to Make Subarray Elements Equal",
+      "slug": "minimum-operations-to-make-subarray-elements-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-subarray-elements-equal/"
+    },
+    {
+      "title": "Minimum Operations to Make Elements Within K Subarrays Equal",
+      "slug": "minimum-operations-to-make-elements-within-k-subarrays-equal",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-elements-within-k-subarrays-equal/"
+    }
+  ],
+  "hints": []
+}

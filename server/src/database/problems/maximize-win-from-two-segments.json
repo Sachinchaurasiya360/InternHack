@@ -1,0 +1,34 @@
+{
+  "id": "2555",
+  "title": "Maximize Win From Two Segments",
+  "slug": "maximize-win-from-two-segments",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are some prizes on the <strong>X-axis</strong>. You are given an integer array <code>prizePositions</code> that is <strong>sorted in non-decreasing order</strong>, where <code>prizePositions[i]</code> is the position of the <code>i<sup>th</sup></code> prize. There could be different prizes at the same position on the line. You are also given an integer <code>k</code>.</p>\n\n<p>You are allowed to select two segments with integer endpoints. The length of each segment must be <code>k</code>. You will collect all prizes whose position falls within at least one of the two selected segments (including the endpoints of the segments). The two selected segments may intersect.</p>\n\n<ul>\n\t<li>For example if <code>k = 2</code>, you can choose segments <code>[1, 3]</code> and <code>[2, 4]</code>, and you will win any prize <font face=\"monospace\">i</font> that satisfies <code>1 &lt;= prizePositions[i] &lt;= 3</code> or <code>2 &lt;= prizePositions[i] &lt;= 4</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>maximum</strong> number of prizes you can win if you choose the two segments optimally</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> prizePositions = [1,1,2,2,3,3,5], k = 2\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> In this example, you can win all 7 prizes by selecting two segments [1, 3] and [3, 5].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> prizePositions = [1,2,3,4], k = 0\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> For this example, <strong>one choice</strong> for the segments is <code>[3, 3]</code> and <code>[4, 4],</code> and you will be able to get <code>2</code> prizes. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= prizePositions.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= prizePositions[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>0 &lt;= k &lt;= 10<sup>9</sup> </code></li>\n\t<li><code>prizePositions</code> is sorted in non-decreasing order.</li>\n</ul>\n\n<p>&nbsp;</p>\n<style type=\"text/css\">.spoilerbutton {display:block; border:dashed; padding: 0px 0px; margin:10px 0px; font-size:150%; font-weight: bold; color:#000000; background-color:cyan; outline:0; \n}\n.spoiler {overflow:hidden;}\n.spoiler > div {-webkit-transition: all 0s ease;-moz-transition: margin 0s ease;-o-transition: all 0s ease;transition: margin 0s ease;}\n.spoilerbutton[value=\"Show Message\"] + .spoiler > div {margin-top:-500%;}\n.spoilerbutton[value=\"Hide Message\"] + .spoiler {padding:5px;}\n</style>\n",
+  "content_markdown": "There are some prizes on the **X-axis**. You are given an integer array `prizePositions` that is **sorted in non-decreasing order** , where `prizePositions[i]` is the position of the `ith` prize. There could be different prizes at the same position on the line. You are also given an integer `k`.\n\nYou are allowed to select two segments with integer endpoints. The length of each segment must be `k`. You will collect all prizes whose position falls within at least one of the two selected segments (including the endpoints of the segments). The two selected segments may intersect.\n\n  * For example if `k = 2`, you can choose segments `[1, 3]` and `[2, 4]`, and you will win any prize i that satisfies `1 <= prizePositions[i] <= 3` or `2 <= prizePositions[i] <= 4`.\n\n\n\nReturn _the**maximum** number of prizes you can win if you choose the two segments optimally_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** prizePositions = [1,1,2,2,3,3,5], k = 2\n    **Output:** 7\n    **Explanation:** In this example, you can win all 7 prizes by selecting two segments [1, 3] and [3, 5].\n    \n\n**Example 2:**\n    \n    \n    **Input:** prizePositions = [1,2,3,4], k = 0\n    **Output:** 2\n    **Explanation:** For this example, **one choice** for the segments is [3, 3] and [4, 4], and you will be able to get 2 prizes. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= prizePositions.length <= 105`\n  * `1 <= prizePositions[i] <= 109`\n  * `0 <= k <= 109 `\n  * `prizePositions` is sorted in non-decreasing order.",
+  "question": "There are some prizes on the **X-axis**. You are given an integer array `prizePositions` that is **sorted in non-decreasing order** , where `prizePositions[i]` is the position of the `ith` prize. There could be different prizes at the same position on the line. You are also given an integer `k`.\n\nYou are allowed to select two segments with integer endpoints. The length of each segment must be `k`. You will collect all prizes whose position falls within at least one of the two selected segments (including the endpoints of the segments). The two selected segments may intersect.\n\n  * For example if `k = 2`, you can choose segments `[1, 3]` and `[2, 4]`, and you will win any prize i that satisfies `1 <= prizePositions[i] <= 3` or `2 <= prizePositions[i] <= 4`.\n\n\n\nReturn _the**maximum** number of prizes you can win if you choose the two segments optimally_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** prizePositions = [1,1,2,2,3,3,5], k = 2\n    **Output:** 7\n    **Explanation:** In this example, you can win all 7 prizes by selecting two segments [1, 3] and [3, 5].\n    \n\n**Example 2:**\n    \n    \n    **Input:** prizePositions = [1,2,3,4], k = 0\n    **Output:** 2\n    **Explanation:** For this example, **one choice** for the segments is [3, 3] and [4, 4], and you will be able to get 2 prizes.",
+  "constraints": "**Constraints:**\n\n  * `1 <= prizePositions.length <= 105`\n  * `1 <= prizePositions[i] <= 109`\n  * `0 <= k <= 109 `\n  * `prizePositions` is sorted in non-decreasing order.",
+  "topics": ["Array", "Binary Search", "Sliding Window"],
+  "total_accepted": 15199,
+  "total_submissions": 40591,
+  "acceptance_rate": "37.4%",
+  "similar_questions": [
+    {
+      "title": "Best Time to Buy and Sell Stock III",
+      "slug": "best-time-to-buy-and-sell-stock-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/"
+    },
+    {
+      "title": "Two Best Non-Overlapping Events",
+      "slug": "two-best-non-overlapping-events",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/two-best-non-overlapping-events/"
+    }
+  ],
+  "hints": [
+    "Try solving the problem for one interval.",
+    "Using the solution with one interval, how can you combine that with a second interval?"
+  ]
+}

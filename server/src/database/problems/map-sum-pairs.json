@@ -1,0 +1,31 @@
+{
+  "id": "677",
+  "title": "Map Sum Pairs",
+  "slug": "map-sum-pairs",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Design a map that allows you to do the following:</p>\n\n<ul>\n\t<li>Maps a string key to a given value.</li>\n\t<li>Returns the sum of the values that have a key with a prefix equal to a given string.</li>\n</ul>\n\n<p>Implement the <code>MapSum</code> class:</p>\n\n<ul>\n\t<li><code>MapSum()</code> Initializes the <code>MapSum</code> object.</li>\n\t<li><code>void insert(String key, int val)</code> Inserts the <code>key-val</code> pair into the map. If the <code>key</code> already existed, the original <code>key-value</code> pair will be overridden to the new one.</li>\n\t<li><code>int sum(string prefix)</code> Returns the sum of all the pairs&#39; value whose <code>key</code> starts with the <code>prefix</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;MapSum&quot;, &quot;insert&quot;, &quot;sum&quot;, &quot;insert&quot;, &quot;sum&quot;]\n[[], [&quot;apple&quot;, 3], [&quot;ap&quot;], [&quot;app&quot;, 2], [&quot;ap&quot;]]\n<strong>Output</strong>\n[null, null, 3, null, 5]\n\n<strong>Explanation</strong>\nMapSum mapSum = new MapSum();\nmapSum.insert(&quot;apple&quot;, 3);  \nmapSum.sum(&quot;ap&quot;);           // return 3 (<u>ap</u>ple = 3)\nmapSum.insert(&quot;app&quot;, 2);    \nmapSum.sum(&quot;ap&quot;);           // return 5 (<u>ap</u>ple + <u>ap</u>p = 3 + 2 = 5)\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= key.length, prefix.length &lt;= 50</code></li>\n\t<li><code>key</code> and <code>prefix</code> consist of only lowercase English letters.</li>\n\t<li><code>1 &lt;= val &lt;= 1000</code></li>\n\t<li>At most <code>50</code> calls will be made to <code>insert</code> and <code>sum</code>.</li>\n</ul>\n",
+  "content_markdown": "Design a map that allows you to do the following:\n\n  * Maps a string key to a given value.\n  * Returns the sum of the values that have a key with a prefix equal to a given string.\n\n\n\nImplement the `MapSum` class:\n\n  * `MapSum()` Initializes the `MapSum` object.\n  * `void insert(String key, int val)` Inserts the `key-val` pair into the map. If the `key` already existed, the original `key-value` pair will be overridden to the new one.\n  * `int sum(string prefix)` Returns the sum of all the pairs' value whose `key` starts with the `prefix`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"MapSum\", \"insert\", \"sum\", \"insert\", \"sum\"]\n    [[], [\"apple\", 3], [\"ap\"], [\"app\", 2], [\"ap\"]]\n    **Output**\n    [null, null, 3, null, 5]\n    \n    **Explanation**\n    MapSum mapSum = new MapSum();\n    mapSum.insert(\"apple\", 3);  \n    mapSum.sum(\"ap\");           // return 3 (_ap_ ple = 3)\n    mapSum.insert(\"app\", 2);    \n    mapSum.sum(\"ap\");           // return 5 (_ap_ ple + _ap_ p = 3 + 2 = 5)\n    \n\n \n\n**Constraints:**\n\n  * `1 <= key.length, prefix.length <= 50`\n  * `key` and `prefix` consist of only lowercase English letters.\n  * `1 <= val <= 1000`\n  * At most `50` calls will be made to `insert` and `sum`.",
+  "question": "Design a map that allows you to do the following:\n\n  * Maps a string key to a given value.\n  * Returns the sum of the values that have a key with a prefix equal to a given string.\n\n\n\nImplement the `MapSum` class:\n\n  * `MapSum()` Initializes the `MapSum` object.\n  * `void insert(String key, int val)` Inserts the `key-val` pair into the map. If the `key` already existed, the original `key-value` pair will be overridden to the new one.\n  * `int sum(string prefix)` Returns the sum of all the pairs' value whose `key` starts with the `prefix`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"MapSum\", \"insert\", \"sum\", \"insert\", \"sum\"]\n    [[], [\"apple\", 3], [\"ap\"], [\"app\", 2], [\"ap\"]]\n    **Output**\n    [null, null, 3, null, 5]\n    \n    **Explanation**\n    MapSum mapSum = new MapSum();\n    mapSum.insert(\"apple\", 3);  \n    mapSum.sum(\"ap\");           // return 3 (_ap_ ple = 3)\n    mapSum.insert(\"app\", 2);    \n    mapSum.sum(\"ap\");           // return 5 (_ap_ ple + _ap_ p = 3 + 2 = 5)",
+  "constraints": "**Constraints:**\n\n  * `1 <= key.length, prefix.length <= 50`\n  * `key` and `prefix` consist of only lowercase English letters.\n  * `1 <= val <= 1000`\n  * At most `50` calls will be made to `insert` and `sum`.",
+  "topics": ["Hash Table", "String", "Design", "Trie"],
+  "total_accepted": 139492,
+  "total_submissions": 244356,
+  "acceptance_rate": "57.1%",
+  "similar_questions": [
+    {
+      "title": "Sort the Jumbled Numbers",
+      "slug": "sort-the-jumbled-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-the-jumbled-numbers/"
+    },
+    {
+      "title": "Sum of Prefix Scores of Strings",
+      "slug": "sum-of-prefix-scores-of-strings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sum-of-prefix-scores-of-strings/"
+    }
+  ],
+  "hints": []
+}

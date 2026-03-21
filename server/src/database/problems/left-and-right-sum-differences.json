@@ -1,0 +1,46 @@
+{
+  "id": "2574",
+  "title": "Left and Right Sum Differences",
+  "slug": "left-and-right-sum-differences",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code> of size <code>n</code>.</p>\n\n<p>Define two arrays <code>leftSum</code> and <code>rightSum</code> where:</p>\n\n<ul>\n\t<li><code>leftSum[i]</code> is the sum of elements to the left of the index <code>i</code> in the array <code>nums</code>. If there is no such element, <code>leftSum[i] = 0</code>.</li>\n\t<li><code>rightSum[i]</code> is the sum of elements to the right of the index <code>i</code> in the array <code>nums</code>. If there is no such element, <code>rightSum[i] = 0</code>.</li>\n</ul>\n\n<p>Return an integer array <code>answer</code> of size <code>n</code> where <code>answer[i] = |leftSum[i] - rightSum[i]|</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,4,8,3]\n<strong>Output:</strong> [15,1,11,22]\n<strong>Explanation:</strong> The array leftSum is [0,10,14,22] and the array rightSum is [15,11,3,0].\nThe array answer is [|0 - 15|,|10 - 11|,|14 - 3|,|22 - 0|] = [15,1,11,22].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1]\n<strong>Output:</strong> [0]\n<strong>Explanation:</strong> The array leftSum is [0] and the array rightSum is [0].\nThe array answer is [|0 - 0|] = [0].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums` of size `n`.\n\nDefine two arrays `leftSum` and `rightSum` where:\n\n  * `leftSum[i]` is the sum of elements to the left of the index `i` in the array `nums`. If there is no such element, `leftSum[i] = 0`.\n  * `rightSum[i]` is the sum of elements to the right of the index `i` in the array `nums`. If there is no such element, `rightSum[i] = 0`.\n\n\n\nReturn an integer array `answer` of size `n` where `answer[i] = |leftSum[i] - rightSum[i]|`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [10,4,8,3]\n    **Output:** [15,1,11,22]\n    **Explanation:** The array leftSum is [0,10,14,22] and the array rightSum is [15,11,3,0].\n    The array answer is [|0 - 15|,|10 - 11|,|14 - 3|,|22 - 0|] = [15,1,11,22].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** [0]\n    **Explanation:** The array leftSum is [0] and the array rightSum is [0].\n    The array answer is [|0 - 0|] = [0].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 105`",
+  "question": "You are given a **0-indexed** integer array `nums` of size `n`.\n\nDefine two arrays `leftSum` and `rightSum` where:\n\n  * `leftSum[i]` is the sum of elements to the left of the index `i` in the array `nums`. If there is no such element, `leftSum[i] = 0`.\n  * `rightSum[i]` is the sum of elements to the right of the index `i` in the array `nums`. If there is no such element, `rightSum[i] = 0`.\n\n\n\nReturn an integer array `answer` of size `n` where `answer[i] = |leftSum[i] - rightSum[i]|`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [10,4,8,3]\n    **Output:** [15,1,11,22]\n    **Explanation:** The array leftSum is [0,10,14,22] and the array rightSum is [15,11,3,0].\n    The array answer is [|0 - 15|,|10 - 11|,|14 - 3|,|22 - 0|] = [15,1,11,22].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** [0]\n    **Explanation:** The array leftSum is [0] and the array rightSum is [0].\n    The array answer is [|0 - 0|] = [0].",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 105`",
+  "topics": ["Array", "Prefix Sum"],
+  "total_accepted": 217113,
+  "total_submissions": 246889,
+  "acceptance_rate": "87.9%",
+  "similar_questions": [
+    {
+      "title": "Find Pivot Index",
+      "slug": "find-pivot-index",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-pivot-index/"
+    },
+    {
+      "title": "Find the Middle Index in Array",
+      "slug": "find-the-middle-index-in-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-middle-index-in-array/"
+    },
+    {
+      "title": "Find the Distinct Difference Array",
+      "slug": "find-the-distinct-difference-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-distinct-difference-array/"
+    },
+    {
+      "title": "Find the N-th Value After K Seconds",
+      "slug": "find-the-n-th-value-after-k-seconds",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-n-th-value-after-k-seconds/"
+    }
+  ],
+  "hints": [
+    "For each index i, maintain two variables leftSum and rightSum.",
+    "Iterate on the range j: [0 … i - 1] and add nums[j] to the leftSum and similarly iterate on the range j: [i + 1 … nums.length - 1] and add nums[j] to the rightSum."
+  ]
+}

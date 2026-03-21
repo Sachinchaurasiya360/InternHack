@@ -1,0 +1,31 @@
+{
+  "id": "130",
+  "title": "Surrounded Regions",
+  "slug": "surrounded-regions",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> matrix <code>board</code> containing <strong>letters</strong> <code>&#39;X&#39;</code> and <code>&#39;O&#39;</code>, <strong>capture regions</strong> that are <strong>surrounded</strong>:</p>\n\n<ul>\n\t<li><strong>Connect</strong>: A cell is connected to adjacent cells horizontally or vertically.</li>\n\t<li><strong>Region</strong>: To form a region <strong>connect every</strong> <code>&#39;O&#39;</code> cell.</li>\n\t<li><strong>Surround</strong>: A region is surrounded if none of the <code>&#39;O&#39;</code> cells in that region are on the edge of the board. Such regions are <strong>completely enclosed </strong>by <code>&#39;X&#39;</code> cells.</li>\n</ul>\n\n<p>To capture a <strong>surrounded region</strong>, replace all <code>&#39;O&#39;</code>s with <code>&#39;X&#39;</code>s <strong>in-place</strong> within the original board. You do not need to return anything.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">board = [[&quot;X&quot;,&quot;X&quot;,&quot;X&quot;,&quot;X&quot;],[&quot;X&quot;,&quot;O&quot;,&quot;O&quot;,&quot;X&quot;],[&quot;X&quot;,&quot;X&quot;,&quot;O&quot;,&quot;X&quot;],[&quot;X&quot;,&quot;O&quot;,&quot;X&quot;,&quot;X&quot;]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[[&quot;X&quot;,&quot;X&quot;,&quot;X&quot;,&quot;X&quot;],[&quot;X&quot;,&quot;X&quot;,&quot;X&quot;,&quot;X&quot;],[&quot;X&quot;,&quot;X&quot;,&quot;X&quot;,&quot;X&quot;],[&quot;X&quot;,&quot;O&quot;,&quot;X&quot;,&quot;X&quot;]]</span></p>\n\n<p><strong>Explanation:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/19/xogrid.jpg\" style=\"width: 367px; height: 158px;\" />\n<p>In the above diagram, the bottom region is not captured because it is on the edge of the board and cannot be surrounded.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">board = [[&quot;X&quot;]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[[&quot;X&quot;]]</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == board.length</code></li>\n\t<li><code>n == board[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>board[i][j]</code> is <code>&#39;X&#39;</code> or <code>&#39;O&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` matrix `board` containing **letters** `'X'` and `'O'`, **capture regions** that are **surrounded** :\n\n  * **Connect** : A cell is connected to adjacent cells horizontally or vertically.\n  * **Region** : To form a region **connect every** `'O'` cell.\n  * **Surround** : A region is surrounded if none of the `'O'` cells in that region are on the edge of the board. Such regions are **completely enclosed** by `'X'` cells.\n\n\n\nTo capture a **surrounded region** , replace all `'O'`s with `'X'`s **in-place** within the original board. You do not need to return anything.\n\n \n\n**Example 1:**\n\n**Input:** board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]\n\n**Output:** [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/xogrid.jpg)\n\nIn the above diagram, the bottom region is not captured because it is on the edge of the board and cannot be surrounded.\n\n**Example 2:**\n\n**Input:** board = [[\"X\"]]\n\n**Output:** [[\"X\"]]\n\n \n\n**Constraints:**\n\n  * `m == board.length`\n  * `n == board[i].length`\n  * `1 <= m, n <= 200`\n  * `board[i][j]` is `'X'` or `'O'`.",
+  "question": "You are given an `m x n` matrix `board` containing **letters** `'X'` and `'O'`, **capture regions** that are **surrounded** :\n\n  * **Connect** : A cell is connected to adjacent cells horizontally or vertically.\n  * **Region** : To form a region **connect every** `'O'` cell.\n  * **Surround** : A region is surrounded if none of the `'O'` cells in that region are on the edge of the board. Such regions are **completely enclosed** by `'X'` cells.\n\n\n\nTo capture a **surrounded region** , replace all `'O'`s with `'X'`s **in-place** within the original board. You do not need to return anything.",
+  "examples": "**Example 1:**\n\n**Input:** board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]\n\n**Output:** [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/xogrid.jpg)\n\nIn the above diagram, the bottom region is not captured because it is on the edge of the board and cannot be surrounded.\n\n**Example 2:**\n\n**Input:** board = [[\"X\"]]\n\n**Output:** [[\"X\"]]",
+  "constraints": "**Constraints:**\n\n  * `m == board.length`\n  * `n == board[i].length`\n  * `1 <= m, n <= 200`\n  * `board[i][j]` is `'X'` or `'O'`.",
+  "topics": ["Array", "Depth-First Search", "Breadth-First Search", "Union-Find", "Matrix"],
+  "total_accepted": 1149058,
+  "total_submissions": 2566003,
+  "acceptance_rate": "44.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-islands/"
+    },
+    {
+      "title": "Walls and Gates",
+      "slug": "walls-and-gates",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/walls-and-gates/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,67 @@
+{
+  "id": "2",
+  "title": "Add Two Numbers",
+  "slug": "add-two-numbers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <strong>non-empty</strong> linked lists representing two non-negative integers. The digits are stored in <strong>reverse order</strong>, and each of their nodes contains a single digit. Add the two numbers and return the sum&nbsp;as a linked list.</p>\n\n<p>You may assume the two numbers do not contain any leading zero, except the number 0 itself.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/02/addtwonumber1.jpg\" style=\"width: 483px; height: 342px;\" />\n<pre>\n<strong>Input:</strong> l1 = [2,4,3], l2 = [5,6,4]\n<strong>Output:</strong> [7,0,8]\n<strong>Explanation:</strong> 342 + 465 = 807.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> l1 = [0], l2 = [0]\n<strong>Output:</strong> [0]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]\n<strong>Output:</strong> [8,9,9,9,0,0,0,1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in each linked list is in the range <code>[1, 100]</code>.</li>\n\t<li><code>0 &lt;= Node.val &lt;= 9</code></li>\n\t<li>It is guaranteed that the list represents a number that does not have leading zeros.</li>\n</ul>\n",
+  "content_markdown": "You are given two **non-empty** linked lists representing two non-negative integers. The digits are stored in **reverse order** , and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/02/addtwonumber1.jpg)\n    \n    \n    **Input:** l1 = [2,4,3], l2 = [5,6,4]\n    **Output:** [7,0,8]\n    **Explanation:** 342 + 465 = 807.\n    \n\n**Example 2:**\n    \n    \n    **Input:** l1 = [0], l2 = [0]\n    **Output:** [0]\n    \n\n**Example 3:**\n    \n    \n    **Input:** l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]\n    **Output:** [8,9,9,9,0,0,0,1]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in each linked list is in the range `[1, 100]`.\n  * `0 <= Node.val <= 9`\n  * It is guaranteed that the list represents a number that does not have leading zeros.",
+  "question": "You are given two **non-empty** linked lists representing two non-negative integers. The digits are stored in **reverse order** , and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/02/addtwonumber1.jpg)\n    \n    \n    **Input:** l1 = [2,4,3], l2 = [5,6,4]\n    **Output:** [7,0,8]\n    **Explanation:** 342 + 465 = 807.\n    \n\n**Example 2:**\n    \n    \n    **Input:** l1 = [0], l2 = [0]\n    **Output:** [0]\n    \n\n**Example 3:**\n    \n    \n    **Input:** l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]\n    **Output:** [8,9,9,9,0,0,0,1]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in each linked list is in the range `[1, 100]`.\n  * `0 <= Node.val <= 9`\n  * It is guaranteed that the list represents a number that does not have leading zeros.",
+  "topics": ["Linked List", "Math", "Recursion"],
+  "total_accepted": 6782137,
+  "total_submissions": 14136221,
+  "acceptance_rate": "48.0%",
+  "similar_questions": [
+    {
+      "title": "Multiply Strings",
+      "slug": "multiply-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/multiply-strings/"
+    },
+    {
+      "title": "Add Binary",
+      "slug": "add-binary",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-binary/"
+    },
+    {
+      "title": "Sum of Two Integers",
+      "slug": "sum-of-two-integers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-two-integers/"
+    },
+    {
+      "title": "Add Strings",
+      "slug": "add-strings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-strings/"
+    },
+    {
+      "title": "Add Two Numbers II",
+      "slug": "add-two-numbers-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-numbers-ii/"
+    },
+    {
+      "title": "Add to Array-Form of Integer",
+      "slug": "add-to-array-form-of-integer",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-to-array-form-of-integer/"
+    },
+    {
+      "title": "Add Two Polynomials Represented as Linked Lists",
+      "slug": "add-two-polynomials-represented-as-linked-lists",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-polynomials-represented-as-linked-lists/"
+    },
+    {
+      "title": "Double a Number Represented as a Linked List",
+      "slug": "double-a-number-represented-as-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/double-a-number-represented-as-a-linked-list/"
+    }
+  ],
+  "hints": []
+}

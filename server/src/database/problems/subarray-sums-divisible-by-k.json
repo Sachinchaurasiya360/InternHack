@@ -1,0 +1,55 @@
+{
+  "id": "974",
+  "title": "Subarray Sums Divisible by K",
+  "slug": "subarray-sums-divisible-by-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the number of non-empty <strong>subarrays</strong> that have a sum divisible by </em><code>k</code>.</p>\n\n<p>A <strong>subarray</strong> is a <strong>contiguous</strong> part of an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,5,0,-2,-3,1], k = 5\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> There are 7 subarrays with a sum divisible by k = 5:\n[4, 5, 0, -2, -3, 1], [5], [5, 0], [5, 0, -2, -3], [0], [0, -2, -3], [-2, -3]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5], k = 9\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>2 &lt;= k &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return _the number of non-empty**subarrays** that have a sum divisible by _`k`.\n\nA **subarray** is a **contiguous** part of an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,5,0,-2,-3,1], k = 5\n    **Output:** 7\n    **Explanation:** There are 7 subarrays with a sum divisible by k = 5:\n    [4, 5, 0, -2, -3, 1], [5], [5, 0], [5, 0, -2, -3], [0], [0, -2, -3], [-2, -3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5], k = 9\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-104 <= nums[i] <= 104`\n  * `2 <= k <= 104`",
+  "question": "Given an integer array `nums` and an integer `k`, return _the number of non-empty**subarrays** that have a sum divisible by _`k`.\n\nA **subarray** is a **contiguous** part of an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,5,0,-2,-3,1], k = 5\n    **Output:** 7\n    **Explanation:** There are 7 subarrays with a sum divisible by k = 5:\n    [4, 5, 0, -2, -3, 1], [5], [5, 0], [5, 0, -2, -3], [0], [0, -2, -3], [-2, -3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5], k = 9\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-104 <= nums[i] <= 104`\n  * `2 <= k <= 104`",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 470654,
+  "total_submissions": 839452,
+  "acceptance_rate": "56.1%",
+  "similar_questions": [
+    {
+      "title": "Subarray Sum Equals K",
+      "slug": "subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sum-equals-k/"
+    },
+    {
+      "title": "Make Sum Divisible by P",
+      "slug": "make-sum-divisible-by-p",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/make-sum-divisible-by-p/"
+    },
+    {
+      "title": "Count Number of Bad Pairs",
+      "slug": "count-number-of-bad-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-bad-pairs/"
+    },
+    {
+      "title": "Find the Divisibility Array of a String",
+      "slug": "find-the-divisibility-array-of-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-divisibility-array-of-a-string/"
+    },
+    {
+      "title": "Count of Interesting Subarrays",
+      "slug": "count-of-interesting-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-of-interesting-subarrays/"
+    },
+    {
+      "title": "Maximum Subarray Sum With Length Divisible by K",
+      "slug": "maximum-subarray-sum-with-length-divisible-by-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray-sum-with-length-divisible-by-k/"
+    }
+  ],
+  "hints": []
+}

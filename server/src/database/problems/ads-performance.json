@@ -1,0 +1,18 @@
+{
+  "id": "1322",
+  "title": "Ads Performance",
+  "slug": "ads-performance",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 52426,
+  "total_submissions": 89323,
+  "acceptance_rate": "58.7%",
+  "similar_questions": [],
+  "hints": []
+}

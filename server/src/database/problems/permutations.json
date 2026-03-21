@@ -1,0 +1,43 @@
+{
+  "id": "46",
+  "title": "Permutations",
+  "slug": "permutations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> of distinct integers, return all the possible <span data-keyword=\"permutation-array\">permutations</span>. You can return the answer in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [0,1]\n<strong>Output:</strong> [[0,1],[1,0]]\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> nums = [1]\n<strong>Output:</strong> [[1]]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 6</code></li>\n\t<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>\n\t<li>All the integers of <code>nums</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given an array `nums` of distinct integers, return all the possible permutations. You can return the answer in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1]\n    **Output:** [[0,1],[1,0]]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** [[1]]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 6`\n  * `-10 <= nums[i] <= 10`\n  * All the integers of `nums` are **unique**.",
+  "question": "Given an array `nums` of distinct integers, return all the possible permutations. You can return the answer in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1]\n    **Output:** [[0,1],[1,0]]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** [[1]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 6`\n  * `-10 <= nums[i] <= 10`\n  * All the integers of `nums` are **unique**.",
+  "topics": ["Array", "Backtracking"],
+  "total_accepted": 2992874,
+  "total_submissions": 3665474,
+  "acceptance_rate": "81.7%",
+  "similar_questions": [
+    {
+      "title": "Next Permutation",
+      "slug": "next-permutation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/next-permutation/"
+    },
+    {
+      "title": "Permutations II",
+      "slug": "permutations-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/permutations-ii/"
+    },
+    {
+      "title": "Permutation Sequence",
+      "slug": "permutation-sequence",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/permutation-sequence/"
+    },
+    {
+      "title": "Combinations",
+      "slug": "combinations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/combinations/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,43 @@
+{
+  "id": "188",
+  "title": "Best Time to Buy and Sell Stock IV",
+  "slug": "best-time-to-buy-and-sell-stock-iv",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>prices</code> where <code>prices[i]</code> is the price of a given stock on the <code>i<sup>th</sup></code> day, and an integer <code>k</code>.</p>\n\n<p>Find the maximum profit you can achieve. You may complete at most <code>k</code> transactions: i.e. you may buy at most <code>k</code> times and sell at most <code>k</code> times.</p>\n\n<p><strong>Note:</strong> You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 2, prices = [2,4,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Buy on day 1 (price = 2) and sell on day 2 (price = 4), profit = 4-2 = 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 2, prices = [3,2,6,5,0,3]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> Buy on day 2 (price = 2) and sell on day 3 (price = 6), profit = 6-2 = 4. Then buy on day 5 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= 100</code></li>\n\t<li><code>1 &lt;= prices.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= prices[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `prices` where `prices[i]` is the price of a given stock on the `ith` day, and an integer `k`.\n\nFind the maximum profit you can achieve. You may complete at most `k` transactions: i.e. you may buy at most `k` times and sell at most `k` times.\n\n**Note:** You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** k = 2, prices = [2,4,1]\n    **Output:** 2\n    **Explanation:** Buy on day 1 (price = 2) and sell on day 2 (price = 4), profit = 4-2 = 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** k = 2, prices = [3,2,6,5,0,3]\n    **Output:** 7\n    **Explanation:** Buy on day 2 (price = 2) and sell on day 3 (price = 6), profit = 6-2 = 4. Then buy on day 5 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= 100`\n  * `1 <= prices.length <= 1000`\n  * `0 <= prices[i] <= 1000`",
+  "question": "You are given an integer array `prices` where `prices[i]` is the price of a given stock on the `ith` day, and an integer `k`.\n\nFind the maximum profit you can achieve. You may complete at most `k` transactions: i.e. you may buy at most `k` times and sell at most `k` times.\n\n**Note:** You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** k = 2, prices = [2,4,1]\n    **Output:** 2\n    **Explanation:** Buy on day 1 (price = 2) and sell on day 2 (price = 4), profit = 4-2 = 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** k = 2, prices = [3,2,6,5,0,3]\n    **Output:** 7\n    **Explanation:** Buy on day 2 (price = 2) and sell on day 3 (price = 6), profit = 6-2 = 4. Then buy on day 5 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= 100`\n  * `1 <= prices.length <= 1000`\n  * `0 <= prices[i] <= 1000`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 695105,
+  "total_submissions": 1402963,
+  "acceptance_rate": "49.5%",
+  "similar_questions": [
+    {
+      "title": "Best Time to Buy and Sell Stock",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock II",
+      "slug": "best-time-to-buy-and-sell-stock-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock III",
+      "slug": "best-time-to-buy-and-sell-stock-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/"
+    },
+    {
+      "title": "Maximum Profit From Trading Stocks",
+      "slug": "maximum-profit-from-trading-stocks",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-profit-from-trading-stocks/"
+    }
+  ],
+  "hints": []
+}

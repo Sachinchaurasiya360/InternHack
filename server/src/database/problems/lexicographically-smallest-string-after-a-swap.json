@@ -1,0 +1,27 @@
+{
+  "id": "3216",
+  "title": "Lexicographically Smallest String After a Swap",
+  "slug": "lexicographically-smallest-string-after-a-swap",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> containing only digits, return the <span data-keyword=\"lexicographically-smaller-string\">lexicographically smallest string</span> that can be obtained after swapping <strong>adjacent</strong> digits in <code>s</code> with the same <strong>parity</strong> at most <strong>once</strong>.</p>\n\n<p>Digits have the same parity if both are odd or both are even. For example, 5 and 9, as well as 2 and 4, have the same parity, while 6 and 9 do not.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;45320&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;43520&quot;</span></p>\n\n<p><strong>Explanation: </strong></p>\n\n<p><code>s[1] == &#39;5&#39;</code> and <code>s[2] == &#39;3&#39;</code> both have the same parity, and swapping them results in the lexicographically smallest string.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;001&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;001&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There is no need to perform a swap because <code>s</code> is already the lexicographically smallest.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists only of digits.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` containing only digits, return the lexicographically smallest string that can be obtained after swapping **adjacent** digits in `s` with the same **parity** at most **once**.\n\nDigits have the same parity if both are odd or both are even. For example, 5 and 9, as well as 2 and 4, have the same parity, while 6 and 9 do not.\n\n \n\n**Example 1:**\n\n**Input:** s = \"45320\"\n\n**Output:** \"43520\"\n\n**Explanation:**\n\n`s[1] == '5'` and `s[2] == '3'` both have the same parity, and swapping them results in the lexicographically smallest string.\n\n**Example 2:**\n\n**Input:** s = \"001\"\n\n**Output:** \"001\"\n\n**Explanation:**\n\nThere is no need to perform a swap because `s` is already the lexicographically smallest.\n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists only of digits.",
+  "question": "Given a string `s` containing only digits, return the lexicographically smallest string that can be obtained after swapping **adjacent** digits in `s` with the same **parity** at most **once**.\n\nDigits have the same parity if both are odd or both are even. For example, 5 and 9, as well as 2 and 4, have the same parity, while 6 and 9 do not.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"45320\"\n\n**Output:** \"43520\"\n\n**Explanation:**\n\n`s[1] == '5'` and `s[2] == '3'` both have the same parity, and swapping them results in the lexicographically smallest string.\n\n**Example 2:**\n\n**Input:** s = \"001\"\n\n**Output:** \"001\"\n\n**Explanation:**\n\nThere is no need to perform a swap because `s` is already the lexicographically smallest.",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists only of digits.",
+  "topics": ["String", "Greedy"],
+  "total_accepted": 54791,
+  "total_submissions": 100557,
+  "acceptance_rate": "54.5%",
+  "similar_questions": [
+    {
+      "title": "Lexicographically Smallest String After Applying Operations",
+      "slug": "lexicographically-smallest-string-after-applying-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lexicographically-smallest-string-after-applying-operations/"
+    }
+  ],
+  "hints": [
+    "Try all possible swaps satisfying the constraints and find the one that results in the lexicographically smallest string."
+  ]
+}

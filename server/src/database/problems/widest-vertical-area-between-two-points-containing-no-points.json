@@ -1,0 +1,31 @@
+{
+  "id": "1637",
+  "title": "Widest Vertical Area Between Two Points Containing No Points",
+  "slug": "widest-vertical-area-between-two-points-containing-no-points",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given <code>n</code> <code>points</code> on a 2D plane where <code>points[i] = [x<sub>i</sub>, y<sub>i</sub>]</code>, Return<em>&nbsp;the <strong>widest vertical area</strong> between two points such that no points are inside the area.</em></p>\n\n<p>A <strong>vertical area</strong> is an area of fixed-width extending infinitely along the y-axis (i.e., infinite height). The <strong>widest vertical area</strong> is the one with the maximum width.</p>\n\n<p>Note that points <strong>on the edge</strong> of a vertical area <strong>are not</strong> considered included in the area.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/19/points3.png\" style=\"width: 276px; height: 371px;\" />​\n<pre>\n<strong>Input:</strong> points = [[8,7],[9,9],[7,4],[9,7]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Both the red and the blue area are optimal.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> points = [[3,1],[9,0],[1,0],[1,4],[5,3],[8,8]]\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == points.length</code></li>\n\t<li><code>2 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>points[i].length == 2</code></li>\n\t<li><code>0 &lt;= x<sub>i</sub>, y<sub>i</sub>&nbsp;&lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given `n` `points` on a 2D plane where `points[i] = [xi, yi]`, Return _  the **widest vertical area** between two points such that no points are inside the area._\n\nA **vertical area** is an area of fixed-width extending infinitely along the y-axis (i.e., infinite height). The **widest vertical area** is the one with the maximum width.\n\nNote that points **on the edge** of a vertical area **are not** considered included in the area.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/19/points3.png)​ \n    \n    \n    **Input:** points = [[8,7],[9,9],[7,4],[9,7]]\n    **Output:** 1\n    **Explanation:** Both the red and the blue area are optimal.\n    \n\n**Example 2:**\n    \n    \n    **Input:** points = [[3,1],[9,0],[1,0],[1,4],[5,3],[8,8]]\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `n == points.length`\n  * `2 <= n <= 105`\n  * `points[i].length == 2`\n  * `0 <= xi, yi <= 109`",
+  "question": "Given `n` `points` on a 2D plane where `points[i] = [xi, yi]`, Return _  the **widest vertical area** between two points such that no points are inside the area._\n\nA **vertical area** is an area of fixed-width extending infinitely along the y-axis (i.e., infinite height). The **widest vertical area** is the one with the maximum width.\n\nNote that points **on the edge** of a vertical area **are not** considered included in the area.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/19/points3.png)​ \n    \n    \n    **Input:** points = [[8,7],[9,9],[7,4],[9,7]]\n    **Output:** 1\n    **Explanation:** Both the red and the blue area are optimal.\n    \n\n**Example 2:**\n    \n    \n    **Input:** points = [[3,1],[9,0],[1,0],[1,4],[5,3],[8,8]]\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `n == points.length`\n  * `2 <= n <= 105`\n  * `points[i].length == 2`\n  * `0 <= xi, yi <= 109`",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 199045,
+  "total_submissions": 228516,
+  "acceptance_rate": "87.1%",
+  "similar_questions": [
+    {
+      "title": "Maximum Gap",
+      "slug": "maximum-gap",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-gap/"
+    },
+    {
+      "title": "Maximum Consecutive Floors Without Special Floors",
+      "slug": "maximum-consecutive-floors-without-special-floors",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-consecutive-floors-without-special-floors/"
+    }
+  ],
+  "hints": ["Try sorting the points", "Think whether the y-axis of a point is relevant"]
+}

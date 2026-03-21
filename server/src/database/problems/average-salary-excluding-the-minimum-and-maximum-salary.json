@@ -1,0 +1,20 @@
+{
+  "id": "1491",
+  "title": "Average Salary Excluding the Minimum and Maximum Salary",
+  "slug": "average-salary-excluding-the-minimum-and-maximum-salary",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of <strong>unique</strong> integers <code>salary</code> where <code>salary[i]</code> is the salary of the <code>i<sup>th</sup></code> employee.</p>\n\n<p>Return <em>the average salary of employees excluding the minimum and maximum salary</em>. Answers within <code>10<sup>-5</sup></code> of the actual answer will be accepted.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> salary = [4000,3000,1000,2000]\n<strong>Output:</strong> 2500.00000\n<strong>Explanation:</strong> Minimum salary and maximum salary are 1000 and 4000 respectively.\nAverage salary excluding minimum and maximum salary is (2000+3000) / 2 = 2500\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> salary = [1000,2000,3000]\n<strong>Output:</strong> 2000.00000\n<strong>Explanation:</strong> Minimum salary and maximum salary are 1000 and 3000 respectively.\nAverage salary excluding minimum and maximum salary is (2000) / 1 = 2000\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= salary.length &lt;= 100</code></li>\n\t<li><code>1000 &lt;= salary[i] &lt;= 10<sup>6</sup></code></li>\n\t<li>All the integers of <code>salary</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of **unique** integers `salary` where `salary[i]` is the salary of the `ith` employee.\n\nReturn _the average salary of employees excluding the minimum and maximum salary_. Answers within `10-5` of the actual answer will be accepted.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** salary = [4000,3000,1000,2000]\n    **Output:** 2500.00000\n    **Explanation:** Minimum salary and maximum salary are 1000 and 4000 respectively.\n    Average salary excluding minimum and maximum salary is (2000+3000) / 2 = 2500\n    \n\n**Example 2:**\n    \n    \n    **Input:** salary = [1000,2000,3000]\n    **Output:** 2000.00000\n    **Explanation:** Minimum salary and maximum salary are 1000 and 3000 respectively.\n    Average salary excluding minimum and maximum salary is (2000) / 1 = 2000\n    \n\n \n\n**Constraints:**\n\n  * `3 <= salary.length <= 100`\n  * `1000 <= salary[i] <= 106`\n  * All the integers of `salary` are **unique**.",
+  "question": "You are given an array of **unique** integers `salary` where `salary[i]` is the salary of the `ith` employee.\n\nReturn _the average salary of employees excluding the minimum and maximum salary_. Answers within `10-5` of the actual answer will be accepted.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** salary = [4000,3000,1000,2000]\n    **Output:** 2500.00000\n    **Explanation:** Minimum salary and maximum salary are 1000 and 4000 respectively.\n    Average salary excluding minimum and maximum salary is (2000+3000) / 2 = 2500\n    \n\n**Example 2:**\n    \n    \n    **Input:** salary = [1000,2000,3000]\n    **Output:** 2000.00000\n    **Explanation:** Minimum salary and maximum salary are 1000 and 3000 respectively.\n    Average salary excluding minimum and maximum salary is (2000) / 1 = 2000",
+  "constraints": "**Constraints:**\n\n  * `3 <= salary.length <= 100`\n  * `1000 <= salary[i] <= 106`\n  * All the integers of `salary` are **unique**.",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 389751,
+  "total_submissions": 613470,
+  "acceptance_rate": "63.5%",
+  "similar_questions": [],
+  "hints": [
+    "Get the total sum and subtract the minimum and maximum value in the array.  Finally divide the result by n - 2."
+  ]
+}

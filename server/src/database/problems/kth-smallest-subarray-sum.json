@@ -1,0 +1,21 @@
+{
+  "id": "1918",
+  "title": "Kth Smallest Subarray Sum",
+  "slug": "kth-smallest-subarray-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Sliding Window"],
+  "total_accepted": 5836,
+  "total_submissions": 10939,
+  "acceptance_rate": "53.4%",
+  "similar_questions": [],
+  "hints": [
+    "How can you compute the number of subarrays with a sum less than a given value?",
+    "Can we use binary search to help find the answer?"
+  ]
+}

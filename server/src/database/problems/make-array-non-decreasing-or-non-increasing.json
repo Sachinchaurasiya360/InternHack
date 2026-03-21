@@ -1,0 +1,41 @@
+{
+  "id": "2263",
+  "title": "Make Array Non-decreasing or Non-increasing",
+  "slug": "make-array-non-decreasing-or-non-increasing",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Greedy", "Heap (Priority Queue)"],
+  "total_accepted": 4777,
+  "total_submissions": 7283,
+  "acceptance_rate": "65.6%",
+  "similar_questions": [
+    {
+      "title": "Non-decreasing Array",
+      "slug": "non-decreasing-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/non-decreasing-array/"
+    },
+    {
+      "title": "Make Array Strictly Increasing",
+      "slug": "make-array-strictly-increasing",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/make-array-strictly-increasing/"
+    },
+    {
+      "title": "Minimum Operations to Make the Array Increasing",
+      "slug": "minimum-operations-to-make-the-array-increasing",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-the-array-increasing/"
+    }
+  ],
+  "hints": [
+    "To find the minimum cost to make nums non-decreasing, use a max heap that contains all of the elements that you have seen so far.",
+    "If the largest number in the heap is greater than the current number, calculate the cost to make the two numbers equal. Then, in the heap, replace the largest number with the current number.",
+    "Now that we have found the minimum cost to make nums non-decreasing, we can set every nums[i] to -nums[i] and do the same process to find the minimum cost to make nums non-increasing."
+  ]
+}

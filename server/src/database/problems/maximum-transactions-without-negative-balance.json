@@ -1,0 +1,30 @@
+{
+  "id": "3711",
+  "title": "Maximum Transactions Without Negative Balance",
+  "slug": "maximum-transactions-without-negative-balance",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Heap (Priority Queue)"],
+  "total_accepted": 595,
+  "total_submissions": 1238,
+  "acceptance_rate": "48.1%",
+  "similar_questions": [
+    {
+      "title": "Make the Prefix Sum Non-negative",
+      "slug": "make-the-prefix-sum-non-negative",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/make-the-prefix-sum-non-negative/"
+    }
+  ],
+  "hints": [
+    "Scan the list left to right, keeping a running <code>balance</code> and a container <code>accepted</code> that tracks the sizes of negative transactions you have taken.",
+    "Always take nonnegative transactions; they increase <code>balance</code> and the total count.",
+    "If a negative <code>t</code> can be paid (<code>balance + t >= 0</code>), accept it and record its absolute value in <code>accepted</code>.",
+    "If a negative would make the balance go below zero, but you previously accepted a larger negative, replace that larger one with the current smaller one (restore balance, swap in the smaller): this trade increases the number of transactions you can keep."
+  ]
+}

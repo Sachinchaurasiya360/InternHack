@@ -1,0 +1,54 @@
+{
+  "id": "2547",
+  "title": "Minimum Cost to Split an Array",
+  "slug": "minimum-cost-to-split-an-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and an integer <code>k</code>.</p>\n\n<p>Split the array into some number of non-empty subarrays. The <strong>cost</strong> of a split is the sum of the <strong>importance value</strong> of each subarray in the split.</p>\n\n<p>Let <code>trimmed(subarray)</code> be the version of the subarray where all numbers which appear only once are removed.</p>\n\n<ul>\n\t<li>For example, <code>trimmed([3,1,2,4,3,4]) = [3,4,3,4].</code></li>\n</ul>\n\n<p>The <strong>importance value</strong> of a subarray is <code>k + trimmed(subarray).length</code>.</p>\n\n<ul>\n\t<li>For example, if a subarray is <code>[1,2,3,3,3,4,4]</code>, then <font face=\"monospace\">trimmed(</font><code>[1,2,3,3,3,4,4]) = [3,3,3,4,4].</code>The importance value of this subarray will be <code>k + 5</code>.</li>\n</ul>\n\n<p>Return <em>the minimum possible cost of a split of </em><code>nums</code>.</p>\n\n<p>A <strong>subarray</strong> is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,2,1,3,3], k = 2\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> We split nums to have two subarrays: [1,2], [1,2,1,3,3].\nThe importance value of [1,2] is 2 + (0) = 2.\nThe importance value of [1,2,1,3,3] is 2 + (2 + 2) = 6.\nThe cost of the split is 2 + 6 = 8. It can be shown that this is the minimum possible cost among all the possible splits.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,2,1], k = 2\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> We split nums to have two subarrays: [1,2], [1,2,1].\nThe importance value of [1,2] is 2 + (0) = 2.\nThe importance value of [1,2,1] is 2 + (2) = 4.\nThe cost of the split is 2 + 4 = 6. It can be shown that this is the minimum possible cost among all the possible splits.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,2,1], k = 5\n<strong>Output:</strong> 10\n<strong>Explanation:</strong> We split nums to have one subarray: [1,2,1,2,1].\nThe importance value of [1,2,1,2,1] is 5 + (3 + 2) = 10.\nThe cost of the split is 10. It can be shown that this is the minimum possible cost among all the possible splits.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= nums[i] &lt; nums.length</code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<style type=\"text/css\">.spoilerbutton {display:block; border:dashed; padding: 0px 0px; margin:10px 0px; font-size:150%; font-weight: bold; color:#000000; background-color:cyan; outline:0; \n}\n.spoiler {overflow:hidden;}\n.spoiler > div {-webkit-transition: all 0s ease;-moz-transition: margin 0s ease;-o-transition: all 0s ease;transition: margin 0s ease;}\n.spoilerbutton[value=\"Show Message\"] + .spoiler > div {margin-top:-500%;}\n.spoilerbutton[value=\"Hide Message\"] + .spoiler {padding:5px;}\n</style>\n",
+  "content_markdown": "You are given an integer array `nums` and an integer `k`.\n\nSplit the array into some number of non-empty subarrays. The **cost** of a split is the sum of the **importance value** of each subarray in the split.\n\nLet `trimmed(subarray)` be the version of the subarray where all numbers which appear only once are removed.\n\n  * For example, `trimmed([3,1,2,4,3,4]) = [3,4,3,4].`\n\n\n\nThe **importance value** of a subarray is `k + trimmed(subarray).length`.\n\n  * For example, if a subarray is `[1,2,3,3,3,4,4]`, then trimmed(`[1,2,3,3,3,4,4]) = [3,3,3,4,4].`The importance value of this subarray will be `k + 5`.\n\n\n\nReturn _the minimum possible cost of a split of_`nums`.\n\nA **subarray** is a contiguous **non-empty** sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1,2,1,3,3], k = 2\n    **Output:** 8\n    **Explanation:** We split nums to have two subarrays: [1,2], [1,2,1,3,3].\n    The importance value of [1,2] is 2 + (0) = 2.\n    The importance value of [1,2,1,3,3] is 2 + (2 + 2) = 6.\n    The cost of the split is 2 + 6 = 8. It can be shown that this is the minimum possible cost among all the possible splits.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,2,1], k = 2\n    **Output:** 6\n    **Explanation:** We split nums to have two subarrays: [1,2], [1,2,1].\n    The importance value of [1,2] is 2 + (0) = 2.\n    The importance value of [1,2,1] is 2 + (2) = 4.\n    The cost of the split is 2 + 4 = 6. It can be shown that this is the minimum possible cost among all the possible splits.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,1,2,1], k = 5\n    **Output:** 10\n    **Explanation:** We split nums to have one subarray: [1,2,1,2,1].\n    The importance value of [1,2,1,2,1] is 5 + (3 + 2) = 10.\n    The cost of the split is 10. It can be shown that this is the minimum possible cost among all the possible splits.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `0 <= nums[i] < nums.length`\n  * `1 <= k <= 109`",
+  "question": "You are given an integer array `nums` and an integer `k`.\n\nSplit the array into some number of non-empty subarrays. The **cost** of a split is the sum of the **importance value** of each subarray in the split.\n\nLet `trimmed(subarray)` be the version of the subarray where all numbers which appear only once are removed.\n\n  * For example, `trimmed([3,1,2,4,3,4]) = [3,4,3,4].`\n\n\n\nThe **importance value** of a subarray is `k + trimmed(subarray).length`.\n\n  * For example, if a subarray is `[1,2,3,3,3,4,4]`, then trimmed(`[1,2,3,3,3,4,4]) = [3,3,3,4,4].`The importance value of this subarray will be `k + 5`.\n\n\n\nReturn _the minimum possible cost of a split of_`nums`.\n\nA **subarray** is a contiguous **non-empty** sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1,2,1,3,3], k = 2\n    **Output:** 8\n    **Explanation:** We split nums to have two subarrays: [1,2], [1,2,1,3,3].\n    The importance value of [1,2] is 2 + (0) = 2.\n    The importance value of [1,2,1,3,3] is 2 + (2 + 2) = 6.\n    The cost of the split is 2 + 6 = 8. It can be shown that this is the minimum possible cost among all the possible splits.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,2,1], k = 2\n    **Output:** 6\n    **Explanation:** We split nums to have two subarrays: [1,2], [1,2,1].\n    The importance value of [1,2] is 2 + (0) = 2.\n    The importance value of [1,2,1] is 2 + (2) = 4.\n    The cost of the split is 2 + 4 = 6. It can be shown that this is the minimum possible cost among all the possible splits.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,1,2,1], k = 5\n    **Output:** 10\n    **Explanation:** We split nums to have one subarray: [1,2,1,2,1].\n    The importance value of [1,2,1,2,1] is 5 + (3 + 2) = 10.\n    The cost of the split is 10. It can be shown that this is the minimum possible cost among all the possible splits.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `0 <= nums[i] < nums.length`\n  * `1 <= k <= 109`",
+  "topics": ["Array", "Hash Table", "Dynamic Programming", "Counting"],
+  "total_accepted": 16328,
+  "total_submissions": 37055,
+  "acceptance_rate": "44.1%",
+  "similar_questions": [
+    {
+      "title": "Coin Change",
+      "slug": "coin-change",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/coin-change/"
+    },
+    {
+      "title": "Split Array Largest Sum",
+      "slug": "split-array-largest-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-largest-sum/"
+    },
+    {
+      "title": "Divide an Array Into Subarrays With Minimum Cost II",
+      "slug": "divide-an-array-into-subarrays-with-minimum-cost-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/divide-an-array-into-subarrays-with-minimum-cost-ii/"
+    },
+    {
+      "title": "Minimum Sum of Values by Dividing Array",
+      "slug": "minimum-sum-of-values-by-dividing-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-sum-of-values-by-dividing-array/"
+    },
+    {
+      "title": "Minimum Cost to Divide Array Into Subarrays",
+      "slug": "minimum-cost-to-divide-array-into-subarrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-cost-to-divide-array-into-subarrays/"
+    }
+  ],
+  "hints": [
+    "Let's denote dp[r] = minimum cost to partition the first r elements of nums. What would be the transitions of such dynamic programming?",
+    "dp[r] = min(dp[l] + importance(nums[l..r])) over all 0 <= l < r. This already gives us an O(n^3) approach, as importance can be calculated in linear time, and there are a total of O(n^2) transitions.",
+    "Can you think of a way to compute multiple importance values of related subarrays faster?",
+    "importance(nums[l-1..r]) is either importance(nums[l..r]) if a new unique element is added, importance(nums[l..r]) + 1 if an old element that appeared at least twice is added, or importance(nums[l..r]) + 2, if a previously unique element is duplicated. This allows us to compute importance(nums[l..r]) for all 0 <= l < r in O(n) by keeping a frequency table and decreasing l from r-1 down to 0."
+  ]
+}

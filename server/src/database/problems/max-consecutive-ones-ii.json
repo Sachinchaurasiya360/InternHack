@@ -1,0 +1,37 @@
+{
+  "id": "487",
+  "title": "Max Consecutive Ones II",
+  "slug": "max-consecutive-ones-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Sliding Window"],
+  "total_accepted": 182158,
+  "total_submissions": 350814,
+  "acceptance_rate": "51.9%",
+  "similar_questions": [
+    {
+      "title": "Max Consecutive Ones",
+      "slug": "max-consecutive-ones",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/max-consecutive-ones/"
+    },
+    {
+      "title": "Max Consecutive Ones III",
+      "slug": "max-consecutive-ones-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-consecutive-ones-iii/"
+    },
+    {
+      "title": "All Divisions With the Highest Score of a Binary Array",
+      "slug": "all-divisions-with-the-highest-score-of-a-binary-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/"
+    }
+  ],
+  "hints": []
+}

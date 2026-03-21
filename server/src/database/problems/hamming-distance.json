@@ -1,0 +1,31 @@
+{
+  "id": "461",
+  "title": "Hamming Distance",
+  "slug": "hamming-distance",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>The <a href=\"https://en.wikipedia.org/wiki/Hamming_distance\" target=\"_blank\">Hamming distance</a> between two integers is the number of positions at which the corresponding bits are different.</p>\n\n<p>Given two integers <code>x</code> and <code>y</code>, return <em>the <strong>Hamming distance</strong> between them</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 1, y = 4\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\n1   (0 0 0 1)\n4   (0 1 0 0)\n       &uarr;   &uarr;\nThe above arrows point to positions where the corresponding bits are different.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 3, y = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;=&nbsp;x, y &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as <a href=\"https://leetcode.com/problems/minimum-bit-flips-to-convert-number/description/\" target=\"_blank\"> 2220: Minimum Bit Flips to Convert Number.</a></p>\n",
+  "content_markdown": "The [Hamming distance](<https://en.wikipedia.org/wiki/Hamming_distance>) between two integers is the number of positions at which the corresponding bits are different.\n\nGiven two integers `x` and `y`, return _the**Hamming distance** between them_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** x = 1, y = 4\n    **Output:** 2\n    **Explanation:**\n    1   (0 0 0 1)\n    4   (0 1 0 0)\n           ↑   ↑\n    The above arrows point to positions where the corresponding bits are different.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 3, y = 1\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `0 <= x, y <= 231 - 1`\n\n\n\n \n\n**Note:** This question is the same as [ 2220: Minimum Bit Flips to Convert Number.](<https://leetcode.com/problems/minimum-bit-flips-to-convert-number/description/>)",
+  "question": "The [Hamming distance](<https://en.wikipedia.org/wiki/Hamming_distance>) between two integers is the number of positions at which the corresponding bits are different.\n\nGiven two integers `x` and `y`, return _the**Hamming distance** between them_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** x = 1, y = 4\n    **Output:** 2\n    **Explanation:**\n    1   (0 0 0 1)\n    4   (0 1 0 0)\n           ↑   ↑\n    The above arrows point to positions where the corresponding bits are different.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 3, y = 1\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `0 <= x, y <= 231 - 1`\n\n\n\n \n\n**Note:** This question is the same as [ 2220: Minimum Bit Flips to Convert Number.](<https://leetcode.com/problems/minimum-bit-flips-to-convert-number/description/>)",
+  "topics": ["Bit Manipulation"],
+  "total_accepted": 680656,
+  "total_submissions": 888348,
+  "acceptance_rate": "76.6%",
+  "similar_questions": [
+    {
+      "title": "Number of 1 Bits",
+      "slug": "number-of-1-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-1-bits/"
+    },
+    {
+      "title": "Total Hamming Distance",
+      "slug": "total-hamming-distance",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/total-hamming-distance/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "1495",
+  "title": "Friendly Movies Streamed Last Month",
+  "slug": "friendly-movies-streamed-last-month",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 40099,
+  "total_submissions": 82027,
+  "acceptance_rate": "48.9%",
+  "similar_questions": [],
+  "hints": []
+}

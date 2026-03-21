@@ -1,0 +1,34 @@
+{
+  "id": "1534",
+  "title": "Count Good Triplets",
+  "slug": "count-good-triplets",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>arr</code>, and three integers&nbsp;<code>a</code>,&nbsp;<code>b</code>&nbsp;and&nbsp;<code>c</code>. You need to find the number of good triplets.</p>\r\n\r\n<p>A triplet <code>(arr[i], arr[j], arr[k])</code>&nbsp;is <strong>good</strong> if the following conditions are true:</p>\r\n\r\n<ul>\r\n\t<li><code>0 &lt;= i &lt; j &lt; k &lt;&nbsp;arr.length</code></li>\r\n\t<li><code>|arr[i] - arr[j]| &lt;= a</code></li>\r\n\t<li><code>|arr[j] - arr[k]| &lt;= b</code></li>\r\n\t<li><code>|arr[i] - arr[k]| &lt;= c</code></li>\r\n</ul>\r\n\r\n<p>Where <code>|x|</code> denotes the absolute value of <code>x</code>.</p>\r\n\r\n<p>Return<em> the number of good triplets</em>.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> arr = [3,0,1,1,9,7], a = 7, b = 2, c = 3\r\n<strong>Output:</strong> 4\r\n<strong>Explanation:</strong>&nbsp;There are 4 good triplets: [(3,0,1), (3,0,1), (3,1,1), (0,1,1)].\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> arr = [1,1,2,2,3], a = 0, b = 0, c = 1\r\n<strong>Output:</strong> 0\r\n<strong>Explanation: </strong>No triplet satisfies all conditions.\r\n</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>3 &lt;= arr.length &lt;= 100</code></li>\r\n\t<li><code>0 &lt;= arr[i] &lt;= 1000</code></li>\r\n\t<li><code>0 &lt;= a, b, c &lt;= 1000</code></li>\r\n</ul>",
+  "content_markdown": "Given an array of integers `arr`, and three integers `a`, `b` and `c`. You need to find the number of good triplets.\n\nA triplet `(arr[i], arr[j], arr[k])` is **good** if the following conditions are true:\n\n  * `0 <= i < j < k < arr.length`\n  * `|arr[i] - arr[j]| <= a`\n  * `|arr[j] - arr[k]| <= b`\n  * `|arr[i] - arr[k]| <= c`\n\n\n\nWhere `|x|` denotes the absolute value of `x`.\n\nReturn _the number of good triplets_.\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** arr = [3,0,1,1,9,7], a = 7, b = 2, c = 3\r\n    **Output:** 4\r\n    **Explanation:**  There are 4 good triplets: [(3,0,1), (3,0,1), (3,1,1), (0,1,1)].\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** arr = [1,1,2,2,3], a = 0, b = 0, c = 1\r\n    **Output:** 0\r\n    **Explanation:** No triplet satisfies all conditions.\r\n    \n\n \n\n**Constraints:**\n\n  * `3 <= arr.length <= 100`\n  * `0 <= arr[i] <= 1000`\n  * `0 <= a, b, c <= 1000`",
+  "question": "Given an array of integers `arr`, and three integers `a`, `b` and `c`. You need to find the number of good triplets.\n\nA triplet `(arr[i], arr[j], arr[k])` is **good** if the following conditions are true:\n\n  * `0 <= i < j < k < arr.length`\n  * `|arr[i] - arr[j]| <= a`\n  * `|arr[j] - arr[k]| <= b`\n  * `|arr[i] - arr[k]| <= c`\n\n\n\nWhere `|x|` denotes the absolute value of `x`.\n\nReturn _the number of good triplets_.",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** arr = [3,0,1,1,9,7], a = 7, b = 2, c = 3\r\n    **Output:** 4\r\n    **Explanation:**  There are 4 good triplets: [(3,0,1), (3,0,1), (3,1,1), (0,1,1)].\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** arr = [1,1,2,2,3], a = 0, b = 0, c = 1\r\n    **Output:** 0\r\n    **Explanation:** No triplet satisfies all conditions.",
+  "constraints": "**Constraints:**\n\n  * `3 <= arr.length <= 100`\n  * `0 <= arr[i] <= 1000`\n  * `0 <= a, b, c <= 1000`",
+  "topics": ["Array", "Enumeration"],
+  "total_accepted": 284961,
+  "total_submissions": 333226,
+  "acceptance_rate": "85.5%",
+  "similar_questions": [
+    {
+      "title": "Count Special Quadruplets",
+      "slug": "count-special-quadruplets",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-special-quadruplets/"
+    },
+    {
+      "title": "Number of Unequal Triplets in Array",
+      "slug": "number-of-unequal-triplets-in-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-unequal-triplets-in-array/"
+    }
+  ],
+  "hints": [
+    "Notice that the constraints are small enough for a brute force solution to pass.",
+    "Loop through all triplets, and count the ones that are good."
+  ]
+}

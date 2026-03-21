@@ -1,0 +1,18 @@
+{
+  "id": "182",
+  "title": "Duplicate Emails",
+  "slug": "duplicate-emails",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "<p>Table: <code>Person</code></p>\n\n<pre>\n+-------------+---------+\n| Column Name | Type    |\n+-------------+---------+\n| id          | int     |\n| email       | varchar |\n+-------------+---------+\nid is the primary key (column with unique values) for this table.\nEach row of this table contains an email. The emails will not contain uppercase letters.\n</pre>\n\n<p>&nbsp;</p>\n\n<p>Write a solution to report all the duplicate emails. Note that it&#39;s guaranteed that the email&nbsp;field is not NULL.</p>\n\n<p>Return the result table in <strong>any order</strong>.</p>\n\n<p>The&nbsp;result format is in the following example.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nPerson table:\n+----+---------+\n| id | email   |\n+----+---------+\n| 1  | a@b.com |\n| 2  | c@d.com |\n| 3  | a@b.com |\n+----+---------+\n<strong>Output:</strong> \n+---------+\n| Email   |\n+---------+\n| a@b.com |\n+---------+\n<strong>Explanation:</strong> a@b.com is repeated two times.\n</pre>\n",
+  "content_markdown": "Table: `Person`\n    \n    \n    +-------------+---------+\n    | Column Name | Type    |\n    +-------------+---------+\n    | id          | int     |\n    | email       | varchar |\n    +-------------+---------+\n    id is the primary key (column with unique values) for this table.\n    Each row of this table contains an email. The emails will not contain uppercase letters.\n    \n\n \n\nWrite a solution to report all the duplicate emails. Note that it's guaranteed that the email field is not NULL.\n\nReturn the result table in **any order**.\n\nThe result format is in the following example.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \n    Person table:\n    +----+---------+\n    | id | email   |\n    +----+---------+\n    | 1  | a@b.com |\n    | 2  | c@d.com |\n    | 3  | a@b.com |\n    +----+---------+\n    **Output:** \n    +---------+\n    | Email   |\n    +---------+\n    | a@b.com |\n    +---------+\n    **Explanation:** a@b.com is repeated two times.",
+  "question": "Table: `Person`\n    \n    \n    +-------------+---------+\n    | Column Name | Type    |\n    +-------------+---------+\n    | id          | int     |\n    | email       | varchar |\n    +-------------+---------+\n    id is the primary key (column with unique values) for this table.\n    Each row of this table contains an email. The emails will not contain uppercase letters.\n    \n\n \n\nWrite a solution to report all the duplicate emails. Note that it's guaranteed that the email field is not NULL.\n\nReturn the result table in **any order**.\n\nThe result format is in the following example.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \n    Person table:\n    +----+---------+\n    | id | email   |\n    +----+---------+\n    | 1  | a@b.com |\n    | 2  | c@d.com |\n    | 3  | a@b.com |\n    +----+---------+\n    **Output:** \n    +---------+\n    | Email   |\n    +---------+\n    | a@b.com |\n    +---------+\n    **Explanation:** a@b.com is repeated two times.",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 1103763,
+  "total_submissions": 1503178,
+  "acceptance_rate": "73.4%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1405",
+  "title": "Longest Happy String",
+  "slug": "longest-happy-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A string <code>s</code> is called <strong>happy</strong> if it satisfies the following conditions:</p>\n\n<ul>\n\t<li><code>s</code> only contains the letters <code>&#39;a&#39;</code>, <code>&#39;b&#39;</code>, and <code>&#39;c&#39;</code>.</li>\n\t<li><code>s</code> does not contain any of <code>&quot;aaa&quot;</code>, <code>&quot;bbb&quot;</code>, or <code>&quot;ccc&quot;</code> as a substring.</li>\n\t<li><code>s</code> contains <strong>at most</strong> <code>a</code> occurrences of the letter <code>&#39;a&#39;</code>.</li>\n\t<li><code>s</code> contains <strong>at most</strong> <code>b</code> occurrences of the letter <code>&#39;b&#39;</code>.</li>\n\t<li><code>s</code> contains <strong>at most</strong> <code>c</code> occurrences of the letter <code>&#39;c&#39;</code>.</li>\n</ul>\n\n<p>Given three integers <code>a</code>, <code>b</code>, and <code>c</code>, return <em>the <strong>longest possible happy </strong>string</em>. If there are multiple longest happy strings, return <em>any of them</em>. If there is no such string, return <em>the empty string </em><code>&quot;&quot;</code>.</p>\n\n<p>A <strong>substring</strong> is a contiguous sequence of characters within a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> a = 1, b = 1, c = 7\n<strong>Output:</strong> &quot;ccaccbcc&quot;\n<strong>Explanation:</strong> &quot;ccbccacc&quot; would also be a correct answer.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> a = 7, b = 1, c = 0\n<strong>Output:</strong> &quot;aabaa&quot;\n<strong>Explanation:</strong> It is the only correct answer in this case.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= a, b, c &lt;= 100</code></li>\n\t<li><code>a + b + c &gt; 0</code></li>\n</ul>\n",
+  "content_markdown": "A string `s` is called **happy** if it satisfies the following conditions:\n\n  * `s` only contains the letters `'a'`, `'b'`, and `'c'`.\n  * `s` does not contain any of `\"aaa\"`, `\"bbb\"`, or `\"ccc\"` as a substring.\n  * `s` contains **at most** `a` occurrences of the letter `'a'`.\n  * `s` contains **at most** `b` occurrences of the letter `'b'`.\n  * `s` contains **at most** `c` occurrences of the letter `'c'`.\n\n\n\nGiven three integers `a`, `b`, and `c`, return _the**longest possible happy** string_. If there are multiple longest happy strings, return _any of them_. If there is no such string, return _the empty string_`\"\"`.\n\nA **substring** is a contiguous sequence of characters within a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** a = 1, b = 1, c = 7\n    **Output:** \"ccaccbcc\"\n    **Explanation:** \"ccbccacc\" would also be a correct answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = 7, b = 1, c = 0\n    **Output:** \"aabaa\"\n    **Explanation:** It is the only correct answer in this case.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= a, b, c <= 100`\n  * `a + b + c > 0`",
+  "question": "A string `s` is called **happy** if it satisfies the following conditions:\n\n  * `s` only contains the letters `'a'`, `'b'`, and `'c'`.\n  * `s` does not contain any of `\"aaa\"`, `\"bbb\"`, or `\"ccc\"` as a substring.\n  * `s` contains **at most** `a` occurrences of the letter `'a'`.\n  * `s` contains **at most** `b` occurrences of the letter `'b'`.\n  * `s` contains **at most** `c` occurrences of the letter `'c'`.\n\n\n\nGiven three integers `a`, `b`, and `c`, return _the**longest possible happy** string_. If there are multiple longest happy strings, return _any of them_. If there is no such string, return _the empty string_`\"\"`.\n\nA **substring** is a contiguous sequence of characters within a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** a = 1, b = 1, c = 7\n    **Output:** \"ccaccbcc\"\n    **Explanation:** \"ccbccacc\" would also be a correct answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = 7, b = 1, c = 0\n    **Output:** \"aabaa\"\n    **Explanation:** It is the only correct answer in this case.",
+  "constraints": "**Constraints:**\n\n  * `0 <= a, b, c <= 100`\n  * `a + b + c > 0`",
+  "topics": ["String", "Greedy", "Heap (Priority Queue)"],
+  "total_accepted": 216527,
+  "total_submissions": 330549,
+  "acceptance_rate": "65.5%",
+  "similar_questions": [
+    {
+      "title": "Reorganize String",
+      "slug": "reorganize-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reorganize-string/"
+    }
+  ],
+  "hints": [
+    "Use a greedy approach.",
+    "Use the letter with the maximum current limit that can be added without breaking the condition."
+  ]
+}

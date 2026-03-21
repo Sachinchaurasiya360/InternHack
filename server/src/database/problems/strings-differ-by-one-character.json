@@ -1,0 +1,28 @@
+{
+  "id": "1554",
+  "title": "Strings Differ by One Character",
+  "slug": "strings-differ-by-one-character",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Rolling Hash", "Hash Function"],
+  "total_accepted": 27487,
+  "total_submissions": 68507,
+  "acceptance_rate": "40.1%",
+  "similar_questions": [
+    {
+      "title": "Count Words Obtained After Adding a Letter",
+      "slug": "count-words-obtained-after-adding-a-letter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-words-obtained-after-adding-a-letter/"
+    }
+  ],
+  "hints": [
+    "BruteForce, check all pairs and verify if they differ in one character. O(n^2 * m) where n is the number of words and m is the length of each string.",
+    "O(m^2 * n), Use hashset, to insert all possible combinations adding a character \"*\". For example: If dict[i] = \"abc\", insert (\"*bc\", \"a*c\" and \"ab*\")."
+  ]
+}

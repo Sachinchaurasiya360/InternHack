@@ -1,0 +1,28 @@
+{
+  "id": "2441",
+  "title": "Largest Positive Integer That Exists With Its Negative",
+  "slug": "largest-positive-integer-that-exists-with-its-negative",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> that <strong>does not contain</strong> any zeros, find <strong>the largest positive</strong> integer <code>k</code> such that <code>-k</code> also exists in the array.</p>\n\n<p>Return <em>the positive integer </em><code>k</code>. If there is no such integer, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,2,-3,3]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> 3 is the only valid k we can find in the array.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,10,6,7,-7,1]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> Both 1 and 7 have their corresponding negative values in the array. 7 has a larger value.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-10,8,6,7,-2,-3]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There is no a single valid k, we return -1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>-1000 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li><code>nums[i] != 0</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` that **does not contain** any zeros, find **the largest positive** integer `k` such that `-k` also exists in the array.\n\nReturn _the positive integer_`k`. If there is no such integer, return `-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [-1,2,-3,3]\n    **Output:** 3\n    **Explanation:** 3 is the only valid k we can find in the array.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,10,6,7,-7,1]\n    **Output:** 7\n    **Explanation:** Both 1 and 7 have their corresponding negative values in the array. 7 has a larger value.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-10,8,6,7,-2,-3]\n    **Output:** -1\n    **Explanation:** There is no a single valid k, we return -1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-1000 <= nums[i] <= 1000`\n  * `nums[i] != 0`",
+  "question": "Given an integer array `nums` that **does not contain** any zeros, find **the largest positive** integer `k` such that `-k` also exists in the array.\n\nReturn _the positive integer_`k`. If there is no such integer, return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [-1,2,-3,3]\n    **Output:** 3\n    **Explanation:** 3 is the only valid k we can find in the array.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,10,6,7,-7,1]\n    **Output:** 7\n    **Explanation:** Both 1 and 7 have their corresponding negative values in the array. 7 has a larger value.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-10,8,6,7,-2,-3]\n    **Output:** -1\n    **Explanation:** There is no a single valid k, we return -1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-1000 <= nums[i] <= 1000`\n  * `nums[i] != 0`",
+  "topics": ["Array", "Hash Table", "Two Pointers", "Sorting"],
+  "total_accepted": 264639,
+  "total_submissions": 355098,
+  "acceptance_rate": "74.5%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    }
+  ],
+  "hints": [
+    "What data structure can help you to determine if an element exists?",
+    "Would a hash table help?"
+  ]
+}

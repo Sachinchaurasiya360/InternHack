@@ -1,0 +1,25 @@
+{
+  "id": "925",
+  "title": "Long Pressed Name",
+  "slug": "long-pressed-name",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Your friend is typing his <code>name</code> into a keyboard. Sometimes, when typing a character <code>c</code>, the key might get <em>long pressed</em>, and the character will be typed 1 or more times.</p>\n\n<p>You examine the <code>typed</code> characters of the keyboard. Return <code>True</code> if it is possible that it was your friends name, with some characters (possibly none) being long pressed.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> name = &quot;alex&quot;, typed = &quot;aaleex&quot;\n<strong>Output:</strong> true\n<strong>Explanation: </strong>&#39;a&#39; and &#39;e&#39; in &#39;alex&#39; were long pressed.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> name = &quot;saeed&quot;, typed = &quot;ssaaedd&quot;\n<strong>Output:</strong> false\n<strong>Explanation: </strong>&#39;e&#39; must have been pressed twice, but it was not in the typed output.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= name.length, typed.length &lt;= 1000</code></li>\n\t<li><code>name</code> and <code>typed</code> consist of only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Your friend is typing his `name` into a keyboard. Sometimes, when typing a character `c`, the key might get _long pressed_ , and the character will be typed 1 or more times.\n\nYou examine the `typed` characters of the keyboard. Return `True` if it is possible that it was your friends name, with some characters (possibly none) being long pressed.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** name = \"alex\", typed = \"aaleex\"\n    **Output:** true\n    **Explanation:** 'a' and 'e' in 'alex' were long pressed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** name = \"saeed\", typed = \"ssaaedd\"\n    **Output:** false\n    **Explanation:** 'e' must have been pressed twice, but it was not in the typed output.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= name.length, typed.length <= 1000`\n  * `name` and `typed` consist of only lowercase English letters.",
+  "question": "Your friend is typing his `name` into a keyboard. Sometimes, when typing a character `c`, the key might get _long pressed_ , and the character will be typed 1 or more times.\n\nYou examine the `typed` characters of the keyboard. Return `True` if it is possible that it was your friends name, with some characters (possibly none) being long pressed.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** name = \"alex\", typed = \"aaleex\"\n    **Output:** true\n    **Explanation:** 'a' and 'e' in 'alex' were long pressed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** name = \"saeed\", typed = \"ssaaedd\"\n    **Output:** false\n    **Explanation:** 'e' must have been pressed twice, but it was not in the typed output.",
+  "constraints": "**Constraints:**\n\n  * `1 <= name.length, typed.length <= 1000`\n  * `name` and `typed` consist of only lowercase English letters.",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 189269,
+  "total_submissions": 577343,
+  "acceptance_rate": "32.8%",
+  "similar_questions": [
+    {
+      "title": "Maximum Matching of Players With Trainers",
+      "slug": "maximum-matching-of-players-with-trainers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-matching-of-players-with-trainers/"
+    }
+  ],
+  "hints": []
+}

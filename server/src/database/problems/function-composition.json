@@ -1,0 +1,34 @@
+{
+  "id": "2629",
+  "title": "Function Composition",
+  "slug": "function-composition",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "<p>Given an array of functions&nbsp;<code>[f<span style=\"font-size: 10.8333px;\">1</span>, f<sub>2</sub>, f<sub>3</sub>,&nbsp;..., f<sub>n</sub>]</code>, return&nbsp;a new function&nbsp;<code>fn</code>&nbsp;that is the <strong>function&nbsp;composition</strong> of the array of functions.</p>\n\n<p>The&nbsp;<strong>function&nbsp;composition</strong>&nbsp;of&nbsp;<code>[f(x), g(x), h(x)]</code>&nbsp;is&nbsp;<code>fn(x) = f(g(h(x)))</code>.</p>\n\n<p>The&nbsp;<strong>function&nbsp;composition</strong>&nbsp;of an empty list of functions is the&nbsp;<strong>identity function</strong>&nbsp;<code>f(x) = x</code>.</p>\n\n<p>You may assume each&nbsp;function&nbsp;in the array accepts one integer as input&nbsp;and returns one integer as output.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> functions = [x =&gt; x + 1, x =&gt; x * x, x =&gt; 2 * x], x = 4\n<strong>Output:</strong> 65\n<strong>Explanation:</strong>\nEvaluating from right to left ...\nStarting with x = 4.\n2 * (4) = 8\n(8) * (8) = 64\n(64) + 1 = 65\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> functions = [x =&gt; 10 * x, x =&gt; 10 * x, x =&gt; 10 * x], x = 1\n<strong>Output:</strong> 1000\n<strong>Explanation:</strong>\nEvaluating from right to left ...\n10 * (1) = 10\n10 * (10) = 100\n10 * (100) = 1000\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> functions = [], x = 42\n<strong>Output:</strong> 42\n<strong>Explanation:</strong>\nThe composition of zero functions is the identity function</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code><font face=\"monospace\">-1000 &lt;= x &lt;= 1000</font></code></li>\n\t<li><code><font face=\"monospace\">0 &lt;= functions.length &lt;= 1000</font></code></li>\n\t<li>all functions accept and return a single integer</li>\n</ul>\n",
+  "content_markdown": "Given an array of functions `[f1, f2, f3, ..., fn]`, return a new function `fn` that is the **function  composition** of the array of functions.\n\nThe **function  composition** of `[f(x), g(x), h(x)]` is `fn(x) = f(g(h(x)))`.\n\nThe **function  composition** of an empty list of functions is the **identity function**  `f(x) = x`.\n\nYou may assume each function in the array accepts one integer as input and returns one integer as output.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** functions = [x => x + 1, x => x * x, x => 2 * x], x = 4\n    **Output:** 65\n    **Explanation:**\n    Evaluating from right to left ...\n    Starting with x = 4.\n    2 * (4) = 8\n    (8) * (8) = 64\n    (64) + 1 = 65\n    \n\n**Example 2:**\n    \n    \n    **Input:** functions = [x => 10 * x, x => 10 * x, x => 10 * x], x = 1\n    **Output:** 1000\n    **Explanation:**\n    Evaluating from right to left ...\n    10 * (1) = 10\n    10 * (10) = 100\n    10 * (100) = 1000\n    \n\n**Example 3:**\n    \n    \n    **Input:** functions = [], x = 42\n    **Output:** 42\n    **Explanation:**\n    The composition of zero functions is the identity function\n\n \n\n**Constraints:**\n\n  * `-1000 <= x <= 1000`\n  * `0 <= functions.length <= 1000`\n  * all functions accept and return a single integer",
+  "question": "Given an array of functions `[f1, f2, f3, ..., fn]`, return a new function `fn` that is the **function  composition** of the array of functions.\n\nThe **function  composition** of `[f(x), g(x), h(x)]` is `fn(x) = f(g(h(x)))`.\n\nThe **function  composition** of an empty list of functions is the **identity function**  `f(x) = x`.\n\nYou may assume each function in the array accepts one integer as input and returns one integer as output.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** functions = [x => x + 1, x => x * x, x => 2 * x], x = 4\n    **Output:** 65\n    **Explanation:**\n    Evaluating from right to left ...\n    Starting with x = 4.\n    2 * (4) = 8\n    (8) * (8) = 64\n    (64) + 1 = 65\n    \n\n**Example 2:**\n    \n    \n    **Input:** functions = [x => 10 * x, x => 10 * x, x => 10 * x], x = 1\n    **Output:** 1000\n    **Explanation:**\n    Evaluating from right to left ...\n    10 * (1) = 10\n    10 * (10) = 100\n    10 * (100) = 1000\n    \n\n**Example 3:**\n    \n    \n    **Input:** functions = [], x = 42\n    **Output:** 42\n    **Explanation:**\n    The composition of zero functions is the identity function",
+  "constraints": "**Constraints:**\n\n  * `-1000 <= x <= 1000`\n  * `0 <= functions.length <= 1000`\n  * all functions accept and return a single integer",
+  "topics": [],
+  "total_accepted": 238825,
+  "total_submissions": 274848,
+  "acceptance_rate": "86.9%",
+  "similar_questions": [
+    {
+      "title": "Memoize",
+      "slug": "memoize",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/memoize/"
+    },
+    {
+      "title": "Counter",
+      "slug": "counter",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/counter/"
+    }
+  ],
+  "hints": [
+    "Start by returning a function that takes in a number and returns a number.",
+    "Call each of the functions in the correct order. Each time passing the output of the previous function into the next function."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "1087",
+  "title": "Brace Expansion",
+  "slug": "brace-expansion",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Backtracking", "Stack", "Breadth-First Search", "Sorting"],
+  "total_accepted": 64841,
+  "total_submissions": 97121,
+  "acceptance_rate": "66.8%",
+  "similar_questions": [
+    {
+      "title": "Decode String",
+      "slug": "decode-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/decode-string/"
+    },
+    {
+      "title": "Letter Case Permutation",
+      "slug": "letter-case-permutation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/letter-case-permutation/"
+    },
+    {
+      "title": "Brace Expansion II",
+      "slug": "brace-expansion-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/brace-expansion-ii/"
+    }
+  ],
+  "hints": [
+    "All generated strings are of the same size. How can we generate all of these strings?",
+    "Do a backtracking on which each level of it has to choose one single (e.g. 'a') character or any character of the given parenthesized group (e.g. \"{a,b,c}\")"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "2498",
+  "title": "Frog Jump II",
+  "slug": "frog-jump-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>stones</code> sorted in <strong>strictly increasing order</strong> representing the positions of stones in a river.</p>\n\n<p>A frog, initially on the first stone, wants to travel to the last stone and then return to the first stone. However, it can jump to any stone <strong>at most once</strong>.</p>\n\n<p>The <strong>length</strong> of a jump is the absolute difference between the position of the stone the frog is currently on and the position of the stone to which the frog jumps.</p>\n\n<ul>\n\t<li>More formally, if the frog is at <code>stones[i]</code> and is jumping to <code>stones[j]</code>, the length of the jump is <code>|stones[i] - stones[j]|</code>.</li>\n</ul>\n\n<p>The <strong>cost</strong> of a path is the <strong>maximum length of a jump</strong> among all jumps in the path.</p>\n\n<p>Return <em>the <strong>minimum</strong> cost of a path for the frog</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2026/02/23/2498_ex0.png\" style=\"width: 500px; height: 190px;\" />\n<pre>\n<strong>Input:</strong> stones = [0,2,5,6,7]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The above figure represents one of the optimal paths the frog can take.\nThe cost of this path is 5, which is the maximum length of a jump.\nSince it is not possible to achieve a cost of less than 5, we return it.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2026/02/23/2498_ex1.png\" style=\"width: 500px; height: 190px;\" />\n<pre>\n<strong>Input:</strong> stones = [0,3,9]\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> \nThe frog can jump directly to the last stone and come back to the first stone. \nIn this case, the length of each jump will be 9. The cost for the path will be max(9, 9) = 9.\nIt can be shown that this is the minimum achievable cost.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= stones.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= stones[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>stones[0] == 0</code></li>\n\t<li><code>stones</code> is sorted in a strictly increasing order.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `stones` sorted in **strictly increasing order** representing the positions of stones in a river.\n\nA frog, initially on the first stone, wants to travel to the last stone and then return to the first stone. However, it can jump to any stone **at most once**.\n\nThe **length** of a jump is the absolute difference between the position of the stone the frog is currently on and the position of the stone to which the frog jumps.\n\n  * More formally, if the frog is at `stones[i]` and is jumping to `stones[j]`, the length of the jump is `|stones[i] - stones[j]|`.\n\n\n\nThe **cost** of a path is the **maximum length of a jump** among all jumps in the path.\n\nReturn _the**minimum** cost of a path for the frog_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2026/02/23/2498_ex0.png)\n    \n    \n    **Input:** stones = [0,2,5,6,7]\n    **Output:** 5\n    **Explanation:** The above figure represents one of the optimal paths the frog can take.\n    The cost of this path is 5, which is the maximum length of a jump.\n    Since it is not possible to achieve a cost of less than 5, we return it.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2026/02/23/2498_ex1.png)\n    \n    \n    **Input:** stones = [0,3,9]\n    **Output:** 9\n    **Explanation:** \n    The frog can jump directly to the last stone and come back to the first stone. \n    In this case, the length of each jump will be 9. The cost for the path will be max(9, 9) = 9.\n    It can be shown that this is the minimum achievable cost.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= stones.length <= 105`\n  * `0 <= stones[i] <= 109`\n  * `stones[0] == 0`\n  * `stones` is sorted in a strictly increasing order.",
+  "question": "You are given a **0-indexed** integer array `stones` sorted in **strictly increasing order** representing the positions of stones in a river.\n\nA frog, initially on the first stone, wants to travel to the last stone and then return to the first stone. However, it can jump to any stone **at most once**.\n\nThe **length** of a jump is the absolute difference between the position of the stone the frog is currently on and the position of the stone to which the frog jumps.\n\n  * More formally, if the frog is at `stones[i]` and is jumping to `stones[j]`, the length of the jump is `|stones[i] - stones[j]|`.\n\n\n\nThe **cost** of a path is the **maximum length of a jump** among all jumps in the path.\n\nReturn _the**minimum** cost of a path for the frog_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2026/02/23/2498_ex0.png)\n    \n    \n    **Input:** stones = [0,2,5,6,7]\n    **Output:** 5\n    **Explanation:** The above figure represents one of the optimal paths the frog can take.\n    The cost of this path is 5, which is the maximum length of a jump.\n    Since it is not possible to achieve a cost of less than 5, we return it.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2026/02/23/2498_ex1.png)\n    \n    \n    **Input:** stones = [0,3,9]\n    **Output:** 9\n    **Explanation:** \n    The frog can jump directly to the last stone and come back to the first stone. \n    In this case, the length of each jump will be 9. The cost for the path will be max(9, 9) = 9.\n    It can be shown that this is the minimum achievable cost.",
+  "constraints": "**Constraints:**\n\n  * `2 <= stones.length <= 105`\n  * `0 <= stones[i] <= 109`\n  * `stones[0] == 0`\n  * `stones` is sorted in a strictly increasing order.",
+  "topics": ["Array", "Binary Search", "Greedy"],
+  "total_accepted": 37679,
+  "total_submissions": 60344,
+  "acceptance_rate": "62.4%",
+  "similar_questions": [
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/climbing-stairs/"
+    },
+    {
+      "title": "Koko Eating Bananas",
+      "slug": "koko-eating-bananas",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/koko-eating-bananas/"
+    }
+  ],
+  "hints": [
+    "One of the optimal strategies will be to jump to every stone.",
+    "Skipping just one stone in every forward jump and jumping to those skipped stones in backward jump can minimize the maximum jump."
+  ]
+}

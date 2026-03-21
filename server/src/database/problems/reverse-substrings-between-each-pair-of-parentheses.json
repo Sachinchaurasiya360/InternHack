@@ -1,0 +1,22 @@
+{
+  "id": "1190",
+  "title": "Reverse Substrings Between Each Pair of Parentheses",
+  "slug": "reverse-substrings-between-each-pair-of-parentheses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> that consists of lower case English letters and brackets.</p>\n\n<p>Reverse the strings in each pair of matching parentheses, starting from the innermost one.</p>\n\n<p>Your result should <strong>not</strong> contain any brackets.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(abcd)&quot;\n<strong>Output:</strong> &quot;dcba&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(u(love)i)&quot;\n<strong>Output:</strong> &quot;iloveu&quot;\n<strong>Explanation:</strong> The substring &quot;love&quot; is reversed first, then the whole string is reversed.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(ed(et(oc))el)&quot;\n<strong>Output:</strong> &quot;leetcode&quot;\n<strong>Explanation:</strong> First, we reverse the substring &quot;oc&quot;, then &quot;etco&quot;, and finally, the whole string.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 2000</code></li>\n\t<li><code>s</code> only contains lower case English characters and parentheses.</li>\n\t<li>It is guaranteed that all parentheses are balanced.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` that consists of lower case English letters and brackets.\n\nReverse the strings in each pair of matching parentheses, starting from the innermost one.\n\nYour result should **not** contain any brackets.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"(abcd)\"\n    **Output:** \"dcba\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(u(love)i)\"\n    **Output:** \"iloveu\"\n    **Explanation:** The substring \"love\" is reversed first, then the whole string is reversed.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"(ed(et(oc))el)\"\n    **Output:** \"leetcode\"\n    **Explanation:** First, we reverse the substring \"oc\", then \"etco\", and finally, the whole string.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` only contains lower case English characters and parentheses.\n  * It is guaranteed that all parentheses are balanced.",
+  "question": "You are given a string `s` that consists of lower case English letters and brackets.\n\nReverse the strings in each pair of matching parentheses, starting from the innermost one.\n\nYour result should **not** contain any brackets.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"(abcd)\"\n    **Output:** \"dcba\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(u(love)i)\"\n    **Output:** \"iloveu\"\n    **Explanation:** The substring \"love\" is reversed first, then the whole string is reversed.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"(ed(et(oc))el)\"\n    **Output:** \"leetcode\"\n    **Explanation:** First, we reverse the substring \"oc\", then \"etco\", and finally, the whole string.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` only contains lower case English characters and parentheses.\n  * It is guaranteed that all parentheses are balanced.",
+  "topics": ["String", "Stack"],
+  "total_accepted": 242859,
+  "total_submissions": 337575,
+  "acceptance_rate": "71.9%",
+  "similar_questions": [],
+  "hints": [
+    "Find all brackets in the string.",
+    "Does the order of the reverse matter ?",
+    "The order does not matter."
+  ]
+}

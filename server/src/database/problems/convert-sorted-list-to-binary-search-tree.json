@@ -1,0 +1,31 @@
+{
+  "id": "109",
+  "title": "Convert Sorted List to Binary Search Tree",
+  "slug": "convert-sorted-list-to-binary-search-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a singly linked list where elements are sorted in <strong>ascending order</strong>, convert <em>it to a </em><span data-keyword=\"height-balanced\"><strong><em>height-balanced</em></strong></span> <em>binary search tree</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/17/linked.jpg\" style=\"width: 500px; height: 388px;\" />\n<pre>\n<strong>Input:</strong> head = [-10,-3,0,5,9]\n<strong>Output:</strong> [0,-3,9,-10,null,5]\n<strong>Explanation:</strong> One possible answer is [0,-3,9,-10,null,5], which represents the shown height balanced BST.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> head = []\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in <code>head</code> is in the range <code>[0, 2 * 10<sup>4</sup>]</code>.</li>\n\t<li><code>-10<sup>5</sup> &lt;= Node.val &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given the `head` of a singly linked list where elements are sorted in **ascending order** , convert _it to a_** _height-balanced_** _binary search tree_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/17/linked.jpg)\n    \n    \n    **Input:** head = [-10,-3,0,5,9]\n    **Output:** [0,-3,9,-10,null,5]\n    **Explanation:** One possible answer is [0,-3,9,-10,null,5], which represents the shown height balanced BST.\n    \n\n**Example 2:**\n    \n    \n    **Input:** head = []\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in `head` is in the range `[0, 2 * 104]`.\n  * `-105 <= Node.val <= 105`",
+  "question": "Given the `head` of a singly linked list where elements are sorted in **ascending order** , convert _it to a_** _height-balanced_** _binary search tree_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/17/linked.jpg)\n    \n    \n    **Input:** head = [-10,-3,0,5,9]\n    **Output:** [0,-3,9,-10,null,5]\n    **Explanation:** One possible answer is [0,-3,9,-10,null,5], which represents the shown height balanced BST.\n    \n\n**Example 2:**\n    \n    \n    **Input:** head = []\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in `head` is in the range `[0, 2 * 104]`.\n  * `-105 <= Node.val <= 105`",
+  "topics": ["Linked List", "Divide and Conquer", "Tree", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 671406,
+  "total_submissions": 1016740,
+  "acceptance_rate": "66.0%",
+  "similar_questions": [
+    {
+      "title": "Convert Sorted Array to Binary Search Tree",
+      "slug": "convert-sorted-array-to-binary-search-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/"
+    },
+    {
+      "title": "Create Binary Tree From Descriptions",
+      "slug": "create-binary-tree-from-descriptions",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/create-binary-tree-from-descriptions/"
+    }
+  ],
+  "hints": []
+}

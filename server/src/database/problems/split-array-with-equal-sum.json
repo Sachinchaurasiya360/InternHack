@@ -1,0 +1,31 @@
+{
+  "id": "548",
+  "title": "Split Array with Equal Sum",
+  "slug": "split-array-with-equal-sum",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 24947,
+  "total_submissions": 49826,
+  "acceptance_rate": "50.1%",
+  "similar_questions": [
+    {
+      "title": "Fair Distribution of Cookies",
+      "slug": "fair-distribution-of-cookies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fair-distribution-of-cookies/"
+    },
+    {
+      "title": "Number of Ways to Split a String",
+      "slug": "number-of-ways-to-split-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-split-a-string/"
+    }
+  ],
+  "hints": []
+}

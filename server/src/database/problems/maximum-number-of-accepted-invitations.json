@@ -1,0 +1,22 @@
+{
+  "id": "1820",
+  "title": "Maximum Number of Accepted Invitations",
+  "slug": "maximum-number-of-accepted-invitations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Depth-First Search", "Graph Theory", "Matrix"],
+  "total_accepted": 10895,
+  "total_submissions": 20825,
+  "acceptance_rate": "52.3%",
+  "similar_questions": [],
+  "hints": [
+    "We can see that the problem can be represented as a directed graph with an edge from each boy to the girl he invited.",
+    "We need to choose a set of edges such that no to source points in the graph (i.e., boys) have an edge with the same endpoint (i.e., the same girl).",
+    "The problem is maximum bipartite matching in the graph."
+  ]
+}

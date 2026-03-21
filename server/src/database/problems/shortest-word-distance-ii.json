@@ -1,0 +1,37 @@
+{
+  "id": "244",
+  "title": "Shortest Word Distance II",
+  "slug": "shortest-word-distance-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Two Pointers", "String", "Design"],
+  "total_accepted": 178286,
+  "total_submissions": 284186,
+  "acceptance_rate": "62.7%",
+  "similar_questions": [
+    {
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-two-sorted-lists/"
+    },
+    {
+      "title": "Shortest Word Distance",
+      "slug": "shortest-word-distance",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/shortest-word-distance/"
+    },
+    {
+      "title": "Shortest Word Distance III",
+      "slug": "shortest-word-distance-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-word-distance-iii/"
+    }
+  ],
+  "hints": []
+}

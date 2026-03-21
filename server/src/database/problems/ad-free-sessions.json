@@ -1,0 +1,18 @@
+{
+  "id": "1809",
+  "title": "Ad-Free Sessions",
+  "slug": "ad-free-sessions",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 19436,
+  "total_submissions": 33019,
+  "acceptance_rate": "58.9%",
+  "similar_questions": [],
+  "hints": []
+}

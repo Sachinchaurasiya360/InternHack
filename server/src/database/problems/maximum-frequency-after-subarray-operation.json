@@ -1,0 +1,21 @@
+{
+  "id": "3434",
+  "title": "Maximum Frequency After Subarray Operation",
+  "slug": "maximum-frequency-after-subarray-operation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> of length <code>n</code>. You are also given an integer <code>k</code>.</p>\n\n<p>You perform the following operation on <code>nums</code> <strong>once</strong>:</p>\n\n<ul>\n\t<li>Select a <span data-keyword=\"subarray-nonempty\">subarray</span> <code>nums[i..j]</code> where <code>0 &lt;= i &lt;= j &lt;= n - 1</code>.</li>\n\t<li>Select an integer <code>x</code> and add <code>x</code> to <strong>all</strong> the elements in <code>nums[i..j]</code>.</li>\n</ul>\n\n<p>Find the <strong>maximum</strong> frequency of the value <code>k</code> after the operation.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3,4,5,6], k = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>After adding -5 to <code>nums[2..5]</code>, 1 has a frequency of 2 in <code>[1, 2, -2, -1, 0, 1]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [10,2,3,4,5,5,4,3,2,2], k = 10</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>After adding 8 to <code>nums[1..9]</code>, 10 has a frequency of 4 in <code>[10, 10, 11, 12, 13, 13, 12, 11, 10, 10]</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n == nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 50</code></li>\n\t<li><code>1 &lt;= k &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` of length `n`. You are also given an integer `k`.\n\nYou perform the following operation on `nums` **once** :\n\n  * Select a subarray `nums[i..j]` where `0 <= i <= j <= n - 1`.\n  * Select an integer `x` and add `x` to **all** the elements in `nums[i..j]`.\n\n\n\nFind the **maximum** frequency of the value `k` after the operation.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,3,4,5,6], k = 1\n\n**Output:** 2\n\n**Explanation:**\n\nAfter adding -5 to `nums[2..5]`, 1 has a frequency of 2 in `[1, 2, -2, -1, 0, 1]`.\n\n**Example 2:**\n\n**Input:** nums = [10,2,3,4,5,5,4,3,2,2], k = 10\n\n**Output:** 4\n\n**Explanation:**\n\nAfter adding 8 to `nums[1..9]`, 10 has a frequency of 4 in `[10, 10, 11, 12, 13, 13, 12, 11, 10, 10]`.\n\n \n\n**Constraints:**\n\n  * `1 <= n == nums.length <= 105`\n  * `1 <= nums[i] <= 50`\n  * `1 <= k <= 50`",
+  "question": "You are given an array `nums` of length `n`. You are also given an integer `k`.\n\nYou perform the following operation on `nums` **once** :\n\n  * Select a subarray `nums[i..j]` where `0 <= i <= j <= n - 1`.\n  * Select an integer `x` and add `x` to **all** the elements in `nums[i..j]`.\n\n\n\nFind the **maximum** frequency of the value `k` after the operation.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,3,4,5,6], k = 1\n\n**Output:** 2\n\n**Explanation:**\n\nAfter adding -5 to `nums[2..5]`, 1 has a frequency of 2 in `[1, 2, -2, -1, 0, 1]`.\n\n**Example 2:**\n\n**Input:** nums = [10,2,3,4,5,5,4,3,2,2], k = 10\n\n**Output:** 4\n\n**Explanation:**\n\nAfter adding 8 to `nums[1..9]`, 10 has a frequency of 4 in `[10, 10, 11, 12, 13, 13, 12, 11, 10, 10]`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n == nums.length <= 105`\n  * `1 <= nums[i] <= 50`\n  * `1 <= k <= 50`",
+  "topics": ["Array", "Hash Table", "Dynamic Programming", "Greedy", "Enumeration", "Prefix Sum"],
+  "total_accepted": 24712,
+  "total_submissions": 80014,
+  "acceptance_rate": "30.9%",
+  "similar_questions": [],
+  "hints": [
+    "Fix the element you want to convert to <code>k</code>.",
+    "Use prefix sums to optimize counting occurrences of an element."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "767",
+  "title": "Reorganize String",
+  "slug": "reorganize-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, rearrange the characters of <code>s</code> so that any two adjacent characters are not the same.</p>\n\n<p>Return <em>any possible rearrangement of</em> <code>s</code> <em>or return</em> <code>&quot;&quot;</code> <em>if not possible</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"aab\"\n<strong>Output:</strong> \"aba\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"aaab\"\n<strong>Output:</strong> \"\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 500</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, rearrange the characters of `s` so that any two adjacent characters are not the same.\n\nReturn _any possible rearrangement of_ `s` _or return_ `\"\"` _if not possible_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** \"aba\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaab\"\n    **Output:** \"\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of lowercase English letters.",
+  "question": "Given a string `s`, rearrange the characters of `s` so that any two adjacent characters are not the same.\n\nReturn _any possible rearrangement of_ `s` _or return_ `\"\"` _if not possible_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** \"aba\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaab\"\n    **Output:** \"\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Greedy", "Sorting", "Heap (Priority Queue)", "Counting"],
+  "total_accepted": 583422,
+  "total_submissions": 1026339,
+  "acceptance_rate": "56.8%",
+  "similar_questions": [
+    {
+      "title": "Rearrange String k Distance Apart",
+      "slug": "rearrange-string-k-distance-apart",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/rearrange-string-k-distance-apart/"
+    },
+    {
+      "title": "Task Scheduler",
+      "slug": "task-scheduler",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/task-scheduler/"
+    },
+    {
+      "title": "Longest Happy String",
+      "slug": "longest-happy-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-happy-string/"
+    }
+  ],
+  "hints": ["Alternate placing the most common letters."]
+}

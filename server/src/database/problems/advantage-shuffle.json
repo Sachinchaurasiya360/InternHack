@@ -1,0 +1,18 @@
+{
+  "id": "870",
+  "title": "Advantage Shuffle",
+  "slug": "advantage-shuffle",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integer arrays <code>nums1</code> and <code>nums2</code> both of the same length. The <strong>advantage</strong> of <code>nums1</code> with respect to <code>nums2</code> is the number of indices <code>i</code> for which <code>nums1[i] &gt; nums2[i]</code>.</p>\n\n<p>Return <em>any permutation of </em><code>nums1</code><em> that maximizes its <strong>advantage</strong> with respect to </em><code>nums2</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums1 = [2,7,11,15], nums2 = [1,10,4,11]\n<strong>Output:</strong> [2,11,7,15]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums1 = [12,24,8,32], nums2 = [13,25,32,11]\n<strong>Output:</strong> [24,32,8,12]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>nums2.length == nums1.length</code></li>\n\t<li><code>0 &lt;= nums1[i], nums2[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two integer arrays `nums1` and `nums2` both of the same length. The **advantage** of `nums1` with respect to `nums2` is the number of indices `i` for which `nums1[i] > nums2[i]`.\n\nReturn _any permutation of_`nums1` _that maximizes its**advantage** with respect to _`nums2`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [2,7,11,15], nums2 = [1,10,4,11]\n    **Output:** [2,11,7,15]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [12,24,8,32], nums2 = [13,25,32,11]\n    **Output:** [24,32,8,12]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length <= 105`\n  * `nums2.length == nums1.length`\n  * `0 <= nums1[i], nums2[i] <= 109`",
+  "question": "You are given two integer arrays `nums1` and `nums2` both of the same length. The **advantage** of `nums1` with respect to `nums2` is the number of indices `i` for which `nums1[i] > nums2[i]`.\n\nReturn _any permutation of_`nums1` _that maximizes its**advantage** with respect to _`nums2`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [2,7,11,15], nums2 = [1,10,4,11]\n    **Output:** [2,11,7,15]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [12,24,8,32], nums2 = [13,25,32,11]\n    **Output:** [24,32,8,12]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length <= 105`\n  * `nums2.length == nums1.length`\n  * `0 <= nums1[i], nums2[i] <= 109`",
+  "topics": ["Array", "Two Pointers", "Greedy", "Sorting"],
+  "total_accepted": 80621,
+  "total_submissions": 148581,
+  "acceptance_rate": "54.3%",
+  "similar_questions": [],
+  "hints": []
+}

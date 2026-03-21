@@ -1,0 +1,55 @@
+{
+  "id": "2426",
+  "title": "Number of Pairs Satisfying Inequality",
+  "slug": "number-of-pairs-satisfying-inequality",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <strong>0-indexed</strong> integer arrays <code>nums1</code> and <code>nums2</code>, each of size <code>n</code>, and an integer <code>diff</code>. Find the number of <strong>pairs</strong> <code>(i, j)</code> such that:</p>\n\n<ul>\n\t<li><code>0 &lt;= i &lt; j &lt;= n - 1</code> <strong>and</strong></li>\n\t<li><code>nums1[i] - nums1[j] &lt;= nums2[i] - nums2[j] + diff</code>.</li>\n</ul>\n\n<p>Return<em> the <strong>number of pairs</strong> that satisfy the conditions.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [3,2,5], nums2 = [2,2,1], diff = 1\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nThere are 3 pairs that satisfy the conditions:\n1. i = 0, j = 1: 3 - 2 &lt;= 2 - 2 + 1. Since i &lt; j and 1 &lt;= 1, this pair satisfies the conditions.\n2. i = 0, j = 2: 3 - 5 &lt;= 2 - 1 + 1. Since i &lt; j and -2 &lt;= 2, this pair satisfies the conditions.\n3. i = 1, j = 2: 2 - 5 &lt;= 2 - 1 + 1. Since i &lt; j and -3 &lt;= 2, this pair satisfies the conditions.\nTherefore, we return 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [3,-1], nums2 = [-2,2], diff = -1\n<strong>Output:</strong> 0\n<strong>Explanation:</strong>\nSince there does not exist any pair that satisfies the conditions, we return 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums1.length == nums2.length</code></li>\n\t<li><code>2 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums1[i], nums2[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= diff &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two **0-indexed** integer arrays `nums1` and `nums2`, each of size `n`, and an integer `diff`. Find the number of **pairs** `(i, j)` such that:\n\n  * `0 <= i < j <= n - 1` **and**\n  * `nums1[i] - nums1[j] <= nums2[i] - nums2[j] + diff`.\n\n\n\nReturn _the**number of pairs** that satisfy the conditions._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [3,2,5], nums2 = [2,2,1], diff = 1\n    **Output:** 3\n    **Explanation:**\n    There are 3 pairs that satisfy the conditions:\n    1. i = 0, j = 1: 3 - 2 <= 2 - 2 + 1. Since i < j and 1 <= 1, this pair satisfies the conditions.\n    2. i = 0, j = 2: 3 - 5 <= 2 - 1 + 1. Since i < j and -2 <= 2, this pair satisfies the conditions.\n    3. i = 1, j = 2: 2 - 5 <= 2 - 1 + 1. Since i < j and -3 <= 2, this pair satisfies the conditions.\n    Therefore, we return 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [3,-1], nums2 = [-2,2], diff = -1\n    **Output:** 0\n    **Explanation:**\n    Since there does not exist any pair that satisfies the conditions, we return 0.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums1.length == nums2.length`\n  * `2 <= n <= 105`\n  * `-104 <= nums1[i], nums2[i] <= 104`\n  * `-104 <= diff <= 104`",
+  "question": "You are given two **0-indexed** integer arrays `nums1` and `nums2`, each of size `n`, and an integer `diff`. Find the number of **pairs** `(i, j)` such that:\n\n  * `0 <= i < j <= n - 1` **and**\n  * `nums1[i] - nums1[j] <= nums2[i] - nums2[j] + diff`.\n\n\n\nReturn _the**number of pairs** that satisfy the conditions._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [3,2,5], nums2 = [2,2,1], diff = 1\n    **Output:** 3\n    **Explanation:**\n    There are 3 pairs that satisfy the conditions:\n    1. i = 0, j = 1: 3 - 2 <= 2 - 2 + 1. Since i < j and 1 <= 1, this pair satisfies the conditions.\n    2. i = 0, j = 2: 3 - 5 <= 2 - 1 + 1. Since i < j and -2 <= 2, this pair satisfies the conditions.\n    3. i = 1, j = 2: 2 - 5 <= 2 - 1 + 1. Since i < j and -3 <= 2, this pair satisfies the conditions.\n    Therefore, we return 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [3,-1], nums2 = [-2,2], diff = -1\n    **Output:** 0\n    **Explanation:**\n    Since there does not exist any pair that satisfies the conditions, we return 0.",
+  "constraints": "**Constraints:**\n\n  * `n == nums1.length == nums2.length`\n  * `2 <= n <= 105`\n  * `-104 <= nums1[i], nums2[i] <= 104`\n  * `-104 <= diff <= 104`",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Divide and Conquer",
+    "Binary Indexed Tree",
+    "Segment Tree",
+    "Merge Sort",
+    "Ordered Set"
+  ],
+  "total_accepted": 18646,
+  "total_submissions": 39819,
+  "acceptance_rate": "46.8%",
+  "similar_questions": [
+    {
+      "title": "K-diff Pairs in an Array",
+      "slug": "k-diff-pairs-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-diff-pairs-in-an-array/"
+    },
+    {
+      "title": "Count Nice Pairs in an Array",
+      "slug": "count-nice-pairs-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-nice-pairs-in-an-array/"
+    },
+    {
+      "title": "Count Number of Bad Pairs",
+      "slug": "count-number-of-bad-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-bad-pairs/"
+    },
+    {
+      "title": "Maximum Balanced Subsequence Sum",
+      "slug": "maximum-balanced-subsequence-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-balanced-subsequence-sum/"
+    }
+  ],
+  "hints": [
+    "Try rearranging the equation.",
+    "Once the equation is rearranged properly, think how a segment tree or a Fenwick tree can be used to solve the rearranged equation.",
+    "Iterate through the array backwards."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "1734",
+  "title": "Decode XORed Permutation",
+  "slug": "decode-xored-permutation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is an integer array <code>perm</code> that is a permutation of the first <code>n</code> positive integers, where <code>n</code> is always <strong>odd</strong>.</p>\n\n<p>It was encoded into another integer array <code>encoded</code> of length <code>n - 1</code>, such that <code>encoded[i] = perm[i] XOR perm[i + 1]</code>. For example, if <code>perm = [1,3,2]</code>, then <code>encoded = [2,1]</code>.</p>\n\n<p>Given the <code>encoded</code> array, return <em>the original array</em> <code>perm</code>. It is guaranteed that the answer exists and is unique.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> encoded = [3,1]\n<strong>Output:</strong> [1,2,3]\n<strong>Explanation:</strong> If perm = [1,2,3], then encoded = [1 XOR 2,2 XOR 3] = [3,1]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> encoded = [6,5,4,6]\n<strong>Output:</strong> [2,4,1,5,3]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= n &lt;&nbsp;10<sup>5</sup></code></li>\n\t<li><code>n</code>&nbsp;is odd.</li>\n\t<li><code>encoded.length == n - 1</code></li>\n</ul>\n",
+  "content_markdown": "There is an integer array `perm` that is a permutation of the first `n` positive integers, where `n` is always **odd**.\n\nIt was encoded into another integer array `encoded` of length `n - 1`, such that `encoded[i] = perm[i] XOR perm[i + 1]`. For example, if `perm = [1,3,2]`, then `encoded = [2,1]`.\n\nGiven the `encoded` array, return _the original array_ `perm`. It is guaranteed that the answer exists and is unique.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** encoded = [3,1]\n    **Output:** [1,2,3]\n    **Explanation:** If perm = [1,2,3], then encoded = [1 XOR 2,2 XOR 3] = [3,1]\n    \n\n**Example 2:**\n    \n    \n    **Input:** encoded = [6,5,4,6]\n    **Output:** [2,4,1,5,3]\n    \n\n \n\n**Constraints:**\n\n  * `3 <= n < 105`\n  * `n` is odd.\n  * `encoded.length == n - 1`",
+  "question": "There is an integer array `perm` that is a permutation of the first `n` positive integers, where `n` is always **odd**.\n\nIt was encoded into another integer array `encoded` of length `n - 1`, such that `encoded[i] = perm[i] XOR perm[i + 1]`. For example, if `perm = [1,3,2]`, then `encoded = [2,1]`.\n\nGiven the `encoded` array, return _the original array_ `perm`. It is guaranteed that the answer exists and is unique.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** encoded = [3,1]\n    **Output:** [1,2,3]\n    **Explanation:** If perm = [1,2,3], then encoded = [1 XOR 2,2 XOR 3] = [3,1]\n    \n\n**Example 2:**\n    \n    \n    **Input:** encoded = [6,5,4,6]\n    **Output:** [2,4,1,5,3]",
+  "constraints": "**Constraints:**\n\n  * `3 <= n < 105`\n  * `n` is odd.\n  * `encoded.length == n - 1`",
+  "topics": ["Array", "Bit Manipulation"],
+  "total_accepted": 20021,
+  "total_submissions": 29923,
+  "acceptance_rate": "66.9%",
+  "similar_questions": [
+    {
+      "title": "Find Xor-Beauty of Array",
+      "slug": "find-xor-beauty-of-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-xor-beauty-of-array/"
+    }
+  ],
+  "hints": [
+    "Compute the XOR of the numbers between 1 and n, and think about how it can be used. Let it be x.",
+    "Think why n is odd.",
+    "perm[0] = x XOR encoded[1] XOR encoded[3] XOR encoded[5] ...",
+    "perm[i] = perm[i-1] XOR encoded[i-1]"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3119",
+  "title": "Maximum Number of Potholes That Can Be Fixed",
+  "slug": "maximum-number-of-potholes-that-can-be-fixed",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Greedy", "Sorting"],
+  "total_accepted": 3943,
+  "total_submissions": 7394,
+  "acceptance_rate": "53.3%",
+  "similar_questions": [],
+  "hints": [
+    "Find all consecutive blocks of <code>’x’</code>.",
+    "Sort them by their length.",
+    "Try to fix the block from the largest one until you have enough budget."
+  ]
+}

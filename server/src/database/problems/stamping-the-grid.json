@@ -1,0 +1,37 @@
+{
+  "id": "2132",
+  "title": "Stamping the Grid",
+  "slug": "stamping-the-grid",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> binary matrix <code>grid</code> where each cell is either <code>0</code> (empty) or <code>1</code> (occupied).</p>\n\n<p>You are then given stamps of size <code>stampHeight x stampWidth</code>. We want to fit the stamps such that they follow the given <strong>restrictions</strong> and <strong>requirements</strong>:</p>\n\n<ol>\n\t<li>Cover all the <strong>empty</strong> cells.</li>\n\t<li>Do not cover any of the <strong>occupied</strong> cells.</li>\n\t<li>We can put as <strong>many</strong> stamps as we want.</li>\n\t<li>Stamps can <strong>overlap</strong> with each other.</li>\n\t<li>Stamps are not allowed to be <strong>rotated</strong>.</li>\n\t<li>Stamps must stay completely <strong>inside</strong> the grid.</li>\n</ol>\n\n<p>Return <code>true</code> <em>if it is possible to fit the stamps while following the given restrictions and requirements. Otherwise, return</em> <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/03/ex1.png\" style=\"width: 180px; height: 237px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0]], stampHeight = 4, stampWidth = 3\n<strong>Output:</strong> true\n<strong>Explanation:</strong> We have two overlapping stamps (labeled 1 and 2 in the image) that are able to cover all the empty cells.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/03/ex2.png\" style=\"width: 170px; height: 179px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]], stampHeight = 2, stampWidth = 2 \n<strong>Output:</strong> false \n<strong>Explanation:</strong> There is no way to fit the stamps onto all the empty cells without the stamps going outside the grid.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[r].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= m * n &lt;= 2 * 10<sup>5</sup></code></li>\n\t<li><code>grid[r][c]</code> is either <code>0</code> or <code>1</code>.</li>\n\t<li><code>1 &lt;= stampHeight, stampWidth &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` binary matrix `grid` where each cell is either `0` (empty) or `1` (occupied).\n\nYou are then given stamps of size `stampHeight x stampWidth`. We want to fit the stamps such that they follow the given **restrictions** and **requirements** :\n\n  1. Cover all the **empty** cells.\n  2. Do not cover any of the **occupied** cells.\n  3. We can put as **many** stamps as we want.\n  4. Stamps can **overlap** with each other.\n  5. Stamps are not allowed to be **rotated**.\n  6. Stamps must stay completely **inside** the grid.\n\n\n\nReturn `true` _if it is possible to fit the stamps while following the given restrictions and requirements. Otherwise, return_ `false`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/ex1.png)\n    \n    \n    **Input:** grid = [[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0]], stampHeight = 4, stampWidth = 3\n    **Output:** true\n    **Explanation:** We have two overlapping stamps (labeled 1 and 2 in the image) that are able to cover all the empty cells.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/ex2.png)\n    \n    \n    **Input:** grid = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]], stampHeight = 2, stampWidth = 2 \n    **Output:** false \n    **Explanation:** There is no way to fit the stamps onto all the empty cells without the stamps going outside the grid.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[r].length`\n  * `1 <= m, n <= 105`\n  * `1 <= m * n <= 2 * 105`\n  * `grid[r][c]` is either `0` or `1`.\n  * `1 <= stampHeight, stampWidth <= 105`",
+  "question": "You are given an `m x n` binary matrix `grid` where each cell is either `0` (empty) or `1` (occupied).\n\nYou are then given stamps of size `stampHeight x stampWidth`. We want to fit the stamps such that they follow the given **restrictions** and **requirements** :\n\n  1. Cover all the **empty** cells.\n  2. Do not cover any of the **occupied** cells.\n  3. We can put as **many** stamps as we want.\n  4. Stamps can **overlap** with each other.\n  5. Stamps are not allowed to be **rotated**.\n  6. Stamps must stay completely **inside** the grid.\n\n\n\nReturn `true` _if it is possible to fit the stamps while following the given restrictions and requirements. Otherwise, return_ `false`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/ex1.png)\n    \n    \n    **Input:** grid = [[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0]], stampHeight = 4, stampWidth = 3\n    **Output:** true\n    **Explanation:** We have two overlapping stamps (labeled 1 and 2 in the image) that are able to cover all the empty cells.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/ex2.png)\n    \n    \n    **Input:** grid = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]], stampHeight = 2, stampWidth = 2 \n    **Output:** false \n    **Explanation:** There is no way to fit the stamps onto all the empty cells without the stamps going outside the grid.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[r].length`\n  * `1 <= m, n <= 105`\n  * `1 <= m * n <= 2 * 105`\n  * `grid[r][c]` is either `0` or `1`.\n  * `1 <= stampHeight, stampWidth <= 105`",
+  "topics": ["Array", "Greedy", "Matrix", "Prefix Sum"],
+  "total_accepted": 9981,
+  "total_submissions": 28555,
+  "acceptance_rate": "35.0%",
+  "similar_questions": [
+    {
+      "title": "Maximal Square",
+      "slug": "maximal-square",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximal-square/"
+    },
+    {
+      "title": "Bomb Enemy",
+      "slug": "bomb-enemy",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bomb-enemy/"
+    },
+    {
+      "title": "Matrix Block Sum",
+      "slug": "matrix-block-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/matrix-block-sum/"
+    }
+  ],
+  "hints": ["Can we use prefix sums here?"]
+}

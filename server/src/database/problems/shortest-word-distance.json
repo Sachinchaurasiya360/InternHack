@@ -1,0 +1,37 @@
+{
+  "id": "243",
+  "title": "Shortest Word Distance",
+  "slug": "shortest-word-distance",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String"],
+  "total_accepted": 243199,
+  "total_submissions": 367195,
+  "acceptance_rate": "66.2%",
+  "similar_questions": [
+    {
+      "title": "Shortest Word Distance II",
+      "slug": "shortest-word-distance-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-word-distance-ii/"
+    },
+    {
+      "title": "Shortest Word Distance III",
+      "slug": "shortest-word-distance-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-word-distance-iii/"
+    },
+    {
+      "title": "Find All K-Distant Indices in an Array",
+      "slug": "find-all-k-distant-indices-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-k-distant-indices-in-an-array/"
+    }
+  ],
+  "hints": []
+}

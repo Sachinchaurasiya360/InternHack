@@ -1,0 +1,25 @@
+{
+  "id": "2832",
+  "title": "Maximal Range That Each Element Is Maximum in It",
+  "slug": "maximal-range-that-each-element-is-maximum-in-it",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 6360,
+  "total_submissions": 8431,
+  "acceptance_rate": "75.4%",
+  "similar_questions": [],
+  "hints": [
+    "For each index, we must find the nearest bigger element on both its left and right sides.",
+    "First, find the nearest bigger element on the left side of each element. To do that, use a stack of pairs <code>(value, index)</code>.",
+    "Start iterating from the beginning of the array.",
+    "Whenever we reach an element <code>nums[index]</code>, while the top of the stack is smaller than <code>nums[index]</code>, we pop from the stack.",
+    "If there is an element left in the stack, <code>top.index + 1</code> would be the answer. Otherwise, <code>0</code> is the answer.",
+    "After that, we push <code>(nums[index], index)</code> to the stack and go for the next element."
+  ]
+}

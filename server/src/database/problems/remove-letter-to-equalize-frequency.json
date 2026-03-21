@@ -1,0 +1,31 @@
+{
+  "id": "2423",
+  "title": "Remove Letter To Equalize Frequency",
+  "slug": "remove-letter-to-equalize-frequency",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> string <code>word</code>, consisting of lowercase English letters. You need to select <strong>one</strong> index and <strong>remove</strong> the letter at that index from <code>word</code> so that the <strong>frequency</strong> of every letter present in <code>word</code> is equal.</p>\n\n<p>Return<em> </em><code>true</code><em> if it is possible to remove one letter so that the frequency of all letters in </em><code>word</code><em> are equal, and </em><code>false</code><em> otherwise</em>.</p>\n\n<p><strong>Note:</strong></p>\n\n<ul>\n\t<li>The <b>frequency</b> of a letter <code>x</code> is the number of times it occurs in the string.</li>\n\t<li>You <strong>must</strong> remove exactly one letter and cannot choose to do nothing.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> word = &quot;abcc&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Select index 3 and delete it: word becomes &quot;abc&quot; and each character has a frequency of 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> word = &quot;aazz&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> We must delete a character, so either the frequency of &quot;a&quot; is 1 and the frequency of &quot;z&quot; is 2, or vice versa. It is impossible to make all present letters have equal frequency.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= word.length &lt;= 100</code></li>\n\t<li><code>word</code> consists of lowercase English letters only.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** string `word`, consisting of lowercase English letters. You need to select **one** index and **remove** the letter at that index from `word` so that the **frequency** of every letter present in `word` is equal.\n\nReturn __`true` _if it is possible to remove one letter so that the frequency of all letters in_`word` _are equal, and_`false` _otherwise_.\n\n**Note:**\n\n  * The **frequency** of a letter `x` is the number of times it occurs in the string.\n  * You **must** remove exactly one letter and cannot choose to do nothing.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word = \"abcc\"\n    **Output:** true\n    **Explanation:** Select index 3 and delete it: word becomes \"abc\" and each character has a frequency of 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"aazz\"\n    **Output:** false\n    **Explanation:** We must delete a character, so either the frequency of \"a\" is 1 and the frequency of \"z\" is 2, or vice versa. It is impossible to make all present letters have equal frequency.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= word.length <= 100`\n  * `word` consists of lowercase English letters only.",
+  "question": "You are given a **0-indexed** string `word`, consisting of lowercase English letters. You need to select **one** index and **remove** the letter at that index from `word` so that the **frequency** of every letter present in `word` is equal.\n\nReturn __`true` _if it is possible to remove one letter so that the frequency of all letters in_`word` _are equal, and_`false` _otherwise_.\n\n**Note:**\n\n  * The **frequency** of a letter `x` is the number of times it occurs in the string.\n  * You **must** remove exactly one letter and cannot choose to do nothing.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word = \"abcc\"\n    **Output:** true\n    **Explanation:** Select index 3 and delete it: word becomes \"abc\" and each character has a frequency of 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"aazz\"\n    **Output:** false\n    **Explanation:** We must delete a character, so either the frequency of \"a\" is 1 and the frequency of \"z\" is 2, or vice versa. It is impossible to make all present letters have equal frequency.",
+  "constraints": "**Constraints:**\n\n  * `2 <= word.length <= 100`\n  * `word` consists of lowercase English letters only.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 75141,
+  "total_submissions": 390678,
+  "acceptance_rate": "19.2%",
+  "similar_questions": [
+    {
+      "title": "Maximum Equal Frequency",
+      "slug": "maximum-equal-frequency",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-equal-frequency/"
+    },
+    {
+      "title": "Minimum Deletions to Make Character Frequencies Unique",
+      "slug": "minimum-deletions-to-make-character-frequencies-unique",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/"
+    }
+  ],
+  "hints": ["Brute force all letters that could be removed.", "Use a frequency array of size 26."]
+}

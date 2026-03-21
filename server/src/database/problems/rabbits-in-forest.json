@@ -1,0 +1,25 @@
+{
+  "id": "781",
+  "title": "Rabbits in Forest",
+  "slug": "rabbits-in-forest",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a forest with an unknown number of rabbits. We asked n rabbits <strong>&quot;How many other rabbits have the same color as you?&quot;</strong> and collected the answers in an integer array <code>answers</code> where <code>answers[i]</code> is the answer of the <code>i<sup>th</sup></code> rabbit.</p>\n\n<p>Given the array <code>answers</code>, return <em>the minimum number of rabbits that could be in the forest</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> answers = [1,1,2]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong>\nThe two rabbits that answered &quot;1&quot; could both be the same color, say red.\nThe rabbit that answered &quot;2&quot; can&#39;t be red or the answers would be inconsistent.\nSay the rabbit that answered &quot;2&quot; was blue.\nThen there should be 2 other blue rabbits in the forest that didn&#39;t answer into the array.\nThe smallest possible number of rabbits in the forest is therefore 5: 3 that answered plus 2 that didn&#39;t.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> answers = [10,10,10]\n<strong>Output:</strong> 11\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= answers.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= answers[i] &lt; 1000</code></li>\n</ul>\n",
+  "content_markdown": "There is a forest with an unknown number of rabbits. We asked n rabbits **\" How many other rabbits have the same color as you?\"** and collected the answers in an integer array `answers` where `answers[i]` is the answer of the `ith` rabbit.\n\nGiven the array `answers`, return _the minimum number of rabbits that could be in the forest_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** answers = [1,1,2]\n    **Output:** 5\n    **Explanation:**\n    The two rabbits that answered \"1\" could both be the same color, say red.\n    The rabbit that answered \"2\" can't be red or the answers would be inconsistent.\n    Say the rabbit that answered \"2\" was blue.\n    Then there should be 2 other blue rabbits in the forest that didn't answer into the array.\n    The smallest possible number of rabbits in the forest is therefore 5: 3 that answered plus 2 that didn't.\n    \n\n**Example 2:**\n    \n    \n    **Input:** answers = [10,10,10]\n    **Output:** 11\n    \n\n \n\n**Constraints:**\n\n  * `1 <= answers.length <= 1000`\n  * `0 <= answers[i] < 1000`",
+  "question": "There is a forest with an unknown number of rabbits. We asked n rabbits **\" How many other rabbits have the same color as you?\"** and collected the answers in an integer array `answers` where `answers[i]` is the answer of the `ith` rabbit.\n\nGiven the array `answers`, return _the minimum number of rabbits that could be in the forest_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** answers = [1,1,2]\n    **Output:** 5\n    **Explanation:**\n    The two rabbits that answered \"1\" could both be the same color, say red.\n    The rabbit that answered \"2\" can't be red or the answers would be inconsistent.\n    Say the rabbit that answered \"2\" was blue.\n    Then there should be 2 other blue rabbits in the forest that didn't answer into the array.\n    The smallest possible number of rabbits in the forest is therefore 5: 3 that answered plus 2 that didn't.\n    \n\n**Example 2:**\n    \n    \n    **Input:** answers = [10,10,10]\n    **Output:** 11",
+  "constraints": "**Constraints:**\n\n  * `1 <= answers.length <= 1000`\n  * `0 <= answers[i] < 1000`",
+  "topics": ["Array", "Hash Table", "Math", "Greedy"],
+  "total_accepted": 185271,
+  "total_submissions": 319155,
+  "acceptance_rate": "58.1%",
+  "similar_questions": [
+    {
+      "title": "Group the People Given the Group Size They Belong To",
+      "slug": "group-the-people-given-the-group-size-they-belong-to",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-the-people-given-the-group-size-they-belong-to/"
+    }
+  ],
+  "hints": []
+}

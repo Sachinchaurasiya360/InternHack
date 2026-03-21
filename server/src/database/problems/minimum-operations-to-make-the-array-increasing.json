@@ -1,0 +1,53 @@
+{
+  "id": "1827",
+  "title": "Minimum Operations to Make the Array Increasing",
+  "slug": "minimum-operations-to-make-the-array-increasing",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> (<strong>0-indexed</strong>). In one operation, you can choose an element of the array and increment it by <code>1</code>.</p>\r\n\r\n<ul>\r\n\t<li>For example, if <code>nums = [1,2,3]</code>, you can choose to increment <code>nums[1]</code> to make <code>nums = [1,<u><b>3</b></u>,3]</code>.</li>\r\n</ul>\r\n\r\n<p>Return <em>the <strong>minimum</strong> number of operations needed to make</em> <code>nums</code> <em><strong>strictly</strong> <strong>increasing</strong>.</em></p>\r\n\r\n<p>An array <code>nums</code> is <strong>strictly increasing</strong> if <code>nums[i] &lt; nums[i+1]</code> for all <code>0 &lt;= i &lt; nums.length - 1</code>. An array of length <code>1</code> is trivially strictly increasing.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [1,1,1]\r\n<strong>Output:</strong> 3\r\n<strong>Explanation:</strong> You can do the following operations:\r\n1) Increment nums[2], so nums becomes [1,1,<u><strong>2</strong></u>].\r\n2) Increment nums[1], so nums becomes [1,<u><strong>2</strong></u>,2].\r\n3) Increment nums[2], so nums becomes [1,2,<u><strong>3</strong></u>].\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [1,5,2,4,1]\r\n<strong>Output:</strong> 14\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 3:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [8]\r\n<strong>Output:</strong> 0\r\n</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>1 &lt;= nums.length &lt;= 5000</code></li>\r\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\r\n</ul>",
+  "content_markdown": "You are given an integer array `nums` (**0-indexed**). In one operation, you can choose an element of the array and increment it by `1`.\n\n  * For example, if `nums = [1,2,3]`, you can choose to increment `nums[1]` to make `nums = [1,_**3**_ ,3]`.\n\n\n\nReturn _the**minimum** number of operations needed to make_ `nums` _**strictly** **increasing**._\n\nAn array `nums` is **strictly increasing** if `nums[i] < nums[i+1]` for all `0 <= i < nums.length - 1`. An array of length `1` is trivially strictly increasing.\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** nums = [1,1,1]\r\n    **Output:** 3\r\n    **Explanation:** You can do the following operations:\r\n    1) Increment nums[2], so nums becomes [1,1,_**2**_].\r\n    2) Increment nums[1], so nums becomes [1,_**2**_ ,2].\r\n    3) Increment nums[2], so nums becomes [1,2,_**3**_].\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** nums = [1,5,2,4,1]\r\n    **Output:** 14\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** nums = [8]\r\n    **Output:** 0\r\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 5000`\n  * `1 <= nums[i] <= 104`",
+  "question": "You are given an integer array `nums` (**0-indexed**). In one operation, you can choose an element of the array and increment it by `1`.\n\n  * For example, if `nums = [1,2,3]`, you can choose to increment `nums[1]` to make `nums = [1,_**3**_ ,3]`.\n\n\n\nReturn _the**minimum** number of operations needed to make_ `nums` _**strictly** **increasing**._\n\nAn array `nums` is **strictly increasing** if `nums[i] < nums[i+1]` for all `0 <= i < nums.length - 1`. An array of length `1` is trivially strictly increasing.",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** nums = [1,1,1]\r\n    **Output:** 3\r\n    **Explanation:** You can do the following operations:\r\n    1) Increment nums[2], so nums becomes [1,1,_**2**_].\r\n    2) Increment nums[1], so nums becomes [1,_**2**_ ,2].\r\n    3) Increment nums[2], so nums becomes [1,2,_**3**_].\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** nums = [1,5,2,4,1]\r\n    **Output:** 14\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** nums = [8]\r\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 5000`\n  * `1 <= nums[i] <= 104`",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 132856,
+  "total_submissions": 162289,
+  "acceptance_rate": "81.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Increment to Make Array Unique",
+      "slug": "minimum-increment-to-make-array-unique",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-increment-to-make-array-unique/"
+    },
+    {
+      "title": "Make Array Non-decreasing or Non-increasing",
+      "slug": "make-array-non-decreasing-or-non-increasing",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/make-array-non-decreasing-or-non-increasing/"
+    },
+    {
+      "title": "Maximum Product After K Increments",
+      "slug": "maximum-product-after-k-increments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-after-k-increments/"
+    },
+    {
+      "title": "Minimum Replacements to Sort the Array",
+      "slug": "minimum-replacements-to-sort-the-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-replacements-to-sort-the-array/"
+    },
+    {
+      "title": "Minimum Operations to Make Columns Strictly Increasing",
+      "slug": "minimum-operations-to-make-columns-strictly-increasing",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-columns-strictly-increasing/"
+    }
+  ],
+  "hints": [
+    "nums[i+1] must be at least equal to nums[i] + 1.",
+    "Think greedily. You don't have to increase nums[i+1] beyond nums[i]+1.",
+    "Iterate on i and set nums[i] = max(nums[i-1]+1, nums[i]) ."
+  ]
+}

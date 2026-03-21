@@ -1,0 +1,40 @@
+{
+  "id": "2124",
+  "title": "Check if All A's Appears Before All B's",
+  "slug": "check-if-all-as-appears-before-all-bs",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> consisting of <strong>only</strong> the characters <code>&#39;a&#39;</code> and <code>&#39;b&#39;</code>, return <code>true</code> <em>if <strong>every</strong> </em><code>&#39;a&#39;</code> <em>appears before <strong>every</strong> </em><code>&#39;b&#39;</code><em> in the string</em>. Otherwise, return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaabbb&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong>\nThe &#39;a&#39;s are at indices 0, 1, and 2, while the &#39;b&#39;s are at indices 3, 4, and 5.\nHence, every &#39;a&#39; appears before every &#39;b&#39; and we return true.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abab&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong>\nThere is an &#39;a&#39; at index 2 and a &#39;b&#39; at index 1.\nHence, not every &#39;a&#39; appears before every &#39;b&#39; and we return false.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bbb&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong>\nThere are no &#39;a&#39;s, hence, every &#39;a&#39; appears before every &#39;b&#39; and we return true.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;a&#39;</code> or <code>&#39;b&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` consisting of **only** the characters `'a'` and `'b'`, return `true` _if**every** _`'a'` _appears before**every** _`'b'`_in the string_. Otherwise, return `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aaabbb\"\n    **Output:** true\n    **Explanation:**\n    The 'a's are at indices 0, 1, and 2, while the 'b's are at indices 3, 4, and 5.\n    Hence, every 'a' appears before every 'b' and we return true.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abab\"\n    **Output:** false\n    **Explanation:**\n    There is an 'a' at index 2 and a 'b' at index 1.\n    Hence, not every 'a' appears before every 'b' and we return false.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"bbb\"\n    **Output:** true\n    **Explanation:**\n    There are no 'a's, hence, every 'a' appears before every 'b' and we return true.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s[i]` is either `'a'` or `'b'`.",
+  "question": "Given a string `s` consisting of **only** the characters `'a'` and `'b'`, return `true` _if**every** _`'a'` _appears before**every** _`'b'`_in the string_. Otherwise, return `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aaabbb\"\n    **Output:** true\n    **Explanation:**\n    The 'a's are at indices 0, 1, and 2, while the 'b's are at indices 3, 4, and 5.\n    Hence, every 'a' appears before every 'b' and we return true.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abab\"\n    **Output:** false\n    **Explanation:**\n    There is an 'a' at index 2 and a 'b' at index 1.\n    Hence, not every 'a' appears before every 'b' and we return false.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"bbb\"\n    **Output:** true\n    **Explanation:**\n    There are no 'a's, hence, every 'a' appears before every 'b' and we return true.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s[i]` is either `'a'` or `'b'`.",
+  "topics": ["String"],
+  "total_accepted": 122253,
+  "total_submissions": 167234,
+  "acceptance_rate": "73.1%",
+  "similar_questions": [
+    {
+      "title": "Minimum Deletions to Make String Balanced",
+      "slug": "minimum-deletions-to-make-string-balanced",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-deletions-to-make-string-balanced/"
+    },
+    {
+      "title": "Check if Array Is Sorted and Rotated",
+      "slug": "check-if-array-is-sorted-and-rotated",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/"
+    },
+    {
+      "title": "Check if Numbers Are Ascending in a Sentence",
+      "slug": "check-if-numbers-are-ascending-in-a-sentence",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-numbers-are-ascending-in-a-sentence/"
+    }
+  ],
+  "hints": [
+    "You can check the opposite: check if there is a ‘b’ before an ‘a’. Then, negate and return that answer.",
+    "s should not have any occurrences of “ba” as a substring."
+  ]
+}

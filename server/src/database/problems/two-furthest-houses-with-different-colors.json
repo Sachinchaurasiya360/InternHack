@@ -1,0 +1,40 @@
+{
+  "id": "2078",
+  "title": "Two Furthest Houses With Different Colors",
+  "slug": "two-furthest-houses-with-different-colors",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> houses evenly lined up on the street, and each house is beautifully painted. You are given a <strong>0-indexed</strong> integer array <code>colors</code> of length <code>n</code>, where <code>colors[i]</code> represents the color of the <code>i<sup>th</sup></code> house.</p>\n\n<p>Return <em>the <strong>maximum</strong> distance between <strong>two</strong> houses with <strong>different</strong> colors</em>.</p>\n\n<p>The distance between the <code>i<sup>th</sup></code> and <code>j<sup>th</sup></code> houses is <code>abs(i - j)</code>, where <code>abs(x)</code> is the <strong>absolute value</strong> of <code>x</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/10/31/eg1.png\" style=\"width: 610px; height: 84px;\" />\n<pre>\n<strong>Input:</strong> colors = [<u><strong>1</strong></u>,1,1,<strong><u>6</u></strong>,1,1,1]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> In the above image, color 1 is blue, and color 6 is red.\nThe furthest two houses with different colors are house 0 and house 3.\nHouse 0 has color 1, and house 3 has color 6. The distance between them is abs(0 - 3) = 3.\nNote that houses 3 and 6 can also produce the optimal answer.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/10/31/eg2.png\" style=\"width: 426px; height: 84px;\" />\n<pre>\n<strong>Input:</strong> colors = [<u><strong>1</strong></u>,8,3,8,<u><strong>3</strong></u>]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> In the above image, color 1 is blue, color 8 is yellow, and color 3 is green.\nThe furthest two houses with different colors are house 0 and house 4.\nHouse 0 has color 1, and house 4 has color 3. The distance between them is abs(0 - 4) = 4.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> colors = [<u><strong>0</strong></u>,<strong><u>1</u></strong>]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The furthest two houses with different colors are house 0 and house 1.\nHouse 0 has color 0, and house 1 has color 1. The distance between them is abs(0 - 1) = 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n ==&nbsp;colors.length</code></li>\n\t<li><code>2 &lt;= n &lt;= 100</code></li>\n\t<li><code>0 &lt;= colors[i] &lt;= 100</code></li>\n\t<li>Test data are generated such that <strong>at least</strong> two houses have different colors.</li>\n</ul>\n",
+  "content_markdown": "There are `n` houses evenly lined up on the street, and each house is beautifully painted. You are given a **0-indexed** integer array `colors` of length `n`, where `colors[i]` represents the color of the `ith` house.\n\nReturn _the**maximum** distance between **two** houses with **different** colors_.\n\nThe distance between the `ith` and `jth` houses is `abs(i - j)`, where `abs(x)` is the **absolute value** of `x`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/10/31/eg1.png)\n    \n    \n    **Input:** colors = [_**1**_ ,1,1,**_6_** ,1,1,1]\n    **Output:** 3\n    **Explanation:** In the above image, color 1 is blue, and color 6 is red.\n    The furthest two houses with different colors are house 0 and house 3.\n    House 0 has color 1, and house 3 has color 6. The distance between them is abs(0 - 3) = 3.\n    Note that houses 3 and 6 can also produce the optimal answer.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/10/31/eg2.png)\n    \n    \n    **Input:** colors = [_**1**_ ,8,3,8,_**3**_]\n    **Output:** 4\n    **Explanation:** In the above image, color 1 is blue, color 8 is yellow, and color 3 is green.\n    The furthest two houses with different colors are house 0 and house 4.\n    House 0 has color 1, and house 4 has color 3. The distance between them is abs(0 - 4) = 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** colors = [_**0**_ ,**_1_**]\n    **Output:** 1\n    **Explanation:** The furthest two houses with different colors are house 0 and house 1.\n    House 0 has color 0, and house 1 has color 1. The distance between them is abs(0 - 1) = 1.\n    \n\n \n\n**Constraints:**\n\n  * `n == colors.length`\n  * `2 <= n <= 100`\n  * `0 <= colors[i] <= 100`\n  * Test data are generated such that **at least** two houses have different colors.",
+  "question": "There are `n` houses evenly lined up on the street, and each house is beautifully painted. You are given a **0-indexed** integer array `colors` of length `n`, where `colors[i]` represents the color of the `ith` house.\n\nReturn _the**maximum** distance between **two** houses with **different** colors_.\n\nThe distance between the `ith` and `jth` houses is `abs(i - j)`, where `abs(x)` is the **absolute value** of `x`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/10/31/eg1.png)\n    \n    \n    **Input:** colors = [_**1**_ ,1,1,**_6_** ,1,1,1]\n    **Output:** 3\n    **Explanation:** In the above image, color 1 is blue, and color 6 is red.\n    The furthest two houses with different colors are house 0 and house 3.\n    House 0 has color 1, and house 3 has color 6. The distance between them is abs(0 - 3) = 3.\n    Note that houses 3 and 6 can also produce the optimal answer.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/10/31/eg2.png)\n    \n    \n    **Input:** colors = [_**1**_ ,8,3,8,_**3**_]\n    **Output:** 4\n    **Explanation:** In the above image, color 1 is blue, color 8 is yellow, and color 3 is green.\n    The furthest two houses with different colors are house 0 and house 4.\n    House 0 has color 1, and house 4 has color 3. The distance between them is abs(0 - 4) = 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** colors = [_**0**_ ,**_1_**]\n    **Output:** 1\n    **Explanation:** The furthest two houses with different colors are house 0 and house 1.\n    House 0 has color 0, and house 1 has color 1. The distance between them is abs(0 - 1) = 1.",
+  "constraints": "**Constraints:**\n\n  * `n == colors.length`\n  * `2 <= n <= 100`\n  * `0 <= colors[i] <= 100`\n  * Test data are generated such that **at least** two houses have different colors.",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 91491,
+  "total_submissions": 139661,
+  "acceptance_rate": "65.5%",
+  "similar_questions": [
+    {
+      "title": "Replace Elements with Greatest Element on Right Side",
+      "slug": "replace-elements-with-greatest-element-on-right-side",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/replace-elements-with-greatest-element-on-right-side/"
+    },
+    {
+      "title": "Maximum Distance Between a Pair of Values",
+      "slug": "maximum-distance-between-a-pair-of-values",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-distance-between-a-pair-of-values/"
+    },
+    {
+      "title": "Maximum Difference Between Increasing Elements",
+      "slug": "maximum-difference-between-increasing-elements",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-difference-between-increasing-elements/"
+    }
+  ],
+  "hints": [
+    "The constraints are small. Can you try the combination of every two houses?",
+    "Greedily, the maximum distance will come from either the pair of the leftmost house and possibly some house on the right with a different color, or the pair of the rightmost house and possibly some house on the left with a different color."
+  ]
+}

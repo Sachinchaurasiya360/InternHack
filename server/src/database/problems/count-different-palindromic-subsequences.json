@@ -1,0 +1,33 @@
+{
+  "id": "730",
+  "title": "Count Different Palindromic Subsequences",
+  "slug": "count-different-palindromic-subsequences",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string s, return <em>the number of different non-empty palindromic subsequences in</em> <code>s</code>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>A subsequence of a string is obtained by deleting zero or more characters from the string.</p>\n\n<p>A sequence is palindromic if it is equal to the sequence reversed.</p>\n\n<p>Two sequences <code>a<sub>1</sub>, a<sub>2</sub>, ...</code> and <code>b<sub>1</sub>, b<sub>2</sub>, ...</code> are different if there is some <code>i</code> for which <code>a<sub>i</sub> != b<sub>i</sub></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bccb&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The 6 different non-empty palindromic subsequences are &#39;b&#39;, &#39;c&#39;, &#39;bb&#39;, &#39;cc&#39;, &#39;bcb&#39;, &#39;bccb&#39;.\nNote that &#39;bcb&#39; is counted only once, even though it occurs twice.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcdabcdabcdabcdabcdabcdabcdabcddcbadcbadcbadcbadcbadcbadcbadcba&quot;\n<strong>Output:</strong> 104860361\n<strong>Explanation:</strong> There are 3104860382 different non-empty palindromic subsequences, which is 104860361 modulo 10<sup>9</sup> + 7.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;a&#39;</code>, <code>&#39;b&#39;</code>, <code>&#39;c&#39;</code>, or <code>&#39;d&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string s, return _the number of different non-empty palindromic subsequences in_ `s`. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nA subsequence of a string is obtained by deleting zero or more characters from the string.\n\nA sequence is palindromic if it is equal to the sequence reversed.\n\nTwo sequences `a1, a2, ...` and `b1, b2, ...` are different if there is some `i` for which `ai != bi`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"bccb\"\n    **Output:** 6\n    **Explanation:** The 6 different non-empty palindromic subsequences are 'b', 'c', 'bb', 'cc', 'bcb', 'bccb'.\n    Note that 'bcb' is counted only once, even though it occurs twice.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcdabcdabcdabcdabcdabcdabcdabcddcbadcbadcbadcbadcbadcbadcbadcba\"\n    **Output:** 104860361\n    **Explanation:** There are 3104860382 different non-empty palindromic subsequences, which is 104860361 modulo 109 + 7.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'a'`, `'b'`, `'c'`, or `'d'`.",
+  "question": "Given a string s, return _the number of different non-empty palindromic subsequences in_ `s`. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nA subsequence of a string is obtained by deleting zero or more characters from the string.\n\nA sequence is palindromic if it is equal to the sequence reversed.\n\nTwo sequences `a1, a2, ...` and `b1, b2, ...` are different if there is some `i` for which `ai != bi`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"bccb\"\n    **Output:** 6\n    **Explanation:** The 6 different non-empty palindromic subsequences are 'b', 'c', 'bb', 'cc', 'bcb', 'bccb'.\n    Note that 'bcb' is counted only once, even though it occurs twice.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcdabcdabcdabcdabcdabcdabcdabcddcbadcbadcbadcbadcbadcbadcbadcba\"\n    **Output:** 104860361\n    **Explanation:** There are 3104860382 different non-empty palindromic subsequences, which is 104860361 modulo 109 + 7.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'a'`, `'b'`, `'c'`, or `'d'`.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 44757,
+  "total_submissions": 94191,
+  "acceptance_rate": "47.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Palindromic Subsequence",
+      "slug": "longest-palindromic-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-palindromic-subsequence/"
+    },
+    {
+      "title": "Count Palindromic Subsequences",
+      "slug": "count-palindromic-subsequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-palindromic-subsequences/"
+    }
+  ],
+  "hints": [
+    "Let dp(i, j) be the answer for the string T = S[i:j+1] including the empty sequence. The answer is the number of unique characters in T, plus palindromes of the form \"a_a\", \"b_b\", \"c_c\", and \"d_d\", where \"_\" represents zero or more characters."
+  ]
+}

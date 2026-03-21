@@ -1,0 +1,33 @@
+{
+  "id": "1723",
+  "title": "Find Minimum Time to Finish All Jobs",
+  "slug": "find-minimum-time-to-finish-all-jobs",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>jobs</code>, where <code>jobs[i]</code> is the amount of time it takes to complete the <code>i<sup>th</sup></code> job.</p>\n\n<p>There are <code>k</code> workers that you can assign jobs to. Each job should be assigned to <strong>exactly</strong> one worker. The <strong>working time</strong> of a worker is the sum of the time it takes to complete all jobs assigned to them. Your goal is to devise an optimal assignment such that the <strong>maximum working time</strong> of any worker is <strong>minimized</strong>.</p>\n\n<p><em>Return the <strong>minimum</strong> possible <strong>maximum working time</strong> of any assignment. </em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> jobs = [3,2,3], k = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> By assigning each person one job, the maximum time is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> jobs = [1,2,4,7,8], k = 2\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> Assign the jobs the following way:\nWorker 1: 1, 2, 8 (working time = 1 + 2 + 8 = 11)\nWorker 2: 4, 7 (working time = 4 + 7 = 11)\nThe maximum working time is 11.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= jobs.length &lt;= 12</code></li>\n\t<li><code>1 &lt;= jobs[i] &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `jobs`, where `jobs[i]` is the amount of time it takes to complete the `ith` job.\n\nThere are `k` workers that you can assign jobs to. Each job should be assigned to **exactly** one worker. The **working time** of a worker is the sum of the time it takes to complete all jobs assigned to them. Your goal is to devise an optimal assignment such that the **maximum working time** of any worker is **minimized**.\n\n_Return the**minimum** possible **maximum working time** of any assignment. _\n\n \n\n**Example 1:**\n    \n    \n    **Input:** jobs = [3,2,3], k = 3\n    **Output:** 3\n    **Explanation:** By assigning each person one job, the maximum time is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** jobs = [1,2,4,7,8], k = 2\n    **Output:** 11\n    **Explanation:** Assign the jobs the following way:\n    Worker 1: 1, 2, 8 (working time = 1 + 2 + 8 = 11)\n    Worker 2: 4, 7 (working time = 4 + 7 = 11)\n    The maximum working time is 11.\n\n \n\n**Constraints:**\n\n  * `1 <= k <= jobs.length <= 12`\n  * `1 <= jobs[i] <= 107`",
+  "question": "You are given an integer array `jobs`, where `jobs[i]` is the amount of time it takes to complete the `ith` job.\n\nThere are `k` workers that you can assign jobs to. Each job should be assigned to **exactly** one worker. The **working time** of a worker is the sum of the time it takes to complete all jobs assigned to them. Your goal is to devise an optimal assignment such that the **maximum working time** of any worker is **minimized**.\n\n_Return the**minimum** possible **maximum working time** of any assignment. _",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** jobs = [3,2,3], k = 3\n    **Output:** 3\n    **Explanation:** By assigning each person one job, the maximum time is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** jobs = [1,2,4,7,8], k = 2\n    **Output:** 11\n    **Explanation:** Assign the jobs the following way:\n    Worker 1: 1, 2, 8 (working time = 1 + 2 + 8 = 11)\n    Worker 2: 4, 7 (working time = 4 + 7 = 11)\n    The maximum working time is 11.",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= jobs.length <= 12`\n  * `1 <= jobs[i] <= 107`",
+  "topics": ["Array", "Dynamic Programming", "Backtracking", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 42167,
+  "total_submissions": 92894,
+  "acceptance_rate": "45.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Work Sessions to Finish the Tasks",
+      "slug": "minimum-number-of-work-sessions-to-finish-the-tasks",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-work-sessions-to-finish-the-tasks/"
+    },
+    {
+      "title": "Find Minimum Time to Finish All Jobs II",
+      "slug": "find-minimum-time-to-finish-all-jobs-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs-ii/"
+    }
+  ],
+  "hints": [
+    "We can select a subset of tasks and assign it to a worker then solve the subproblem on the remaining tasks"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "796",
+  "title": "Rotate String",
+  "slug": "rotate-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s</code> and <code>goal</code>, return <code>true</code> <em>if and only if</em> <code>s</code> <em>can become</em> <code>goal</code> <em>after some number of <strong>shifts</strong> on</em> <code>s</code>.</p>\n\n<p>A <strong>shift</strong> on <code>s</code> consists of moving the leftmost character of <code>s</code> to the rightmost position.</p>\n\n<ul>\n\t<li>For example, if <code>s = &quot;abcde&quot;</code>, then it will be <code>&quot;bcdea&quot;</code> after one shift.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"abcde\", goal = \"cdeab\"\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"abcde\", goal = \"abced\"\n<strong>Output:</strong> false\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length, goal.length &lt;= 100</code></li>\n\t<li><code>s</code> and <code>goal</code> consist of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `s` and `goal`, return `true` _if and only if_ `s` _can become_ `goal` _after some number of**shifts** on_ `s`.\n\nA **shift** on `s` consists of moving the leftmost character of `s` to the rightmost position.\n\n  * For example, if `s = \"abcde\"`, then it will be `\"bcdea\"` after one shift.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abcde\", goal = \"cdeab\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcde\", goal = \"abced\"\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length, goal.length <= 100`\n  * `s` and `goal` consist of lowercase English letters.",
+  "question": "Given two strings `s` and `goal`, return `true` _if and only if_ `s` _can become_ `goal` _after some number of**shifts** on_ `s`.\n\nA **shift** on `s` consists of moving the leftmost character of `s` to the rightmost position.\n\n  * For example, if `s = \"abcde\"`, then it will be `\"bcdea\"` after one shift.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abcde\", goal = \"cdeab\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcde\", goal = \"abced\"\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length, goal.length <= 100`\n  * `s` and `goal` consist of lowercase English letters.",
+  "topics": ["String", "String Matching"],
+  "total_accepted": 779904,
+  "total_submissions": 1197516,
+  "acceptance_rate": "65.1%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,43 @@
+{
+  "id": "146",
+  "title": "LRU Cache",
+  "slug": "lru-cache",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Design a data structure that follows the constraints of a <strong><a href=\"https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU\" target=\"_blank\">Least Recently Used (LRU) cache</a></strong>.</p>\n\n<p>Implement the <code>LRUCache</code> class:</p>\n\n<ul>\n\t<li><code>LRUCache(int capacity)</code> Initialize the LRU cache with <strong>positive</strong> size <code>capacity</code>.</li>\n\t<li><code>int get(int key)</code> Return the value of the <code>key</code> if the key exists, otherwise return <code>-1</code>.</li>\n\t<li><code>void put(int key, int value)</code> Update the value of the <code>key</code> if the <code>key</code> exists. Otherwise, add the <code>key-value</code> pair to the cache. If the number of keys exceeds the <code>capacity</code> from this operation, <strong>evict</strong> the least recently used key.</li>\n</ul>\n\n<p>The functions <code>get</code> and <code>put</code> must each run in <code>O(1)</code> average time complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;LRUCache&quot;, &quot;put&quot;, &quot;put&quot;, &quot;get&quot;, &quot;put&quot;, &quot;get&quot;, &quot;put&quot;, &quot;get&quot;, &quot;get&quot;, &quot;get&quot;]\n[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]\n<strong>Output</strong>\n[null, null, null, 1, null, -1, null, -1, 3, 4]\n\n<strong>Explanation</strong>\nLRUCache lRUCache = new LRUCache(2);\nlRUCache.put(1, 1); // cache is {1=1}\nlRUCache.put(2, 2); // cache is {1=1, 2=2}\nlRUCache.get(1);    // return 1\nlRUCache.put(3, 3); // LRU key was 2, evicts key 2, cache is {1=1, 3=3}\nlRUCache.get(2);    // returns -1 (not found)\nlRUCache.put(4, 4); // LRU key was 1, evicts key 1, cache is {4=4, 3=3}\nlRUCache.get(1);    // return -1 (not found)\nlRUCache.get(3);    // return 3\nlRUCache.get(4);    // return 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= capacity &lt;= 3000</code></li>\n\t<li><code>0 &lt;= key &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= value &lt;= 10<sup>5</sup></code></li>\n\t<li>At most <code>2 * 10<sup>5</sup></code> calls will be made to <code>get</code> and <code>put</code>.</li>\n</ul>\n",
+  "content_markdown": "Design a data structure that follows the constraints of a **[Least Recently Used (LRU) cache](<https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU>)**.\n\nImplement the `LRUCache` class:\n\n  * `LRUCache(int capacity)` Initialize the LRU cache with **positive** size `capacity`.\n  * `int get(int key)` Return the value of the `key` if the key exists, otherwise return `-1`.\n  * `void put(int key, int value)` Update the value of the `key` if the `key` exists. Otherwise, add the `key-value` pair to the cache. If the number of keys exceeds the `capacity` from this operation, **evict** the least recently used key.\n\n\n\nThe functions `get` and `put` must each run in `O(1)` average time complexity.\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"LRUCache\", \"put\", \"put\", \"get\", \"put\", \"get\", \"put\", \"get\", \"get\", \"get\"]\n    [[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]\n    **Output**\n    [null, null, null, 1, null, -1, null, -1, 3, 4]\n    \n    **Explanation**\n    LRUCache lRUCache = new LRUCache(2);\n    lRUCache.put(1, 1); // cache is {1=1}\n    lRUCache.put(2, 2); // cache is {1=1, 2=2}\n    lRUCache.get(1);    // return 1\n    lRUCache.put(3, 3); // LRU key was 2, evicts key 2, cache is {1=1, 3=3}\n    lRUCache.get(2);    // returns -1 (not found)\n    lRUCache.put(4, 4); // LRU key was 1, evicts key 1, cache is {4=4, 3=3}\n    lRUCache.get(1);    // return -1 (not found)\n    lRUCache.get(3);    // return 3\n    lRUCache.get(4);    // return 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= capacity <= 3000`\n  * `0 <= key <= 104`\n  * `0 <= value <= 105`\n  * At most `2 * 105` calls will be made to `get` and `put`.",
+  "question": "Design a data structure that follows the constraints of a **[Least Recently Used (LRU) cache](<https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU>)**.\n\nImplement the `LRUCache` class:\n\n  * `LRUCache(int capacity)` Initialize the LRU cache with **positive** size `capacity`.\n  * `int get(int key)` Return the value of the `key` if the key exists, otherwise return `-1`.\n  * `void put(int key, int value)` Update the value of the `key` if the `key` exists. Otherwise, add the `key-value` pair to the cache. If the number of keys exceeds the `capacity` from this operation, **evict** the least recently used key.\n\n\n\nThe functions `get` and `put` must each run in `O(1)` average time complexity.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"LRUCache\", \"put\", \"put\", \"get\", \"put\", \"get\", \"put\", \"get\", \"get\", \"get\"]\n    [[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]\n    **Output**\n    [null, null, null, 1, null, -1, null, -1, 3, 4]\n    \n    **Explanation**\n    LRUCache lRUCache = new LRUCache(2);\n    lRUCache.put(1, 1); // cache is {1=1}\n    lRUCache.put(2, 2); // cache is {1=1, 2=2}\n    lRUCache.get(1);    // return 1\n    lRUCache.put(3, 3); // LRU key was 2, evicts key 2, cache is {1=1, 3=3}\n    lRUCache.get(2);    // returns -1 (not found)\n    lRUCache.put(4, 4); // LRU key was 1, evicts key 1, cache is {4=4, 3=3}\n    lRUCache.get(1);    // return -1 (not found)\n    lRUCache.get(3);    // return 3\n    lRUCache.get(4);    // return 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= capacity <= 3000`\n  * `0 <= key <= 104`\n  * `0 <= value <= 105`\n  * At most `2 * 105` calls will be made to `get` and `put`.",
+  "topics": ["Hash Table", "Linked List", "Design", "Doubly-Linked List"],
+  "total_accepted": 2488500,
+  "total_submissions": 5312079,
+  "acceptance_rate": "46.8%",
+  "similar_questions": [
+    {
+      "title": "LFU Cache",
+      "slug": "lfu-cache",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/lfu-cache/"
+    },
+    {
+      "title": "Design In-Memory File System",
+      "slug": "design-in-memory-file-system",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/design-in-memory-file-system/"
+    },
+    {
+      "title": "Design Compressed String Iterator",
+      "slug": "design-compressed-string-iterator",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/design-compressed-string-iterator/"
+    },
+    {
+      "title": "Design Most Recently Used Queue",
+      "slug": "design-most-recently-used-queue",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-most-recently-used-queue/"
+    }
+  ],
+  "hints": []
+}

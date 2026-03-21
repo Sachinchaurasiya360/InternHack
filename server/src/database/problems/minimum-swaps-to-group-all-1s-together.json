@@ -1,0 +1,50 @@
+{
+  "id": "1151",
+  "title": "Minimum Swaps to Group All 1's Together",
+  "slug": "minimum-swaps-to-group-all-1s-together",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sliding Window"],
+  "total_accepted": 88231,
+  "total_submissions": 144165,
+  "acceptance_rate": "61.2%",
+  "similar_questions": [
+    {
+      "title": "Minimum Adjacent Swaps for K Consecutive Ones",
+      "slug": "minimum-adjacent-swaps-for-k-consecutive-ones",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-adjacent-swaps-for-k-consecutive-ones/"
+    },
+    {
+      "title": "Minimum Swaps to Group All 1's Together II",
+      "slug": "minimum-swaps-to-group-all-1s-together-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together-ii/"
+    },
+    {
+      "title": "Time Needed to Rearrange a Binary String",
+      "slug": "time-needed-to-rearrange-a-binary-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/time-needed-to-rearrange-a-binary-string/"
+    },
+    {
+      "title": "Minimum Moves to Pick K Ones",
+      "slug": "minimum-moves-to-pick-k-ones",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-moves-to-pick-k-ones/"
+    }
+  ],
+  "hints": [
+    "How many 1's should be grouped together ? Is not a fixed number?",
+    "Yeah it's just the number of 1's the whole array has. Let's name this number as ones",
+    "Every subarray of size of ones, needs some number of swaps to reach, Can you find the number of swaps needed to group all 1's in this subarray?",
+    "It's the number of zeros in that subarray.",
+    "Do you need to count the number of zeros all over again for every position ?",
+    "Use Sliding Window technique."
+  ]
+}

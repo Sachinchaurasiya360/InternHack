@@ -1,0 +1,18 @@
+{
+  "id": "1426",
+  "title": "Counting Elements",
+  "slug": "counting-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 165915,
+  "total_submissions": 273121,
+  "acceptance_rate": "60.7%",
+  "similar_questions": [],
+  "hints": ["Use hashset to store all elements.", "Loop again to count all valid elements."]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "2407",
+  "title": "Longest Increasing Subsequence II",
+  "slug": "longest-increasing-subsequence-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and an integer <code>k</code>.</p>\n\n<p>Find the longest subsequence of <code>nums</code> that meets the following requirements:</p>\n\n<ul>\n\t<li>The subsequence is <strong>strictly increasing</strong> and</li>\n\t<li>The difference between adjacent elements in the subsequence is <strong>at most</strong> <code>k</code>.</li>\n</ul>\n\n<p>Return<em> the length of the <strong>longest</strong> <strong>subsequence</strong> that meets the requirements.</em></p>\n\n<p>A <strong>subsequence</strong> is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,2,1,4,3,4,5,8,15], k = 3\n<strong>Output:</strong> 5\n<strong>Explanation:</strong>\nThe longest subsequence that meets the requirements is [1,3,4,5,8].\nThe subsequence has a length of 5, so we return 5.\nNote that the subsequence [1,3,4,5,8,15] does not meet the requirements because 15 - 8 = 7 is larger than 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [7,4,5,1,8,12,4,7], k = 5\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\nThe longest subsequence that meets the requirements is [4,5,8,12].\nThe subsequence has a length of 4, so we return 4.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,5], k = 1\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nThe longest subsequence that meets the requirements is [1].\nThe subsequence has a length of 1, so we return 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i], k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and an integer `k`.\n\nFind the longest subsequence of `nums` that meets the following requirements:\n\n  * The subsequence is **strictly increasing** and\n  * The difference between adjacent elements in the subsequence is **at most** `k`.\n\n\n\nReturn _the length of the**longest** **subsequence** that meets the requirements._\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,2,1,4,3,4,5,8,15], k = 3\n    **Output:** 5\n    **Explanation:**\n    The longest subsequence that meets the requirements is [1,3,4,5,8].\n    The subsequence has a length of 5, so we return 5.\n    Note that the subsequence [1,3,4,5,8,15] does not meet the requirements because 15 - 8 = 7 is larger than 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [7,4,5,1,8,12,4,7], k = 5\n    **Output:** 4\n    **Explanation:**\n    The longest subsequence that meets the requirements is [4,5,8,12].\n    The subsequence has a length of 4, so we return 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,5], k = 1\n    **Output:** 1\n    **Explanation:**\n    The longest subsequence that meets the requirements is [1].\n    The subsequence has a length of 1, so we return 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i], k <= 105`",
+  "question": "You are given an integer array `nums` and an integer `k`.\n\nFind the longest subsequence of `nums` that meets the following requirements:\n\n  * The subsequence is **strictly increasing** and\n  * The difference between adjacent elements in the subsequence is **at most** `k`.\n\n\n\nReturn _the length of the**longest** **subsequence** that meets the requirements._\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,2,1,4,3,4,5,8,15], k = 3\n    **Output:** 5\n    **Explanation:**\n    The longest subsequence that meets the requirements is [1,3,4,5,8].\n    The subsequence has a length of 5, so we return 5.\n    Note that the subsequence [1,3,4,5,8,15] does not meet the requirements because 15 - 8 = 7 is larger than 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [7,4,5,1,8,12,4,7], k = 5\n    **Output:** 4\n    **Explanation:**\n    The longest subsequence that meets the requirements is [4,5,8,12].\n    The subsequence has a length of 4, so we return 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,5], k = 1\n    **Output:** 1\n    **Explanation:**\n    The longest subsequence that meets the requirements is [1].\n    The subsequence has a length of 1, so we return 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i], k <= 105`",
+  "topics": [
+    "Array",
+    "Divide and Conquer",
+    "Dynamic Programming",
+    "Binary Indexed Tree",
+    "Segment Tree",
+    "Queue",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 23672,
+  "total_submissions": 90873,
+  "acceptance_rate": "26.0%",
+  "similar_questions": [
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    },
+    {
+      "title": "Number of Longest Increasing Subsequence",
+      "slug": "number-of-longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-longest-increasing-subsequence/"
+    },
+    {
+      "title": "Longest Continuous Increasing Subsequence",
+      "slug": "longest-continuous-increasing-subsequence",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-continuous-increasing-subsequence/"
+    },
+    {
+      "title": "Longest Substring of One Repeating Character",
+      "slug": "longest-substring-of-one-repeating-character",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-substring-of-one-repeating-character/"
+    },
+    {
+      "title": "Booking Concert Tickets in Groups",
+      "slug": "booking-concert-tickets-in-groups",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/booking-concert-tickets-in-groups/"
+    },
+    {
+      "title": "Longest Subsequence With Decreasing Adjacent Difference",
+      "slug": "longest-subsequence-with-decreasing-adjacent-difference",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-subsequence-with-decreasing-adjacent-difference/"
+    }
+  ],
+  "hints": [
+    "We can use dynamic programming. Let dp[i][val] be the answer using only the first i + 1 elements, and the last element in the subsequence is equal to val.",
+    "The only value that might change between dp[i - 1] and dp[i] are dp[i - 1][val] and dp[i][val].",
+    "Try using dp[i - 1] and the fact that the second last element in the subsequence has to fall within a range to calculate dp[i][val].",
+    "We can use a segment tree to find the maximum value in dp[i - 1] within a certain range."
+  ]
+}

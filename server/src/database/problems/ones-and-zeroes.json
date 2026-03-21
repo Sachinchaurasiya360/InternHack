@@ -1,0 +1,37 @@
+{
+  "id": "474",
+  "title": "Ones and Zeroes",
+  "slug": "ones-and-zeroes",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of binary strings <code>strs</code> and two integers <code>m</code> and <code>n</code>.</p>\n\n<p>Return <em>the size of the largest subset of <code>strs</code> such that there are <strong>at most</strong> </em><code>m</code><em> </em><code>0</code><em>&#39;s and </em><code>n</code><em> </em><code>1</code><em>&#39;s in the subset</em>.</p>\n\n<p>A set <code>x</code> is a <strong>subset</strong> of a set <code>y</code> if all elements of <code>x</code> are also elements of <code>y</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> strs = [&quot;10&quot;,&quot;0001&quot;,&quot;111001&quot;,&quot;1&quot;,&quot;0&quot;], m = 5, n = 3\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The largest subset with at most 5 0&#39;s and 3 1&#39;s is {&quot;10&quot;, &quot;0001&quot;, &quot;1&quot;, &quot;0&quot;}, so the answer is 4.\nOther valid but smaller subsets include {&quot;0001&quot;, &quot;1&quot;} and {&quot;10&quot;, &quot;1&quot;, &quot;0&quot;}.\n{&quot;111001&quot;} is an invalid subset because it contains 4 1&#39;s, greater than the maximum of 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> strs = [&quot;10&quot;,&quot;0&quot;,&quot;1&quot;], m = 1, n = 1\n<strong>Output:</strong> 2\n<b>Explanation:</b> The largest subset is {&quot;0&quot;, &quot;1&quot;}, so the answer is 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= strs.length &lt;= 600</code></li>\n\t<li><code>1 &lt;= strs[i].length &lt;= 100</code></li>\n\t<li><code>strs[i]</code> consists only of digits <code>&#39;0&#39;</code> and <code>&#39;1&#39;</code>.</li>\n\t<li><code>1 &lt;= m, n &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of binary strings `strs` and two integers `m` and `n`.\n\nReturn _the size of the largest subset of`strs` such that there are **at most** _`m` __`0` _' s and _`n` __`1` _' s in the subset_.\n\nA set `x` is a **subset** of a set `y` if all elements of `x` are also elements of `y`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** strs = [\"10\",\"0001\",\"111001\",\"1\",\"0\"], m = 5, n = 3\n    **Output:** 4\n    **Explanation:** The largest subset with at most 5 0's and 3 1's is {\"10\", \"0001\", \"1\", \"0\"}, so the answer is 4.\n    Other valid but smaller subsets include {\"0001\", \"1\"} and {\"10\", \"1\", \"0\"}.\n    {\"111001\"} is an invalid subset because it contains 4 1's, greater than the maximum of 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"10\",\"0\",\"1\"], m = 1, n = 1\n    **Output:** 2\n    **Explanation:** The largest subset is {\"0\", \"1\"}, so the answer is 2.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= strs.length <= 600`\n  * `1 <= strs[i].length <= 100`\n  * `strs[i]` consists only of digits `'0'` and `'1'`.\n  * `1 <= m, n <= 100`",
+  "question": "You are given an array of binary strings `strs` and two integers `m` and `n`.\n\nReturn _the size of the largest subset of`strs` such that there are **at most** _`m` __`0` _' s and _`n` __`1` _' s in the subset_.\n\nA set `x` is a **subset** of a set `y` if all elements of `x` are also elements of `y`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** strs = [\"10\",\"0001\",\"111001\",\"1\",\"0\"], m = 5, n = 3\n    **Output:** 4\n    **Explanation:** The largest subset with at most 5 0's and 3 1's is {\"10\", \"0001\", \"1\", \"0\"}, so the answer is 4.\n    Other valid but smaller subsets include {\"0001\", \"1\"} and {\"10\", \"1\", \"0\"}.\n    {\"111001\"} is an invalid subset because it contains 4 1's, greater than the maximum of 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"10\",\"0\",\"1\"], m = 1, n = 1\n    **Output:** 2\n    **Explanation:** The largest subset is {\"0\", \"1\"}, so the answer is 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= strs.length <= 600`\n  * `1 <= strs[i].length <= 100`\n  * `strs[i]` consists only of digits `'0'` and `'1'`.\n  * `1 <= m, n <= 100`",
+  "topics": ["Array", "String", "Dynamic Programming"],
+  "total_accepted": 343005,
+  "total_submissions": 646369,
+  "acceptance_rate": "53.1%",
+  "similar_questions": [
+    {
+      "title": "Count Subarrays With More Ones Than Zeros",
+      "slug": "count-subarrays-with-more-ones-than-zeros",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-subarrays-with-more-ones-than-zeros/"
+    },
+    {
+      "title": "Non-negative Integers without Consecutive Ones",
+      "slug": "non-negative-integers-without-consecutive-ones",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/"
+    },
+    {
+      "title": "All Divisions With the Highest Score of a Binary Array",
+      "slug": "all-divisions-with-the-highest-score-of-a-binary-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/"
+    }
+  ],
+  "hints": []
+}

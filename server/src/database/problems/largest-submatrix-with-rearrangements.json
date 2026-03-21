@@ -1,0 +1,28 @@
+{
+  "id": "1727",
+  "title": "Largest Submatrix With Rearrangements",
+  "slug": "largest-submatrix-with-rearrangements",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a binary matrix <code>matrix</code> of size <code>m x n</code>, and you are allowed to rearrange the <strong>columns</strong> of the <code>matrix</code> in any order.</p>\n\n<p>Return <em>the area of the largest submatrix within </em><code>matrix</code><em> where <strong>every</strong> element of the submatrix is </em><code>1</code><em> after reordering the columns optimally.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/29/screenshot-2020-12-30-at-40536-pm.png\" style=\"width: 500px; height: 240px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[0,0,1],[1,1,1],[1,0,1]]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> You can rearrange the columns as shown above.\nThe largest submatrix of 1s, in bold, has an area of 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/29/screenshot-2020-12-30-at-40852-pm.png\" style=\"width: 500px; height: 62px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,0,1,0,1]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> You can rearrange the columns as shown above.\nThe largest submatrix of 1s, in bold, has an area of 3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[1,1,0],[1,0,1]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Notice that you must rearrange entire columns, and there is no way to make a submatrix of 1s larger than an area of 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m * n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>matrix[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a binary matrix `matrix` of size `m x n`, and you are allowed to rearrange the **columns** of the `matrix` in any order.\n\nReturn _the area of the largest submatrix within_`matrix` _where**every** element of the submatrix is _`1` _after reordering the columns optimally._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/29/screenshot-2020-12-30-at-40536-pm.png)\n    \n    \n    **Input:** matrix = [[0,0,1],[1,1,1],[1,0,1]]\n    **Output:** 4\n    **Explanation:** You can rearrange the columns as shown above.\n    The largest submatrix of 1s, in bold, has an area of 4.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/29/screenshot-2020-12-30-at-40852-pm.png)\n    \n    \n    **Input:** matrix = [[1,0,1,0,1]]\n    **Output:** 3\n    **Explanation:** You can rearrange the columns as shown above.\n    The largest submatrix of 1s, in bold, has an area of 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[1,1,0],[1,0,1]]\n    **Output:** 2\n    **Explanation:** Notice that you must rearrange entire columns, and there is no way to make a submatrix of 1s larger than an area of 2.\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m * n <= 105`\n  * `matrix[i][j]` is either `0` or `1`.",
+  "question": "You are given a binary matrix `matrix` of size `m x n`, and you are allowed to rearrange the **columns** of the `matrix` in any order.\n\nReturn _the area of the largest submatrix within_`matrix` _where**every** element of the submatrix is _`1` _after reordering the columns optimally._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/29/screenshot-2020-12-30-at-40536-pm.png)\n    \n    \n    **Input:** matrix = [[0,0,1],[1,1,1],[1,0,1]]\n    **Output:** 4\n    **Explanation:** You can rearrange the columns as shown above.\n    The largest submatrix of 1s, in bold, has an area of 4.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/29/screenshot-2020-12-30-at-40852-pm.png)\n    \n    \n    **Input:** matrix = [[1,0,1,0,1]]\n    **Output:** 3\n    **Explanation:** You can rearrange the columns as shown above.\n    The largest submatrix of 1s, in bold, has an area of 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[1,1,0],[1,0,1]]\n    **Output:** 2\n    **Explanation:** Notice that you must rearrange entire columns, and there is no way to make a submatrix of 1s larger than an area of 2.",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m * n <= 105`\n  * `matrix[i][j]` is either `0` or `1`.",
+  "topics": ["Array", "Greedy", "Sorting", "Matrix"],
+  "total_accepted": 78821,
+  "total_submissions": 104794,
+  "acceptance_rate": "75.2%",
+  "similar_questions": [
+    {
+      "title": "Max Area of Island",
+      "slug": "max-area-of-island",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-area-of-island/"
+    }
+  ],
+  "hints": [
+    "For each column, find the number of consecutive ones ending at each position.",
+    "For each row, sort the cumulative ones in non-increasing order and \"fit\" the largest submatrix."
+  ]
+}

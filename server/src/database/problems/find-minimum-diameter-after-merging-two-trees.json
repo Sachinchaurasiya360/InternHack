@@ -1,0 +1,54 @@
+{
+  "id": "3203",
+  "title": "Find Minimum Diameter After Merging Two Trees",
+  "slug": "find-minimum-diameter-after-merging-two-trees",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There exist two <strong>undirected </strong>trees with <code>n</code> and <code>m</code> nodes, numbered from <code>0</code> to <code>n - 1</code> and from <code>0</code> to <code>m - 1</code>, respectively. You are given two 2D integer arrays <code>edges1</code> and <code>edges2</code> of lengths <code>n - 1</code> and <code>m - 1</code>, respectively, where <code>edges1[i] = [a<sub>i</sub>, b<sub>i</sub>]</code> indicates that there is an edge between nodes <code>a<sub>i</sub></code> and <code>b<sub>i</sub></code> in the first tree and <code>edges2[i] = [u<sub>i</sub>, v<sub>i</sub>]</code> indicates that there is an edge between nodes <code>u<sub>i</sub></code> and <code>v<sub>i</sub></code> in the second tree.</p>\n\n<p>You must connect one node from the first tree with another node from the second tree with an edge.</p>\n\n<p>Return the <strong>minimum </strong>possible <strong>diameter </strong>of the resulting tree.</p>\n\n<p>The <strong>diameter</strong> of a tree is the length of the <em>longest</em> path between any two nodes in the tree.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/04/22/example11-transformed.png\" /></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">edges1 = [[0,1],[0,2],[0,3]], edges2 = [[0,1]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We can obtain a tree of diameter 3 by connecting node 0 from the first tree with any node from the second tree.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/04/22/example211.png\" />\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">edges1 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]], edges2 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We can obtain a tree of diameter 5 by connecting node 0 from the first tree with node 0 from the second tree.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n, m &lt;= 10<sup>5</sup></code></li>\n\t<li><code>edges1.length == n - 1</code></li>\n\t<li><code>edges2.length == m - 1</code></li>\n\t<li><code>edges1[i].length == edges2[i].length == 2</code></li>\n\t<li><code>edges1[i] = [a<sub>i</sub>, b<sub>i</sub>]</code></li>\n\t<li><code>0 &lt;= a<sub>i</sub>, b<sub>i</sub> &lt; n</code></li>\n\t<li><code>edges2[i] = [u<sub>i</sub>, v<sub>i</sub>]</code></li>\n\t<li><code>0 &lt;= u<sub>i</sub>, v<sub>i</sub> &lt; m</code></li>\n\t<li>The input is generated such that <code>edges1</code> and <code>edges2</code> represent valid trees.</li>\n</ul>\n",
+  "content_markdown": "There exist two **undirected** trees with `n` and `m` nodes, numbered from `0` to `n - 1` and from `0` to `m - 1`, respectively. You are given two 2D integer arrays `edges1` and `edges2` of lengths `n - 1` and `m - 1`, respectively, where `edges1[i] = [ai, bi]` indicates that there is an edge between nodes `ai` and `bi` in the first tree and `edges2[i] = [ui, vi]` indicates that there is an edge between nodes `ui` and `vi` in the second tree.\n\nYou must connect one node from the first tree with another node from the second tree with an edge.\n\nReturn the **minimum** possible **diameter** of the resulting tree.\n\nThe **diameter** of a tree is the length of the _longest_ path between any two nodes in the tree.\n\n \n\n**Example 1:**![](https://assets.leetcode.com/uploads/2024/04/22/example11-transformed.png)\n\n**Input:** edges1 = [[0,1],[0,2],[0,3]], edges2 = [[0,1]]\n\n**Output:** 3\n\n**Explanation:**\n\nWe can obtain a tree of diameter 3 by connecting node 0 from the first tree with any node from the second tree.\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2024/04/22/example211.png)\n\n**Input:** edges1 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]], edges2 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]]\n\n**Output:** 5\n\n**Explanation:**\n\nWe can obtain a tree of diameter 5 by connecting node 0 from the first tree with node 0 from the second tree.\n\n \n\n**Constraints:**\n\n  * `1 <= n, m <= 105`\n  * `edges1.length == n - 1`\n  * `edges2.length == m - 1`\n  * `edges1[i].length == edges2[i].length == 2`\n  * `edges1[i] = [ai, bi]`\n  * `0 <= ai, bi < n`\n  * `edges2[i] = [ui, vi]`\n  * `0 <= ui, vi < m`\n  * The input is generated such that `edges1` and `edges2` represent valid trees.",
+  "question": "There exist two **undirected** trees with `n` and `m` nodes, numbered from `0` to `n - 1` and from `0` to `m - 1`, respectively. You are given two 2D integer arrays `edges1` and `edges2` of lengths `n - 1` and `m - 1`, respectively, where `edges1[i] = [ai, bi]` indicates that there is an edge between nodes `ai` and `bi` in the first tree and `edges2[i] = [ui, vi]` indicates that there is an edge between nodes `ui` and `vi` in the second tree.\n\nYou must connect one node from the first tree with another node from the second tree with an edge.\n\nReturn the **minimum** possible **diameter** of the resulting tree.\n\nThe **diameter** of a tree is the length of the _longest_ path between any two nodes in the tree.",
+  "examples": "**Example 1:**![](https://assets.leetcode.com/uploads/2024/04/22/example11-transformed.png)\n\n**Input:** edges1 = [[0,1],[0,2],[0,3]], edges2 = [[0,1]]\n\n**Output:** 3\n\n**Explanation:**\n\nWe can obtain a tree of diameter 3 by connecting node 0 from the first tree with any node from the second tree.\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2024/04/22/example211.png)\n\n**Input:** edges1 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]], edges2 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]]\n\n**Output:** 5\n\n**Explanation:**\n\nWe can obtain a tree of diameter 5 by connecting node 0 from the first tree with node 0 from the second tree.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n, m <= 105`\n  * `edges1.length == n - 1`\n  * `edges2.length == m - 1`\n  * `edges1[i].length == edges2[i].length == 2`\n  * `edges1[i] = [ai, bi]`\n  * `0 <= ai, bi < n`\n  * `edges2[i] = [ui, vi]`\n  * `0 <= ui, vi < m`\n  * The input is generated such that `edges1` and `edges2` represent valid trees.",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Graph Theory"],
+  "total_accepted": 78045,
+  "total_submissions": 136628,
+  "acceptance_rate": "57.1%",
+  "similar_questions": [
+    {
+      "title": "Minimum Height Trees",
+      "slug": "minimum-height-trees",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-height-trees/"
+    },
+    {
+      "title": "Tree Diameter",
+      "slug": "tree-diameter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/tree-diameter/"
+    },
+    {
+      "title": "Maximize the Number of Target Nodes After Connecting Trees I",
+      "slug": "maximize-the-number-of-target-nodes-after-connecting-trees-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-the-number-of-target-nodes-after-connecting-trees-i/"
+    },
+    {
+      "title": "Maximize the Number of Target Nodes After Connecting Trees II",
+      "slug": "maximize-the-number-of-target-nodes-after-connecting-trees-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximize-the-number-of-target-nodes-after-connecting-trees-ii/"
+    },
+    {
+      "title": "Maximize Sum of Weights after Edge Removals",
+      "slug": "maximize-sum-of-weights-after-edge-removals",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximize-sum-of-weights-after-edge-removals/"
+    }
+  ],
+  "hints": [
+    "Suppose that we connected node <code>a</code> in tree1 with node <code>b</code> in tree2. The diameter length of the resulting tree will be the largest of the following 3 values: \r\n<ol>\r\n<li>The diameter of tree 1.</li>\r\n<li>The diameter of tree 2.</li>\r\n<li>The length of the longest path that starts at node <code>a</code> and that is completely within Tree 1 + The length of the longest path that starts at node <code>b</code> and that is completely within Tree 2 + 1.</li>\r\n</ol> \r\nThe added one in the third value is due to the additional edge that we have added between trees 1 and 2.",
+    "Values 1 and 2 are constant regardless of our choice of <code>a</code> and <code>b</code>. Therefore, we need to pick <code>a</code> and <code>b</code> in such a way that minimizes value 3.",
+    "If we pick <code>a</code> and <code>b</code> optimally, they will be in the diameters of Tree 1 and Tree 2, respectively. Exactly which nodes of the diameter should we pick?",
+    "<code>a</code> is the center of the diameter of tree 1, and <code>b</code> is the center of the diameter of tree 2."
+  ]
+}

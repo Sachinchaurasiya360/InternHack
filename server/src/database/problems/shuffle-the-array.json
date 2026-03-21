@@ -1,0 +1,20 @@
+{
+  "id": "1470",
+  "title": "Shuffle the Array",
+  "slug": "shuffle-the-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the array <code>nums</code> consisting of <code>2n</code> elements in the form <code>[x<sub>1</sub>,x<sub>2</sub>,...,x<sub>n</sub>,y<sub>1</sub>,y<sub>2</sub>,...,y<sub>n</sub>]</code>.</p>\r\n\r\n<p><em>Return the array in the form</em> <code>[x<sub>1</sub>,y<sub>1</sub>,x<sub>2</sub>,y<sub>2</sub>,...,x<sub>n</sub>,y<sub>n</sub>]</code>.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [2,5,1,3,4,7], n = 3\r\n<strong>Output:</strong> [2,3,5,4,1,7] \r\n<strong>Explanation:</strong> Since x<sub>1</sub>=2, x<sub>2</sub>=5, x<sub>3</sub>=1, y<sub>1</sub>=3, y<sub>2</sub>=4, y<sub>3</sub>=7 then the answer is [2,3,5,4,1,7].\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [1,2,3,4,4,3,2,1], n = 4\r\n<strong>Output:</strong> [1,4,2,3,3,2,4,1]\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 3:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> nums = [1,1,2,2], n = 2\r\n<strong>Output:</strong> [1,2,1,2]\r\n</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>1 &lt;= n &lt;= 500</code></li>\r\n\t<li><code>nums.length == 2n</code></li>\r\n\t<li><code>1 &lt;= nums[i] &lt;= 10^3</code></li>\r\n</ul>",
+  "content_markdown": "Given the array `nums` consisting of `2n` elements in the form `[x1,x2,...,xn,y1,y2,...,yn]`.\n\n_Return the array in the form_ `[x1,y1,x2,y2,...,xn,yn]`.\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** nums = [2,5,1,3,4,7], n = 3\r\n    **Output:** [2,3,5,4,1,7] \r\n    **Explanation:** Since x1=2, x2=5, x3=1, y1=3, y2=4, y3=7 then the answer is [2,3,5,4,1,7].\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** nums = [1,2,3,4,4,3,2,1], n = 4\r\n    **Output:** [1,4,2,3,3,2,4,1]\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** nums = [1,1,2,2], n = 2\r\n    **Output:** [1,2,1,2]\r\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 500`\n  * `nums.length == 2n`\n  * `1 <= nums[i] <= 10^3`",
+  "question": "Given the array `nums` consisting of `2n` elements in the form `[x1,x2,...,xn,y1,y2,...,yn]`.\n\n_Return the array in the form_ `[x1,y1,x2,y2,...,xn,yn]`.",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** nums = [2,5,1,3,4,7], n = 3\r\n    **Output:** [2,3,5,4,1,7] \r\n    **Explanation:** Since x1=2, x2=5, x3=1, y1=3, y2=4, y3=7 then the answer is [2,3,5,4,1,7].\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** nums = [1,2,3,4,4,3,2,1], n = 4\r\n    **Output:** [1,4,2,3,3,2,4,1]\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** nums = [1,1,2,2], n = 2\r\n    **Output:** [1,2,1,2]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 500`\n  * `nums.length == 2n`\n  * `1 <= nums[i] <= 10^3`",
+  "topics": ["Array"],
+  "total_accepted": 1021617,
+  "total_submissions": 1148512,
+  "acceptance_rate": "89.0%",
+  "similar_questions": [],
+  "hints": [
+    "Use two pointers to create the new array of 2n elements. The first starting at the beginning and the other starting at (n+1)th position. Alternate between them and create the new array."
+  ]
+}

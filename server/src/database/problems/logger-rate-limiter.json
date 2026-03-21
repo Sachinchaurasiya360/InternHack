@@ -1,0 +1,25 @@
+{
+  "id": "359",
+  "title": "Logger Rate Limiter",
+  "slug": "logger-rate-limiter",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Design", "Data Stream"],
+  "total_accepted": 387289,
+  "total_submissions": 504442,
+  "acceptance_rate": "76.8%",
+  "similar_questions": [
+    {
+      "title": "Design Hit Counter",
+      "slug": "design-hit-counter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-hit-counter/"
+    }
+  ],
+  "hints": []
+}

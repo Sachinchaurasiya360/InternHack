@@ -1,0 +1,20 @@
+{
+  "id": "2864",
+  "title": "Maximum Odd Binary Number",
+  "slug": "maximum-odd-binary-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>binary</strong> string <code>s</code> that contains at least one <code>&#39;1&#39;</code>.</p>\n\n<p>You have to <strong>rearrange</strong> the bits in such a way that the resulting binary number is the <strong>maximum odd binary number</strong> that can be created from this combination.</p>\n\n<p>Return <em>a string representing the maximum odd binary number that can be created from the given combination.</em></p>\n\n<p><strong>Note </strong>that the resulting string <strong>can</strong> have leading zeros.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;010&quot;\n<strong>Output:</strong> &quot;001&quot;\n<strong>Explanation:</strong> Because there is just one &#39;1&#39;, it must be in the last position. So the answer is &quot;001&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;0101&quot;\n<strong>Output:</strong> &quot;1001&quot;\n<strong>Explanation: </strong>One of the &#39;1&#39;s must be in the last position. The maximum number that can be made with the remaining digits is &quot;100&quot;. So the answer is &quot;1001&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists only of <code>&#39;0&#39;</code> and <code>&#39;1&#39;</code>.</li>\n\t<li><code>s</code> contains at least one <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a **binary** string `s` that contains at least one `'1'`.\n\nYou have to **rearrange** the bits in such a way that the resulting binary number is the **maximum odd binary number** that can be created from this combination.\n\nReturn _a string representing the maximum odd binary number that can be created from the given combination._\n\n**Note** that the resulting string **can** have leading zeros.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"010\"\n    **Output:** \"001\"\n    **Explanation:** Because there is just one '1', it must be in the last position. So the answer is \"001\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"0101\"\n    **Output:** \"1001\"\n    **Explanation:** One of the '1's must be in the last position. The maximum number that can be made with the remaining digits is \"100\". So the answer is \"1001\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists only of `'0'` and `'1'`.\n  * `s` contains at least one `'1'`.",
+  "question": "You are given a **binary** string `s` that contains at least one `'1'`.\n\nYou have to **rearrange** the bits in such a way that the resulting binary number is the **maximum odd binary number** that can be created from this combination.\n\nReturn _a string representing the maximum odd binary number that can be created from the given combination._\n\n**Note** that the resulting string **can** have leading zeros.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"010\"\n    **Output:** \"001\"\n    **Explanation:** Because there is just one '1', it must be in the last position. So the answer is \"001\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"0101\"\n    **Output:** \"1001\"\n    **Explanation:** One of the '1's must be in the last position. The maximum number that can be made with the remaining digits is \"100\". So the answer is \"1001\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists only of `'0'` and `'1'`.\n  * `s` contains at least one `'1'`.",
+  "topics": ["Math", "String", "Greedy"],
+  "total_accepted": 231930,
+  "total_submissions": 279822,
+  "acceptance_rate": "82.9%",
+  "similar_questions": [],
+  "hints": [
+    "The binary representation of an odd number contains <code>'1'</code> in the least significant place."
+  ]
+}

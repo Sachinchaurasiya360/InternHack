@@ -1,0 +1,53 @@
+{
+  "id": "2116",
+  "title": "Check if a Parentheses String Can Be Valid",
+  "slug": "check-if-a-parentheses-string-can-be-valid",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A parentheses string is a <strong>non-empty</strong> string consisting only of <code>&#39;(&#39;</code> and <code>&#39;)&#39;</code>. It is valid if <strong>any</strong> of the following conditions is <strong>true</strong>:</p>\n\n<ul>\n\t<li>It is <code>()</code>.</li>\n\t<li>It can be written as <code>AB</code> (<code>A</code> concatenated with <code>B</code>), where <code>A</code> and <code>B</code> are valid parentheses strings.</li>\n\t<li>It can be written as <code>(A)</code>, where <code>A</code> is a valid parentheses string.</li>\n</ul>\n\n<p>You are given a parentheses string <code>s</code> and a string <code>locked</code>, both of length <code>n</code>. <code>locked</code> is a binary string consisting only of <code>&#39;0&#39;</code>s and <code>&#39;1&#39;</code>s. For <strong>each</strong> index <code>i</code> of <code>locked</code>,</p>\n\n<ul>\n\t<li>If <code>locked[i]</code> is <code>&#39;1&#39;</code>, you <strong>cannot</strong> change <code>s[i]</code>.</li>\n\t<li>But if <code>locked[i]</code> is <code>&#39;0&#39;</code>, you <strong>can</strong> change <code>s[i]</code> to either <code>&#39;(&#39;</code> or <code>&#39;)&#39;</code>.</li>\n</ul>\n\n<p>Return <code>true</code> <em>if you can make <code>s</code> a valid parentheses string</em>. Otherwise, return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/06/eg1.png\" style=\"width: 311px; height: 101px;\" />\n<pre>\n<strong>Input:</strong> s = &quot;))()))&quot;, locked = &quot;010100&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> locked[1] == &#39;1&#39; and locked[3] == &#39;1&#39;, so we cannot change s[1] or s[3].\nWe change s[0] and s[4] to &#39;(&#39; while leaving s[2] and s[5] unchanged to make s valid.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;()()&quot;, locked = &quot;0000&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> We do not need to make any changes because s is already valid.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;)&quot;, locked = &quot;0&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> locked permits us to change s[0]. \nChanging s[0] to either &#39;(&#39; or &#39;)&#39; will not make s valid.\n</pre>\n\n<p><strong class=\"example\">Example 4:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(((())(((())&quot;, locked = &quot;111111010111&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> locked permits us to change s[6] and s[8]. \nWe change s[6] and s[8] to &#39;)&#39; to make s valid.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == s.length == locked.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;(&#39;</code> or <code>&#39;)&#39;</code>.</li>\n\t<li><code>locked[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "A parentheses string is a **non-empty** string consisting only of `'('` and `')'`. It is valid if **any** of the following conditions is **true** :\n\n  * It is `()`.\n  * It can be written as `AB` (`A` concatenated with `B`), where `A` and `B` are valid parentheses strings.\n  * It can be written as `(A)`, where `A` is a valid parentheses string.\n\n\n\nYou are given a parentheses string `s` and a string `locked`, both of length `n`. `locked` is a binary string consisting only of `'0'`s and `'1'`s. For **each** index `i` of `locked`,\n\n  * If `locked[i]` is `'1'`, you **cannot** change `s[i]`.\n  * But if `locked[i]` is `'0'`, you **can** change `s[i]` to either `'('` or `')'`.\n\n\n\nReturn `true` _if you can make`s` a valid parentheses string_. Otherwise, return `false`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/06/eg1.png)\n    \n    \n    **Input:** s = \"))()))\", locked = \"010100\"\n    **Output:** true\n    **Explanation:** locked[1] == '1' and locked[3] == '1', so we cannot change s[1] or s[3].\n    We change s[0] and s[4] to '(' while leaving s[2] and s[5] unchanged to make s valid.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"()()\", locked = \"0000\"\n    **Output:** true\n    **Explanation:** We do not need to make any changes because s is already valid.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \")\", locked = \"0\"\n    **Output:** false\n    **Explanation:** locked permits us to change s[0]. \n    Changing s[0] to either '(' or ')' will not make s valid.\n    \n\n**Example 4:**\n    \n    \n    **Input:** s = \"(((())(((())\", locked = \"111111010111\"\n    **Output:** true\n    **Explanation:** locked permits us to change s[6] and s[8]. \n    We change s[6] and s[8] to ')' to make s valid.\n    \n\n \n\n**Constraints:**\n\n  * `n == s.length == locked.length`\n  * `1 <= n <= 105`\n  * `s[i]` is either `'('` or `')'`.\n  * `locked[i]` is either `'0'` or `'1'`.",
+  "question": "A parentheses string is a **non-empty** string consisting only of `'('` and `')'`. It is valid if **any** of the following conditions is **true** :\n\n  * It is `()`.\n  * It can be written as `AB` (`A` concatenated with `B`), where `A` and `B` are valid parentheses strings.\n  * It can be written as `(A)`, where `A` is a valid parentheses string.\n\n\n\nYou are given a parentheses string `s` and a string `locked`, both of length `n`. `locked` is a binary string consisting only of `'0'`s and `'1'`s. For **each** index `i` of `locked`,\n\n  * If `locked[i]` is `'1'`, you **cannot** change `s[i]`.\n  * But if `locked[i]` is `'0'`, you **can** change `s[i]` to either `'('` or `')'`.\n\n\n\nReturn `true` _if you can make`s` a valid parentheses string_. Otherwise, return `false`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/06/eg1.png)\n    \n    \n    **Input:** s = \"))()))\", locked = \"010100\"\n    **Output:** true\n    **Explanation:** locked[1] == '1' and locked[3] == '1', so we cannot change s[1] or s[3].\n    We change s[0] and s[4] to '(' while leaving s[2] and s[5] unchanged to make s valid.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"()()\", locked = \"0000\"\n    **Output:** true\n    **Explanation:** We do not need to make any changes because s is already valid.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \")\", locked = \"0\"\n    **Output:** false\n    **Explanation:** locked permits us to change s[0]. \n    Changing s[0] to either '(' or ')' will not make s valid.\n    \n\n**Example 4:**\n    \n    \n    **Input:** s = \"(((())(((())\", locked = \"111111010111\"\n    **Output:** true\n    **Explanation:** locked permits us to change s[6] and s[8]. \n    We change s[6] and s[8] to ')' to make s valid.",
+  "constraints": "**Constraints:**\n\n  * `n == s.length == locked.length`\n  * `1 <= n <= 105`\n  * `s[i]` is either `'('` or `')'`.\n  * `locked[i]` is either `'0'` or `'1'`.",
+  "topics": ["String", "Stack", "Greedy"],
+  "total_accepted": 155090,
+  "total_submissions": 343991,
+  "acceptance_rate": "45.1%",
+  "similar_questions": [
+    {
+      "title": "Valid Parentheses",
+      "slug": "valid-parentheses",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-parentheses/"
+    },
+    {
+      "title": "Generate Parentheses",
+      "slug": "generate-parentheses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/generate-parentheses/"
+    },
+    {
+      "title": "Valid Parenthesis String",
+      "slug": "valid-parenthesis-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/valid-parenthesis-string/"
+    },
+    {
+      "title": "Minimum Remove to Make Valid Parentheses",
+      "slug": "minimum-remove-to-make-valid-parentheses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/"
+    },
+    {
+      "title": " Check if There Is a Valid Parentheses String Path",
+      "slug": "check-if-there-is-a-valid-parentheses-string-path",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/check-if-there-is-a-valid-parentheses-string-path/"
+    }
+  ],
+  "hints": [
+    "Can an odd length string ever be valid?",
+    "From left to right, if a locked ')' is encountered, it must be balanced with either a locked '(' or an unlocked index on its left. If neither exist, what conclusion can be drawn? If both exist, which one is more preferable to use?",
+    "After the above, we may have locked indices of '(' and additional unlocked indices. How can you balance out the locked '(' now? What if you cannot balance any locked '('?"
+  ]
+}

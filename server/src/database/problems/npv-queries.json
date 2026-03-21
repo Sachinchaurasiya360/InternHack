@@ -1,0 +1,18 @@
+{
+  "id": "1421",
+  "title": "NPV Queries",
+  "slug": "npv-queries",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 31347,
+  "total_submissions": 37816,
+  "acceptance_rate": "82.9%",
+  "similar_questions": [],
+  "hints": []
+}

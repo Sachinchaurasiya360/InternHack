@@ -1,0 +1,23 @@
+{
+  "id": "3787",
+  "title": "Find Diameter Endpoints of a Tree",
+  "slug": "find-diameter-endpoints-of-a-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Breadth-First Search", "Graph Theory"],
+  "total_accepted": 543,
+  "total_submissions": 778,
+  "acceptance_rate": "69.8%",
+  "similar_questions": [],
+  "hints": [
+    "Start a breadth first search (BFS) from any node <code>start</code>; let the farthest node found be <code>A</code>.",
+    "Run BFS from <code>A</code>; a farthest node <code>B</code> is at the other end, and the path <code>A</code>-<code>B</code> is a diameter.",
+    "If several nodes tie as farthest from <code>start</code>, collect them into <code>cand_start</code>, each is a possible diameter endpoint.",
+    "Running BFS from any node in <code>cand_start</code> yields the opposite-end set <code>cand_other</code>, the other diameter endpoints."
+  ]
+}

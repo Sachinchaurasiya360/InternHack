@@ -1,0 +1,28 @@
+{
+  "id": "1580",
+  "title": "Put Boxes Into the Warehouse II",
+  "slug": "put-boxes-into-the-warehouse-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 10647,
+  "total_submissions": 16184,
+  "acceptance_rate": "65.8%",
+  "similar_questions": [
+    {
+      "title": "Put Boxes Into the Warehouse I",
+      "slug": "put-boxes-into-the-warehouse-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/put-boxes-into-the-warehouse-i/"
+    }
+  ],
+  "hints": [
+    "Try to put at least one box in the house pushing it from either side.",
+    "Once you put one box to the house, you can solve the problem with the same logic used to solve version I. You have a warehouse open from the left only and a warehouse open from the right only."
+  ]
+}

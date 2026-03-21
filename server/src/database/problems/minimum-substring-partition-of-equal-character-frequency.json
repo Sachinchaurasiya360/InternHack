@@ -1,0 +1,34 @@
+{
+  "id": "3144",
+  "title": "Minimum Substring Partition of Equal Character Frequency",
+  "slug": "minimum-substring-partition-of-equal-character-frequency",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, you need to partition it into one or more <strong>balanced</strong> <span data-keyword=\"substring\">substrings</span>. For example, if <code>s == &quot;ababcc&quot;</code> then <code>(&quot;abab&quot;, &quot;c&quot;, &quot;c&quot;)</code>, <code>(&quot;ab&quot;, &quot;abc&quot;, &quot;c&quot;)</code>, and <code>(&quot;ababcc&quot;)</code> are all valid partitions, but <code>(&quot;a&quot;, <strong>&quot;bab&quot;</strong>, &quot;cc&quot;)</code>, <code>(<strong>&quot;aba&quot;</strong>, &quot;bc&quot;, &quot;c&quot;)</code>, and <code>(&quot;ab&quot;, <strong>&quot;abcc&quot;</strong>)</code> are not. The unbalanced substrings are bolded.</p>\n\n<p>Return the <strong>minimum</strong> number of substrings that you can partition <code>s</code> into.</p>\n\n<p><strong>Note:</strong> A <strong>balanced</strong> string is a string where each character in the string occurs the same number of times.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;fabccddg&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We can partition the string <code>s</code> into 3 substrings in one of the following ways: <code>(&quot;fab, &quot;ccdd&quot;, &quot;g&quot;)</code>, or <code>(&quot;fabc&quot;, &quot;cd&quot;, &quot;dg&quot;)</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;abababaccddb&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We can partition the string <code>s</code> into 2 substrings like so: <code>(&quot;abab&quot;, &quot;abaccddb&quot;)</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s</code> consists only of English lowercase letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, you need to partition it into one or more **balanced** substrings. For example, if `s == \"ababcc\"` then `(\"abab\", \"c\", \"c\")`, `(\"ab\", \"abc\", \"c\")`, and `(\"ababcc\")` are all valid partitions, but `(\"a\", **\" bab\"**, \"cc\")`, `(**\" aba\"**, \"bc\", \"c\")`, and `(\"ab\", **\" abcc\"**)` are not. The unbalanced substrings are bolded.\n\nReturn the **minimum** number of substrings that you can partition `s` into.\n\n**Note:** A **balanced** string is a string where each character in the string occurs the same number of times.\n\n \n\n**Example 1:**\n\n**Input:** s = \"fabccddg\"\n\n**Output:** 3\n\n**Explanation:**\n\nWe can partition the string `s` into 3 substrings in one of the following ways: `(\"fab, \"ccdd\", \"g\")`, or `(\"fabc\", \"cd\", \"dg\")`.\n\n**Example 2:**\n\n**Input:** s = \"abababaccddb\"\n\n**Output:** 2\n\n**Explanation:**\n\nWe can partition the string `s` into 2 substrings like so: `(\"abab\", \"abaccddb\")`.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists only of English lowercase letters.",
+  "question": "Given a string `s`, you need to partition it into one or more **balanced** substrings. For example, if `s == \"ababcc\"` then `(\"abab\", \"c\", \"c\")`, `(\"ab\", \"abc\", \"c\")`, and `(\"ababcc\")` are all valid partitions, but `(\"a\", **\" bab\"**, \"cc\")`, `(**\" aba\"**, \"bc\", \"c\")`, and `(\"ab\", **\" abcc\"**)` are not. The unbalanced substrings are bolded.\n\nReturn the **minimum** number of substrings that you can partition `s` into.\n\n**Note:** A **balanced** string is a string where each character in the string occurs the same number of times.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"fabccddg\"\n\n**Output:** 3\n\n**Explanation:**\n\nWe can partition the string `s` into 3 substrings in one of the following ways: `(\"fab, \"ccdd\", \"g\")`, or `(\"fabc\", \"cd\", \"dg\")`.\n\n**Example 2:**\n\n**Input:** s = \"abababaccddb\"\n\n**Output:** 2\n\n**Explanation:**\n\nWe can partition the string `s` into 2 substrings like so: `(\"abab\", \"abaccddb\")`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists only of English lowercase letters.",
+  "topics": ["Hash Table", "String", "Dynamic Programming", "Counting"],
+  "total_accepted": 17835,
+  "total_submissions": 44608,
+  "acceptance_rate": "40.0%",
+  "similar_questions": [
+    {
+      "title": "Partition Array for Maximum Sum",
+      "slug": "partition-array-for-maximum-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-array-for-maximum-sum/"
+    },
+    {
+      "title": "Partition String Into Minimum Beautiful Substrings",
+      "slug": "partition-string-into-minimum-beautiful-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-string-into-minimum-beautiful-substrings/"
+    }
+  ],
+  "hints": [
+    "Let <code>dp[i]</code> be the minimum number of partitions for the prefix ending at index <code>i + 1</code>.",
+    "<code>dp[i]</code> can be calculated as the <code>min(dp[j])</code> over all <code>j</code> such that <code>j < i</code> and <code>word[j+1…i]</code> is valid."
+  ]
+}

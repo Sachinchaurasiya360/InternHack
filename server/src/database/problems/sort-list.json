@@ -1,0 +1,43 @@
+{
+  "id": "148",
+  "title": "Sort List",
+  "slug": "sort-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a linked list, return <em>the list after sorting it in <strong>ascending order</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/14/sort_list_1.jpg\" style=\"width: 450px; height: 194px;\" />\n<pre>\n<strong>Input:</strong> head = [4,2,1,3]\n<strong>Output:</strong> [1,2,3,4]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/14/sort_list_2.jpg\" style=\"width: 550px; height: 184px;\" />\n<pre>\n<strong>Input:</strong> head = [-1,5,3,4,0]\n<strong>Output:</strong> [-1,0,3,4,5]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> head = []\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is in the range <code>[0, 5 * 10<sup>4</sup>]</code>.</li>\n\t<li><code>-10<sup>5</sup> &lt;= Node.val &lt;= 10<sup>5</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Can you sort the linked list in <code>O(n logn)</code> time and <code>O(1)</code> memory (i.e. constant space)?</p>\n",
+  "content_markdown": "Given the `head` of a linked list, return _the list after sorting it in**ascending order**_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/14/sort_list_1.jpg)\n    \n    \n    **Input:** head = [4,2,1,3]\n    **Output:** [1,2,3,4]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/09/14/sort_list_2.jpg)\n    \n    \n    **Input:** head = [-1,5,3,4,0]\n    **Output:** [-1,0,3,4,5]\n    \n\n**Example 3:**\n    \n    \n    **Input:** head = []\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 5 * 104]`.\n  * `-105 <= Node.val <= 105`\n\n\n\n \n\n**Follow up:** Can you sort the linked list in `O(n logn)` time and `O(1)` memory (i.e. constant space)?",
+  "question": "Given the `head` of a linked list, return _the list after sorting it in**ascending order**_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/14/sort_list_1.jpg)\n    \n    \n    **Input:** head = [4,2,1,3]\n    **Output:** [1,2,3,4]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/09/14/sort_list_2.jpg)\n    \n    \n    **Input:** head = [-1,5,3,4,0]\n    **Output:** [-1,0,3,4,5]\n    \n\n**Example 3:**\n    \n    \n    **Input:** head = []\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is in the range `[0, 5 * 104]`.\n  * `-105 <= Node.val <= 105`",
+  "topics": ["Linked List", "Two Pointers", "Divide and Conquer", "Sorting", "Merge Sort"],
+  "total_accepted": 1234059,
+  "total_submissions": 1931414,
+  "acceptance_rate": "63.9%",
+  "similar_questions": [
+    {
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-two-sorted-lists/"
+    },
+    {
+      "title": "Sort Colors",
+      "slug": "sort-colors",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-colors/"
+    },
+    {
+      "title": "Insertion Sort List",
+      "slug": "insertion-sort-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/insertion-sort-list/"
+    },
+    {
+      "title": "Sort Linked List Already Sorted Using Absolute Values",
+      "slug": "sort-linked-list-already-sorted-using-absolute-values",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-linked-list-already-sorted-using-absolute-values/"
+    }
+  ],
+  "hints": []
+}

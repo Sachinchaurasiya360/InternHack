@@ -1,0 +1,35 @@
+{
+  "id": "1120",
+  "title": "Maximum Average Subtree",
+  "slug": "maximum-average-subtree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 73799,
+  "total_submissions": 110286,
+  "acceptance_rate": "66.9%",
+  "similar_questions": [
+    {
+      "title": "Count Nodes Equal to Sum of Descendants",
+      "slug": "count-nodes-equal-to-sum-of-descendants",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-nodes-equal-to-sum-of-descendants/"
+    },
+    {
+      "title": "Count Nodes Equal to Average of Subtree",
+      "slug": "count-nodes-equal-to-average-of-subtree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-nodes-equal-to-average-of-subtree/"
+    }
+  ],
+  "hints": [
+    "Can you find the sum of values and the number of nodes for every sub-tree ?",
+    "Can you find the sum of values and the number of nodes for a sub-tree given the sum of values and the number of nodes of it's left and right sub-trees ?",
+    "Use depth first search to recursively find the solution for the children of a node then use their solutions to compute the current node's solution."
+  ]
+}

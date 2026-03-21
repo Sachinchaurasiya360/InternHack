@@ -1,0 +1,28 @@
+{
+  "id": "2260",
+  "title": "Minimum Consecutive Cards to Pick Up",
+  "slug": "minimum-consecutive-cards-to-pick-up",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>cards</code> where <code>cards[i]</code> represents the <strong>value</strong> of the <code>i<sup>th</sup></code> card. A pair of cards are <strong>matching</strong> if the cards have the <strong>same</strong> value.</p>\n\n<p>Return<em> the <strong>minimum</strong> number of <strong>consecutive</strong> cards you have to pick up to have a pair of <strong>matching</strong> cards among the picked cards.</em> If it is impossible to have matching cards, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> cards = [3,4,2,3,4,7]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> We can pick up the cards [3,4,2,3] which contain a matching pair of cards with value 3. Note that picking up the cards [4,2,3,4] is also optimal.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> cards = [1,0,5,3]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There is no way to pick up a set of consecutive cards that contain a pair of matching cards.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= cards.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= cards[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `cards` where `cards[i]` represents the **value** of the `ith` card. A pair of cards are **matching** if the cards have the **same** value.\n\nReturn _the**minimum** number of **consecutive** cards you have to pick up to have a pair of **matching** cards among the picked cards._ If it is impossible to have matching cards, return `-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** cards = [3,4,2,3,4,7]\n    **Output:** 4\n    **Explanation:** We can pick up the cards [3,4,2,3] which contain a matching pair of cards with value 3. Note that picking up the cards [4,2,3,4] is also optimal.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cards = [1,0,5,3]\n    **Output:** -1\n    **Explanation:** There is no way to pick up a set of consecutive cards that contain a pair of matching cards.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= cards.length <= 105`\n  * `0 <= cards[i] <= 106`",
+  "question": "You are given an integer array `cards` where `cards[i]` represents the **value** of the `ith` card. A pair of cards are **matching** if the cards have the **same** value.\n\nReturn _the**minimum** number of **consecutive** cards you have to pick up to have a pair of **matching** cards among the picked cards._ If it is impossible to have matching cards, return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** cards = [3,4,2,3,4,7]\n    **Output:** 4\n    **Explanation:** We can pick up the cards [3,4,2,3] which contain a matching pair of cards with value 3. Note that picking up the cards [4,2,3,4] is also optimal.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cards = [1,0,5,3]\n    **Output:** -1\n    **Explanation:** There is no way to pick up a set of consecutive cards that contain a pair of matching cards.",
+  "constraints": "**Constraints:**\n\n  * `1 <= cards.length <= 105`\n  * `0 <= cards[i] <= 106`",
+  "topics": ["Array", "Hash Table", "Sliding Window"],
+  "total_accepted": 118718,
+  "total_submissions": 221735,
+  "acceptance_rate": "53.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+    }
+  ],
+  "hints": [
+    "Iterate through the cards and store the location of the last occurrence of each number.",
+    "What data structure could you use to get the last occurrence of a number in O(1) or O(log n)?"
+  ]
+}

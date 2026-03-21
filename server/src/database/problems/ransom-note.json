@@ -1,0 +1,31 @@
+{
+  "id": "383",
+  "title": "Ransom Note",
+  "slug": "ransom-note",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>ransomNote</code> and <code>magazine</code>, return <code>true</code><em> if </em><code>ransomNote</code><em> can be constructed by using the letters from </em><code>magazine</code><em> and </em><code>false</code><em> otherwise</em>.</p>\n\n<p>Each letter in <code>magazine</code> can only be used once in <code>ransomNote</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> ransomNote = \"a\", magazine = \"b\"\n<strong>Output:</strong> false\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> ransomNote = \"aa\", magazine = \"ab\"\n<strong>Output:</strong> false\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> ransomNote = \"aa\", magazine = \"aab\"\n<strong>Output:</strong> true\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= ransomNote.length, magazine.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>ransomNote</code> and <code>magazine</code> consist of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `ransomNote` and `magazine`, return `true` _if_`ransomNote` _can be constructed by using the letters from_`magazine` _and_`false` _otherwise_.\n\nEach letter in `magazine` can only be used once in `ransomNote`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** ransomNote = \"a\", magazine = \"b\"\n    **Output:** false\n    \n\n**Example 2:**\n    \n    \n    **Input:** ransomNote = \"aa\", magazine = \"ab\"\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** ransomNote = \"aa\", magazine = \"aab\"\n    **Output:** true\n    \n\n \n\n**Constraints:**\n\n  * `1 <= ransomNote.length, magazine.length <= 105`\n  * `ransomNote` and `magazine` consist of lowercase English letters.",
+  "question": "Given two strings `ransomNote` and `magazine`, return `true` _if_`ransomNote` _can be constructed by using the letters from_`magazine` _and_`false` _otherwise_.\n\nEach letter in `magazine` can only be used once in `ransomNote`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** ransomNote = \"a\", magazine = \"b\"\n    **Output:** false\n    \n\n**Example 2:**\n    \n    \n    **Input:** ransomNote = \"aa\", magazine = \"ab\"\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** ransomNote = \"aa\", magazine = \"aab\"\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `1 <= ransomNote.length, magazine.length <= 105`\n  * `ransomNote` and `magazine` consist of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 1895938,
+  "total_submissions": 2887872,
+  "acceptance_rate": "65.7%",
+  "similar_questions": [
+    {
+      "title": "Stickers to Spell Word",
+      "slug": "stickers-to-spell-word",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stickers-to-spell-word/"
+    },
+    {
+      "title": "Find Words That Can Be Formed by Characters",
+      "slug": "find-words-that-can-be-formed-by-characters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-words-that-can-be-formed-by-characters/"
+    }
+  ],
+  "hints": []
+}

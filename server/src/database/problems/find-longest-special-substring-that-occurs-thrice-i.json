@@ -1,0 +1,31 @@
+{
+  "id": "2981",
+  "title": "Find Longest Special Substring That Occurs Thrice I",
+  "slug": "find-longest-special-substring-that-occurs-thrice-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> that consists of lowercase English letters.</p>\n\n<p>A string is called <strong>special</strong> if it is made up of only a single character. For example, the string <code>&quot;abc&quot;</code> is not special, whereas the strings <code>&quot;ddd&quot;</code>, <code>&quot;zz&quot;</code>, and <code>&quot;f&quot;</code> are special.</p>\n\n<p>Return <em>the length of the <strong>longest special substring</strong> of </em><code>s</code> <em>which occurs <strong>at least thrice</strong></em>, <em>or </em><code>-1</code><em> if no special substring occurs at least thrice</em>.</p>\n\n<p>A <strong>substring</strong> is a contiguous <strong>non-empty</strong> sequence of characters within a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaaa&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The longest special substring which occurs thrice is &quot;aa&quot;: substrings &quot;<u><strong>aa</strong></u>aa&quot;, &quot;a<u><strong>aa</strong></u>a&quot;, and &quot;aa<u><strong>aa</strong></u>&quot;.\nIt can be shown that the maximum length achievable is 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcdef&quot;\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There exists no special substring which occurs at least thrice. Hence return -1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcaba&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The longest special substring which occurs thrice is &quot;a&quot;: substrings &quot;<u><strong>a</strong></u>bcaba&quot;, &quot;abc<u><strong>a</strong></u>ba&quot;, and &quot;abcab<u><strong>a</strong></u>&quot;.\nIt can be shown that the maximum length achievable is 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= s.length &lt;= 50</code></li>\n\t<li><code>s</code> consists of only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` that consists of lowercase English letters.\n\nA string is called **special** if it is made up of only a single character. For example, the string `\"abc\"` is not special, whereas the strings `\"ddd\"`, `\"zz\"`, and `\"f\"` are special.\n\nReturn _the length of the**longest special substring** of _`s` _which occurs**at least thrice**_ , _or_`-1` _if no special substring occurs at least thrice_.\n\nA **substring** is a contiguous **non-empty** sequence of characters within a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aaaa\"\n    **Output:** 2\n    **Explanation:** The longest special substring which occurs thrice is \"aa\": substrings \"_**aa**_ aa\", \"a _**aa**_ a\", and \"aa _**aa**_ \".\n    It can be shown that the maximum length achievable is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcdef\"\n    **Output:** -1\n    **Explanation:** There exists no special substring which occurs at least thrice. Hence return -1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abcaba\"\n    **Output:** 1\n    **Explanation:** The longest special substring which occurs thrice is \"a\": substrings \"_**a**_ bcaba\", \"abc _**a**_ ba\", and \"abcab _**a**_ \".\n    It can be shown that the maximum length achievable is 1.\n    \n\n \n\n**Constraints:**\n\n  * `3 <= s.length <= 50`\n  * `s` consists of only lowercase English letters.",
+  "question": "You are given a string `s` that consists of lowercase English letters.\n\nA string is called **special** if it is made up of only a single character. For example, the string `\"abc\"` is not special, whereas the strings `\"ddd\"`, `\"zz\"`, and `\"f\"` are special.\n\nReturn _the length of the**longest special substring** of _`s` _which occurs**at least thrice**_ , _or_`-1` _if no special substring occurs at least thrice_.\n\nA **substring** is a contiguous **non-empty** sequence of characters within a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aaaa\"\n    **Output:** 2\n    **Explanation:** The longest special substring which occurs thrice is \"aa\": substrings \"_**aa**_ aa\", \"a _**aa**_ a\", and \"aa _**aa**_ \".\n    It can be shown that the maximum length achievable is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcdef\"\n    **Output:** -1\n    **Explanation:** There exists no special substring which occurs at least thrice. Hence return -1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abcaba\"\n    **Output:** 1\n    **Explanation:** The longest special substring which occurs thrice is \"a\": substrings \"_**a**_ bcaba\", \"abc _**a**_ ba\", and \"abcab _**a**_ \".\n    It can be shown that the maximum length achievable is 1.",
+  "constraints": "**Constraints:**\n\n  * `3 <= s.length <= 50`\n  * `s` consists of only lowercase English letters.",
+  "topics": ["Hash Table", "String", "Binary Search", "Sliding Window", "Counting"],
+  "total_accepted": 131056,
+  "total_submissions": 211855,
+  "acceptance_rate": "61.9%",
+  "similar_questions": [
+    {
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+    },
+    {
+      "title": "Longest Substring with At Least K Repeating Characters",
+      "slug": "longest-substring-with-at-least-k-repeating-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/"
+    }
+  ],
+  "hints": ["The constraints are small.", "Brute force checking all substrings."]
+}

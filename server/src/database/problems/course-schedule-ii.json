@@ -1,0 +1,77 @@
+{
+  "id": "210",
+  "title": "Course Schedule II",
+  "slug": "course-schedule-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are a total of <code>numCourses</code> courses you have to take, labeled from <code>0</code> to <code>numCourses - 1</code>. You are given an array <code>prerequisites</code> where <code>prerequisites[i] = [a<sub>i</sub>, b<sub>i</sub>]</code> indicates that you <strong>must</strong> take course <code>b<sub>i</sub></code> first if you want to take course <code>a<sub>i</sub></code>.</p>\n\n<ul>\n\t<li>For example, the pair <code>[0, 1]</code>, indicates that to take course <code>0</code> you have to first take course <code>1</code>.</li>\n</ul>\n\n<p>Return <em>the ordering of courses you should take to finish all courses</em>. If there are many valid answers, return <strong>any</strong> of them. If it is impossible to finish all courses, return <strong>an empty array</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> numCourses = 2, prerequisites = [[1,0]]\n<strong>Output:</strong> [0,1]\n<strong>Explanation:</strong> There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]\n<strong>Output:</strong> [0,2,1,3]\n<strong>Explanation:</strong> There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\nSo one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> numCourses = 1, prerequisites = []\n<strong>Output:</strong> [0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= numCourses &lt;= 2000</code></li>\n\t<li><code>0 &lt;= prerequisites.length &lt;= numCourses * (numCourses - 1)</code></li>\n\t<li><code>prerequisites[i].length == 2</code></li>\n\t<li><code>0 &lt;= a<sub>i</sub>, b<sub>i</sub> &lt; numCourses</code></li>\n\t<li><code>a<sub>i</sub> != b<sub>i</sub></code></li>\n\t<li>All the pairs <code>[a<sub>i</sub>, b<sub>i</sub>]</code> are <strong>distinct</strong>.</li>\n</ul>\n",
+  "content_markdown": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you **must** take course `bi` first if you want to take course `ai`.\n\n  * For example, the pair `[0, 1]`, indicates that to take course `0` you have to first take course `1`.\n\n\n\nReturn _the ordering of courses you should take to finish all courses_. If there are many valid answers, return **any** of them. If it is impossible to finish all courses, return **an empty array**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** numCourses = 2, prerequisites = [[1,0]]\n    **Output:** [0,1]\n    **Explanation:** There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]\n    **Output:** [0,2,1,3]\n    **Explanation:** There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\n    So one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].\n    \n\n**Example 3:**\n    \n    \n    **Input:** numCourses = 1, prerequisites = []\n    **Output:** [0]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= numCourses <= 2000`\n  * `0 <= prerequisites.length <= numCourses * (numCourses - 1)`\n  * `prerequisites[i].length == 2`\n  * `0 <= ai, bi < numCourses`\n  * `ai != bi`\n  * All the pairs `[ai, bi]` are **distinct**.",
+  "question": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you **must** take course `bi` first if you want to take course `ai`.\n\n  * For example, the pair `[0, 1]`, indicates that to take course `0` you have to first take course `1`.\n\n\n\nReturn _the ordering of courses you should take to finish all courses_. If there are many valid answers, return **any** of them. If it is impossible to finish all courses, return **an empty array**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** numCourses = 2, prerequisites = [[1,0]]\n    **Output:** [0,1]\n    **Explanation:** There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]\n    **Output:** [0,2,1,3]\n    **Explanation:** There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\n    So one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].\n    \n\n**Example 3:**\n    \n    \n    **Input:** numCourses = 1, prerequisites = []\n    **Output:** [0]",
+  "constraints": "**Constraints:**\n\n  * `1 <= numCourses <= 2000`\n  * `0 <= prerequisites.length <= numCourses * (numCourses - 1)`\n  * `prerequisites[i].length == 2`\n  * `0 <= ai, bi < numCourses`\n  * `ai != bi`\n  * All the pairs `[ai, bi]` are **distinct**.",
+  "topics": ["Depth-First Search", "Breadth-First Search", "Graph Theory", "Topological Sort"],
+  "total_accepted": 1641631,
+  "total_submissions": 2983964,
+  "acceptance_rate": "55.0%",
+  "similar_questions": [
+    {
+      "title": "Course Schedule",
+      "slug": "course-schedule",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/course-schedule/"
+    },
+    {
+      "title": "Alien Dictionary",
+      "slug": "alien-dictionary",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/alien-dictionary/"
+    },
+    {
+      "title": "Minimum Height Trees",
+      "slug": "minimum-height-trees",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-height-trees/"
+    },
+    {
+      "title": "Sequence Reconstruction",
+      "slug": "sequence-reconstruction",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sequence-reconstruction/"
+    },
+    {
+      "title": "Course Schedule III",
+      "slug": "course-schedule-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/course-schedule-iii/"
+    },
+    {
+      "title": "Parallel Courses",
+      "slug": "parallel-courses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/parallel-courses/"
+    },
+    {
+      "title": "Find All Possible Recipes from Given Supplies",
+      "slug": "find-all-possible-recipes-from-given-supplies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/"
+    },
+    {
+      "title": "Build a Matrix With Conditions",
+      "slug": "build-a-matrix-with-conditions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/build-a-matrix-with-conditions/"
+    },
+    {
+      "title": "Sort Array by Moving Items to Empty Space",
+      "slug": "sort-array-by-moving-items-to-empty-space",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sort-array-by-moving-items-to-empty-space/"
+    }
+  ],
+  "hints": [
+    "This problem is equivalent to finding the topological order in a directed graph. If a cycle exists, no topological ordering exists and therefore it will be impossible to take all courses.",
+    "<a href=\"https://www.youtube.com/watch?v=ozso3xxkVGU\" target=\"_blank\">Topological Sort via DFS</a> - A great video tutorial (21 minutes) on Coursera explaining the basic concepts of Topological Sort.",
+    "Topological sort could also be done via <a href=\"http://en.wikipedia.org/wiki/Topological_sorting#Algorithms\" target=\"_blank\">BFS</a>."
+  ]
+}

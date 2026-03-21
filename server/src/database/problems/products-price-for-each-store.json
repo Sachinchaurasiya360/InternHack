@@ -1,0 +1,31 @@
+{
+  "id": "1777",
+  "title": "Product's Price for Each Store",
+  "slug": "products-price-for-each-store",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 24690,
+  "total_submissions": 30066,
+  "acceptance_rate": "82.1%",
+  "similar_questions": [
+    {
+      "title": "Rearrange Products Table",
+      "slug": "rearrange-products-table",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/rearrange-products-table/"
+    },
+    {
+      "title": "Dynamic Pivoting of a Table",
+      "slug": "dynamic-pivoting-of-a-table",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/dynamic-pivoting-of-a-table/"
+    }
+  ],
+  "hints": []
+}

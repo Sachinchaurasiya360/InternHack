@@ -1,0 +1,59 @@
+{
+  "id": "2557",
+  "title": "Maximum Number of Integers to Choose From a Range II",
+  "slug": "maximum-number-of-integers-to-choose-from-a-range-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Greedy", "Sorting"],
+  "total_accepted": 2847,
+  "total_submissions": 8158,
+  "acceptance_rate": "34.9%",
+  "similar_questions": [
+    {
+      "title": "First Missing Positive",
+      "slug": "first-missing-positive",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/first-missing-positive/"
+    },
+    {
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+    },
+    {
+      "title": "Append K Integers With Minimal Sum",
+      "slug": "append-k-integers-with-minimal-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/append-k-integers-with-minimal-sum/"
+    },
+    {
+      "title": "Replace Elements in an Array",
+      "slug": "replace-elements-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/replace-elements-in-an-array/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range I",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-i/"
+    },
+    {
+      "title": "Maximize the Distance Between Points on a Square",
+      "slug": "maximize-the-distance-between-points-on-a-square",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximize-the-distance-between-points-on-a-square/"
+    }
+  ],
+  "hints": [
+    "It is optimal always to take the smallest possible integer you can choose.",
+    "Between every consecutive banned integers, can you find how many integers you can choose?",
+    "Think of using binary search to find that."
+  ]
+}

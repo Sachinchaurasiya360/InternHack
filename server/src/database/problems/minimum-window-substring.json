@@ -1,0 +1,72 @@
+{
+  "id": "76",
+  "title": "Minimum Window Substring",
+  "slug": "minimum-window-substring",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s</code> and <code>t</code> of lengths <code>m</code> and <code>n</code> respectively, return <em>the <strong>minimum window</strong></em> <span data-keyword=\"substring-nonempty\"><strong><em>substring</em></strong></span><em> of </em><code>s</code><em> such that every character in </em><code>t</code><em> (<strong>including duplicates</strong>) is included in the window</em>. If there is no such substring, return <em>the empty string </em><code>&quot;&quot;</code>.</p>\n\n<p>The testcases will be generated such that the answer is <strong>unique</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ADOBECODEBANC&quot;, t = &quot;ABC&quot;\n<strong>Output:</strong> &quot;BANC&quot;\n<strong>Explanation:</strong> The minimum window substring &quot;BANC&quot; includes &#39;A&#39;, &#39;B&#39;, and &#39;C&#39; from string t.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a&quot;, t = &quot;a&quot;\n<strong>Output:</strong> &quot;a&quot;\n<strong>Explanation:</strong> The entire string s is the minimum window.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a&quot;, t = &quot;aa&quot;\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> Both &#39;a&#39;s from t must be included in the window.\nSince the largest window of s only has one &#39;a&#39;, return empty string.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == s.length</code></li>\n\t<li><code>n == t.length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> and <code>t</code> consist of uppercase and lowercase English letters.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Could you find an algorithm that runs in <code>O(m + n)</code> time?</p>\n",
+  "content_markdown": "Given two strings `s` and `t` of lengths `m` and `n` respectively, return _the**minimum window**_ **_substring_** _of_`s` _such that every character in_`t` _(**including duplicates**) is included in the window_. If there is no such substring, return _the empty string_`\"\"`.\n\nThe testcases will be generated such that the answer is **unique**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"ADOBECODEBANC\", t = \"ABC\"\n    **Output:** \"BANC\"\n    **Explanation:** The minimum window substring \"BANC\" includes 'A', 'B', and 'C' from string t.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\", t = \"a\"\n    **Output:** \"a\"\n    **Explanation:** The entire string s is the minimum window.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"a\", t = \"aa\"\n    **Output:** \"\"\n    **Explanation:** Both 'a's from t must be included in the window.\n    Since the largest window of s only has one 'a', return empty string.\n    \n\n \n\n**Constraints:**\n\n  * `m == s.length`\n  * `n == t.length`\n  * `1 <= m, n <= 105`\n  * `s` and `t` consist of uppercase and lowercase English letters.\n\n\n\n \n\n**Follow up:** Could you find an algorithm that runs in `O(m + n)` time?",
+  "question": "Given two strings `s` and `t` of lengths `m` and `n` respectively, return _the**minimum window**_ **_substring_** _of_`s` _such that every character in_`t` _(**including duplicates**) is included in the window_. If there is no such substring, return _the empty string_`\"\"`.\n\nThe testcases will be generated such that the answer is **unique**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"ADOBECODEBANC\", t = \"ABC\"\n    **Output:** \"BANC\"\n    **Explanation:** The minimum window substring \"BANC\" includes 'A', 'B', and 'C' from string t.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\", t = \"a\"\n    **Output:** \"a\"\n    **Explanation:** The entire string s is the minimum window.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"a\", t = \"aa\"\n    **Output:** \"\"\n    **Explanation:** Both 'a's from t must be included in the window.\n    Since the largest window of s only has one 'a', return empty string.",
+  "constraints": "**Constraints:**\n\n  * `m == s.length`\n  * `n == t.length`\n  * `1 <= m, n <= 105`\n  * `s` and `t` consist of uppercase and lowercase English letters.",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 2075960,
+  "total_submissions": 4418611,
+  "acceptance_rate": "47.0%",
+  "similar_questions": [
+    {
+      "title": "Substring with Concatenation of All Words",
+      "slug": "substring-with-concatenation-of-all-words",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/substring-with-concatenation-of-all-words/"
+    },
+    {
+      "title": "Minimum Size Subarray Sum",
+      "slug": "minimum-size-subarray-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-size-subarray-sum/"
+    },
+    {
+      "title": "Sliding Window Maximum",
+      "slug": "sliding-window-maximum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sliding-window-maximum/"
+    },
+    {
+      "title": "Permutation in String",
+      "slug": "permutation-in-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/permutation-in-string/"
+    },
+    {
+      "title": "Smallest Range Covering Elements from K Lists",
+      "slug": "smallest-range-covering-elements-from-k-lists",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/"
+    },
+    {
+      "title": "Minimum Window Subsequence",
+      "slug": "minimum-window-subsequence",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-window-subsequence/"
+    },
+    {
+      "title": "Count Substrings That Can Be Rearranged to Contain a String II",
+      "slug": "count-substrings-that-can-be-rearranged-to-contain-a-string-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-substrings-that-can-be-rearranged-to-contain-a-string-ii/"
+    },
+    {
+      "title": "Count Substrings That Can Be Rearranged to Contain a String I",
+      "slug": "count-substrings-that-can-be-rearranged-to-contain-a-string-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-substrings-that-can-be-rearranged-to-contain-a-string-i/"
+    }
+  ],
+  "hints": [
+    "Use two pointers to create a window of letters in s, which would have all the characters from t.",
+    "Expand the right pointer until all the characters of t are covered.",
+    "Once all the characters are covered, move the left pointer and ensure that all the characters are still covered to minimize the subarray size.",
+    "Continue expanding the right and left pointers until you reach the end of s."
+  ]
+}

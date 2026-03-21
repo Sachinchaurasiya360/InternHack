@@ -1,0 +1,18 @@
+{
+  "id": "58",
+  "title": "Length of Last Word",
+  "slug": "length-of-last-word",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> consisting of words and spaces, return <em>the length of the <strong>last</strong> word in the string.</em></p>\n\n<p>A <strong>word</strong> is a maximal <span data-keyword=\"substring-nonempty\">substring</span> consisting of non-space characters only.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Hello World&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The last word is &quot;World&quot; with length 5.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;   fly me   to   the moon  &quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The last word is &quot;moon&quot; with length 4.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;luffy is still joyboy&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The last word is &quot;joyboy&quot; with length 6.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of only English letters and spaces <code>&#39; &#39;</code>.</li>\n\t<li>There will be at least one word in <code>s</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` consisting of words and spaces, return _the length of the**last** word in the string._\n\nA **word** is a maximal substring consisting of non-space characters only.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"Hello World\"\n    **Output:** 5\n    **Explanation:** The last word is \"World\" with length 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"   fly me   to   the moon  \"\n    **Output:** 4\n    **Explanation:** The last word is \"moon\" with length 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"luffy is still joyboy\"\n    **Output:** 6\n    **Explanation:** The last word is \"joyboy\" with length 6.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of only English letters and spaces `' '`.\n  * There will be at least one word in `s`.",
+  "question": "Given a string `s` consisting of words and spaces, return _the length of the**last** word in the string._\n\nA **word** is a maximal substring consisting of non-space characters only.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"Hello World\"\n    **Output:** 5\n    **Explanation:** The last word is \"World\" with length 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"   fly me   to   the moon  \"\n    **Output:** 4\n    **Explanation:** The last word is \"moon\" with length 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"luffy is still joyboy\"\n    **Output:** 6\n    **Explanation:** The last word is \"joyboy\" with length 6.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of only English letters and spaces `' '`.\n  * There will be at least one word in `s`.",
+  "topics": ["String"],
+  "total_accepted": 3292246,
+  "total_submissions": 5645551,
+  "acceptance_rate": "58.3%",
+  "similar_questions": [],
+  "hints": []
+}

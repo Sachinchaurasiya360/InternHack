@@ -1,0 +1,28 @@
+{
+  "id": "2587",
+  "title": "Rearrange Array to Maximize Prefix Score",
+  "slug": "rearrange-array-to-maximize-prefix-score",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>. You can rearrange the elements of <code>nums</code> to <strong>any order</strong> (including the given order).</p>\n\n<p>Let <code>prefix</code> be the array containing the prefix sums of <code>nums</code> after rearranging it. In other words, <code>prefix[i]</code> is the sum of the elements from <code>0</code> to <code>i</code> in <code>nums</code> after rearranging it. The <strong>score</strong> of <code>nums</code> is the number of positive integers in the array <code>prefix</code>.</p>\n\n<p>Return <em>the maximum score you can achieve</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,-1,0,1,-3,3,-3]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> We can rearrange the array into nums = [2,3,1,-1,-3,0,-3].\nprefix = [2,5,6,5,2,2,-1], so the score is 6.\nIt can be shown that 6 is the maximum score we can obtain.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-2,-3,0]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> Any rearrangement of the array will result in a score of 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>6</sup> &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`. You can rearrange the elements of `nums` to **any order** (including the given order).\n\nLet `prefix` be the array containing the prefix sums of `nums` after rearranging it. In other words, `prefix[i]` is the sum of the elements from `0` to `i` in `nums` after rearranging it. The **score** of `nums` is the number of positive integers in the array `prefix`.\n\nReturn _the maximum score you can achieve_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,-1,0,1,-3,3,-3]\n    **Output:** 6\n    **Explanation:** We can rearrange the array into nums = [2,3,1,-1,-3,0,-3].\n    prefix = [2,5,6,5,2,2,-1], so the score is 6.\n    It can be shown that 6 is the maximum score we can obtain.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-2,-3,0]\n    **Output:** 0\n    **Explanation:** Any rearrangement of the array will result in a score of 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-106 <= nums[i] <= 106`",
+  "question": "You are given a **0-indexed** integer array `nums`. You can rearrange the elements of `nums` to **any order** (including the given order).\n\nLet `prefix` be the array containing the prefix sums of `nums` after rearranging it. In other words, `prefix[i]` is the sum of the elements from `0` to `i` in `nums` after rearranging it. The **score** of `nums` is the number of positive integers in the array `prefix`.\n\nReturn _the maximum score you can achieve_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,-1,0,1,-3,3,-3]\n    **Output:** 6\n    **Explanation:** We can rearrange the array into nums = [2,3,1,-1,-3,0,-3].\n    prefix = [2,5,6,5,2,2,-1], so the score is 6.\n    It can be shown that 6 is the maximum score we can obtain.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-2,-3,0]\n    **Output:** 0\n    **Explanation:** Any rearrangement of the array will result in a score of 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-106 <= nums[i] <= 106`",
+  "topics": ["Array", "Greedy", "Sorting", "Prefix Sum"],
+  "total_accepted": 39170,
+  "total_submissions": 92210,
+  "acceptance_rate": "42.5%",
+  "similar_questions": [
+    {
+      "title": "Two City Scheduling",
+      "slug": "two-city-scheduling",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/two-city-scheduling/"
+    }
+  ],
+  "hints": [
+    "The best order of the array is in decreasing order.",
+    "Sort the array in decreasing order and count the number of positive values in the prefix sum array."
+  ]
+}

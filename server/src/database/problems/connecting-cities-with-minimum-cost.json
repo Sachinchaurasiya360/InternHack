@@ -1,0 +1,32 @@
+{
+  "id": "1135",
+  "title": "Connecting Cities With Minimum Cost",
+  "slug": "connecting-cities-with-minimum-cost",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Union-Find", "Graph Theory", "Heap (Priority Queue)", "Minimum Spanning Tree"],
+  "total_accepted": 90794,
+  "total_submissions": 143155,
+  "acceptance_rate": "63.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost to Reach City With Discounts",
+      "slug": "minimum-cost-to-reach-city-with-discounts",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-to-reach-city-with-discounts/"
+    }
+  ],
+  "hints": [
+    "What if we model the cities as a graph?",
+    "Build a graph of cities and find the minimum spanning tree.",
+    "You can use a variation of the Kruskal's algorithm for that.",
+    "Sort the edges by their cost and use a union-find data structure.",
+    "How to check all cities are connected?",
+    "At the beginning we have n connected components, each time we connect two components the number of connected components is reduced by one. At the end we should end with only a single component otherwise return -1."
+  ]
+}

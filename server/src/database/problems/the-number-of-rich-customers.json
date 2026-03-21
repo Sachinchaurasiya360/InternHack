@@ -1,0 +1,25 @@
+{
+  "id": "2082",
+  "title": "The Number of Rich Customers",
+  "slug": "the-number-of-rich-customers",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 30447,
+  "total_submissions": 39339,
+  "acceptance_rate": "77.4%",
+  "similar_questions": [
+    {
+      "title": "The Winner University",
+      "slug": "the-winner-university",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/the-winner-university/"
+    }
+  ],
+  "hints": []
+}

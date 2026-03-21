@@ -1,0 +1,18 @@
+{
+  "id": "3052",
+  "title": "Maximize Items",
+  "slug": "maximize-items",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 1992,
+  "total_submissions": 2691,
+  "acceptance_rate": "74.0%",
+  "similar_questions": [],
+  "hints": []
+}

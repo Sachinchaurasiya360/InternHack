@@ -1,0 +1,25 @@
+{
+  "id": "346",
+  "title": "Moving Average from Data Stream",
+  "slug": "moving-average-from-data-stream",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Design", "Queue", "Data Stream"],
+  "total_accepted": 527303,
+  "total_submissions": 657556,
+  "acceptance_rate": "80.2%",
+  "similar_questions": [
+    {
+      "title": "K Radius Subarray Averages",
+      "slug": "k-radius-subarray-averages",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-radius-subarray-averages/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,43 @@
+{
+  "id": "47",
+  "title": "Permutations II",
+  "slug": "permutations-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a collection of numbers, <code>nums</code>,&nbsp;that might contain duplicates, return <em>all possible unique permutations <strong>in any order</strong>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,2]\n<strong>Output:</strong>\n[[1,1,2],\n [1,2,1],\n [2,1,1]]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 8</code></li>\n\t<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>\n</ul>\n",
+  "content_markdown": "Given a collection of numbers, `nums`, that might contain duplicates, return _all possible unique permutations**in any order**._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,1,2]\n    **Output:**\n    [[1,1,2],\n     [1,2,1],\n     [2,1,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 8`\n  * `-10 <= nums[i] <= 10`",
+  "question": "Given a collection of numbers, `nums`, that might contain duplicates, return _all possible unique permutations**in any order**._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,1,2]\n    **Output:**\n    [[1,1,2],\n     [1,2,1],\n     [2,1,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 8`\n  * `-10 <= nums[i] <= 10`",
+  "topics": ["Array", "Backtracking", "Sorting"],
+  "total_accepted": 1253017,
+  "total_submissions": 1988917,
+  "acceptance_rate": "63.0%",
+  "similar_questions": [
+    {
+      "title": "Next Permutation",
+      "slug": "next-permutation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/next-permutation/"
+    },
+    {
+      "title": "Permutations",
+      "slug": "permutations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/permutations/"
+    },
+    {
+      "title": "Palindrome Permutation II",
+      "slug": "palindrome-permutation-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/palindrome-permutation-ii/"
+    },
+    {
+      "title": "Number of Squareful Arrays",
+      "slug": "number-of-squareful-arrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-squareful-arrays/"
+    }
+  ],
+  "hints": []
+}

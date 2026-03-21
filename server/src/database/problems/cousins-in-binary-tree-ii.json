@@ -1,0 +1,35 @@
+{
+  "id": "2641",
+  "title": "Cousins in Binary Tree II",
+  "slug": "cousins-in-binary-tree-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree, replace the value of each node in the tree with the <strong>sum of all its cousins&#39; values</strong>.</p>\n\n<p>Two nodes of a binary tree are <strong>cousins</strong> if they have the same depth with different parents.</p>\n\n<p>Return <em>the </em><code>root</code><em> of the modified tree</em>.</p>\n\n<p><strong>Note</strong> that the depth of a node is the number of edges in the path from the root node to it.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/01/11/example11.png\" style=\"width: 571px; height: 151px;\" />\n<pre>\n<strong>Input:</strong> root = [5,4,9,1,10,null,7]\n<strong>Output:</strong> [0,0,0,7,7,null,11]\n<strong>Explanation:</strong> The diagram above shows the initial binary tree and the binary tree after changing the value of each node.\n- Node with value 5 does not have any cousins so its sum is 0.\n- Node with value 4 does not have any cousins so its sum is 0.\n- Node with value 9 does not have any cousins so its sum is 0.\n- Node with value 1 has a cousin with value 7 so its sum is 7.\n- Node with value 10 has a cousin with value 7 so its sum is 7.\n- Node with value 7 has cousins with values 1 and 10 so its sum is 11.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/01/11/diagram33.png\" style=\"width: 481px; height: 91px;\" />\n<pre>\n<strong>Input:</strong> root = [3,1,2]\n<strong>Output:</strong> [0,0,0]\n<strong>Explanation:</strong> The diagram above shows the initial binary tree and the binary tree after changing the value of each node.\n- Node with value 3 does not have any cousins so its sum is 0.\n- Node with value 1 does not have any cousins so its sum is 0.\n- Node with value 2 does not have any cousins so its sum is 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 10<sup>5</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree, replace the value of each node in the tree with the **sum of all its cousins ' values**.\n\nTwo nodes of a binary tree are **cousins** if they have the same depth with different parents.\n\nReturn _the_`root` _of the modified tree_.\n\n**Note** that the depth of a node is the number of edges in the path from the root node to it.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/01/11/example11.png)\n    \n    \n    **Input:** root = [5,4,9,1,10,null,7]\n    **Output:** [0,0,0,7,7,null,11]\n    **Explanation:** The diagram above shows the initial binary tree and the binary tree after changing the value of each node.\n    - Node with value 5 does not have any cousins so its sum is 0.\n    - Node with value 4 does not have any cousins so its sum is 0.\n    - Node with value 9 does not have any cousins so its sum is 0.\n    - Node with value 1 has a cousin with value 7 so its sum is 7.\n    - Node with value 10 has a cousin with value 7 so its sum is 7.\n    - Node with value 7 has cousins with values 1 and 10 so its sum is 11.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/01/11/diagram33.png)\n    \n    \n    **Input:** root = [3,1,2]\n    **Output:** [0,0,0]\n    **Explanation:** The diagram above shows the initial binary tree and the binary tree after changing the value of each node.\n    - Node with value 3 does not have any cousins so its sum is 0.\n    - Node with value 1 does not have any cousins so its sum is 0.\n    - Node with value 2 does not have any cousins so its sum is 0.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 105]`.\n  * `1 <= Node.val <= 104`",
+  "question": "Given the `root` of a binary tree, replace the value of each node in the tree with the **sum of all its cousins ' values**.\n\nTwo nodes of a binary tree are **cousins** if they have the same depth with different parents.\n\nReturn _the_`root` _of the modified tree_.\n\n**Note** that the depth of a node is the number of edges in the path from the root node to it.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/01/11/example11.png)\n    \n    \n    **Input:** root = [5,4,9,1,10,null,7]\n    **Output:** [0,0,0,7,7,null,11]\n    **Explanation:** The diagram above shows the initial binary tree and the binary tree after changing the value of each node.\n    - Node with value 5 does not have any cousins so its sum is 0.\n    - Node with value 4 does not have any cousins so its sum is 0.\n    - Node with value 9 does not have any cousins so its sum is 0.\n    - Node with value 1 has a cousin with value 7 so its sum is 7.\n    - Node with value 10 has a cousin with value 7 so its sum is 7.\n    - Node with value 7 has cousins with values 1 and 10 so its sum is 11.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/01/11/diagram33.png)\n    \n    \n    **Input:** root = [3,1,2]\n    **Output:** [0,0,0]\n    **Explanation:** The diagram above shows the initial binary tree and the binary tree after changing the value of each node.\n    - Node with value 3 does not have any cousins so its sum is 0.\n    - Node with value 1 does not have any cousins so its sum is 0.\n    - Node with value 2 does not have any cousins so its sum is 0.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 105]`.\n  * `1 <= Node.val <= 104`",
+  "topics": ["Hash Table", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 127889,
+  "total_submissions": 168789,
+  "acceptance_rate": "75.8%",
+  "similar_questions": [
+    {
+      "title": "Cousins in Binary Tree",
+      "slug": "cousins-in-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/cousins-in-binary-tree/"
+    },
+    {
+      "title": "Maximum Level Sum of a Binary Tree",
+      "slug": "maximum-level-sum-of-a-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/"
+    }
+  ],
+  "hints": [
+    "Use DFS two times.",
+    "For the first time, find the sum of values of all the levels of the binary tree.",
+    "For the second time, update the value of the node with the sum of the values of the current level - sibling node’s values."
+  ]
+}

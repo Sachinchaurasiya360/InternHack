@@ -1,0 +1,40 @@
+{
+  "id": "2261",
+  "title": "K Divisible Elements Subarrays",
+  "slug": "k-divisible-elements-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and two integers <code>k</code> and <code>p</code>, return <em>the number of <strong>distinct subarrays,</strong> which have <strong>at most</strong></em> <code>k</code> <em>elements </em>that are <em>divisible by</em> <code>p</code>.</p>\n\n<p>Two arrays <code>nums1</code> and <code>nums2</code> are said to be <strong>distinct</strong> if:</p>\n\n<ul>\n\t<li>They are of <strong>different</strong> lengths, or</li>\n\t<li>There exists <strong>at least</strong> one index <code>i</code> where <code>nums1[i] != nums2[i]</code>.</li>\n</ul>\n\n<p>A <strong>subarray</strong> is defined as a <strong>non-empty</strong> contiguous sequence of elements in an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [<u><strong>2</strong></u>,3,3,<u><strong>2</strong></u>,<u><strong>2</strong></u>], k = 2, p = 2\n<strong>Output:</strong> 11\n<strong>Explanation:</strong>\nThe elements at indices 0, 3, and 4 are divisible by p = 2.\nThe 11 distinct subarrays which have at most k = 2 elements divisible by 2 are:\n[2], [2,3], [2,3,3], [2,3,3,2], [3], [3,3], [3,3,2], [3,3,2,2], [3,2], [3,2,2], and [2,2].\nNote that the subarrays [2] and [3] occur more than once in nums, but they should each be counted only once.\nThe subarray [2,3,3,2,2] should not be counted because it has 3 elements that are divisible by 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4], k = 4, p = 1\n<strong>Output:</strong> 10\n<strong>Explanation:</strong>\nAll element of nums are divisible by p = 1.\nAlso, every subarray of nums will have at most 4 elements that are divisible by 1.\nSince all subarrays are distinct, the total number of subarrays satisfying all the constraints is 10.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 200</code></li>\n\t<li><code>1 &lt;= nums[i], p &lt;= 200</code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong></p>\n\n<p>Can you solve this problem in O(n<sup>2</sup>) time complexity?</p>\n",
+  "content_markdown": "Given an integer array `nums` and two integers `k` and `p`, return _the number of**distinct subarrays,** which have **at most**_ `k` _elements_ that are _divisible by_ `p`.\n\nTwo arrays `nums1` and `nums2` are said to be **distinct** if:\n\n  * They are of **different** lengths, or\n  * There exists **at least** one index `i` where `nums1[i] != nums2[i]`.\n\n\n\nA **subarray** is defined as a **non-empty** contiguous sequence of elements in an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [_**2**_ ,3,3,_**2**_ ,_**2**_], k = 2, p = 2\n    **Output:** 11\n    **Explanation:**\n    The elements at indices 0, 3, and 4 are divisible by p = 2.\n    The 11 distinct subarrays which have at most k = 2 elements divisible by 2 are:\n    [2], [2,3], [2,3,3], [2,3,3,2], [3], [3,3], [3,3,2], [3,3,2,2], [3,2], [3,2,2], and [2,2].\n    Note that the subarrays [2] and [3] occur more than once in nums, but they should each be counted only once.\n    The subarray [2,3,3,2,2] should not be counted because it has 3 elements that are divisible by 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 4, p = 1\n    **Output:** 10\n    **Explanation:**\n    All element of nums are divisible by p = 1.\n    Also, every subarray of nums will have at most 4 elements that are divisible by 1.\n    Since all subarrays are distinct, the total number of subarrays satisfying all the constraints is 10.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 200`\n  * `1 <= nums[i], p <= 200`\n  * `1 <= k <= nums.length`\n\n\n\n \n\n**Follow up:**\n\nCan you solve this problem in O(n2) time complexity?",
+  "question": "Given an integer array `nums` and two integers `k` and `p`, return _the number of**distinct subarrays,** which have **at most**_ `k` _elements_ that are _divisible by_ `p`.\n\nTwo arrays `nums1` and `nums2` are said to be **distinct** if:\n\n  * They are of **different** lengths, or\n  * There exists **at least** one index `i` where `nums1[i] != nums2[i]`.\n\n\n\nA **subarray** is defined as a **non-empty** contiguous sequence of elements in an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [_**2**_ ,3,3,_**2**_ ,_**2**_], k = 2, p = 2\n    **Output:** 11\n    **Explanation:**\n    The elements at indices 0, 3, and 4 are divisible by p = 2.\n    The 11 distinct subarrays which have at most k = 2 elements divisible by 2 are:\n    [2], [2,3], [2,3,3], [2,3,3,2], [3], [3,3], [3,3,2], [3,3,2,2], [3,2], [3,2,2], and [2,2].\n    Note that the subarrays [2] and [3] occur more than once in nums, but they should each be counted only once.\n    The subarray [2,3,3,2,2] should not be counted because it has 3 elements that are divisible by 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 4, p = 1\n    **Output:** 10\n    **Explanation:**\n    All element of nums are divisible by p = 1.\n    Also, every subarray of nums will have at most 4 elements that are divisible by 1.\n    Since all subarrays are distinct, the total number of subarrays satisfying all the constraints is 10.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 200`\n  * `1 <= nums[i], p <= 200`\n  * `1 <= k <= nums.length`",
+  "topics": ["Array", "Hash Table", "Trie", "Rolling Hash", "Hash Function", "Enumeration"],
+  "total_accepted": 48267,
+  "total_submissions": 88106,
+  "acceptance_rate": "54.8%",
+  "similar_questions": [
+    {
+      "title": "Subarrays with K Different Integers",
+      "slug": "subarrays-with-k-different-integers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/subarrays-with-k-different-integers/"
+    },
+    {
+      "title": "Count Number of Nice Subarrays",
+      "slug": "count-number-of-nice-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-nice-subarrays/"
+    },
+    {
+      "title": "Subarray With Elements Greater Than Varying Threshold",
+      "slug": "subarray-with-elements-greater-than-varying-threshold",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/subarray-with-elements-greater-than-varying-threshold/"
+    }
+  ],
+  "hints": [
+    "Enumerate all subarrays and find the ones that satisfy all the conditions.",
+    "Use any suitable method to hash the subarrays to avoid duplicates."
+  ]
+}

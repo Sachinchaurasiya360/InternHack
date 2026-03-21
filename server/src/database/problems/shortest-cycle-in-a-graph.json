@@ -1,0 +1,40 @@
+{
+  "id": "2608",
+  "title": "Shortest Cycle in a Graph",
+  "slug": "shortest-cycle-in-a-graph",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There is a <strong>bi-directional </strong>graph with <code>n</code> vertices, where each vertex is labeled from <code>0</code> to <code>n - 1</code>. The edges in the graph are represented by a given 2D integer array <code>edges</code>, where <code>edges[i] = [u<sub>i</sub>, v<sub>i</sub>]</code> denotes an edge between vertex <code>u<sub>i</sub></code> and vertex <code>v<sub>i</sub></code>. Every vertex pair is connected by at most one edge, and no vertex has an edge to itself.</p>\n\n<p>Return <em>the length of the <strong>shortest </strong>cycle in the graph</em>. If no cycle exists, return <code>-1</code>.</p>\n\n<p>A cycle is a path that starts and ends at the same node, and each edge in the path is used only once.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/01/04/cropped.png\" style=\"width: 387px; height: 331px;\" />\n<pre>\n<strong>Input:</strong> n = 7, edges = [[0,1],[1,2],[2,0],[3,4],[4,5],[5,6],[6,3]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The cycle with the smallest length is : 0 -&gt; 1 -&gt; 2 -&gt; 0 \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/01/04/croppedagin.png\" style=\"width: 307px; height: 307px;\" />\n<pre>\n<strong>Input:</strong> n = 4, edges = [[0,1],[0,2]]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There are no cycles in this graph.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n &lt;= 1000</code></li>\n\t<li><code>1 &lt;= edges.length &lt;= 1000</code></li>\n\t<li><code>edges[i].length == 2</code></li>\n\t<li><code>0 &lt;= u<sub>i</sub>, v<sub>i</sub> &lt; n</code></li>\n\t<li><code>u<sub>i</sub> != v<sub>i</sub></code></li>\n\t<li>There are no repeated edges.</li>\n</ul>\n",
+  "content_markdown": "There is a **bi-directional** graph with `n` vertices, where each vertex is labeled from `0` to `n - 1`. The edges in the graph are represented by a given 2D integer array `edges`, where `edges[i] = [ui, vi]` denotes an edge between vertex `ui` and vertex `vi`. Every vertex pair is connected by at most one edge, and no vertex has an edge to itself.\n\nReturn _the length of the**shortest** cycle in the graph_. If no cycle exists, return `-1`.\n\nA cycle is a path that starts and ends at the same node, and each edge in the path is used only once.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/01/04/cropped.png)\n    \n    \n    **Input:** n = 7, edges = [[0,1],[1,2],[2,0],[3,4],[4,5],[5,6],[6,3]]\n    **Output:** 3\n    **Explanation:** The cycle with the smallest length is : 0 -> 1 -> 2 -> 0 \n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/01/04/croppedagin.png)\n    \n    \n    **Input:** n = 4, edges = [[0,1],[0,2]]\n    **Output:** -1\n    **Explanation:** There are no cycles in this graph.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= n <= 1000`\n  * `1 <= edges.length <= 1000`\n  * `edges[i].length == 2`\n  * `0 <= ui, vi < n`\n  * `ui != vi`\n  * There are no repeated edges.",
+  "question": "There is a **bi-directional** graph with `n` vertices, where each vertex is labeled from `0` to `n - 1`. The edges in the graph are represented by a given 2D integer array `edges`, where `edges[i] = [ui, vi]` denotes an edge between vertex `ui` and vertex `vi`. Every vertex pair is connected by at most one edge, and no vertex has an edge to itself.\n\nReturn _the length of the**shortest** cycle in the graph_. If no cycle exists, return `-1`.\n\nA cycle is a path that starts and ends at the same node, and each edge in the path is used only once.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/01/04/cropped.png)\n    \n    \n    **Input:** n = 7, edges = [[0,1],[1,2],[2,0],[3,4],[4,5],[5,6],[6,3]]\n    **Output:** 3\n    **Explanation:** The cycle with the smallest length is : 0 -> 1 -> 2 -> 0 \n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/01/04/croppedagin.png)\n    \n    \n    **Input:** n = 4, edges = [[0,1],[0,2]]\n    **Output:** -1\n    **Explanation:** There are no cycles in this graph.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n <= 1000`\n  * `1 <= edges.length <= 1000`\n  * `edges[i].length == 2`\n  * `0 <= ui, vi < n`\n  * `ui != vi`\n  * There are no repeated edges.",
+  "topics": ["Breadth-First Search", "Graph Theory"],
+  "total_accepted": 29864,
+  "total_submissions": 76227,
+  "acceptance_rate": "39.2%",
+  "similar_questions": [
+    {
+      "title": "Redundant Connection",
+      "slug": "redundant-connection",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/redundant-connection/"
+    },
+    {
+      "title": "Longest Cycle in a Graph",
+      "slug": "longest-cycle-in-a-graph",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-cycle-in-a-graph/"
+    },
+    {
+      "title": "Divide Nodes Into the Maximum Number of Groups",
+      "slug": "divide-nodes-into-the-maximum-number-of-groups",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/divide-nodes-into-the-maximum-number-of-groups/"
+    }
+  ],
+  "hints": [
+    "How can BFS be used?",
+    "For each vertex u, calculate the length of the shortest cycle that contains vertex u using BFS"
+  ]
+}

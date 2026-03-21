@@ -1,0 +1,18 @@
+{
+  "id": "2339",
+  "title": "All the Matches of the League",
+  "slug": "all-the-matches-of-the-league",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 11359,
+  "total_submissions": 12826,
+  "acceptance_rate": "88.6%",
+  "similar_questions": [],
+  "hints": []
+}

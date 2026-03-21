@@ -1,0 +1,18 @@
+{
+  "id": "1294",
+  "title": "Weather Type in Each Country",
+  "slug": "weather-type-in-each-country",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 45503,
+  "total_submissions": 67865,
+  "acceptance_rate": "67.0%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1522",
+  "title": "Diameter of N-Ary Tree",
+  "slug": "diameter-of-n-ary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search"],
+  "total_accepted": 61482,
+  "total_submissions": 81488,
+  "acceptance_rate": "75.4%",
+  "similar_questions": [
+    {
+      "title": "Diameter of Binary Tree",
+      "slug": "diameter-of-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/diameter-of-binary-tree/"
+    }
+  ],
+  "hints": [
+    "For the node i, calculate the height of each of its children and keep the first and second maximum heights (max1_i , max2_i).",
+    "Check all nodes and return max( 2 + max1_i  +  max2_i )."
+  ]
+}

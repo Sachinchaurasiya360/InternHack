@@ -1,0 +1,41 @@
+{
+  "id": "2615",
+  "title": "Sum of Distances",
+  "slug": "sum-of-distances",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>. There exists an array <code>arr</code> of length <code>nums.length</code>, where <code>arr[i]</code> is the sum of <code>|i - j|</code> over all <code>j</code> such that <code>nums[j] == nums[i]</code> and <code>j != i</code>. If there is no such <code>j</code>, set <code>arr[i]</code> to be <code>0</code>.</p>\n\n<p>Return <em>the array </em><code>arr</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,1,1,2]\n<strong>Output:</strong> [5,0,3,4,0]\n<strong>Explanation:</strong> \nWhen i = 0, nums[0] == nums[2] and nums[0] == nums[3]. Therefore, arr[0] = |0 - 2| + |0 - 3| = 5. \nWhen i = 1, arr[1] = 0 because there is no other index with value 3.\nWhen i = 2, nums[2] == nums[0] and nums[2] == nums[3]. Therefore, arr[2] = |2 - 0| + |2 - 3| = 3. \nWhen i = 3, nums[3] == nums[0] and nums[3] == nums[2]. Therefore, arr[3] = |3 - 0| + |3 - 2| = 4. \nWhen i = 4, arr[4] = 0 because there is no other index with value 2. \n\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,5,3]\n<strong>Output:</strong> [0,0,0]\n<strong>Explanation:</strong> Since each element in nums is distinct, arr[i] = 0 for all i.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as <a href=\"https://leetcode.com/problems/intervals-between-identical-elements/description/\" target=\"_blank\"> 2121: Intervals Between Identical Elements.</a></p>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`. There exists an array `arr` of length `nums.length`, where `arr[i]` is the sum of `|i - j|` over all `j` such that `nums[j] == nums[i]` and `j != i`. If there is no such `j`, set `arr[i]` to be `0`.\n\nReturn _the array_`arr` _._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,1,1,2]\n    **Output:** [5,0,3,4,0]\n    **Explanation:** \n    When i = 0, nums[0] == nums[2] and nums[0] == nums[3]. Therefore, arr[0] = |0 - 2| + |0 - 3| = 5. \n    When i = 1, arr[1] = 0 because there is no other index with value 3.\n    When i = 2, nums[2] == nums[0] and nums[2] == nums[3]. Therefore, arr[2] = |2 - 0| + |2 - 3| = 3. \n    When i = 3, nums[3] == nums[0] and nums[3] == nums[2]. Therefore, arr[3] = |3 - 0| + |3 - 2| = 4. \n    When i = 4, arr[4] = 0 because there is no other index with value 2. \n    \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,5,3]\n    **Output:** [0,0,0]\n    **Explanation:** Since each element in nums is distinct, arr[i] = 0 for all i.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`\n\n\n\n \n\n**Note:** This question is the same as [ 2121: Intervals Between Identical Elements.](<https://leetcode.com/problems/intervals-between-identical-elements/description/>)",
+  "question": "You are given a **0-indexed** integer array `nums`. There exists an array `arr` of length `nums.length`, where `arr[i]` is the sum of `|i - j|` over all `j` such that `nums[j] == nums[i]` and `j != i`. If there is no such `j`, set `arr[i]` to be `0`.\n\nReturn _the array_`arr` _._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,1,1,2]\n    **Output:** [5,0,3,4,0]\n    **Explanation:** \n    When i = 0, nums[0] == nums[2] and nums[0] == nums[3]. Therefore, arr[0] = |0 - 2| + |0 - 3| = 5. \n    When i = 1, arr[1] = 0 because there is no other index with value 3.\n    When i = 2, nums[2] == nums[0] and nums[2] == nums[3]. Therefore, arr[2] = |2 - 0| + |2 - 3| = 3. \n    When i = 3, nums[3] == nums[0] and nums[3] == nums[2]. Therefore, arr[3] = |3 - 0| + |3 - 2| = 4. \n    When i = 4, arr[4] = 0 because there is no other index with value 2. \n    \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,5,3]\n    **Output:** [0,0,0]\n    **Explanation:** Since each element in nums is distinct, arr[i] = 0 for all i.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`\n\n\n\n \n\n**Note:** This question is the same as [ 2121: Intervals Between Identical Elements.](<https://leetcode.com/problems/intervals-between-identical-elements/description/>)",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 28477,
+  "total_submissions": 87733,
+  "acceptance_rate": "32.5%",
+  "similar_questions": [
+    {
+      "title": "Remove Duplicates from Sorted Array",
+      "slug": "remove-duplicates-from-sorted-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/"
+    },
+    {
+      "title": "Find All Duplicates in an Array",
+      "slug": "find-all-duplicates-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-duplicates-in-an-array/"
+    },
+    {
+      "title": "Minimum Operations to Make All Array Elements Equal",
+      "slug": "minimum-operations-to-make-all-array-elements-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-all-array-elements-equal/"
+    }
+  ],
+  "hints": [
+    "Can we use the prefix sum here?",
+    "For each number x, collect all the indices where x occurs, and calculate the prefix sum of the array.",
+    "For each occurrence of x, the indices to the right will be regular subtraction while the indices to the left will be reversed subtraction."
+  ]
+}

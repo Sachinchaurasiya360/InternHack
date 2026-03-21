@@ -1,0 +1,39 @@
+{
+  "id": "1102",
+  "title": "Path With Maximum Minimum Value",
+  "slug": "path-with-maximum-minimum-value",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Heap (Priority Queue)",
+    "Matrix"
+  ],
+  "total_accepted": 71881,
+  "total_submissions": 131664,
+  "acceptance_rate": "54.6%",
+  "similar_questions": [
+    {
+      "title": "Path With Minimum Effort",
+      "slug": "path-with-minimum-effort",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-with-minimum-effort/"
+    }
+  ],
+  "hints": [
+    "What if we sort each cell of the matrix by the value?",
+    "Don't include small values in your path if you can only include large values.",
+    "Let's keep adding a possible cell to use in the path incrementally with decreasing values.",
+    "If the start and end cells are connected then we don't need to add more cells.",
+    "Use union-find data structure to check connectivity and return as answer the value of the given cell that makes start and end cells connected."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3821",
+  "title": "Find Nth Smallest Integer With K One Bits",
+  "slug": "find-nth-smallest-integer-with-k-one-bits",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two positive integers <code>n</code> and <code>k</code>.</p>\n\n<p>Return an integer denoting the <code>n<sup>th</sup></code> smallest positive integer that has <strong>exactly</strong> <code>k</code> ones in its binary representation. It is guaranteed that the answer is <strong>strictly less</strong> than <code>2<sup>50</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 4, k = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">9</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The 4 smallest positive integers that have exactly <code>k = 2</code> ones in their binary representations are:</p>\n\n<ul>\n\t<li><code>3 = 11<sub>2</sub></code></li>\n\t<li><code>5 = 101<sub>2</sub></code></li>\n\t<li><code>6 = 110<sub>2</sub></code></li>\n\t<li><code>9 = 1001<sub>2</sub></code></li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3, k = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The 3 smallest positive integers that have exactly <code>k = 1</code> one in their binary representations are:</p>\n\n<ul>\n\t<li><code>1 = 1<sub>2</sub></code></li>\n\t<li><code>2 = 10<sub>2</sub></code></li>\n\t<li><code>4 = 100<sub>2</sub></code></li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 2<sup>50</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 50</code></li>\n\t<li>The answer is strictly less than <code>2<sup>50</sup></code>.</li>\n</ul>\n",
+  "content_markdown": "You are given two positive integers `n` and `k`.\n\nReturn an integer denoting the `nth` smallest positive integer that has **exactly** `k` ones in its binary representation. It is guaranteed that the answer is **strictly less** than `250`.\n\n \n\n**Example 1:**\n\n**Input:** n = 4, k = 2\n\n**Output:** 9\n\n**Explanation:**\n\nThe 4 smallest positive integers that have exactly `k = 2` ones in their binary representations are:\n\n  * `3 = 112`\n  * `5 = 1012`\n  * `6 = 1102`\n  * `9 = 10012`\n\n\n\n**Example 2:**\n\n**Input:** n = 3, k = 1\n\n**Output:** 4\n\n**Explanation:**\n\nThe 3 smallest positive integers that have exactly `k = 1` one in their binary representations are:\n\n  * `1 = 12`\n  * `2 = 102`\n  * `4 = 1002`\n\n\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 250`\n  * `1 <= k <= 50`\n  * The answer is strictly less than `250`.",
+  "question": "You are given two positive integers `n` and `k`.\n\nReturn an integer denoting the `nth` smallest positive integer that has **exactly** `k` ones in its binary representation. It is guaranteed that the answer is **strictly less** than `250`.",
+  "examples": "**Example 1:**\n\n**Input:** n = 4, k = 2\n\n**Output:** 9\n\n**Explanation:**\n\nThe 4 smallest positive integers that have exactly `k = 2` ones in their binary representations are:\n\n  * `3 = 112`\n  * `5 = 1012`\n  * `6 = 1102`\n  * `9 = 10012`\n\n\n\n**Example 2:**\n\n**Input:** n = 3, k = 1\n\n**Output:** 4\n\n**Explanation:**\n\nThe 3 smallest positive integers that have exactly `k = 1` one in their binary representations are:\n\n  * `1 = 12`\n  * `2 = 102`\n  * `4 = 1002`",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 250`\n  * `1 <= k <= 50`\n  * The answer is strictly less than `250`.",
+  "topics": ["Math", "Bit Manipulation", "Combinatorics"],
+  "total_accepted": 9129,
+  "total_submissions": 26795,
+  "acceptance_rate": "34.1%",
+  "similar_questions": [],
+  "hints": [
+    "Since the answer is strictly less than <code>2<sup>50</sup></code>, we can iterate over the number of bits (the length) of the result.",
+    "Precompute binomial coefficients <code>C(n, k)</code> to count how many numbers with exactly <code>k</code> set bits exist for a given length.",
+    "Determine the position of the most significant bit first, then greedily determine the remaining bits from MSB to LSB based on the remaining count <code>n</code>."
+  ]
+}

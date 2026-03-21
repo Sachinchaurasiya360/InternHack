@@ -1,0 +1,18 @@
+{
+  "id": "555",
+  "title": "Split Concatenated Strings",
+  "slug": "split-concatenated-strings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String", "Greedy"],
+  "total_accepted": 7473,
+  "total_submissions": 17150,
+  "acceptance_rate": "43.6%",
+  "similar_questions": [],
+  "hints": []
+}

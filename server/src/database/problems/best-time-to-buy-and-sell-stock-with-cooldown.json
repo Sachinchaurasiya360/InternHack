@@ -1,0 +1,31 @@
+{
+  "id": "309",
+  "title": "Best Time to Buy and Sell Stock with Cooldown",
+  "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>prices</code> where <code>prices[i]</code> is the price of a given stock on the <code>i<sup>th</sup></code> day.</p>\n\n<p>Find the maximum profit you can achieve. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times) with the following restrictions:</p>\n\n<ul>\n\t<li>After you sell your stock, you cannot buy stock on the next day (i.e., cooldown one day).</li>\n</ul>\n\n<p><strong>Note:</strong> You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [1,2,3,0,2]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> transactions = [buy, sell, cooldown, buy, sell]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [1]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= prices.length &lt;= 5000</code></li>\n\t<li><code>0 &lt;= prices[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nFind the maximum profit you can achieve. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times) with the following restrictions:\n\n  * After you sell your stock, you cannot buy stock on the next day (i.e., cooldown one day).\n\n\n\n**Note:** You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** prices = [1,2,3,0,2]\n    **Output:** 3\n    **Explanation:** transactions = [buy, sell, cooldown, buy, sell]\n    \n\n**Example 2:**\n    \n    \n    **Input:** prices = [1]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= prices.length <= 5000`\n  * `0 <= prices[i] <= 1000`",
+  "question": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nFind the maximum profit you can achieve. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times) with the following restrictions:\n\n  * After you sell your stock, you cannot buy stock on the next day (i.e., cooldown one day).\n\n\n\n**Note:** You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** prices = [1,2,3,0,2]\n    **Output:** 3\n    **Explanation:** transactions = [buy, sell, cooldown, buy, sell]\n    \n\n**Example 2:**\n    \n    \n    **Input:** prices = [1]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= prices.length <= 5000`\n  * `0 <= prices[i] <= 1000`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 745938,
+  "total_submissions": 1208353,
+  "acceptance_rate": "61.7%",
+  "similar_questions": [
+    {
+      "title": "Best Time to Buy and Sell Stock",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock II",
+      "slug": "best-time-to-buy-and-sell-stock-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/"
+    }
+  ],
+  "hints": []
+}

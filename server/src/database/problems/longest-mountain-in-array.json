@@ -1,0 +1,31 @@
+{
+  "id": "845",
+  "title": "Longest Mountain in Array",
+  "slug": "longest-mountain-in-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You may recall that an array <code>arr</code> is a <strong>mountain array</strong> if and only if:</p>\n\n<ul>\n\t<li><code>arr.length &gt;= 3</code></li>\n\t<li>There exists some index <code>i</code> (<strong>0-indexed</strong>) with <code>0 &lt; i &lt; arr.length - 1</code> such that:\n\t<ul>\n\t\t<li><code>arr[0] &lt; arr[1] &lt; ... &lt; arr[i - 1] &lt; arr[i]</code></li>\n\t\t<li><code>arr[i] &gt; arr[i + 1] &gt; ... &gt; arr[arr.length - 1]</code></li>\n\t</ul>\n\t</li>\n</ul>\n\n<p>Given an integer array <code>arr</code>, return <em>the length of the longest subarray, which is a mountain</em>. Return <code>0</code> if there is no mountain subarray.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,1,4,7,3,2,5]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The largest mountain is [1,4,7,3,2] which has length 5.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,2,2]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There is no mountain.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong></p>\n\n<ul>\n\t<li>Can you solve it using only one pass?</li>\n\t<li>Can you solve it in <code>O(1)</code> space?</li>\n</ul>\n",
+  "content_markdown": "You may recall that an array `arr` is a **mountain array** if and only if:\n\n  * `arr.length >= 3`\n  * There exists some index `i` (**0-indexed**) with `0 < i < arr.length - 1` such that: \n    * `arr[0] < arr[1] < ... < arr[i - 1] < arr[i]`\n    * `arr[i] > arr[i + 1] > ... > arr[arr.length - 1]`\n\n\n\nGiven an integer array `arr`, return _the length of the longest subarray, which is a mountain_. Return `0` if there is no mountain subarray.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [2,1,4,7,3,2,5]\n    **Output:** 5\n    **Explanation:** The largest mountain is [1,4,7,3,2] which has length 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,2,2]\n    **Output:** 0\n    **Explanation:** There is no mountain.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `0 <= arr[i] <= 104`\n\n\n\n \n\n**Follow up:**\n\n  * Can you solve it using only one pass?\n  * Can you solve it in `O(1)` space?",
+  "question": "You may recall that an array `arr` is a **mountain array** if and only if:\n\n  * `arr.length >= 3`\n  * There exists some index `i` (**0-indexed**) with `0 < i < arr.length - 1` such that: \n    * `arr[0] < arr[1] < ... < arr[i - 1] < arr[i]`\n    * `arr[i] > arr[i + 1] > ... > arr[arr.length - 1]`\n\n\n\nGiven an integer array `arr`, return _the length of the longest subarray, which is a mountain_. Return `0` if there is no mountain subarray.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [2,1,4,7,3,2,5]\n    **Output:** 5\n    **Explanation:** The largest mountain is [1,4,7,3,2] which has length 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,2,2]\n    **Output:** 0\n    **Explanation:** There is no mountain.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `0 <= arr[i] <= 104`",
+  "topics": ["Array", "Two Pointers", "Dynamic Programming", "Enumeration"],
+  "total_accepted": 194056,
+  "total_submissions": 463362,
+  "acceptance_rate": "41.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Removals to Make Mountain Array",
+      "slug": "minimum-number-of-removals-to-make-mountain-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-removals-to-make-mountain-array/"
+    },
+    {
+      "title": "Find Good Days to Rob the Bank",
+      "slug": "find-good-days-to-rob-the-bank",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-good-days-to-rob-the-bank/"
+    }
+  ],
+  "hints": []
+}

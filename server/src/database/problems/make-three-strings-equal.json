@@ -1,0 +1,25 @@
+{
+  "id": "2937",
+  "title": "Make Three Strings Equal",
+  "slug": "make-three-strings-equal",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given three strings: <code>s1</code>, <code>s2</code>, and <code>s3</code>. In one operation you can choose one of these strings and delete its <strong>rightmost</strong> character. Note that you <strong>cannot</strong> completely empty a string.</p>\n\n<p>Return the <em>minimum number of operations</em> required to make the strings equal<em>. </em>If it is impossible to make them equal, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\" style=\"border-color: var(--border-tertiary); border-left-width: 2px; color: var(--text-secondary); font-size: .875rem; margin-bottom: 1rem; margin-top: 1rem; overflow: visible; padding-left: 1rem;\">\n<p><strong>Input: </strong><span class=\"example-io\" style=\"font-family: Menlo,sans-serif; font-size: 0.85rem;\">s1 = &quot;abc&quot;, s2 = &quot;abb&quot;, s3 = &quot;ab&quot;</span></p>\n\n<p><strong>Output: </strong><span class=\"example-io\" style=\"font-family: Menlo,sans-serif; font-size: 0.85rem;\">2</span></p>\n\n<p><strong>Explanation:&nbsp;</strong>Deleting the rightmost character from both <code>s1</code> and <code>s2</code> will result in three equal strings.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\" style=\"border-color: var(--border-tertiary); border-left-width: 2px; color: var(--text-secondary); font-size: .875rem; margin-bottom: 1rem; margin-top: 1rem; overflow: visible; padding-left: 1rem;\">\n<p><strong>Input: </strong><span class=\"example-io\" style=\"font-family: Menlo,sans-serif; font-size: 0.85rem;\">s1 = &quot;dac&quot;, s2 = &quot;bac&quot;, s3 = &quot;cac&quot;</span></p>\n\n<p><strong>Output: </strong><span class=\"example-io\" style=\"font-family: Menlo,sans-serif; font-size: 0.85rem;\">-1</span></p>\n\n<p><strong>Explanation:</strong> Since the first letters of <code>s1</code> and <code>s2</code> differ, they cannot be made equal.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s1.length, s2.length, s3.length &lt;= 100</code></li>\n\t<li><font face=\"monospace\"><code>s1</code>,</font> <code><font face=\"monospace\">s2</font></code><font face=\"monospace\"> and</font> <code><font face=\"monospace\">s3</font></code> consist only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given three strings: `s1`, `s2`, and `s3`. In one operation you can choose one of these strings and delete its **rightmost** character. Note that you **cannot** completely empty a string.\n\nReturn the _minimum number of operations_ required to make the strings equal _._ If it is impossible to make them equal, return `-1`.\n\n \n\n**Example 1:**\n\n**Input:** s1 = \"abc\", s2 = \"abb\", s3 = \"ab\"\n\n**Output:** 2\n\n**Explanation:  **Deleting the rightmost character from both `s1` and `s2` will result in three equal strings.\n\n**Example 2:**\n\n**Input:** s1 = \"dac\", s2 = \"bac\", s3 = \"cac\"\n\n**Output:** -1\n\n**Explanation:** Since the first letters of `s1` and `s2` differ, they cannot be made equal.\n\n \n\n**Constraints:**\n\n  * `1 <= s1.length, s2.length, s3.length <= 100`\n  * `s1`, `s2` and `s3` consist only of lowercase English letters.",
+  "question": "You are given three strings: `s1`, `s2`, and `s3`. In one operation you can choose one of these strings and delete its **rightmost** character. Note that you **cannot** completely empty a string.\n\nReturn the _minimum number of operations_ required to make the strings equal _._ If it is impossible to make them equal, return `-1`.",
+  "examples": "**Example 1:**\n\n**Input:** s1 = \"abc\", s2 = \"abb\", s3 = \"ab\"\n\n**Output:** 2\n\n**Explanation:  **Deleting the rightmost character from both `s1` and `s2` will result in three equal strings.\n\n**Example 2:**\n\n**Input:** s1 = \"dac\", s2 = \"bac\", s3 = \"cac\"\n\n**Output:** -1\n\n**Explanation:** Since the first letters of `s1` and `s2` differ, they cannot be made equal.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s1.length, s2.length, s3.length <= 100`\n  * `s1`, `s2` and `s3` consist only of lowercase English letters.",
+  "topics": ["String"],
+  "total_accepted": 39566,
+  "total_submissions": 88700,
+  "acceptance_rate": "44.6%",
+  "similar_questions": [
+    {
+      "title": "Delete Operation for Two Strings",
+      "slug": "delete-operation-for-two-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-operation-for-two-strings/"
+    }
+  ],
+  "hints": ["Calculate the length of the longest common prefix of the <code>3</code> strings."]
+}

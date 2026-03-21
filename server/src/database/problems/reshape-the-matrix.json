@@ -1,0 +1,30 @@
+{
+  "id": "566",
+  "title": "Reshape the Matrix",
+  "slug": "reshape-the-matrix",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>In MATLAB, there is a handy function called <code>reshape</code> which can reshape an <code>m x n</code> matrix into a new one with a different size <code>r x c</code> keeping its original data.</p>\n\n<p>You are given an <code>m x n</code> matrix <code>mat</code> and two integers <code>r</code> and <code>c</code> representing the number of rows and the number of columns of the wanted reshaped matrix.</p>\n\n<p>The reshaped matrix should be filled with all the elements of the original matrix in the same row-traversing order as they were.</p>\n\n<p>If the <code>reshape</code> operation with given parameters is possible and legal, output the new reshaped matrix; Otherwise, output the original matrix.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/24/reshape1-grid.jpg\" style=\"width: 613px; height: 173px;\" />\n<pre>\n<strong>Input:</strong> mat = [[1,2],[3,4]], r = 1, c = 4\n<strong>Output:</strong> [[1,2,3,4]]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/24/reshape2-grid.jpg\" style=\"width: 453px; height: 173px;\" />\n<pre>\n<strong>Input:</strong> mat = [[1,2],[3,4]], r = 2, c = 4\n<strong>Output:</strong> [[1,2],[3,4]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == mat.length</code></li>\n\t<li><code>n == mat[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 100</code></li>\n\t<li><code>-1000 &lt;= mat[i][j] &lt;= 1000</code></li>\n\t<li><code>1 &lt;= r, c &lt;= 300</code></li>\n</ul>\n",
+  "content_markdown": "In MATLAB, there is a handy function called `reshape` which can reshape an `m x n` matrix into a new one with a different size `r x c` keeping its original data.\n\nYou are given an `m x n` matrix `mat` and two integers `r` and `c` representing the number of rows and the number of columns of the wanted reshaped matrix.\n\nThe reshaped matrix should be filled with all the elements of the original matrix in the same row-traversing order as they were.\n\nIf the `reshape` operation with given parameters is possible and legal, output the new reshaped matrix; Otherwise, output the original matrix.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/24/reshape1-grid.jpg)\n    \n    \n    **Input:** mat = [[1,2],[3,4]], r = 1, c = 4\n    **Output:** [[1,2,3,4]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/24/reshape2-grid.jpg)\n    \n    \n    **Input:** mat = [[1,2],[3,4]], r = 2, c = 4\n    **Output:** [[1,2],[3,4]]\n    \n\n \n\n**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 100`\n  * `-1000 <= mat[i][j] <= 1000`\n  * `1 <= r, c <= 300`",
+  "question": "In MATLAB, there is a handy function called `reshape` which can reshape an `m x n` matrix into a new one with a different size `r x c` keeping its original data.\n\nYou are given an `m x n` matrix `mat` and two integers `r` and `c` representing the number of rows and the number of columns of the wanted reshaped matrix.\n\nThe reshaped matrix should be filled with all the elements of the original matrix in the same row-traversing order as they were.\n\nIf the `reshape` operation with given parameters is possible and legal, output the new reshaped matrix; Otherwise, output the original matrix.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/24/reshape1-grid.jpg)\n    \n    \n    **Input:** mat = [[1,2],[3,4]], r = 1, c = 4\n    **Output:** [[1,2,3,4]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/24/reshape2-grid.jpg)\n    \n    \n    **Input:** mat = [[1,2],[3,4]], r = 2, c = 4\n    **Output:** [[1,2],[3,4]]",
+  "constraints": "**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 100`\n  * `-1000 <= mat[i][j] <= 1000`\n  * `1 <= r, c <= 300`",
+  "topics": ["Array", "Matrix", "Simulation"],
+  "total_accepted": 463084,
+  "total_submissions": 715365,
+  "acceptance_rate": "64.7%",
+  "similar_questions": [
+    {
+      "title": "Convert 1D Array Into 2D Array",
+      "slug": "convert-1d-array-into-2d-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/convert-1d-array-into-2d-array/"
+    }
+  ],
+  "hints": [
+    "Do you know how 2d matrix is stored in 1d memory? Try to map 2-dimensions into one.",
+    "M[i][j]=M[n*i+j] , where n is the number of cols. \r\nThis is the one way of converting 2-d indices into one 1-d index.  \r\nNow, how will you convert 1-d index into 2-d indices?",
+    "Try to use division and modulus to convert 1-d index into 2-d indices.",
+    "M[i] =>  M[i/n][i%n] Will it result in right mapping? Take some example and check this formula."
+  ]
+}

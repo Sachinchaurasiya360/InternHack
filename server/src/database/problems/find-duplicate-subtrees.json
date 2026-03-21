@@ -1,0 +1,43 @@
+{
+  "id": "652",
+  "title": "Find Duplicate Subtrees",
+  "slug": "find-duplicate-subtrees",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code>&nbsp;of a binary tree, return all <strong>duplicate subtrees</strong>.</p>\n\n<p>For each kind of duplicate subtrees, you only need to return the root node of any <b>one</b> of them.</p>\n\n<p>Two trees are <strong>duplicate</strong> if they have the <strong>same structure</strong> with the <strong>same node values</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/16/e1.jpg\" style=\"width: 450px; height: 354px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3,4,null,2,4,null,null,4]\n<strong>Output:</strong> [[2,4],[4]]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/16/e2.jpg\" style=\"width: 321px; height: 201px;\" />\n<pre>\n<strong>Input:</strong> root = [2,1,1]\n<strong>Output:</strong> [[1]]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/16/e33.jpg\" style=\"width: 450px; height: 303px;\" />\n<pre>\n<strong>Input:</strong> root = [2,2,2,3,null,3,null]\n<strong>Output:</strong> [[2,3],[3]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of the nodes in the tree will be in the range <code>[1, 5000]</code></li>\n\t<li><code>-200 &lt;= Node.val &lt;= 200</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree, return all **duplicate subtrees**.\n\nFor each kind of duplicate subtrees, you only need to return the root node of any **one** of them.\n\nTwo trees are **duplicate** if they have the **same structure** with the **same node values**.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/16/e1.jpg)\n    \n    \n    **Input:** root = [1,2,3,4,null,2,4,null,null,4]\n    **Output:** [[2,4],[4]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/16/e2.jpg)\n    \n    \n    **Input:** root = [2,1,1]\n    **Output:** [[1]]\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2020/08/16/e33.jpg)\n    \n    \n    **Input:** root = [2,2,2,3,null,3,null]\n    **Output:** [[2,3],[3]]\n    \n\n \n\n**Constraints:**\n\n  * The number of the nodes in the tree will be in the range `[1, 5000]`\n  * `-200 <= Node.val <= 200`",
+  "question": "Given the `root` of a binary tree, return all **duplicate subtrees**.\n\nFor each kind of duplicate subtrees, you only need to return the root node of any **one** of them.\n\nTwo trees are **duplicate** if they have the **same structure** with the **same node values**.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/16/e1.jpg)\n    \n    \n    **Input:** root = [1,2,3,4,null,2,4,null,null,4]\n    **Output:** [[2,4],[4]]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/16/e2.jpg)\n    \n    \n    **Input:** root = [2,1,1]\n    **Output:** [[1]]\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2020/08/16/e33.jpg)\n    \n    \n    **Input:** root = [2,2,2,3,null,3,null]\n    **Output:** [[2,3],[3]]",
+  "constraints": "**Constraints:**\n\n  * The number of the nodes in the tree will be in the range `[1, 5000]`\n  * `-200 <= Node.val <= 200`",
+  "topics": ["Hash Table", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 311912,
+  "total_submissions": 514794,
+  "acceptance_rate": "60.6%",
+  "similar_questions": [
+    {
+      "title": "Serialize and Deserialize Binary Tree",
+      "slug": "serialize-and-deserialize-binary-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/"
+    },
+    {
+      "title": "Serialize and Deserialize BST",
+      "slug": "serialize-and-deserialize-bst",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/serialize-and-deserialize-bst/"
+    },
+    {
+      "title": "Construct String from Binary Tree",
+      "slug": "construct-string-from-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/construct-string-from-binary-tree/"
+    },
+    {
+      "title": "Delete Duplicate Folders in System",
+      "slug": "delete-duplicate-folders-in-system",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/delete-duplicate-folders-in-system/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "2169",
+  "title": "Count Operations to Obtain Zero",
+  "slug": "count-operations-to-obtain-zero",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <strong>non-negative</strong> integers <code>num1</code> and <code>num2</code>.</p>\n\n<p>In one <strong>operation</strong>, if <code>num1 &gt;= num2</code>, you must subtract <code>num2</code> from <code>num1</code>, otherwise subtract <code>num1</code> from <code>num2</code>.</p>\n\n<ul>\n\t<li>For example, if <code>num1 = 5</code> and <code>num2 = 4</code>, subtract <code>num2</code> from <code>num1</code>, thus obtaining <code>num1 = 1</code> and <code>num2 = 4</code>. However, if <code>num1 = 4</code> and <code>num2 = 5</code>, after one operation, <code>num1 = 4</code> and <code>num2 = 1</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>number of operations</strong> required to make either</em> <code>num1 = 0</code> <em>or</em> <code>num2 = 0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num1 = 2, num2 = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> \n- Operation 1: num1 = 2, num2 = 3. Since num1 &lt; num2, we subtract num1 from num2 and get num1 = 2, num2 = 3 - 2 = 1.\n- Operation 2: num1 = 2, num2 = 1. Since num1 &gt; num2, we subtract num2 from num1.\n- Operation 3: num1 = 1, num2 = 1. Since num1 == num2, we subtract num2 from num1.\nNow num1 = 0 and num2 = 1. Since num1 == 0, we do not need to perform any further operations.\nSo the total number of operations required is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num1 = 10, num2 = 10\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> \n- Operation 1: num1 = 10, num2 = 10. Since num1 == num2, we subtract num2 from num1 and get num1 = 10 - 10 = 0.\nNow num1 = 0 and num2 = 10. Since num1 == 0, we are done.\nSo the total number of operations required is 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= num1, num2 &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two **non-negative** integers `num1` and `num2`.\n\nIn one **operation** , if `num1 >= num2`, you must subtract `num2` from `num1`, otherwise subtract `num1` from `num2`.\n\n  * For example, if `num1 = 5` and `num2 = 4`, subtract `num2` from `num1`, thus obtaining `num1 = 1` and `num2 = 4`. However, if `num1 = 4` and `num2 = 5`, after one operation, `num1 = 4` and `num2 = 1`.\n\n\n\nReturn _the**number of operations** required to make either_ `num1 = 0` _or_ `num2 = 0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num1 = 2, num2 = 3\n    **Output:** 3\n    **Explanation:** \n    - Operation 1: num1 = 2, num2 = 3. Since num1 < num2, we subtract num1 from num2 and get num1 = 2, num2 = 3 - 2 = 1.\n    - Operation 2: num1 = 2, num2 = 1. Since num1 > num2, we subtract num2 from num1.\n    - Operation 3: num1 = 1, num2 = 1. Since num1 == num2, we subtract num2 from num1.\n    Now num1 = 0 and num2 = 1. Since num1 == 0, we do not need to perform any further operations.\n    So the total number of operations required is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num1 = 10, num2 = 10\n    **Output:** 1\n    **Explanation:** \n    - Operation 1: num1 = 10, num2 = 10. Since num1 == num2, we subtract num2 from num1 and get num1 = 10 - 10 = 0.\n    Now num1 = 0 and num2 = 10. Since num1 == 0, we are done.\n    So the total number of operations required is 1.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= num1, num2 <= 105`",
+  "question": "You are given two **non-negative** integers `num1` and `num2`.\n\nIn one **operation** , if `num1 >= num2`, you must subtract `num2` from `num1`, otherwise subtract `num1` from `num2`.\n\n  * For example, if `num1 = 5` and `num2 = 4`, subtract `num2` from `num1`, thus obtaining `num1 = 1` and `num2 = 4`. However, if `num1 = 4` and `num2 = 5`, after one operation, `num1 = 4` and `num2 = 1`.\n\n\n\nReturn _the**number of operations** required to make either_ `num1 = 0` _or_ `num2 = 0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num1 = 2, num2 = 3\n    **Output:** 3\n    **Explanation:** \n    - Operation 1: num1 = 2, num2 = 3. Since num1 < num2, we subtract num1 from num2 and get num1 = 2, num2 = 3 - 2 = 1.\n    - Operation 2: num1 = 2, num2 = 1. Since num1 > num2, we subtract num2 from num1.\n    - Operation 3: num1 = 1, num2 = 1. Since num1 == num2, we subtract num2 from num1.\n    Now num1 = 0 and num2 = 1. Since num1 == 0, we do not need to perform any further operations.\n    So the total number of operations required is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num1 = 10, num2 = 10\n    **Output:** 1\n    **Explanation:** \n    - Operation 1: num1 = 10, num2 = 10. Since num1 == num2, we subtract num2 from num1 and get num1 = 10 - 10 = 0.\n    Now num1 = 0 and num2 = 10. Since num1 == 0, we are done.\n    So the total number of operations required is 1.",
+  "constraints": "**Constraints:**\n\n  * `0 <= num1, num2 <= 105`",
+  "topics": ["Math", "Simulation"],
+  "total_accepted": 223275,
+  "total_submissions": 279742,
+  "acceptance_rate": "79.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Steps to Reduce a Number to Zero",
+      "slug": "number-of-steps-to-reduce-a-number-to-zero",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-steps-to-reduce-a-number-to-zero/"
+    }
+  ],
+  "hints": [
+    "Try simulating the process until either of the two integers is zero.",
+    "Count the number of operations done."
+  ]
+}

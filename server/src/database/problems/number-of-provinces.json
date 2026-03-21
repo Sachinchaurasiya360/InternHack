@@ -1,0 +1,55 @@
+{
+  "id": "547",
+  "title": "Number of Provinces",
+  "slug": "number-of-provinces",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> cities. Some of them are connected, while some are not. If city <code>a</code> is connected directly with city <code>b</code>, and city <code>b</code> is connected directly with city <code>c</code>, then city <code>a</code> is connected indirectly with city <code>c</code>.</p>\n\n<p>A <strong>province</strong> is a group of directly or indirectly connected cities and no other cities outside of the group.</p>\n\n<p>You are given an <code>n x n</code> matrix <code>isConnected</code> where <code>isConnected[i][j] = 1</code> if the <code>i<sup>th</sup></code> city and the <code>j<sup>th</sup></code> city are directly connected, and <code>isConnected[i][j] = 0</code> otherwise.</p>\n\n<p>Return <em>the total number of <strong>provinces</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/24/graph1.jpg\" style=\"width: 222px; height: 142px;\" />\n<pre>\n<strong>Input:</strong> isConnected = [[1,1,0],[1,1,0],[0,0,1]]\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/24/graph2.jpg\" style=\"width: 222px; height: 142px;\" />\n<pre>\n<strong>Input:</strong> isConnected = [[1,0,0],[0,1,0],[0,0,1]]\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 200</code></li>\n\t<li><code>n == isConnected.length</code></li>\n\t<li><code>n == isConnected[i].length</code></li>\n\t<li><code>isConnected[i][j]</code> is <code>1</code> or <code>0</code>.</li>\n\t<li><code>isConnected[i][i] == 1</code></li>\n\t<li><code>isConnected[i][j] == isConnected[j][i]</code></li>\n</ul>\n",
+  "content_markdown": "There are `n` cities. Some of them are connected, while some are not. If city `a` is connected directly with city `b`, and city `b` is connected directly with city `c`, then city `a` is connected indirectly with city `c`.\n\nA **province** is a group of directly or indirectly connected cities and no other cities outside of the group.\n\nYou are given an `n x n` matrix `isConnected` where `isConnected[i][j] = 1` if the `ith` city and the `jth` city are directly connected, and `isConnected[i][j] = 0` otherwise.\n\nReturn _the total number of**provinces**_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/24/graph1.jpg)\n    \n    \n    **Input:** isConnected = [[1,1,0],[1,1,0],[0,0,1]]\n    **Output:** 2\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/24/graph2.jpg)\n    \n    \n    **Input:** isConnected = [[1,0,0],[0,1,0],[0,0,1]]\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 200`\n  * `n == isConnected.length`\n  * `n == isConnected[i].length`\n  * `isConnected[i][j]` is `1` or `0`.\n  * `isConnected[i][i] == 1`\n  * `isConnected[i][j] == isConnected[j][i]`",
+  "question": "There are `n` cities. Some of them are connected, while some are not. If city `a` is connected directly with city `b`, and city `b` is connected directly with city `c`, then city `a` is connected indirectly with city `c`.\n\nA **province** is a group of directly or indirectly connected cities and no other cities outside of the group.\n\nYou are given an `n x n` matrix `isConnected` where `isConnected[i][j] = 1` if the `ith` city and the `jth` city are directly connected, and `isConnected[i][j] = 0` otherwise.\n\nReturn _the total number of**provinces**_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/24/graph1.jpg)\n    \n    \n    **Input:** isConnected = [[1,1,0],[1,1,0],[0,0,1]]\n    **Output:** 2\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/24/graph2.jpg)\n    \n    \n    **Input:** isConnected = [[1,0,0],[0,1,0],[0,0,1]]\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 200`\n  * `n == isConnected.length`\n  * `n == isConnected[i].length`\n  * `isConnected[i][j]` is `1` or `0`.\n  * `isConnected[i][i] == 1`\n  * `isConnected[i][j] == isConnected[j][i]`",
+  "topics": ["Depth-First Search", "Breadth-First Search", "Union-Find", "Graph Theory"],
+  "total_accepted": 1470039,
+  "total_submissions": 2099960,
+  "acceptance_rate": "70.0%",
+  "similar_questions": [
+    {
+      "title": "Number of Connected Components in an Undirected Graph",
+      "slug": "number-of-connected-components-in-an-undirected-graph",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/"
+    },
+    {
+      "title": "Robot Return to Origin",
+      "slug": "robot-return-to-origin",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/robot-return-to-origin/"
+    },
+    {
+      "title": "Sentence Similarity",
+      "slug": "sentence-similarity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sentence-similarity/"
+    },
+    {
+      "title": "Sentence Similarity II",
+      "slug": "sentence-similarity-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sentence-similarity-ii/"
+    },
+    {
+      "title": "The Earliest Moment When Everyone Become Friends",
+      "slug": "the-earliest-moment-when-everyone-become-friends",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-earliest-moment-when-everyone-become-friends/"
+    },
+    {
+      "title": "Detonate the Maximum Bombs",
+      "slug": "detonate-the-maximum-bombs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/detonate-the-maximum-bombs/"
+    }
+  ],
+  "hints": []
+}

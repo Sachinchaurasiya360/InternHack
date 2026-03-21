@@ -1,0 +1,33 @@
+{
+  "id": "1056",
+  "title": "Confusing Number",
+  "slug": "confusing-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math"],
+  "total_accepted": 55119,
+  "total_submissions": 111744,
+  "acceptance_rate": "49.3%",
+  "similar_questions": [
+    {
+      "title": "Strobogrammatic Number",
+      "slug": "strobogrammatic-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/strobogrammatic-number/"
+    },
+    {
+      "title": "Confusing Number II",
+      "slug": "confusing-number-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/confusing-number-ii/"
+    }
+  ],
+  "hints": [
+    "Reverse each digit with their corresponding new digit if an invalid digit is found the return -1. After reversing the digits just compare the reversed number with the original number."
+  ]
+}

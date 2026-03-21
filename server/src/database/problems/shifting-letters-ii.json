@@ -1,0 +1,64 @@
+{
+  "id": "2381",
+  "title": "Shifting Letters II",
+  "slug": "shifting-letters-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> of lowercase English letters and a 2D integer array <code>shifts</code> where <code>shifts[i] = [start<sub>i</sub>, end<sub>i</sub>, direction<sub>i</sub>]</code>. For every <code>i</code>, <strong>shift</strong> the characters in <code>s</code> from the index <code>start<sub>i</sub></code> to the index <code>end<sub>i</sub></code> (<strong>inclusive</strong>) forward if <code>direction<sub>i</sub> = 1</code>, or shift the characters backward if <code>direction<sub>i</sub> = 0</code>.</p>\n\n<p>Shifting a character <strong>forward</strong> means replacing it with the <strong>next</strong> letter in the alphabet (wrapping around so that <code>&#39;z&#39;</code> becomes <code>&#39;a&#39;</code>). Similarly, shifting a character <strong>backward</strong> means replacing it with the <strong>previous</strong> letter in the alphabet (wrapping around so that <code>&#39;a&#39;</code> becomes <code>&#39;z&#39;</code>).</p>\n\n<p>Return <em>the final string after all such shifts to </em><code>s</code><em> are applied</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abc&quot;, shifts = [[0,1,0],[1,2,1],[0,2,1]]\n<strong>Output:</strong> &quot;ace&quot;\n<strong>Explanation:</strong> Firstly, shift the characters from index 0 to index 1 backward. Now s = &quot;zac&quot;.\nSecondly, shift the characters from index 1 to index 2 forward. Now s = &quot;zbd&quot;.\nFinally, shift the characters from index 0 to index 2 forward. Now s = &quot;ace&quot;.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;dztz&quot;, shifts = [[0,0,0],[1,1,1]]\n<strong>Output:</strong> &quot;catz&quot;\n<strong>Explanation:</strong> Firstly, shift the characters from index 0 to index 0 backward. Now s = &quot;cztz&quot;.\nFinally, shift the characters from index 1 to index 1 forward. Now s = &quot;catz&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length, shifts.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>shifts[i].length == 3</code></li>\n\t<li><code>0 &lt;= start<sub>i</sub> &lt;= end<sub>i</sub> &lt; s.length</code></li>\n\t<li><code>0 &lt;= direction<sub>i</sub> &lt;= 1</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` of lowercase English letters and a 2D integer array `shifts` where `shifts[i] = [starti, endi, directioni]`. For every `i`, **shift** the characters in `s` from the index `starti` to the index `endi` (**inclusive**) forward if `directioni = 1`, or shift the characters backward if `directioni = 0`.\n\nShifting a character **forward** means replacing it with the **next** letter in the alphabet (wrapping around so that `'z'` becomes `'a'`). Similarly, shifting a character **backward** means replacing it with the **previous** letter in the alphabet (wrapping around so that `'a'` becomes `'z'`).\n\nReturn _the final string after all such shifts to_`s` _are applied_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abc\", shifts = [[0,1,0],[1,2,1],[0,2,1]]\n    **Output:** \"ace\"\n    **Explanation:** Firstly, shift the characters from index 0 to index 1 backward. Now s = \"zac\".\n    Secondly, shift the characters from index 1 to index 2 forward. Now s = \"zbd\".\n    Finally, shift the characters from index 0 to index 2 forward. Now s = \"ace\".\n\n**Example 2:**\n    \n    \n    **Input:** s = \"dztz\", shifts = [[0,0,0],[1,1,1]]\n    **Output:** \"catz\"\n    **Explanation:** Firstly, shift the characters from index 0 to index 0 backward. Now s = \"cztz\".\n    Finally, shift the characters from index 1 to index 1 forward. Now s = \"catz\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length, shifts.length <= 5 * 104`\n  * `shifts[i].length == 3`\n  * `0 <= starti <= endi < s.length`\n  * `0 <= directioni <= 1`\n  * `s` consists of lowercase English letters.",
+  "question": "You are given a string `s` of lowercase English letters and a 2D integer array `shifts` where `shifts[i] = [starti, endi, directioni]`. For every `i`, **shift** the characters in `s` from the index `starti` to the index `endi` (**inclusive**) forward if `directioni = 1`, or shift the characters backward if `directioni = 0`.\n\nShifting a character **forward** means replacing it with the **next** letter in the alphabet (wrapping around so that `'z'` becomes `'a'`). Similarly, shifting a character **backward** means replacing it with the **previous** letter in the alphabet (wrapping around so that `'a'` becomes `'z'`).\n\nReturn _the final string after all such shifts to_`s` _are applied_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abc\", shifts = [[0,1,0],[1,2,1],[0,2,1]]\n    **Output:** \"ace\"\n    **Explanation:** Firstly, shift the characters from index 0 to index 1 backward. Now s = \"zac\".\n    Secondly, shift the characters from index 1 to index 2 forward. Now s = \"zbd\".\n    Finally, shift the characters from index 0 to index 2 forward. Now s = \"ace\".\n\n**Example 2:**\n    \n    \n    **Input:** s = \"dztz\", shifts = [[0,0,0],[1,1,1]]\n    **Output:** \"catz\"\n    **Explanation:** Firstly, shift the characters from index 0 to index 0 backward. Now s = \"cztz\".\n    Finally, shift the characters from index 1 to index 1 forward. Now s = \"catz\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length, shifts.length <= 5 * 104`\n  * `shifts[i].length == 3`\n  * `0 <= starti <= endi < s.length`\n  * `0 <= directioni <= 1`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Array", "String", "Prefix Sum"],
+  "total_accepted": 159399,
+  "total_submissions": 297773,
+  "acceptance_rate": "53.5%",
+  "similar_questions": [
+    {
+      "title": "The Skyline Problem",
+      "slug": "the-skyline-problem",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/the-skyline-problem/"
+    },
+    {
+      "title": "Range Sum Query - Mutable",
+      "slug": "range-sum-query-mutable",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-sum-query-mutable/"
+    },
+    {
+      "title": "Range Addition",
+      "slug": "range-addition",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-addition/"
+    },
+    {
+      "title": "Shifting Letters",
+      "slug": "shifting-letters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shifting-letters/"
+    },
+    {
+      "title": "Maximum Population Year",
+      "slug": "maximum-population-year",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-population-year/"
+    },
+    {
+      "title": "Describe the Painting",
+      "slug": "describe-the-painting",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/describe-the-painting/"
+    },
+    {
+      "title": "Shift Distance Between Two Strings",
+      "slug": "shift-distance-between-two-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shift-distance-between-two-strings/"
+    }
+  ],
+  "hints": [
+    "Instead of shifting every character in each shift, could you keep track of which characters are shifted and by how much across all shifts?",
+    "Try marking the start and ends of each shift, then perform a prefix sum of the shifts."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "1353",
+  "title": "Maximum Number of Events That Can Be Attended",
+  "slug": "maximum-number-of-events-that-can-be-attended",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of <code>events</code> where <code>events[i] = [startDay<sub>i</sub>, endDay<sub>i</sub>]</code>. Every event <code>i</code> starts at <code>startDay<sub>i</sub></code><sub> </sub>and ends at <code>endDay<sub>i</sub></code>.</p>\n\n<p>You can attend an event <code>i</code> at any day <code>d</code> where <code>startDay<sub>i</sub> &lt;= d &lt;= endDay<sub>i</sub></code>. You can only attend one event at any time <code>d</code>.</p>\n\n<p>Return <em>the maximum number of events you can attend</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/02/05/e1.png\" style=\"width: 400px; height: 267px;\" />\n<pre>\n<strong>Input:</strong> events = [[1,2],[2,3],[3,4]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> You can attend all the three events.\nOne way to attend them all is as shown.\nAttend the first event on day 1.\nAttend the second event on day 2.\nAttend the third event on day 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> events= [[1,2],[2,3],[3,4],[1,2]]\n<strong>Output:</strong> 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= events.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>events[i].length == 2</code></li>\n\t<li><code>1 &lt;= startDay<sub>i</sub> &lt;= endDay<sub>i</sub> &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of `events` where `events[i] = [startDayi, endDayi]`. Every event `i` starts at `startDayi` and ends at `endDayi`.\n\nYou can attend an event `i` at any day `d` where `startDayi <= d <= endDayi`. You can only attend one event at any time `d`.\n\nReturn _the maximum number of events you can attend_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/02/05/e1.png)\n    \n    \n    **Input:** events = [[1,2],[2,3],[3,4]]\n    **Output:** 3\n    **Explanation:** You can attend all the three events.\n    One way to attend them all is as shown.\n    Attend the first event on day 1.\n    Attend the second event on day 2.\n    Attend the third event on day 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** events= [[1,2],[2,3],[3,4],[1,2]]\n    **Output:** 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= events.length <= 105`\n  * `events[i].length == 2`\n  * `1 <= startDayi <= endDayi <= 105`",
+  "question": "You are given an array of `events` where `events[i] = [startDayi, endDayi]`. Every event `i` starts at `startDayi` and ends at `endDayi`.\n\nYou can attend an event `i` at any day `d` where `startDayi <= d <= endDayi`. You can only attend one event at any time `d`.\n\nReturn _the maximum number of events you can attend_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/02/05/e1.png)\n    \n    \n    **Input:** events = [[1,2],[2,3],[3,4]]\n    **Output:** 3\n    **Explanation:** You can attend all the three events.\n    One way to attend them all is as shown.\n    Attend the first event on day 1.\n    Attend the second event on day 2.\n    Attend the third event on day 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** events= [[1,2],[2,3],[3,4],[1,2]]\n    **Output:** 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= events.length <= 105`\n  * `events[i].length == 2`\n  * `1 <= startDayi <= endDayi <= 105`",
+  "topics": ["Array", "Greedy", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 223079,
+  "total_submissions": 573458,
+  "acceptance_rate": "38.9%",
+  "similar_questions": [
+    {
+      "title": "Maximum Number of Events That Can Be Attended II",
+      "slug": "maximum-number-of-events-that-can-be-attended-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended-ii/"
+    },
+    {
+      "title": "Maximum Earnings From Taxi",
+      "slug": "maximum-earnings-from-taxi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-earnings-from-taxi/"
+    },
+    {
+      "title": "Meeting Rooms III",
+      "slug": "meeting-rooms-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/meeting-rooms-iii/"
+    }
+  ],
+  "hints": [
+    "Sort the events by the start time and in case of tie by the end time in ascending order.",
+    "Loop over the sorted events. Attend as much as you can and keep the last day occupied. When you try to attend new event keep in mind the first day you can attend a new event in."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "459",
+  "title": "Repeated Substring Pattern",
+  "slug": "repeated-substring-pattern",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, check if it can be constructed by taking a substring of it and appending multiple copies of the substring together.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abab&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> It is the substring &quot;ab&quot; twice.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aba&quot;\n<strong>Output:</strong> false\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcabcabcabc&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> It is the substring &quot;abc&quot; four times or the substring &quot;abcabc&quot; twice.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, check if it can be constructed by taking a substring of it and appending multiple copies of the substring together.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abab\"\n    **Output:** true\n    **Explanation:** It is the substring \"ab\" twice.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aba\"\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abcabcabcabc\"\n    **Output:** true\n    **Explanation:** It is the substring \"abc\" four times or the substring \"abcabc\" twice.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of lowercase English letters.",
+  "question": "Given a string `s`, check if it can be constructed by taking a substring of it and appending multiple copies of the substring together.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abab\"\n    **Output:** true\n    **Explanation:** It is the substring \"ab\" twice.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aba\"\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abcabcabcabc\"\n    **Output:** true\n    **Explanation:** It is the substring \"abc\" four times or the substring \"abcabc\" twice.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of lowercase English letters.",
+  "topics": ["String", "String Matching"],
+  "total_accepted": 596795,
+  "total_submissions": 1246834,
+  "acceptance_rate": "47.9%",
+  "similar_questions": [
+    {
+      "title": "Find the Index of the First Occurrence in a String",
+      "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/"
+    },
+    {
+      "title": "Repeated String Match",
+      "slug": "repeated-string-match",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/repeated-string-match/"
+    }
+  ],
+  "hints": []
+}

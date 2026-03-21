@@ -1,0 +1,18 @@
+{
+  "id": "2703",
+  "title": "Return Length of Arguments Passed",
+  "slug": "return-length-of-arguments-passed",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "Write a function&nbsp;<code>argumentsLength</code> that returns the count of arguments passed to it.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> args = [5]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nargumentsLength(5); // 1\n\nOne value was passed to the function so it should return 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> args = [{}, null, &quot;3&quot;]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> \nargumentsLength({}, null, &quot;3&quot;); // 3\n\nThree values were passed to the function so it should return 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>args</code>&nbsp;is a valid JSON array</li>\n\t<li><code>0 &lt;= args.length &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Write a function `argumentsLength` that returns the count of arguments passed to it. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** args = [5]\n    **Output:** 1\n    **Explanation:**\n    argumentsLength(5); // 1\n    \n    One value was passed to the function so it should return 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** args = [{}, null, \"3\"]\n    **Output:** 3\n    **Explanation:** \n    argumentsLength({}, null, \"3\"); // 3\n    \n    Three values were passed to the function so it should return 3.\n    \n\n \n\n**Constraints:**\n\n  * `args` is a valid JSON array\n  * `0 <= args.length <= 100`",
+  "question": "Write a function `argumentsLength` that returns the count of arguments passed to it.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** args = [5]\n    **Output:** 1\n    **Explanation:**\n    argumentsLength(5); // 1\n    \n    One value was passed to the function so it should return 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** args = [{}, null, \"3\"]\n    **Output:** 3\n    **Explanation:** \n    argumentsLength({}, null, \"3\"); // 3\n    \n    Three values were passed to the function so it should return 3.",
+  "constraints": "**Constraints:**\n\n  * `args` is a valid JSON array\n  * `0 <= args.length <= 100`",
+  "topics": [],
+  "total_accepted": 292590,
+  "total_submissions": 309561,
+  "acceptance_rate": "94.5%",
+  "similar_questions": [],
+  "hints": []
+}

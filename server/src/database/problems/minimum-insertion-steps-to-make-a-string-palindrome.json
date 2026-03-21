@@ -1,0 +1,28 @@
+{
+  "id": "1312",
+  "title": "Minimum Insertion Steps to Make a String Palindrome",
+  "slug": "minimum-insertion-steps-to-make-a-string-palindrome",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>. In one step you can insert any character at any index of the string.</p>\n\n<p>Return <em>the minimum number of steps</em> to make <code>s</code>&nbsp;palindrome.</p>\n\n<p>A&nbsp;<b>Palindrome String</b>&nbsp;is one that reads the same backward as well as forward.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;zzazz&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The string &quot;zzazz&quot; is already palindrome we do not need any insertions.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;mbadm&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> String can be &quot;mbdadbm&quot; or &quot;mdbabdm&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;leetcode&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> Inserting 5 characters the string becomes &quot;leetcodocteel&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 500</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`. In one step you can insert any character at any index of the string.\n\nReturn _the minimum number of steps_ to make `s` palindrome.\n\nA **Palindrome String**  is one that reads the same backward as well as forward.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"zzazz\"\n    **Output:** 0\n    **Explanation:** The string \"zzazz\" is already palindrome we do not need any insertions.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"mbadm\"\n    **Output:** 2\n    **Explanation:** String can be \"mbdadbm\" or \"mdbabdm\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"leetcode\"\n    **Output:** 5\n    **Explanation:** Inserting 5 characters the string becomes \"leetcodocteel\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of lowercase English letters.",
+  "question": "Given a string `s`. In one step you can insert any character at any index of the string.\n\nReturn _the minimum number of steps_ to make `s` palindrome.\n\nA **Palindrome String**  is one that reads the same backward as well as forward.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"zzazz\"\n    **Output:** 0\n    **Explanation:** The string \"zzazz\" is already palindrome we do not need any insertions.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"mbadm\"\n    **Output:** 2\n    **Explanation:** String can be \"mbdadbm\" or \"mdbabdm\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"leetcode\"\n    **Output:** 5\n    **Explanation:** Inserting 5 characters the string becomes \"leetcodocteel\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of lowercase English letters.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 299566,
+  "total_submissions": 406672,
+  "acceptance_rate": "73.7%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Moves to Make Palindrome",
+      "slug": "minimum-number-of-moves-to-make-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-moves-to-make-palindrome/"
+    }
+  ],
+  "hints": [
+    "Is dynamic programming suitable for this problem ?",
+    "If we know the longest palindromic sub-sequence is x and the length of the string is n then, what is the answer to this problem? It is n - x as we need n - x insertions to make the remaining characters also palindrome."
+  ]
+}

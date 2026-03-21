@@ -1,0 +1,58 @@
+{
+  "id": "2087",
+  "title": "Minimum Cost Homecoming of a Robot in a Grid",
+  "slug": "minimum-cost-homecoming-of-a-robot-in-a-grid",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is an <code>m x n</code> grid, where <code>(0, 0)</code> is the top-left cell and <code>(m - 1, n - 1)</code> is the bottom-right cell. You are given an integer array <code>startPos</code> where <code>startPos = [start<sub>row</sub>, start<sub>col</sub>]</code> indicates that <strong>initially</strong>, a <strong>robot</strong> is at the cell <code>(start<sub>row</sub>, start<sub>col</sub>)</code>. You are also given an integer array <code>homePos</code> where <code>homePos = [home<sub>row</sub>, home<sub>col</sub>]</code> indicates that its <strong>home</strong> is at the cell <code>(home<sub>row</sub>, home<sub>col</sub>)</code>.</p>\n\n<p>The robot needs to go to its home. It can move one cell in four directions: <strong>left</strong>, <strong>right</strong>, <strong>up</strong>, or <strong>down</strong>, and it can not move outside the boundary. Every move incurs some cost. You are further given two <strong>0-indexed</strong> integer arrays: <code>rowCosts</code> of length <code>m</code> and <code>colCosts</code> of length <code>n</code>.</p>\n\n<ul>\n\t<li>If the robot moves <strong>up</strong> or <strong>down</strong> into a cell whose <strong>row</strong> is <code>r</code>, then this move costs <code>rowCosts[r]</code>.</li>\n\t<li>If the robot moves <strong>left</strong> or <strong>right</strong> into a cell whose <strong>column</strong> is <code>c</code>, then this move costs <code>colCosts[c]</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>minimum total cost</strong> for this robot to return home</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/10/11/eg-1.png\" style=\"width: 282px; height: 217px;\" />\n<pre>\n<strong>Input:</strong> startPos = [1, 0], homePos = [2, 3], rowCosts = [5, 4, 3], colCosts = [8, 2, 6, 7]\n<strong>Output:</strong> 18\n<strong>Explanation:</strong> One optimal path is that:\nStarting from (1, 0)\n-&gt; It goes down to (<u><strong>2</strong></u>, 0). This move costs rowCosts[2] = 3.\n-&gt; It goes right to (2, <u><strong>1</strong></u>). This move costs colCosts[1] = 2.\n-&gt; It goes right to (2, <u><strong>2</strong></u>). This move costs colCosts[2] = 6.\n-&gt; It goes right to (2, <u><strong>3</strong></u>). This move costs colCosts[3] = 7.\nThe total cost is 3 + 2 + 6 + 7 = 18</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> startPos = [0, 0], homePos = [0, 0], rowCosts = [5], colCosts = [26]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The robot is already at its home. Since no moves occur, the total cost is 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == rowCosts.length</code></li>\n\t<li><code>n == colCosts.length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= rowCosts[r], colCosts[c] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>startPos.length == 2</code></li>\n\t<li><code>homePos.length == 2</code></li>\n\t<li><code>0 &lt;= start<sub>row</sub>, home<sub>row</sub> &lt; m</code></li>\n\t<li><code>0 &lt;= start<sub>col</sub>, home<sub>col</sub> &lt; n</code></li>\n</ul>\n",
+  "content_markdown": "There is an `m x n` grid, where `(0, 0)` is the top-left cell and `(m - 1, n - 1)` is the bottom-right cell. You are given an integer array `startPos` where `startPos = [startrow, startcol]` indicates that **initially** , a **robot** is at the cell `(startrow, startcol)`. You are also given an integer array `homePos` where `homePos = [homerow, homecol]` indicates that its **home** is at the cell `(homerow, homecol)`.\n\nThe robot needs to go to its home. It can move one cell in four directions: **left** , **right** , **up** , or **down** , and it can not move outside the boundary. Every move incurs some cost. You are further given two **0-indexed** integer arrays: `rowCosts` of length `m` and `colCosts` of length `n`.\n\n  * If the robot moves **up** or **down** into a cell whose **row** is `r`, then this move costs `rowCosts[r]`.\n  * If the robot moves **left** or **right** into a cell whose **column** is `c`, then this move costs `colCosts[c]`.\n\n\n\nReturn _the**minimum total cost** for this robot to return home_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/10/11/eg-1.png)\n    \n    \n    **Input:** startPos = [1, 0], homePos = [2, 3], rowCosts = [5, 4, 3], colCosts = [8, 2, 6, 7]\n    **Output:** 18\n    **Explanation:** One optimal path is that:\n    Starting from (1, 0)\n    -> It goes down to (_**2**_ , 0). This move costs rowCosts[2] = 3.\n    -> It goes right to (2, _**1**_). This move costs colCosts[1] = 2.\n    -> It goes right to (2, _**2**_). This move costs colCosts[2] = 6.\n    -> It goes right to (2, _**3**_). This move costs colCosts[3] = 7.\n    The total cost is 3 + 2 + 6 + 7 = 18\n\n**Example 2:**\n    \n    \n    **Input:** startPos = [0, 0], homePos = [0, 0], rowCosts = [5], colCosts = [26]\n    **Output:** 0\n    **Explanation:** The robot is already at its home. Since no moves occur, the total cost is 0.\n    \n\n \n\n**Constraints:**\n\n  * `m == rowCosts.length`\n  * `n == colCosts.length`\n  * `1 <= m, n <= 105`\n  * `0 <= rowCosts[r], colCosts[c] <= 104`\n  * `startPos.length == 2`\n  * `homePos.length == 2`\n  * `0 <= startrow, homerow < m`\n  * `0 <= startcol, homecol < n`",
+  "question": "There is an `m x n` grid, where `(0, 0)` is the top-left cell and `(m - 1, n - 1)` is the bottom-right cell. You are given an integer array `startPos` where `startPos = [startrow, startcol]` indicates that **initially** , a **robot** is at the cell `(startrow, startcol)`. You are also given an integer array `homePos` where `homePos = [homerow, homecol]` indicates that its **home** is at the cell `(homerow, homecol)`.\n\nThe robot needs to go to its home. It can move one cell in four directions: **left** , **right** , **up** , or **down** , and it can not move outside the boundary. Every move incurs some cost. You are further given two **0-indexed** integer arrays: `rowCosts` of length `m` and `colCosts` of length `n`.\n\n  * If the robot moves **up** or **down** into a cell whose **row** is `r`, then this move costs `rowCosts[r]`.\n  * If the robot moves **left** or **right** into a cell whose **column** is `c`, then this move costs `colCosts[c]`.\n\n\n\nReturn _the**minimum total cost** for this robot to return home_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/10/11/eg-1.png)\n    \n    \n    **Input:** startPos = [1, 0], homePos = [2, 3], rowCosts = [5, 4, 3], colCosts = [8, 2, 6, 7]\n    **Output:** 18\n    **Explanation:** One optimal path is that:\n    Starting from (1, 0)\n    -> It goes down to (_**2**_ , 0). This move costs rowCosts[2] = 3.\n    -> It goes right to (2, _**1**_). This move costs colCosts[1] = 2.\n    -> It goes right to (2, _**2**_). This move costs colCosts[2] = 6.\n    -> It goes right to (2, _**3**_). This move costs colCosts[3] = 7.\n    The total cost is 3 + 2 + 6 + 7 = 18\n\n**Example 2:**\n    \n    \n    **Input:** startPos = [0, 0], homePos = [0, 0], rowCosts = [5], colCosts = [26]\n    **Output:** 0\n    **Explanation:** The robot is already at its home. Since no moves occur, the total cost is 0.",
+  "constraints": "**Constraints:**\n\n  * `m == rowCosts.length`\n  * `n == colCosts.length`\n  * `1 <= m, n <= 105`\n  * `0 <= rowCosts[r], colCosts[c] <= 104`\n  * `startPos.length == 2`\n  * `homePos.length == 2`\n  * `0 <= startrow, homerow < m`\n  * `0 <= startcol, homecol < n`",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 26411,
+  "total_submissions": 51209,
+  "acceptance_rate": "51.6%",
+  "similar_questions": [
+    {
+      "title": "Unique Paths",
+      "slug": "unique-paths",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-paths/"
+    },
+    {
+      "title": "Minimum Path Sum",
+      "slug": "minimum-path-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-sum/"
+    },
+    {
+      "title": "Bomb Enemy",
+      "slug": "bomb-enemy",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bomb-enemy/"
+    },
+    {
+      "title": "Count Square Submatrices with All Ones",
+      "slug": "count-square-submatrices-with-all-ones",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-square-submatrices-with-all-ones/"
+    },
+    {
+      "title": "Paths in Matrix Whose Sum Is Divisible by K",
+      "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paths-in-matrix-whose-sum-is-divisible-by-k/"
+    },
+    {
+      "title": "Check if There is a Path With Equal Number of 0's And 1's",
+      "slug": "check-if-there-is-a-path-with-equal-number-of-0s-and-1s",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-there-is-a-path-with-equal-number-of-0s-and-1s/"
+    }
+  ],
+  "hints": [
+    "Irrespective of what path the robot takes, it will have to traverse all the rows between startRow and homeRow and all the columns between startCol and homeCol.",
+    "Hence, making any other move other than traversing the required rows and columns will potentially incur more cost which can be avoided."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "3155",
+  "title": "Maximum Number of Upgradable Servers",
+  "slug": "maximum-number-of-upgradable-servers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Binary Search"],
+  "total_accepted": 3242,
+  "total_submissions": 7513,
+  "acceptance_rate": "43.2%",
+  "similar_questions": [],
+  "hints": [
+    "Use binary search to find the maximum number of servers that can be upgraded for each data center separately."
+  ]
+}

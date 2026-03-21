@@ -1,0 +1,40 @@
+{
+  "id": "1976",
+  "title": "Number of Ways to Arrive at Destination",
+  "slug": "number-of-ways-to-arrive-at-destination",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are in a city that consists of <code>n</code> intersections numbered from <code>0</code> to <code>n - 1</code> with <strong>bi-directional</strong> roads between some intersections. The inputs are generated such that you can reach any intersection from any other intersection and that there is at most one road between any two intersections.</p>\n\n<p>You are given an integer <code>n</code> and a 2D integer array <code>roads</code> where <code>roads[i] = [u<sub>i</sub>, v<sub>i</sub>, time<sub>i</sub>]</code> means that there is a road between intersections <code>u<sub>i</sub></code> and <code>v<sub>i</sub></code> that takes <code>time<sub>i</sub></code> minutes to travel. You want to know in how many ways you can travel from intersection <code>0</code> to intersection <code>n - 1</code> in the <strong>shortest amount of time</strong>.</p>\n\n<p>Return <em>the <strong>number of ways</strong> you can arrive at your destination in the <strong>shortest amount of time</strong></em>. Since the answer may be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2025/02/14/1976_corrected.png\" style=\"width: 255px; height: 400px;\" />\n<pre>\n<strong>Input:</strong> n = 7, roads = [[0,6,7],[0,1,2],[1,2,3],[1,3,3],[6,3,3],[3,5,1],[6,5,1],[2,5,1],[0,4,5],[4,6,2]]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The shortest amount of time it takes to go from intersection 0 to intersection 6 is 7 minutes.\nThe four ways to get there in 7 minutes are:\n- 0 ➝ 6\n- 0 ➝ 4 ➝ 6\n- 0 ➝ 1 ➝ 2 ➝ 5 ➝ 6\n- 0 ➝ 1 ➝ 3 ➝ 5 ➝ 6\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, roads = [[1,0,10]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> There is only one way to go from intersection 0 to intersection 1, and it takes 10 minutes.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 200</code></li>\n\t<li><code>n - 1 &lt;= roads.length &lt;= n * (n - 1) / 2</code></li>\n\t<li><code>roads[i].length == 3</code></li>\n\t<li><code>0 &lt;= u<sub>i</sub>, v<sub>i</sub> &lt;= n - 1</code></li>\n\t<li><code>1 &lt;= time<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>u<sub>i </sub>!= v<sub>i</sub></code></li>\n\t<li>There is at most one road connecting any two intersections.</li>\n\t<li>You can reach any intersection from any other intersection.</li>\n</ul>\n",
+  "content_markdown": "You are in a city that consists of `n` intersections numbered from `0` to `n - 1` with **bi-directional** roads between some intersections. The inputs are generated such that you can reach any intersection from any other intersection and that there is at most one road between any two intersections.\n\nYou are given an integer `n` and a 2D integer array `roads` where `roads[i] = [ui, vi, timei]` means that there is a road between intersections `ui` and `vi` that takes `timei` minutes to travel. You want to know in how many ways you can travel from intersection `0` to intersection `n - 1` in the **shortest amount of time**.\n\nReturn _the**number of ways** you can arrive at your destination in the **shortest amount of time**_. Since the answer may be large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2025/02/14/1976_corrected.png)\n    \n    \n    **Input:** n = 7, roads = [[0,6,7],[0,1,2],[1,2,3],[1,3,3],[6,3,3],[3,5,1],[6,5,1],[2,5,1],[0,4,5],[4,6,2]]\n    **Output:** 4\n    **Explanation:** The shortest amount of time it takes to go from intersection 0 to intersection 6 is 7 minutes.\n    The four ways to get there in 7 minutes are:\n    - 0 ➝ 6\n    - 0 ➝ 4 ➝ 6\n    - 0 ➝ 1 ➝ 2 ➝ 5 ➝ 6\n    - 0 ➝ 1 ➝ 3 ➝ 5 ➝ 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2, roads = [[1,0,10]]\n    **Output:** 1\n    **Explanation:** There is only one way to go from intersection 0 to intersection 1, and it takes 10 minutes.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 200`\n  * `n - 1 <= roads.length <= n * (n - 1) / 2`\n  * `roads[i].length == 3`\n  * `0 <= ui, vi <= n - 1`\n  * `1 <= timei <= 109`\n  * `ui != vi`\n  * There is at most one road connecting any two intersections.\n  * You can reach any intersection from any other intersection.",
+  "question": "You are in a city that consists of `n` intersections numbered from `0` to `n - 1` with **bi-directional** roads between some intersections. The inputs are generated such that you can reach any intersection from any other intersection and that there is at most one road between any two intersections.\n\nYou are given an integer `n` and a 2D integer array `roads` where `roads[i] = [ui, vi, timei]` means that there is a road between intersections `ui` and `vi` that takes `timei` minutes to travel. You want to know in how many ways you can travel from intersection `0` to intersection `n - 1` in the **shortest amount of time**.\n\nReturn _the**number of ways** you can arrive at your destination in the **shortest amount of time**_. Since the answer may be large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2025/02/14/1976_corrected.png)\n    \n    \n    **Input:** n = 7, roads = [[0,6,7],[0,1,2],[1,2,3],[1,3,3],[6,3,3],[3,5,1],[6,5,1],[2,5,1],[0,4,5],[4,6,2]]\n    **Output:** 4\n    **Explanation:** The shortest amount of time it takes to go from intersection 0 to intersection 6 is 7 minutes.\n    The four ways to get there in 7 minutes are:\n    - 0 ➝ 6\n    - 0 ➝ 4 ➝ 6\n    - 0 ➝ 1 ➝ 2 ➝ 5 ➝ 6\n    - 0 ➝ 1 ➝ 3 ➝ 5 ➝ 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2, roads = [[1,0,10]]\n    **Output:** 1\n    **Explanation:** There is only one way to go from intersection 0 to intersection 1, and it takes 10 minutes.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 200`\n  * `n - 1 <= roads.length <= n * (n - 1) / 2`\n  * `roads[i].length == 3`\n  * `0 <= ui, vi <= n - 1`\n  * `1 <= timei <= 109`\n  * `ui != vi`\n  * There is at most one road connecting any two intersections.\n  * You can reach any intersection from any other intersection.",
+  "topics": ["Dynamic Programming", "Graph Theory", "Topological Sort", "Shortest Path"],
+  "total_accepted": 247057,
+  "total_submissions": 661675,
+  "acceptance_rate": "37.3%",
+  "similar_questions": [
+    {
+      "title": "All Paths From Source to Target",
+      "slug": "all-paths-from-source-to-target",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/all-paths-from-source-to-target/"
+    },
+    {
+      "title": "Path with Maximum Probability",
+      "slug": "path-with-maximum-probability",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-with-maximum-probability/"
+    },
+    {
+      "title": "Second Minimum Time to Reach Destination",
+      "slug": "second-minimum-time-to-reach-destination",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/second-minimum-time-to-reach-destination/"
+    }
+  ],
+  "hints": [
+    "First use any shortest path algorithm to get edges where dist[u] + weight = dist[v], here dist[x] is the shortest distance between node 0 and x",
+    "Using those edges only the graph turns into a dag now we just need to know the number of ways to get from node 0 to node n - 1 on a dag using dp"
+  ]
+}

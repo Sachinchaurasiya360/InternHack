@@ -1,0 +1,31 @@
+{
+  "id": "797",
+  "title": "All Paths From Source to Target",
+  "slug": "all-paths-from-source-to-target",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a directed acyclic graph (<strong>DAG</strong>) of <code>n</code> nodes labeled from <code>0</code> to <code>n - 1</code>, find all possible paths from node <code>0</code> to node <code>n - 1</code> and return them in <strong>any order</strong>.</p>\n\n<p>The graph is given as follows: <code>graph[i]</code> is a list of all nodes you can visit from node <code>i</code> (i.e., there is a directed edge from node <code>i</code> to node <code>graph[i][j]</code>).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/28/all_1.jpg\" style=\"width: 242px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> graph = [[1,2],[3],[3],[]]\n<strong>Output:</strong> [[0,1,3],[0,2,3]]\n<strong>Explanation:</strong> There are two paths: 0 -&gt; 1 -&gt; 3 and 0 -&gt; 2 -&gt; 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/28/all_2.jpg\" style=\"width: 423px; height: 301px;\" />\n<pre>\n<strong>Input:</strong> graph = [[4,3,1],[3,2,4],[3],[4],[]]\n<strong>Output:</strong> [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == graph.length</code></li>\n\t<li><code>2 &lt;= n &lt;= 15</code></li>\n\t<li><code>0 &lt;= graph[i][j] &lt; n</code></li>\n\t<li><code>graph[i][j] != i</code> (i.e., there will be no self-loops).</li>\n\t<li>All the elements of <code>graph[i]</code> are <strong>unique</strong>.</li>\n\t<li>The input graph is <strong>guaranteed</strong> to be a <strong>DAG</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given a directed acyclic graph (**DAG**) of `n` nodes labeled from `0` to `n - 1`, find all possible paths from node `0` to node `n - 1` and return them in **any order**.\n\nThe graph is given as follows: `graph[i]` is a list of all nodes you can visit from node `i` (i.e., there is a directed edge from node `i` to node `graph[i][j]`).\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/28/all_1.jpg)\n    \n    \n    **Input:** graph = [[1,2],[3],[3],[]]\n    **Output:** [[0,1,3],[0,2,3]]\n    **Explanation:** There are two paths: 0 -> 1 -> 3 and 0 -> 2 -> 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/09/28/all_2.jpg)\n    \n    \n    **Input:** graph = [[4,3,1],[3,2,4],[3],[4],[]]\n    **Output:** [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]\n    \n\n \n\n**Constraints:**\n\n  * `n == graph.length`\n  * `2 <= n <= 15`\n  * `0 <= graph[i][j] < n`\n  * `graph[i][j] != i` (i.e., there will be no self-loops).\n  * All the elements of `graph[i]` are **unique**.\n  * The input graph is **guaranteed** to be a **DAG**.",
+  "question": "Given a directed acyclic graph (**DAG**) of `n` nodes labeled from `0` to `n - 1`, find all possible paths from node `0` to node `n - 1` and return them in **any order**.\n\nThe graph is given as follows: `graph[i]` is a list of all nodes you can visit from node `i` (i.e., there is a directed edge from node `i` to node `graph[i][j]`).",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/28/all_1.jpg)\n    \n    \n    **Input:** graph = [[1,2],[3],[3],[]]\n    **Output:** [[0,1,3],[0,2,3]]\n    **Explanation:** There are two paths: 0 -> 1 -> 3 and 0 -> 2 -> 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/09/28/all_2.jpg)\n    \n    \n    **Input:** graph = [[4,3,1],[3,2,4],[3],[4],[]]\n    **Output:** [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]",
+  "constraints": "**Constraints:**\n\n  * `n == graph.length`\n  * `2 <= n <= 15`\n  * `0 <= graph[i][j] < n`\n  * `graph[i][j] != i` (i.e., there will be no self-loops).\n  * All the elements of `graph[i]` are **unique**.\n  * The input graph is **guaranteed** to be a **DAG**.",
+  "topics": ["Backtracking", "Depth-First Search", "Breadth-First Search", "Graph Theory"],
+  "total_accepted": 676622,
+  "total_submissions": 809946,
+  "acceptance_rate": "83.5%",
+  "similar_questions": [
+    {
+      "title": "Number of Ways to Arrive at Destination",
+      "slug": "number-of-ways-to-arrive-at-destination",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/"
+    },
+    {
+      "title": "Number of Increasing Paths in a Grid",
+      "slug": "number-of-increasing-paths-in-a-grid",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-increasing-paths-in-a-grid/"
+    }
+  ],
+  "hints": []
+}

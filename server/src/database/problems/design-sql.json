@@ -1,0 +1,21 @@
+{
+  "id": "2408",
+  "title": "Design SQL",
+  "slug": "design-sql",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Design"],
+  "total_accepted": 19737,
+  "total_submissions": 30572,
+  "acceptance_rate": "64.6%",
+  "similar_questions": [],
+  "hints": [
+    "What data structure do you need to use for this problem?",
+    "Try using a Hash map, each table name will be the key, and the value will be an array of all rows."
+  ]
+}

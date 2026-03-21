@@ -1,0 +1,18 @@
+{
+  "id": "180",
+  "title": "Consecutive Numbers",
+  "slug": "consecutive-numbers",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "<p>Table: <code>Logs</code></p>\n\n<pre>\n+-------------+---------+\n| Column Name | Type    |\n+-------------+---------+\n| id          | int     |\n| num         | varchar |\n+-------------+---------+\nIn SQL, id is the primary key for this table.\nid is an autoincrement column starting from 1.\n</pre>\n\n<p>&nbsp;</p>\n\n<p>Find all numbers that appear at least three times consecutively.</p>\n\n<p>Return the result table in <strong>any order</strong>.</p>\n\n<p>The&nbsp;result format is in the following example.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nLogs table:\n+----+-----+\n| id | num |\n+----+-----+\n| 1  | 1   |\n| 2  | 1   |\n| 3  | 1   |\n| 4  | 2   |\n| 5  | 1   |\n| 6  | 2   |\n| 7  | 2   |\n+----+-----+\n<strong>Output:</strong> \n+-----------------+\n| ConsecutiveNums |\n+-----------------+\n| 1               |\n+-----------------+\n<strong>Explanation:</strong> 1 is the only number that appears consecutively for at least three times.\n</pre>\n",
+  "content_markdown": "Table: `Logs`\n    \n    \n    +-------------+---------+\n    | Column Name | Type    |\n    +-------------+---------+\n    | id          | int     |\n    | num         | varchar |\n    +-------------+---------+\n    In SQL, id is the primary key for this table.\n    id is an autoincrement column starting from 1.\n    \n\n \n\nFind all numbers that appear at least three times consecutively.\n\nReturn the result table in **any order**.\n\nThe result format is in the following example.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \n    Logs table:\n    +----+-----+\n    | id | num |\n    +----+-----+\n    | 1  | 1   |\n    | 2  | 1   |\n    | 3  | 1   |\n    | 4  | 2   |\n    | 5  | 1   |\n    | 6  | 2   |\n    | 7  | 2   |\n    +----+-----+\n    **Output:** \n    +-----------------+\n    | ConsecutiveNums |\n    +-----------------+\n    | 1               |\n    +-----------------+\n    **Explanation:** 1 is the only number that appears consecutively for at least three times.",
+  "question": "Table: `Logs`\n    \n    \n    +-------------+---------+\n    | Column Name | Type    |\n    +-------------+---------+\n    | id          | int     |\n    | num         | varchar |\n    +-------------+---------+\n    In SQL, id is the primary key for this table.\n    id is an autoincrement column starting from 1.\n    \n\n \n\nFind all numbers that appear at least three times consecutively.\n\nReturn the result table in **any order**.\n\nThe result format is in the following example.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \n    Logs table:\n    +----+-----+\n    | id | num |\n    +----+-----+\n    | 1  | 1   |\n    | 2  | 1   |\n    | 3  | 1   |\n    | 4  | 2   |\n    | 5  | 1   |\n    | 6  | 2   |\n    | 7  | 2   |\n    +----+-----+\n    **Output:** \n    +-----------------+\n    | ConsecutiveNums |\n    +-----------------+\n    | 1               |\n    +-----------------+\n    **Explanation:** 1 is the only number that appears consecutively for at least three times.",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 731151,
+  "total_submissions": 1527478,
+  "acceptance_rate": "47.9%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "702",
+  "title": "Search in a Sorted Array of Unknown Size",
+  "slug": "search-in-a-sorted-array-of-unknown-size",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Interactive"],
+  "total_accepted": 112617,
+  "total_submissions": 154088,
+  "acceptance_rate": "73.1%",
+  "similar_questions": [
+    {
+      "title": "Binary Search",
+      "slug": "binary-search",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-search/"
+    },
+    {
+      "title": "Find the Index of the Large Integer",
+      "slug": "find-the-index-of-the-large-integer",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-index-of-the-large-integer/"
+    }
+  ],
+  "hints": []
+}

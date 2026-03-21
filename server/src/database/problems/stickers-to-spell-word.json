@@ -1,0 +1,36 @@
+{
+  "id": "691",
+  "title": "Stickers to Spell Word",
+  "slug": "stickers-to-spell-word",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>We are given <code>n</code> different types of <code>stickers</code>. Each sticker has a lowercase English word on it.</p>\n\n<p>You would like to spell out the given string <code>target</code> by cutting individual letters from your collection of stickers and rearranging them. You can use each sticker more than once if you want, and you have infinite quantities of each sticker.</p>\n\n<p>Return <em>the minimum number of stickers that you need to spell out </em><code>target</code>. If the task is impossible, return <code>-1</code>.</p>\n\n<p><strong>Note:</strong> In all test cases, all words were chosen randomly from the <code>1000</code> most common US English words, and <code>target</code> was chosen as a concatenation of two random words.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> stickers = [&quot;with&quot;,&quot;example&quot;,&quot;science&quot;], target = &quot;thehat&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nWe can use 2 &quot;with&quot; stickers, and 1 &quot;example&quot; sticker.\nAfter cutting and rearrange the letters of those stickers, we can form the target &quot;thehat&quot;.\nAlso, this is the minimum number of stickers necessary to form the target string.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> stickers = [&quot;notice&quot;,&quot;possible&quot;], target = &quot;basicbasic&quot;\n<strong>Output:</strong> -1\nExplanation:\nWe cannot form the target &quot;basicbasic&quot; from cutting letters from the given stickers.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == stickers.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 50</code></li>\n\t<li><code>1 &lt;= stickers[i].length &lt;= 10</code></li>\n\t<li><code>1 &lt;= target.length &lt;= 15</code></li>\n\t<li><code>stickers[i]</code> and <code>target</code> consist of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "We are given `n` different types of `stickers`. Each sticker has a lowercase English word on it.\n\nYou would like to spell out the given string `target` by cutting individual letters from your collection of stickers and rearranging them. You can use each sticker more than once if you want, and you have infinite quantities of each sticker.\n\nReturn _the minimum number of stickers that you need to spell out_`target`. If the task is impossible, return `-1`.\n\n**Note:** In all test cases, all words were chosen randomly from the `1000` most common US English words, and `target` was chosen as a concatenation of two random words.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** stickers = [\"with\",\"example\",\"science\"], target = \"thehat\"\n    **Output:** 3\n    **Explanation:**\n    We can use 2 \"with\" stickers, and 1 \"example\" sticker.\n    After cutting and rearrange the letters of those stickers, we can form the target \"thehat\".\n    Also, this is the minimum number of stickers necessary to form the target string.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stickers = [\"notice\",\"possible\"], target = \"basicbasic\"\n    **Output:** -1\n    Explanation:\n    We cannot form the target \"basicbasic\" from cutting letters from the given stickers.\n    \n\n \n\n**Constraints:**\n\n  * `n == stickers.length`\n  * `1 <= n <= 50`\n  * `1 <= stickers[i].length <= 10`\n  * `1 <= target.length <= 15`\n  * `stickers[i]` and `target` consist of lowercase English letters.",
+  "question": "We are given `n` different types of `stickers`. Each sticker has a lowercase English word on it.\n\nYou would like to spell out the given string `target` by cutting individual letters from your collection of stickers and rearranging them. You can use each sticker more than once if you want, and you have infinite quantities of each sticker.\n\nReturn _the minimum number of stickers that you need to spell out_`target`. If the task is impossible, return `-1`.\n\n**Note:** In all test cases, all words were chosen randomly from the `1000` most common US English words, and `target` was chosen as a concatenation of two random words.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** stickers = [\"with\",\"example\",\"science\"], target = \"thehat\"\n    **Output:** 3\n    **Explanation:**\n    We can use 2 \"with\" stickers, and 1 \"example\" sticker.\n    After cutting and rearrange the letters of those stickers, we can form the target \"thehat\".\n    Also, this is the minimum number of stickers necessary to form the target string.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stickers = [\"notice\",\"possible\"], target = \"basicbasic\"\n    **Output:** -1\n    Explanation:\n    We cannot form the target \"basicbasic\" from cutting letters from the given stickers.",
+  "constraints": "**Constraints:**\n\n  * `n == stickers.length`\n  * `1 <= n <= 50`\n  * `1 <= stickers[i].length <= 10`\n  * `1 <= target.length <= 15`\n  * `stickers[i]` and `target` consist of lowercase English letters.",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Dynamic Programming",
+    "Backtracking",
+    "Bit Manipulation",
+    "Memoization",
+    "Bitmask"
+  ],
+  "total_accepted": 95141,
+  "total_submissions": 187850,
+  "acceptance_rate": "50.6%",
+  "similar_questions": [
+    {
+      "title": "Ransom Note",
+      "slug": "ransom-note",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/ransom-note/"
+    }
+  ],
+  "hints": [
+    "We want to perform an exhaustive search, but we need to speed it up based on the input data being random.  \r\n\r\nFor all stickers, we can ignore any letters that are not in the target word.  \r\n\r\nWhen our candidate answer won't be smaller than an answer we have already found, we can stop searching this path.  \r\n\r\nWhen a sticker dominates another, we shouldn't include the dominated sticker in our sticker collection.  [Here, we say a sticker `A` dominates `B` if `A.count(letter) >= B.count(letter)` for all letters.]"
+  ]
+}

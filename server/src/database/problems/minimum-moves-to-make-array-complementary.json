@@ -1,0 +1,35 @@
+{
+  "id": "1674",
+  "title": "Minimum Moves to Make Array Complementary",
+  "slug": "minimum-moves-to-make-array-complementary",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> of <strong>even</strong> length <code>n</code> and an integer <code>limit</code>. In one move, you can replace any integer from <code>nums</code> with another integer between <code>1</code> and <code>limit</code>, inclusive.</p>\n\n<p>The array <code>nums</code> is <strong>complementary</strong> if for all indices <code>i</code> (<strong>0-indexed</strong>), <code>nums[i] + nums[n - 1 - i]</code> equals the same number. For example, the array <code>[1,2,3,4]</code> is complementary because for all indices <code>i</code>, <code>nums[i] + nums[n - 1 - i] = 5</code>.</p>\n\n<p>Return the <em><strong>minimum</strong> number of moves required to make </em><code>nums</code><em> <strong>complementary</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,4,3], limit = 4\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> In 1 move, you can change nums to [1,2,<u>2</u>,3] (underlined elements are changed).\nnums[0] + nums[3] = 1 + 3 = 4.\nnums[1] + nums[2] = 2 + 2 = 4.\nnums[2] + nums[1] = 2 + 2 = 4.\nnums[3] + nums[0] = 3 + 1 = 4.\nTherefore, nums[i] + nums[n-1-i] = 4 for every i, so nums is complementary.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,2,1], limit = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> In 2 moves, you can change nums to [<u>2</u>,2,2,<u>2</u>]. You cannot change any number to 3 since 3 &gt; limit.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,2], limit = 2\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> nums is already complementary.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>2 &lt;= n&nbsp;&lt;=&nbsp;10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i]&nbsp;&lt;= limit &lt;=&nbsp;10<sup>5</sup></code></li>\n\t<li><code>n</code> is even.</li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` of **even** length `n` and an integer `limit`. In one move, you can replace any integer from `nums` with another integer between `1` and `limit`, inclusive.\n\nThe array `nums` is **complementary** if for all indices `i` (**0-indexed**), `nums[i] + nums[n - 1 - i]` equals the same number. For example, the array `[1,2,3,4]` is complementary because for all indices `i`, `nums[i] + nums[n - 1 - i] = 5`.\n\nReturn the _**minimum** number of moves required to make _`nums` _**complementary**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,4,3], limit = 4\n    **Output:** 1\n    **Explanation:** In 1 move, you can change nums to [1,2,_2_ ,3] (underlined elements are changed).\n    nums[0] + nums[3] = 1 + 3 = 4.\n    nums[1] + nums[2] = 2 + 2 = 4.\n    nums[2] + nums[1] = 2 + 2 = 4.\n    nums[3] + nums[0] = 3 + 1 = 4.\n    Therefore, nums[i] + nums[n-1-i] = 4 for every i, so nums is complementary.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,2,1], limit = 2\n    **Output:** 2\n    **Explanation:** In 2 moves, you can change nums to [_2_ ,2,2,_2_]. You cannot change any number to 3 since 3 > limit.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,1,2], limit = 2\n    **Output:** 0\n    **Explanation:** nums is already complementary.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `2 <= n <= 105`\n  * `1 <= nums[i] <= limit <= 105`\n  * `n` is even.",
+  "question": "You are given an integer array `nums` of **even** length `n` and an integer `limit`. In one move, you can replace any integer from `nums` with another integer between `1` and `limit`, inclusive.\n\nThe array `nums` is **complementary** if for all indices `i` (**0-indexed**), `nums[i] + nums[n - 1 - i]` equals the same number. For example, the array `[1,2,3,4]` is complementary because for all indices `i`, `nums[i] + nums[n - 1 - i] = 5`.\n\nReturn the _**minimum** number of moves required to make _`nums` _**complementary**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,4,3], limit = 4\n    **Output:** 1\n    **Explanation:** In 1 move, you can change nums to [1,2,_2_ ,3] (underlined elements are changed).\n    nums[0] + nums[3] = 1 + 3 = 4.\n    nums[1] + nums[2] = 2 + 2 = 4.\n    nums[2] + nums[1] = 2 + 2 = 4.\n    nums[3] + nums[0] = 3 + 1 = 4.\n    Therefore, nums[i] + nums[n-1-i] = 4 for every i, so nums is complementary.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,2,1], limit = 2\n    **Output:** 2\n    **Explanation:** In 2 moves, you can change nums to [_2_ ,2,2,_2_]. You cannot change any number to 3 since 3 > limit.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,1,2], limit = 2\n    **Output:** 0\n    **Explanation:** nums is already complementary.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `2 <= n <= 105`\n  * `1 <= nums[i] <= limit <= 105`\n  * `n` is even.",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 12863,
+  "total_submissions": 29718,
+  "acceptance_rate": "43.3%",
+  "similar_questions": [
+    {
+      "title": "Zero Array Transformation II",
+      "slug": "zero-array-transformation-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/zero-array-transformation-ii/"
+    },
+    {
+      "title": "Zero Array Transformation III",
+      "slug": "zero-array-transformation-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/zero-array-transformation-iii/"
+    }
+  ],
+  "hints": [
+    "Given a target sum x, each pair of nums[i] and nums[n-1-i] would either need 0, 1, or 2 modifications.",
+    "Can you find the optimal target sum x value such that the sum of modifications is minimized?",
+    "Create a difference array to efficiently sum all the modifications."
+  ]
+}

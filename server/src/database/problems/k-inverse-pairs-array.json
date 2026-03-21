@@ -1,0 +1,25 @@
+{
+  "id": "629",
+  "title": "K Inverse Pairs Array",
+  "slug": "k-inverse-pairs-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>For an integer array <code>nums</code>, an <strong>inverse pair</strong> is a pair of integers <code>[i, j]</code> where <code>0 &lt;= i &lt; j &lt; nums.length</code> and <code>nums[i] &gt; nums[j]</code>.</p>\n\n<p>Given two integers n and k, return the number of different arrays consisting of numbers from <code>1</code> to <code>n</code> such that there are exactly <code>k</code> <strong>inverse pairs</strong>. Since the answer can be huge, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, k = 0\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Only the array [1,2,3] which consists of numbers from 1 to 3 has exactly 0 inverse pairs.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, k = 1\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The array [1,3,2] and [2,1,3] have exactly 1 inverse pair.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n\t<li><code>0 &lt;= k &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "For an integer array `nums`, an **inverse pair** is a pair of integers `[i, j]` where `0 <= i < j < nums.length` and `nums[i] > nums[j]`.\n\nGiven two integers n and k, return the number of different arrays consisting of numbers from `1` to `n` such that there are exactly `k` **inverse pairs**. Since the answer can be huge, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 3, k = 0\n    **Output:** 1\n    **Explanation:** Only the array [1,2,3] which consists of numbers from 1 to 3 has exactly 0 inverse pairs.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, k = 1\n    **Output:** 2\n    **Explanation:** The array [1,3,2] and [2,1,3] have exactly 1 inverse pair.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `0 <= k <= 1000`",
+  "question": "For an integer array `nums`, an **inverse pair** is a pair of integers `[i, j]` where `0 <= i < j < nums.length` and `nums[i] > nums[j]`.\n\nGiven two integers n and k, return the number of different arrays consisting of numbers from `1` to `n` such that there are exactly `k` **inverse pairs**. Since the answer can be huge, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 3, k = 0\n    **Output:** 1\n    **Explanation:** Only the array [1,2,3] which consists of numbers from 1 to 3 has exactly 0 inverse pairs.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, k = 1\n    **Output:** 2\n    **Explanation:** The array [1,3,2] and [2,1,3] have exactly 1 inverse pair.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`\n  * `0 <= k <= 1000`",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 139641,
+  "total_submissions": 285179,
+  "acceptance_rate": "49.0%",
+  "similar_questions": [
+    {
+      "title": "Count the Number of Inversions",
+      "slug": "count-the-number-of-inversions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-the-number-of-inversions/"
+    }
+  ],
+  "hints": []
+}

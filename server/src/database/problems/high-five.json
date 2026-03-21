@@ -1,0 +1,29 @@
+{
+  "id": "1086",
+  "title": "High Five",
+  "slug": "high-five",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 122490,
+  "total_submissions": 165056,
+  "acceptance_rate": "74.2%",
+  "similar_questions": [
+    {
+      "title": "Determine the Winner of a Bowling Game",
+      "slug": "determine-the-winner-of-a-bowling-game",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/determine-the-winner-of-a-bowling-game/"
+    }
+  ],
+  "hints": [
+    "How can we solve the problem if we have just one student?",
+    "Given an student sort their grades and get the top 5 average.",
+    "Generalize the idea to do it for many students."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "1344",
+  "title": "Angle Between Hands of a Clock",
+  "slug": "angle-between-hands-of-a-clock",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two numbers, <code>hour</code> and <code>minutes</code>, return <em>the smaller angle (in degrees) formed between the </em><code>hour</code><em> and the </em><code>minute</code><em> hand</em>.</p>\n\n<p>Answers within <code>10<sup>-5</sup></code> of the actual value will be accepted as correct.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/12/26/sample_1_1673.png\" style=\"width: 300px; height: 296px;\" />\n<pre>\n<strong>Input:</strong> hour = 12, minutes = 30\n<strong>Output:</strong> 165\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/12/26/sample_2_1673.png\" style=\"width: 300px; height: 301px;\" />\n<pre>\n<strong>Input:</strong> hour = 3, minutes = 30\n<strong>Output:</strong> 75\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/12/26/sample_3_1673.png\" style=\"width: 300px; height: 301px;\" />\n<pre>\n<strong>Input:</strong> hour = 3, minutes = 15\n<strong>Output:</strong> 7.5\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= hour &lt;= 12</code></li>\n\t<li><code>0 &lt;= minutes &lt;= 59</code></li>\n</ul>\n",
+  "content_markdown": "Given two numbers, `hour` and `minutes`, return _the smaller angle (in degrees) formed between the_`hour` _and the_`minute` _hand_.\n\nAnswers within `10-5` of the actual value will be accepted as correct.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/12/26/sample_1_1673.png)\n    \n    \n    **Input:** hour = 12, minutes = 30\n    **Output:** 165\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/12/26/sample_2_1673.png)\n    \n    \n    **Input:** hour = 3, minutes = 30\n    **Output:** 75\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2019/12/26/sample_3_1673.png)\n    \n    \n    **Input:** hour = 3, minutes = 15\n    **Output:** 7.5\n    \n\n \n\n**Constraints:**\n\n  * `1 <= hour <= 12`\n  * `0 <= minutes <= 59`",
+  "question": "Given two numbers, `hour` and `minutes`, return _the smaller angle (in degrees) formed between the_`hour` _and the_`minute` _hand_.\n\nAnswers within `10-5` of the actual value will be accepted as correct.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/12/26/sample_1_1673.png)\n    \n    \n    **Input:** hour = 12, minutes = 30\n    **Output:** 165\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/12/26/sample_2_1673.png)\n    \n    \n    **Input:** hour = 3, minutes = 30\n    **Output:** 75\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2019/12/26/sample_3_1673.png)\n    \n    \n    **Input:** hour = 3, minutes = 15\n    **Output:** 7.5",
+  "constraints": "**Constraints:**\n\n  * `1 <= hour <= 12`\n  * `0 <= minutes <= 59`",
+  "topics": ["Math"],
+  "total_accepted": 142350,
+  "total_submissions": 221064,
+  "acceptance_rate": "64.4%",
+  "similar_questions": [],
+  "hints": [
+    "The tricky part is determining how the minute hand affects the position of the hour hand.",
+    "Calculate the angles separately then find the difference."
+  ]
+}

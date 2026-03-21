@@ -1,0 +1,25 @@
+{
+  "id": "828",
+  "title": "Count Unique Characters of All Substrings of a Given String",
+  "slug": "count-unique-characters-of-all-substrings-of-a-given-string",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Let&#39;s define a function <code>countUniqueChars(s)</code> that returns the number of unique characters in&nbsp;<code>s</code>.</p>\n\n<ul>\n\t<li>For example, calling <code>countUniqueChars(s)</code> if <code>s = &quot;LEETCODE&quot;</code> then <code>&quot;L&quot;</code>, <code>&quot;T&quot;</code>, <code>&quot;C&quot;</code>, <code>&quot;O&quot;</code>, <code>&quot;D&quot;</code> are the unique characters since they appear only once in <code>s</code>, therefore <code>countUniqueChars(s) = 5</code>.</li>\n</ul>\n\n<p>Given a string <code>s</code>, return the sum of <code>countUniqueChars(t)</code> where <code>t</code> is a substring of <code>s</code>. The test cases are generated such that the answer fits in a 32-bit integer.</p>\n\n<p>Notice that some substrings can be repeated so in this case you have to count the repeated ones too.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ABC&quot;\n<strong>Output:</strong> 10\n<strong>Explanation: </strong>All possible substrings are: &quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;AB&quot;,&quot;BC&quot; and &quot;ABC&quot;.\nEvery substring is composed with only unique letters.\nSum of lengths of all substring is 1 + 1 + 1 + 2 + 2 + 3 = 10\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ABA&quot;\n<strong>Output:</strong> 8\n<strong>Explanation: </strong>The same as example 1, except <code>countUniqueChars</code>(&quot;ABA&quot;) = 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;LEETCODE&quot;\n<strong>Output:</strong> 92\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of uppercase English letters only.</li>\n</ul>\n",
+  "content_markdown": "Let's define a function `countUniqueChars(s)` that returns the number of unique characters in `s`.\n\n  * For example, calling `countUniqueChars(s)` if `s = \"LEETCODE\"` then `\"L\"`, `\"T\"`, `\"C\"`, `\"O\"`, `\"D\"` are the unique characters since they appear only once in `s`, therefore `countUniqueChars(s) = 5`.\n\n\n\nGiven a string `s`, return the sum of `countUniqueChars(t)` where `t` is a substring of `s`. The test cases are generated such that the answer fits in a 32-bit integer.\n\nNotice that some substrings can be repeated so in this case you have to count the repeated ones too.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"ABC\"\n    **Output:** 10\n    **Explanation:** All possible substrings are: \"A\",\"B\",\"C\",\"AB\",\"BC\" and \"ABC\".\n    Every substring is composed with only unique letters.\n    Sum of lengths of all substring is 1 + 1 + 1 + 2 + 2 + 3 = 10\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"ABA\"\n    **Output:** 8\n    **Explanation:** The same as example 1, except countUniqueChars(\"ABA\") = 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"LEETCODE\"\n    **Output:** 92\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of uppercase English letters only.",
+  "question": "Let's define a function `countUniqueChars(s)` that returns the number of unique characters in `s`.\n\n  * For example, calling `countUniqueChars(s)` if `s = \"LEETCODE\"` then `\"L\"`, `\"T\"`, `\"C\"`, `\"O\"`, `\"D\"` are the unique characters since they appear only once in `s`, therefore `countUniqueChars(s) = 5`.\n\n\n\nGiven a string `s`, return the sum of `countUniqueChars(t)` where `t` is a substring of `s`. The test cases are generated such that the answer fits in a 32-bit integer.\n\nNotice that some substrings can be repeated so in this case you have to count the repeated ones too.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"ABC\"\n    **Output:** 10\n    **Explanation:** All possible substrings are: \"A\",\"B\",\"C\",\"AB\",\"BC\" and \"ABC\".\n    Every substring is composed with only unique letters.\n    Sum of lengths of all substring is 1 + 1 + 1 + 2 + 2 + 3 = 10\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"ABA\"\n    **Output:** 8\n    **Explanation:** The same as example 1, except countUniqueChars(\"ABA\") = 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"LEETCODE\"\n    **Output:** 92",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of uppercase English letters only.",
+  "topics": ["Hash Table", "String", "Dynamic Programming"],
+  "total_accepted": 83291,
+  "total_submissions": 155694,
+  "acceptance_rate": "53.5%",
+  "similar_questions": [
+    {
+      "title": "Total Appeal of A String",
+      "slug": "total-appeal-of-a-string",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/total-appeal-of-a-string/"
+    }
+  ],
+  "hints": []
+}

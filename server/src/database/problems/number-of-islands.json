@@ -1,0 +1,91 @@
+{
+  "id": "200",
+  "title": "Number of Islands",
+  "slug": "number-of-islands",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> 2D binary grid <code>grid</code> which represents a map of <code>&#39;1&#39;</code>s (land) and <code>&#39;0&#39;</code>s (water), return <em>the number of islands</em>.</p>\n\n<p>An <strong>island</strong> is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [\n  [&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;0&quot;],\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;],\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;]\n]\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;0&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;1&quot;,&quot;1&quot;]\n]\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 300</code></li>\n\t<li><code>grid[i][j]</code> is <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return _the number of islands_.\n\nAn **island** is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** grid = [\n      [\"1\",\"1\",\"1\",\"1\",\"0\"],\n      [\"1\",\"1\",\"0\",\"1\",\"0\"],\n      [\"1\",\"1\",\"0\",\"0\",\"0\"],\n      [\"0\",\"0\",\"0\",\"0\",\"0\"]\n    ]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [\n      [\"1\",\"1\",\"0\",\"0\",\"0\"],\n      [\"1\",\"1\",\"0\",\"0\",\"0\"],\n      [\"0\",\"0\",\"1\",\"0\",\"0\"],\n      [\"0\",\"0\",\"0\",\"1\",\"1\"]\n    ]\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 300`\n  * `grid[i][j]` is `'0'` or `'1'`.",
+  "question": "Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return _the number of islands_.\n\nAn **island** is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** grid = [\n      [\"1\",\"1\",\"1\",\"1\",\"0\"],\n      [\"1\",\"1\",\"0\",\"1\",\"0\"],\n      [\"1\",\"1\",\"0\",\"0\",\"0\"],\n      [\"0\",\"0\",\"0\",\"0\",\"0\"]\n    ]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [\n      [\"1\",\"1\",\"0\",\"0\",\"0\"],\n      [\"1\",\"1\",\"0\",\"0\",\"0\"],\n      [\"0\",\"0\",\"1\",\"0\",\"0\"],\n      [\"0\",\"0\",\"0\",\"1\",\"1\"]\n    ]\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 300`\n  * `grid[i][j]` is `'0'` or `'1'`.",
+  "topics": ["Array", "Depth-First Search", "Breadth-First Search", "Union-Find", "Matrix"],
+  "total_accepted": 4002285,
+  "total_submissions": 6268353,
+  "acceptance_rate": "63.8%",
+  "similar_questions": [
+    {
+      "title": "Surrounded Regions",
+      "slug": "surrounded-regions",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/surrounded-regions/"
+    },
+    {
+      "title": "Walls and Gates",
+      "slug": "walls-and-gates",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/walls-and-gates/"
+    },
+    {
+      "title": "Number of Islands II",
+      "slug": "number-of-islands-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-islands-ii/"
+    },
+    {
+      "title": "Number of Connected Components in an Undirected Graph",
+      "slug": "number-of-connected-components-in-an-undirected-graph",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/"
+    },
+    {
+      "title": "Battleships in a Board",
+      "slug": "battleships-in-a-board",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/battleships-in-a-board/"
+    },
+    {
+      "title": "Number of Distinct Islands",
+      "slug": "number-of-distinct-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-distinct-islands/"
+    },
+    {
+      "title": "Max Area of Island",
+      "slug": "max-area-of-island",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-area-of-island/"
+    },
+    {
+      "title": "Count Sub Islands",
+      "slug": "count-sub-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-sub-islands/"
+    },
+    {
+      "title": "Find All Groups of Farmland",
+      "slug": "find-all-groups-of-farmland",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-groups-of-farmland/"
+    },
+    {
+      "title": "Count Unreachable Pairs of Nodes in an Undirected Graph",
+      "slug": "count-unreachable-pairs-of-nodes-in-an-undirected-graph",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-unreachable-pairs-of-nodes-in-an-undirected-graph/"
+    },
+    {
+      "title": "Maximum Number of Fish in a Grid",
+      "slug": "maximum-number-of-fish-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-fish-in-a-grid/"
+    },
+    {
+      "title": "Count Islands With Total Value Divisible by K",
+      "slug": "count-islands-with-total-value-divisible-by-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-islands-with-total-value-divisible-by-k/"
+    }
+  ],
+  "hints": []
+}

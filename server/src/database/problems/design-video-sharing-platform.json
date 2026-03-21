@@ -1,0 +1,40 @@
+{
+  "id": "2254",
+  "title": "Design Video Sharing Platform",
+  "slug": "design-video-sharing-platform",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Design", "Heap (Priority Queue)"],
+  "total_accepted": 5457,
+  "total_submissions": 8519,
+  "acceptance_rate": "64.1%",
+  "similar_questions": [
+    {
+      "title": "Tweet Counts Per Frequency",
+      "slug": "tweet-counts-per-frequency",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/tweet-counts-per-frequency/"
+    },
+    {
+      "title": "Design Browser History",
+      "slug": "design-browser-history",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-browser-history/"
+    },
+    {
+      "title": "Most Popular Video Creator",
+      "slug": "most-popular-video-creator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/most-popular-video-creator/"
+    }
+  ],
+  "hints": [
+    "How can we keep track of the videoId’s of removed videos?",
+    "When you remove a video, keep track of its videoId in an array called usedId. When a new video is uploaded, first check if usedId contains any elements, if it does, use the smallest value in usedId."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "379",
+  "title": "Design Phone Directory",
+  "slug": "design-phone-directory",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Linked List", "Design", "Queue"],
+  "total_accepted": 74296,
+  "total_submissions": 140955,
+  "acceptance_rate": "52.7%",
+  "similar_questions": [
+    {
+      "title": "Seat Reservation Manager",
+      "slug": "seat-reservation-manager",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/seat-reservation-manager/"
+    }
+  ],
+  "hints": []
+}

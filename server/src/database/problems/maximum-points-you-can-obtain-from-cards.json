@@ -1,0 +1,46 @@
+{
+  "id": "1423",
+  "title": "Maximum Points You Can Obtain from Cards",
+  "slug": "maximum-points-you-can-obtain-from-cards",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are several cards <strong>arranged in a row</strong>, and each card has an associated number of points. The points are given in the integer array <code>cardPoints</code>.</p>\n\n<p>In one step, you can take one card from the beginning or from the end of the row. You have to take exactly <code>k</code> cards.</p>\n\n<p>Your score is the sum of the points of the cards you have taken.</p>\n\n<p>Given the integer array <code>cardPoints</code> and the integer <code>k</code>, return the <em>maximum score</em> you can obtain.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> cardPoints = [1,2,3,4,5,6,1], k = 3\n<strong>Output:</strong> 12\n<strong>Explanation:</strong> After the first step, your score will always be 1. However, choosing the rightmost card first will maximize your total score. The optimal strategy is to take the three cards on the right, giving a final score of 1 + 6 + 5 = 12.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> cardPoints = [2,2,2], k = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Regardless of which two cards you take, your score will always be 4.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> cardPoints = [9,7,7,9,7,7,9], k = 7\n<strong>Output:</strong> 55\n<strong>Explanation:</strong> You have to take all the cards. Your score is the sum of points of all cards.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= cardPoints.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= cardPoints[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= cardPoints.length</code></li>\n</ul>\n",
+  "content_markdown": "There are several cards **arranged in a row** , and each card has an associated number of points. The points are given in the integer array `cardPoints`.\n\nIn one step, you can take one card from the beginning or from the end of the row. You have to take exactly `k` cards.\n\nYour score is the sum of the points of the cards you have taken.\n\nGiven the integer array `cardPoints` and the integer `k`, return the _maximum score_ you can obtain.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** cardPoints = [1,2,3,4,5,6,1], k = 3\n    **Output:** 12\n    **Explanation:** After the first step, your score will always be 1. However, choosing the rightmost card first will maximize your total score. The optimal strategy is to take the three cards on the right, giving a final score of 1 + 6 + 5 = 12.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cardPoints = [2,2,2], k = 2\n    **Output:** 4\n    **Explanation:** Regardless of which two cards you take, your score will always be 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** cardPoints = [9,7,7,9,7,7,9], k = 7\n    **Output:** 55\n    **Explanation:** You have to take all the cards. Your score is the sum of points of all cards.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= cardPoints.length <= 105`\n  * `1 <= cardPoints[i] <= 104`\n  * `1 <= k <= cardPoints.length`",
+  "question": "There are several cards **arranged in a row** , and each card has an associated number of points. The points are given in the integer array `cardPoints`.\n\nIn one step, you can take one card from the beginning or from the end of the row. You have to take exactly `k` cards.\n\nYour score is the sum of the points of the cards you have taken.\n\nGiven the integer array `cardPoints` and the integer `k`, return the _maximum score_ you can obtain.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** cardPoints = [1,2,3,4,5,6,1], k = 3\n    **Output:** 12\n    **Explanation:** After the first step, your score will always be 1. However, choosing the rightmost card first will maximize your total score. The optimal strategy is to take the three cards on the right, giving a final score of 1 + 6 + 5 = 12.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cardPoints = [2,2,2], k = 2\n    **Output:** 4\n    **Explanation:** Regardless of which two cards you take, your score will always be 4.\n    \n\n**Example 3:**\n    \n    \n    **Input:** cardPoints = [9,7,7,9,7,7,9], k = 7\n    **Output:** 55\n    **Explanation:** You have to take all the cards. Your score is the sum of points of all cards.",
+  "constraints": "**Constraints:**\n\n  * `1 <= cardPoints.length <= 105`\n  * `1 <= cardPoints[i] <= 104`\n  * `1 <= k <= cardPoints.length`",
+  "topics": ["Array", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 497581,
+  "total_submissions": 868607,
+  "acceptance_rate": "57.3%",
+  "similar_questions": [
+    {
+      "title": "Maximum Score from Performing Multiplication Operations",
+      "slug": "maximum-score-from-performing-multiplication-operations",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-score-from-performing-multiplication-operations/"
+    },
+    {
+      "title": "Removing Minimum and Maximum From Array",
+      "slug": "removing-minimum-and-maximum-from-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/removing-minimum-and-maximum-from-array/"
+    },
+    {
+      "title": "Minimum Recolors to Get K Consecutive Black Blocks",
+      "slug": "minimum-recolors-to-get-k-consecutive-black-blocks",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-recolors-to-get-k-consecutive-black-blocks/"
+    },
+    {
+      "title": "Maximum Spending After Buying Items",
+      "slug": "maximum-spending-after-buying-items",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-spending-after-buying-items/"
+    }
+  ],
+  "hints": [
+    "Let the sum of all points be total_pts. You need to remove a sub-array from cardPoints with length n - k.",
+    "Keep a window of size n - k over the array. The answer is max(answer, total_pts - sumOfCurrentWindow)"
+  ]
+}

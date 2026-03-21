@@ -1,0 +1,36 @@
+{
+  "id": "3481",
+  "title": "Apply Substitutions",
+  "slug": "apply-substitutions",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Topological Sort"
+  ],
+  "total_accepted": 14489,
+  "total_submissions": 18704,
+  "acceptance_rate": "77.5%",
+  "similar_questions": [
+    {
+      "title": "Evaluate the Bracket Pairs of a String",
+      "slug": "evaluate-the-bracket-pairs-of-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/evaluate-the-bracket-pairs-of-a-string/"
+    }
+  ],
+  "hints": [
+    "Build a dependency graph where each key is a node, and add an edge from key <code>X</code> to key <code>Y</code> if the replacement value for <code>Y</code> contains the placeholder <code>%X%</code>. Then perform a topological sort to determine a valid order for substitution.",
+    "Process the keys in the topologically sorted order by replacing placeholders in each replacement value with its fully expanded value. Finally, substitute the placeholders in the text using these computed values."
+  ]
+}

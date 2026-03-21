@@ -1,0 +1,28 @@
+{
+  "id": "2393",
+  "title": "Count Strictly Increasing Subarrays",
+  "slug": "count-strictly-increasing-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Dynamic Programming"],
+  "total_accepted": 8160,
+  "total_submissions": 11438,
+  "acceptance_rate": "71.3%",
+  "similar_questions": [
+    {
+      "title": "Maximum Ascending Subarray Sum",
+      "slug": "maximum-ascending-subarray-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-ascending-subarray-sum/"
+    }
+  ],
+  "hints": [
+    "Find the number of strictly increasing subarrays that end at a specific index. Can you calculate that for each index from 0 to n - 1?",
+    "The answer will be the sum of the number of subarrays that end at each index."
+  ]
+}

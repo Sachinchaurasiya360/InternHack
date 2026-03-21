@@ -661,16 +661,10 @@ export interface DsaTopic {
   solvedCount: number;
 }
 
-export interface DsaSubTopic {
-  id: number;
-  name: string;
-  orderIndex: number;
-  problems: DsaProblem[];
-}
-
 export interface DsaProblem {
   id: number;
   title: string;
+  slug: string;
   difficulty: string;
   leetcodeUrl?: string;
   gfgUrl?: string;
@@ -680,8 +674,9 @@ export interface DsaProblem {
   codechefUrl?: string;
   tags: string[];
   companies: string[];
-  hints?: string;
+  hints: string[];
   sheets: string[];
+  acceptanceRate?: string;
   solved: boolean;
   notes?: string | null;
   bookmarked?: boolean;
@@ -695,7 +690,39 @@ export interface DsaTopicDetail {
   orderIndex: number;
   totalProblems: number;
   totalSolved: number;
-  subTopics: DsaSubTopic[];
+  totalPages: number;
+  page: number;
+  problems: DsaProblem[];
+}
+
+export interface DsaProblemDetail {
+  id: number;
+  title: string;
+  slug: string;
+  difficulty: string;
+  leetcodeId?: number;
+  leetcodeUrl?: string;
+  gfgUrl?: string;
+  articleUrl?: string;
+  videoUrl?: string;
+  hackerrankUrl?: string;
+  codechefUrl?: string;
+  tags: string[];
+  companies: string[];
+  hints: string[];
+  sheets: string[];
+  description?: string;
+  examples?: string;
+  constraints?: string;
+  acceptanceRate?: string;
+  totalAccepted?: number;
+  totalSubmissions?: number;
+  similarQuestions?: { title: string; slug: string; difficulty: string; url: string }[];
+  category?: string;
+  isPremium: boolean;
+  solved: boolean;
+  bookmarked: boolean;
+  notes?: string | null;
 }
 
 export interface DsaProgress {
@@ -728,14 +755,14 @@ export interface DsaBookmarkItem {
   id: number;
   problemId: number;
   title: string;
+  slug: string;
   difficulty: string;
   leetcodeUrl?: string;
   gfgUrl?: string;
   tags: string[];
   companies: string[];
   sheets: string[];
-  topicName: string;
-  topicSlug: string;
+  acceptanceRate?: string;
   solved: boolean;
   createdAt: string;
 }
@@ -743,17 +770,24 @@ export interface DsaBookmarkItem {
 export interface DsaCompanyProblem {
   id: number;
   title: string;
+  slug: string;
   difficulty: string;
   leetcodeUrl?: string;
   gfgUrl?: string;
   tags: string[];
   companies: string[];
-  hints?: string;
+  hints: string[];
   sheets: string[];
-  topicName: string;
-  topicSlug: string;
+  acceptanceRate?: string;
   solved: boolean;
   bookmarked: boolean;
+}
+
+export interface DsaPaginatedProblems {
+  problems: DsaCompanyProblem[];
+  total: number;
+  totalPages: number;
+  page: number;
 }
 
 // Aptitude Practice

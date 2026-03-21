@@ -1,0 +1,31 @@
+{
+  "id": "842",
+  "title": "Split Array into Fibonacci Sequence",
+  "slug": "split-array-into-fibonacci-sequence",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string of digits <code>num</code>, such as <code>&quot;123456579&quot;</code>. We can split it into a Fibonacci-like sequence <code>[123, 456, 579]</code>.</p>\n\n<p>Formally, a <strong>Fibonacci-like</strong> sequence is a list <code>f</code> of non-negative integers such that:</p>\n\n<ul>\n\t<li><code>0 &lt;= f[i] &lt; 2<sup>31</sup></code>, (that is, each integer fits in a <strong>32-bit</strong> signed integer type),</li>\n\t<li><code>f.length &gt;= 3</code>, and</li>\n\t<li><code>f[i] + f[i + 1] == f[i + 2]</code> for all <code>0 &lt;= i &lt; f.length - 2</code>.</li>\n</ul>\n\n<p>Note that when splitting the string into pieces, each piece must not have extra leading zeroes, except if the piece is the number <code>0</code> itself.</p>\n\n<p>Return any Fibonacci-like sequence split from <code>num</code>, or return <code>[]</code> if it cannot be done.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;1101111&quot;\n<strong>Output:</strong> [11,0,11,11]\n<strong>Explanation:</strong> The output [110, 1, 111] would also be accepted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;112358130&quot;\n<strong>Output:</strong> []\n<strong>Explanation:</strong> The task is impossible.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;0123&quot;\n<strong>Output:</strong> []\n<strong>Explanation:</strong> Leading zeroes are not allowed, so &quot;01&quot;, &quot;2&quot;, &quot;3&quot; is not valid.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num.length &lt;= 200</code></li>\n\t<li><code>num</code> contains only digits.</li>\n</ul>\n",
+  "content_markdown": "You are given a string of digits `num`, such as `\"123456579\"`. We can split it into a Fibonacci-like sequence `[123, 456, 579]`.\n\nFormally, a **Fibonacci-like** sequence is a list `f` of non-negative integers such that:\n\n  * `0 <= f[i] < 231`, (that is, each integer fits in a **32-bit** signed integer type),\n  * `f.length >= 3`, and\n  * `f[i] + f[i + 1] == f[i + 2]` for all `0 <= i < f.length - 2`.\n\n\n\nNote that when splitting the string into pieces, each piece must not have extra leading zeroes, except if the piece is the number `0` itself.\n\nReturn any Fibonacci-like sequence split from `num`, or return `[]` if it cannot be done.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = \"1101111\"\n    **Output:** [11,0,11,11]\n    **Explanation:** The output [110, 1, 111] would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"112358130\"\n    **Output:** []\n    **Explanation:** The task is impossible.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = \"0123\"\n    **Output:** []\n    **Explanation:** Leading zeroes are not allowed, so \"01\", \"2\", \"3\" is not valid.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num.length <= 200`\n  * `num` contains only digits.",
+  "question": "You are given a string of digits `num`, such as `\"123456579\"`. We can split it into a Fibonacci-like sequence `[123, 456, 579]`.\n\nFormally, a **Fibonacci-like** sequence is a list `f` of non-negative integers such that:\n\n  * `0 <= f[i] < 231`, (that is, each integer fits in a **32-bit** signed integer type),\n  * `f.length >= 3`, and\n  * `f[i] + f[i + 1] == f[i + 2]` for all `0 <= i < f.length - 2`.\n\n\n\nNote that when splitting the string into pieces, each piece must not have extra leading zeroes, except if the piece is the number `0` itself.\n\nReturn any Fibonacci-like sequence split from `num`, or return `[]` if it cannot be done.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = \"1101111\"\n    **Output:** [11,0,11,11]\n    **Explanation:** The output [110, 1, 111] would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"112358130\"\n    **Output:** []\n    **Explanation:** The task is impossible.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = \"0123\"\n    **Output:** []\n    **Explanation:** Leading zeroes are not allowed, so \"01\", \"2\", \"3\" is not valid.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num.length <= 200`\n  * `num` contains only digits.",
+  "topics": ["String", "Backtracking"],
+  "total_accepted": 46459,
+  "total_submissions": 115583,
+  "acceptance_rate": "40.2%",
+  "similar_questions": [
+    {
+      "title": "Additive Number",
+      "slug": "additive-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/additive-number/"
+    },
+    {
+      "title": "Fibonacci Number",
+      "slug": "fibonacci-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/fibonacci-number/"
+    }
+  ],
+  "hints": []
+}

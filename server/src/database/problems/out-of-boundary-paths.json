@@ -1,0 +1,35 @@
+{
+  "id": "576",
+  "title": "Out of Boundary Paths",
+  "slug": "out-of-boundary-paths",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is an <code>m x n</code> grid with a ball. The ball is initially at the position <code>[startRow, startColumn]</code>. You are allowed to move the ball to one of the four adjacent cells in the grid (possibly out of the grid crossing the grid boundary). You can apply <strong>at most</strong> <code>maxMove</code> moves to the ball.</p>\n\n<p>Given the five integers <code>m</code>, <code>n</code>, <code>maxMove</code>, <code>startRow</code>, <code>startColumn</code>, return the number of paths to move the ball out of the grid boundary. Since the answer can be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/28/out_of_boundary_paths_1.png\" style=\"width: 500px; height: 296px;\" />\n<pre>\n<strong>Input:</strong> m = 2, n = 2, maxMove = 2, startRow = 0, startColumn = 0\n<strong>Output:</strong> 6\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/28/out_of_boundary_paths_2.png\" style=\"width: 500px; height: 293px;\" />\n<pre>\n<strong>Input:</strong> m = 1, n = 3, maxMove = 3, startRow = 0, startColumn = 1\n<strong>Output:</strong> 12\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= m, n &lt;= 50</code></li>\n\t<li><code>0 &lt;= maxMove &lt;= 50</code></li>\n\t<li><code>0 &lt;= startRow &lt; m</code></li>\n\t<li><code>0 &lt;= startColumn &lt; n</code></li>\n</ul>\n",
+  "content_markdown": "There is an `m x n` grid with a ball. The ball is initially at the position `[startRow, startColumn]`. You are allowed to move the ball to one of the four adjacent cells in the grid (possibly out of the grid crossing the grid boundary). You can apply **at most** `maxMove` moves to the ball.\n\nGiven the five integers `m`, `n`, `maxMove`, `startRow`, `startColumn`, return the number of paths to move the ball out of the grid boundary. Since the answer can be very large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/out_of_boundary_paths_1.png)\n    \n    \n    **Input:** m = 2, n = 2, maxMove = 2, startRow = 0, startColumn = 0\n    **Output:** 6\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/out_of_boundary_paths_2.png)\n    \n    \n    **Input:** m = 1, n = 3, maxMove = 3, startRow = 0, startColumn = 1\n    **Output:** 12\n    \n\n \n\n**Constraints:**\n\n  * `1 <= m, n <= 50`\n  * `0 <= maxMove <= 50`\n  * `0 <= startRow < m`\n  * `0 <= startColumn < n`",
+  "question": "There is an `m x n` grid with a ball. The ball is initially at the position `[startRow, startColumn]`. You are allowed to move the ball to one of the four adjacent cells in the grid (possibly out of the grid crossing the grid boundary). You can apply **at most** `maxMove` moves to the ball.\n\nGiven the five integers `m`, `n`, `maxMove`, `startRow`, `startColumn`, return the number of paths to move the ball out of the grid boundary. Since the answer can be very large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/out_of_boundary_paths_1.png)\n    \n    \n    **Input:** m = 2, n = 2, maxMove = 2, startRow = 0, startColumn = 0\n    **Output:** 6\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/out_of_boundary_paths_2.png)\n    \n    \n    **Input:** m = 1, n = 3, maxMove = 3, startRow = 0, startColumn = 1\n    **Output:** 12",
+  "constraints": "**Constraints:**\n\n  * `1 <= m, n <= 50`\n  * `0 <= maxMove <= 50`\n  * `0 <= startRow < m`\n  * `0 <= startColumn < n`",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 228263,
+  "total_submissions": 471853,
+  "acceptance_rate": "48.4%",
+  "similar_questions": [
+    {
+      "title": "Knight Probability in Chessboard",
+      "slug": "knight-probability-in-chessboard",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/knight-probability-in-chessboard/"
+    },
+    {
+      "title": "Execution of All Suffix Instructions Staying in a Grid",
+      "slug": "execution-of-all-suffix-instructions-staying-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/execution-of-all-suffix-instructions-staying-in-a-grid/"
+    }
+  ],
+  "hints": [
+    "Is traversing every path feasible? There are many possible paths for a small matrix. Try to optimize it.",
+    "Can we use some space to store the number of paths and update them after every move?",
+    "One obvious thing: the ball will go out of the boundary only by crossing it. Also, there is only one possible way the ball can go out of the boundary from the boundary cell except for corner cells. From the corner cell, the ball can go out in two different ways.\r\n\r\nCan you use this thing to solve the problem?"
+  ]
+}

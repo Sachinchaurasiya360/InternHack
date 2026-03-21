@@ -1,0 +1,21 @@
+{
+  "id": "1864",
+  "title": "Minimum Number of Swaps to Make the Binary String Alternating",
+  "slug": "minimum-number-of-swaps-to-make-the-binary-string-alternating",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary string <code>s</code>, return <em>the <strong>minimum</strong> number of character swaps to make it <strong>alternating</strong>, or </em><code>-1</code><em> if it is impossible.</em></p>\n\n<p>The string is called <strong>alternating</strong> if no two adjacent characters are equal. For example, the strings <code>&quot;010&quot;</code> and <code>&quot;1010&quot;</code> are alternating, while the string <code>&quot;0100&quot;</code> is not.</p>\n\n<p>Any two characters may be swapped, even if they are&nbsp;<strong>not adjacent</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;111000&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Swap positions 1 and 4: &quot;1<u>1</u>10<u>0</u>0&quot; -&gt; &quot;1<u>0</u>10<u>1</u>0&quot;\nThe string is now alternating.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;010&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The string is already alternating, no swaps are needed.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1110&quot;\n<strong>Output:</strong> -1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a binary string `s`, return _the**minimum** number of character swaps to make it **alternating** , or _`-1` _if it is impossible._\n\nThe string is called **alternating** if no two adjacent characters are equal. For example, the strings `\"010\"` and `\"1010\"` are alternating, while the string `\"0100\"` is not.\n\nAny two characters may be swapped, even if they are **not adjacent**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"111000\"\n    **Output:** 1\n    **Explanation:** Swap positions 1 and 4: \"1 _1_ 10 _0_ 0\" -> \"1 _0_ 10 _1_ 0\"\n    The string is now alternating.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"010\"\n    **Output:** 0\n    **Explanation:** The string is already alternating, no swaps are needed.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1110\"\n    **Output:** -1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "question": "Given a binary string `s`, return _the**minimum** number of character swaps to make it **alternating** , or _`-1` _if it is impossible._\n\nThe string is called **alternating** if no two adjacent characters are equal. For example, the strings `\"010\"` and `\"1010\"` are alternating, while the string `\"0100\"` is not.\n\nAny two characters may be swapped, even if they are **not adjacent**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"111000\"\n    **Output:** 1\n    **Explanation:** Swap positions 1 and 4: \"1 _1_ 10 _0_ 0\" -> \"1 _0_ 10 _1_ 0\"\n    The string is now alternating.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"010\"\n    **Output:** 0\n    **Explanation:** The string is already alternating, no swaps are needed.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1110\"\n    **Output:** -1",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "topics": ["String", "Greedy"],
+  "total_accepted": 35318,
+  "total_submissions": 80517,
+  "acceptance_rate": "43.9%",
+  "similar_questions": [],
+  "hints": [
+    "Think about all valid strings of length n.",
+    "Try to count the mismatched positions with each valid string of length n."
+  ]
+}

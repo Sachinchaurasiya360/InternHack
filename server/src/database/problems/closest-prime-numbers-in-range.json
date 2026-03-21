@@ -1,0 +1,28 @@
+{
+  "id": "2523",
+  "title": "Closest Prime Numbers in Range",
+  "slug": "closest-prime-numbers-in-range",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two positive integers <code>left</code> and <code>right</code>, find the two integers <code>num1</code> and <code>num2</code> such that:</p>\n\n<ul>\n\t<li><code>left &lt;= num1 &lt; num2 &lt;= right </code>.</li>\n\t<li>Both <code>num1</code> and <code>num2</code> are <span data-keyword=\"prime-number\">prime numbers</span>.</li>\n\t<li><code>num2 - num1</code> is the <strong>minimum</strong> amongst all other pairs satisfying the above conditions.</li>\n</ul>\n\n<p>Return the positive integer array <code>ans = [num1, num2]</code>. If there are multiple pairs satisfying these conditions, return the one with the <strong>smallest</strong> <code>num1</code> value. If no such numbers exist, return <code>[-1, -1]</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = 10, right = 19\n<strong>Output:</strong> [11,13]\n<strong>Explanation:</strong> The prime numbers between 10 and 19 are 11, 13, 17, and 19.\nThe closest gap between any pair is 2, which can be achieved by [11,13] or [17,19].\nSince 11 is smaller than 17, we return the first pair.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = 4, right = 6\n<strong>Output:</strong> [-1,-1]\n<strong>Explanation:</strong> There exists only one prime number in the given range, so the conditions cannot be satisfied.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= left &lt;= right &lt;= 10<sup>6</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<style type=\"text/css\">.spoilerbutton {display:block; border:dashed; padding: 0px 0px; margin:10px 0px; font-size:150%; font-weight: bold; color:#000000; background-color:cyan; outline:0; \n}\n.spoiler {overflow:hidden;}\n.spoiler > div {-webkit-transition: all 0s ease;-moz-transition: margin 0s ease;-o-transition: all 0s ease;transition: margin 0s ease;}\n.spoilerbutton[value=\"Show Message\"] + .spoiler > div {margin-top:-500%;}\n.spoilerbutton[value=\"Hide Message\"] + .spoiler {padding:5px;}\n</style>\n",
+  "content_markdown": "Given two positive integers `left` and `right`, find the two integers `num1` and `num2` such that:\n\n  * `left <= num1 < num2 <= right `.\n  * Both `num1` and `num2` are prime numbers.\n  * `num2 - num1` is the **minimum** amongst all other pairs satisfying the above conditions.\n\n\n\nReturn the positive integer array `ans = [num1, num2]`. If there are multiple pairs satisfying these conditions, return the one with the **smallest** `num1` value. If no such numbers exist, return `[-1, -1]`_._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** left = 10, right = 19\n    **Output:** [11,13]\n    **Explanation:** The prime numbers between 10 and 19 are 11, 13, 17, and 19.\n    The closest gap between any pair is 2, which can be achieved by [11,13] or [17,19].\n    Since 11 is smaller than 17, we return the first pair.\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = 4, right = 6\n    **Output:** [-1,-1]\n    **Explanation:** There exists only one prime number in the given range, so the conditions cannot be satisfied.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= left <= right <= 106`",
+  "question": "Given two positive integers `left` and `right`, find the two integers `num1` and `num2` such that:\n\n  * `left <= num1 < num2 <= right `.\n  * Both `num1` and `num2` are prime numbers.\n  * `num2 - num1` is the **minimum** amongst all other pairs satisfying the above conditions.\n\n\n\nReturn the positive integer array `ans = [num1, num2]`. If there are multiple pairs satisfying these conditions, return the one with the **smallest** `num1` value. If no such numbers exist, return `[-1, -1]`_._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** left = 10, right = 19\n    **Output:** [11,13]\n    **Explanation:** The prime numbers between 10 and 19 are 11, 13, 17, and 19.\n    The closest gap between any pair is 2, which can be achieved by [11,13] or [17,19].\n    Since 11 is smaller than 17, we return the first pair.\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = 4, right = 6\n    **Output:** [-1,-1]\n    **Explanation:** There exists only one prime number in the given range, so the conditions cannot be satisfied.",
+  "constraints": "**Constraints:**\n\n  * `1 <= left <= right <= 106`",
+  "topics": ["Math", "Number Theory"],
+  "total_accepted": 188313,
+  "total_submissions": 364404,
+  "acceptance_rate": "51.7%",
+  "similar_questions": [
+    {
+      "title": "Count Ways to Make Array With Product",
+      "slug": "count-ways-to-make-array-with-product",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-ways-to-make-array-with-product/"
+    }
+  ],
+  "hints": [
+    "Use Sieve of Eratosthenes to mark numbers that are primes.",
+    "Iterate from right to left and find pair with the minimum distance between marked numbers."
+  ]
+}

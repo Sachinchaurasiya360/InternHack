@@ -1,0 +1,35 @@
+{
+  "id": "2164",
+  "title": "Sort Even and Odd Indices Independently",
+  "slug": "sort-even-and-odd-indices-independently",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>. Rearrange the values of <code>nums</code> according to the following rules:</p>\n\n<ol>\n\t<li>Sort the values at <strong>odd indices</strong> of <code>nums</code> in <strong>non-increasing</strong> order.\n\n\t<ul>\n\t\t<li>For example, if <code>nums = [4,<strong><u>1</u></strong>,2,<u><strong>3</strong></u>]</code> before this step, it becomes <code>[4,<u><strong>3</strong></u>,2,<strong><u>1</u></strong>]</code> after. The values at odd indices <code>1</code> and <code>3</code> are sorted in non-increasing order.</li>\n\t</ul>\n\t</li>\n\t<li>Sort the values at <strong>even indices</strong> of <code>nums</code> in <strong>non-decreasing</strong> order.\n\t<ul>\n\t\t<li>For example, if <code>nums = [<u><strong>4</strong></u>,1,<u><strong>2</strong></u>,3]</code> before this step, it becomes <code>[<u><strong>2</strong></u>,1,<u><strong>4</strong></u>,3]</code> after. The values at even indices <code>0</code> and <code>2</code> are sorted in non-decreasing order.</li>\n\t</ul>\n\t</li>\n</ol>\n\n<p>Return <em>the array formed after rearranging the values of</em> <code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,1,2,3]\n<strong>Output:</strong> [2,3,4,1]\n<strong>Explanation:</strong> \nFirst, we sort the values present at odd indices (1 and 3) in non-increasing order.\nSo, nums changes from [4,<strong><u>1</u></strong>,2,<strong><u>3</u></strong>] to [4,<u><strong>3</strong></u>,2,<strong><u>1</u></strong>].\nNext, we sort the values present at even indices (0 and 2) in non-decreasing order.\nSo, nums changes from [<u><strong>4</strong></u>,1,<strong><u>2</u></strong>,3] to [<u><strong>2</strong></u>,3,<u><strong>4</strong></u>,1].\nThus, the array formed after rearranging the values is [2,3,4,1].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,1]\n<strong>Output:</strong> [2,1]\n<strong>Explanation:</strong> \nSince there is exactly one odd index and one even index, no rearrangement of values takes place.\nThe resultant array formed is [2,1], which is the same as the initial array. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`. Rearrange the values of `nums` according to the following rules:\n\n  1. Sort the values at **odd indices** of `nums` in **non-increasing** order. \n     * For example, if `nums = [4,**_1_** ,2,_**3**_]` before this step, it becomes `[4,_**3**_ ,2,**_1_**]` after. The values at odd indices `1` and `3` are sorted in non-increasing order.\n  2. Sort the values at **even indices** of `nums` in **non-decreasing** order. \n     * For example, if `nums = [_**4**_ ,1,_**2**_ ,3]` before this step, it becomes `[_**2**_ ,1,_**4**_ ,3]` after. The values at even indices `0` and `2` are sorted in non-decreasing order.\n\n\n\nReturn _the array formed after rearranging the values of_ `nums`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,1,2,3]\n    **Output:** [2,3,4,1]\n    **Explanation:** \n    First, we sort the values present at odd indices (1 and 3) in non-increasing order.\n    So, nums changes from [4,**_1_** ,2,**_3_**] to [4,_**3**_ ,2,**_1_**].\n    Next, we sort the values present at even indices (0 and 2) in non-decreasing order.\n    So, nums changes from [_**4**_ ,1,**_2_** ,3] to [_**2**_ ,3,_**4**_ ,1].\n    Thus, the array formed after rearranging the values is [2,3,4,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1]\n    **Output:** [2,1]\n    **Explanation:** \n    Since there is exactly one odd index and one even index, no rearrangement of values takes place.\n    The resultant array formed is [2,1], which is the same as the initial array. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 100`",
+  "question": "You are given a **0-indexed** integer array `nums`. Rearrange the values of `nums` according to the following rules:\n\n  1. Sort the values at **odd indices** of `nums` in **non-increasing** order. \n     * For example, if `nums = [4,**_1_** ,2,_**3**_]` before this step, it becomes `[4,_**3**_ ,2,**_1_**]` after. The values at odd indices `1` and `3` are sorted in non-increasing order.\n  2. Sort the values at **even indices** of `nums` in **non-decreasing** order. \n     * For example, if `nums = [_**4**_ ,1,_**2**_ ,3]` before this step, it becomes `[_**2**_ ,1,_**4**_ ,3]` after. The values at even indices `0` and `2` are sorted in non-decreasing order.\n\n\n\nReturn _the array formed after rearranging the values of_ `nums`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,1,2,3]\n    **Output:** [2,3,4,1]\n    **Explanation:** \n    First, we sort the values present at odd indices (1 and 3) in non-increasing order.\n    So, nums changes from [4,**_1_** ,2,**_3_**] to [4,_**3**_ ,2,**_1_**].\n    Next, we sort the values present at even indices (0 and 2) in non-decreasing order.\n    So, nums changes from [_**4**_ ,1,**_2_** ,3] to [_**2**_ ,3,_**4**_ ,1].\n    Thus, the array formed after rearranging the values is [2,3,4,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1]\n    **Output:** [2,1]\n    **Explanation:** \n    Since there is exactly one odd index and one even index, no rearrangement of values takes place.\n    The resultant array formed is [2,1], which is the same as the initial array.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 100`",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 89389,
+  "total_submissions": 141508,
+  "acceptance_rate": "63.2%",
+  "similar_questions": [
+    {
+      "title": "Sort Array By Parity",
+      "slug": "sort-array-by-parity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-parity/"
+    },
+    {
+      "title": "Sort Array By Parity II",
+      "slug": "sort-array-by-parity-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-parity-ii/"
+    }
+  ],
+  "hints": [
+    "Try to separate the elements at odd indices from the elements at even indices.",
+    "Sort the two groups of elements individually.",
+    "Combine them to form the resultant array."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "2865",
+  "title": "Beautiful Towers I",
+  "slug": "beautiful-towers-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>heights</code> of <code>n</code> integers representing the number of bricks in <code>n</code> consecutive towers. Your task is to remove some bricks to form a <strong>mountain-shaped</strong> tower arrangement. In this arrangement, the tower heights are non-decreasing, reaching a maximum peak value with one or multiple consecutive towers and then non-increasing.</p>\n\n<p>Return the <strong>maximum possible sum</strong> of heights of a mountain-shaped tower arrangement.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">heights = [5,3,4,1,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">13</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We remove some bricks to make <code>heights =&nbsp;[5,3,3,1,1]</code>, the peak is at index 0.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">heights = [6,5,3,9,2,7]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">22</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We remove some bricks to make <code>heights =&nbsp;[3,3,3,9,2,2]</code>, the peak is at index 3.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">heights = [3,2,5,5,2,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">18</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We remove some bricks to make <code>heights = [2,2,5,5,2,2]</code>, the peak is at index 2 or 3.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n == heights.length &lt;= 10<sup>3</sup></code></li>\n\t<li><code>1 &lt;= heights[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `heights` of `n` integers representing the number of bricks in `n` consecutive towers. Your task is to remove some bricks to form a **mountain-shaped** tower arrangement. In this arrangement, the tower heights are non-decreasing, reaching a maximum peak value with one or multiple consecutive towers and then non-increasing.\n\nReturn the **maximum possible sum** of heights of a mountain-shaped tower arrangement.\n\n \n\n**Example 1:**\n\n**Input:** heights = [5,3,4,1,1]\n\n**Output:** 13\n\n**Explanation:**\n\nWe remove some bricks to make `heights = [5,3,3,1,1]`, the peak is at index 0.\n\n**Example 2:**\n\n**Input:** heights = [6,5,3,9,2,7]\n\n**Output:** 22\n\n**Explanation:**\n\nWe remove some bricks to make `heights = [3,3,3,9,2,2]`, the peak is at index 3.\n\n**Example 3:**\n\n**Input:** heights = [3,2,5,5,2,3]\n\n**Output:** 18\n\n**Explanation:**\n\nWe remove some bricks to make `heights = [2,2,5,5,2,2]`, the peak is at index 2 or 3.\n\n \n\n**Constraints:**\n\n  * `1 <= n == heights.length <= 103`\n  * `1 <= heights[i] <= 109`",
+  "question": "You are given an array `heights` of `n` integers representing the number of bricks in `n` consecutive towers. Your task is to remove some bricks to form a **mountain-shaped** tower arrangement. In this arrangement, the tower heights are non-decreasing, reaching a maximum peak value with one or multiple consecutive towers and then non-increasing.\n\nReturn the **maximum possible sum** of heights of a mountain-shaped tower arrangement.",
+  "examples": "**Example 1:**\n\n**Input:** heights = [5,3,4,1,1]\n\n**Output:** 13\n\n**Explanation:**\n\nWe remove some bricks to make `heights = [5,3,3,1,1]`, the peak is at index 0.\n\n**Example 2:**\n\n**Input:** heights = [6,5,3,9,2,7]\n\n**Output:** 22\n\n**Explanation:**\n\nWe remove some bricks to make `heights = [3,3,3,9,2,2]`, the peak is at index 3.\n\n**Example 3:**\n\n**Input:** heights = [3,2,5,5,2,3]\n\n**Output:** 18\n\n**Explanation:**\n\nWe remove some bricks to make `heights = [2,2,5,5,2,2]`, the peak is at index 2 or 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n == heights.length <= 103`\n  * `1 <= heights[i] <= 109`",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 33475,
+  "total_submissions": 75496,
+  "acceptance_rate": "44.3%",
+  "similar_questions": [
+    {
+      "title": "Valid Mountain Array",
+      "slug": "valid-mountain-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-mountain-array/"
+    },
+    {
+      "title": "Minimum Number of Removals to Make Mountain Array",
+      "slug": "minimum-number-of-removals-to-make-mountain-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-removals-to-make-mountain-array/"
+    },
+    {
+      "title": "Maximum Number of Books You Can Take",
+      "slug": "maximum-number-of-books-you-can-take",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-books-you-can-take/"
+    }
+  ],
+  "hints": [
+    "Try all the possible indices <code>i</code> as the peak.",
+    "If <code>i</code> is the peak, <code>i-1<sup>th</sup></code> element, and <code>heights[j] = min(heights[j], heights[j + 1])</code> for <code>0 <= j < i </code>",
+    "If <code>i</code> is the peak, start from <code>i+1<sup>th</sup></code> element, heights[j] = min(heights[j], heights[j - 1]) for <code>i < j < heights.size()</code>"
+  ]
+}

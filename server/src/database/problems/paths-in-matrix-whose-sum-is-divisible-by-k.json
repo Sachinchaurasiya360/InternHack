@@ -1,0 +1,71 @@
+{
+  "id": "2435",
+  "title": "Paths in Matrix Whose Sum Is Divisible by K",
+  "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> <code>m x n</code> integer matrix <code>grid</code> and an integer <code>k</code>. You are currently at position <code>(0, 0)</code> and you want to reach position <code>(m - 1, n - 1)</code> moving only <strong>down</strong> or <strong>right</strong>.</p>\n\n<p>Return<em> the number of paths where the sum of the elements on the path is divisible by </em><code>k</code>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img src=\"https://assets.leetcode.com/uploads/2022/08/13/image-20220813183124-1.png\" style=\"width: 437px; height: 200px;\" />\n<pre>\n<strong>Input:</strong> grid = [[5,2,4],[3,0,5],[0,7,2]], k = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> There are two paths where the sum of the elements on the path is divisible by k.\nThe first path highlighted in red has a sum of 5 + 2 + 4 + 5 + 2 = 18 which is divisible by 3.\nThe second path highlighted in blue has a sum of 5 + 3 + 0 + 5 + 2 = 15 which is divisible by 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img src=\"https://assets.leetcode.com/uploads/2022/08/17/image-20220817112930-3.png\" style=\"height: 85px; width: 132px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,0]], k = 5\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The path highlighted in red has a sum of 0 + 0 = 0 which is divisible by 5.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img src=\"https://assets.leetcode.com/uploads/2022/08/12/image-20220812224605-3.png\" style=\"width: 257px; height: 200px;\" />\n<pre>\n<strong>Input:</strong> grid = [[7,3,4,9],[2,3,6,2],[2,3,7,0]], k = 1\n<strong>Output:</strong> 10\n<strong>Explanation:</strong> Every integer is divisible by 1 so the sum of the elements on every possible path is divisible by k.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= m * n &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= grid[i][j] &lt;= 100</code></li>\n\t<li><code>1 &lt;= k &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** `m x n` integer matrix `grid` and an integer `k`. You are currently at position `(0, 0)` and you want to reach position `(m - 1, n - 1)` moving only **down** or **right**.\n\nReturn _the number of paths where the sum of the elements on the path is divisible by_`k`. Since the answer may be very large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/08/13/image-20220813183124-1.png)\n    \n    \n    **Input:** grid = [[5,2,4],[3,0,5],[0,7,2]], k = 3\n    **Output:** 2\n    **Explanation:** There are two paths where the sum of the elements on the path is divisible by k.\n    The first path highlighted in red has a sum of 5 + 2 + 4 + 5 + 2 = 18 which is divisible by 3.\n    The second path highlighted in blue has a sum of 5 + 3 + 0 + 5 + 2 = 15 which is divisible by 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/08/17/image-20220817112930-3.png)\n    \n    \n    **Input:** grid = [[0,0]], k = 5\n    **Output:** 1\n    **Explanation:** The path highlighted in red has a sum of 0 + 0 = 0 which is divisible by 5.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2022/08/12/image-20220812224605-3.png)\n    \n    \n    **Input:** grid = [[7,3,4,9],[2,3,6,2],[2,3,7,0]], k = 1\n    **Output:** 10\n    **Explanation:** Every integer is divisible by 1 so the sum of the elements on every possible path is divisible by k.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 5 * 104`\n  * `1 <= m * n <= 5 * 104`\n  * `0 <= grid[i][j] <= 100`\n  * `1 <= k <= 50`",
+  "question": "You are given a **0-indexed** `m x n` integer matrix `grid` and an integer `k`. You are currently at position `(0, 0)` and you want to reach position `(m - 1, n - 1)` moving only **down** or **right**.\n\nReturn _the number of paths where the sum of the elements on the path is divisible by_`k`. Since the answer may be very large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/08/13/image-20220813183124-1.png)\n    \n    \n    **Input:** grid = [[5,2,4],[3,0,5],[0,7,2]], k = 3\n    **Output:** 2\n    **Explanation:** There are two paths where the sum of the elements on the path is divisible by k.\n    The first path highlighted in red has a sum of 5 + 2 + 4 + 5 + 2 = 18 which is divisible by 3.\n    The second path highlighted in blue has a sum of 5 + 3 + 0 + 5 + 2 = 15 which is divisible by 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/08/17/image-20220817112930-3.png)\n    \n    \n    **Input:** grid = [[0,0]], k = 5\n    **Output:** 1\n    **Explanation:** The path highlighted in red has a sum of 0 + 0 = 0 which is divisible by 5.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2022/08/12/image-20220812224605-3.png)\n    \n    \n    **Input:** grid = [[7,3,4,9],[2,3,6,2],[2,3,7,0]], k = 1\n    **Output:** 10\n    **Explanation:** Every integer is divisible by 1 so the sum of the elements on every possible path is divisible by k.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 5 * 104`\n  * `1 <= m * n <= 5 * 104`\n  * `0 <= grid[i][j] <= 100`\n  * `1 <= k <= 50`",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 102744,
+  "total_submissions": 174947,
+  "acceptance_rate": "58.7%",
+  "similar_questions": [
+    {
+      "title": "Unique Paths",
+      "slug": "unique-paths",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-paths/"
+    },
+    {
+      "title": "Unique Paths II",
+      "slug": "unique-paths-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-paths-ii/"
+    },
+    {
+      "title": "Minimum Path Sum",
+      "slug": "minimum-path-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-sum/"
+    },
+    {
+      "title": "Dungeon Game",
+      "slug": "dungeon-game",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/dungeon-game/"
+    },
+    {
+      "title": "Cherry Pickup",
+      "slug": "cherry-pickup",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/cherry-pickup/"
+    },
+    {
+      "title": "Shortest Path in Binary Matrix",
+      "slug": "shortest-path-in-binary-matrix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-path-in-binary-matrix/"
+    },
+    {
+      "title": "Minimum Cost Homecoming of a Robot in a Grid",
+      "slug": "minimum-cost-homecoming-of-a-robot-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/"
+    },
+    {
+      "title": "Check if There is a Path With Equal Number of 0's And 1's",
+      "slug": "check-if-there-is-a-path-with-equal-number-of-0s-and-1s",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-there-is-a-path-with-equal-number-of-0s-and-1s/"
+    }
+  ],
+  "hints": [
+    "The actual numbers in grid do not matter. What matters are the remainders you get when you divide the numbers by k.",
+    "We can use dynamic programming to solve this problem. What can we use as states?",
+    "Let dp[i][j][value] represent the number of paths where the sum of the elements on the path has a remainder of value when divided by k."
+  ]
+}

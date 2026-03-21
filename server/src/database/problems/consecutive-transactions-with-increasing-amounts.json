@@ -1,0 +1,18 @@
+{
+  "id": "2701",
+  "title": "Consecutive Transactions with Increasing Amounts",
+  "slug": "consecutive-transactions-with-increasing-amounts",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 5459,
+  "total_submissions": 15776,
+  "acceptance_rate": "34.6%",
+  "similar_questions": [],
+  "hints": []
+}

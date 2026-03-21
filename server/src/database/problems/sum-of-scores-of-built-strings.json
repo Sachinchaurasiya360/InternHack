@@ -1,0 +1,35 @@
+{
+  "id": "2223",
+  "title": "Sum of Scores of Built Strings",
+  "slug": "sum-of-scores-of-built-strings",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are <strong>building</strong> a string <code>s</code> of length <code>n</code> <strong>one</strong> character at a time, <strong>prepending</strong> each new character to the <strong>front</strong> of the string. The strings are labeled from <code>1</code> to <code>n</code>, where the string with length <code>i</code> is labeled <code>s<sub>i</sub></code>.</p>\n\n<ul>\n\t<li>For example, for <code>s = &quot;abaca&quot;</code>, <code>s<sub>1</sub> == &quot;a&quot;</code>, <code>s<sub>2</sub> == &quot;ca&quot;</code>, <code>s<sub>3</sub> == &quot;aca&quot;</code>, etc.</li>\n</ul>\n\n<p>The <strong>score</strong> of <code>s<sub>i</sub></code> is the length of the <strong>longest common prefix</strong> between <code>s<sub>i</sub></code> and <code>s<sub>n</sub></code> (Note that <code>s == s<sub>n</sub></code>).</p>\n\n<p>Given the final string <code>s</code>, return<em> the <strong>sum</strong> of the <strong>score</strong> of every </em><code>s<sub>i</sub></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;babab&quot;\n<strong>Output:</strong> 9\n<strong>Explanation:</strong>\nFor s<sub>1</sub> == &quot;b&quot;, the longest common prefix is &quot;b&quot; which has a score of 1.\nFor s<sub>2</sub> == &quot;ab&quot;, there is no common prefix so the score is 0.\nFor s<sub>3</sub> == &quot;bab&quot;, the longest common prefix is &quot;bab&quot; which has a score of 3.\nFor s<sub>4</sub> == &quot;abab&quot;, there is no common prefix so the score is 0.\nFor s<sub>5</sub> == &quot;babab&quot;, the longest common prefix is &quot;babab&quot; which has a score of 5.\nThe sum of the scores is 1 + 0 + 3 + 0 + 5 = 9, so we return 9.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;azbazbzaz&quot;\n<strong>Output:</strong> 14\n<strong>Explanation:</strong> \nFor s<sub>2</sub> == &quot;az&quot;, the longest common prefix is &quot;az&quot; which has a score of 2.\nFor s<sub>6</sub> == &quot;azbzaz&quot;, the longest common prefix is &quot;azb&quot; which has a score of 3.\nFor s<sub>9</sub> == &quot;azbazbzaz&quot;, the longest common prefix is &quot;azbazbzaz&quot; which has a score of 9.\nFor all other s<sub>i</sub>, the score is 0.\nThe sum of the scores is 2 + 3 + 9 = 14, so we return 14.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are **building** a string `s` of length `n` **one** character at a time, **prepending** each new character to the **front** of the string. The strings are labeled from `1` to `n`, where the string with length `i` is labeled `si`.\n\n  * For example, for `s = \"abaca\"`, `s1 == \"a\"`, `s2 == \"ca\"`, `s3 == \"aca\"`, etc.\n\n\n\nThe **score** of `si` is the length of the **longest common prefix** between `si` and `sn` (Note that `s == sn`).\n\nGiven the final string `s`, return _the**sum** of the **score** of every _`si`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"babab\"\n    **Output:** 9\n    **Explanation:**\n    For s1 == \"b\", the longest common prefix is \"b\" which has a score of 1.\n    For s2 == \"ab\", there is no common prefix so the score is 0.\n    For s3 == \"bab\", the longest common prefix is \"bab\" which has a score of 3.\n    For s4 == \"abab\", there is no common prefix so the score is 0.\n    For s5 == \"babab\", the longest common prefix is \"babab\" which has a score of 5.\n    The sum of the scores is 1 + 0 + 3 + 0 + 5 = 9, so we return 9.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"azbazbzaz\"\n    **Output:** 14\n    **Explanation:** \n    For s2 == \"az\", the longest common prefix is \"az\" which has a score of 2.\n    For s6 == \"azbzaz\", the longest common prefix is \"azb\" which has a score of 3.\n    For s9 == \"azbazbzaz\", the longest common prefix is \"azbazbzaz\" which has a score of 9.\n    For all other si, the score is 0.\n    The sum of the scores is 2 + 3 + 9 = 14, so we return 14.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "question": "You are **building** a string `s` of length `n` **one** character at a time, **prepending** each new character to the **front** of the string. The strings are labeled from `1` to `n`, where the string with length `i` is labeled `si`.\n\n  * For example, for `s = \"abaca\"`, `s1 == \"a\"`, `s2 == \"ca\"`, `s3 == \"aca\"`, etc.\n\n\n\nThe **score** of `si` is the length of the **longest common prefix** between `si` and `sn` (Note that `s == sn`).\n\nGiven the final string `s`, return _the**sum** of the **score** of every _`si`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"babab\"\n    **Output:** 9\n    **Explanation:**\n    For s1 == \"b\", the longest common prefix is \"b\" which has a score of 1.\n    For s2 == \"ab\", there is no common prefix so the score is 0.\n    For s3 == \"bab\", the longest common prefix is \"bab\" which has a score of 3.\n    For s4 == \"abab\", there is no common prefix so the score is 0.\n    For s5 == \"babab\", the longest common prefix is \"babab\" which has a score of 5.\n    The sum of the scores is 1 + 0 + 3 + 0 + 5 = 9, so we return 9.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"azbazbzaz\"\n    **Output:** 14\n    **Explanation:** \n    For s2 == \"az\", the longest common prefix is \"az\" which has a score of 2.\n    For s6 == \"azbzaz\", the longest common prefix is \"azb\" which has a score of 3.\n    For s9 == \"azbazbzaz\", the longest common prefix is \"azbazbzaz\" which has a score of 9.\n    For all other si, the score is 0.\n    The sum of the scores is 2 + 3 + 9 = 14, so we return 14.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "topics": [
+    "String",
+    "Binary Search",
+    "Rolling Hash",
+    "Suffix Array",
+    "String Matching",
+    "Hash Function"
+  ],
+  "total_accepted": 14059,
+  "total_submissions": 30100,
+  "acceptance_rate": "46.7%",
+  "similar_questions": [
+    {
+      "title": "Longest Happy Prefix",
+      "slug": "longest-happy-prefix",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-happy-prefix/"
+    }
+  ],
+  "hints": [
+    "Each s_i is a suffix of the string s, so consider algorithms that can determine the longest prefix that is also a suffix.",
+    "Could you use the Z array from the Z algorithm to find the score of each s_i?"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "1952",
+  "title": "Three Divisors",
+  "slug": "three-divisors",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <code>true</code><em> if </em><code>n</code><em> has <strong>exactly three positive divisors</strong>. Otherwise, return </em><code>false</code>.</p>\n\n<p>An integer <code>m</code> is a <strong>divisor</strong> of <code>n</code> if there exists an integer <code>k</code> such that <code>n = k * m</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> false\n<strong>Explantion:</strong> 2 has only two divisors: 1 and 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> true\n<strong>Explantion:</strong> 4 has three divisors: 1, 2, and 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, return `true` _if_`n` _has**exactly three positive divisors**. Otherwise, return _`false`.\n\nAn integer `m` is a **divisor** of `n` if there exists an integer `k` such that `n = k * m`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** false\n    **Explantion:** 2 has only two divisors: 1 and 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 4\n    **Output:** true\n    **Explantion:** 4 has three divisors: 1, 2, and 4.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 104`",
+  "question": "Given an integer `n`, return `true` _if_`n` _has**exactly three positive divisors**. Otherwise, return _`false`.\n\nAn integer `m` is a **divisor** of `n` if there exists an integer `k` such that `n = k * m`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** false\n    **Explantion:** 2 has only two divisors: 1 and 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 4\n    **Output:** true\n    **Explantion:** 4 has three divisors: 1, 2, and 4.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 104`",
+  "topics": ["Math", "Enumeration", "Number Theory"],
+  "total_accepted": 131695,
+  "total_submissions": 205994,
+  "acceptance_rate": "63.9%",
+  "similar_questions": [
+    {
+      "title": "Find Greatest Common Divisor of Array",
+      "slug": "find-greatest-common-divisor-of-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-greatest-common-divisor-of-array/"
+    },
+    {
+      "title": "Smallest Even Multiple",
+      "slug": "smallest-even-multiple",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/smallest-even-multiple/"
+    }
+  ],
+  "hints": [
+    "You can count the number of divisors and just check that they are 3",
+    "Beware of the case of n equal 1 as some solutions might fail in it"
+  ]
+}

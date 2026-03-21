@@ -1,0 +1,46 @@
+{
+  "id": "2419",
+  "title": "Longest Subarray With Maximum Bitwise AND",
+  "slug": "longest-subarray-with-maximum-bitwise-and",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> of size <code>n</code>.</p>\n\n<p>Consider a <strong>non-empty</strong> subarray from <code>nums</code> that has the <strong>maximum</strong> possible <strong>bitwise AND</strong>.</p>\n\n<ul>\n\t<li>In other words, let <code>k</code> be the maximum value of the bitwise AND of <strong>any</strong> subarray of <code>nums</code>. Then, only subarrays with a bitwise AND equal to <code>k</code> should be considered.</li>\n</ul>\n\n<p>Return <em>the length of the <strong>longest</strong> such subarray</em>.</p>\n\n<p>The bitwise AND of an array is the bitwise AND of all the numbers in it.</p>\n\n<p>A <strong>subarray</strong> is a contiguous sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,3,2,2]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nThe maximum possible bitwise AND of a subarray is 3.\nThe longest subarray with that value is [3,3], so we return 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nThe maximum possible bitwise AND of a subarray is 4.\nThe longest subarray with that value is [4], so we return 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` of size `n`.\n\nConsider a **non-empty** subarray from `nums` that has the **maximum** possible **bitwise AND**.\n\n  * In other words, let `k` be the maximum value of the bitwise AND of **any** subarray of `nums`. Then, only subarrays with a bitwise AND equal to `k` should be considered.\n\n\n\nReturn _the length of the**longest** such subarray_.\n\nThe bitwise AND of an array is the bitwise AND of all the numbers in it.\n\nA **subarray** is a contiguous sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,3,2,2]\n    **Output:** 2\n    **Explanation:**\n    The maximum possible bitwise AND of a subarray is 3.\n    The longest subarray with that value is [3,3], so we return 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 1\n    **Explanation:**\n    The maximum possible bitwise AND of a subarray is 4.\n    The longest subarray with that value is [4], so we return 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 106`",
+  "question": "You are given an integer array `nums` of size `n`.\n\nConsider a **non-empty** subarray from `nums` that has the **maximum** possible **bitwise AND**.\n\n  * In other words, let `k` be the maximum value of the bitwise AND of **any** subarray of `nums`. Then, only subarrays with a bitwise AND equal to `k` should be considered.\n\n\n\nReturn _the length of the**longest** such subarray_.\n\nThe bitwise AND of an array is the bitwise AND of all the numbers in it.\n\nA **subarray** is a contiguous sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,3,2,2]\n    **Output:** 2\n    **Explanation:**\n    The maximum possible bitwise AND of a subarray is 3.\n    The longest subarray with that value is [3,3], so we return 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 1\n    **Explanation:**\n    The maximum possible bitwise AND of a subarray is 4.\n    The longest subarray with that value is [4], so we return 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 106`",
+  "topics": ["Array", "Bit Manipulation", "Brainteaser"],
+  "total_accepted": 253095,
+  "total_submissions": 387070,
+  "acceptance_rate": "65.4%",
+  "similar_questions": [
+    {
+      "title": "Number of Different Integers in a String",
+      "slug": "number-of-different-integers-in-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-different-integers-in-a-string/"
+    },
+    {
+      "title": "Remove Colored Pieces if Both Neighbors are the Same Color",
+      "slug": "remove-colored-pieces-if-both-neighbors-are-the-same-color",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-colored-pieces-if-both-neighbors-are-the-same-color/"
+    },
+    {
+      "title": "Count Number of Maximum Bitwise-OR Subsets",
+      "slug": "count-number-of-maximum-bitwise-or-subsets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-maximum-bitwise-or-subsets/"
+    },
+    {
+      "title": "Smallest Subarrays With Maximum Bitwise OR",
+      "slug": "smallest-subarrays-with-maximum-bitwise-or",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-subarrays-with-maximum-bitwise-or/"
+    }
+  ],
+  "hints": [
+    "Notice that the bitwise AND of two different numbers will always be strictly less than the maximum of those two numbers.",
+    "What does that tell us about the nature of the subarray that we should choose?"
+  ]
+}

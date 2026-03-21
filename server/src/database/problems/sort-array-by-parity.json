@@ -1,0 +1,37 @@
+{
+  "id": "905",
+  "title": "Sort Array By Parity",
+  "slug": "sort-array-by-parity",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, move all the even integers at the beginning of the array followed by all the odd integers.</p>\n\n<p>Return <em><strong>any array</strong> that satisfies this condition</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,1,2,4]\n<strong>Output:</strong> [2,4,3,1]\n<strong>Explanation:</strong> The outputs [4,2,3,1], [2,4,1,3], and [4,2,1,3] would also be accepted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0]\n<strong>Output:</strong> [0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 5000</code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 5000</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, move all the even integers at the beginning of the array followed by all the odd integers.\n\nReturn _**any array** that satisfies this condition_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,1,2,4]\n    **Output:** [2,4,3,1]\n    **Explanation:** The outputs [4,2,3,1], [2,4,1,3], and [4,2,1,3] would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0]\n    **Output:** [0]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 5000`\n  * `0 <= nums[i] <= 5000`",
+  "question": "Given an integer array `nums`, move all the even integers at the beginning of the array followed by all the odd integers.\n\nReturn _**any array** that satisfies this condition_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,1,2,4]\n    **Output:** [2,4,3,1]\n    **Explanation:** The outputs [4,2,3,1], [2,4,1,3], and [4,2,1,3] would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0]\n    **Output:** [0]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 5000`\n  * `0 <= nums[i] <= 5000`",
+  "topics": ["Array", "Two Pointers", "Sorting"],
+  "total_accepted": 999441,
+  "total_submissions": 1306954,
+  "acceptance_rate": "76.5%",
+  "similar_questions": [
+    {
+      "title": "Sort Array By Parity II",
+      "slug": "sort-array-by-parity-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-parity-ii/"
+    },
+    {
+      "title": "Sort Even and Odd Indices Independently",
+      "slug": "sort-even-and-odd-indices-independently",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-even-and-odd-indices-independently/"
+    },
+    {
+      "title": "Largest Number After Digit Swaps by Parity",
+      "slug": "largest-number-after-digit-swaps-by-parity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/largest-number-after-digit-swaps-by-parity/"
+    }
+  ],
+  "hints": []
+}

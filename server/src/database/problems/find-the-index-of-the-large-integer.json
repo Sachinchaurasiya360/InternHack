@@ -1,0 +1,28 @@
+{
+  "id": "1533",
+  "title": "Find the Index of the Large Integer",
+  "slug": "find-the-index-of-the-large-integer",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Interactive"],
+  "total_accepted": 17971,
+  "total_submissions": 31780,
+  "acceptance_rate": "56.5%",
+  "similar_questions": [
+    {
+      "title": "Search in a Sorted Array of Unknown Size",
+      "slug": "search-in-a-sorted-array-of-unknown-size",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/search-in-a-sorted-array-of-unknown-size/"
+    }
+  ],
+  "hints": [
+    "Do a binary search over the array, exclude the half of the array that doesn't contain the largest number.",
+    "Keep shrinking the search space till it reaches the size of 2 where you can easily determine which one has the largest integer."
+  ]
+}

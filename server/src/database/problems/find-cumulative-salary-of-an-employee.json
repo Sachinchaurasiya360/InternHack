@@ -1,0 +1,22 @@
+{
+  "id": "579",
+  "title": "Find Cumulative Salary of an Employee",
+  "slug": "find-cumulative-salary-of-an-employee",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 43764,
+  "total_submissions": 88736,
+  "acceptance_rate": "49.3%",
+  "similar_questions": [],
+  "hints": [
+    "Seem hard at first glance? Try to divide this problem into some sub-problems. \r\nThink about how to calculate the cumulative sum of one employee, how to get the cumulative sum for many employees, and how to except the most recent month of the result.",
+    "Use the technique of self-join if you have only one table but to write a complex query.",
+    "Still remember how to use the function `sum` and `max`?"
+  ]
+}

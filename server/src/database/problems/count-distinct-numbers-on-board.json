@@ -1,0 +1,29 @@
+{
+  "id": "2549",
+  "title": "Count Distinct Numbers on Board",
+  "slug": "count-distinct-numbers-on-board",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>n</code>, that is initially placed on a board. Every day, for <code>10<sup>9</sup></code> days, you perform the following procedure:</p>\n\n<ul>\n\t<li>For each number <code>x</code> present on the board, find all numbers <code>1 &lt;= i &lt;= n</code> such that <code>x % i == 1</code>.</li>\n\t<li>Then, place those numbers on the board.</li>\n</ul>\n\n<p>Return<em> the number of <strong>distinct</strong> integers present on the board after</em> <code>10<sup>9</sup></code> <em>days have elapsed</em>.</p>\n\n<p><strong>Note:</strong></p>\n\n<ul>\n\t<li>Once a number is placed on the board, it will remain on it until the end.</li>\n\t<li><code>%</code>&nbsp;stands&nbsp;for the modulo operation. For example,&nbsp;<code>14 % 3</code> is <code>2</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Initially, 5 is present on the board. \nThe next day, 2 and 4 will be added since 5 % 2 == 1 and 5 % 4 == 1. \nAfter that day, 3 will be added to the board because 4 % 3 == 1. \nAt the end of a billion days, the distinct numbers on the board will be 2, 3, 4, and 5. \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> \nSince 3 % 2 == 1, 2 will be added to the board. \nAfter a billion days, the only two distinct numbers on the board are 2 and 3. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `n`, that is initially placed on a board. Every day, for `109` days, you perform the following procedure:\n\n  * For each number `x` present on the board, find all numbers `1 <= i <= n` such that `x % i == 1`.\n  * Then, place those numbers on the board.\n\n\n\nReturn _the number of**distinct** integers present on the board after_ `109` _days have elapsed_.\n\n**Note:**\n\n  * Once a number is placed on the board, it will remain on it until the end.\n  * `%` stands for the modulo operation. For example, `14 % 3` is `2`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** 4\n    **Explanation:** Initially, 5 is present on the board. \n    The next day, 2 and 4 will be added since 5 % 2 == 1 and 5 % 4 == 1. \n    After that day, 3 will be added to the board because 4 % 3 == 1. \n    At the end of a billion days, the distinct numbers on the board will be 2, 3, 4, and 5. \n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** \n    Since 3 % 2 == 1, 2 will be added to the board. \n    After a billion days, the only two distinct numbers on the board are 2 and 3. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 100`",
+  "question": "You are given a positive integer `n`, that is initially placed on a board. Every day, for `109` days, you perform the following procedure:\n\n  * For each number `x` present on the board, find all numbers `1 <= i <= n` such that `x % i == 1`.\n  * Then, place those numbers on the board.\n\n\n\nReturn _the number of**distinct** integers present on the board after_ `109` _days have elapsed_.\n\n**Note:**\n\n  * Once a number is placed on the board, it will remain on it until the end.\n  * `%` stands for the modulo operation. For example, `14 % 3` is `2`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** 4\n    **Explanation:** Initially, 5 is present on the board. \n    The next day, 2 and 4 will be added since 5 % 2 == 1 and 5 % 4 == 1. \n    After that day, 3 will be added to the board because 4 % 3 == 1. \n    At the end of a billion days, the distinct numbers on the board will be 2, 3, 4, and 5. \n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** \n    Since 3 % 2 == 1, 2 will be added to the board. \n    After a billion days, the only two distinct numbers on the board are 2 and 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 100`",
+  "topics": ["Array", "Hash Table", "Math", "Simulation"],
+  "total_accepted": 63195,
+  "total_submissions": 102453,
+  "acceptance_rate": "61.7%",
+  "similar_questions": [
+    {
+      "title": "Count of Matches in Tournament",
+      "slug": "count-of-matches-in-tournament",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-of-matches-in-tournament/"
+    }
+  ],
+  "hints": [
+    "For n > 2, n % (n - 1) == 1 thus n - 1 will be added on the board the next day.",
+    "As the operations are performed for so long time, all the numbers lesser than n except 1 will be added to the board.",
+    "What will happen if n == 1?"
+  ]
+}

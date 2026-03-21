@@ -1,0 +1,25 @@
+{
+  "id": "965",
+  "title": "Univalued Binary Tree",
+  "slug": "univalued-binary-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A binary tree is <strong>uni-valued</strong> if every node in the tree has the same value.</p>\n\n<p>Given the <code>root</code> of a binary tree, return <code>true</code><em> if the given tree is <strong>uni-valued</strong>, or </em><code>false</code><em> otherwise.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/28/unival_bst_1.png\" style=\"width: 265px; height: 172px;\" />\n<pre>\n<strong>Input:</strong> root = [1,1,1,1,1,null,1]\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/28/unival_bst_2.png\" style=\"width: 198px; height: 169px;\" />\n<pre>\n<strong>Input:</strong> root = [2,2,2,5,2]\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 100]</code>.</li>\n\t<li><code>0 &lt;= Node.val &lt; 100</code></li>\n</ul>\n",
+  "content_markdown": "A binary tree is **uni-valued** if every node in the tree has the same value.\n\nGiven the `root` of a binary tree, return `true` _if the given tree is**uni-valued** , or _`false` _otherwise._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/12/28/unival_bst_1.png)\n    \n    \n    **Input:** root = [1,1,1,1,1,null,1]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2018/12/28/unival_bst_2.png)\n    \n    \n    **Input:** root = [2,2,2,5,2]\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 100]`.\n  * `0 <= Node.val < 100`",
+  "question": "A binary tree is **uni-valued** if every node in the tree has the same value.\n\nGiven the `root` of a binary tree, return `true` _if the given tree is**uni-valued** , or _`false` _otherwise._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/12/28/unival_bst_1.png)\n    \n    \n    **Input:** root = [1,1,1,1,1,null,1]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2018/12/28/unival_bst_2.png)\n    \n    \n    **Input:** root = [2,2,2,5,2]\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 100]`.\n  * `0 <= Node.val < 100`",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 270860,
+  "total_submissions": 371793,
+  "acceptance_rate": "72.9%",
+  "similar_questions": [
+    {
+      "title": "Find All The Lonely Nodes",
+      "slug": "find-all-the-lonely-nodes",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-the-lonely-nodes/"
+    }
+  ],
+  "hints": []
+}

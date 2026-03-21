@@ -1,0 +1,20 @@
+{
+  "id": "1262",
+  "title": "Greatest Sum Divisible by Three",
+  "slug": "greatest-sum-divisible-by-three",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>the <strong>maximum possible sum </strong>of elements of the array such that it is divisible by three</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,6,5,1,8]\n<strong>Output:</strong> 18\n<strong>Explanation:</strong> Pick numbers 3, 6, 1 and 8 their sum is 18 (maximum sum divisible by 3).</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> Since 4 is not divisible by 3, do not pick any number.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,4]\n<strong>Output:</strong> 12\n<strong>Explanation:</strong> Pick numbers 1, 3, 4 and 4 their sum is 12 (maximum sum divisible by 3).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 4 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, return _the**maximum possible sum** of elements of the array such that it is divisible by three_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,6,5,1,8]\n    **Output:** 18\n    **Explanation:** Pick numbers 3, 6, 1 and 8 their sum is 18 (maximum sum divisible by 3).\n\n**Example 2:**\n    \n    \n    **Input:** nums = [4]\n    **Output:** 0\n    **Explanation:** Since 4 is not divisible by 3, do not pick any number.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4,4]\n    **Output:** 12\n    **Explanation:** Pick numbers 1, 3, 4 and 4 their sum is 12 (maximum sum divisible by 3).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 4 * 104`\n  * `1 <= nums[i] <= 104`",
+  "question": "Given an integer array `nums`, return _the**maximum possible sum** of elements of the array such that it is divisible by three_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,6,5,1,8]\n    **Output:** 18\n    **Explanation:** Pick numbers 3, 6, 1 and 8 their sum is 18 (maximum sum divisible by 3).\n\n**Example 2:**\n    \n    \n    **Input:** nums = [4]\n    **Output:** 0\n    **Explanation:** Since 4 is not divisible by 3, do not pick any number.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4,4]\n    **Output:** 12\n    **Explanation:** Pick numbers 1, 3, 4 and 4 their sum is 12 (maximum sum divisible by 3).",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 4 * 104`\n  * `1 <= nums[i] <= 104`",
+  "topics": ["Array", "Dynamic Programming", "Greedy", "Sorting"],
+  "total_accepted": 161566,
+  "total_submissions": 283142,
+  "acceptance_rate": "57.1%",
+  "similar_questions": [],
+  "hints": [
+    "Represent the state as DP[pos][mod]: maximum possible sum starting in the position \"pos\" in the array where the current sum modulo 3 is equal to mod."
+  ]
+}

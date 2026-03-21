@@ -1,0 +1,28 @@
+{
+  "id": "2340",
+  "title": "Minimum Adjacent Swaps to Make a Valid Array",
+  "slug": "minimum-adjacent-swaps-to-make-a-valid-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 40519,
+  "total_submissions": 56096,
+  "acceptance_rate": "72.2%",
+  "similar_questions": [
+    {
+      "title": "Minimum Adjacent Swaps for K Consecutive Ones",
+      "slug": "minimum-adjacent-swaps-for-k-consecutive-ones",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-adjacent-swaps-for-k-consecutive-ones/"
+    }
+  ],
+  "hints": [
+    "Notice that in order to obtain the minimum swaps, we should focus on the smallest element that is the leftmost and the largest element that is the rightmost.",
+    "We can take those elements and greedily only do swaps that bring them closer to their respective end positions."
+  ]
+}

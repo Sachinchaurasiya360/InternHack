@@ -1,0 +1,27 @@
+{
+  "id": "777",
+  "title": "Swap Adjacent in LR String",
+  "slug": "swap-adjacent-in-lr-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>In a string composed of <code>&#39;L&#39;</code>, <code>&#39;R&#39;</code>, and <code>&#39;X&#39;</code> characters, like <code>&quot;RXXLRXRXL&quot;</code>, a move consists of either replacing one occurrence of <code>&quot;XL&quot;</code> with <code>&quot;LX&quot;</code>, or replacing one occurrence of <code>&quot;RX&quot;</code> with <code>&quot;XR&quot;</code>. Given the starting string <code>start</code> and the ending string <code>result</code>, return <code>True</code> if and only if there exists a sequence of moves to transform <code>start</code> to <code>result</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> start = &quot;RXXLRXRXL&quot;, result = &quot;XRLXXRRLX&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> We can transform start to result following these steps:\nRXXLRXRXL -&gt;\nXRXLRXRXL -&gt;\nXRLXRXRXL -&gt;\nXRLXXRRXL -&gt;\nXRLXXRRLX\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> start = &quot;X&quot;, result = &quot;L&quot;\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= start.length&nbsp;&lt;= 10<sup>4</sup></code></li>\n\t<li><code>start.length == result.length</code></li>\n\t<li>Both <code>start</code> and <code>result</code> will only consist of characters in <code>&#39;L&#39;</code>, <code>&#39;R&#39;</code>, and&nbsp;<code>&#39;X&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "In a string composed of `'L'`, `'R'`, and `'X'` characters, like `\"RXXLRXRXL\"`, a move consists of either replacing one occurrence of `\"XL\"` with `\"LX\"`, or replacing one occurrence of `\"RX\"` with `\"XR\"`. Given the starting string `start` and the ending string `result`, return `True` if and only if there exists a sequence of moves to transform `start` to `result`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** start = \"RXXLRXRXL\", result = \"XRLXXRRLX\"\n    **Output:** true\n    **Explanation:** We can transform start to result following these steps:\n    RXXLRXRXL ->\n    XRXLRXRXL ->\n    XRLXRXRXL ->\n    XRLXXRRXL ->\n    XRLXXRRLX\n    \n\n**Example 2:**\n    \n    \n    **Input:** start = \"X\", result = \"L\"\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= start.length <= 104`\n  * `start.length == result.length`\n  * Both `start` and `result` will only consist of characters in `'L'`, `'R'`, and `'X'`.",
+  "question": "In a string composed of `'L'`, `'R'`, and `'X'` characters, like `\"RXXLRXRXL\"`, a move consists of either replacing one occurrence of `\"XL\"` with `\"LX\"`, or replacing one occurrence of `\"RX\"` with `\"XR\"`. Given the starting string `start` and the ending string `result`, return `True` if and only if there exists a sequence of moves to transform `start` to `result`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** start = \"RXXLRXRXL\", result = \"XRLXXRRLX\"\n    **Output:** true\n    **Explanation:** We can transform start to result following these steps:\n    RXXLRXRXL ->\n    XRXLRXRXL ->\n    XRLXRXRXL ->\n    XRLXXRRXL ->\n    XRLXXRRLX\n    \n\n**Example 2:**\n    \n    \n    **Input:** start = \"X\", result = \"L\"\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= start.length <= 104`\n  * `start.length == result.length`\n  * Both `start` and `result` will only consist of characters in `'L'`, `'R'`, and `'X'`.",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 95233,
+  "total_submissions": 251244,
+  "acceptance_rate": "37.9%",
+  "similar_questions": [
+    {
+      "title": "Move Pieces to Obtain a String",
+      "slug": "move-pieces-to-obtain-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/move-pieces-to-obtain-a-string/"
+    }
+  ],
+  "hints": [
+    "Think of the L and R's as people on a horizontal line, where X is a space.  The people can't cross each other, and also you can't go from XRX to RXX."
+  ]
+}

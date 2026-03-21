@@ -1,0 +1,40 @@
+{
+  "id": "1343",
+  "title": "Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold",
+  "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>arr</code> and two integers <code>k</code> and <code>threshold</code>, return <em>the number of sub-arrays of size </em><code>k</code><em> and average greater than or equal to </em><code>threshold</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> Sub-arrays [2,5,5],[5,5,5] and [5,5,8] have averages 4, 5 and 6 respectively. All other sub-arrays of size 3 have averages less than 4 (the threshold).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [11,13,17,23,29,31,7,5,2,3], k = 3, threshold = 5\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The first 6 sub-arrays of size 3 have averages greater than 5. Note that averages are not integers.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= arr.length</code></li>\n\t<li><code>0 &lt;= threshold &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `arr` and two integers `k` and `threshold`, return _the number of sub-arrays of size_`k` _and average greater than or equal to_`threshold`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4\n    **Output:** 3\n    **Explanation:** Sub-arrays [2,5,5],[5,5,5] and [5,5,8] have averages 4, 5 and 6 respectively. All other sub-arrays of size 3 have averages less than 4 (the threshold).\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [11,13,17,23,29,31,7,5,2,3], k = 3, threshold = 5\n    **Output:** 6\n    **Explanation:** The first 6 sub-arrays of size 3 have averages greater than 5. Note that averages are not integers.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `1 <= arr[i] <= 104`\n  * `1 <= k <= arr.length`\n  * `0 <= threshold <= 104`",
+  "question": "Given an array of integers `arr` and two integers `k` and `threshold`, return _the number of sub-arrays of size_`k` _and average greater than or equal to_`threshold`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4\n    **Output:** 3\n    **Explanation:** Sub-arrays [2,5,5],[5,5,5] and [5,5,8] have averages 4, 5 and 6 respectively. All other sub-arrays of size 3 have averages less than 4 (the threshold).\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [11,13,17,23,29,31,7,5,2,3], k = 3, threshold = 5\n    **Output:** 6\n    **Explanation:** The first 6 sub-arrays of size 3 have averages greater than 5. Note that averages are not integers.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `1 <= arr[i] <= 104`\n  * `1 <= k <= arr.length`\n  * `0 <= threshold <= 104`",
+  "topics": ["Array", "Sliding Window"],
+  "total_accepted": 184647,
+  "total_submissions": 255546,
+  "acceptance_rate": "72.3%",
+  "similar_questions": [
+    {
+      "title": "K Radius Subarray Averages",
+      "slug": "k-radius-subarray-averages",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-radius-subarray-averages/"
+    },
+    {
+      "title": "Count Subarrays With Median K",
+      "slug": "count-subarrays-with-median-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-subarrays-with-median-k/"
+    },
+    {
+      "title": "Apply Operations to Make All Array Elements Equal to Zero",
+      "slug": "apply-operations-to-make-all-array-elements-equal-to-zero",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/apply-operations-to-make-all-array-elements-equal-to-zero/"
+    }
+  ],
+  "hints": [
+    "Start with a window of size K and test its average against the threshold.",
+    "Keep moving the window by one element maintaining its size k until you cover the whole array. Count the number of windows that have an average greater than or equal to the threshold."
+  ]
+}

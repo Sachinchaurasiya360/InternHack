@@ -1,0 +1,43 @@
+{
+  "id": "772",
+  "title": "Basic Calculator III",
+  "slug": "basic-calculator-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "String", "Stack", "Recursion"],
+  "total_accepted": 154745,
+  "total_submissions": 291105,
+  "acceptance_rate": "53.2%",
+  "similar_questions": [
+    {
+      "title": "Basic Calculator",
+      "slug": "basic-calculator",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/basic-calculator/"
+    },
+    {
+      "title": "Basic Calculator II",
+      "slug": "basic-calculator-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/basic-calculator-ii/"
+    },
+    {
+      "title": "Basic Calculator IV",
+      "slug": "basic-calculator-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/basic-calculator-iv/"
+    },
+    {
+      "title": "Build Binary Expression Tree From Infix Expression",
+      "slug": "build-binary-expression-tree-from-infix-expression",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/build-binary-expression-tree-from-infix-expression/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "1290",
+  "title": "Convert Binary Number in a Linked List to Integer",
+  "slug": "convert-binary-number-in-a-linked-list-to-integer",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given <code>head</code> which is a reference node to a singly-linked list. The value of each node in the linked list is either <code>0</code> or <code>1</code>. The linked list holds the binary representation of a number.</p>\n\n<p>Return the <em>decimal value</em> of the number in the linked list.</p>\n\n<p>The <strong>most significant bit</strong> is at the head of the linked list.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/12/05/graph-1.png\" style=\"width: 426px; height: 108px;\" />\n<pre>\n<strong>Input:</strong> head = [1,0,1]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> (101) in base 2 = (5) in base 10\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> head = [0]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The Linked List is not empty.</li>\n\t<li>Number of nodes will not exceed <code>30</code>.</li>\n\t<li>Each node&#39;s value is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "Given `head` which is a reference node to a singly-linked list. The value of each node in the linked list is either `0` or `1`. The linked list holds the binary representation of a number.\n\nReturn the _decimal value_ of the number in the linked list.\n\nThe **most significant bit** is at the head of the linked list.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/12/05/graph-1.png)\n    \n    \n    **Input:** head = [1,0,1]\n    **Output:** 5\n    **Explanation:** (101) in base 2 = (5) in base 10\n    \n\n**Example 2:**\n    \n    \n    **Input:** head = [0]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * The Linked List is not empty.\n  * Number of nodes will not exceed `30`.\n  * Each node's value is either `0` or `1`.",
+  "question": "Given `head` which is a reference node to a singly-linked list. The value of each node in the linked list is either `0` or `1`. The linked list holds the binary representation of a number.\n\nReturn the _decimal value_ of the number in the linked list.\n\nThe **most significant bit** is at the head of the linked list.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/12/05/graph-1.png)\n    \n    \n    **Input:** head = [1,0,1]\n    **Output:** 5\n    **Explanation:** (101) in base 2 = (5) in base 10\n    \n\n**Example 2:**\n    \n    \n    **Input:** head = [0]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * The Linked List is not empty.\n  * Number of nodes will not exceed `30`.\n  * Each node's value is either `0` or `1`.",
+  "topics": ["Linked List", "Math"],
+  "total_accepted": 718537,
+  "total_submissions": 872829,
+  "acceptance_rate": "82.3%",
+  "similar_questions": [],
+  "hints": [
+    "Traverse the linked list and store all values in a string or array. convert the values obtained to decimal value.",
+    "You can solve the problem in O(1) memory using bits operation. use shift left operation ( << ) and or operation ( | ) to get the decimal value in one operation."
+  ]
+}

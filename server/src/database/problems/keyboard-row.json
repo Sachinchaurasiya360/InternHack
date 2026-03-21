@@ -1,0 +1,37 @@
+{
+  "id": "500",
+  "title": "Keyboard Row",
+  "slug": "keyboard-row",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>words</code>, return <em>the words that can be typed using letters of the alphabet on only one row of American keyboard like the image below</em>.</p>\n\n<p><strong>Note</strong> that the strings are <strong>case-insensitive</strong>, both lowercased and uppercased of the same letter are treated as if they are at the same row.</p>\n\n<p>In the <strong>American keyboard</strong>:</p>\n\n<ul>\n\t<li>the first row consists of the characters <code>&quot;qwertyuiop&quot;</code>,</li>\n\t<li>the second row consists of the characters <code>&quot;asdfghjkl&quot;</code>, and</li>\n\t<li>the third row consists of the characters <code>&quot;zxcvbnm&quot;</code>.</li>\n</ul>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/10/12/keyboard.png\" style=\"width: 800px; max-width: 600px; height: 267px;\" />\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">words = [&quot;Hello&quot;,&quot;Alaska&quot;,&quot;Dad&quot;,&quot;Peace&quot;]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[&quot;Alaska&quot;,&quot;Dad&quot;]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Both <code>&quot;a&quot;</code> and <code>&quot;A&quot;</code> are in the 2nd row of the American keyboard due to case insensitivity.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">words = [&quot;omk&quot;]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[]</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">words = [&quot;adsdf&quot;,&quot;sfd&quot;]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[&quot;adsdf&quot;,&quot;sfd&quot;]</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 20</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 100</code></li>\n\t<li><code>words[i]</code> consists of English letters (both lowercase and uppercase).&nbsp;</li>\n</ul>\n",
+  "content_markdown": "Given an array of strings `words`, return _the words that can be typed using letters of the alphabet on only one row of American keyboard like the image below_.\n\n**Note** that the strings are **case-insensitive** , both lowercased and uppercased of the same letter are treated as if they are at the same row.\n\nIn the **American keyboard** :\n\n  * the first row consists of the characters `\"qwertyuiop\"`,\n  * the second row consists of the characters `\"asdfghjkl\"`, and\n  * the third row consists of the characters `\"zxcvbnm\"`.\n\n![](https://assets.leetcode.com/uploads/2018/10/12/keyboard.png)\n\n \n\n**Example 1:**\n\n**Input:** words = [\"Hello\",\"Alaska\",\"Dad\",\"Peace\"]\n\n**Output:** [\"Alaska\",\"Dad\"]\n\n**Explanation:**\n\nBoth `\"a\"` and `\"A\"` are in the 2nd row of the American keyboard due to case insensitivity.\n\n**Example 2:**\n\n**Input:** words = [\"omk\"]\n\n**Output:** []\n\n**Example 3:**\n\n**Input:** words = [\"adsdf\",\"sfd\"]\n\n**Output:** [\"adsdf\",\"sfd\"]\n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 20`\n  * `1 <= words[i].length <= 100`\n  * `words[i]` consists of English letters (both lowercase and uppercase).",
+  "question": "Given an array of strings `words`, return _the words that can be typed using letters of the alphabet on only one row of American keyboard like the image below_.\n\n**Note** that the strings are **case-insensitive** , both lowercased and uppercased of the same letter are treated as if they are at the same row.\n\nIn the **American keyboard** :\n\n  * the first row consists of the characters `\"qwertyuiop\"`,\n  * the second row consists of the characters `\"asdfghjkl\"`, and\n  * the third row consists of the characters `\"zxcvbnm\"`.\n\n![](https://assets.leetcode.com/uploads/2018/10/12/keyboard.png)",
+  "examples": "**Example 1:**\n\n**Input:** words = [\"Hello\",\"Alaska\",\"Dad\",\"Peace\"]\n\n**Output:** [\"Alaska\",\"Dad\"]\n\n**Explanation:**\n\nBoth `\"a\"` and `\"A\"` are in the 2nd row of the American keyboard due to case insensitivity.\n\n**Example 2:**\n\n**Input:** words = [\"omk\"]\n\n**Output:** []\n\n**Example 3:**\n\n**Input:** words = [\"adsdf\",\"sfd\"]\n\n**Output:** [\"adsdf\",\"sfd\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 20`\n  * `1 <= words[i].length <= 100`\n  * `words[i]` consists of English letters (both lowercase and uppercase).",
+  "topics": ["Array", "Hash Table", "String"],
+  "total_accepted": 321332,
+  "total_submissions": 436751,
+  "acceptance_rate": "73.6%",
+  "similar_questions": [
+    {
+      "title": "Find the Sequence of Strings Appeared on the Screen",
+      "slug": "find-the-sequence-of-strings-appeared-on-the-screen",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-sequence-of-strings-appeared-on-the-screen/"
+    },
+    {
+      "title": "Find the Original Typed String I",
+      "slug": "find-the-original-typed-string-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-original-typed-string-i/"
+    },
+    {
+      "title": "Find the Original Typed String II",
+      "slug": "find-the-original-typed-string-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-original-typed-string-ii/"
+    }
+  ],
+  "hints": []
+}

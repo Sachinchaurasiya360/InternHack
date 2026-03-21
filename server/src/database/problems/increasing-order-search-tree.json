@@ -1,0 +1,18 @@
+{
+  "id": "897",
+  "title": "Increasing Order Search Tree",
+  "slug": "increasing-order-search-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary search tree, rearrange the tree in <strong>in-order</strong> so that the leftmost node in the tree is now the root of the tree, and every node has no left child and only one right child.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/17/ex1.jpg\" style=\"width: 600px; height: 350px;\" />\n<pre>\n<strong>Input:</strong> root = [5,3,6,2,4,null,8,1,null,null,null,7,9]\n<strong>Output:</strong> [1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/17/ex2.jpg\" style=\"width: 300px; height: 114px;\" />\n<pre>\n<strong>Input:</strong> root = [5,1,7]\n<strong>Output:</strong> [1,null,5,null,7]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the given tree will be in the range <code>[1, 100]</code>.</li>\n\t<li><code>0 &lt;= Node.val &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary search tree, rearrange the tree in **in-order** so that the leftmost node in the tree is now the root of the tree, and every node has no left child and only one right child.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/17/ex1.jpg)\n    \n    \n    **Input:** root = [5,3,6,2,4,null,8,1,null,null,null,7,9]\n    **Output:** [1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/17/ex2.jpg)\n    \n    \n    **Input:** root = [5,1,7]\n    **Output:** [1,null,5,null,7]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the given tree will be in the range `[1, 100]`.\n  * `0 <= Node.val <= 1000`",
+  "question": "Given the `root` of a binary search tree, rearrange the tree in **in-order** so that the leftmost node in the tree is now the root of the tree, and every node has no left child and only one right child.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/17/ex1.jpg)\n    \n    \n    **Input:** root = [5,3,6,2,4,null,8,1,null,null,null,7,9]\n    **Output:** [1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/17/ex2.jpg)\n    \n    \n    **Input:** root = [5,1,7]\n    **Output:** [1,null,5,null,7]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the given tree will be in the range `[1, 100]`.\n  * `0 <= Node.val <= 1000`",
+  "topics": ["Stack", "Tree", "Depth-First Search", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 334532,
+  "total_submissions": 423846,
+  "acceptance_rate": "78.9%",
+  "similar_questions": [],
+  "hints": []
+}

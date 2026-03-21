@@ -1,0 +1,37 @@
+{
+  "id": "231",
+  "title": "Power of Two",
+  "slug": "power-of-two",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <em><code>true</code> if it is a power of two. Otherwise, return <code>false</code></em>.</p>\n\n<p>An integer <code>n</code> is a power of two, if there exists an integer <code>x</code> such that <code>n == 2<sup>x</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> true\n<strong>Explanation: </strong>2<sup>0</sup> = 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 16\n<strong>Output:</strong> true\n<strong>Explanation: </strong>2<sup>4</sup> = 16\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-2<sup>31</sup> &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Could you solve it without loops/recursion?",
+  "content_markdown": "Given an integer `n`, return _`true` if it is a power of two. Otherwise, return `false`_.\n\nAn integer `n` is a power of two, if there exists an integer `x` such that `n == 2x`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** true\n    **Explanation:** 20 = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 16\n    **Output:** true\n    **Explanation:** 24 = 16\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `-231 <= n <= 231 - 1`\n\n\n\n \n\n**Follow up:** Could you solve it without loops/recursion?",
+  "question": "Given an integer `n`, return _`true` if it is a power of two. Otherwise, return `false`_.\n\nAn integer `n` is a power of two, if there exists an integer `x` such that `n == 2x`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** true\n    **Explanation:** 20 = 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 16\n    **Output:** true\n    **Explanation:** 24 = 16\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `-231 <= n <= 231 - 1`",
+  "topics": ["Math", "Bit Manipulation", "Recursion"],
+  "total_accepted": 2151720,
+  "total_submissions": 4314943,
+  "acceptance_rate": "49.9%",
+  "similar_questions": [
+    {
+      "title": "Number of 1 Bits",
+      "slug": "number-of-1-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-1-bits/"
+    },
+    {
+      "title": "Power of Three",
+      "slug": "power-of-three",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/power-of-three/"
+    },
+    {
+      "title": "Power of Four",
+      "slug": "power-of-four",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/power-of-four/"
+    }
+  ],
+  "hints": []
+}

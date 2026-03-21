@@ -1,0 +1,39 @@
+{
+  "id": "732",
+  "title": "My Calendar III",
+  "slug": "my-calendar-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>A <code>k</code>-booking happens when <code>k</code> events have some non-empty intersection (i.e., there is some time that is common to all <code>k</code> events.)</p>\n\n<p>You are given some events <code>[startTime, endTime)</code>, after each given event, return an integer <code>k</code> representing the maximum <code>k</code>-booking between all the previous events.</p>\n\n<p>Implement the <code>MyCalendarThree</code> class:</p>\n\n<ul>\n\t<li><code>MyCalendarThree()</code> Initializes the object.</li>\n\t<li><code>int book(int startTime, int endTime)</code> Returns an integer <code>k</code> representing the largest integer such that there exists a <code>k</code>-booking in the calendar.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;MyCalendarThree&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]\n[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]\n<strong>Output</strong>\n[null, 1, 1, 2, 3, 3, 3]\n\n<strong>Explanation</strong>\nMyCalendarThree myCalendarThree = new MyCalendarThree();\nmyCalendarThree.book(10, 20); // return 1\nmyCalendarThree.book(50, 60); // return 1\nmyCalendarThree.book(10, 40); // return 2\nmyCalendarThree.book(5, 15); // return 3\nmyCalendarThree.book(5, 10); // return 3\nmyCalendarThree.book(25, 55); // return 3\n\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= startTime &lt; endTime &lt;= 10<sup>9</sup></code></li>\n\t<li>At most <code>400</code> calls will be made to <code>book</code>.</li>\n</ul>\n",
+  "content_markdown": "A `k`-booking happens when `k` events have some non-empty intersection (i.e., there is some time that is common to all `k` events.)\n\nYou are given some events `[startTime, endTime)`, after each given event, return an integer `k` representing the maximum `k`-booking between all the previous events.\n\nImplement the `MyCalendarThree` class:\n\n  * `MyCalendarThree()` Initializes the object.\n  * `int book(int startTime, int endTime)` Returns an integer `k` representing the largest integer such that there exists a `k`-booking in the calendar.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"MyCalendarThree\", \"book\", \"book\", \"book\", \"book\", \"book\", \"book\"]\n    [[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]\n    **Output**\n    [null, 1, 1, 2, 3, 3, 3]\n    \n    **Explanation**\n    MyCalendarThree myCalendarThree = new MyCalendarThree();\n    myCalendarThree.book(10, 20); // return 1\n    myCalendarThree.book(50, 60); // return 1\n    myCalendarThree.book(10, 40); // return 2\n    myCalendarThree.book(5, 15); // return 3\n    myCalendarThree.book(5, 10); // return 3\n    myCalendarThree.book(25, 55); // return 3\n    \n    \n\n \n\n**Constraints:**\n\n  * `0 <= startTime < endTime <= 109`\n  * At most `400` calls will be made to `book`.",
+  "question": "A `k`-booking happens when `k` events have some non-empty intersection (i.e., there is some time that is common to all `k` events.)\n\nYou are given some events `[startTime, endTime)`, after each given event, return an integer `k` representing the maximum `k`-booking between all the previous events.\n\nImplement the `MyCalendarThree` class:\n\n  * `MyCalendarThree()` Initializes the object.\n  * `int book(int startTime, int endTime)` Returns an integer `k` representing the largest integer such that there exists a `k`-booking in the calendar.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"MyCalendarThree\", \"book\", \"book\", \"book\", \"book\", \"book\", \"book\"]\n    [[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]\n    **Output**\n    [null, 1, 1, 2, 3, 3, 3]\n    \n    **Explanation**\n    MyCalendarThree myCalendarThree = new MyCalendarThree();\n    myCalendarThree.book(10, 20); // return 1\n    myCalendarThree.book(50, 60); // return 1\n    myCalendarThree.book(10, 40); // return 2\n    myCalendarThree.book(5, 15); // return 3\n    myCalendarThree.book(5, 10); // return 3\n    myCalendarThree.book(25, 55); // return 3",
+  "constraints": "**Constraints:**\n\n  * `0 <= startTime < endTime <= 109`\n  * At most `400` calls will be made to `book`.",
+  "topics": ["Binary Search", "Design", "Segment Tree", "Prefix Sum", "Ordered Set"],
+  "total_accepted": 109950,
+  "total_submissions": 153873,
+  "acceptance_rate": "71.5%",
+  "similar_questions": [
+    {
+      "title": "My Calendar I",
+      "slug": "my-calendar-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/my-calendar-i/"
+    },
+    {
+      "title": "My Calendar II",
+      "slug": "my-calendar-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/my-calendar-ii/"
+    },
+    {
+      "title": "Count Integers in Intervals",
+      "slug": "count-integers-in-intervals",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-integers-in-intervals/"
+    }
+  ],
+  "hints": [
+    "Treat each interval [start, end) as two events \"start\" and \"end\", and process them in sorted order."
+  ]
+}

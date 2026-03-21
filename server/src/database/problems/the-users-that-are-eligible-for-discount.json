@@ -1,0 +1,25 @@
+{
+  "id": "2230",
+  "title": "The Users That Are Eligible for Discount",
+  "slug": "the-users-that-are-eligible-for-discount",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 7395,
+  "total_submissions": 14609,
+  "acceptance_rate": "50.6%",
+  "similar_questions": [
+    {
+      "title": "The Number of Users That Are Eligible for Discount",
+      "slug": "the-number-of-users-that-are-eligible-for-discount",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/the-number-of-users-that-are-eligible-for-discount/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "1271",
+  "title": "Hexspeak",
+  "slug": "hexspeak",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "String"],
+  "total_accepted": 12987,
+  "total_submissions": 22240,
+  "acceptance_rate": "58.4%",
+  "similar_questions": [],
+  "hints": [
+    "Convert the given number to hexadecimal.",
+    "Replace all 0 and 1 with 'O' and 'I'.",
+    "Check if the final string has any numerical digits."
+  ]
+}

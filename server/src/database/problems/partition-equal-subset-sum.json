@@ -1,0 +1,61 @@
+{
+  "id": "416",
+  "title": "Partition Equal Subset Sum",
+  "slug": "partition-equal-subset-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <code>true</code> <em>if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,5,11,5]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The array can be partitioned as [1, 5, 5] and [11].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,5]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The array cannot be partitioned into equal sum subsets.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 200</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, return `true` _if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or_`false` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,5,11,5]\n    **Output:** true\n    **Explanation:** The array can be partitioned as [1, 5, 5] and [11].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,5]\n    **Output:** false\n    **Explanation:** The array cannot be partitioned into equal sum subsets.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 200`\n  * `1 <= nums[i] <= 100`",
+  "question": "Given an integer array `nums`, return `true` _if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or_`false` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,5,11,5]\n    **Output:** true\n    **Explanation:** The array can be partitioned as [1, 5, 5] and [11].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,5]\n    **Output:** false\n    **Explanation:** The array cannot be partitioned into equal sum subsets.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 200`\n  * `1 <= nums[i] <= 100`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 1453513,
+  "total_submissions": 2952749,
+  "acceptance_rate": "49.2%",
+  "similar_questions": [
+    {
+      "title": "Partition to K Equal Sum Subsets",
+      "slug": "partition-to-k-equal-sum-subsets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-to-k-equal-sum-subsets/"
+    },
+    {
+      "title": "Minimize the Difference Between Target and Chosen Elements",
+      "slug": "minimize-the-difference-between-target-and-chosen-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-the-difference-between-target-and-chosen-elements/"
+    },
+    {
+      "title": "Maximum Number of Ways to Partition an Array",
+      "slug": "maximum-number-of-ways-to-partition-an-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array/"
+    },
+    {
+      "title": "Partition Array Into Two Arrays to Minimize Sum Difference",
+      "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/"
+    },
+    {
+      "title": "Find Subarrays With Equal Sum",
+      "slug": "find-subarrays-with-equal-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-subarrays-with-equal-sum/"
+    },
+    {
+      "title": "Number of Great Partitions",
+      "slug": "number-of-great-partitions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-great-partitions/"
+    },
+    {
+      "title": "Split With Minimum Sum",
+      "slug": "split-with-minimum-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/split-with-minimum-sum/"
+    }
+  ],
+  "hints": []
+}

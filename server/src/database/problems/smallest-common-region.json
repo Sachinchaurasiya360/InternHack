@@ -1,0 +1,35 @@
+{
+  "id": "1257",
+  "title": "Smallest Common Region",
+  "slug": "smallest-common-region",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Tree", "Depth-First Search", "Breadth-First Search"],
+  "total_accepted": 37296,
+  "total_submissions": 54626,
+  "acceptance_rate": "68.3%",
+  "similar_questions": [
+    {
+      "title": "Lowest Common Ancestor of a Binary Search Tree",
+      "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/"
+    },
+    {
+      "title": "Lowest Common Ancestor of a Binary Tree",
+      "slug": "lowest-common-ancestor-of-a-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/"
+    }
+  ],
+  "hints": [
+    "Try to model the problem as a graph problem.",
+    "The given graph is a tree.",
+    "The problem is reduced to finding the lowest common ancestor of two nodes in a tree."
+  ]
+}

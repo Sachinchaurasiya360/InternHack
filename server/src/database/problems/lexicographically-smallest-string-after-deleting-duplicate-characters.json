@@ -1,0 +1,32 @@
+{
+  "id": "3816",
+  "title": "Lexicographically Smallest String After Deleting Duplicate Characters",
+  "slug": "lexicographically-smallest-string-after-deleting-duplicate-characters",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> that consists of lowercase English letters.</p>\n\n<p>You can perform the following operation any number of times (possibly zero times):</p>\n\n<ul>\n\t<li>Choose any letter that appears <strong>at least twice</strong> in the current string <code>s</code> and delete any <strong>one</strong> occurrence.</li>\n</ul>\n\n<p>Return the <strong><span data-keyword=\"lexicographically-smaller-string\">lexicographically smallest</span></strong> resulting string that can be formed this way.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;aaccb&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;aacb&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We can form the strings <code>&quot;acb&quot;</code>, <code>&quot;aacb&quot;</code>, <code>&quot;accb&quot;</code>, and <code>&quot;aaccb&quot;</code>. <code>&quot;aacb&quot;</code> is the lexicographically smallest one.</p>\n\n<p>For example, we can obtain <code>&quot;aacb&quot;</code> by choosing <code>&#39;c&#39;</code> and deleting its first occurrence.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;z&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;z&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We cannot perform any operations. The only string we can form is <code>&quot;z&quot;</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> contains lowercase English letters only.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` that consists of lowercase English letters.\n\nYou can perform the following operation any number of times (possibly zero times):\n\n  * Choose any letter that appears **at least twice** in the current string `s` and delete any **one** occurrence.\n\n\n\nReturn the **lexicographically smallest** resulting string that can be formed this way.\n\n \n\n**Example 1:**\n\n**Input:** s = \"aaccb\"\n\n**Output:** \"aacb\"\n\n**Explanation:**\n\nWe can form the strings `\"acb\"`, `\"aacb\"`, `\"accb\"`, and `\"aaccb\"`. `\"aacb\"` is the lexicographically smallest one.\n\nFor example, we can obtain `\"aacb\"` by choosing `'c'` and deleting its first occurrence.\n\n**Example 2:**\n\n**Input:** s = \"z\"\n\n**Output:** \"z\"\n\n**Explanation:**\n\nWe cannot perform any operations. The only string we can form is `\"z\"`.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` contains lowercase English letters only.",
+  "question": "You are given a string `s` that consists of lowercase English letters.\n\nYou can perform the following operation any number of times (possibly zero times):\n\n  * Choose any letter that appears **at least twice** in the current string `s` and delete any **one** occurrence.\n\n\n\nReturn the **lexicographically smallest** resulting string that can be formed this way.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"aaccb\"\n\n**Output:** \"aacb\"\n\n**Explanation:**\n\nWe can form the strings `\"acb\"`, `\"aacb\"`, `\"accb\"`, and `\"aaccb\"`. `\"aacb\"` is the lexicographically smallest one.\n\nFor example, we can obtain `\"aacb\"` by choosing `'c'` and deleting its first occurrence.\n\n**Example 2:**\n\n**Input:** s = \"z\"\n\n**Output:** \"z\"\n\n**Explanation:**\n\nWe cannot perform any operations. The only string we can form is `\"z\"`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` contains lowercase English letters only.",
+  "topics": ["Hash Table", "String", "Stack", "Greedy", "Monotonic Stack"],
+  "total_accepted": 5072,
+  "total_submissions": 26242,
+  "acceptance_rate": "19.3%",
+  "similar_questions": [
+    {
+      "title": "Remove Duplicate Letters",
+      "slug": "remove-duplicate-letters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-duplicate-letters/"
+    }
+  ],
+  "hints": [
+    "Solve greedily.",
+    "Each distinct letter must appear at least once in the final string.",
+    "For each letter, maintain a deque of its positions.",
+    "At each step, try letters from <code>'a'</code> to <code>'z'</code> and pick the smallest letter whose earliest position lies within a safe window.",
+    "Do not pick an occurrence if choosing it would make some other letter impossible to keep.",
+    "Mark positions as used and repeat, always minimizing the next chosen character."
+  ]
+}

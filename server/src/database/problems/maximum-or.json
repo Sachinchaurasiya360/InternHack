@@ -1,0 +1,21 @@
+{
+  "id": "2680",
+  "title": "Maximum OR",
+  "slug": "maximum-or",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code> of length <code>n</code> and an integer <code>k</code>. In an operation, you can choose an element and multiply it by <code>2</code>.</p>\n\n<p>Return <em>the maximum possible value of </em><code>nums[0] | nums[1] | ... | nums[n - 1]</code> <em>that can be obtained after applying the operation on nums at most </em><code>k</code><em> times</em>.</p>\n\n<p>Note that <code>a | b</code> denotes the <strong>bitwise or</strong> between two integers <code>a</code> and <code>b</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [12,9], k = 1\n<strong>Output:</strong> 30\n<strong>Explanation:</strong> If we apply the operation to index 1, our new array nums will be equal to [12,18]. Thus, we return the bitwise or of 12 and 18, which is 30.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [8,1,2], k = 2\n<strong>Output:</strong> 35\n<strong>Explanation:</strong> If we apply the operation twice on index 0, we yield a new array of [32,1,2]. Thus, we return 32|1|2 = 35.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 15</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums` of length `n` and an integer `k`. In an operation, you can choose an element and multiply it by `2`.\n\nReturn _the maximum possible value of_`nums[0] | nums[1] | ... | nums[n - 1]` _that can be obtained after applying the operation on nums at most_`k` _times_.\n\nNote that `a | b` denotes the **bitwise or** between two integers `a` and `b`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [12,9], k = 1\n    **Output:** 30\n    **Explanation:** If we apply the operation to index 1, our new array nums will be equal to [12,18]. Thus, we return the bitwise or of 12 and 18, which is 30.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [8,1,2], k = 2\n    **Output:** 35\n    **Explanation:** If we apply the operation twice on index 0, we yield a new array of [32,1,2]. Thus, we return 32|1|2 = 35.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 15`",
+  "question": "You are given a **0-indexed** integer array `nums` of length `n` and an integer `k`. In an operation, you can choose an element and multiply it by `2`.\n\nReturn _the maximum possible value of_`nums[0] | nums[1] | ... | nums[n - 1]` _that can be obtained after applying the operation on nums at most_`k` _times_.\n\nNote that `a | b` denotes the **bitwise or** between two integers `a` and `b`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [12,9], k = 1\n    **Output:** 30\n    **Explanation:** If we apply the operation to index 1, our new array nums will be equal to [12,18]. Thus, we return the bitwise or of 12 and 18, which is 30.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [8,1,2], k = 2\n    **Output:** 35\n    **Explanation:** If we apply the operation twice on index 0, we yield a new array of [32,1,2]. Thus, we return 32|1|2 = 35.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 15`",
+  "topics": ["Array", "Greedy", "Bit Manipulation", "Prefix Sum"],
+  "total_accepted": 18745,
+  "total_submissions": 43916,
+  "acceptance_rate": "42.7%",
+  "similar_questions": [],
+  "hints": [
+    "The optimal solution should apply all the k operations on a single number.",
+    "Calculate the prefix or and the suffix or and perform k operations over each element, and maximize the answer."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "1144",
+  "title": "Decrease Elements To Make Array Zigzag",
+  "slug": "decrease-elements-to-make-array-zigzag",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> of integers, a <em>move</em>&nbsp;consists of choosing any element and <strong>decreasing it by 1</strong>.</p>\n\n<p>An array <code>A</code> is a&nbsp;<em>zigzag array</em>&nbsp;if either:</p>\n\n<ul>\n\t<li>Every even-indexed element is greater than adjacent elements, ie.&nbsp;<code>A[0] &gt; A[1] &lt; A[2] &gt; A[3] &lt; A[4] &gt; ...</code></li>\n\t<li>OR, every odd-indexed element is greater than adjacent elements, ie.&nbsp;<code>A[0] &lt; A[1] &gt; A[2] &lt; A[3] &gt; A[4] &lt; ...</code></li>\n</ul>\n\n<p>Return the minimum number of moves to transform the given array <code>nums</code> into a zigzag array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We can decrease 2 to 0 or 3 to 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [9,6,1,6,2]\n<strong>Output:</strong> 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given an array `nums` of integers, a _move_  consists of choosing any element and **decreasing it by 1**.\n\nAn array `A` is a _zigzag array_  if either:\n\n  * Every even-indexed element is greater than adjacent elements, ie. `A[0] > A[1] < A[2] > A[3] < A[4] > ...`\n  * OR, every odd-indexed element is greater than adjacent elements, ie. `A[0] < A[1] > A[2] < A[3] > A[4] < ...`\n\n\n\nReturn the minimum number of moves to transform the given array `nums` into a zigzag array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 2\n    **Explanation:** We can decrease 2 to 0 or 3 to 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [9,6,1,6,2]\n    **Output:** 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 1000`",
+  "question": "Given an array `nums` of integers, a _move_  consists of choosing any element and **decreasing it by 1**.\n\nAn array `A` is a _zigzag array_  if either:\n\n  * Every even-indexed element is greater than adjacent elements, ie. `A[0] > A[1] < A[2] > A[3] < A[4] > ...`\n  * OR, every odd-indexed element is greater than adjacent elements, ie. `A[0] < A[1] > A[2] < A[3] > A[4] < ...`\n\n\n\nReturn the minimum number of moves to transform the given array `nums` into a zigzag array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 2\n    **Explanation:** We can decrease 2 to 0 or 3 to 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [9,6,1,6,2]\n    **Output:** 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 1000`",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 25287,
+  "total_submissions": 51613,
+  "acceptance_rate": "49.0%",
+  "similar_questions": [],
+  "hints": [
+    "Do each case (even indexed is greater, odd indexed is greater) separately. In say the even case, you should decrease each even-indexed element until it is lower than its immediate neighbors."
+  ]
+}

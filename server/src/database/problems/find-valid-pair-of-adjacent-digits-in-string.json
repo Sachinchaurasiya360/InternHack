@@ -1,0 +1,31 @@
+{
+  "id": "3438",
+  "title": "Find Valid Pair of Adjacent Digits in String",
+  "slug": "find-valid-pair-of-adjacent-digits-in-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting only of digits. A <strong>valid pair</strong> is defined as two <strong>adjacent</strong> digits in <code>s</code> such that:</p>\n\n<ul>\n\t<li>The first digit is <strong>not equal</strong> to the second.</li>\n\t<li>Each digit in the pair appears in <code>s</code> <strong>exactly</strong> as many times as its numeric value.</li>\n</ul>\n\n<p>Return the first <strong>valid pair</strong> found in the string <code>s</code> when traversing from left to right. If no valid pair exists, return an empty string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;2523533&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;23&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Digit <code>&#39;2&#39;</code> appears 2 times and digit <code>&#39;3&#39;</code> appears 3 times. Each digit in the pair <code>&quot;23&quot;</code> appears in <code>s</code> exactly as many times as its numeric value. Hence, the output is <code>&quot;23&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;221&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;21&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Digit <code>&#39;2&#39;</code> appears 2 times and digit <code>&#39;1&#39;</code> appears 1 time. Hence, the output is <code>&quot;21&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;22&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There are no valid adjacent pairs.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> only consists of digits from <code>&#39;1&#39;</code> to <code>&#39;9&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting only of digits. A **valid pair** is defined as two **adjacent** digits in `s` such that:\n\n  * The first digit is **not equal** to the second.\n  * Each digit in the pair appears in `s` **exactly** as many times as its numeric value.\n\n\n\nReturn the first **valid pair** found in the string `s` when traversing from left to right. If no valid pair exists, return an empty string.\n\n \n\n**Example 1:**\n\n**Input:** s = \"2523533\"\n\n**Output:** \"23\"\n\n**Explanation:**\n\nDigit `'2'` appears 2 times and digit `'3'` appears 3 times. Each digit in the pair `\"23\"` appears in `s` exactly as many times as its numeric value. Hence, the output is `\"23\"`.\n\n**Example 2:**\n\n**Input:** s = \"221\"\n\n**Output:** \"21\"\n\n**Explanation:**\n\nDigit `'2'` appears 2 times and digit `'1'` appears 1 time. Hence, the output is `\"21\"`.\n\n**Example 3:**\n\n**Input:** s = \"22\"\n\n**Output:** \"\"\n\n**Explanation:**\n\nThere are no valid adjacent pairs.\n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` only consists of digits from `'1'` to `'9'`.",
+  "question": "You are given a string `s` consisting only of digits. A **valid pair** is defined as two **adjacent** digits in `s` such that:\n\n  * The first digit is **not equal** to the second.\n  * Each digit in the pair appears in `s` **exactly** as many times as its numeric value.\n\n\n\nReturn the first **valid pair** found in the string `s` when traversing from left to right. If no valid pair exists, return an empty string.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"2523533\"\n\n**Output:** \"23\"\n\n**Explanation:**\n\nDigit `'2'` appears 2 times and digit `'3'` appears 3 times. Each digit in the pair `\"23\"` appears in `s` exactly as many times as its numeric value. Hence, the output is `\"23\"`.\n\n**Example 2:**\n\n**Input:** s = \"221\"\n\n**Output:** \"21\"\n\n**Explanation:**\n\nDigit `'2'` appears 2 times and digit `'1'` appears 1 time. Hence, the output is `\"21\"`.\n\n**Example 3:**\n\n**Input:** s = \"22\"\n\n**Output:** \"\"\n\n**Explanation:**\n\nThere are no valid adjacent pairs.",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` only consists of digits from `'1'` to `'9'`.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 46470,
+  "total_submissions": 76672,
+  "acceptance_rate": "60.6%",
+  "similar_questions": [
+    {
+      "title": "Majority Element",
+      "slug": "majority-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/majority-element/"
+    },
+    {
+      "title": "Contains Duplicate",
+      "slug": "contains-duplicate",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/contains-duplicate/"
+    }
+  ],
+  "hints": ["Use a HashMap to count the frequency of each digit."]
+}

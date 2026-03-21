@@ -1,0 +1,27 @@
+{
+  "id": "740",
+  "title": "Delete and Earn",
+  "slug": "delete-and-earn",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. You want to maximize the number of points you get by performing the following operation any number of times:</p>\n\n<ul>\n\t<li>Pick any <code>nums[i]</code> and delete it to earn <code>nums[i]</code> points. Afterwards, you must delete <b>every</b> element equal to <code>nums[i] - 1</code> and <strong>every</strong> element equal to <code>nums[i] + 1</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>maximum number of points</strong> you can earn by applying the above operation some number of times</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,4,2]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> You can perform the following operations:\n- Delete 4 to earn 4 points. Consequently, 3 is also deleted. nums = [2].\n- Delete 2 to earn 2 points. nums = [].\nYou earn a total of 6 points.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,2,3,3,3,4]\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> You can perform the following operations:\n- Delete a 3 to earn 3 points. All 2&#39;s and 4&#39;s are also deleted. nums = [3,3].\n- Delete a 3 again to earn 3 points. nums = [3].\n- Delete a 3 once more to earn 3 points. nums = [].\nYou earn a total of 9 points.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`. You want to maximize the number of points you get by performing the following operation any number of times:\n\n  * Pick any `nums[i]` and delete it to earn `nums[i]` points. Afterwards, you must delete **every** element equal to `nums[i] - 1` and **every** element equal to `nums[i] + 1`.\n\n\n\nReturn _the**maximum number of points** you can earn by applying the above operation some number of times_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,4,2]\n    **Output:** 6\n    **Explanation:** You can perform the following operations:\n    - Delete 4 to earn 4 points. Consequently, 3 is also deleted. nums = [2].\n    - Delete 2 to earn 2 points. nums = [].\n    You earn a total of 6 points.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,3,3,3,4]\n    **Output:** 9\n    **Explanation:** You can perform the following operations:\n    - Delete a 3 to earn 3 points. All 2's and 4's are also deleted. nums = [3,3].\n    - Delete a 3 again to earn 3 points. nums = [3].\n    - Delete a 3 once more to earn 3 points. nums = [].\n    You earn a total of 9 points.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `1 <= nums[i] <= 104`",
+  "question": "You are given an integer array `nums`. You want to maximize the number of points you get by performing the following operation any number of times:\n\n  * Pick any `nums[i]` and delete it to earn `nums[i]` points. Afterwards, you must delete **every** element equal to `nums[i] - 1` and **every** element equal to `nums[i] + 1`.\n\n\n\nReturn _the**maximum number of points** you can earn by applying the above operation some number of times_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,4,2]\n    **Output:** 6\n    **Explanation:** You can perform the following operations:\n    - Delete 4 to earn 4 points. Consequently, 3 is also deleted. nums = [2].\n    - Delete 2 to earn 2 points. nums = [].\n    You earn a total of 6 points.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,3,3,3,4]\n    **Output:** 9\n    **Explanation:** You can perform the following operations:\n    - Delete a 3 to earn 3 points. All 2's and 4's are also deleted. nums = [3,3].\n    - Delete a 3 again to earn 3 points. nums = [3].\n    - Delete a 3 once more to earn 3 points. nums = [].\n    You earn a total of 9 points.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `1 <= nums[i] <= 104`",
+  "topics": ["Array", "Hash Table", "Dynamic Programming"],
+  "total_accepted": 440604,
+  "total_submissions": 771878,
+  "acceptance_rate": "57.1%",
+  "similar_questions": [
+    {
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber/"
+    }
+  ],
+  "hints": [
+    "If you take a number, you might as well take them all.  Keep track of what the value is of the subset of the input with maximum M when you either take or don't take M."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "3304",
+  "title": "Find the K-th Character in String Game I",
+  "slug": "find-the-k-th-character-in-string-game-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Alice and Bob are playing a game. Initially, Alice has a string <code>word = &quot;a&quot;</code>.</p>\n\n<p>You are given a <strong>positive</strong> integer <code>k</code>.</p>\n\n<p>Now Bob will ask Alice to perform the following operation <strong>forever</strong>:</p>\n\n<ul>\n\t<li>Generate a new string by <strong>changing</strong> each character in <code>word</code> to its <strong>next</strong> character in the English alphabet, and <strong>append</strong> it to the <em>original</em> <code>word</code>.</li>\n</ul>\n\n<p>For example, performing the operation on <code>&quot;c&quot;</code> generates <code>&quot;cd&quot;</code> and performing the operation on <code>&quot;zb&quot;</code> generates <code>&quot;zbac&quot;</code>.</p>\n\n<p>Return the value of the <code>k<sup>th</sup></code> character in <code>word</code>, after enough operations have been done for <code>word</code> to have <strong>at least</strong> <code>k</code> characters.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">k = 5</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;b&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Initially, <code>word = &quot;a&quot;</code>. We need to do the operation three times:</p>\n\n<ul>\n\t<li>Generated string is <code>&quot;b&quot;</code>, <code>word</code> becomes <code>&quot;ab&quot;</code>.</li>\n\t<li>Generated string is <code>&quot;bc&quot;</code>, <code>word</code> becomes <code>&quot;abbc&quot;</code>.</li>\n\t<li>Generated string is <code>&quot;bccd&quot;</code>, <code>word</code> becomes <code>&quot;abbcbccd&quot;</code>.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">k = 10</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;c&quot;</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= 500</code></li>\n</ul>\n",
+  "content_markdown": "Alice and Bob are playing a game. Initially, Alice has a string `word = \"a\"`.\n\nYou are given a **positive** integer `k`.\n\nNow Bob will ask Alice to perform the following operation **forever** :\n\n  * Generate a new string by **changing** each character in `word` to its **next** character in the English alphabet, and **append** it to the _original_ `word`.\n\n\n\nFor example, performing the operation on `\"c\"` generates `\"cd\"` and performing the operation on `\"zb\"` generates `\"zbac\"`.\n\nReturn the value of the `kth` character in `word`, after enough operations have been done for `word` to have **at least** `k` characters.\n\n \n\n**Example 1:**\n\n**Input:** k = 5\n\n**Output:** \"b\"\n\n**Explanation:**\n\nInitially, `word = \"a\"`. We need to do the operation three times:\n\n  * Generated string is `\"b\"`, `word` becomes `\"ab\"`.\n  * Generated string is `\"bc\"`, `word` becomes `\"abbc\"`.\n  * Generated string is `\"bccd\"`, `word` becomes `\"abbcbccd\"`.\n\n\n\n**Example 2:**\n\n**Input:** k = 10\n\n**Output:** \"c\"\n\n \n\n**Constraints:**\n\n  * `1 <= k <= 500`",
+  "question": "Alice and Bob are playing a game. Initially, Alice has a string `word = \"a\"`.\n\nYou are given a **positive** integer `k`.\n\nNow Bob will ask Alice to perform the following operation **forever** :\n\n  * Generate a new string by **changing** each character in `word` to its **next** character in the English alphabet, and **append** it to the _original_ `word`.\n\n\n\nFor example, performing the operation on `\"c\"` generates `\"cd\"` and performing the operation on `\"zb\"` generates `\"zbac\"`.\n\nReturn the value of the `kth` character in `word`, after enough operations have been done for `word` to have **at least** `k` characters.",
+  "examples": "**Example 1:**\n\n**Input:** k = 5\n\n**Output:** \"b\"\n\n**Explanation:**\n\nInitially, `word = \"a\"`. We need to do the operation three times:\n\n  * Generated string is `\"b\"`, `word` becomes `\"ab\"`.\n  * Generated string is `\"bc\"`, `word` becomes `\"abbc\"`.\n  * Generated string is `\"bccd\"`, `word` becomes `\"abbcbccd\"`.\n\n\n\n**Example 2:**\n\n**Input:** k = 10\n\n**Output:** \"c\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= 500`",
+  "topics": ["Math", "Bit Manipulation", "Recursion", "Simulation"],
+  "total_accepted": 210721,
+  "total_submissions": 258136,
+  "acceptance_rate": "81.6%",
+  "similar_questions": [
+    {
+      "title": "Shifting Letters",
+      "slug": "shifting-letters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shifting-letters/"
+    }
+  ],
+  "hints": ["The constraints are small. Construct the string by simulating the operations."]
+}

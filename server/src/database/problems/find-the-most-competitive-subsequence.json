@@ -1,0 +1,33 @@
+{
+  "id": "1673",
+  "title": "Find the Most Competitive Subsequence",
+  "slug": "find-the-most-competitive-subsequence",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and a positive integer <code>k</code>, return <em>the most<strong> competitive</strong> subsequence of </em><code>nums</code> <em>of size </em><code>k</code>.</p>\n\n<p>An array&#39;s subsequence is a resulting sequence obtained by erasing some (possibly zero) elements from the array.</p>\n\n<p>We define that a subsequence <code>a</code> is more <strong>competitive</strong> than a subsequence <code>b</code> (of the same length) if in the first position where <code>a</code> and <code>b</code> differ, subsequence <code>a</code> has a number <strong>less</strong> than the corresponding number in <code>b</code>. For example, <code>[1,3,4]</code> is more competitive than <code>[1,3,5]</code> because the first position they differ is at the final number, and <code>4</code> is less than <code>5</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,5,2,6], k = 2\n<strong>Output:</strong> [2,6]\n<strong>Explanation:</strong> Among the set of every possible subsequence: {[3,5], [3,2], [3,6], [5,2], [5,6], [2,6]}, [2,6] is the most competitive.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,4,3,3,5,4,9,6], k = 4\n<strong>Output:</strong> [2,3,3,4]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and a positive integer `k`, return _the most**competitive** subsequence of _`nums` _of size_`k`.\n\nAn array's subsequence is a resulting sequence obtained by erasing some (possibly zero) elements from the array.\n\nWe define that a subsequence `a` is more **competitive** than a subsequence `b` (of the same length) if in the first position where `a` and `b` differ, subsequence `a` has a number **less** than the corresponding number in `b`. For example, `[1,3,4]` is more competitive than `[1,3,5]` because the first position they differ is at the final number, and `4` is less than `5`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,5,2,6], k = 2\n    **Output:** [2,6]\n    **Explanation:** Among the set of every possible subsequence: {[3,5], [3,2], [3,6], [5,2], [5,6], [2,6]}, [2,6] is the most competitive.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,4,3,3,5,4,9,6], k = 4\n    **Output:** [2,3,3,4]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`\n  * `1 <= k <= nums.length`",
+  "question": "Given an integer array `nums` and a positive integer `k`, return _the most**competitive** subsequence of _`nums` _of size_`k`.\n\nAn array's subsequence is a resulting sequence obtained by erasing some (possibly zero) elements from the array.\n\nWe define that a subsequence `a` is more **competitive** than a subsequence `b` (of the same length) if in the first position where `a` and `b` differ, subsequence `a` has a number **less** than the corresponding number in `b`. For example, `[1,3,4]` is more competitive than `[1,3,5]` because the first position they differ is at the final number, and `4` is less than `5`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,5,2,6], k = 2\n    **Output:** [2,6]\n    **Explanation:** Among the set of every possible subsequence: {[3,5], [3,2], [3,6], [5,2], [5,6], [2,6]}, [2,6] is the most competitive.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,4,3,3,5,4,9,6], k = 4\n    **Output:** [2,3,3,4]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`\n  * `1 <= k <= nums.length`",
+  "topics": ["Array", "Stack", "Greedy", "Monotonic Stack"],
+  "total_accepted": 82323,
+  "total_submissions": 156217,
+  "acceptance_rate": "52.7%",
+  "similar_questions": [
+    {
+      "title": "Remove K Digits",
+      "slug": "remove-k-digits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-k-digits/"
+    },
+    {
+      "title": "Smallest Subsequence of Distinct Characters",
+      "slug": "smallest-subsequence-of-distinct-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/"
+    }
+  ],
+  "hints": [
+    "In lexicographical order, the elements to the left have higher priority than those that come after. Can you think of a strategy that incrementally builds the answer from left to right?"
+  ]
+}

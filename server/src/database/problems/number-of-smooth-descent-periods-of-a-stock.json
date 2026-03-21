@@ -1,0 +1,41 @@
+{
+  "id": "2110",
+  "title": "Number of Smooth Descent Periods of a Stock",
+  "slug": "number-of-smooth-descent-periods-of-a-stock",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>prices</code> representing the daily price history of a stock, where <code>prices[i]</code> is the stock price on the <code>i<sup>th</sup></code> day.</p>\n\n<p>A <strong>smooth descent period</strong> of a stock consists of <strong>one or more contiguous</strong> days such that the price on each day is <strong>lower</strong> than the price on the <strong>preceding day</strong> by <strong>exactly</strong> <code>1</code>. The first day of the period is exempted from this rule.</p>\n\n<p>Return <em>the number of <strong>smooth descent periods</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [3,2,1,4]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> There are 7 smooth descent periods:\n[3], [2], [1], [4], [3,2], [2,1], and [3,2,1]\nNote that a period with one day is a smooth descent period by the definition.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [8,6,7,7]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> There are 4 smooth descent periods: [8], [6], [7], and [7]\nNote that [8,6] is not a smooth descent period as 8 - 6 &ne; 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> There is 1 smooth descent period: [1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= prices.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= prices[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `prices` representing the daily price history of a stock, where `prices[i]` is the stock price on the `ith` day.\n\nA **smooth descent period** of a stock consists of **one or more contiguous** days such that the price on each day is **lower** than the price on the **preceding day** by **exactly** `1`. The first day of the period is exempted from this rule.\n\nReturn _the number of**smooth descent periods**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** prices = [3,2,1,4]\n    **Output:** 7\n    **Explanation:** There are 7 smooth descent periods:\n    [3], [2], [1], [4], [3,2], [2,1], and [3,2,1]\n    Note that a period with one day is a smooth descent period by the definition.\n    \n\n**Example 2:**\n    \n    \n    **Input:** prices = [8,6,7,7]\n    **Output:** 4\n    **Explanation:** There are 4 smooth descent periods: [8], [6], [7], and [7]\n    Note that [8,6] is not a smooth descent period as 8 - 6 ≠ 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** prices = [1]\n    **Output:** 1\n    **Explanation:** There is 1 smooth descent period: [1]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= prices.length <= 105`\n  * `1 <= prices[i] <= 105`",
+  "question": "You are given an integer array `prices` representing the daily price history of a stock, where `prices[i]` is the stock price on the `ith` day.\n\nA **smooth descent period** of a stock consists of **one or more contiguous** days such that the price on each day is **lower** than the price on the **preceding day** by **exactly** `1`. The first day of the period is exempted from this rule.\n\nReturn _the number of**smooth descent periods**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** prices = [3,2,1,4]\n    **Output:** 7\n    **Explanation:** There are 7 smooth descent periods:\n    [3], [2], [1], [4], [3,2], [2,1], and [3,2,1]\n    Note that a period with one day is a smooth descent period by the definition.\n    \n\n**Example 2:**\n    \n    \n    **Input:** prices = [8,6,7,7]\n    **Output:** 4\n    **Explanation:** There are 4 smooth descent periods: [8], [6], [7], and [7]\n    Note that [8,6] is not a smooth descent period as 8 - 6 ≠ 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** prices = [1]\n    **Output:** 1\n    **Explanation:** There is 1 smooth descent period: [1]",
+  "constraints": "**Constraints:**\n\n  * `1 <= prices.length <= 105`\n  * `1 <= prices[i] <= 105`",
+  "topics": ["Array", "Math", "Two Pointers", "Dynamic Programming", "Sliding Window"],
+  "total_accepted": 141525,
+  "total_submissions": 208924,
+  "acceptance_rate": "67.7%",
+  "similar_questions": [
+    {
+      "title": "Subarray Product Less Than K",
+      "slug": "subarray-product-less-than-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-product-less-than-k/"
+    },
+    {
+      "title": "Number of Valid Subarrays",
+      "slug": "number-of-valid-subarrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-valid-subarrays/"
+    },
+    {
+      "title": "Number of Zero-Filled Subarrays",
+      "slug": "number-of-zero-filled-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-zero-filled-subarrays/"
+    }
+  ],
+  "hints": [
+    "Any array is a series of adjacent longest possible smooth descent periods. For example, [5,3,2,1,7,6] is [5] + [3,2,1] + [7,6].",
+    "Think of a 2-pointer approach to traverse the array and find each longest possible period.",
+    "Suppose you found the longest possible period with a length of k. How many periods are within that period? How can you count them quickly? Think of the formula to calculate the sum of 1, 2, 3, ..., k."
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "2093",
+  "title": "Minimum Cost to Reach City With Discounts",
+  "slug": "minimum-cost-to-reach-city-with-discounts",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Graph Theory", "Heap (Priority Queue)", "Shortest Path"],
+  "total_accepted": 12413,
+  "total_submissions": 20632,
+  "acceptance_rate": "60.2%",
+  "similar_questions": [
+    {
+      "title": "Cheapest Flights Within K Stops",
+      "slug": "cheapest-flights-within-k-stops",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/"
+    },
+    {
+      "title": "Connecting Cities With Minimum Cost",
+      "slug": "connecting-cities-with-minimum-cost",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/connecting-cities-with-minimum-cost/"
+    },
+    {
+      "title": "Maximum Cost of Trip With K Highways",
+      "slug": "maximum-cost-of-trip-with-k-highways",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-cost-of-trip-with-k-highways/"
+    },
+    {
+      "title": "Minimum Cost to Reach Destination in Time",
+      "slug": "minimum-cost-to-reach-destination-in-time",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-cost-to-reach-destination-in-time/"
+    }
+  ],
+  "hints": [
+    "Try to construct a graph out of highways. What type of graph is this?",
+    "We essentially need to find the minimum distance to get from node 0 to node n - 1 in an undirected weighted graph. What algorithm should we use to do this?",
+    "Use Dijkstra's algorithm to find the minimum weight path. Keep track of the minimum distance to each vertex with d discounts left"
+  ]
+}

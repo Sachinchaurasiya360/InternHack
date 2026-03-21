@@ -1,0 +1,31 @@
+{
+  "id": "968",
+  "title": "Binary Tree Cameras",
+  "slug": "binary-tree-cameras",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> of a binary tree. We install cameras on the tree nodes where each camera at a node can monitor its parent, itself, and its immediate children.</p>\n\n<p>Return <em>the minimum number of cameras needed to monitor all nodes of the tree</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_01.png\" style=\"width: 138px; height: 163px;\" />\n<pre>\n<strong>Input:</strong> root = [0,0,null,0,0]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> One camera is enough to monitor all nodes if placed as shown.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_02.png\" style=\"width: 139px; height: 312px;\" />\n<pre>\n<strong>Input:</strong> root = [0,0,null,0,null,0,null,null,0]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> At least two cameras are needed to monitor all nodes of the tree. The above image shows one of the valid configurations of camera placement.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 1000]</code>.</li>\n\t<li><code>Node.val == 0</code></li>\n</ul>\n",
+  "content_markdown": "You are given the `root` of a binary tree. We install cameras on the tree nodes where each camera at a node can monitor its parent, itself, and its immediate children.\n\nReturn _the minimum number of cameras needed to monitor all nodes of the tree_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_01.png)\n    \n    \n    **Input:** root = [0,0,null,0,0]\n    **Output:** 1\n    **Explanation:** One camera is enough to monitor all nodes if placed as shown.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_02.png)\n    \n    \n    **Input:** root = [0,0,null,0,null,0,null,null,0]\n    **Output:** 2\n    **Explanation:** At least two cameras are needed to monitor all nodes of the tree. The above image shows one of the valid configurations of camera placement.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 1000]`.\n  * `Node.val == 0`",
+  "question": "You are given the `root` of a binary tree. We install cameras on the tree nodes where each camera at a node can monitor its parent, itself, and its immediate children.\n\nReturn _the minimum number of cameras needed to monitor all nodes of the tree_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_01.png)\n    \n    \n    **Input:** root = [0,0,null,0,0]\n    **Output:** 1\n    **Explanation:** One camera is enough to monitor all nodes if placed as shown.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_02.png)\n    \n    \n    **Input:** root = [0,0,null,0,null,0,null,null,0]\n    **Output:** 2\n    **Explanation:** At least two cameras are needed to monitor all nodes of the tree. The above image shows one of the valid configurations of camera placement.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 1000]`.\n  * `Node.val == 0`",
+  "topics": ["Dynamic Programming", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 182787,
+  "total_submissions": 383605,
+  "acceptance_rate": "47.6%",
+  "similar_questions": [
+    {
+      "title": "Distribute Coins in Binary Tree",
+      "slug": "distribute-coins-in-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/distribute-coins-in-binary-tree/"
+    },
+    {
+      "title": "Choose Edges to Maximize Score in a Tree",
+      "slug": "choose-edges-to-maximize-score-in-a-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/choose-edges-to-maximize-score-in-a-tree/"
+    }
+  ],
+  "hints": []
+}

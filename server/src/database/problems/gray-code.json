@@ -1,0 +1,25 @@
+{
+  "id": "89",
+  "title": "Gray Code",
+  "slug": "gray-code",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>An <strong>n-bit gray code sequence</strong> is a sequence of <code>2<sup>n</sup></code> integers where:</p>\n\n<ul>\n\t<li>Every integer is in the <strong>inclusive</strong> range <code>[0, 2<sup>n</sup> - 1]</code>,</li>\n\t<li>The first integer is <code>0</code>,</li>\n\t<li>An integer appears <strong>no more than once</strong> in the sequence,</li>\n\t<li>The binary representation of every pair of <strong>adjacent</strong> integers differs by <strong>exactly one bit</strong>, and</li>\n\t<li>The binary representation of the <strong>first</strong> and <strong>last</strong> integers differs by <strong>exactly one bit</strong>.</li>\n</ul>\n\n<p>Given an integer <code>n</code>, return <em>any valid <strong>n-bit gray code sequence</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> [0,1,3,2]\n<strong>Explanation:</strong>\nThe binary representation of [0,1,3,2] is [00,01,11,10].\n- 0<u>0</u> and 0<u>1</u> differ by one bit\n- <u>0</u>1 and <u>1</u>1 differ by one bit\n- 1<u>1</u> and 1<u>0</u> differ by one bit\n- <u>1</u>0 and <u>0</u>0 differ by one bit\n[0,2,3,1] is also a valid gray code sequence, whose binary representation is [00,10,11,01].\n- <u>0</u>0 and <u>1</u>0 differ by one bit\n- 1<u>0</u> and 1<u>1</u> differ by one bit\n- <u>1</u>1 and <u>0</u>1 differ by one bit\n- 0<u>1</u> and 0<u>0</u> differ by one bit\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> [0,1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 16</code></li>\n</ul>\n",
+  "content_markdown": "An **n-bit gray code sequence** is a sequence of `2n` integers where:\n\n  * Every integer is in the **inclusive** range `[0, 2n - 1]`,\n  * The first integer is `0`,\n  * An integer appears **no more than once** in the sequence,\n  * The binary representation of every pair of **adjacent** integers differs by **exactly one bit** , and\n  * The binary representation of the **first** and **last** integers differs by **exactly one bit**.\n\n\n\nGiven an integer `n`, return _any valid**n-bit gray code sequence**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** [0,1,3,2]\n    **Explanation:**\n    The binary representation of [0,1,3,2] is [00,01,11,10].\n    - 0 _0_ and 0 _1_ differ by one bit\n    - _0_ 1 and _1_ 1 differ by one bit\n    - 1 _1_ and 1 _0_ differ by one bit\n    - _1_ 0 and _0_ 0 differ by one bit\n    [0,2,3,1] is also a valid gray code sequence, whose binary representation is [00,10,11,01].\n    - _0_ 0 and _1_ 0 differ by one bit\n    - 1 _0_ and 1 _1_ differ by one bit\n    - _1_ 1 and _0_ 1 differ by one bit\n    - 0 _1_ and 0 _0_ differ by one bit\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [0,1]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 16`",
+  "question": "An **n-bit gray code sequence** is a sequence of `2n` integers where:\n\n  * Every integer is in the **inclusive** range `[0, 2n - 1]`,\n  * The first integer is `0`,\n  * An integer appears **no more than once** in the sequence,\n  * The binary representation of every pair of **adjacent** integers differs by **exactly one bit** , and\n  * The binary representation of the **first** and **last** integers differs by **exactly one bit**.\n\n\n\nGiven an integer `n`, return _any valid**n-bit gray code sequence**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** [0,1,3,2]\n    **Explanation:**\n    The binary representation of [0,1,3,2] is [00,01,11,10].\n    - 0 _0_ and 0 _1_ differ by one bit\n    - _0_ 1 and _1_ 1 differ by one bit\n    - 1 _1_ and 1 _0_ differ by one bit\n    - _1_ 0 and _0_ 0 differ by one bit\n    [0,2,3,1] is also a valid gray code sequence, whose binary representation is [00,10,11,01].\n    - _0_ 0 and _1_ 0 differ by one bit\n    - 1 _0_ and 1 _1_ differ by one bit\n    - _1_ 1 and _0_ 1 differ by one bit\n    - 0 _1_ and 0 _0_ differ by one bit\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [0,1]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 16`",
+  "topics": ["Math", "Backtracking", "Bit Manipulation"],
+  "total_accepted": 407534,
+  "total_submissions": 635485,
+  "acceptance_rate": "64.1%",
+  "similar_questions": [
+    {
+      "title": "1-bit and 2-bit Characters",
+      "slug": "1-bit-and-2-bit-characters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/1-bit-and-2-bit-characters/"
+    }
+  ],
+  "hints": []
+}

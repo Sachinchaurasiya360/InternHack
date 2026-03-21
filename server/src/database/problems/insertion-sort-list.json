@@ -1,0 +1,31 @@
+{
+  "id": "147",
+  "title": "Insertion Sort List",
+  "slug": "insertion-sort-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a singly linked list, sort the list using <strong>insertion sort</strong>, and return <em>the sorted list&#39;s head</em>.</p>\n\n<p>The steps of the <strong>insertion sort</strong> algorithm:</p>\n\n<ol>\n\t<li>Insertion sort iterates, consuming one input element each repetition and growing a sorted output list.</li>\n\t<li>At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list and inserts it there.</li>\n\t<li>It repeats until no input elements remain.</li>\n</ol>\n\n<p>The following is a graphical example of the insertion sort algorithm. The partially sorted list (black) initially contains only the first element in the list. One element (red) is removed from the input data and inserted in-place into the sorted list with each iteration.</p>\n<img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/0/0f/Insertion-sort-example-300px.gif\" style=\"height:180px; width:300px\" />\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/04/sort1linked-list.jpg\" style=\"width: 422px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> head = [4,2,1,3]\n<strong>Output:</strong> [1,2,3,4]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/04/sort2linked-list.jpg\" style=\"width: 542px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> head = [-1,5,3,4,0]\n<strong>Output:</strong> [-1,0,3,4,5]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is in the range <code>[1, 5000]</code>.</li>\n\t<li><code>-5000 &lt;= Node.val &lt;= 5000</code></li>\n</ul>\n",
+  "content_markdown": "Given the `head` of a singly linked list, sort the list using **insertion sort** , and return _the sorted list 's head_.\n\nThe steps of the **insertion sort** algorithm:\n\n  1. Insertion sort iterates, consuming one input element each repetition and growing a sorted output list.\n  2. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list and inserts it there.\n  3. It repeats until no input elements remain.\n\n\n\nThe following is a graphical example of the insertion sort algorithm. The partially sorted list (black) initially contains only the first element in the list. One element (red) is removed from the input data and inserted in-place into the sorted list with each iteration.\n\n![](https://upload.wikimedia.org/wikipedia/commons/0/0f/Insertion-sort-example-300px.gif)\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/04/sort1linked-list.jpg)\n    \n    \n    **Input:** head = [4,2,1,3]\n    **Output:** [1,2,3,4]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/04/sort2linked-list.jpg)\n    \n    \n    **Input:** head = [-1,5,3,4,0]\n    **Output:** [-1,0,3,4,5]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is in the range `[1, 5000]`.\n  * `-5000 <= Node.val <= 5000`",
+  "question": "Given the `head` of a singly linked list, sort the list using **insertion sort** , and return _the sorted list 's head_.\n\nThe steps of the **insertion sort** algorithm:\n\n  1. Insertion sort iterates, consuming one input element each repetition and growing a sorted output list.\n  2. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list and inserts it there.\n  3. It repeats until no input elements remain.\n\n\n\nThe following is a graphical example of the insertion sort algorithm. The partially sorted list (black) initially contains only the first element in the list. One element (red) is removed from the input data and inserted in-place into the sorted list with each iteration.\n\n![](https://upload.wikimedia.org/wikipedia/commons/0/0f/Insertion-sort-example-300px.gif)",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/04/sort1linked-list.jpg)\n    \n    \n    **Input:** head = [4,2,1,3]\n    **Output:** [1,2,3,4]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/04/sort2linked-list.jpg)\n    \n    \n    **Input:** head = [-1,5,3,4,0]\n    **Output:** [-1,0,3,4,5]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is in the range `[1, 5000]`.\n  * `-5000 <= Node.val <= 5000`",
+  "topics": ["Linked List", "Sorting"],
+  "total_accepted": 479568,
+  "total_submissions": 819376,
+  "acceptance_rate": "58.5%",
+  "similar_questions": [
+    {
+      "title": "Sort List",
+      "slug": "sort-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-list/"
+    },
+    {
+      "title": "Insert into a Sorted Circular Linked List",
+      "slug": "insert-into-a-sorted-circular-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/"
+    }
+  ],
+  "hints": []
+}

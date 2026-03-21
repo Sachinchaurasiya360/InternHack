@@ -1,0 +1,25 @@
+{
+  "id": "93",
+  "title": "Restore IP Addresses",
+  "slug": "restore-ip-addresses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A <strong>valid IP address</strong> consists of exactly four integers separated by single dots. Each integer is between <code>0</code> and <code>255</code> (<strong>inclusive</strong>) and cannot have leading zeros.</p>\n\n<ul>\n\t<li>For example, <code>&quot;0.1.2.201&quot;</code> and <code>&quot;192.168.1.1&quot;</code> are <strong>valid</strong> IP addresses, but <code>&quot;0.011.255.245&quot;</code>, <code>&quot;192.168.1.312&quot;</code> and <code>&quot;192.168@1.1&quot;</code> are <strong>invalid</strong> IP addresses.</li>\n</ul>\n\n<p>Given a string <code>s</code> containing only digits, return <em>all possible valid IP addresses that can be formed by inserting dots into </em><code>s</code>. You are <strong>not</strong> allowed to reorder or remove any digits in <code>s</code>. You may return the valid IP addresses in <strong>any</strong> order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;25525511135&quot;\n<strong>Output:</strong> [&quot;255.255.11.135&quot;,&quot;255.255.111.35&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;0000&quot;\n<strong>Output:</strong> [&quot;0.0.0.0&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;101023&quot;\n<strong>Output:</strong> [&quot;1.0.10.23&quot;,&quot;1.0.102.3&quot;,&quot;10.1.0.23&quot;,&quot;10.10.2.3&quot;,&quot;101.0.2.3&quot;]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 20</code></li>\n\t<li><code>s</code> consists of digits only.</li>\n</ul>\n",
+  "content_markdown": "A **valid IP address** consists of exactly four integers separated by single dots. Each integer is between `0` and `255` (**inclusive**) and cannot have leading zeros.\n\n  * For example, `\"0.1.2.201\"` and `\"192.168.1.1\"` are **valid** IP addresses, but `\"0.011.255.245\"`, `\"192.168.1.312\"` and `\"192.168@1.1\"` are **invalid** IP addresses.\n\n\n\nGiven a string `s` containing only digits, return _all possible valid IP addresses that can be formed by inserting dots into_`s`. You are **not** allowed to reorder or remove any digits in `s`. You may return the valid IP addresses in **any** order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"25525511135\"\n    **Output:** [\"255.255.11.135\",\"255.255.111.35\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"0000\"\n    **Output:** [\"0.0.0.0\"]\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"101023\"\n    **Output:** [\"1.0.10.23\",\"1.0.102.3\",\"10.1.0.23\",\"10.10.2.3\",\"101.0.2.3\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 20`\n  * `s` consists of digits only.",
+  "question": "A **valid IP address** consists of exactly four integers separated by single dots. Each integer is between `0` and `255` (**inclusive**) and cannot have leading zeros.\n\n  * For example, `\"0.1.2.201\"` and `\"192.168.1.1\"` are **valid** IP addresses, but `\"0.011.255.245\"`, `\"192.168.1.312\"` and `\"192.168@1.1\"` are **invalid** IP addresses.\n\n\n\nGiven a string `s` containing only digits, return _all possible valid IP addresses that can be formed by inserting dots into_`s`. You are **not** allowed to reorder or remove any digits in `s`. You may return the valid IP addresses in **any** order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"25525511135\"\n    **Output:** [\"255.255.11.135\",\"255.255.111.35\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"0000\"\n    **Output:** [\"0.0.0.0\"]\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"101023\"\n    **Output:** [\"1.0.10.23\",\"1.0.102.3\",\"10.1.0.23\",\"10.10.2.3\",\"101.0.2.3\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 20`\n  * `s` consists of digits only.",
+  "topics": ["String", "Backtracking"],
+  "total_accepted": 608791,
+  "total_submissions": 1099959,
+  "acceptance_rate": "55.3%",
+  "similar_questions": [
+    {
+      "title": "IP to CIDR",
+      "slug": "ip-to-cidr",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/ip-to-cidr/"
+    }
+  ],
+  "hints": []
+}

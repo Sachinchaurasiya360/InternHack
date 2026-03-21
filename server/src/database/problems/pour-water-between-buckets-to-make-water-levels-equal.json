@@ -1,0 +1,42 @@
+{
+  "id": "2137",
+  "title": "Pour Water Between Buckets to Make Water Levels Equal",
+  "slug": "pour-water-between-buckets-to-make-water-levels-equal",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 3780,
+  "total_submissions": 5541,
+  "acceptance_rate": "68.2%",
+  "similar_questions": [
+    {
+      "title": "Search in Rotated Sorted Array",
+      "slug": "search-in-rotated-sorted-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/"
+    },
+    {
+      "title": "Find Peak Element",
+      "slug": "find-peak-element",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-peak-element/"
+    },
+    {
+      "title": "Minimum Moves to Equal Array Elements",
+      "slug": "minimum-moves-to-equal-array-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements/"
+    }
+  ],
+  "hints": [
+    "What is the range that the answer must fall into?",
+    "The answer has to be in the range [0, max(buckets)] (inclusive).",
+    "For a number x, is there an efficient way to check if it is possible to make the amount of water in each bucket x.",
+    "Let in be the total amount of water that needs to be poured into buckets and out be the total amount of water that needs to be poured out of buckets to make the amount of water in each bucket x. If out - (out * loss) >= in, then it is possible."
+  ]
+}

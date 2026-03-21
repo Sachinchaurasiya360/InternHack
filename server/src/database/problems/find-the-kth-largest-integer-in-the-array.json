@@ -1,0 +1,37 @@
+{
+  "id": "1985",
+  "title": "Find the Kth Largest Integer in the Array",
+  "slug": "find-the-kth-largest-integer-in-the-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of strings <code>nums</code> and an integer <code>k</code>. Each string in <code>nums</code> represents an integer without leading zeros.</p>\n\n<p>Return <em>the string that represents the </em><code>k<sup>th</sup></code><em><strong> largest integer</strong> in </em><code>nums</code>.</p>\n\n<p><strong>Note</strong>: Duplicate numbers should be counted distinctly. For example, if <code>nums</code> is <code>[&quot;1&quot;,&quot;2&quot;,&quot;2&quot;]</code>, <code>&quot;2&quot;</code> is the first largest integer, <code>&quot;2&quot;</code> is the second-largest integer, and <code>&quot;1&quot;</code> is the third-largest integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;3&quot;,&quot;6&quot;,&quot;7&quot;,&quot;10&quot;], k = 4\n<strong>Output:</strong> &quot;3&quot;\n<strong>Explanation:</strong>\nThe numbers in nums sorted in non-decreasing order are [&quot;3&quot;,&quot;6&quot;,&quot;7&quot;,&quot;10&quot;].\nThe 4<sup>th</sup> largest integer in nums is &quot;3&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;2&quot;,&quot;21&quot;,&quot;12&quot;,&quot;1&quot;], k = 3\n<strong>Output:</strong> &quot;2&quot;\n<strong>Explanation:</strong>\nThe numbers in nums sorted in non-decreasing order are [&quot;1&quot;,&quot;2&quot;,&quot;12&quot;,&quot;21&quot;].\nThe 3<sup>rd</sup> largest integer in nums is &quot;2&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;0&quot;,&quot;0&quot;], k = 2\n<strong>Output:</strong> &quot;0&quot;\n<strong>Explanation:</strong>\nThe numbers in nums sorted in non-decreasing order are [&quot;0&quot;,&quot;0&quot;].\nThe 2<sup>nd</sup> largest integer in nums is &quot;0&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i].length &lt;= 100</code></li>\n\t<li><code>nums[i]</code> consists of only digits.</li>\n\t<li><code>nums[i]</code> will not have any leading zeros.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of strings `nums` and an integer `k`. Each string in `nums` represents an integer without leading zeros.\n\nReturn _the string that represents the_`kth` _**largest integer** in _`nums`.\n\n**Note** : Duplicate numbers should be counted distinctly. For example, if `nums` is `[\"1\",\"2\",\"2\"]`, `\"2\"` is the first largest integer, `\"2\"` is the second-largest integer, and `\"1\"` is the third-largest integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [\"3\",\"6\",\"7\",\"10\"], k = 4\n    **Output:** \"3\"\n    **Explanation:**\n    The numbers in nums sorted in non-decreasing order are [\"3\",\"6\",\"7\",\"10\"].\n    The 4th largest integer in nums is \"3\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [\"2\",\"21\",\"12\",\"1\"], k = 3\n    **Output:** \"2\"\n    **Explanation:**\n    The numbers in nums sorted in non-decreasing order are [\"1\",\"2\",\"12\",\"21\"].\n    The 3rd largest integer in nums is \"2\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [\"0\",\"0\"], k = 2\n    **Output:** \"0\"\n    **Explanation:**\n    The numbers in nums sorted in non-decreasing order are [\"0\",\"0\"].\n    The 2nd largest integer in nums is \"0\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= nums.length <= 104`\n  * `1 <= nums[i].length <= 100`\n  * `nums[i]` consists of only digits.\n  * `nums[i]` will not have any leading zeros.",
+  "question": "You are given an array of strings `nums` and an integer `k`. Each string in `nums` represents an integer without leading zeros.\n\nReturn _the string that represents the_`kth` _**largest integer** in _`nums`.\n\n**Note** : Duplicate numbers should be counted distinctly. For example, if `nums` is `[\"1\",\"2\",\"2\"]`, `\"2\"` is the first largest integer, `\"2\"` is the second-largest integer, and `\"1\"` is the third-largest integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [\"3\",\"6\",\"7\",\"10\"], k = 4\n    **Output:** \"3\"\n    **Explanation:**\n    The numbers in nums sorted in non-decreasing order are [\"3\",\"6\",\"7\",\"10\"].\n    The 4th largest integer in nums is \"3\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [\"2\",\"21\",\"12\",\"1\"], k = 3\n    **Output:** \"2\"\n    **Explanation:**\n    The numbers in nums sorted in non-decreasing order are [\"1\",\"2\",\"12\",\"21\"].\n    The 3rd largest integer in nums is \"2\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [\"0\",\"0\"], k = 2\n    **Output:** \"0\"\n    **Explanation:**\n    The numbers in nums sorted in non-decreasing order are [\"0\",\"0\"].\n    The 2nd largest integer in nums is \"0\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= nums.length <= 104`\n  * `1 <= nums[i].length <= 100`\n  * `nums[i]` consists of only digits.\n  * `nums[i]` will not have any leading zeros.",
+  "topics": [
+    "Array",
+    "String",
+    "Divide and Conquer",
+    "Sorting",
+    "Heap (Priority Queue)",
+    "Quickselect"
+  ],
+  "total_accepted": 100163,
+  "total_submissions": 210355,
+  "acceptance_rate": "47.6%",
+  "similar_questions": [
+    {
+      "title": "Kth Largest Element in an Array",
+      "slug": "kth-largest-element-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/"
+    }
+  ],
+  "hints": [
+    "If two numbers have different lengths, which one will be larger?",
+    "The longer number is the larger number.",
+    "If two numbers have the same length, which one will be larger?",
+    "Compare the two numbers starting from the most significant digit. Once you have found the first digit that differs, the one with the larger digit is the larger number."
+  ]
+}

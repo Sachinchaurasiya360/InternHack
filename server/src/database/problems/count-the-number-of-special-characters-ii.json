@@ -1,0 +1,39 @@
+{
+  "id": "3121",
+  "title": "Count the Number of Special Characters II",
+  "slug": "count-the-number-of-special-characters-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>word</code>. A letter&nbsp;<code>c</code> is called <strong>special</strong> if it appears <strong>both</strong> in lowercase and uppercase in <code>word</code>, and <strong>every</strong> lowercase occurrence of <code>c</code> appears before the <strong>first</strong> uppercase occurrence of <code>c</code>.</p>\n\n<p>Return the number of<em> </em><strong>special</strong> letters<em> </em>in<em> </em><code>word</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;aaAbcBC&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The special characters are <code>&#39;a&#39;</code>, <code>&#39;b&#39;</code>, and <code>&#39;c&#39;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;abc&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There are no special characters in <code>word</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;AbBCab&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There are no special characters in <code>word</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 2 * 10<sup>5</sup></code></li>\n\t<li><code>word</code> consists of only lowercase and uppercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `word`. A letter `c` is called **special** if it appears **both** in lowercase and uppercase in `word`, and **every** lowercase occurrence of `c` appears before the **first** uppercase occurrence of `c`.\n\nReturn the number of __**special** letters __ in __`word`.\n\n \n\n**Example 1:**\n\n**Input:** word = \"aaAbcBC\"\n\n**Output:** 3\n\n**Explanation:**\n\nThe special characters are `'a'`, `'b'`, and `'c'`.\n\n**Example 2:**\n\n**Input:** word = \"abc\"\n\n**Output:** 0\n\n**Explanation:**\n\nThere are no special characters in `word`.\n\n**Example 3:**\n\n**Input:** word = \"AbBCab\"\n\n**Output:** 0\n\n**Explanation:**\n\nThere are no special characters in `word`.\n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 2 * 105`\n  * `word` consists of only lowercase and uppercase English letters.",
+  "question": "You are given a string `word`. A letter `c` is called **special** if it appears **both** in lowercase and uppercase in `word`, and **every** lowercase occurrence of `c` appears before the **first** uppercase occurrence of `c`.\n\nReturn the number of __**special** letters __ in __`word`.",
+  "examples": "**Example 1:**\n\n**Input:** word = \"aaAbcBC\"\n\n**Output:** 3\n\n**Explanation:**\n\nThe special characters are `'a'`, `'b'`, and `'c'`.\n\n**Example 2:**\n\n**Input:** word = \"abc\"\n\n**Output:** 0\n\n**Explanation:**\n\nThere are no special characters in `word`.\n\n**Example 3:**\n\n**Input:** word = \"AbBCab\"\n\n**Output:** 0\n\n**Explanation:**\n\nThere are no special characters in `word`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 2 * 105`\n  * `word` consists of only lowercase and uppercase English letters.",
+  "topics": ["Hash Table", "String"],
+  "total_accepted": 40791,
+  "total_submissions": 94267,
+  "acceptance_rate": "43.3%",
+  "similar_questions": [
+    {
+      "title": "Detect Capital",
+      "slug": "detect-capital",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/detect-capital/"
+    },
+    {
+      "title": "Greatest English Letter in Upper and Lower Case",
+      "slug": "greatest-english-letter-in-upper-and-lower-case",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/greatest-english-letter-in-upper-and-lower-case/"
+    },
+    {
+      "title": "Count the Number of Special Characters I",
+      "slug": "count-the-number-of-special-characters-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-the-number-of-special-characters-i/"
+    }
+  ],
+  "hints": [
+    "For each character <code>c</code>, store the first occurrence of its uppercase and the last occurrence of its lowercase."
+  ]
+}

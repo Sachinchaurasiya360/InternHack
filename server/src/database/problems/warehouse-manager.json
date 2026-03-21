@@ -1,0 +1,18 @@
+{
+  "id": "1571",
+  "title": "Warehouse Manager",
+  "slug": "warehouse-manager",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 51525,
+  "total_submissions": 59039,
+  "acceptance_rate": "87.3%",
+  "similar_questions": [],
+  "hints": []
+}

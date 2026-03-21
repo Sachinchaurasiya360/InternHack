@@ -1,0 +1,35 @@
+{
+  "id": "2097",
+  "title": "Valid Arrangement of Pairs",
+  "slug": "valid-arrangement-of-pairs",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> 2D integer array <code>pairs</code> where <code>pairs[i] = [start<sub>i</sub>, end<sub>i</sub>]</code>. An arrangement of <code>pairs</code> is <strong>valid</strong> if for every index <code>i</code> where <code>1 &lt;= i &lt; pairs.length</code>, we have <code>end<sub>i-1</sub> == start<sub>i</sub></code>.</p>\n\n<p>Return <em><strong>any</strong> valid arrangement of </em><code>pairs</code>.</p>\n\n<p><strong>Note:</strong> The inputs will be generated such that there exists a valid arrangement of <code>pairs</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> pairs = [[5,1],[4,5],[11,9],[9,4]]\n<strong>Output:</strong> [[11,9],[9,4],[4,5],[5,1]]\n<strong>Explanation:\n</strong>This is a valid arrangement since end<sub>i-1</sub> always equals start<sub>i</sub>.\nend<sub>0</sub> = 9 == 9 = start<sub>1</sub> \nend<sub>1</sub> = 4 == 4 = start<sub>2</sub>\nend<sub>2</sub> = 5 == 5 = start<sub>3</sub>\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> pairs = [[1,3],[3,2],[2,1]]\n<strong>Output:</strong> [[1,3],[3,2],[2,1]]\n<strong>Explanation:</strong>\nThis is a valid arrangement since end<sub>i-1</sub> always equals start<sub>i</sub>.\nend<sub>0</sub> = 3 == 3 = start<sub>1</sub>\nend<sub>1</sub> = 2 == 2 = start<sub>2</sub>\nThe arrangements [[2,1],[1,3],[3,2]] and [[3,2],[2,1],[1,3]] are also valid.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> pairs = [[1,2],[1,3],[2,1]]\n<strong>Output:</strong> [[1,2],[2,1],[1,3]]\n<strong>Explanation:</strong>\nThis is a valid arrangement since end<sub>i-1</sub> always equals start<sub>i</sub>.\nend<sub>0</sub> = 2 == 2 = start<sub>1</sub>\nend<sub>1</sub> = 1 == 1 = start<sub>2</sub>\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= pairs.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>pairs[i].length == 2</code></li>\n\t<li><code>0 &lt;= start<sub>i</sub>, end<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>start<sub>i</sub> != end<sub>i</sub></code></li>\n\t<li>No two pairs are exactly the same.</li>\n\t<li>There <strong>exists</strong> a valid arrangement of <code>pairs</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** 2D integer array `pairs` where `pairs[i] = [starti, endi]`. An arrangement of `pairs` is **valid** if for every index `i` where `1 <= i < pairs.length`, we have `endi-1 == starti`.\n\nReturn _**any** valid arrangement of _`pairs`.\n\n**Note:** The inputs will be generated such that there exists a valid arrangement of `pairs`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** pairs = [[5,1],[4,5],[11,9],[9,4]]\n    **Output:** [[11,9],[9,4],[4,5],[5,1]]\n    **Explanation:** This is a valid arrangement since endi-1 always equals starti.\n    end0 = 9 == 9 = start1 \n    end1 = 4 == 4 = start2\n    end2 = 5 == 5 = start3\n    \n\n**Example 2:**\n    \n    \n    **Input:** pairs = [[1,3],[3,2],[2,1]]\n    **Output:** [[1,3],[3,2],[2,1]]\n    **Explanation:**\n    This is a valid arrangement since endi-1 always equals starti.\n    end0 = 3 == 3 = start1\n    end1 = 2 == 2 = start2\n    The arrangements [[2,1],[1,3],[3,2]] and [[3,2],[2,1],[1,3]] are also valid.\n    \n\n**Example 3:**\n    \n    \n    **Input:** pairs = [[1,2],[1,3],[2,1]]\n    **Output:** [[1,2],[2,1],[1,3]]\n    **Explanation:**\n    This is a valid arrangement since endi-1 always equals starti.\n    end0 = 2 == 2 = start1\n    end1 = 1 == 1 = start2\n    \n\n \n\n**Constraints:**\n\n  * `1 <= pairs.length <= 105`\n  * `pairs[i].length == 2`\n  * `0 <= starti, endi <= 109`\n  * `starti != endi`\n  * No two pairs are exactly the same.\n  * There **exists** a valid arrangement of `pairs`.",
+  "question": "You are given a **0-indexed** 2D integer array `pairs` where `pairs[i] = [starti, endi]`. An arrangement of `pairs` is **valid** if for every index `i` where `1 <= i < pairs.length`, we have `endi-1 == starti`.\n\nReturn _**any** valid arrangement of _`pairs`.\n\n**Note:** The inputs will be generated such that there exists a valid arrangement of `pairs`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** pairs = [[5,1],[4,5],[11,9],[9,4]]\n    **Output:** [[11,9],[9,4],[4,5],[5,1]]\n    **Explanation:** This is a valid arrangement since endi-1 always equals starti.\n    end0 = 9 == 9 = start1 \n    end1 = 4 == 4 = start2\n    end2 = 5 == 5 = start3\n    \n\n**Example 2:**\n    \n    \n    **Input:** pairs = [[1,3],[3,2],[2,1]]\n    **Output:** [[1,3],[3,2],[2,1]]\n    **Explanation:**\n    This is a valid arrangement since endi-1 always equals starti.\n    end0 = 3 == 3 = start1\n    end1 = 2 == 2 = start2\n    The arrangements [[2,1],[1,3],[3,2]] and [[3,2],[2,1],[1,3]] are also valid.\n    \n\n**Example 3:**\n    \n    \n    **Input:** pairs = [[1,2],[1,3],[2,1]]\n    **Output:** [[1,2],[2,1],[1,3]]\n    **Explanation:**\n    This is a valid arrangement since endi-1 always equals starti.\n    end0 = 2 == 2 = start1\n    end1 = 1 == 1 = start2",
+  "constraints": "**Constraints:**\n\n  * `1 <= pairs.length <= 105`\n  * `pairs[i].length == 2`\n  * `0 <= starti, endi <= 109`\n  * `starti != endi`\n  * No two pairs are exactly the same.\n  * There **exists** a valid arrangement of `pairs`.",
+  "topics": ["Array", "Depth-First Search", "Graph Theory", "Eulerian Circuit"],
+  "total_accepted": 81414,
+  "total_submissions": 122484,
+  "acceptance_rate": "66.5%",
+  "similar_questions": [
+    {
+      "title": "Reconstruct Itinerary",
+      "slug": "reconstruct-itinerary",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/reconstruct-itinerary/"
+    },
+    {
+      "title": "Find if Path Exists in Graph",
+      "slug": "find-if-path-exists-in-graph",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-if-path-exists-in-graph/"
+    }
+  ],
+  "hints": [
+    "Could you convert this into a graph problem?",
+    "Consider the pairs as edges and each number as a node.",
+    "We have to find an Eulerian path of this graph. Hierholzer’s algorithm can be used."
+  ]
+}

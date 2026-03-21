@@ -1,0 +1,30 @@
+{
+  "id": "1819",
+  "title": "Number of Different Subsequences GCDs",
+  "slug": "number-of-different-subsequences-gcds",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> that consists of positive integers.</p>\n\n<p>The <strong>GCD</strong> of a sequence of numbers is defined as the greatest integer that divides <strong>all</strong> the numbers in the sequence evenly.</p>\n\n<ul>\n\t<li>For example, the GCD of the sequence <code>[4,6,16]</code> is <code>2</code>.</li>\n</ul>\n\n<p>A <strong>subsequence</strong> of an array is a sequence that can be formed by removing some elements (possibly none) of the array.</p>\n\n<ul>\n\t<li>For example, <code>[2,5,10]</code> is a subsequence of <code>[1,2,1,<strong><u>2</u></strong>,4,1,<u><strong>5</strong></u>,<u><strong>10</strong></u>]</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>number</strong> of <strong>different</strong> GCDs among all <strong>non-empty</strong> subsequences of</em> <code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/17/image-1.png\" style=\"width: 149px; height: 309px;\" />\n<pre>\n<strong>Input:</strong> nums = [6,10,3]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The figure shows all the non-empty subsequences and their GCDs.\nThe different GCDs are 6, 10, 3, 2, and 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5,15,40,5,6]\n<strong>Output:</strong> 7\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 2 * 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` that consists of positive integers.\n\nThe **GCD** of a sequence of numbers is defined as the greatest integer that divides **all** the numbers in the sequence evenly.\n\n  * For example, the GCD of the sequence `[4,6,16]` is `2`.\n\n\n\nA **subsequence** of an array is a sequence that can be formed by removing some elements (possibly none) of the array.\n\n  * For example, `[2,5,10]` is a subsequence of `[1,2,1,**_2_** ,4,1,_**5**_ ,_**10**_]`.\n\n\n\nReturn _the**number** of **different** GCDs among all **non-empty** subsequences of_ `nums`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/17/image-1.png)\n    \n    \n    **Input:** nums = [6,10,3]\n    **Output:** 5\n    **Explanation:** The figure shows all the non-empty subsequences and their GCDs.\n    The different GCDs are 6, 10, 3, 2, and 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,15,40,5,6]\n    **Output:** 7\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 2 * 105`",
+  "question": "You are given an array `nums` that consists of positive integers.\n\nThe **GCD** of a sequence of numbers is defined as the greatest integer that divides **all** the numbers in the sequence evenly.\n\n  * For example, the GCD of the sequence `[4,6,16]` is `2`.\n\n\n\nA **subsequence** of an array is a sequence that can be formed by removing some elements (possibly none) of the array.\n\n  * For example, `[2,5,10]` is a subsequence of `[1,2,1,**_2_** ,4,1,_**5**_ ,_**10**_]`.\n\n\n\nReturn _the**number** of **different** GCDs among all **non-empty** subsequences of_ `nums`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/17/image-1.png)\n    \n    \n    **Input:** nums = [6,10,3]\n    **Output:** 5\n    **Explanation:** The figure shows all the non-empty subsequences and their GCDs.\n    The different GCDs are 6, 10, 3, 2, and 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,15,40,5,6]\n    **Output:** 7",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 2 * 105`",
+  "topics": ["Array", "Math", "Counting", "Number Theory"],
+  "total_accepted": 12891,
+  "total_submissions": 28620,
+  "acceptance_rate": "45.0%",
+  "similar_questions": [
+    {
+      "title": "Find Greatest Common Divisor of Array",
+      "slug": "find-greatest-common-divisor-of-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-greatest-common-divisor-of-array/"
+    }
+  ],
+  "hints": [
+    "Think of how to check if a number x is a gcd of a subsequence.",
+    "If there is such subsequence, then all of it will be divisible by x. Moreover, if you divide each number in the subsequence by x , then the gcd of the resulting numbers will be 1.",
+    "Adding a number to a subsequence cannot increase its gcd. So, if there is a valid subsequence for x , then the subsequence that contains all multiples of x is a valid one too.",
+    "Iterate on all possiblex from 1 to 10^5, and check if there is a valid subsequence for x."
+  ]
+}

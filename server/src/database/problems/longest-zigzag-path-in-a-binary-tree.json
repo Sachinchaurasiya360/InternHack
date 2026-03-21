@@ -1,0 +1,27 @@
+{
+  "id": "1372",
+  "title": "Longest ZigZag Path in a Binary Tree",
+  "slug": "longest-zigzag-path-in-a-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> of a binary tree.</p>\n\n<p>A ZigZag path for a binary tree is defined as follow:</p>\n\n<ul>\n\t<li>Choose <strong>any </strong>node in the binary tree and a direction (right or left).</li>\n\t<li>If the current direction is right, move to the right child of the current node; otherwise, move to the left child.</li>\n\t<li>Change the direction from right to left or from left to right.</li>\n\t<li>Repeat the second and third steps until you can&#39;t move in the tree.</li>\n</ul>\n\n<p>Zigzag length is defined as the number of nodes visited - 1. (A single node has a length of 0).</p>\n\n<p>Return <em>the longest <strong>ZigZag</strong> path contained in that tree</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/22/sample_1_1702.png\" style=\"width: 221px; height: 383px;\" />\n<pre>\n<strong>Input:</strong> root = [1,null,1,1,1,null,null,1,1,null,1,null,null,null,1]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> Longest ZigZag path in blue nodes (right -&gt; left -&gt; right).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/22/sample_2_1702.png\" style=\"width: 157px; height: 329px;\" />\n<pre>\n<strong>Input:</strong> root = [1,1,1,null,1,null,null,1,1,null,1]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Longest ZigZag path in blue nodes (left -&gt; right -&gt; left -&gt; right).\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [1]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 5 * 10<sup>4</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given the `root` of a binary tree.\n\nA ZigZag path for a binary tree is defined as follow:\n\n  * Choose **any** node in the binary tree and a direction (right or left).\n  * If the current direction is right, move to the right child of the current node; otherwise, move to the left child.\n  * Change the direction from right to left or from left to right.\n  * Repeat the second and third steps until you can't move in the tree.\n\n\n\nZigzag length is defined as the number of nodes visited - 1. (A single node has a length of 0).\n\nReturn _the longest**ZigZag** path contained in that tree_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/22/sample_1_1702.png)\n    \n    \n    **Input:** root = [1,null,1,1,1,null,null,1,1,null,1,null,null,null,1]\n    **Output:** 3\n    **Explanation:** Longest ZigZag path in blue nodes (right -> left -> right).\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/01/22/sample_2_1702.png)\n    \n    \n    **Input:** root = [1,1,1,null,1,null,null,1,1,null,1]\n    **Output:** 4\n    **Explanation:** Longest ZigZag path in blue nodes (left -> right -> left -> right).\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [1]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 5 * 104]`.\n  * `1 <= Node.val <= 100`",
+  "question": "You are given the `root` of a binary tree.\n\nA ZigZag path for a binary tree is defined as follow:\n\n  * Choose **any** node in the binary tree and a direction (right or left).\n  * If the current direction is right, move to the right child of the current node; otherwise, move to the left child.\n  * Change the direction from right to left or from left to right.\n  * Repeat the second and third steps until you can't move in the tree.\n\n\n\nZigzag length is defined as the number of nodes visited - 1. (A single node has a length of 0).\n\nReturn _the longest**ZigZag** path contained in that tree_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/22/sample_1_1702.png)\n    \n    \n    **Input:** root = [1,null,1,1,1,null,null,1,1,null,1,null,null,null,1]\n    **Output:** 3\n    **Explanation:** Longest ZigZag path in blue nodes (right -> left -> right).\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/01/22/sample_2_1702.png)\n    \n    \n    **Input:** root = [1,1,1,null,1,null,null,1,1,null,1]\n    **Output:** 4\n    **Explanation:** Longest ZigZag path in blue nodes (left -> right -> left -> right).\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [1]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 5 * 104]`.\n  * `1 <= Node.val <= 100`",
+  "topics": ["Dynamic Programming", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 278565,
+  "total_submissions": 415706,
+  "acceptance_rate": "67.0%",
+  "similar_questions": [
+    {
+      "title": "Zigzag Grid Traversal With Skip",
+      "slug": "zigzag-grid-traversal-with-skip",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/zigzag-grid-traversal-with-skip/"
+    }
+  ],
+  "hints": [
+    "Create this function maxZigZag(node, direction) maximum zigzag given a node and direction (right or left)."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "3065",
+  "title": "Minimum Operations to Exceed Threshold Value I",
+  "slug": "minimum-operations-to-exceed-threshold-value-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>, and an integer <code>k</code>.</p>\n\n<p>In one operation, you can remove one occurrence of the smallest element of <code>nums</code>.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of operations needed so that all elements of the array are greater than or equal to</em> <code>k</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,11,10,1,3], k = 10\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> After one operation, nums becomes equal to [2, 11, 10, 3].\nAfter two operations, nums becomes equal to [11, 10, 3].\nAfter three operations, nums becomes equal to [11, 10].\nAt this stage, all the elements of nums are greater than or equal to 10 so we can stop.\nIt can be shown that 3 is the minimum number of operations needed so that all elements of the array are greater than or equal to 10.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,2,4,9], k = 1\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> All elements of the array are greater than or equal to 1 so we do not need to apply any operations on nums.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,2,4,9], k = 9\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> only a single element of nums is greater than or equal to 9 so we need to apply the operations 4 times on nums.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n\t<li>The input is generated such that there is at least one index <code>i</code> such that <code>nums[i] &gt;= k</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`, and an integer `k`.\n\nIn one operation, you can remove one occurrence of the smallest element of `nums`.\n\nReturn _the**minimum** number of operations needed so that all elements of the array are greater than or equal to_ `k`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,11,10,1,3], k = 10\n    **Output:** 3\n    **Explanation:** After one operation, nums becomes equal to [2, 11, 10, 3].\n    After two operations, nums becomes equal to [11, 10, 3].\n    After three operations, nums becomes equal to [11, 10].\n    At this stage, all the elements of nums are greater than or equal to 10 so we can stop.\n    It can be shown that 3 is the minimum number of operations needed so that all elements of the array are greater than or equal to 10.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,2,4,9], k = 1\n    **Output:** 0\n    **Explanation:** All elements of the array are greater than or equal to 1 so we do not need to apply any operations on nums.\n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,2,4,9], k = 9\n    **Output:** 4\n    **Explanation:** only a single element of nums is greater than or equal to 9 so we need to apply the operations 4 times on nums.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`\n  * The input is generated such that there is at least one index `i` such that `nums[i] >= k`.",
+  "question": "You are given a **0-indexed** integer array `nums`, and an integer `k`.\n\nIn one operation, you can remove one occurrence of the smallest element of `nums`.\n\nReturn _the**minimum** number of operations needed so that all elements of the array are greater than or equal to_ `k`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,11,10,1,3], k = 10\n    **Output:** 3\n    **Explanation:** After one operation, nums becomes equal to [2, 11, 10, 3].\n    After two operations, nums becomes equal to [11, 10, 3].\n    After three operations, nums becomes equal to [11, 10].\n    At this stage, all the elements of nums are greater than or equal to 10 so we can stop.\n    It can be shown that 3 is the minimum number of operations needed so that all elements of the array are greater than or equal to 10.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,2,4,9], k = 1\n    **Output:** 0\n    **Explanation:** All elements of the array are greater than or equal to 1 so we do not need to apply any operations on nums.\n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,2,4,9], k = 9\n    **Output:** 4\n    **Explanation:** only a single element of nums is greater than or equal to 9 so we need to apply the operations 4 times on nums.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`\n  * The input is generated such that there is at least one index `i` such that `nums[i] >= k`.",
+  "topics": ["Array"],
+  "total_accepted": 102012,
+  "total_submissions": 117753,
+  "acceptance_rate": "86.6%",
+  "similar_questions": [
+    {
+      "title": "Search Insert Position",
+      "slug": "search-insert-position",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/search-insert-position/"
+    },
+    {
+      "title": "Majority Element",
+      "slug": "majority-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/majority-element/"
+    },
+    {
+      "title": "Number of Employees Who Met the Target",
+      "slug": "number-of-employees-who-met-the-target",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-employees-who-met-the-target/"
+    }
+  ],
+  "hints": [
+    "Iterate over <code>nums</code> and count the number of elements less than <code>k</code>."
+  ]
+}

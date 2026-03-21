@@ -1,0 +1,34 @@
+{
+  "id": "3272",
+  "title": "Find the Count of Good Integers",
+  "slug": "find-the-count-of-good-integers",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <strong>positive</strong> integers <code>n</code> and <code>k</code>.</p>\n\n<p>An integer <code>x</code> is called <strong>k-palindromic</strong> if:</p>\n\n<ul>\n\t<li><code>x</code> is a <span data-keyword=\"palindrome-integer\">palindrome</span>.</li>\n\t<li><code>x</code> is divisible by <code>k</code>.</li>\n</ul>\n\n<p>An integer is called <strong>good</strong> if its digits can be <em>rearranged</em> to form a <strong>k-palindromic</strong> integer. For example, for <code>k = 2</code>, 2020 can be rearranged to form the <em>k-palindromic</em> integer 2002, whereas 1010 cannot be rearranged to form a <em>k-palindromic</em> integer.</p>\n\n<p>Return the count of <strong>good</strong> integers containing <code>n</code> digits.</p>\n\n<p><strong>Note</strong> that <em>any</em> integer must <strong>not</strong> have leading zeros, <strong>neither</strong> before <strong>nor</strong> after rearrangement. For example, 1010 <em>cannot</em> be rearranged to form 101.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3, k = 5</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">27</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><em>Some</em> of the good integers are:</p>\n\n<ul>\n\t<li>551 because it can be rearranged to form 515.</li>\n\t<li>525 because it is already k-palindromic.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 1, k = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The two good integers are 4 and 8.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 5, k = 6</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2468</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10</code></li>\n\t<li><code>1 &lt;= k &lt;= 9</code></li>\n</ul>\n",
+  "content_markdown": "You are given two **positive** integers `n` and `k`.\n\nAn integer `x` is called **k-palindromic** if:\n\n  * `x` is a palindrome.\n  * `x` is divisible by `k`.\n\n\n\nAn integer is called **good** if its digits can be _rearranged_ to form a **k-palindromic** integer. For example, for `k = 2`, 2020 can be rearranged to form the _k-palindromic_ integer 2002, whereas 1010 cannot be rearranged to form a _k-palindromic_ integer.\n\nReturn the count of **good** integers containing `n` digits.\n\n**Note** that _any_ integer must **not** have leading zeros, **neither** before **nor** after rearrangement. For example, 1010 _cannot_ be rearranged to form 101.\n\n \n\n**Example 1:**\n\n**Input:** n = 3, k = 5\n\n**Output:** 27\n\n**Explanation:**\n\n_Some_ of the good integers are:\n\n  * 551 because it can be rearranged to form 515.\n  * 525 because it is already k-palindromic.\n\n\n\n**Example 2:**\n\n**Input:** n = 1, k = 4\n\n**Output:** 2\n\n**Explanation:**\n\nThe two good integers are 4 and 8.\n\n**Example 3:**\n\n**Input:** n = 5, k = 6\n\n**Output:** 2468\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 10`\n  * `1 <= k <= 9`",
+  "question": "You are given two **positive** integers `n` and `k`.\n\nAn integer `x` is called **k-palindromic** if:\n\n  * `x` is a palindrome.\n  * `x` is divisible by `k`.\n\n\n\nAn integer is called **good** if its digits can be _rearranged_ to form a **k-palindromic** integer. For example, for `k = 2`, 2020 can be rearranged to form the _k-palindromic_ integer 2002, whereas 1010 cannot be rearranged to form a _k-palindromic_ integer.\n\nReturn the count of **good** integers containing `n` digits.\n\n**Note** that _any_ integer must **not** have leading zeros, **neither** before **nor** after rearrangement. For example, 1010 _cannot_ be rearranged to form 101.",
+  "examples": "**Example 1:**\n\n**Input:** n = 3, k = 5\n\n**Output:** 27\n\n**Explanation:**\n\n_Some_ of the good integers are:\n\n  * 551 because it can be rearranged to form 515.\n  * 525 because it is already k-palindromic.\n\n\n\n**Example 2:**\n\n**Input:** n = 1, k = 4\n\n**Output:** 2\n\n**Explanation:**\n\nThe two good integers are 4 and 8.\n\n**Example 3:**\n\n**Input:** n = 5, k = 6\n\n**Output:** 2468",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 10`\n  * `1 <= k <= 9`",
+  "topics": ["Hash Table", "Math", "Combinatorics", "Enumeration"],
+  "total_accepted": 72871,
+  "total_submissions": 104903,
+  "acceptance_rate": "69.5%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Number",
+      "slug": "palindrome-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-number/"
+    },
+    {
+      "title": "Find the Closest Palindrome",
+      "slug": "find-the-closest-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-closest-palindrome/"
+    }
+  ],
+  "hints": [
+    "How to generate all K-palindromic strings of length <code>n</code>? Do we need to go through all <code>n</code> digits?",
+    "Use permutations to calculate the number of possible rearrangements."
+  ]
+}

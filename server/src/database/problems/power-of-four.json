@@ -1,0 +1,31 @@
+{
+  "id": "342",
+  "title": "Power of Four",
+  "slug": "power-of-four",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <em><code>true</code> if it is a power of four. Otherwise, return <code>false</code></em>.</p>\n\n<p>An integer <code>n</code> is a power of four, if there exists an integer <code>x</code> such that <code>n == 4<sup>x</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> n = 16\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> n = 5\n<strong>Output:</strong> false\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> n = 1\n<strong>Output:</strong> true\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-2<sup>31</sup> &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Could you solve it without loops/recursion?",
+  "content_markdown": "Given an integer `n`, return _`true` if it is a power of four. Otherwise, return `false`_.\n\nAn integer `n` is a power of four, if there exists an integer `x` such that `n == 4x`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 16\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 1\n    **Output:** true\n    \n\n \n\n**Constraints:**\n\n  * `-231 <= n <= 231 - 1`\n\n\n\n \n\n**Follow up:** Could you solve it without loops/recursion?",
+  "question": "Given an integer `n`, return _`true` if it is a power of four. Otherwise, return `false`_.\n\nAn integer `n` is a power of four, if there exists an integer `x` such that `n == 4x`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 16\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 1\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `-231 <= n <= 231 - 1`",
+  "topics": ["Math", "Bit Manipulation", "Recursion"],
+  "total_accepted": 1074092,
+  "total_submissions": 2074761,
+  "acceptance_rate": "51.8%",
+  "similar_questions": [
+    {
+      "title": "Power of Two",
+      "slug": "power-of-two",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/power-of-two/"
+    },
+    {
+      "title": "Power of Three",
+      "slug": "power-of-three",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/power-of-three/"
+    }
+  ],
+  "hints": []
+}

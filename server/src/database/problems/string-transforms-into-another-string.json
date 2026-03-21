@@ -1,0 +1,25 @@
+{
+  "id": "1153",
+  "title": "String Transforms Into Another String",
+  "slug": "string-transforms-into-another-string",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Graph Theory"],
+  "total_accepted": 54268,
+  "total_submissions": 156595,
+  "acceptance_rate": "34.7%",
+  "similar_questions": [],
+  "hints": [
+    "Model the problem as a graph problem. Add an edge from one character to another if you need to convert between them.",
+    "What if one character needs to be converted into more than one character?",
+    "There would be no solution. Thus, every node can have at most one outgoing edge.",
+    "How to process a linked list?",
+    "How to process a cycle?",
+    "What if there is a character with no outgoing edge? You can use it to break all cycles!"
+  ]
+}

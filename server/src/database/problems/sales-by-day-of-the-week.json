@@ -1,0 +1,18 @@
+{
+  "id": "1479",
+  "title": "Sales by Day of the Week",
+  "slug": "sales-by-day-of-the-week",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 21198,
+  "total_submissions": 27799,
+  "acceptance_rate": "76.3%",
+  "similar_questions": [],
+  "hints": []
+}

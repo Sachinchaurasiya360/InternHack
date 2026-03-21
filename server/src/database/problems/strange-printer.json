@@ -1,0 +1,31 @@
+{
+  "id": "664",
+  "title": "Strange Printer",
+  "slug": "strange-printer",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There is a strange printer with the following two special properties:</p>\n\n<ul>\n\t<li>The printer can only print a sequence of <strong>the same character</strong> each time.</li>\n\t<li>At each turn, the printer can print new characters starting from and ending at any place and will cover the original existing characters.</li>\n</ul>\n\n<p>Given a string <code>s</code>, return <em>the minimum number of turns the printer needed to print it</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaabbb&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Print &quot;aaa&quot; first and then print &quot;bbb&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aba&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Print &quot;aaa&quot; first and then print &quot;b&quot; from the second place of the string, which will cover the existing character &#39;a&#39;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "There is a strange printer with the following two special properties:\n\n  * The printer can only print a sequence of **the same character** each time.\n  * At each turn, the printer can print new characters starting from and ending at any place and will cover the original existing characters.\n\n\n\nGiven a string `s`, return _the minimum number of turns the printer needed to print it_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aaabbb\"\n    **Output:** 2\n    **Explanation:** Print \"aaa\" first and then print \"bbb\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aba\"\n    **Output:** 2\n    **Explanation:** Print \"aaa\" first and then print \"b\" from the second place of the string, which will cover the existing character 'a'.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of lowercase English letters.",
+  "question": "There is a strange printer with the following two special properties:\n\n  * The printer can only print a sequence of **the same character** each time.\n  * At each turn, the printer can print new characters starting from and ending at any place and will cover the original existing characters.\n\n\n\nGiven a string `s`, return _the minimum number of turns the printer needed to print it_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aaabbb\"\n    **Output:** 2\n    **Explanation:** Print \"aaa\" first and then print \"bbb\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aba\"\n    **Output:** 2\n    **Explanation:** Print \"aaa\" first and then print \"b\" from the second place of the string, which will cover the existing character 'a'.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of lowercase English letters.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 159751,
+  "total_submissions": 262455,
+  "acceptance_rate": "60.9%",
+  "similar_questions": [
+    {
+      "title": "Remove Boxes",
+      "slug": "remove-boxes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/remove-boxes/"
+    },
+    {
+      "title": "Strange Printer II",
+      "slug": "strange-printer-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/strange-printer-ii/"
+    }
+  ],
+  "hints": []
+}

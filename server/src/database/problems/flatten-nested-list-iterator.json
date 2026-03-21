@@ -1,0 +1,43 @@
+{
+  "id": "341",
+  "title": "Flatten Nested List Iterator",
+  "slug": "flatten-nested-list-iterator",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a nested list of integers <code>nestedList</code>. Each element is either an integer or a list whose elements may also be integers or other lists. Implement an iterator to flatten it.</p>\n\n<p>Implement the <code>NestedIterator</code> class:</p>\n\n<ul>\n\t<li><code>NestedIterator(List&lt;NestedInteger&gt; nestedList)</code> Initializes the iterator with the nested list <code>nestedList</code>.</li>\n\t<li><code>int next()</code> Returns the next integer in the nested list.</li>\n\t<li><code>boolean hasNext()</code> Returns <code>true</code> if there are still some integers in the nested list and <code>false</code> otherwise.</li>\n</ul>\n\n<p>Your code will be tested with the following pseudocode:</p>\n\n<pre>\ninitialize iterator with nestedList\nres = []\nwhile iterator.hasNext()\n    append iterator.next() to the end of res\nreturn res\n</pre>\n\n<p>If <code>res</code> matches the expected flattened list, then your code will be judged as correct.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nestedList = [[1,1],2,[1,1]]\n<strong>Output:</strong> [1,1,2,1,1]\n<strong>Explanation:</strong> By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,1,2,1,1].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nestedList = [1,[4,[6]]]\n<strong>Output:</strong> [1,4,6]\n<strong>Explanation:</strong> By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,4,6].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nestedList.length &lt;= 500</code></li>\n\t<li>The values of the integers in the nested list is in the range <code>[-10<sup>6</sup>, 10<sup>6</sup>]</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a nested list of integers `nestedList`. Each element is either an integer or a list whose elements may also be integers or other lists. Implement an iterator to flatten it.\n\nImplement the `NestedIterator` class:\n\n  * `NestedIterator(List<NestedInteger> nestedList)` Initializes the iterator with the nested list `nestedList`.\n  * `int next()` Returns the next integer in the nested list.\n  * `boolean hasNext()` Returns `true` if there are still some integers in the nested list and `false` otherwise.\n\n\n\nYour code will be tested with the following pseudocode:\n    \n    \n    initialize iterator with nestedList\n    res = []\n    while iterator.hasNext()\n        append iterator.next() to the end of res\n    return res\n    \n\nIf `res` matches the expected flattened list, then your code will be judged as correct.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nestedList = [[1,1],2,[1,1]]\n    **Output:** [1,1,2,1,1]\n    **Explanation:** By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,1,2,1,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nestedList = [1,[4,[6]]]\n    **Output:** [1,4,6]\n    **Explanation:** By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,4,6].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nestedList.length <= 500`\n  * The values of the integers in the nested list is in the range `[-106, 106]`.",
+  "question": "You are given a nested list of integers `nestedList`. Each element is either an integer or a list whose elements may also be integers or other lists. Implement an iterator to flatten it.\n\nImplement the `NestedIterator` class:\n\n  * `NestedIterator(List<NestedInteger> nestedList)` Initializes the iterator with the nested list `nestedList`.\n  * `int next()` Returns the next integer in the nested list.\n  * `boolean hasNext()` Returns `true` if there are still some integers in the nested list and `false` otherwise.\n\n\n\nYour code will be tested with the following pseudocode:\n    \n    \n    initialize iterator with nestedList\n    res = []\n    while iterator.hasNext()\n        append iterator.next() to the end of res\n    return res\n    \n\nIf `res` matches the expected flattened list, then your code will be judged as correct.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nestedList = [[1,1],2,[1,1]]\n    **Output:** [1,1,2,1,1]\n    **Explanation:** By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,1,2,1,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nestedList = [1,[4,[6]]]\n    **Output:** [1,4,6]\n    **Explanation:** By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,4,6].",
+  "constraints": "**Constraints:**\n\n  * `1 <= nestedList.length <= 500`\n  * The values of the integers in the nested list is in the range `[-106, 106]`.",
+  "topics": ["Stack", "Tree", "Depth-First Search", "Design", "Queue", "Iterator"],
+  "total_accepted": 530478,
+  "total_submissions": 808394,
+  "acceptance_rate": "65.6%",
+  "similar_questions": [
+    {
+      "title": "Flatten 2D Vector",
+      "slug": "flatten-2d-vector",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-2d-vector/"
+    },
+    {
+      "title": "Zigzag Iterator",
+      "slug": "zigzag-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/zigzag-iterator/"
+    },
+    {
+      "title": "Mini Parser",
+      "slug": "mini-parser",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/mini-parser/"
+    },
+    {
+      "title": "Array Nesting",
+      "slug": "array-nesting",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/array-nesting/"
+    }
+  ],
+  "hints": []
+}

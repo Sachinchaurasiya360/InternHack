@@ -1,0 +1,18 @@
+{
+  "id": "3124",
+  "title": "Find Longest Calls",
+  "slug": "find-longest-calls",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 2887,
+  "total_submissions": 4574,
+  "acceptance_rate": "63.1%",
+  "similar_questions": [],
+  "hints": []
+}

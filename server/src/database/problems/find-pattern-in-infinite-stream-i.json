@@ -1,0 +1,25 @@
+{
+  "id": "3023",
+  "title": "Find Pattern in Infinite Stream I",
+  "slug": "find-pattern-in-infinite-stream-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Sliding Window",
+    "Rolling Hash",
+    "String Matching",
+    "Interactive",
+    "Hash Function"
+  ],
+  "total_accepted": 1867,
+  "total_submissions": 3296,
+  "acceptance_rate": "56.6%",
+  "similar_questions": [],
+  "hints": []
+}

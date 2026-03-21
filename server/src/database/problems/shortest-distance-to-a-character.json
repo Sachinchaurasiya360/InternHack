@@ -1,0 +1,25 @@
+{
+  "id": "821",
+  "title": "Shortest Distance to a Character",
+  "slug": "shortest-distance-to-a-character",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> and a character <code>c</code> that occurs in <code>s</code>, return <em>an array of integers </em><code>answer</code><em> where </em><code>answer.length == s.length</code><em> and </em><code>answer[i]</code><em> is the <strong>distance</strong> from index </em><code>i</code><em> to the <strong>closest</strong> occurrence of character </em><code>c</code><em> in </em><code>s</code>.</p>\n\n<p>The <strong>distance</strong> between two indices <code>i</code> and <code>j</code> is <code>abs(i - j)</code>, where <code>abs</code> is the absolute value function.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;loveleetcode&quot;, c = &quot;e&quot;\n<strong>Output:</strong> [3,2,1,0,1,0,0,1,2,2,1,0]\n<strong>Explanation:</strong> The character &#39;e&#39; appears at indices 3, 5, 6, and 11 (0-indexed).\nThe closest occurrence of &#39;e&#39; for index 0 is at index 3, so the distance is abs(0 - 3) = 3.\nThe closest occurrence of &#39;e&#39; for index 1 is at index 3, so the distance is abs(1 - 3) = 2.\nFor index 4, there is a tie between the &#39;e&#39; at index 3 and the &#39;e&#39; at index 5, but the distance is still the same: abs(4 - 3) == abs(4 - 5) = 1.\nThe closest occurrence of &#39;e&#39; for index 8 is at index 6, so the distance is abs(8 - 6) = 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaab&quot;, c = &quot;b&quot;\n<strong>Output:</strong> [3,2,1,0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s[i]</code> and <code>c</code> are lowercase English letters.</li>\n\t<li>It is guaranteed that <code>c</code> occurs at least once in <code>s</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` and a character `c` that occurs in `s`, return _an array of integers_`answer` _where_`answer.length == s.length` _and_`answer[i]`_is the**distance** from index _`i` _to the**closest** occurrence of character _`c` _in_`s`.\n\nThe **distance** between two indices `i` and `j` is `abs(i - j)`, where `abs` is the absolute value function.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"loveleetcode\", c = \"e\"\n    **Output:** [3,2,1,0,1,0,0,1,2,2,1,0]\n    **Explanation:** The character 'e' appears at indices 3, 5, 6, and 11 (0-indexed).\n    The closest occurrence of 'e' for index 0 is at index 3, so the distance is abs(0 - 3) = 3.\n    The closest occurrence of 'e' for index 1 is at index 3, so the distance is abs(1 - 3) = 2.\n    For index 4, there is a tie between the 'e' at index 3 and the 'e' at index 5, but the distance is still the same: abs(4 - 3) == abs(4 - 5) = 1.\n    The closest occurrence of 'e' for index 8 is at index 6, so the distance is abs(8 - 6) = 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaab\", c = \"b\"\n    **Output:** [3,2,1,0]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s[i]` and `c` are lowercase English letters.\n  * It is guaranteed that `c` occurs at least once in `s`.",
+  "question": "Given a string `s` and a character `c` that occurs in `s`, return _an array of integers_`answer` _where_`answer.length == s.length` _and_`answer[i]`_is the**distance** from index _`i` _to the**closest** occurrence of character _`c` _in_`s`.\n\nThe **distance** between two indices `i` and `j` is `abs(i - j)`, where `abs` is the absolute value function.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"loveleetcode\", c = \"e\"\n    **Output:** [3,2,1,0,1,0,0,1,2,2,1,0]\n    **Explanation:** The character 'e' appears at indices 3, 5, 6, and 11 (0-indexed).\n    The closest occurrence of 'e' for index 0 is at index 3, so the distance is abs(0 - 3) = 3.\n    The closest occurrence of 'e' for index 1 is at index 3, so the distance is abs(1 - 3) = 2.\n    For index 4, there is a tie between the 'e' at index 3 and the 'e' at index 5, but the distance is still the same: abs(4 - 3) == abs(4 - 5) = 1.\n    The closest occurrence of 'e' for index 8 is at index 6, so the distance is abs(8 - 6) = 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaab\", c = \"b\"\n    **Output:** [3,2,1,0]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s[i]` and `c` are lowercase English letters.\n  * It is guaranteed that `c` occurs at least once in `s`.",
+  "topics": ["Array", "Two Pointers", "String"],
+  "total_accepted": 237550,
+  "total_submissions": 326916,
+  "acceptance_rate": "72.7%",
+  "similar_questions": [
+    {
+      "title": "Check Distances Between Same Letters",
+      "slug": "check-distances-between-same-letters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-distances-between-same-letters/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "426",
+  "title": "Convert Binary Search Tree to Sorted Doubly Linked List",
+  "slug": "convert-binary-search-tree-to-sorted-doubly-linked-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Linked List",
+    "Stack",
+    "Tree",
+    "Depth-First Search",
+    "Binary Search Tree",
+    "Binary Tree",
+    "Doubly-Linked List"
+  ],
+  "total_accepted": 371007,
+  "total_submissions": 565226,
+  "acceptance_rate": "65.6%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Inorder Traversal",
+      "slug": "binary-tree-inorder-traversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/"
+    }
+  ],
+  "hints": []
+}

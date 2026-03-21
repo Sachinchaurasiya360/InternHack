@@ -1,0 +1,21 @@
+{
+  "id": "1122",
+  "title": "Relative Sort Array",
+  "slug": "relative-sort-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two arrays <code>arr1</code> and <code>arr2</code>, the elements of <code>arr2</code> are distinct, and all elements in <code>arr2</code> are also in <code>arr1</code>.</p>\n\n<p>Sort the elements of <code>arr1</code> such that the relative ordering of items in <code>arr1</code> are the same as in <code>arr2</code>. Elements that do not appear in <code>arr2</code> should be placed at the end of <code>arr1</code> in <strong>ascending</strong> order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr1 = [2,3,1,3,2,4,6,7,9,2,19], arr2 = [2,1,4,3,9,6]\n<strong>Output:</strong> [2,2,2,1,4,3,3,9,6,7,19]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr1 = [28,6,22,8,44,17], arr2 = [22,28,8,6]\n<strong>Output:</strong> [22,28,8,6,17,44]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr1.length, arr2.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= arr1[i], arr2[i] &lt;= 1000</code></li>\n\t<li>All the elements of <code>arr2</code> are <strong>distinct</strong>.</li>\n\t<li>Each&nbsp;<code>arr2[i]</code> is in <code>arr1</code>.</li>\n</ul>\n",
+  "content_markdown": "Given two arrays `arr1` and `arr2`, the elements of `arr2` are distinct, and all elements in `arr2` are also in `arr1`.\n\nSort the elements of `arr1` such that the relative ordering of items in `arr1` are the same as in `arr2`. Elements that do not appear in `arr2` should be placed at the end of `arr1` in **ascending** order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr1 = [2,3,1,3,2,4,6,7,9,2,19], arr2 = [2,1,4,3,9,6]\n    **Output:** [2,2,2,1,4,3,3,9,6,7,19]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr1 = [28,6,22,8,44,17], arr2 = [22,28,8,6]\n    **Output:** [22,28,8,6,17,44]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr1.length, arr2.length <= 1000`\n  * `0 <= arr1[i], arr2[i] <= 1000`\n  * All the elements of `arr2` are **distinct**.\n  * Each `arr2[i]` is in `arr1`.",
+  "question": "Given two arrays `arr1` and `arr2`, the elements of `arr2` are distinct, and all elements in `arr2` are also in `arr1`.\n\nSort the elements of `arr1` such that the relative ordering of items in `arr1` are the same as in `arr2`. Elements that do not appear in `arr2` should be placed at the end of `arr1` in **ascending** order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr1 = [2,3,1,3,2,4,6,7,9,2,19], arr2 = [2,1,4,3,9,6]\n    **Output:** [2,2,2,1,4,3,3,9,6,7,19]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr1 = [28,6,22,8,44,17], arr2 = [22,28,8,6]\n    **Output:** [22,28,8,6,17,44]",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr1.length, arr2.length <= 1000`\n  * `0 <= arr1[i], arr2[i] <= 1000`\n  * All the elements of `arr2` are **distinct**.\n  * Each `arr2[i]` is in `arr1`.",
+  "topics": ["Array", "Hash Table", "Sorting", "Counting Sort"],
+  "total_accepted": 399097,
+  "total_submissions": 531330,
+  "acceptance_rate": "75.1%",
+  "similar_questions": [],
+  "hints": [
+    "Using a hashmap, we can map the values of arr2 to their position in arr2.",
+    "After, we can use a custom sorting function."
+  ]
+}

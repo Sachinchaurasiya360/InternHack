@@ -1,0 +1,37 @@
+{
+  "id": "2168",
+  "title": "Unique Substrings With Equal Digit Frequency",
+  "slug": "unique-substrings-with-equal-digit-frequency",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Rolling Hash", "Counting", "Hash Function"],
+  "total_accepted": 9783,
+  "total_submissions": 15155,
+  "acceptance_rate": "64.6%",
+  "similar_questions": [
+    {
+      "title": "Number of Equal Count Substrings",
+      "slug": "number-of-equal-count-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-equal-count-substrings/"
+    },
+    {
+      "title": "Substrings That Begin and End With the Same Letter",
+      "slug": "substrings-that-begin-and-end-with-the-same-letter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/substrings-that-begin-and-end-with-the-same-letter/"
+    }
+  ],
+  "hints": [
+    "With the constraints, could we try every substring?",
+    "Yes, checking every substring has runtime O(n^2), which will pass.",
+    "How can we make sure we only count unique substrings?",
+    "Use a set to store previously counted substrings. Hashing a string s of length m takes O(m) time. Is there a fast way to compute the hash of s if we know the hash of s[0..m - 2]?",
+    "Use a rolling hash."
+  ]
+}

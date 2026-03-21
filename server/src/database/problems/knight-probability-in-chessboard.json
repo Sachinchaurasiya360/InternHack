@@ -1,0 +1,31 @@
+{
+  "id": "688",
+  "title": "Knight Probability in Chessboard",
+  "slug": "knight-probability-in-chessboard",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>On an <code>n x n</code> chessboard, a knight starts at the cell <code>(row, column)</code> and attempts to make exactly <code>k</code> moves. The rows and columns are <strong>0-indexed</strong>, so the top-left cell is <code>(0, 0)</code>, and the bottom-right cell is <code>(n - 1, n - 1)</code>.</p>\n\n<p>A chess knight has eight possible moves it can make, as illustrated below. Each move is two cells in a cardinal direction, then one cell in an orthogonal direction.</p>\n<img src=\"https://assets.leetcode.com/uploads/2018/10/12/knight.png\" style=\"width: 300px; height: 300px;\" />\n<p>Each time the knight is to move, it chooses one of eight possible moves uniformly at random (even if the piece would go off the chessboard) and moves there.</p>\n\n<p>The knight continues moving until it has made exactly <code>k</code> moves or has moved off the chessboard.</p>\n\n<p>Return <em>the probability that the knight remains on the board after it has stopped moving</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, k = 2, row = 0, column = 0\n<strong>Output:</strong> 0.06250\n<strong>Explanation:</strong> There are two moves (to (1,2), (2,1)) that will keep the knight on the board.\nFrom each of those positions, there are also two moves that will keep the knight on the board.\nThe total probability the knight stays on the board is 0.0625.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1, k = 0, row = 0, column = 0\n<strong>Output:</strong> 1.00000\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 25</code></li>\n\t<li><code>0 &lt;= k &lt;= 100</code></li>\n\t<li><code>0 &lt;= row, column &lt;= n - 1</code></li>\n</ul>\n",
+  "content_markdown": "On an `n x n` chessboard, a knight starts at the cell `(row, column)` and attempts to make exactly `k` moves. The rows and columns are **0-indexed** , so the top-left cell is `(0, 0)`, and the bottom-right cell is `(n - 1, n - 1)`.\n\nA chess knight has eight possible moves it can make, as illustrated below. Each move is two cells in a cardinal direction, then one cell in an orthogonal direction.\n\n![](https://assets.leetcode.com/uploads/2018/10/12/knight.png)\n\nEach time the knight is to move, it chooses one of eight possible moves uniformly at random (even if the piece would go off the chessboard) and moves there.\n\nThe knight continues moving until it has made exactly `k` moves or has moved off the chessboard.\n\nReturn _the probability that the knight remains on the board after it has stopped moving_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 3, k = 2, row = 0, column = 0\n    **Output:** 0.06250\n    **Explanation:** There are two moves (to (1,2), (2,1)) that will keep the knight on the board.\n    From each of those positions, there are also two moves that will keep the knight on the board.\n    The total probability the knight stays on the board is 0.0625.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, k = 0, row = 0, column = 0\n    **Output:** 1.00000\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 25`\n  * `0 <= k <= 100`\n  * `0 <= row, column <= n - 1`",
+  "question": "On an `n x n` chessboard, a knight starts at the cell `(row, column)` and attempts to make exactly `k` moves. The rows and columns are **0-indexed** , so the top-left cell is `(0, 0)`, and the bottom-right cell is `(n - 1, n - 1)`.\n\nA chess knight has eight possible moves it can make, as illustrated below. Each move is two cells in a cardinal direction, then one cell in an orthogonal direction.\n\n![](https://assets.leetcode.com/uploads/2018/10/12/knight.png)\n\nEach time the knight is to move, it chooses one of eight possible moves uniformly at random (even if the piece would go off the chessboard) and moves there.\n\nThe knight continues moving until it has made exactly `k` moves or has moved off the chessboard.\n\nReturn _the probability that the knight remains on the board after it has stopped moving_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 3, k = 2, row = 0, column = 0\n    **Output:** 0.06250\n    **Explanation:** There are two moves (to (1,2), (2,1)) that will keep the knight on the board.\n    From each of those positions, there are also two moves that will keep the knight on the board.\n    The total probability the knight stays on the board is 0.0625.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, k = 0, row = 0, column = 0\n    **Output:** 1.00000",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 25`\n  * `0 <= k <= 100`\n  * `0 <= row, column <= n - 1`",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 182894,
+  "total_submissions": 321340,
+  "acceptance_rate": "56.9%",
+  "similar_questions": [
+    {
+      "title": "Out of Boundary Paths",
+      "slug": "out-of-boundary-paths",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/out-of-boundary-paths/"
+    },
+    {
+      "title": "Maximum Number of Moves to Kill All Pawns",
+      "slug": "maximum-number-of-moves-to-kill-all-pawns",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-moves-to-kill-all-pawns/"
+    }
+  ],
+  "hints": []
+}

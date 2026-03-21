@@ -1,0 +1,33 @@
+{
+  "id": "255",
+  "title": "Verify Preorder Sequence in Binary Search Tree",
+  "slug": "verify-preorder-sequence-in-binary-search-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Stack",
+    "Tree",
+    "Binary Search Tree",
+    "Recursion",
+    "Monotonic Stack",
+    "Binary Tree"
+  ],
+  "total_accepted": 93626,
+  "total_submissions": 181113,
+  "acceptance_rate": "51.7%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Preorder Traversal",
+      "slug": "binary-tree-preorder-traversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-preorder-traversal/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "155",
+  "title": "Min Stack",
+  "slug": "min-stack",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.</p>\n\n<p>Implement the <code>MinStack</code> class:</p>\n\n<ul>\n\t<li><code>MinStack()</code> initializes the stack object.</li>\n\t<li><code>void push(int val)</code> pushes the element <code>val</code> onto the stack.</li>\n\t<li><code>void pop()</code> removes the element on the top of the stack.</li>\n\t<li><code>int top()</code> gets the top element of the stack.</li>\n\t<li><code>int getMin()</code> retrieves the minimum element in the stack.</li>\n</ul>\n\n<p>You must implement a solution with <code>O(1)</code> time complexity for each function.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;MinStack&quot;,&quot;push&quot;,&quot;push&quot;,&quot;push&quot;,&quot;getMin&quot;,&quot;pop&quot;,&quot;top&quot;,&quot;getMin&quot;]\n[[],[-2],[0],[-3],[],[],[],[]]\n\n<strong>Output</strong>\n[null,null,null,null,-3,null,0,-2]\n\n<strong>Explanation</strong>\nMinStack minStack = new MinStack();\nminStack.push(-2);\nminStack.push(0);\nminStack.push(-3);\nminStack.getMin(); // return -3\nminStack.pop();\nminStack.top();    // return 0\nminStack.getMin(); // return -2\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-2<sup>31</sup> &lt;= val &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li>Methods <code>pop</code>, <code>top</code> and <code>getMin</code> operations will always be called on <strong>non-empty</strong> stacks.</li>\n\t<li>At most <code>3 * 10<sup>4</sup></code> calls will be made to <code>push</code>, <code>pop</code>, <code>top</code>, and <code>getMin</code>.</li>\n</ul>\n",
+  "content_markdown": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.\n\nImplement the `MinStack` class:\n\n  * `MinStack()` initializes the stack object.\n  * `void push(int val)` pushes the element `val` onto the stack.\n  * `void pop()` removes the element on the top of the stack.\n  * `int top()` gets the top element of the stack.\n  * `int getMin()` retrieves the minimum element in the stack.\n\n\n\nYou must implement a solution with `O(1)` time complexity for each function.\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"MinStack\",\"push\",\"push\",\"push\",\"getMin\",\"pop\",\"top\",\"getMin\"]\n    [[],[-2],[0],[-3],[],[],[],[]]\n    \n    **Output**\n    [null,null,null,null,-3,null,0,-2]\n    \n    **Explanation**\n    MinStack minStack = new MinStack();\n    minStack.push(-2);\n    minStack.push(0);\n    minStack.push(-3);\n    minStack.getMin(); // return -3\n    minStack.pop();\n    minStack.top();    // return 0\n    minStack.getMin(); // return -2\n    \n\n \n\n**Constraints:**\n\n  * `-231 <= val <= 231 - 1`\n  * Methods `pop`, `top` and `getMin` operations will always be called on **non-empty** stacks.\n  * At most `3 * 104` calls will be made to `push`, `pop`, `top`, and `getMin`.",
+  "question": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.\n\nImplement the `MinStack` class:\n\n  * `MinStack()` initializes the stack object.\n  * `void push(int val)` pushes the element `val` onto the stack.\n  * `void pop()` removes the element on the top of the stack.\n  * `int top()` gets the top element of the stack.\n  * `int getMin()` retrieves the minimum element in the stack.\n\n\n\nYou must implement a solution with `O(1)` time complexity for each function.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"MinStack\",\"push\",\"push\",\"push\",\"getMin\",\"pop\",\"top\",\"getMin\"]\n    [[],[-2],[0],[-3],[],[],[],[]]\n    \n    **Output**\n    [null,null,null,null,-3,null,0,-2]\n    \n    **Explanation**\n    MinStack minStack = new MinStack();\n    minStack.push(-2);\n    minStack.push(0);\n    minStack.push(-3);\n    minStack.getMin(); // return -3\n    minStack.pop();\n    minStack.top();    // return 0\n    minStack.getMin(); // return -2",
+  "constraints": "**Constraints:**\n\n  * `-231 <= val <= 231 - 1`\n  * Methods `pop`, `top` and `getMin` operations will always be called on **non-empty** stacks.\n  * At most `3 * 104` calls will be made to `push`, `pop`, `top`, and `getMin`.",
+  "topics": ["Stack", "Design"],
+  "total_accepted": 2617966,
+  "total_submissions": 4533724,
+  "acceptance_rate": "57.7%",
+  "similar_questions": [
+    {
+      "title": "Sliding Window Maximum",
+      "slug": "sliding-window-maximum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sliding-window-maximum/"
+    },
+    {
+      "title": "Max Stack",
+      "slug": "max-stack",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/max-stack/"
+    }
+  ],
+  "hints": ["Consider each node in the stack having a minimum value. (Credits to @aakarshmadhavan)"]
+}

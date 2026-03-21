@@ -1,0 +1,22 @@
+{
+  "id": "3004",
+  "title": "Maximum Subtree of the Same Color",
+  "slug": "maximum-subtree-of-the-same-color",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Tree", "Depth-First Search"],
+  "total_accepted": 2371,
+  "total_submissions": 4065,
+  "acceptance_rate": "58.3%",
+  "similar_questions": [],
+  "hints": [
+    "For each node, define a <code>flag[v]</code> indicating that the subtree of this node contains only one color or not.",
+    "In the DFS process, when you call <code>dfs(u)</code> from node <code>v</code>, after that DFS of <code>u</code> has finished, check if <code>flag[u] == false</code>, then <code>flag[v]</code> is also <code>false</code>.",
+    "Also if <code>color[v] != color[u]</code>, <code>flag[v]</code> becomes <code>false</code>."
+  ]
+}

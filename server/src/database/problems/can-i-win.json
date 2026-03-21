@@ -1,0 +1,56 @@
+{
+  "id": "464",
+  "title": "Can I Win",
+  "slug": "can-i-win",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>In the &quot;100 game&quot; two players take turns adding, to a running total, any integer from <code>1</code> to <code>10</code>. The player who first causes the running total to <strong>reach or exceed</strong> 100 wins.</p>\n\n<p>What if we change the game so that players <strong>cannot</strong> re-use integers?</p>\n\n<p>For example, two players might take turns drawing from a common pool of numbers from 1 to 15 without replacement until they reach a total &gt;= 100.</p>\n\n<p>Given two integers <code>maxChoosableInteger</code> and <code>desiredTotal</code>, return <code>true</code> if the first player to move can force a win, otherwise, return <code>false</code>. Assume both players play <strong>optimally</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> maxChoosableInteger = 10, desiredTotal = 11\n<strong>Output:</strong> false\n<strong>Explanation:</strong>\nNo matter which integer the first player choose, the first player will lose.\nThe first player can choose an integer from 1 up to 10.\nIf the first player choose 1, the second player can only choose integers from 2 up to 10.\nThe second player will win by choosing 10 and get a total = 11, which is &gt;= desiredTotal.\nSame with other integers chosen by the first player, the second player will always win.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> maxChoosableInteger = 10, desiredTotal = 0\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> maxChoosableInteger = 10, desiredTotal = 1\n<strong>Output:</strong> true\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= maxChoosableInteger &lt;= 20</code></li>\n\t<li><code>0 &lt;= desiredTotal &lt;= 300</code></li>\n</ul>\n",
+  "content_markdown": "In the \"100 game\" two players take turns adding, to a running total, any integer from `1` to `10`. The player who first causes the running total to **reach or exceed** 100 wins.\n\nWhat if we change the game so that players **cannot** re-use integers?\n\nFor example, two players might take turns drawing from a common pool of numbers from 1 to 15 without replacement until they reach a total >= 100.\n\nGiven two integers `maxChoosableInteger` and `desiredTotal`, return `true` if the first player to move can force a win, otherwise, return `false`. Assume both players play **optimally**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** maxChoosableInteger = 10, desiredTotal = 11\n    **Output:** false\n    **Explanation:**\n    No matter which integer the first player choose, the first player will lose.\n    The first player can choose an integer from 1 up to 10.\n    If the first player choose 1, the second player can only choose integers from 2 up to 10.\n    The second player will win by choosing 10 and get a total = 11, which is >= desiredTotal.\n    Same with other integers chosen by the first player, the second player will always win.\n    \n\n**Example 2:**\n    \n    \n    **Input:** maxChoosableInteger = 10, desiredTotal = 0\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** maxChoosableInteger = 10, desiredTotal = 1\n    **Output:** true\n    \n\n \n\n**Constraints:**\n\n  * `1 <= maxChoosableInteger <= 20`\n  * `0 <= desiredTotal <= 300`",
+  "question": "In the \"100 game\" two players take turns adding, to a running total, any integer from `1` to `10`. The player who first causes the running total to **reach or exceed** 100 wins.\n\nWhat if we change the game so that players **cannot** re-use integers?\n\nFor example, two players might take turns drawing from a common pool of numbers from 1 to 15 without replacement until they reach a total >= 100.\n\nGiven two integers `maxChoosableInteger` and `desiredTotal`, return `true` if the first player to move can force a win, otherwise, return `false`. Assume both players play **optimally**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** maxChoosableInteger = 10, desiredTotal = 11\n    **Output:** false\n    **Explanation:**\n    No matter which integer the first player choose, the first player will lose.\n    The first player can choose an integer from 1 up to 10.\n    If the first player choose 1, the second player can only choose integers from 2 up to 10.\n    The second player will win by choosing 10 and get a total = 11, which is >= desiredTotal.\n    Same with other integers chosen by the first player, the second player will always win.\n    \n\n**Example 2:**\n    \n    \n    **Input:** maxChoosableInteger = 10, desiredTotal = 0\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** maxChoosableInteger = 10, desiredTotal = 1\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `1 <= maxChoosableInteger <= 20`\n  * `0 <= desiredTotal <= 300`",
+  "topics": [
+    "Math",
+    "Dynamic Programming",
+    "Bit Manipulation",
+    "Memoization",
+    "Game Theory",
+    "Bitmask"
+  ],
+  "total_accepted": 120401,
+  "total_submissions": 387958,
+  "acceptance_rate": "31.0%",
+  "similar_questions": [
+    {
+      "title": "Flip Game II",
+      "slug": "flip-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flip-game-ii/"
+    },
+    {
+      "title": "Guess Number Higher or Lower II",
+      "slug": "guess-number-higher-or-lower-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/guess-number-higher-or-lower-ii/"
+    },
+    {
+      "title": "Predict the Winner",
+      "slug": "predict-the-winner",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/predict-the-winner/"
+    },
+    {
+      "title": "Find the Winning Player in Coin Game",
+      "slug": "find-the-winning-player-in-coin-game",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-winning-player-in-coin-game/"
+    },
+    {
+      "title": "Find the Number of Winning Players",
+      "slug": "find-the-number-of-winning-players",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-number-of-winning-players/"
+    }
+  ],
+  "hints": []
+}

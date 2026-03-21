@@ -1,0 +1,25 @@
+{
+  "id": "1837",
+  "title": "Sum of Digits in Base K",
+  "slug": "sum-of-digits-in-base-k",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code> (in base <code>10</code>) and a base <code>k</code>, return <em>the <strong>sum</strong> of the digits of </em><code>n</code><em> <strong>after</strong> converting </em><code>n</code><em> from base </em><code>10</code><em> to base </em><code>k</code>.</p>\n\n<p>After converting, each digit should be interpreted as a base <code>10</code> number, and the sum should be returned in base <code>10</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 34, k = 6\n<strong>Output:</strong> 9\n<strong>Explanation: </strong>34 (base 10) expressed in base 6 is 54. 5 + 4 = 9.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 10, k = 10\n<strong>Output:</strong> 1\n<strong>Explanation: </strong>n is already in base 10. 1 + 0 = 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n\t<li><code>2 &lt;= k &lt;= 10</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n` (in base `10`) and a base `k`, return _the**sum** of the digits of _`n` _**after** converting _`n` _from base_`10` _to base_`k`.\n\nAfter converting, each digit should be interpreted as a base `10` number, and the sum should be returned in base `10`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 34, k = 6\n    **Output:** 9\n    **Explanation:** 34 (base 10) expressed in base 6 is 54. 5 + 4 = 9.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 10, k = 10\n    **Output:** 1\n    **Explanation:** n is already in base 10. 1 + 0 = 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 100`\n  * `2 <= k <= 10`",
+  "question": "Given an integer `n` (in base `10`) and a base `k`, return _the**sum** of the digits of _`n` _**after** converting _`n` _from base_`10` _to base_`k`.\n\nAfter converting, each digit should be interpreted as a base `10` number, and the sum should be returned in base `10`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 34, k = 6\n    **Output:** 9\n    **Explanation:** 34 (base 10) expressed in base 6 is 54. 5 + 4 = 9.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 10, k = 10\n    **Output:** 1\n    **Explanation:** n is already in base 10. 1 + 0 = 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 100`\n  * `2 <= k <= 10`",
+  "topics": ["Math"],
+  "total_accepted": 77400,
+  "total_submissions": 98555,
+  "acceptance_rate": "78.5%",
+  "similar_questions": [
+    {
+      "title": "  Count Symmetric Integers",
+      "slug": "count-symmetric-integers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-symmetric-integers/"
+    }
+  ],
+  "hints": ["Convert the given number into base k."]
+}

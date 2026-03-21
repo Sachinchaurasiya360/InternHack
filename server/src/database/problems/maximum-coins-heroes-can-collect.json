@@ -1,0 +1,24 @@
+{
+  "id": "2838",
+  "title": "Maximum Coins Heroes Can Collect",
+  "slug": "maximum-coins-heroes-can-collect",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting", "Prefix Sum"],
+  "total_accepted": 7055,
+  "total_submissions": 10269,
+  "acceptance_rate": "68.7%",
+  "similar_questions": [],
+  "hints": [
+    "If a hero can defeat the <code>i<sup>th</sup></code> monster, then he defeats all the monsters having a power less than <code>monster[i]</code>.",
+    "Sort monsters by their powers. Also change the order of the coins array according to this sort.",
+    "Construct a prefix sum array for the updated coins array.",
+    "For each hero, do a binary search and find the last position of the most powerful monster that this hero can defeat.",
+    "If said monster has index <code>i</code>, then the <code>i<sup>th</sup></code> element of the partial sum array would be the answer."
+  ]
+}

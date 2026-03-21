@@ -1,0 +1,29 @@
+{
+  "id": "2148",
+  "title": "Count Elements With Strictly Smaller and Greater Elements ",
+  "slug": "count-elements-with-strictly-smaller-and-greater-elements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>the number of elements that have <strong>both</strong> a strictly smaller and a strictly greater element appear in </em><code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [11,7,2,15]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The element 7 has the element 2 strictly smaller than it and the element 11 strictly greater than it.\nElement 11 has element 7 strictly smaller than it and element 15 strictly greater than it.\nIn total there are 2 elements having both a strictly smaller and a strictly greater element appear in <code>nums</code>.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-3,3,3,90]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The element 3 has the element -3 strictly smaller than it and the element 90 strictly greater than it.\nSince there are two elements with the value 3, in total there are 2 elements having both a strictly smaller and a strictly greater element appear in <code>nums</code>.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, return _the number of elements that have**both** a strictly smaller and a strictly greater element appear in _`nums`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [11,7,2,15]\n    **Output:** 2\n    **Explanation:** The element 7 has the element 2 strictly smaller than it and the element 11 strictly greater than it.\n    Element 11 has element 7 strictly smaller than it and element 15 strictly greater than it.\n    In total there are 2 elements having both a strictly smaller and a strictly greater element appear in nums.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-3,3,3,90]\n    **Output:** 2\n    **Explanation:** The element 3 has the element -3 strictly smaller than it and the element 90 strictly greater than it.\n    Since there are two elements with the value 3, in total there are 2 elements having both a strictly smaller and a strictly greater element appear in nums.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `-105 <= nums[i] <= 105`",
+  "question": "Given an integer array `nums`, return _the number of elements that have**both** a strictly smaller and a strictly greater element appear in _`nums`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [11,7,2,15]\n    **Output:** 2\n    **Explanation:** The element 7 has the element 2 strictly smaller than it and the element 11 strictly greater than it.\n    Element 11 has element 7 strictly smaller than it and element 15 strictly greater than it.\n    In total there are 2 elements having both a strictly smaller and a strictly greater element appear in nums.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-3,3,3,90]\n    **Output:** 2\n    **Explanation:** The element 3 has the element -3 strictly smaller than it and the element 90 strictly greater than it.\n    Since there are two elements with the value 3, in total there are 2 elements having both a strictly smaller and a strictly greater element appear in nums.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `-105 <= nums[i] <= 105`",
+  "topics": ["Array", "Sorting", "Counting"],
+  "total_accepted": 80725,
+  "total_submissions": 134986,
+  "acceptance_rate": "59.8%",
+  "similar_questions": [
+    {
+      "title": "Find Smallest Letter Greater Than Target",
+      "slug": "find-smallest-letter-greater-than-target",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-smallest-letter-greater-than-target/"
+    }
+  ],
+  "hints": [
+    "All the elements in the array should be counted except for the minimum and maximum elements.",
+    "If the array has n elements, the answer will be n - count(min(nums)) - count(max(nums))",
+    "This formula will not work in case the array has all the elements equal, why?"
+  ]
+}

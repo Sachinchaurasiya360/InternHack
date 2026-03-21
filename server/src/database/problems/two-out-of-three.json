@@ -1,0 +1,21 @@
+{
+  "id": "2032",
+  "title": "Two Out of Three",
+  "slug": "two-out-of-three",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "Given three integer arrays <code>nums1</code>, <code>nums2</code>, and <code>nums3</code>, return <em>a <strong>distinct</strong> array containing all the values that are present in <strong>at least two</strong> out of the three arrays. You may return the values in <strong>any</strong> order</em>.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,1,3,2], nums2 = [2,3], nums3 = [3]\n<strong>Output:</strong> [3,2]\n<strong>Explanation:</strong> The values that are present in at least two arrays are:\n- 3, in all three arrays.\n- 2, in nums1 and nums2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [3,1], nums2 = [2,3], nums3 = [1,2]\n<strong>Output:</strong> [2,3,1]\n<strong>Explanation:</strong> The values that are present in at least two arrays are:\n- 2, in nums2 and nums3.\n- 3, in nums1 and nums2.\n- 1, in nums1 and nums3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2,2], nums2 = [4,3,3], nums3 = [5]\n<strong>Output:</strong> []\n<strong>Explanation:</strong> No value is present in at least two arrays.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length, nums2.length, nums3.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums1[i], nums2[j], nums3[k] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given three integer arrays `nums1`, `nums2`, and `nums3`, return _a**distinct** array containing all the values that are present in **at least two** out of the three arrays. You may return the values in **any** order_. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [1,1,3,2], nums2 = [2,3], nums3 = [3]\n    **Output:** [3,2]\n    **Explanation:** The values that are present in at least two arrays are:\n    - 3, in all three arrays.\n    - 2, in nums1 and nums2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [3,1], nums2 = [2,3], nums3 = [1,2]\n    **Output:** [2,3,1]\n    **Explanation:** The values that are present in at least two arrays are:\n    - 2, in nums2 and nums3.\n    - 3, in nums1 and nums2.\n    - 1, in nums1 and nums3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [1,2,2], nums2 = [4,3,3], nums3 = [5]\n    **Output:** []\n    **Explanation:** No value is present in at least two arrays.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length, nums2.length, nums3.length <= 100`\n  * `1 <= nums1[i], nums2[j], nums3[k] <= 100`",
+  "question": "Given three integer arrays `nums1`, `nums2`, and `nums3`, return _a**distinct** array containing all the values that are present in **at least two** out of the three arrays. You may return the values in **any** order_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [1,1,3,2], nums2 = [2,3], nums3 = [3]\n    **Output:** [3,2]\n    **Explanation:** The values that are present in at least two arrays are:\n    - 3, in all three arrays.\n    - 2, in nums1 and nums2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [3,1], nums2 = [2,3], nums3 = [1,2]\n    **Output:** [2,3,1]\n    **Explanation:** The values that are present in at least two arrays are:\n    - 2, in nums2 and nums3.\n    - 3, in nums1 and nums2.\n    - 1, in nums1 and nums3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [1,2,2], nums2 = [4,3,3], nums3 = [5]\n    **Output:** []\n    **Explanation:** No value is present in at least two arrays.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length, nums2.length, nums3.length <= 100`\n  * `1 <= nums1[i], nums2[j], nums3[k] <= 100`",
+  "topics": ["Array", "Hash Table", "Bit Manipulation"],
+  "total_accepted": 101206,
+  "total_submissions": 130682,
+  "acceptance_rate": "77.4%",
+  "similar_questions": [],
+  "hints": [
+    "What data structure can we use to help us quickly find whether an element belongs in an array?",
+    "Can we count the frequencies of the elements in each array?"
+  ]
+}

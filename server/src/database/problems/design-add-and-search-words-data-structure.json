@@ -1,0 +1,57 @@
+{
+  "id": "211",
+  "title": "Design Add and Search Words Data Structure",
+  "slug": "design-add-and-search-words-data-structure",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Design a data structure that supports adding new words and finding if a string matches any previously added string.</p>\n\n<p>Implement the <code>WordDictionary</code> class:</p>\n\n<ul>\n\t<li><code>WordDictionary()</code>&nbsp;Initializes the object.</li>\n\t<li><code>void addWord(word)</code> Adds <code>word</code> to the data structure, it can be matched later.</li>\n\t<li><code>bool search(word)</code>&nbsp;Returns <code>true</code> if there is any string in the data structure that matches <code>word</code>&nbsp;or <code>false</code> otherwise. <code>word</code> may contain dots <code>&#39;.&#39;</code> where dots can be matched with any letter.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;WordDictionary&quot;,&quot;addWord&quot;,&quot;addWord&quot;,&quot;addWord&quot;,&quot;search&quot;,&quot;search&quot;,&quot;search&quot;,&quot;search&quot;]\n[[],[&quot;bad&quot;],[&quot;dad&quot;],[&quot;mad&quot;],[&quot;pad&quot;],[&quot;bad&quot;],[&quot;.ad&quot;],[&quot;b..&quot;]]\n<strong>Output</strong>\n[null,null,null,null,false,true,true,true]\n\n<strong>Explanation</strong>\nWordDictionary wordDictionary = new WordDictionary();\nwordDictionary.addWord(&quot;bad&quot;);\nwordDictionary.addWord(&quot;dad&quot;);\nwordDictionary.addWord(&quot;mad&quot;);\nwordDictionary.search(&quot;pad&quot;); // return False\nwordDictionary.search(&quot;bad&quot;); // return True\nwordDictionary.search(&quot;.ad&quot;); // return True\nwordDictionary.search(&quot;b..&quot;); // return True\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 25</code></li>\n\t<li><code>word</code> in <code>addWord</code> consists of lowercase English letters.</li>\n\t<li><code>word</code> in <code>search</code> consist of <code>&#39;.&#39;</code> or lowercase English letters.</li>\n\t<li>There will be at most <code>2</code> dots in <code>word</code> for <code>search</code> queries.</li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>addWord</code> and <code>search</code>.</li>\n</ul>\n",
+  "content_markdown": "Design a data structure that supports adding new words and finding if a string matches any previously added string.\n\nImplement the `WordDictionary` class:\n\n  * `WordDictionary()` Initializes the object.\n  * `void addWord(word)` Adds `word` to the data structure, it can be matched later.\n  * `bool search(word)` Returns `true` if there is any string in the data structure that matches `word` or `false` otherwise. `word` may contain dots `'.'` where dots can be matched with any letter.\n\n\n\n \n\n**Example:**\n    \n    \n    **Input**\n    [\"WordDictionary\",\"addWord\",\"addWord\",\"addWord\",\"search\",\"search\",\"search\",\"search\"]\n    [[],[\"bad\"],[\"dad\"],[\"mad\"],[\"pad\"],[\"bad\"],[\".ad\"],[\"b..\"]]\n    **Output**\n    [null,null,null,null,false,true,true,true]\n    \n    **Explanation**\n    WordDictionary wordDictionary = new WordDictionary();\n    wordDictionary.addWord(\"bad\");\n    wordDictionary.addWord(\"dad\");\n    wordDictionary.addWord(\"mad\");\n    wordDictionary.search(\"pad\"); // return False\n    wordDictionary.search(\"bad\"); // return True\n    wordDictionary.search(\".ad\"); // return True\n    wordDictionary.search(\"b..\"); // return True\n    \n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 25`\n  * `word` in `addWord` consists of lowercase English letters.\n  * `word` in `search` consist of `'.'` or lowercase English letters.\n  * There will be at most `2` dots in `word` for `search` queries.\n  * At most `104` calls will be made to `addWord` and `search`.",
+  "question": "Design a data structure that supports adding new words and finding if a string matches any previously added string.\n\nImplement the `WordDictionary` class:\n\n  * `WordDictionary()` Initializes the object.\n  * `void addWord(word)` Adds `word` to the data structure, it can be matched later.\n  * `bool search(word)` Returns `true` if there is any string in the data structure that matches `word` or `false` otherwise. `word` may contain dots `'.'` where dots can be matched with any letter.",
+  "examples": "**Example:**\n    \n    \n    **Input**\n    [\"WordDictionary\",\"addWord\",\"addWord\",\"addWord\",\"search\",\"search\",\"search\",\"search\"]\n    [[],[\"bad\"],[\"dad\"],[\"mad\"],[\"pad\"],[\"bad\"],[\".ad\"],[\"b..\"]]\n    **Output**\n    [null,null,null,null,false,true,true,true]\n    \n    **Explanation**\n    WordDictionary wordDictionary = new WordDictionary();\n    wordDictionary.addWord(\"bad\");\n    wordDictionary.addWord(\"dad\");\n    wordDictionary.addWord(\"mad\");\n    wordDictionary.search(\"pad\"); // return False\n    wordDictionary.search(\"bad\"); // return True\n    wordDictionary.search(\".ad\"); // return True\n    wordDictionary.search(\"b..\"); // return True",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 25`\n  * `word` in `addWord` consists of lowercase English letters.\n  * `word` in `search` consist of `'.'` or lowercase English letters.\n  * There will be at most `2` dots in `word` for `search` queries.\n  * At most `104` calls will be made to `addWord` and `search`.",
+  "topics": ["String", "Depth-First Search", "Design", "Trie"],
+  "total_accepted": 866424,
+  "total_submissions": 1798866,
+  "acceptance_rate": "48.2%",
+  "similar_questions": [
+    {
+      "title": "Implement Trie (Prefix Tree)",
+      "slug": "implement-trie-prefix-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/implement-trie-prefix-tree/"
+    },
+    {
+      "title": "Prefix and Suffix Search",
+      "slug": "prefix-and-suffix-search",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/prefix-and-suffix-search/"
+    },
+    {
+      "title": "Match Substring After Replacement",
+      "slug": "match-substring-after-replacement",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/match-substring-after-replacement/"
+    },
+    {
+      "title": "Sum of Prefix Scores of Strings",
+      "slug": "sum-of-prefix-scores-of-strings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sum-of-prefix-scores-of-strings/"
+    },
+    {
+      "title": "Count Prefix and Suffix Pairs II",
+      "slug": "count-prefix-and-suffix-pairs-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-prefix-and-suffix-pairs-ii/"
+    },
+    {
+      "title": "Count Prefix and Suffix Pairs I",
+      "slug": "count-prefix-and-suffix-pairs-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-prefix-and-suffix-pairs-i/"
+    }
+  ],
+  "hints": [
+    "You should be familiar with how a Trie works. If not, please work on this problem: <a href=\"https://leetcode.com/problems/implement-trie-prefix-tree/\">Implement Trie (Prefix Tree)</a> first."
+  ]
+}

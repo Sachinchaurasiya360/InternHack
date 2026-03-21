@@ -1,0 +1,42 @@
+{
+  "id": "284",
+  "title": "Peeking Iterator",
+  "slug": "peeking-iterator",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Design an iterator that supports the <code>peek</code> operation on an existing iterator in addition to the <code>hasNext</code> and the <code>next</code> operations.</p>\n\n<p>Implement the <code>PeekingIterator</code> class:</p>\n\n<ul>\n\t<li><code>PeekingIterator(Iterator&lt;int&gt; nums)</code> Initializes the object with the given integer iterator <code>iterator</code>.</li>\n\t<li><code>int next()</code> Returns the next element in the array and moves the pointer to the next element.</li>\n\t<li><code>boolean hasNext()</code> Returns <code>true</code> if there are still elements in the array.</li>\n\t<li><code>int peek()</code> Returns the next element in the array <strong>without</strong> moving the pointer.</li>\n</ul>\n\n<p><strong>Note:</strong> Each language may have a different implementation of the constructor and <code>Iterator</code>, but they all support the <code>int next()</code> and <code>boolean hasNext()</code> functions.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;PeekingIterator&quot;, &quot;next&quot;, &quot;peek&quot;, &quot;next&quot;, &quot;next&quot;, &quot;hasNext&quot;]\n[[[1, 2, 3]], [], [], [], [], []]\n<strong>Output</strong>\n[null, 1, 2, 2, 3, false]\n\n<strong>Explanation</strong>\nPeekingIterator peekingIterator = new PeekingIterator([1, 2, 3]); // [<u><strong>1</strong></u>,2,3]\npeekingIterator.next();    // return 1, the pointer moves to the next element [1,<u><strong>2</strong></u>,3].\npeekingIterator.peek();    // return 2, the pointer does not move [1,<u><strong>2</strong></u>,3].\npeekingIterator.next();    // return 2, the pointer moves to the next element [1,2,<u><strong>3</strong></u>]\npeekingIterator.next();    // return 3, the pointer moves to the next element [1,2,3]\npeekingIterator.hasNext(); // return False\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li>All the calls to <code>next</code> and <code>peek</code> are valid.</li>\n\t<li>At most <code>1000</code> calls will be made to <code>next</code>, <code>hasNext</code>, and <code>peek</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> How would you extend your design to be generic and work with all types, not just integer?",
+  "content_markdown": "Design an iterator that supports the `peek` operation on an existing iterator in addition to the `hasNext` and the `next` operations.\n\nImplement the `PeekingIterator` class:\n\n  * `PeekingIterator(Iterator<int> nums)` Initializes the object with the given integer iterator `iterator`.\n  * `int next()` Returns the next element in the array and moves the pointer to the next element.\n  * `boolean hasNext()` Returns `true` if there are still elements in the array.\n  * `int peek()` Returns the next element in the array **without** moving the pointer.\n\n\n\n**Note:** Each language may have a different implementation of the constructor and `Iterator`, but they all support the `int next()` and `boolean hasNext()` functions.\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"PeekingIterator\", \"next\", \"peek\", \"next\", \"next\", \"hasNext\"]\n    [[[1, 2, 3]], [], [], [], [], []]\n    **Output**\n    [null, 1, 2, 2, 3, false]\n    \n    **Explanation**\n    PeekingIterator peekingIterator = new PeekingIterator([1, 2, 3]); // [_**1**_ ,2,3]\n    peekingIterator.next();    // return 1, the pointer moves to the next element [1,_**2**_ ,3].\n    peekingIterator.peek();    // return 2, the pointer does not move [1,_**2**_ ,3].\n    peekingIterator.next();    // return 2, the pointer moves to the next element [1,2,_**3**_]\n    peekingIterator.next();    // return 3, the pointer moves to the next element [1,2,3]\n    peekingIterator.hasNext(); // return False\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 1000`\n  * All the calls to `next` and `peek` are valid.\n  * At most `1000` calls will be made to `next`, `hasNext`, and `peek`.\n\n\n\n \n\n**Follow up:** How would you extend your design to be generic and work with all types, not just integer?",
+  "question": "Design an iterator that supports the `peek` operation on an existing iterator in addition to the `hasNext` and the `next` operations.\n\nImplement the `PeekingIterator` class:\n\n  * `PeekingIterator(Iterator<int> nums)` Initializes the object with the given integer iterator `iterator`.\n  * `int next()` Returns the next element in the array and moves the pointer to the next element.\n  * `boolean hasNext()` Returns `true` if there are still elements in the array.\n  * `int peek()` Returns the next element in the array **without** moving the pointer.\n\n\n\n**Note:** Each language may have a different implementation of the constructor and `Iterator`, but they all support the `int next()` and `boolean hasNext()` functions.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"PeekingIterator\", \"next\", \"peek\", \"next\", \"next\", \"hasNext\"]\n    [[[1, 2, 3]], [], [], [], [], []]\n    **Output**\n    [null, 1, 2, 2, 3, false]\n    \n    **Explanation**\n    PeekingIterator peekingIterator = new PeekingIterator([1, 2, 3]); // [_**1**_ ,2,3]\n    peekingIterator.next();    // return 1, the pointer moves to the next element [1,_**2**_ ,3].\n    peekingIterator.peek();    // return 2, the pointer does not move [1,_**2**_ ,3].\n    peekingIterator.next();    // return 2, the pointer moves to the next element [1,2,_**3**_]\n    peekingIterator.next();    // return 3, the pointer moves to the next element [1,2,3]\n    peekingIterator.hasNext(); // return False",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 1000`\n  * All the calls to `next` and `peek` are valid.\n  * At most `1000` calls will be made to `next`, `hasNext`, and `peek`.",
+  "topics": ["Array", "Design", "Iterator"],
+  "total_accepted": 253526,
+  "total_submissions": 413910,
+  "acceptance_rate": "61.3%",
+  "similar_questions": [
+    {
+      "title": "Binary Search Tree Iterator",
+      "slug": "binary-search-tree-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-search-tree-iterator/"
+    },
+    {
+      "title": "Flatten 2D Vector",
+      "slug": "flatten-2d-vector",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-2d-vector/"
+    },
+    {
+      "title": "Zigzag Iterator",
+      "slug": "zigzag-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/zigzag-iterator/"
+    }
+  ],
+  "hints": [
+    "Think of \"looking ahead\". You want to cache the next element.",
+    "Is one variable sufficient? Why or why not?",
+    "Test your design with call order of <code>peek()</code> before <code>next()</code> vs <code>next()</code> before <code>peek()</code>.",
+    "For a clean implementation, check out <a href=\"https://github.com/google/guava/blob/703ef758b8621cfbab16814f01ddcc5324bdea33/guava-gwt/src-super/com/google/common/collect/super/com/google/common/collect/Iterators.java#L1125\" target=\"_blank\">Google's guava library source code</a>."
+  ]
+}

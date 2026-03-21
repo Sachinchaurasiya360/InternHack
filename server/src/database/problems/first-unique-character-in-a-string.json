@@ -1,0 +1,31 @@
+{
+  "id": "387",
+  "title": "First Unique Character in a String",
+  "slug": "first-unique-character-in-a-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, find the <strong>first</strong> non-repeating character in it and return its index. If it <strong>does not</strong> exist, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;leetcode&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The character <code>&#39;l&#39;</code> at index 0 is the first character that does not occur at any other index.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;loveleetcode&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;aabb&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">-1</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, find the **first** non-repeating character in it and return its index. If it **does not** exist, return `-1`.\n\n \n\n**Example 1:**\n\n**Input:** s = \"leetcode\"\n\n**Output:** 0\n\n**Explanation:**\n\nThe character `'l'` at index 0 is the first character that does not occur at any other index.\n\n**Example 2:**\n\n**Input:** s = \"loveleetcode\"\n\n**Output:** 2\n\n**Example 3:**\n\n**Input:** s = \"aabb\"\n\n**Output:** -1\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of only lowercase English letters.",
+  "question": "Given a string `s`, find the **first** non-repeating character in it and return its index. If it **does not** exist, return `-1`.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"leetcode\"\n\n**Output:** 0\n\n**Explanation:**\n\nThe character `'l'` at index 0 is the first character that does not occur at any other index.\n\n**Example 2:**\n\n**Input:** s = \"loveleetcode\"\n\n**Output:** 2\n\n**Example 3:**\n\n**Input:** s = \"aabb\"\n\n**Output:** -1",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of only lowercase English letters.",
+  "topics": ["Hash Table", "String", "Queue", "Counting"],
+  "total_accepted": 2312244,
+  "total_submissions": 3554424,
+  "acceptance_rate": "65.1%",
+  "similar_questions": [
+    {
+      "title": "Sort Characters By Frequency",
+      "slug": "sort-characters-by-frequency",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-characters-by-frequency/"
+    },
+    {
+      "title": "First Letter to Appear Twice",
+      "slug": "first-letter-to-appear-twice",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/first-letter-to-appear-twice/"
+    }
+  ],
+  "hints": []
+}

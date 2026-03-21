@@ -1,0 +1,41 @@
+{
+  "id": "1814",
+  "title": "Count Nice Pairs in an Array",
+  "slug": "count-nice-pairs-in-an-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> that consists of non-negative integers. Let us define <code>rev(x)</code> as the reverse of the non-negative integer <code>x</code>. For example, <code>rev(123) = 321</code>, and <code>rev(120) = 21</code>. A pair of indices <code>(i, j)</code> is <strong>nice</strong> if it satisfies all of the following conditions:</p>\n\n<ul>\n\t<li><code>0 &lt;= i &lt; j &lt; nums.length</code></li>\n\t<li><code>nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])</code></li>\n</ul>\n\n<p>Return <em>the number of nice pairs of indices</em>. Since that number can be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [42,11,1,97]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The two pairs are:\n - (0,3) : 42 + rev(97) = 42 + 79 = 121, 97 + rev(42) = 97 + 24 = 121.\n - (1,2) : 11 + rev(1) = 11 + 1 = 12, 1 + rev(11) = 1 + 11 = 12.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [13,10,35,24,76]\n<strong>Output:</strong> 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` that consists of non-negative integers. Let us define `rev(x)` as the reverse of the non-negative integer `x`. For example, `rev(123) = 321`, and `rev(120) = 21`. A pair of indices `(i, j)` is **nice** if it satisfies all of the following conditions:\n\n  * `0 <= i < j < nums.length`\n  * `nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])`\n\n\n\nReturn _the number of nice pairs of indices_. Since that number can be too large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [42,11,1,97]\n    **Output:** 2\n    **Explanation:** The two pairs are:\n     - (0,3) : 42 + rev(97) = 42 + 79 = 121, 97 + rev(42) = 97 + 24 = 121.\n     - (1,2) : 11 + rev(1) = 11 + 1 = 12, 1 + rev(11) = 1 + 11 = 12.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [13,10,35,24,76]\n    **Output:** 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`",
+  "question": "You are given an array `nums` that consists of non-negative integers. Let us define `rev(x)` as the reverse of the non-negative integer `x`. For example, `rev(123) = 321`, and `rev(120) = 21`. A pair of indices `(i, j)` is **nice** if it satisfies all of the following conditions:\n\n  * `0 <= i < j < nums.length`\n  * `nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])`\n\n\n\nReturn _the number of nice pairs of indices_. Since that number can be too large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [42,11,1,97]\n    **Output:** 2\n    **Explanation:** The two pairs are:\n     - (0,3) : 42 + rev(97) = 42 + 79 = 121, 97 + rev(42) = 97 + 24 = 121.\n     - (1,2) : 11 + rev(1) = 11 + 1 = 12, 1 + rev(11) = 1 + 11 = 12.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [13,10,35,24,76]\n    **Output:** 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Math", "Counting"],
+  "total_accepted": 133627,
+  "total_submissions": 275847,
+  "acceptance_rate": "48.4%",
+  "similar_questions": [
+    {
+      "title": "Number of Pairs of Interchangeable Rectangles",
+      "slug": "number-of-pairs-of-interchangeable-rectangles",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-pairs-of-interchangeable-rectangles/"
+    },
+    {
+      "title": "Count Number of Bad Pairs",
+      "slug": "count-number-of-bad-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-bad-pairs/"
+    },
+    {
+      "title": "Number of Pairs Satisfying Inequality",
+      "slug": "number-of-pairs-satisfying-inequality",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-pairs-satisfying-inequality/"
+    }
+  ],
+  "hints": [
+    "The condition can be rearranged to (nums[i] - rev(nums[i])) == (nums[j] - rev(nums[j])).",
+    "Transform each nums[i] into (nums[i] - rev(nums[i])). Then, count the number of (i, j) pairs that have equal values.",
+    "Keep a map storing the frequencies of values that you have seen so far. For each i, check if nums[i] is in the map. If it is, then add that count to the overall count. Then, increment the frequency of nums[i]."
+  ]
+}

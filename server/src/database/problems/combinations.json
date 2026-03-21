@@ -1,0 +1,31 @@
+{
+  "id": "77",
+  "title": "Combinations",
+  "slug": "combinations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integers <code>n</code> and <code>k</code>, return <em>all possible combinations of</em> <code>k</code> <em>numbers chosen from the range</em> <code>[1, n]</code>.</p>\n\n<p>You may return the answer in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4, k = 2\n<strong>Output:</strong> [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]\n<strong>Explanation:</strong> There are 4 choose 2 = 6 total combinations.\nNote that combinations are unordered, i.e., [1,2] and [2,1] are considered to be the same combination.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1, k = 1\n<strong>Output:</strong> [[1]]\n<strong>Explanation:</strong> There is 1 choose 1 = 1 total combination.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 20</code></li>\n\t<li><code>1 &lt;= k &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "Given two integers `n` and `k`, return _all possible combinations of_ `k` _numbers chosen from the range_ `[1, n]`.\n\nYou may return the answer in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4, k = 2\n    **Output:** [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]\n    **Explanation:** There are 4 choose 2 = 6 total combinations.\n    Note that combinations are unordered, i.e., [1,2] and [2,1] are considered to be the same combination.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, k = 1\n    **Output:** [[1]]\n    **Explanation:** There is 1 choose 1 = 1 total combination.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 20`\n  * `1 <= k <= n`",
+  "question": "Given two integers `n` and `k`, return _all possible combinations of_ `k` _numbers chosen from the range_ `[1, n]`.\n\nYou may return the answer in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4, k = 2\n    **Output:** [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]\n    **Explanation:** There are 4 choose 2 = 6 total combinations.\n    Note that combinations are unordered, i.e., [1,2] and [2,1] are considered to be the same combination.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, k = 1\n    **Output:** [[1]]\n    **Explanation:** There is 1 choose 1 = 1 total combination.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 20`\n  * `1 <= k <= n`",
+  "topics": ["Backtracking"],
+  "total_accepted": 1292819,
+  "total_submissions": 1742242,
+  "acceptance_rate": "74.2%",
+  "similar_questions": [
+    {
+      "title": "Combination Sum",
+      "slug": "combination-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/combination-sum/"
+    },
+    {
+      "title": "Permutations",
+      "slug": "permutations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/permutations/"
+    }
+  ],
+  "hints": []
+}

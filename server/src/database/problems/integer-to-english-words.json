@@ -1,0 +1,29 @@
+{
+  "id": "273",
+  "title": "Integer to English Words",
+  "slug": "integer-to-english-words",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Convert a non-negative integer <code>num</code> to its English words representation.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 123\n<strong>Output:</strong> &quot;One Hundred Twenty Three&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 12345\n<strong>Output:</strong> &quot;Twelve Thousand Three Hundred Forty Five&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 1234567\n<strong>Output:</strong> &quot;One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= num &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Convert a non-negative integer `num` to its English words representation.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 123\n    **Output:** \"One Hundred Twenty Three\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 12345\n    **Output:** \"Twelve Thousand Three Hundred Forty Five\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 1234567\n    **Output:** \"One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven\"\n    \n\n \n\n**Constraints:**\n\n  * `0 <= num <= 231 - 1`",
+  "question": "Convert a non-negative integer `num` to its English words representation.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 123\n    **Output:** \"One Hundred Twenty Three\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 12345\n    **Output:** \"Twelve Thousand Three Hundred Forty Five\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 1234567\n    **Output:** \"One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven\"",
+  "constraints": "**Constraints:**\n\n  * `0 <= num <= 231 - 1`",
+  "topics": ["Math", "String", "Recursion"],
+  "total_accepted": 575354,
+  "total_submissions": 1652566,
+  "acceptance_rate": "34.8%",
+  "similar_questions": [
+    {
+      "title": "Integer to Roman",
+      "slug": "integer-to-roman",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/integer-to-roman/"
+    }
+  ],
+  "hints": [
+    "Did you see a pattern in dividing the number into chunk of words? For example, 123 and 123000.",
+    "Group the number by thousands (3 digits). You can write a helper function that takes a number less than 1000 and convert just that chunk to words.",
+    "There are many edge cases. What are some good test cases? Does your code work with input such as 0? Or 1000010? (middle chunk is zero and should not be printed out)"
+  ]
+}

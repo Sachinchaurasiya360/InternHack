@@ -1,0 +1,49 @@
+{
+  "id": "162",
+  "title": "Find Peak Element",
+  "slug": "find-peak-element",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A peak element is an element that is strictly greater than its neighbors.</p>\n\n<p>Given a <strong>0-indexed</strong> integer array <code>nums</code>, find a peak element, and return its index. If the array contains multiple peaks, return the index to <strong>any of the peaks</strong>.</p>\n\n<p>You may imagine that <code>nums[-1] = nums[n] = -&infin;</code>. In other words, an element is always considered to be strictly greater than a neighbor that is outside the array.</p>\n\n<p>You must write an algorithm that runs in <code>O(log n)</code> time.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> 3 is a peak element and your function should return the index number 2.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,3,5,6,4]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> Your function can return either index number 1 where the peak element is 2, or index number 5 where the peak element is 6.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li><code>nums[i] != nums[i + 1]</code> for all valid <code>i</code>.</li>\n</ul>\n",
+  "content_markdown": "A peak element is an element that is strictly greater than its neighbors.\n\nGiven a **0-indexed** integer array `nums`, find a peak element, and return its index. If the array contains multiple peaks, return the index to **any of the peaks**.\n\nYou may imagine that `nums[-1] = nums[n] = -∞`. In other words, an element is always considered to be strictly greater than a neighbor that is outside the array.\n\nYou must write an algorithm that runs in `O(log n)` time.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,1]\n    **Output:** 2\n    **Explanation:** 3 is a peak element and your function should return the index number 2.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,3,5,6,4]\n    **Output:** 5\n    **Explanation:** Your function can return either index number 1 where the peak element is 2, or index number 5 where the peak element is 6.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-231 <= nums[i] <= 231 - 1`\n  * `nums[i] != nums[i + 1]` for all valid `i`.",
+  "question": "A peak element is an element that is strictly greater than its neighbors.\n\nGiven a **0-indexed** integer array `nums`, find a peak element, and return its index. If the array contains multiple peaks, return the index to **any of the peaks**.\n\nYou may imagine that `nums[-1] = nums[n] = -∞`. In other words, an element is always considered to be strictly greater than a neighbor that is outside the array.\n\nYou must write an algorithm that runs in `O(log n)` time.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,1]\n    **Output:** 2\n    **Explanation:** 3 is a peak element and your function should return the index number 2.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,3,5,6,4]\n    **Output:** 5\n    **Explanation:** Your function can return either index number 1 where the peak element is 2, or index number 5 where the peak element is 6.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-231 <= nums[i] <= 231 - 1`\n  * `nums[i] != nums[i + 1]` for all valid `i`.",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 2329324,
+  "total_submissions": 4976491,
+  "acceptance_rate": "46.8%",
+  "similar_questions": [
+    {
+      "title": "Peak Index in a Mountain Array",
+      "slug": "peak-index-in-a-mountain-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/peak-index-in-a-mountain-array/"
+    },
+    {
+      "title": "Find a Peak Element II",
+      "slug": "find-a-peak-element-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-a-peak-element-ii/"
+    },
+    {
+      "title": "Pour Water Between Buckets to Make Water Levels Equal",
+      "slug": "pour-water-between-buckets-to-make-water-levels-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/pour-water-between-buckets-to-make-water-levels-equal/"
+    },
+    {
+      "title": "Count Hills and Valleys in an Array",
+      "slug": "count-hills-and-valleys-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-hills-and-valleys-in-an-array/"
+    },
+    {
+      "title": "Find the Peaks",
+      "slug": "find-the-peaks",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-peaks/"
+    }
+  ],
+  "hints": []
+}

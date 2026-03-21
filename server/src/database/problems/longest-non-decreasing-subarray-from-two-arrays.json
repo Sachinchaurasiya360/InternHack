@@ -1,0 +1,35 @@
+{
+  "id": "2771",
+  "title": "Longest Non-decreasing Subarray From Two Arrays",
+  "slug": "longest-non-decreasing-subarray-from-two-arrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <strong>0-indexed</strong> integer arrays <code>nums1</code> and <code>nums2</code> of length <code>n</code>.</p>\n\n<p>Let&#39;s define another <strong>0-indexed</strong> integer array, <code>nums3</code>, of length <code>n</code>. For each index <code>i</code> in the range <code>[0, n - 1]</code>, you can assign either <code>nums1[i]</code> or <code>nums2[i]</code> to <code>nums3[i]</code>.</p>\n\n<p>Your task is to maximize the length of the <strong>longest non-decreasing subarray</strong> in <code>nums3</code> by choosing its values optimally.</p>\n\n<p>Return <em>an integer representing the length of the <strong>longest non-decreasing</strong> subarray in</em> <code>nums3</code>.</p>\n\n<p><strong>Note: </strong>A <strong>subarray</strong> is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [2,3,1], nums2 = [1,2,1]\n<strong>Output:</strong> 2\n<strong>Explanation: </strong>One way to construct nums3 is: \nnums3 = [nums1[0], nums2[1], nums2[2]] =&gt; [2,2,1]. \nThe subarray starting from index 0 and ending at index 1, [2,2], forms a non-decreasing subarray of length 2. \nWe can show that 2 is the maximum achievable length.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,3,2,1], nums2 = [2,2,3,4]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> One way to construct nums3 is: \nnums3 = [nums1[0], nums2[1], nums2[2], nums2[3]] =&gt; [1,2,3,4]. \nThe entire array forms a non-decreasing subarray of length 4, making it the maximum achievable length.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,1], nums2 = [2,2]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> One way to construct nums3 is: \nnums3 = [nums1[0], nums1[1]] =&gt; [1,1]. \nThe entire array forms a non-decreasing subarray of length 2, making it the maximum achievable length.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length == nums2.length == n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums1[i], nums2[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two **0-indexed** integer arrays `nums1` and `nums2` of length `n`.\n\nLet's define another **0-indexed** integer array, `nums3`, of length `n`. For each index `i` in the range `[0, n - 1]`, you can assign either `nums1[i]` or `nums2[i]` to `nums3[i]`.\n\nYour task is to maximize the length of the **longest non-decreasing subarray** in `nums3` by choosing its values optimally.\n\nReturn _an integer representing the length of the**longest non-decreasing** subarray in_ `nums3`.\n\n**Note:** A **subarray** is a contiguous **non-empty** sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [2,3,1], nums2 = [1,2,1]\n    **Output:** 2\n    **Explanation:** One way to construct nums3 is: \n    nums3 = [nums1[0], nums2[1], nums2[2]] => [2,2,1]. \n    The subarray starting from index 0 and ending at index 1, [2,2], forms a non-decreasing subarray of length 2. \n    We can show that 2 is the maximum achievable length.\n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,3,2,1], nums2 = [2,2,3,4]\n    **Output:** 4\n    **Explanation:** One way to construct nums3 is: \n    nums3 = [nums1[0], nums2[1], nums2[2], nums2[3]] => [1,2,3,4]. \n    The entire array forms a non-decreasing subarray of length 4, making it the maximum achievable length.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [1,1], nums2 = [2,2]\n    **Output:** 2\n    **Explanation:** One way to construct nums3 is: \n    nums3 = [nums1[0], nums1[1]] => [1,1]. \n    The entire array forms a non-decreasing subarray of length 2, making it the maximum achievable length.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length == nums2.length == n <= 105`\n  * `1 <= nums1[i], nums2[i] <= 109`",
+  "question": "You are given two **0-indexed** integer arrays `nums1` and `nums2` of length `n`.\n\nLet's define another **0-indexed** integer array, `nums3`, of length `n`. For each index `i` in the range `[0, n - 1]`, you can assign either `nums1[i]` or `nums2[i]` to `nums3[i]`.\n\nYour task is to maximize the length of the **longest non-decreasing subarray** in `nums3` by choosing its values optimally.\n\nReturn _an integer representing the length of the**longest non-decreasing** subarray in_ `nums3`.\n\n**Note:** A **subarray** is a contiguous **non-empty** sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [2,3,1], nums2 = [1,2,1]\n    **Output:** 2\n    **Explanation:** One way to construct nums3 is: \n    nums3 = [nums1[0], nums2[1], nums2[2]] => [2,2,1]. \n    The subarray starting from index 0 and ending at index 1, [2,2], forms a non-decreasing subarray of length 2. \n    We can show that 2 is the maximum achievable length.\n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,3,2,1], nums2 = [2,2,3,4]\n    **Output:** 4\n    **Explanation:** One way to construct nums3 is: \n    nums3 = [nums1[0], nums2[1], nums2[2], nums2[3]] => [1,2,3,4]. \n    The entire array forms a non-decreasing subarray of length 4, making it the maximum achievable length.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [1,1], nums2 = [2,2]\n    **Output:** 2\n    **Explanation:** One way to construct nums3 is: \n    nums3 = [nums1[0], nums1[1]] => [1,1]. \n    The entire array forms a non-decreasing subarray of length 2, making it the maximum achievable length.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length == nums2.length == n <= 105`\n  * `1 <= nums1[i], nums2[i] <= 109`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 35947,
+  "total_submissions": 115815,
+  "acceptance_rate": "31.0%",
+  "similar_questions": [
+    {
+      "title": "Russian Doll Envelopes",
+      "slug": "russian-doll-envelopes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/russian-doll-envelopes/"
+    },
+    {
+      "title": "Maximum Length of Pair Chain",
+      "slug": "maximum-length-of-pair-chain",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-length-of-pair-chain/"
+    }
+  ],
+  "hints": [
+    "Consider using dynamic programming.",
+    "Let dp[i][0] (dp[i][1]) be the length of the longest non-decreasing ending with nums1[i] (nums2[i]).",
+    "Initialize dp[i][0] to 1. If nums1[i] >= nums1[i - 1] then dp[i][0] may be dp[i - 1][0] + 1. If nums1[i] >= nums2[i - 1] then dp[i][0] may be dp[i - 1][1] + 1. Perform a similar calculation for nums2[i] and dp[i][1]."
+  ]
+}

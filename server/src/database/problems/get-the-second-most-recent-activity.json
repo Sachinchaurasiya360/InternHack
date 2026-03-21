@@ -1,0 +1,18 @@
+{
+  "id": "1369",
+  "title": "Get the Second Most Recent Activity",
+  "slug": "get-the-second-most-recent-activity",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 26097,
+  "total_submissions": 38768,
+  "acceptance_rate": "67.3%",
+  "similar_questions": [],
+  "hints": []
+}

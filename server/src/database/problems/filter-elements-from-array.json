@@ -1,0 +1,41 @@
+{
+  "id": "2634",
+  "title": "Filter Elements from Array",
+  "slug": "filter-elements-from-array",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "<p>Given an integer array <code>arr</code> and a filtering function <code>fn</code>, return a filtered array <code>filteredArr</code>.</p>\n\n<p>The <code>fn</code> function takes one or two arguments:</p>\n\n<ul>\n\t<li><code>arr[i]</code> - number&nbsp;from&nbsp;the <code>arr</code></li>\n\t<li><code>i</code>&nbsp;- index of <code>arr[i]</code></li>\n</ul>\n\n<p><code>filteredArr</code> should only contain the elements from the&nbsp;<code>arr</code> for which the expression <code>fn(arr[i], i)</code> evaluates to a <strong>truthy</strong> value. A&nbsp;<strong>truthy</strong>&nbsp;value is a value where&nbsp;<code>Boolean(value)</code>&nbsp;returns&nbsp;<code>true</code>.</p>\n\n<p>Please solve it without the built-in <code>Array.filter</code> method.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [0,10,20,30], fn = function greaterThan10(n) { return n &gt; 10; }\n<strong>Output:</strong> [20,30]\n<strong>Explanation:</strong>\nconst newArray = filter(arr, fn); // [20, 30]\nThe function filters out values that are not greater than 10</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3], fn = function firstIndex(n, i) { return i === 0; }\n<strong>Output:</strong> [1]\n<strong>Explanation:</strong>\nfn can also accept the index of each element\nIn this case, the function removes elements not at index 0\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [-2,-1,0,1,2], fn = function plusOne(n) { return n + 1 }\n<strong>Output:</strong> [-2,0,1,2]\n<strong>Explanation:</strong>\nFalsey values such as 0 should be filtered out\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= arr.length &lt;= 1000</code></li>\n\t<li><code>-10<sup>9</sup>&nbsp;&lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr` and a filtering function `fn`, return a filtered array `filteredArr`.\n\nThe `fn` function takes one or two arguments:\n\n  * `arr[i]` \\- number from the `arr`\n  * `i` \\- index of `arr[i]`\n\n\n\n`filteredArr` should only contain the elements from the `arr` for which the expression `fn(arr[i], i)` evaluates to a **truthy** value. A **truthy**  value is a value where `Boolean(value)` returns `true`.\n\nPlease solve it without the built-in `Array.filter` method.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [0,10,20,30], fn = function greaterThan10(n) { return n > 10; }\n    **Output:** [20,30]\n    **Explanation:**\n    const newArray = filter(arr, fn); // [20, 30]\n    The function filters out values that are not greater than 10\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3], fn = function firstIndex(n, i) { return i === 0; }\n    **Output:** [1]\n    **Explanation:**\n    fn can also accept the index of each element\n    In this case, the function removes elements not at index 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [-2,-1,0,1,2], fn = function plusOne(n) { return n + 1 }\n    **Output:** [-2,0,1,2]\n    **Explanation:**\n    Falsey values such as 0 should be filtered out\n    \n\n \n\n**Constraints:**\n\n  * `0 <= arr.length <= 1000`\n  * `-109 <= arr[i] <= 109`",
+  "question": "Given an integer array `arr` and a filtering function `fn`, return a filtered array `filteredArr`.\n\nThe `fn` function takes one or two arguments:\n\n  * `arr[i]` \\- number from the `arr`\n  * `i` \\- index of `arr[i]`\n\n\n\n`filteredArr` should only contain the elements from the `arr` for which the expression `fn(arr[i], i)` evaluates to a **truthy** value. A **truthy**  value is a value where `Boolean(value)` returns `true`.\n\nPlease solve it without the built-in `Array.filter` method.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [0,10,20,30], fn = function greaterThan10(n) { return n > 10; }\n    **Output:** [20,30]\n    **Explanation:**\n    const newArray = filter(arr, fn); // [20, 30]\n    The function filters out values that are not greater than 10\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3], fn = function firstIndex(n, i) { return i === 0; }\n    **Output:** [1]\n    **Explanation:**\n    fn can also accept the index of each element\n    In this case, the function removes elements not at index 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [-2,-1,0,1,2], fn = function plusOne(n) { return n + 1 }\n    **Output:** [-2,0,1,2]\n    **Explanation:**\n    Falsey values such as 0 should be filtered out",
+  "constraints": "**Constraints:**\n\n  * `0 <= arr.length <= 1000`\n  * `-109 <= arr[i] <= 109`",
+  "topics": [],
+  "total_accepted": 302965,
+  "total_submissions": 354127,
+  "acceptance_rate": "85.6%",
+  "similar_questions": [
+    {
+      "title": "Group By",
+      "slug": "group-by",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-by/"
+    },
+    {
+      "title": "Apply Transform Over Each Element in Array",
+      "slug": "apply-transform-over-each-element-in-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/apply-transform-over-each-element-in-array/"
+    },
+    {
+      "title": "Array Reduce Transformation",
+      "slug": "array-reduce-transformation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/array-reduce-transformation/"
+    }
+  ],
+  "hints": [
+    "Start by declaring a new array which will eventually be returned.",
+    "In Javascript, there is the concept of \"truthiness\" and \"falsiness\". Values such as 0, undefined, null, and false are falsy. Most values are truthy: 1, {}, [], true, etc. In Javascript, the contents of if-statements don't need to be booleans. You can say \"if ([1,2,3]) {}\", and it's equivalent to saying 'if (true) {}\".",
+    "Loop over each element in the array. If fn(arr[i]) is truthy, push it to the array."
+  ]
+}

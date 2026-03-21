@@ -1,0 +1,18 @@
+{
+  "id": "2292",
+  "title": "Products With Three or More Orders in Two Consecutive Years",
+  "slug": "products-with-three-or-more-orders-in-two-consecutive-years",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 10489,
+  "total_submissions": 25882,
+  "acceptance_rate": "40.5%",
+  "similar_questions": [],
+  "hints": []
+}

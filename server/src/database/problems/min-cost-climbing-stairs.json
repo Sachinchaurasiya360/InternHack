@@ -1,0 +1,35 @@
+{
+  "id": "746",
+  "title": "Min Cost Climbing Stairs",
+  "slug": "min-cost-climbing-stairs",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>cost</code> where <code>cost[i]</code> is the cost of <code>i<sup>th</sup></code> step on a staircase. Once you pay the cost, you can either climb one or two steps.</p>\n\n<p>You can either start from the step with index <code>0</code>, or the step with index <code>1</code>.</p>\n\n<p>Return <em>the minimum cost to reach the top of the floor</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> cost = [10,<u>15</u>,20]\n<strong>Output:</strong> 15\n<strong>Explanation:</strong> You will start at index 1.\n- Pay 15 and climb two steps to reach the top.\nThe total cost is 15.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> cost = [<u>1</u>,100,<u>1</u>,1,<u>1</u>,100,<u>1</u>,<u>1</u>,100,<u>1</u>]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> You will start at index 0.\n- Pay 1 and climb two steps to reach index 2.\n- Pay 1 and climb two steps to reach index 4.\n- Pay 1 and climb two steps to reach index 6.\n- Pay 1 and climb one step to reach index 7.\n- Pay 1 and climb two steps to reach index 9.\n- Pay 1 and climb one step to reach the top.\nThe total cost is 6.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= cost.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= cost[i] &lt;= 999</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `cost` where `cost[i]` is the cost of `ith` step on a staircase. Once you pay the cost, you can either climb one or two steps.\n\nYou can either start from the step with index `0`, or the step with index `1`.\n\nReturn _the minimum cost to reach the top of the floor_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** cost = [10,_15_ ,20]\n    **Output:** 15\n    **Explanation:** You will start at index 1.\n    - Pay 15 and climb two steps to reach the top.\n    The total cost is 15.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cost = [_1_ ,100,_1_ ,1,_1_ ,100,_1_ ,_1_ ,100,_1_]\n    **Output:** 6\n    **Explanation:** You will start at index 0.\n    - Pay 1 and climb two steps to reach index 2.\n    - Pay 1 and climb two steps to reach index 4.\n    - Pay 1 and climb two steps to reach index 6.\n    - Pay 1 and climb one step to reach index 7.\n    - Pay 1 and climb two steps to reach index 9.\n    - Pay 1 and climb one step to reach the top.\n    The total cost is 6.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= cost.length <= 1000`\n  * `0 <= cost[i] <= 999`",
+  "question": "You are given an integer array `cost` where `cost[i]` is the cost of `ith` step on a staircase. Once you pay the cost, you can either climb one or two steps.\n\nYou can either start from the step with index `0`, or the step with index `1`.\n\nReturn _the minimum cost to reach the top of the floor_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** cost = [10,_15_ ,20]\n    **Output:** 15\n    **Explanation:** You will start at index 1.\n    - Pay 15 and climb two steps to reach the top.\n    The total cost is 15.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cost = [_1_ ,100,_1_ ,1,_1_ ,100,_1_ ,_1_ ,100,_1_]\n    **Output:** 6\n    **Explanation:** You will start at index 0.\n    - Pay 1 and climb two steps to reach index 2.\n    - Pay 1 and climb two steps to reach index 4.\n    - Pay 1 and climb two steps to reach index 6.\n    - Pay 1 and climb one step to reach index 7.\n    - Pay 1 and climb two steps to reach index 9.\n    - Pay 1 and climb one step to reach the top.\n    The total cost is 6.",
+  "constraints": "**Constraints:**\n\n  * `2 <= cost.length <= 1000`\n  * `0 <= cost[i] <= 999`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 1704058,
+  "total_submissions": 2504521,
+  "acceptance_rate": "68.0%",
+  "similar_questions": [
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/climbing-stairs/"
+    },
+    {
+      "title": "Find Number of Ways to Reach the K-th Stair",
+      "slug": "find-number-of-ways-to-reach-the-k-th-stair",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-number-of-ways-to-reach-the-k-th-stair/"
+    }
+  ],
+  "hints": [
+    "Build an array dp where dp[i] is the minimum cost to climb to the top starting from the ith staircase.",
+    "Assuming we have n staircase labeled from 0 to n - 1 and assuming the top is n, then dp[n] = 0, marking that if you are at the top, the cost is 0.",
+    "Now, looping from n - 1 to 0, the dp[i] = cost[i] + min(dp[i + 1], dp[i + 2]). The answer will be the minimum of dp[0] and dp[1]"
+  ]
+}

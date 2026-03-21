@@ -1,0 +1,37 @@
+{
+  "id": "167",
+  "title": "Two Sum II - Input Array Is Sorted",
+  "slug": "two-sum-ii-input-array-is-sorted",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>1-indexed</strong> array of integers <code>numbers</code> that is already <strong><em>sorted in non-decreasing order</em></strong>, find two numbers such that they add up to a specific <code>target</code> number. Let these two numbers be <code>numbers[index<sub>1</sub>]</code> and <code>numbers[index<sub>2</sub>]</code> where <code>1 &lt;= index<sub>1</sub> &lt; index<sub>2</sub> &lt;= numbers.length</code>.</p>\n\n<p>Return<em> the indices of the two numbers&nbsp;</em><code>index<sub>1</sub></code><em> and </em><code>index<sub>2</sub></code><em>, <strong>each incremented by one,</strong> as an integer array </em><code>[index<sub>1</sub>, index<sub>2</sub>]</code><em> of length 2.</em></p>\n\n<p>The tests are generated such that there is <strong>exactly one solution</strong>. You <strong>may not</strong> use the same element twice.</p>\n\n<p>Your solution must use only constant extra space.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> numbers = [<u>2</u>,<u>7</u>,11,15], target = 9\n<strong>Output:</strong> [1,2]\n<strong>Explanation:</strong> The sum of 2 and 7 is 9. Therefore, index<sub>1</sub> = 1, index<sub>2</sub> = 2. We return [1, 2].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> numbers = [<u>2</u>,3,<u>4</u>], target = 6\n<strong>Output:</strong> [1,3]\n<strong>Explanation:</strong> The sum of 2 and 4 is 6. Therefore index<sub>1</sub> = 1, index<sub>2</sub> = 3. We return [1, 3].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> numbers = [<u>-1</u>,<u>0</u>], target = -1\n<strong>Output:</strong> [1,2]\n<strong>Explanation:</strong> The sum of -1 and 0 is -1. Therefore index<sub>1</sub> = 1, index<sub>2</sub> = 2. We return [1, 2].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= numbers.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>-1000 &lt;= numbers[i] &lt;= 1000</code></li>\n\t<li><code>numbers</code> is sorted in <strong>non-decreasing order</strong>.</li>\n\t<li><code>-1000 &lt;= target &lt;= 1000</code></li>\n\t<li>The tests are generated such that there is <strong>exactly one solution</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given a **1-indexed** array of integers `numbers` that is already **_sorted in non-decreasing order_** , find two numbers such that they add up to a specific `target` number. Let these two numbers be `numbers[index1]` and `numbers[index2]` where `1 <= index1 < index2 <= numbers.length`.\n\nReturn _the indices of the two numbers  _`index1` _and_`index2` _,**each incremented by one,** as an integer array _`[index1, index2]`_of length 2._\n\nThe tests are generated such that there is **exactly one solution**. You **may not** use the same element twice.\n\nYour solution must use only constant extra space.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** numbers = [_2_ ,_7_ ,11,15], target = 9\n    **Output:** [1,2]\n    **Explanation:** The sum of 2 and 7 is 9. Therefore, index1 = 1, index2 = 2. We return [1, 2].\n    \n\n**Example 2:**\n    \n    \n    **Input:** numbers = [_2_ ,3,_4_], target = 6\n    **Output:** [1,3]\n    **Explanation:** The sum of 2 and 4 is 6. Therefore index1 = 1, index2 = 3. We return [1, 3].\n    \n\n**Example 3:**\n    \n    \n    **Input:** numbers = [_-1_ ,_0_], target = -1\n    **Output:** [1,2]\n    **Explanation:** The sum of -1 and 0 is -1. Therefore index1 = 1, index2 = 2. We return [1, 2].\n    \n\n \n\n**Constraints:**\n\n  * `2 <= numbers.length <= 3 * 104`\n  * `-1000 <= numbers[i] <= 1000`\n  * `numbers` is sorted in **non-decreasing order**.\n  * `-1000 <= target <= 1000`\n  * The tests are generated such that there is **exactly one solution**.",
+  "question": "Given a **1-indexed** array of integers `numbers` that is already **_sorted in non-decreasing order_** , find two numbers such that they add up to a specific `target` number. Let these two numbers be `numbers[index1]` and `numbers[index2]` where `1 <= index1 < index2 <= numbers.length`.\n\nReturn _the indices of the two numbers  _`index1` _and_`index2` _,**each incremented by one,** as an integer array _`[index1, index2]`_of length 2._\n\nThe tests are generated such that there is **exactly one solution**. You **may not** use the same element twice.\n\nYour solution must use only constant extra space.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** numbers = [_2_ ,_7_ ,11,15], target = 9\n    **Output:** [1,2]\n    **Explanation:** The sum of 2 and 7 is 9. Therefore, index1 = 1, index2 = 2. We return [1, 2].\n    \n\n**Example 2:**\n    \n    \n    **Input:** numbers = [_2_ ,3,_4_], target = 6\n    **Output:** [1,3]\n    **Explanation:** The sum of 2 and 4 is 6. Therefore index1 = 1, index2 = 3. We return [1, 3].\n    \n\n**Example 3:**\n    \n    \n    **Input:** numbers = [_-1_ ,_0_], target = -1\n    **Output:** [1,2]\n    **Explanation:** The sum of -1 and 0 is -1. Therefore index1 = 1, index2 = 2. We return [1, 2].",
+  "constraints": "**Constraints:**\n\n  * `2 <= numbers.length <= 3 * 104`\n  * `-1000 <= numbers[i] <= 1000`\n  * `numbers` is sorted in **non-decreasing order**.\n  * `-1000 <= target <= 1000`\n  * The tests are generated such that there is **exactly one solution**.",
+  "topics": ["Array", "Two Pointers", "Binary Search"],
+  "total_accepted": 3250119,
+  "total_submissions": 5027480,
+  "acceptance_rate": "64.6%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "Two Sum IV - Input is a BST",
+      "slug": "two-sum-iv-input-is-a-bst",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum-iv-input-is-a-bst/"
+    },
+    {
+      "title": "Two Sum Less Than K",
+      "slug": "two-sum-less-than-k",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum-less-than-k/"
+    }
+  ],
+  "hints": []
+}

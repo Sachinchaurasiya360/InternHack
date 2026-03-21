@@ -1,0 +1,53 @@
+{
+  "id": "2195",
+  "title": "Append K Integers With Minimal Sum",
+  "slug": "append-k-integers-with-minimal-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and an integer <code>k</code>. Append <code>k</code> <strong>unique positive</strong> integers that do <strong>not</strong> appear in <code>nums</code> to <code>nums</code> such that the resulting total sum is <strong>minimum</strong>.</p>\n\n<p>Return<em> the sum of the</em> <code>k</code> <em>integers appended to</em> <code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,4,25,10,25], k = 2\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The two unique positive integers that do not appear in nums which we append are 2 and 3.\nThe resulting sum of nums is 1 + 4 + 25 + 10 + 25 + 2 + 3 = 70, which is the minimum.\nThe sum of the two integers appended is 2 + 3 = 5, so we return 5.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5,6], k = 6\n<strong>Output:</strong> 25\n<strong>Explanation:</strong> The six unique positive integers that do not appear in nums which we append are 1, 2, 3, 4, 7, and 8.\nThe resulting sum of nums is 5 + 6 + 1 + 2 + 3 + 4 + 7 + 8 = 36, which is the minimum. \nThe sum of the six integers appended is 1 + 2 + 3 + 4 + 7 + 8 = 25, so we return 25.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and an integer `k`. Append `k` **unique positive** integers that do **not** appear in `nums` to `nums` such that the resulting total sum is **minimum**.\n\nReturn _the sum of the_ `k` _integers appended to_ `nums`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,4,25,10,25], k = 2\n    **Output:** 5\n    **Explanation:** The two unique positive integers that do not appear in nums which we append are 2 and 3.\n    The resulting sum of nums is 1 + 4 + 25 + 10 + 25 + 2 + 3 = 70, which is the minimum.\n    The sum of the two integers appended is 2 + 3 = 5, so we return 5.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,6], k = 6\n    **Output:** 25\n    **Explanation:** The six unique positive integers that do not appear in nums which we append are 1, 2, 3, 4, 7, and 8.\n    The resulting sum of nums is 5 + 6 + 1 + 2 + 3 + 4 + 7 + 8 = 36, which is the minimum. \n    The sum of the six integers appended is 1 + 2 + 3 + 4 + 7 + 8 = 25, so we return 25.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 108`",
+  "question": "You are given an integer array `nums` and an integer `k`. Append `k` **unique positive** integers that do **not** appear in `nums` to `nums` such that the resulting total sum is **minimum**.\n\nReturn _the sum of the_ `k` _integers appended to_ `nums`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,4,25,10,25], k = 2\n    **Output:** 5\n    **Explanation:** The two unique positive integers that do not appear in nums which we append are 2 and 3.\n    The resulting sum of nums is 1 + 4 + 25 + 10 + 25 + 2 + 3 = 70, which is the minimum.\n    The sum of the two integers appended is 2 + 3 = 5, so we return 5.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,6], k = 6\n    **Output:** 25\n    **Explanation:** The six unique positive integers that do not appear in nums which we append are 1, 2, 3, 4, 7, and 8.\n    The resulting sum of nums is 5 + 6 + 1 + 2 + 3 + 4 + 7 + 8 = 36, which is the minimum. \n    The sum of the six integers appended is 1 + 2 + 3 + 4 + 7 + 8 = 25, so we return 25.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 108`",
+  "topics": ["Array", "Math", "Greedy", "Sorting"],
+  "total_accepted": 41589,
+  "total_submissions": 154855,
+  "acceptance_rate": "26.9%",
+  "similar_questions": [
+    {
+      "title": "Remove K Digits",
+      "slug": "remove-k-digits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-k-digits/"
+    },
+    {
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+    },
+    {
+      "title": "Kth Missing Positive Number",
+      "slug": "kth-missing-positive-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/kth-missing-positive-number/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range I",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-i/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range II",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-ii/"
+    }
+  ],
+  "hints": [
+    "The k smallest numbers that do not appear in nums will result in the minimum sum.",
+    "Recall that the sum of the first n positive numbers is equal to n * (n+1) / 2.",
+    "Initialize the answer as the sum of 1 to k. Then, adjust the answer depending on the values in nums."
+  ]
+}

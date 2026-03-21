@@ -1,0 +1,32 @@
+{
+  "id": "3037",
+  "title": "Find Pattern in Infinite Stream II",
+  "slug": "find-pattern-in-infinite-stream-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Sliding Window",
+    "Rolling Hash",
+    "String Matching",
+    "Interactive",
+    "Hash Function"
+  ],
+  "total_accepted": 1350,
+  "total_submissions": 2000,
+  "acceptance_rate": "67.5%",
+  "similar_questions": [
+    {
+      "title": "Number of Integers With Popcount-Depth Equal to K I",
+      "slug": "number-of-integers-with-popcount-depth-equal-to-k-i",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-integers-with-popcount-depth-equal-to-k-i/"
+    }
+  ],
+  "hints": ["Use the KMP algorithm."]
+}
