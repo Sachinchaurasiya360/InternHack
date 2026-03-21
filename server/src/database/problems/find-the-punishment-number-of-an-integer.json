@@ -1,0 +1,28 @@
+{
+  "id": "2698",
+  "title": "Find the Punishment Number of an Integer",
+  "slug": "find-the-punishment-number-of-an-integer",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer <code>n</code>, return <em>the <strong>punishment number</strong></em> of <code>n</code>.</p>\n\n<p>The <strong>punishment number</strong> of <code>n</code> is defined as the sum of the squares of all integers <code>i</code> such that:</p>\n\n<ul>\n\t<li><code>1 &lt;= i &lt;= n</code></li>\n\t<li>The decimal representation of <code>i * i</code> can be partitioned into contiguous substrings such that the sum of the integer values of these substrings equals <code>i</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 10\n<strong>Output:</strong> 182\n<strong>Explanation:</strong> There are exactly 3 integers i in the range [1, 10] that satisfy the conditions in the statement:\n- 1 since 1 * 1 = 1\n- 9 since 9 * 9 = 81 and 81 can be partitioned into 8 and 1 with a sum equal to 8 + 1 == 9.\n- 10 since 10 * 10 = 100 and 100 can be partitioned into 10 and 0 with a sum equal to 10 + 0 == 10.\nHence, the punishment number of 10 is 1 + 81 + 100 = 182\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 37\n<strong>Output:</strong> 1478\n<strong>Explanation:</strong> There are exactly 4 integers i in the range [1, 37] that satisfy the conditions in the statement:\n- 1 since 1 * 1 = 1. \n- 9 since 9 * 9 = 81 and 81 can be partitioned into 8 + 1. \n- 10 since 10 * 10 = 100 and 100 can be partitioned into 10 + 0. \n- 36 since 36 * 36 = 1296 and 1296 can be partitioned into 1 + 29 + 6.\nHence, the punishment number of 37 is 1 + 81 + 100 + 1296 = 1478\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer `n`, return _the**punishment number**_ of `n`.\n\nThe **punishment number** of `n` is defined as the sum of the squares of all integers `i` such that:\n\n  * `1 <= i <= n`\n  * The decimal representation of `i * i` can be partitioned into contiguous substrings such that the sum of the integer values of these substrings equals `i`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 10\n    **Output:** 182\n    **Explanation:** There are exactly 3 integers i in the range [1, 10] that satisfy the conditions in the statement:\n    - 1 since 1 * 1 = 1\n    - 9 since 9 * 9 = 81 and 81 can be partitioned into 8 and 1 with a sum equal to 8 + 1 == 9.\n    - 10 since 10 * 10 = 100 and 100 can be partitioned into 10 and 0 with a sum equal to 10 + 0 == 10.\n    Hence, the punishment number of 10 is 1 + 81 + 100 = 182\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 37\n    **Output:** 1478\n    **Explanation:** There are exactly 4 integers i in the range [1, 37] that satisfy the conditions in the statement:\n    - 1 since 1 * 1 = 1. \n    - 9 since 9 * 9 = 81 and 81 can be partitioned into 8 + 1. \n    - 10 since 10 * 10 = 100 and 100 can be partitioned into 10 + 0. \n    - 36 since 36 * 36 = 1296 and 1296 can be partitioned into 1 + 29 + 6.\n    Hence, the punishment number of 37 is 1 + 81 + 100 + 1296 = 1478\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "question": "Given a positive integer `n`, return _the**punishment number**_ of `n`.\n\nThe **punishment number** of `n` is defined as the sum of the squares of all integers `i` such that:\n\n  * `1 <= i <= n`\n  * The decimal representation of `i * i` can be partitioned into contiguous substrings such that the sum of the integer values of these substrings equals `i`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 10\n    **Output:** 182\n    **Explanation:** There are exactly 3 integers i in the range [1, 10] that satisfy the conditions in the statement:\n    - 1 since 1 * 1 = 1\n    - 9 since 9 * 9 = 81 and 81 can be partitioned into 8 and 1 with a sum equal to 8 + 1 == 9.\n    - 10 since 10 * 10 = 100 and 100 can be partitioned into 10 and 0 with a sum equal to 10 + 0 == 10.\n    Hence, the punishment number of 10 is 1 + 81 + 100 = 182\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 37\n    **Output:** 1478\n    **Explanation:** There are exactly 4 integers i in the range [1, 37] that satisfy the conditions in the statement:\n    - 1 since 1 * 1 = 1. \n    - 9 since 9 * 9 = 81 and 81 can be partitioned into 8 + 1. \n    - 10 since 10 * 10 = 100 and 100 can be partitioned into 10 + 0. \n    - 36 since 36 * 36 = 1296 and 1296 can be partitioned into 1 + 29 + 6.\n    Hence, the punishment number of 37 is 1 + 81 + 100 + 1296 = 1478",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "topics": ["Math", "Backtracking"],
+  "total_accepted": 150831,
+  "total_submissions": 184517,
+  "acceptance_rate": "81.7%",
+  "similar_questions": [
+    {
+      "title": "Number of Great Partitions",
+      "slug": "number-of-great-partitions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-great-partitions/"
+    }
+  ],
+  "hints": [
+    "Can we generate all possible partitions of a number?",
+    "Use a recursive algorithm that splits the number into two parts, generates all possible partitions of each part recursively, and then combines them in all possible ways."
+  ]
+}

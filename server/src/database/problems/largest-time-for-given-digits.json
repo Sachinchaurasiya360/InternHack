@@ -1,0 +1,25 @@
+{
+  "id": "949",
+  "title": "Largest Time for Given Digits",
+  "slug": "largest-time-for-given-digits",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>arr</code> of 4 digits, find the latest 24-hour time that can be made using each digit <strong>exactly once</strong>.</p>\n\n<p>24-hour times are formatted as <code>&quot;HH:MM&quot;</code>, where <code>HH</code> is between <code>00</code> and <code>23</code>, and <code>MM</code> is between <code>00</code> and <code>59</code>. The earliest 24-hour time is <code>00:00</code>, and the latest is <code>23:59</code>.</p>\n\n<p>Return <em>the latest 24-hour time in <code>&quot;HH:MM&quot;</code> format</em>. If no valid time can be made, return an empty string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3,4]\n<strong>Output:</strong> &quot;23:41&quot;\n<strong>Explanation:</strong> The valid 24-hour times are &quot;12:34&quot;, &quot;12:43&quot;, &quot;13:24&quot;, &quot;13:42&quot;, &quot;14:23&quot;, &quot;14:32&quot;, &quot;21:34&quot;, &quot;21:43&quot;, &quot;23:14&quot;, and &quot;23:41&quot;. Of these times, &quot;23:41&quot; is the latest.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [5,5,5,5]\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> There are no valid 24-hour times as &quot;55:55&quot; is not valid.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>arr.length == 4</code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 9</code></li>\n</ul>\n",
+  "content_markdown": "Given an array `arr` of 4 digits, find the latest 24-hour time that can be made using each digit **exactly once**.\n\n24-hour times are formatted as `\"HH:MM\"`, where `HH` is between `00` and `23`, and `MM` is between `00` and `59`. The earliest 24-hour time is `00:00`, and the latest is `23:59`.\n\nReturn _the latest 24-hour time in`\"HH:MM\"` format_. If no valid time can be made, return an empty string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,4]\n    **Output:** \"23:41\"\n    **Explanation:** The valid 24-hour times are \"12:34\", \"12:43\", \"13:24\", \"13:42\", \"14:23\", \"14:32\", \"21:34\", \"21:43\", \"23:14\", and \"23:41\". Of these times, \"23:41\" is the latest.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [5,5,5,5]\n    **Output:** \"\"\n    **Explanation:** There are no valid 24-hour times as \"55:55\" is not valid.\n    \n\n \n\n**Constraints:**\n\n  * `arr.length == 4`\n  * `0 <= arr[i] <= 9`",
+  "question": "Given an array `arr` of 4 digits, find the latest 24-hour time that can be made using each digit **exactly once**.\n\n24-hour times are formatted as `\"HH:MM\"`, where `HH` is between `00` and `23`, and `MM` is between `00` and `59`. The earliest 24-hour time is `00:00`, and the latest is `23:59`.\n\nReturn _the latest 24-hour time in`\"HH:MM\"` format_. If no valid time can be made, return an empty string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,4]\n    **Output:** \"23:41\"\n    **Explanation:** The valid 24-hour times are \"12:34\", \"12:43\", \"13:24\", \"13:42\", \"14:23\", \"14:32\", \"21:34\", \"21:43\", \"23:14\", and \"23:41\". Of these times, \"23:41\" is the latest.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [5,5,5,5]\n    **Output:** \"\"\n    **Explanation:** There are no valid 24-hour times as \"55:55\" is not valid.",
+  "constraints": "**Constraints:**\n\n  * `arr.length == 4`\n  * `0 <= arr[i] <= 9`",
+  "topics": ["Array", "String", "Backtracking", "Enumeration"],
+  "total_accepted": 102539,
+  "total_submissions": 286091,
+  "acceptance_rate": "35.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Valid Clock Times",
+      "slug": "number-of-valid-clock-times",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-valid-clock-times/"
+    }
+  ],
+  "hints": []
+}

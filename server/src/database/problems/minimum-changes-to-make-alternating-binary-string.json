@@ -1,0 +1,29 @@
+{
+  "id": "1758",
+  "title": "Minimum Changes To Make Alternating Binary String",
+  "slug": "minimum-changes-to-make-alternating-binary-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting only of the characters <code>&#39;0&#39;</code> and <code>&#39;1&#39;</code>. In one operation, you can change any <code>&#39;0&#39;</code> to <code>&#39;1&#39;</code> or vice versa.</p>\n\n<p>The string is called alternating if no two adjacent characters are equal. For example, the string <code>&quot;010&quot;</code> is alternating, while the string <code>&quot;0100&quot;</code> is not.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of operations needed to make</em> <code>s</code> <em>alternating</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;0100&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> If you change the last character to &#39;1&#39;, s will be &quot;0101&quot;, which is alternating.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;10&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> s is already alternating.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1111&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You need two operations to reach &quot;0101&quot; or &quot;1010&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting only of the characters `'0'` and `'1'`. In one operation, you can change any `'0'` to `'1'` or vice versa.\n\nThe string is called alternating if no two adjacent characters are equal. For example, the string `\"010\"` is alternating, while the string `\"0100\"` is not.\n\nReturn _the**minimum** number of operations needed to make_ `s` _alternating_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"0100\"\n    **Output:** 1\n    **Explanation:** If you change the last character to '1', s will be \"0101\", which is alternating.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10\"\n    **Output:** 0\n    **Explanation:** s is already alternating.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1111\"\n    **Output:** 2\n    **Explanation:** You need two operations to reach \"0101\" or \"1010\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "question": "You are given a string `s` consisting only of the characters `'0'` and `'1'`. In one operation, you can change any `'0'` to `'1'` or vice versa.\n\nThe string is called alternating if no two adjacent characters are equal. For example, the string `\"010\"` is alternating, while the string `\"0100\"` is not.\n\nReturn _the**minimum** number of operations needed to make_ `s` _alternating_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"0100\"\n    **Output:** 1\n    **Explanation:** If you change the last character to '1', s will be \"0101\", which is alternating.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"10\"\n    **Output:** 0\n    **Explanation:** s is already alternating.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1111\"\n    **Output:** 2\n    **Explanation:** You need two operations to reach \"0101\" or \"1010\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "topics": ["String"],
+  "total_accepted": 165525,
+  "total_submissions": 259507,
+  "acceptance_rate": "63.8%",
+  "similar_questions": [
+    {
+      "title": "Remove Adjacent Almost-Equal Characters",
+      "slug": "remove-adjacent-almost-equal-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-adjacent-almost-equal-characters/"
+    }
+  ],
+  "hints": [
+    "Think about how the final string will look like.",
+    "It will either start with a '0' and be like '010101010..' or with a '1' and be like '10101010..'",
+    "Try both ways, and check for each way, the number of changes needed to reach it from the given string. The answer is the minimum of both ways."
+  ]
+}

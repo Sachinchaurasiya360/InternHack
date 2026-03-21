@@ -1,0 +1,34 @@
+{
+  "id": "401",
+  "title": "Binary Watch",
+  "slug": "binary-watch",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A binary watch has 4 LEDs on the top to represent the hours (0-11), and 6 LEDs on the bottom to represent&nbsp;the minutes (0-59). Each LED represents a zero or one, with the least significant bit on the right.</p>\n\n<ul>\n\t<li>For example, the below binary watch reads <code>&quot;4:51&quot;</code>.</li>\n</ul>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/08/binarywatch.jpg\" style=\"width: 500px; height: 500px;\" /></p>\n\n<p>Given an integer <code>turnedOn</code> which represents the number of LEDs that are currently on (ignoring the PM), return <em>all possible times the watch could represent</em>. You may return the answer in <strong>any order</strong>.</p>\n\n<p>The hour must not contain a leading zero.</p>\n\n<ul>\n\t<li>For example, <code>&quot;01:00&quot;</code> is not valid. It should be <code>&quot;1:00&quot;</code>.</li>\n</ul>\n\n<p>The minute must&nbsp;consist of two digits and may contain a leading zero.</p>\n\n<ul>\n\t<li>For example, <code>&quot;10:2&quot;</code> is not valid. It should be <code>&quot;10:02&quot;</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> turnedOn = 1\n<strong>Output:</strong> [\"0:01\",\"0:02\",\"0:04\",\"0:08\",\"0:16\",\"0:32\",\"1:00\",\"2:00\",\"4:00\",\"8:00\"]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> turnedOn = 9\n<strong>Output:</strong> []\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= turnedOn &lt;= 10</code></li>\n</ul>\n",
+  "content_markdown": "A binary watch has 4 LEDs on the top to represent the hours (0-11), and 6 LEDs on the bottom to represent the minutes (0-59). Each LED represents a zero or one, with the least significant bit on the right.\n\n  * For example, the below binary watch reads `\"4:51\"`.\n\n\n\n![](https://assets.leetcode.com/uploads/2021/04/08/binarywatch.jpg)\n\nGiven an integer `turnedOn` which represents the number of LEDs that are currently on (ignoring the PM), return _all possible times the watch could represent_. You may return the answer in **any order**.\n\nThe hour must not contain a leading zero.\n\n  * For example, `\"01:00\"` is not valid. It should be `\"1:00\"`.\n\n\n\nThe minute must consist of two digits and may contain a leading zero.\n\n  * For example, `\"10:2\"` is not valid. It should be `\"10:02\"`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** turnedOn = 1\n    **Output:** [\"0:01\",\"0:02\",\"0:04\",\"0:08\",\"0:16\",\"0:32\",\"1:00\",\"2:00\",\"4:00\",\"8:00\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** turnedOn = 9\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * `0 <= turnedOn <= 10`",
+  "question": "A binary watch has 4 LEDs on the top to represent the hours (0-11), and 6 LEDs on the bottom to represent the minutes (0-59). Each LED represents a zero or one, with the least significant bit on the right.\n\n  * For example, the below binary watch reads `\"4:51\"`.\n\n\n\n![](https://assets.leetcode.com/uploads/2021/04/08/binarywatch.jpg)\n\nGiven an integer `turnedOn` which represents the number of LEDs that are currently on (ignoring the PM), return _all possible times the watch could represent_. You may return the answer in **any order**.\n\nThe hour must not contain a leading zero.\n\n  * For example, `\"01:00\"` is not valid. It should be `\"1:00\"`.\n\n\n\nThe minute must consist of two digits and may contain a leading zero.\n\n  * For example, `\"10:2\"` is not valid. It should be `\"10:02\"`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** turnedOn = 1\n    **Output:** [\"0:01\",\"0:02\",\"0:04\",\"0:08\",\"0:16\",\"0:32\",\"1:00\",\"2:00\",\"4:00\",\"8:00\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** turnedOn = 9\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * `0 <= turnedOn <= 10`",
+  "topics": ["Backtracking", "Bit Manipulation"],
+  "total_accepted": 276304,
+  "total_submissions": 423978,
+  "acceptance_rate": "65.2%",
+  "similar_questions": [
+    {
+      "title": "Letter Combinations of a Phone Number",
+      "slug": "letter-combinations-of-a-phone-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/"
+    },
+    {
+      "title": "Number of 1 Bits",
+      "slug": "number-of-1-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-1-bits/"
+    }
+  ],
+  "hints": [
+    "Simplify by seeking for solutions that involve comparing set bit counts.",
+    "Consider precomputing all possible times for comparison."
+  ]
+}

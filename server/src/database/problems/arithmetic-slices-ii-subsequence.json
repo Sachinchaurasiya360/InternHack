@@ -1,0 +1,37 @@
+{
+  "id": "446",
+  "title": "Arithmetic Slices II - Subsequence",
+  "slug": "arithmetic-slices-ii-subsequence",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>the number of all the <strong>arithmetic subsequences</strong> of</em> <code>nums</code>.</p>\n\n<p>A sequence of numbers is called arithmetic if it consists of <strong>at least three elements</strong> and if the difference between any two consecutive elements is the same.</p>\n\n<ul>\n\t<li>For example, <code>[1, 3, 5, 7, 9]</code>, <code>[7, 7, 7, 7]</code>, and <code>[3, -1, -5, -9]</code> are arithmetic sequences.</li>\n\t<li>For example, <code>[1, 1, 2, 5, 7]</code> is not an arithmetic sequence.</li>\n</ul>\n\n<p>A <strong>subsequence</strong> of an array is a sequence that can be formed by removing some elements (possibly none) of the array.</p>\n\n<ul>\n\t<li>For example, <code>[2,5,10]</code> is a subsequence of <code>[1,2,1,<strong><u>2</u></strong>,4,1,<u><strong>5</strong></u>,<u><strong>10</strong></u>]</code>.</li>\n</ul>\n\n<p>The test cases are generated so that the answer fits in <strong>32-bit</strong> integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,4,6,8,10]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> All arithmetic subsequence slices are:\n[2,4,6]\n[4,6,8]\n[6,8,10]\n[2,4,6,8]\n[4,6,8,10]\n[2,4,6,8,10]\n[2,6,10]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [7,7,7,7,7]\n<strong>Output:</strong> 16\n<strong>Explanation:</strong> Any subsequence of this array is arithmetic.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1&nbsp; &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, return _the number of all the**arithmetic subsequences** of_ `nums`.\n\nA sequence of numbers is called arithmetic if it consists of **at least three elements** and if the difference between any two consecutive elements is the same.\n\n  * For example, `[1, 3, 5, 7, 9]`, `[7, 7, 7, 7]`, and `[3, -1, -5, -9]` are arithmetic sequences.\n  * For example, `[1, 1, 2, 5, 7]` is not an arithmetic sequence.\n\n\n\nA **subsequence** of an array is a sequence that can be formed by removing some elements (possibly none) of the array.\n\n  * For example, `[2,5,10]` is a subsequence of `[1,2,1,**_2_** ,4,1,_**5**_ ,_**10**_]`.\n\n\n\nThe test cases are generated so that the answer fits in **32-bit** integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,4,6,8,10]\n    **Output:** 7\n    **Explanation:** All arithmetic subsequence slices are:\n    [2,4,6]\n    [4,6,8]\n    [6,8,10]\n    [2,4,6,8]\n    [4,6,8,10]\n    [2,4,6,8,10]\n    [2,6,10]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [7,7,7,7,7]\n    **Output:** 16\n    **Explanation:** Any subsequence of this array is arithmetic.\n    \n\n \n\n**Constraints:**\n\n  * `1  <= nums.length <= 1000`\n  * `-231 <= nums[i] <= 231 - 1`",
+  "question": "Given an integer array `nums`, return _the number of all the**arithmetic subsequences** of_ `nums`.\n\nA sequence of numbers is called arithmetic if it consists of **at least three elements** and if the difference between any two consecutive elements is the same.\n\n  * For example, `[1, 3, 5, 7, 9]`, `[7, 7, 7, 7]`, and `[3, -1, -5, -9]` are arithmetic sequences.\n  * For example, `[1, 1, 2, 5, 7]` is not an arithmetic sequence.\n\n\n\nA **subsequence** of an array is a sequence that can be formed by removing some elements (possibly none) of the array.\n\n  * For example, `[2,5,10]` is a subsequence of `[1,2,1,**_2_** ,4,1,_**5**_ ,_**10**_]`.\n\n\n\nThe test cases are generated so that the answer fits in **32-bit** integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,4,6,8,10]\n    **Output:** 7\n    **Explanation:** All arithmetic subsequence slices are:\n    [2,4,6]\n    [4,6,8]\n    [6,8,10]\n    [2,4,6,8]\n    [4,6,8,10]\n    [2,4,6,8,10]\n    [2,6,10]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [7,7,7,7,7]\n    **Output:** 16\n    **Explanation:** Any subsequence of this array is arithmetic.",
+  "constraints": "**Constraints:**\n\n  * `1  <= nums.length <= 1000`\n  * `-231 <= nums[i] <= 231 - 1`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 167290,
+  "total_submissions": 304631,
+  "acceptance_rate": "54.9%",
+  "similar_questions": [
+    {
+      "title": "Arithmetic Slices",
+      "slug": "arithmetic-slices",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/arithmetic-slices/"
+    },
+    {
+      "title": "Destroy Sequential Targets",
+      "slug": "destroy-sequential-targets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/destroy-sequential-targets/"
+    },
+    {
+      "title": "Count Palindromic Subsequences",
+      "slug": "count-palindromic-subsequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-palindromic-subsequences/"
+    }
+  ],
+  "hints": []
+}

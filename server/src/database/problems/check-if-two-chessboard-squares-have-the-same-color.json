@@ -1,0 +1,27 @@
+{
+  "id": "3274",
+  "title": "Check if Two Chessboard Squares Have the Same Color",
+  "slug": "check-if-two-chessboard-squares-have-the-same-color",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two strings, <code>coordinate1</code> and <code>coordinate2</code>, representing the coordinates of a square on an <code>8 x 8</code> chessboard.</p>\n\n<p>Below is the chessboard for reference.</p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/07/17/screenshot-2021-02-20-at-22159-pm.png\" style=\"width: 400px; height: 396px;\" /></p>\n\n<p>Return <code>true</code> if these two squares have the same color and <code>false</code> otherwise.</p>\n\n<p>The coordinate will always represent a valid chessboard square. The coordinate will always have the letter first (indicating its column), and the number second (indicating its row).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">coordinate1 = &quot;a1&quot;, coordinate2 = &quot;c3&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Both squares are black.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">coordinate1 = &quot;a1&quot;, coordinate2 = &quot;h3&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Square <code>&quot;a1&quot;</code> is black and <code>&quot;h3&quot;</code> is white.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>coordinate1.length == coordinate2.length == 2</code></li>\n\t<li><code>&#39;a&#39; &lt;= coordinate1[0], coordinate2[0] &lt;= &#39;h&#39;</code></li>\n\t<li><code>&#39;1&#39; &lt;= coordinate1[1], coordinate2[1] &lt;= &#39;8&#39;</code></li>\n</ul>\n",
+  "content_markdown": "You are given two strings, `coordinate1` and `coordinate2`, representing the coordinates of a square on an `8 x 8` chessboard.\n\nBelow is the chessboard for reference.\n\n![](https://assets.leetcode.com/uploads/2024/07/17/screenshot-2021-02-20-at-22159-pm.png)\n\nReturn `true` if these two squares have the same color and `false` otherwise.\n\nThe coordinate will always represent a valid chessboard square. The coordinate will always have the letter first (indicating its column), and the number second (indicating its row).\n\n \n\n**Example 1:**\n\n**Input:** coordinate1 = \"a1\", coordinate2 = \"c3\"\n\n**Output:** true\n\n**Explanation:**\n\nBoth squares are black.\n\n**Example 2:**\n\n**Input:** coordinate1 = \"a1\", coordinate2 = \"h3\"\n\n**Output:** false\n\n**Explanation:**\n\nSquare `\"a1\"` is black and `\"h3\"` is white.\n\n \n\n**Constraints:**\n\n  * `coordinate1.length == coordinate2.length == 2`\n  * `'a' <= coordinate1[0], coordinate2[0] <= 'h'`\n  * `'1' <= coordinate1[1], coordinate2[1] <= '8'`",
+  "question": "You are given two strings, `coordinate1` and `coordinate2`, representing the coordinates of a square on an `8 x 8` chessboard.\n\nBelow is the chessboard for reference.\n\n![](https://assets.leetcode.com/uploads/2024/07/17/screenshot-2021-02-20-at-22159-pm.png)\n\nReturn `true` if these two squares have the same color and `false` otherwise.\n\nThe coordinate will always represent a valid chessboard square. The coordinate will always have the letter first (indicating its column), and the number second (indicating its row).",
+  "examples": "**Example 1:**\n\n**Input:** coordinate1 = \"a1\", coordinate2 = \"c3\"\n\n**Output:** true\n\n**Explanation:**\n\nBoth squares are black.\n\n**Example 2:**\n\n**Input:** coordinate1 = \"a1\", coordinate2 = \"h3\"\n\n**Output:** false\n\n**Explanation:**\n\nSquare `\"a1\"` is black and `\"h3\"` is white.",
+  "constraints": "**Constraints:**\n\n  * `coordinate1.length == coordinate2.length == 2`\n  * `'a' <= coordinate1[0], coordinate2[0] <= 'h'`\n  * `'1' <= coordinate1[1], coordinate2[1] <= '8'`",
+  "topics": ["Math", "String"],
+  "total_accepted": 69667,
+  "total_submissions": 96439,
+  "acceptance_rate": "72.2%",
+  "similar_questions": [
+    {
+      "title": "Determine Color of a Chessboard Square",
+      "slug": "determine-color-of-a-chessboard-square",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/determine-color-of-a-chessboard-square/"
+    }
+  ],
+  "hints": [
+    "The color of the chessboard is black the sum of row coordinates and column coordinates is even. Otherwise, it's white."
+  ]
+}

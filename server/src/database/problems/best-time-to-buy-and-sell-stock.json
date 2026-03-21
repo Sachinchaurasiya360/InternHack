@@ -1,0 +1,73 @@
+{
+  "id": "121",
+  "title": "Best Time to Buy and Sell Stock",
+  "slug": "best-time-to-buy-and-sell-stock",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>prices</code> where <code>prices[i]</code> is the price of a given stock on the <code>i<sup>th</sup></code> day.</p>\n\n<p>You want to maximize your profit by choosing a <strong>single day</strong> to buy one stock and choosing a <strong>different day in the future</strong> to sell that stock.</p>\n\n<p>Return <em>the maximum profit you can achieve from this transaction</em>. If you cannot achieve any profit, return <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [7,1,5,3,6,4]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.\nNote that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [7,6,4,3,1]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> In this case, no transactions are done and the max profit = 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= prices.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= prices[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nYou want to maximize your profit by choosing a **single day** to buy one stock and choosing a **different day in the future** to sell that stock.\n\nReturn _the maximum profit you can achieve from this transaction_. If you cannot achieve any profit, return `0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** prices = [7,1,5,3,6,4]\n    **Output:** 5\n    **Explanation:** Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.\n    Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.\n    \n\n**Example 2:**\n    \n    \n    **Input:** prices = [7,6,4,3,1]\n    **Output:** 0\n    **Explanation:** In this case, no transactions are done and the max profit = 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= prices.length <= 105`\n  * `0 <= prices[i] <= 104`",
+  "question": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nYou want to maximize your profit by choosing a **single day** to buy one stock and choosing a **different day in the future** to sell that stock.\n\nReturn _the maximum profit you can achieve from this transaction_. If you cannot achieve any profit, return `0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** prices = [7,1,5,3,6,4]\n    **Output:** 5\n    **Explanation:** Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.\n    Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.\n    \n\n**Example 2:**\n    \n    \n    **Input:** prices = [7,6,4,3,1]\n    **Output:** 0\n    **Explanation:** In this case, no transactions are done and the max profit = 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= prices.length <= 105`\n  * `0 <= prices[i] <= 104`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 7673781,
+  "total_submissions": 13600711,
+  "acceptance_rate": "56.4%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock II",
+      "slug": "best-time-to-buy-and-sell-stock-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock III",
+      "slug": "best-time-to-buy-and-sell-stock-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock IV",
+      "slug": "best-time-to-buy-and-sell-stock-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock with Cooldown",
+      "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/"
+    },
+    {
+      "title": "Sum of Beauty in the Array",
+      "slug": "sum-of-beauty-in-the-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-beauty-in-the-array/"
+    },
+    {
+      "title": "Maximum Difference Between Increasing Elements",
+      "slug": "maximum-difference-between-increasing-elements",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-difference-between-increasing-elements/"
+    },
+    {
+      "title": "Maximum Profit From Trading Stocks",
+      "slug": "maximum-profit-from-trading-stocks",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-profit-from-trading-stocks/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock V",
+      "slug": "best-time-to-buy-and-sell-stock-v",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-v/"
+    }
+  ],
+  "hints": []
+}

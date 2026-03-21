@@ -1,0 +1,28 @@
+{
+  "id": "1523",
+  "title": "Count Odd Numbers in an Interval Range",
+  "slug": "count-odd-numbers-in-an-interval-range",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two non-negative integers <code>low</code> and <code><font face=\"monospace\">high</font></code>. Return the <em>count of odd numbers between </em><code>low</code><em> and </em><code><font face=\"monospace\">high</font></code><em>&nbsp;(inclusive)</em>.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> low = 3, high = 7\r\n<strong>Output:</strong> 3\r\n<b>Explanation: </b>The odd numbers between 3 and 7 are [3,5,7].</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> low = 8, high = 10\r\n<strong>Output:</strong> 1\r\n<b>Explanation: </b>The odd numbers between 8 and 10 are [9].</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>0 &lt;= low &lt;= high&nbsp;&lt;= 10^9</code></li>\r\n</ul>",
+  "content_markdown": "Given two non-negative integers `low` and `high`. Return the _count of odd numbers between_`low` _and_` high` _ (inclusive)_.\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** low = 3, high = 7\r\n    **Output:** 3\r\n    **Explanation:** The odd numbers between 3 and 7 are [3,5,7].\n\n**Example 2:**\n    \n    \r\n    **Input:** low = 8, high = 10\r\n    **Output:** 1\r\n    **Explanation:** The odd numbers between 8 and 10 are [9].\n\n \n\n**Constraints:**\n\n  * `0 <= low <= high <= 10^9`",
+  "question": "Given two non-negative integers `low` and `high`. Return the _count of odd numbers between_`low` _and_` high` _ (inclusive)_.",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** low = 3, high = 7\r\n    **Output:** 3\r\n    **Explanation:** The odd numbers between 3 and 7 are [3,5,7].\n\n**Example 2:**\n    \n    \r\n    **Input:** low = 8, high = 10\r\n    **Output:** 1\r\n    **Explanation:** The odd numbers between 8 and 10 are [9].",
+  "constraints": "**Constraints:**\n\n  * `0 <= low <= high <= 10^9`",
+  "topics": ["Math"],
+  "total_accepted": 540794,
+  "total_submissions": 994499,
+  "acceptance_rate": "54.4%",
+  "similar_questions": [
+    {
+      "title": "Check if Bitwise OR Has Trailing Zeros",
+      "slug": "check-if-bitwise-or-has-trailing-zeros",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-bitwise-or-has-trailing-zeros/"
+    }
+  ],
+  "hints": [
+    "If the range (high - low + 1) is even, the number of even and odd numbers in this range will be the same.",
+    "If the range (high - low + 1) is odd, the solution will depend on the parity of high and low."
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "266",
+  "title": "Palindrome Permutation",
+  "slug": "palindrome-permutation",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Bit Manipulation"],
+  "total_accepted": 233453,
+  "total_submissions": 340181,
+  "acceptance_rate": "68.6%",
+  "similar_questions": [
+    {
+      "title": "Longest Palindromic Substring",
+      "slug": "longest-palindromic-substring",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-palindromic-substring/"
+    },
+    {
+      "title": "Valid Anagram",
+      "slug": "valid-anagram",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-anagram/"
+    },
+    {
+      "title": "Palindrome Permutation II",
+      "slug": "palindrome-permutation-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/palindrome-permutation-ii/"
+    },
+    {
+      "title": "Longest Palindrome",
+      "slug": "longest-palindrome",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-palindrome/"
+    }
+  ],
+  "hints": [
+    "Consider the palindromes of odd vs even length. What difference do you notice?",
+    "Count the frequency of each character.",
+    "If each character occurs even number of times, then it must be a palindrome. How about character which occurs odd number of times?"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "2782",
+  "title": "Number of Unique Categories",
+  "slug": "number-of-unique-categories",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Union-Find", "Interactive", "Counting"],
+  "total_accepted": 3470,
+  "total_submissions": 4147,
+  "acceptance_rate": "83.7%",
+  "similar_questions": [],
+  "hints": [
+    "It can be proven that all pairs should be asked from the helper function.",
+    "Iterate from the first element. For each element `i`, ask the helper function `i` with all `j < i`.",
+    "If there is some `j < i` that `i` and `j` belong to the same group, go to next `i`. Otherwise, add one to the current number of groups."
+  ]
+}

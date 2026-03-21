@@ -1,0 +1,49 @@
+{
+  "id": "995",
+  "title": "Minimum Number of K Consecutive Bit Flips",
+  "slug": "minimum-number-of-k-consecutive-bit-flips",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a binary array <code>nums</code> and an integer <code>k</code>.</p>\n\n<p>A <strong>k-bit flip</strong> is choosing a <strong>subarray</strong> of length <code>k</code> from <code>nums</code> and simultaneously changing every <code>0</code> in the subarray to <code>1</code>, and every <code>1</code> in the subarray to <code>0</code>.</p>\n\n<p>Return <em>the minimum number of <strong>k-bit flips</strong> required so that there is no </em><code>0</code><em> in the array</em>. If it is not possible, return <code>-1</code>.</p>\n\n<p>A <strong>subarray</strong> is a <strong>contiguous</strong> part of an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,1,0], k = 1\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Flip nums[0], then flip nums[2].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,0], k = 2\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> No matter how we flip subarrays of size 2, we cannot make the array become [1,1,1].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,0,0,1,0,1,1,0], k = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> \nFlip nums[0],nums[1],nums[2]: nums becomes [1,1,1,1,0,1,1,0]\nFlip nums[4],nums[5],nums[6]: nums becomes [1,1,1,1,1,0,0,0]\nFlip nums[5],nums[6],nums[7]: nums becomes [1,1,1,1,1,1,1,1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given a binary array `nums` and an integer `k`.\n\nA **k-bit flip** is choosing a **subarray** of length `k` from `nums` and simultaneously changing every `0` in the subarray to `1`, and every `1` in the subarray to `0`.\n\nReturn _the minimum number of**k-bit flips** required so that there is no _`0` _in the array_. If it is not possible, return `-1`.\n\nA **subarray** is a **contiguous** part of an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [0,1,0], k = 1\n    **Output:** 2\n    **Explanation:** Flip nums[0], then flip nums[2].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,0], k = 2\n    **Output:** -1\n    **Explanation:** No matter how we flip subarrays of size 2, we cannot make the array become [1,1,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [0,0,0,1,0,1,1,0], k = 3\n    **Output:** 3\n    **Explanation:** \n    Flip nums[0],nums[1],nums[2]: nums becomes [1,1,1,1,0,1,1,0]\n    Flip nums[4],nums[5],nums[6]: nums becomes [1,1,1,1,1,0,0,0]\n    Flip nums[5],nums[6],nums[7]: nums becomes [1,1,1,1,1,1,1,1]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= k <= nums.length`",
+  "question": "You are given a binary array `nums` and an integer `k`.\n\nA **k-bit flip** is choosing a **subarray** of length `k` from `nums` and simultaneously changing every `0` in the subarray to `1`, and every `1` in the subarray to `0`.\n\nReturn _the minimum number of**k-bit flips** required so that there is no _`0` _in the array_. If it is not possible, return `-1`.\n\nA **subarray** is a **contiguous** part of an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [0,1,0], k = 1\n    **Output:** 2\n    **Explanation:** Flip nums[0], then flip nums[2].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,0], k = 2\n    **Output:** -1\n    **Explanation:** No matter how we flip subarrays of size 2, we cannot make the array become [1,1,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [0,0,0,1,0,1,1,0], k = 3\n    **Output:** 3\n    **Explanation:** \n    Flip nums[0],nums[1],nums[2]: nums becomes [1,1,1,1,0,1,1,0]\n    Flip nums[4],nums[5],nums[6]: nums becomes [1,1,1,1,1,0,0,0]\n    Flip nums[5],nums[6],nums[7]: nums becomes [1,1,1,1,1,1,1,1]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= k <= nums.length`",
+  "topics": ["Array", "Bit Manipulation", "Queue", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 141379,
+  "total_submissions": 227117,
+  "acceptance_rate": "62.2%",
+  "similar_questions": [
+    {
+      "title": "Bulb Switcher",
+      "slug": "bulb-switcher",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bulb-switcher/"
+    },
+    {
+      "title": "Minimum Time to Remove All Cars Containing Illegal Goods",
+      "slug": "minimum-time-to-remove-all-cars-containing-illegal-goods",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-time-to-remove-all-cars-containing-illegal-goods/"
+    },
+    {
+      "title": "Number of Distinct Binary Strings After Applying Operations",
+      "slug": "number-of-distinct-binary-strings-after-applying-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-distinct-binary-strings-after-applying-operations/"
+    },
+    {
+      "title": "Minimum Operations to Make Binary Array Elements Equal to One I",
+      "slug": "minimum-operations-to-make-binary-array-elements-equal-to-one-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-binary-array-elements-equal-to-one-i/"
+    },
+    {
+      "title": "Smallest Number With All Set Bits",
+      "slug": "smallest-number-with-all-set-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/smallest-number-with-all-set-bits/"
+    }
+  ],
+  "hints": []
+}

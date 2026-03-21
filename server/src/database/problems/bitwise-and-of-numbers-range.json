@@ -1,0 +1,25 @@
+{
+  "id": "201",
+  "title": "Bitwise AND of Numbers Range",
+  "slug": "bitwise-and-of-numbers-range",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integers <code>left</code> and <code>right</code> that represent the range <code>[left, right]</code>, return <em>the bitwise AND of all numbers in this range, inclusive</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = 5, right = 7\n<strong>Output:</strong> 4\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = 0, right = 0\n<strong>Output:</strong> 0\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = 1, right = 2147483647\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= left &lt;= right &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given two integers `left` and `right` that represent the range `[left, right]`, return _the bitwise AND of all numbers in this range, inclusive_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** left = 5, right = 7\n    **Output:** 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = 0, right = 0\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** left = 1, right = 2147483647\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `0 <= left <= right <= 231 - 1`",
+  "question": "Given two integers `left` and `right` that represent the range `[left, right]`, return _the bitwise AND of all numbers in this range, inclusive_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** left = 5, right = 7\n    **Output:** 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = 0, right = 0\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** left = 1, right = 2147483647\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `0 <= left <= right <= 231 - 1`",
+  "topics": ["Bit Manipulation"],
+  "total_accepted": 503765,
+  "total_submissions": 1034816,
+  "acceptance_rate": "48.7%",
+  "similar_questions": [
+    {
+      "title": "Longest Nice Subarray",
+      "slug": "longest-nice-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-nice-subarray/"
+    }
+  ],
+  "hints": []
+}

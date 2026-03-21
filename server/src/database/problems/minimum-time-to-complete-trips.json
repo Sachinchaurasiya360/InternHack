@@ -1,0 +1,64 @@
+{
+  "id": "2187",
+  "title": "Minimum Time to Complete Trips",
+  "slug": "minimum-time-to-complete-trips",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>time</code> where <code>time[i]</code> denotes the time taken by the <code>i<sup>th</sup></code> bus to complete <strong>one trip</strong>.</p>\n\n<p>Each bus can make multiple trips <strong>successively</strong>; that is, the next trip can start <strong>immediately after</strong> completing the current trip. Also, each bus operates <strong>independently</strong>; that is, the trips of one bus do not influence the trips of any other bus.</p>\n\n<p>You are also given an integer <code>totalTrips</code>, which denotes the number of trips all buses should make <strong>in total</strong>. Return <em>the <strong>minimum time</strong> required for all buses to complete <strong>at least</strong> </em><code>totalTrips</code><em> trips</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = [1,2,3], totalTrips = 5\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\n- At time t = 1, the number of trips completed by each bus are [1,0,0]. \n  The total number of trips completed is 1 + 0 + 0 = 1.\n- At time t = 2, the number of trips completed by each bus are [2,1,0]. \n  The total number of trips completed is 2 + 1 + 0 = 3.\n- At time t = 3, the number of trips completed by each bus are [3,1,1]. \n  The total number of trips completed is 3 + 1 + 1 = 5.\nSo the minimum time needed for all buses to complete at least 5 trips is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = [2], totalTrips = 1\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nThere is only one bus, and it will complete its first trip at t = 2.\nSo the minimum time needed to complete 1 trip is 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= time.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= time[i], totalTrips &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `time` where `time[i]` denotes the time taken by the `ith` bus to complete **one trip**.\n\nEach bus can make multiple trips **successively** ; that is, the next trip can start **immediately after** completing the current trip. Also, each bus operates **independently** ; that is, the trips of one bus do not influence the trips of any other bus.\n\nYou are also given an integer `totalTrips`, which denotes the number of trips all buses should make **in total**. Return _the**minimum time** required for all buses to complete **at least** _`totalTrips` _trips_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** time = [1,2,3], totalTrips = 5\n    **Output:** 3\n    **Explanation:**\n    - At time t = 1, the number of trips completed by each bus are [1,0,0]. \n      The total number of trips completed is 1 + 0 + 0 = 1.\n    - At time t = 2, the number of trips completed by each bus are [2,1,0]. \n      The total number of trips completed is 2 + 1 + 0 = 3.\n    - At time t = 3, the number of trips completed by each bus are [3,1,1]. \n      The total number of trips completed is 3 + 1 + 1 = 5.\n    So the minimum time needed for all buses to complete at least 5 trips is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** time = [2], totalTrips = 1\n    **Output:** 2\n    **Explanation:**\n    There is only one bus, and it will complete its first trip at t = 2.\n    So the minimum time needed to complete 1 trip is 2.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= time.length <= 105`\n  * `1 <= time[i], totalTrips <= 107`",
+  "question": "You are given an array `time` where `time[i]` denotes the time taken by the `ith` bus to complete **one trip**.\n\nEach bus can make multiple trips **successively** ; that is, the next trip can start **immediately after** completing the current trip. Also, each bus operates **independently** ; that is, the trips of one bus do not influence the trips of any other bus.\n\nYou are also given an integer `totalTrips`, which denotes the number of trips all buses should make **in total**. Return _the**minimum time** required for all buses to complete **at least** _`totalTrips` _trips_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** time = [1,2,3], totalTrips = 5\n    **Output:** 3\n    **Explanation:**\n    - At time t = 1, the number of trips completed by each bus are [1,0,0]. \n      The total number of trips completed is 1 + 0 + 0 = 1.\n    - At time t = 2, the number of trips completed by each bus are [2,1,0]. \n      The total number of trips completed is 2 + 1 + 0 = 3.\n    - At time t = 3, the number of trips completed by each bus are [3,1,1]. \n      The total number of trips completed is 3 + 1 + 1 = 5.\n    So the minimum time needed for all buses to complete at least 5 trips is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** time = [2], totalTrips = 1\n    **Output:** 2\n    **Explanation:**\n    There is only one bus, and it will complete its first trip at t = 2.\n    So the minimum time needed to complete 1 trip is 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= time.length <= 105`\n  * `1 <= time[i], totalTrips <= 107`",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 151182,
+  "total_submissions": 382115,
+  "acceptance_rate": "39.6%",
+  "similar_questions": [
+    {
+      "title": "Maximum Candies Allocated to K Children",
+      "slug": "maximum-candies-allocated-to-k-children",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-candies-allocated-to-k-children/"
+    },
+    {
+      "title": "Minimum Speed to Arrive on Time",
+      "slug": "minimum-speed-to-arrive-on-time",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-speed-to-arrive-on-time/"
+    },
+    {
+      "title": "Minimized Maximum of Products Distributed to Any Store",
+      "slug": "minimized-maximum-of-products-distributed-to-any-store",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/"
+    },
+    {
+      "title": "Maximum Running Time of N Computers",
+      "slug": "maximum-running-time-of-n-computers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-running-time-of-n-computers/"
+    },
+    {
+      "title": "Maximum Number of Robots Within Budget",
+      "slug": "maximum-number-of-robots-within-budget",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-robots-within-budget/"
+    },
+    {
+      "title": "Minimize Maximum of Array",
+      "slug": "minimize-maximum-of-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-maximum-of-array/"
+    },
+    {
+      "title": "Minimum Amount of Damage Dealt to Bob",
+      "slug": "minimum-amount-of-damage-dealt-to-bob",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-amount-of-damage-dealt-to-bob/"
+    }
+  ],
+  "hints": [
+    "For a given amount of time, how can we count the total number of trips completed by all buses within that time?",
+    "Consider using binary search."
+  ]
+}

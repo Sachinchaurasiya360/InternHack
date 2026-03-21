@@ -1,0 +1,20 @@
+{
+  "id": "1538",
+  "title": "Guess the Majority in a Hidden Array",
+  "slug": "guess-the-majority-in-a-hidden-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Interactive"],
+  "total_accepted": 5144,
+  "total_submissions": 7421,
+  "acceptance_rate": "69.3%",
+  "similar_questions": [],
+  "hints": [
+    "If you find that 2 indexes in the array (id1, id2) have the same value (nums [id1] == nums [id2]), you could infer the values of (x, y) based on the results of query (id1, id2, x, y)."
+  ]
+}

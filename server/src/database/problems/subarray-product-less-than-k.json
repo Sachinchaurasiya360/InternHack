@@ -1,0 +1,57 @@
+{
+  "id": "713",
+  "title": "Subarray Product Less Than K",
+  "slug": "subarray-product-less-than-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>nums</code> and an integer <code>k</code>, return <em>the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than </em><code>k</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,5,2,6], k = 100\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> The 8 subarrays that have product less than 100 are:\n[10], [5], [2], [6], [10, 5], [5, 2], [2, 6], [5, 2, 6]\nNote that [10, 5, 2] is not included as the product of 100 is not strictly less than k.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3], k = 0\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li><code>0 &lt;= k &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `nums` and an integer `k`, return _the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than_`k`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [10,5,2,6], k = 100\n    **Output:** 8\n    **Explanation:** The 8 subarrays that have product less than 100 are:\n    [10], [5], [2], [6], [10, 5], [5, 2], [2, 6], [5, 2, 6]\n    Note that [10, 5, 2] is not included as the product of 100 is not strictly less than k.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3], k = 0\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `1 <= nums[i] <= 1000`\n  * `0 <= k <= 106`",
+  "question": "Given an array of integers `nums` and an integer `k`, return _the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than_`k`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [10,5,2,6], k = 100\n    **Output:** 8\n    **Explanation:** The 8 subarrays that have product less than 100 are:\n    [10], [5], [2], [6], [10, 5], [5, 2], [2, 6], [5, 2, 6]\n    Note that [10, 5, 2] is not included as the product of 100 is not strictly less than k.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3], k = 0\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `1 <= nums[i] <= 1000`\n  * `0 <= k <= 106`",
+  "topics": ["Array", "Binary Search", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 587123,
+  "total_submissions": 1088832,
+  "acceptance_rate": "53.9%",
+  "similar_questions": [
+    {
+      "title": "Maximum Product Subarray",
+      "slug": "maximum-product-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-subarray/"
+    },
+    {
+      "title": "Maximum Size Subarray Sum Equals k",
+      "slug": "maximum-size-subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/"
+    },
+    {
+      "title": "Subarray Sum Equals K",
+      "slug": "subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sum-equals-k/"
+    },
+    {
+      "title": "Two Sum Less Than K",
+      "slug": "two-sum-less-than-k",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum-less-than-k/"
+    },
+    {
+      "title": "Number of Smooth Descent Periods of a Stock",
+      "slug": "number-of-smooth-descent-periods-of-a-stock",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-smooth-descent-periods-of-a-stock/"
+    },
+    {
+      "title": "Count Subarrays With Score Less Than K",
+      "slug": "count-subarrays-with-score-less-than-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-subarrays-with-score-less-than-k/"
+    }
+  ],
+  "hints": [
+    "For each j, let opt(j) be the smallest i so that nums[i] * nums[i+1] * ... * nums[j] is less than k.  opt is an increasing function."
+  ]
+}

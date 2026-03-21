@@ -1,0 +1,22 @@
+{
+  "id": "2445",
+  "title": "Number of Nodes With Value One",
+  "slug": "number-of-nodes-with-value-one",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 2880,
+  "total_submissions": 4344,
+  "acceptance_rate": "66.3%",
+  "similar_questions": [],
+  "hints": [
+    "The relative order of processing queries does not matter.",
+    "If we know that for some node v, its parent was updated some number of times, then we know that node v was also updated that number of times.",
+    "Iterate on nodes from highest to lowest and count the number of times the query was performed on that node and the number of times this node was updated from its parent (direct or indirect). The parity of that number is the answer."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "3114",
+  "title": "Latest Time You Can Obtain After Replacing Characters",
+  "slug": "latest-time-you-can-obtain-after-replacing-characters",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> representing a 12-hour format time where some of the digits (possibly none) are replaced with a <code>&quot;?&quot;</code>.</p>\n\n<p>12-hour times are formatted as <code>&quot;HH:MM&quot;</code>, where <code>HH</code> is between <code>00</code> and <code>11</code>, and <code>MM</code> is between <code>00</code> and <code>59</code>. The earliest 12-hour time is <code>00:00</code>, and the latest is <code>11:59</code>.</p>\n\n<p>You have to replace <strong>all</strong> the <code>&quot;?&quot;</code> characters in <code>s</code> with digits such that the time we obtain by the resulting string is a <strong>valid</strong> 12-hour format time and is the <strong>latest</strong> possible.</p>\n\n<p>Return <em>the resulting string</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;1?:?4&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;11:54&quot;</span></p>\n\n<p><strong>Explanation:</strong> The latest 12-hour format time we can achieve by replacing <code>&quot;?&quot;</code> characters is <code>&quot;11:54&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;0?:5?&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;09:59&quot;</span></p>\n\n<p><strong>Explanation:</strong> The latest 12-hour format time we can achieve by replacing <code>&quot;?&quot;</code> characters is <code>&quot;09:59&quot;</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>s.length == 5</code></li>\n\t<li><code>s[2]</code> is equal to the character <code>&quot;:&quot;</code>.</li>\n\t<li>All characters except <code>s[2]</code> are digits or <code>&quot;?&quot;</code> characters.</li>\n\t<li>The input is generated such that there is <strong>at least</strong> one time between <code>&quot;00:00&quot;</code> and <code>&quot;11:59&quot;</code> that you can obtain after replacing the <code>&quot;?&quot;</code> characters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` representing a 12-hour format time where some of the digits (possibly none) are replaced with a `\"?\"`.\n\n12-hour times are formatted as `\"HH:MM\"`, where `HH` is between `00` and `11`, and `MM` is between `00` and `59`. The earliest 12-hour time is `00:00`, and the latest is `11:59`.\n\nYou have to replace **all** the `\"?\"` characters in `s` with digits such that the time we obtain by the resulting string is a **valid** 12-hour format time and is the **latest** possible.\n\nReturn _the resulting string_.\n\n \n\n**Example 1:**\n\n**Input:** s = \"1?:?4\"\n\n**Output:** \"11:54\"\n\n**Explanation:** The latest 12-hour format time we can achieve by replacing `\"?\"` characters is `\"11:54\"`.\n\n**Example 2:**\n\n**Input:** s = \"0?:5?\"\n\n**Output:** \"09:59\"\n\n**Explanation:** The latest 12-hour format time we can achieve by replacing `\"?\"` characters is `\"09:59\"`.\n\n \n\n**Constraints:**\n\n  * `s.length == 5`\n  * `s[2]` is equal to the character `\":\"`.\n  * All characters except `s[2]` are digits or `\"?\"` characters.\n  * The input is generated such that there is **at least** one time between `\"00:00\"` and `\"11:59\"` that you can obtain after replacing the `\"?\"` characters.",
+  "question": "You are given a string `s` representing a 12-hour format time where some of the digits (possibly none) are replaced with a `\"?\"`.\n\n12-hour times are formatted as `\"HH:MM\"`, where `HH` is between `00` and `11`, and `MM` is between `00` and `59`. The earliest 12-hour time is `00:00`, and the latest is `11:59`.\n\nYou have to replace **all** the `\"?\"` characters in `s` with digits such that the time we obtain by the resulting string is a **valid** 12-hour format time and is the **latest** possible.\n\nReturn _the resulting string_.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"1?:?4\"\n\n**Output:** \"11:54\"\n\n**Explanation:** The latest 12-hour format time we can achieve by replacing `\"?\"` characters is `\"11:54\"`.\n\n**Example 2:**\n\n**Input:** s = \"0?:5?\"\n\n**Output:** \"09:59\"\n\n**Explanation:** The latest 12-hour format time we can achieve by replacing `\"?\"` characters is `\"09:59\"`.",
+  "constraints": "**Constraints:**\n\n  * `s.length == 5`\n  * `s[2]` is equal to the character `\":\"`.\n  * All characters except `s[2]` are digits or `\"?\"` characters.\n  * The input is generated such that there is **at least** one time between `\"00:00\"` and `\"11:59\"` that you can obtain after replacing the `\"?\"` characters.",
+  "topics": ["String", "Enumeration"],
+  "total_accepted": 40902,
+  "total_submissions": 116464,
+  "acceptance_rate": "35.1%",
+  "similar_questions": [
+    {
+      "title": "Latest Time by Replacing Hidden Digits",
+      "slug": "latest-time-by-replacing-hidden-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/latest-time-by-replacing-hidden-digits/"
+    }
+  ],
+  "hints": [
+    "Try using a brute force approach.",
+    "Iterate over all possible times that can be generated from the string and find the latest one."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "978",
+  "title": "Longest Turbulent Subarray",
+  "slug": "longest-turbulent-subarray",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>arr</code>, return <em>the length of a maximum size turbulent subarray of</em> <code>arr</code>.</p>\n\n<p>A subarray is <strong>turbulent</strong> if the comparison sign flips between each adjacent pair of elements in the subarray.</p>\n\n<p>More formally, a subarray <code>[arr[i], arr[i + 1], ..., arr[j]]</code> of <code>arr</code> is said to be turbulent if and only if:</p>\n\n<ul>\n\t<li>For <code>i &lt;= k &lt; j</code>:\n\n\t<ul>\n\t\t<li><code>arr[k] &gt; arr[k + 1]</code> when <code>k</code> is odd, and</li>\n\t\t<li><code>arr[k] &lt; arr[k + 1]</code> when <code>k</code> is even.</li>\n\t</ul>\n\t</li>\n\t<li>Or, for <code>i &lt;= k &lt; j</code>:\n\t<ul>\n\t\t<li><code>arr[k] &gt; arr[k + 1]</code> when <code>k</code> is even, and</li>\n\t\t<li><code>arr[k] &lt; arr[k + 1]</code> when <code>k</code> is odd.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [9,4,2,10,7,8,8,1,9]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> arr[1] &gt; arr[2] &lt; arr[3] &gt; arr[4] &lt; arr[5]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,8,12,16]\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [100]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 4 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr`, return _the length of a maximum size turbulent subarray of_ `arr`.\n\nA subarray is **turbulent** if the comparison sign flips between each adjacent pair of elements in the subarray.\n\nMore formally, a subarray `[arr[i], arr[i + 1], ..., arr[j]]` of `arr` is said to be turbulent if and only if:\n\n  * For `i <= k < j`: \n    * `arr[k] > arr[k + 1]` when `k` is odd, and\n    * `arr[k] < arr[k + 1]` when `k` is even.\n  * Or, for `i <= k < j`: \n    * `arr[k] > arr[k + 1]` when `k` is even, and\n    * `arr[k] < arr[k + 1]` when `k` is odd.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [9,4,2,10,7,8,8,1,9]\n    **Output:** 5\n    **Explanation:** arr[1] > arr[2] < arr[3] > arr[4] < arr[5]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [4,8,12,16]\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [100]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 4 * 104`\n  * `0 <= arr[i] <= 109`",
+  "question": "Given an integer array `arr`, return _the length of a maximum size turbulent subarray of_ `arr`.\n\nA subarray is **turbulent** if the comparison sign flips between each adjacent pair of elements in the subarray.\n\nMore formally, a subarray `[arr[i], arr[i + 1], ..., arr[j]]` of `arr` is said to be turbulent if and only if:\n\n  * For `i <= k < j`: \n    * `arr[k] > arr[k + 1]` when `k` is odd, and\n    * `arr[k] < arr[k + 1]` when `k` is even.\n  * Or, for `i <= k < j`: \n    * `arr[k] > arr[k + 1]` when `k` is even, and\n    * `arr[k] < arr[k + 1]` when `k` is odd.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [9,4,2,10,7,8,8,1,9]\n    **Output:** 5\n    **Explanation:** arr[1] > arr[2] < arr[3] > arr[4] < arr[5]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [4,8,12,16]\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [100]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 4 * 104`\n  * `0 <= arr[i] <= 109`",
+  "topics": ["Array", "Dynamic Programming", "Sliding Window"],
+  "total_accepted": 136242,
+  "total_submissions": 278676,
+  "acceptance_rate": "48.9%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray/"
+    },
+    {
+      "title": "Longest Alternating Subarray",
+      "slug": "longest-alternating-subarray",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-alternating-subarray/"
+    }
+  ],
+  "hints": []
+}

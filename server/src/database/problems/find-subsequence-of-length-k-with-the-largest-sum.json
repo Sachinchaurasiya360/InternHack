@@ -1,0 +1,46 @@
+{
+  "id": "2099",
+  "title": "Find Subsequence of Length K With the Largest Sum",
+  "slug": "find-subsequence-of-length-k-with-the-largest-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and an integer <code>k</code>. You want to find a <strong>subsequence </strong>of <code>nums</code> of length <code>k</code> that has the <strong>largest</strong> sum.</p>\n\n<p>Return<em> </em><em><strong>any</strong> such subsequence as an integer array of length </em><code>k</code>.</p>\n\n<p>A <strong>subsequence</strong> is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,1,3,3], k = 2\n<strong>Output:</strong> [3,3]\n<strong>Explanation:</strong>\nThe subsequence has the largest sum of 3 + 3 = 6.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,-2,3,4], k = 3\n<strong>Output:</strong> [-1,3,4]\n<strong>Explanation:</strong> \nThe subsequence has the largest sum of -1 + 3 + 4 = 6.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,4,3,3], k = 2\n<strong>Output:</strong> [3,4]\n<strong>Explanation:</strong>\nThe subsequence has the largest sum of 3 + 4 = 7. \nAnother possible subsequence is [4, 3].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>-10<sup>5</sup>&nbsp;&lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and an integer `k`. You want to find a **subsequence** of `nums` of length `k` that has the **largest** sum.\n\nReturn ___**any** such subsequence as an integer array of length _`k`.\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,1,3,3], k = 2\n    **Output:** [3,3]\n    **Explanation:**\n    The subsequence has the largest sum of 3 + 3 = 6.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,-2,3,4], k = 3\n    **Output:** [-1,3,4]\n    **Explanation:** \n    The subsequence has the largest sum of -1 + 3 + 4 = 6.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,4,3,3], k = 2\n    **Output:** [3,4]\n    **Explanation:**\n    The subsequence has the largest sum of 3 + 4 = 7. \n    Another possible subsequence is [4, 3].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-105 <= nums[i] <= 105`\n  * `1 <= k <= nums.length`",
+  "question": "You are given an integer array `nums` and an integer `k`. You want to find a **subsequence** of `nums` of length `k` that has the **largest** sum.\n\nReturn ___**any** such subsequence as an integer array of length _`k`.\n\nA **subsequence** is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,1,3,3], k = 2\n    **Output:** [3,3]\n    **Explanation:**\n    The subsequence has the largest sum of 3 + 3 = 6.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,-2,3,4], k = 3\n    **Output:** [-1,3,4]\n    **Explanation:** \n    The subsequence has the largest sum of -1 + 3 + 4 = 6.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [3,4,3,3], k = 2\n    **Output:** [3,4]\n    **Explanation:**\n    The subsequence has the largest sum of 3 + 4 = 7. \n    Another possible subsequence is [4, 3].",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `-105 <= nums[i] <= 105`\n  * `1 <= k <= nums.length`",
+  "topics": ["Array", "Hash Table", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 178739,
+  "total_submissions": 311509,
+  "acceptance_rate": "57.4%",
+  "similar_questions": [
+    {
+      "title": "Kth Largest Element in an Array",
+      "slug": "kth-largest-element-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/"
+    },
+    {
+      "title": "Maximize Sum Of Array After K Negations",
+      "slug": "maximize-sum-of-array-after-k-negations",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximize-sum-of-array-after-k-negations/"
+    },
+    {
+      "title": "Sort Integers by The Number of 1 Bits",
+      "slug": "sort-integers-by-the-number-of-1-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-integers-by-the-number-of-1-bits/"
+    },
+    {
+      "title": "Minimum Difference in Sums After Removal of Elements",
+      "slug": "minimum-difference-in-sums-after-removal-of-elements",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-difference-in-sums-after-removal-of-elements/"
+    }
+  ],
+  "hints": [
+    "From a greedy perspective, what k elements should you pick?",
+    "Could you sort the array while maintaining the index?"
+  ]
+}

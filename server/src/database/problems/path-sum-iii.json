@@ -1,0 +1,43 @@
+{
+  "id": "437",
+  "title": "Path Sum III",
+  "slug": "path-sum-iii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree and an integer <code>targetSum</code>, return <em>the number of paths where the sum of the values&nbsp;along the path equals</em>&nbsp;<code>targetSum</code>.</p>\n\n<p>The path does not need to start or end at the root or a leaf, but it must go downwards (i.e., traveling only from parent nodes to child nodes).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/09/pathsum3-1-tree.jpg\" style=\"width: 450px; height: 386px;\" />\n<pre>\n<strong>Input:</strong> root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The paths that sum to 8 are shown.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 1000]</code>.</li>\n\t<li><code>-10<sup>9</sup> &lt;= Node.val &lt;= 10<sup>9</sup></code></li>\n\t<li><code>-1000 &lt;= targetSum &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree and an integer `targetSum`, return _the number of paths where the sum of the values  along the path equals_ `targetSum`.\n\nThe path does not need to start or end at the root or a leaf, but it must go downwards (i.e., traveling only from parent nodes to child nodes).\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/09/pathsum3-1-tree.jpg)\n    \n    \n    **Input:** root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8\n    **Output:** 3\n    **Explanation:** The paths that sum to 8 are shown.\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 1000]`.\n  * `-109 <= Node.val <= 109`\n  * `-1000 <= targetSum <= 1000`",
+  "question": "Given the `root` of a binary tree and an integer `targetSum`, return _the number of paths where the sum of the values  along the path equals_ `targetSum`.\n\nThe path does not need to start or end at the root or a leaf, but it must go downwards (i.e., traveling only from parent nodes to child nodes).",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/09/pathsum3-1-tree.jpg)\n    \n    \n    **Input:** root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8\n    **Output:** 3\n    **Explanation:** The paths that sum to 8 are shown.\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 1000]`.\n  * `-109 <= Node.val <= 109`\n  * `-1000 <= targetSum <= 1000`",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 774696,
+  "total_submissions": 1672974,
+  "acceptance_rate": "46.3%",
+  "similar_questions": [
+    {
+      "title": "Path Sum",
+      "slug": "path-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/path-sum/"
+    },
+    {
+      "title": "Path Sum II",
+      "slug": "path-sum-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-sum-ii/"
+    },
+    {
+      "title": "Path Sum IV",
+      "slug": "path-sum-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-sum-iv/"
+    },
+    {
+      "title": "Longest Univalue Path",
+      "slug": "longest-univalue-path",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-univalue-path/"
+    }
+  ],
+  "hints": []
+}

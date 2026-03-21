@@ -1,0 +1,21 @@
+{
+  "id": "1496",
+  "title": "Path Crossing",
+  "slug": "path-crossing",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>path</code>, where <code>path[i] = &#39;N&#39;</code>, <code>&#39;S&#39;</code>, <code>&#39;E&#39;</code> or <code>&#39;W&#39;</code>, each representing moving one unit north, south, east, or west, respectively. You start at the origin <code>(0, 0)</code> on a 2D plane and walk on the path specified by <code>path</code>.</p>\n\n<p>Return <code>true</code> <em>if the path crosses itself at any point, that is, if at any time you are on a location you have previously visited</em>. Return <code>false</code> otherwise.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/06/10/screen-shot-2020-06-10-at-123929-pm.png\" style=\"width: 400px; height: 358px;\" />\n<pre>\n<strong>Input:</strong> path = &quot;NES&quot;\n<strong>Output:</strong> false \n<strong>Explanation:</strong> Notice that the path doesn&#39;t cross any point more than once.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/06/10/screen-shot-2020-06-10-at-123843-pm.png\" style=\"width: 400px; height: 339px;\" />\n<pre>\n<strong>Input:</strong> path = &quot;NESWW&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Notice that the path visits the origin twice.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= path.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>path[i]</code> is either <code>&#39;N&#39;</code>, <code>&#39;S&#39;</code>, <code>&#39;E&#39;</code>, or <code>&#39;W&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `path`, where `path[i] = 'N'`, `'S'`, `'E'` or `'W'`, each representing moving one unit north, south, east, or west, respectively. You start at the origin `(0, 0)` on a 2D plane and walk on the path specified by `path`.\n\nReturn `true` _if the path crosses itself at any point, that is, if at any time you are on a location you have previously visited_. Return `false` otherwise.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/06/10/screen-shot-2020-06-10-at-123929-pm.png)\n    \n    \n    **Input:** path = \"NES\"\n    **Output:** false \n    **Explanation:** Notice that the path doesn't cross any point more than once.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/06/10/screen-shot-2020-06-10-at-123843-pm.png)\n    \n    \n    **Input:** path = \"NESWW\"\n    **Output:** true\n    **Explanation:** Notice that the path visits the origin twice.\n\n \n\n**Constraints:**\n\n  * `1 <= path.length <= 104`\n  * `path[i]` is either `'N'`, `'S'`, `'E'`, or `'W'`.",
+  "question": "Given a string `path`, where `path[i] = 'N'`, `'S'`, `'E'` or `'W'`, each representing moving one unit north, south, east, or west, respectively. You start at the origin `(0, 0)` on a 2D plane and walk on the path specified by `path`.\n\nReturn `true` _if the path crosses itself at any point, that is, if at any time you are on a location you have previously visited_. Return `false` otherwise.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/06/10/screen-shot-2020-06-10-at-123929-pm.png)\n    \n    \n    **Input:** path = \"NES\"\n    **Output:** false \n    **Explanation:** Notice that the path doesn't cross any point more than once.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/06/10/screen-shot-2020-06-10-at-123843-pm.png)\n    \n    \n    **Input:** path = \"NESWW\"\n    **Output:** true\n    **Explanation:** Notice that the path visits the origin twice.",
+  "constraints": "**Constraints:**\n\n  * `1 <= path.length <= 104`\n  * `path[i]` is either `'N'`, `'S'`, `'E'`, or `'W'`.",
+  "topics": ["Hash Table", "String"],
+  "total_accepted": 194226,
+  "total_submissions": 310464,
+  "acceptance_rate": "62.6%",
+  "similar_questions": [],
+  "hints": [
+    "Simulate the process while keeping track of visited points.",
+    "Use a set to store previously visited points."
+  ]
+}

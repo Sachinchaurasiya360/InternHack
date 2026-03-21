@@ -1,0 +1,49 @@
+{
+  "id": "214",
+  "title": "Shortest Palindrome",
+  "slug": "shortest-palindrome",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code>. You can convert <code>s</code> to a <span data-keyword=\"palindrome-string\">palindrome</span> by adding characters in front of it.</p>\n\n<p>Return <em>the shortest palindrome you can find by performing this transformation</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"aacecaaa\"\n<strong>Output:</strong> \"aaacecaaa\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"abcd\"\n<strong>Output:</strong> \"dcbabcd\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters only.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s`. You can convert `s` to a palindrome by adding characters in front of it.\n\nReturn _the shortest palindrome you can find by performing this transformation_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aacecaaa\"\n    **Output:** \"aaacecaaa\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\"\n    **Output:** \"dcbabcd\"\n    \n\n \n\n**Constraints:**\n\n  * `0 <= s.length <= 5 * 104`\n  * `s` consists of lowercase English letters only.",
+  "question": "You are given a string `s`. You can convert `s` to a palindrome by adding characters in front of it.\n\nReturn _the shortest palindrome you can find by performing this transformation_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aacecaaa\"\n    **Output:** \"aaacecaaa\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\"\n    **Output:** \"dcbabcd\"",
+  "constraints": "**Constraints:**\n\n  * `0 <= s.length <= 5 * 104`\n  * `s` consists of lowercase English letters only.",
+  "topics": ["String", "Rolling Hash", "String Matching", "Hash Function"],
+  "total_accepted": 346997,
+  "total_submissions": 827209,
+  "acceptance_rate": "41.9%",
+  "similar_questions": [
+    {
+      "title": "Longest Palindromic Substring",
+      "slug": "longest-palindromic-substring",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-palindromic-substring/"
+    },
+    {
+      "title": "Find the Index of the First Occurrence in a String",
+      "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/"
+    },
+    {
+      "title": "Palindrome Pairs",
+      "slug": "palindrome-pairs",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-pairs/"
+    },
+    {
+      "title": "Maximum Deletions on a String",
+      "slug": "maximum-deletions-on-a-string",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-deletions-on-a-string/"
+    },
+    {
+      "title": "Smallest Palindromic Rearrangement I",
+      "slug": "smallest-palindromic-rearrangement-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-palindromic-rearrangement-i/"
+    }
+  ],
+  "hints": []
+}

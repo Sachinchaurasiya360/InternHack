@@ -1,0 +1,18 @@
+{
+  "id": "1064",
+  "title": "Fixed Point",
+  "slug": "fixed-point",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 49232,
+  "total_submissions": 77181,
+  "acceptance_rate": "63.8%",
+  "similar_questions": [],
+  "hints": ["Loop over the array and check the first index i such A[i] == i"]
+}

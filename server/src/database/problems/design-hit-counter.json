@@ -1,0 +1,25 @@
+{
+  "id": "362",
+  "title": "Design Hit Counter",
+  "slug": "design-hit-counter",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Design", "Queue", "Data Stream"],
+  "total_accepted": 326091,
+  "total_submissions": 468593,
+  "acceptance_rate": "69.6%",
+  "similar_questions": [
+    {
+      "title": "Logger Rate Limiter",
+      "slug": "logger-rate-limiter",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/logger-rate-limiter/"
+    }
+  ],
+  "hints": []
+}

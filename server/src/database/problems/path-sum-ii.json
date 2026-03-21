@@ -1,0 +1,49 @@
+{
+  "id": "113",
+  "title": "Path Sum II",
+  "slug": "path-sum-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree and an integer <code>targetSum</code>, return <em>all <strong>root-to-leaf</strong> paths where the sum of the node values in the path equals </em><code>targetSum</code><em>. Each path should be returned as a list of the node <strong>values</strong>, not node references</em>.</p>\n\n<p>A <strong>root-to-leaf</strong> path is a path starting from the root and ending at any leaf node. A <strong>leaf</strong> is a node with no children.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/18/pathsumii1.jpg\" style=\"width: 500px; height: 356px;\" />\n<pre>\n<strong>Input:</strong> root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22\n<strong>Output:</strong> [[5,4,11,2],[5,8,4,5]]\n<strong>Explanation:</strong> There are two paths whose sum equals targetSum:\n5 + 4 + 11 + 2 = 22\n5 + 8 + 4 + 5 = 22\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/18/pathsum2.jpg\" style=\"width: 212px; height: 181px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3], targetSum = 5\n<strong>Output:</strong> []\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [1,2], targetSum = 0\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 5000]</code>.</li>\n\t<li><code>-1000 &lt;= Node.val &lt;= 1000</code></li>\n\t<li><code>-1000 &lt;= targetSum &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree and an integer `targetSum`, return _all**root-to-leaf** paths where the sum of the node values in the path equals _`targetSum` _. Each path should be returned as a list of the node**values** , not node references_.\n\nA **root-to-leaf** path is a path starting from the root and ending at any leaf node. A **leaf** is a node with no children.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsumii1.jpg)\n    \n    \n    **Input:** root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22\n    **Output:** [[5,4,11,2],[5,8,4,5]]\n    **Explanation:** There are two paths whose sum equals targetSum:\n    5 + 4 + 11 + 2 = 22\n    5 + 8 + 4 + 5 = 22\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsum2.jpg)\n    \n    \n    **Input:** root = [1,2,3], targetSum = 5\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [1,2], targetSum = 0\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 5000]`.\n  * `-1000 <= Node.val <= 1000`\n  * `-1000 <= targetSum <= 1000`",
+  "question": "Given the `root` of a binary tree and an integer `targetSum`, return _all**root-to-leaf** paths where the sum of the node values in the path equals _`targetSum` _. Each path should be returned as a list of the node**values** , not node references_.\n\nA **root-to-leaf** path is a path starting from the root and ending at any leaf node. A **leaf** is a node with no children.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsumii1.jpg)\n    \n    \n    **Input:** root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22\n    **Output:** [[5,4,11,2],[5,8,4,5]]\n    **Explanation:** There are two paths whose sum equals targetSum:\n    5 + 4 + 11 + 2 = 22\n    5 + 8 + 4 + 5 = 22\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/pathsum2.jpg)\n    \n    \n    **Input:** root = [1,2,3], targetSum = 5\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [1,2], targetSum = 0\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 5000]`.\n  * `-1000 <= Node.val <= 1000`\n  * `-1000 <= targetSum <= 1000`",
+  "topics": ["Backtracking", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 1144489,
+  "total_submissions": 1852345,
+  "acceptance_rate": "61.8%",
+  "similar_questions": [
+    {
+      "title": "Path Sum",
+      "slug": "path-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/path-sum/"
+    },
+    {
+      "title": "Binary Tree Paths",
+      "slug": "binary-tree-paths",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-paths/"
+    },
+    {
+      "title": "Path Sum III",
+      "slug": "path-sum-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-sum-iii/"
+    },
+    {
+      "title": "Path Sum IV",
+      "slug": "path-sum-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-sum-iv/"
+    },
+    {
+      "title": "Step-By-Step Directions From a Binary Tree Node to Another",
+      "slug": "step-by-step-directions-from-a-binary-tree-node-to-another",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/"
+    }
+  ],
+  "hints": []
+}

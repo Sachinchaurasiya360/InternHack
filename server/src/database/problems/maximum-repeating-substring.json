@@ -1,0 +1,34 @@
+{
+  "id": "1668",
+  "title": "Maximum Repeating Substring",
+  "slug": "maximum-repeating-substring",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>For a string <code>sequence</code>, a string <code>word</code> is <strong><code>k</code>-repeating</strong> if <code>word</code> concatenated <code>k</code> times is a substring of <code>sequence</code>. The <code>word</code>&#39;s <strong>maximum <code>k</code>-repeating value</strong> is the highest value <code>k</code> where <code>word</code> is <code>k</code>-repeating in <code>sequence</code>. If <code>word</code> is not a substring of <code>sequence</code>, <code>word</code>&#39;s maximum <code>k</code>-repeating value is <code>0</code>.</p>\n\n<p>Given strings <code>sequence</code> and <code>word</code>, return <em>the <strong>maximum <code>k</code>-repeating value</strong> of <code>word</code> in <code>sequence</code></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> sequence = &quot;ababc&quot;, word = &quot;ab&quot;\n<strong>Output:</strong> 2\n<strong>Explanation: </strong>&quot;abab&quot; is a substring in &quot;<u>abab</u>c&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> sequence = &quot;ababc&quot;, word = &quot;ba&quot;\n<strong>Output:</strong> 1\n<strong>Explanation: </strong>&quot;ba&quot; is a substring in &quot;a<u>ba</u>bc&quot;. &quot;baba&quot; is not a substring in &quot;ababc&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> sequence = &quot;ababc&quot;, word = &quot;ac&quot;\n<strong>Output:</strong> 0\n<strong>Explanation: </strong>&quot;ac&quot; is not a substring in &quot;ababc&quot;. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= sequence.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= word.length &lt;= 100</code></li>\n\t<li><code>sequence</code> and <code>word</code>&nbsp;contains only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "For a string `sequence`, a string `word` is **`k`-repeating** if `word` concatenated `k` times is a substring of `sequence`. The `word`'s **maximum`k`-repeating value** is the highest value `k` where `word` is `k`-repeating in `sequence`. If `word` is not a substring of `sequence`, `word`'s maximum `k`-repeating value is `0`.\n\nGiven strings `sequence` and `word`, return _the**maximum`k`-repeating value** of `word` in `sequence`_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** sequence = \"ababc\", word = \"ab\"\n    **Output:** 2\n    **Explanation:** \"abab\" is a substring in \"_abab_ c\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** sequence = \"ababc\", word = \"ba\"\n    **Output:** 1\n    **Explanation:** \"ba\" is a substring in \"a _ba_ bc\". \"baba\" is not a substring in \"ababc\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** sequence = \"ababc\", word = \"ac\"\n    **Output:** 0\n    **Explanation:** \"ac\" is not a substring in \"ababc\". \n    \n\n \n\n**Constraints:**\n\n  * `1 <= sequence.length <= 100`\n  * `1 <= word.length <= 100`\n  * `sequence` and `word` contains only lowercase English letters.",
+  "question": "For a string `sequence`, a string `word` is **`k`-repeating** if `word` concatenated `k` times is a substring of `sequence`. The `word`'s **maximum`k`-repeating value** is the highest value `k` where `word` is `k`-repeating in `sequence`. If `word` is not a substring of `sequence`, `word`'s maximum `k`-repeating value is `0`.\n\nGiven strings `sequence` and `word`, return _the**maximum`k`-repeating value** of `word` in `sequence`_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** sequence = \"ababc\", word = \"ab\"\n    **Output:** 2\n    **Explanation:** \"abab\" is a substring in \"_abab_ c\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** sequence = \"ababc\", word = \"ba\"\n    **Output:** 1\n    **Explanation:** \"ba\" is a substring in \"a _ba_ bc\". \"baba\" is not a substring in \"ababc\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** sequence = \"ababc\", word = \"ac\"\n    **Output:** 0\n    **Explanation:** \"ac\" is not a substring in \"ababc\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= sequence.length <= 100`\n  * `1 <= word.length <= 100`\n  * `sequence` and `word` contains only lowercase English letters.",
+  "topics": ["String", "Dynamic Programming", "String Matching"],
+  "total_accepted": 104377,
+  "total_submissions": 253755,
+  "acceptance_rate": "41.1%",
+  "similar_questions": [
+    {
+      "title": "Detect Pattern of Length M Repeated K or More Times",
+      "slug": "detect-pattern-of-length-m-repeated-k-or-more-times",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/detect-pattern-of-length-m-repeated-k-or-more-times/"
+    },
+    {
+      "title": "Minimum Number of Operations to Make Word K-Periodic",
+      "slug": "minimum-number-of-operations-to-make-word-k-periodic",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-word-k-periodic/"
+    }
+  ],
+  "hints": [
+    "The constraints are low enough for a brute force approach.",
+    "Try every k value from 0 upwards until word is no longer k-repeating."
+  ]
+}

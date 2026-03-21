@@ -1,0 +1,25 @@
+{
+  "id": "866",
+  "title": "Prime Palindrome",
+  "slug": "prime-palindrome",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer n, return <em>the smallest <strong>prime palindrome</strong> greater than or equal to </em><code>n</code>.</p>\n\n<p>An integer is <strong>prime</strong> if it has exactly two divisors: <code>1</code> and itself. Note that <code>1</code> is not a prime number.</p>\n\n<ul>\n\t<li>For example, <code>2</code>, <code>3</code>, <code>5</code>, <code>7</code>, <code>11</code>, and <code>13</code> are all primes.</li>\n</ul>\n\n<p>An integer is a <strong>palindrome</strong> if it reads the same from left to right as it does from right to left.</p>\n\n<ul>\n\t<li>For example, <code>101</code> and <code>12321</code> are palindromes.</li>\n</ul>\n\n<p>The test cases are generated so that the answer always exists and is in the range <code>[2, 2 * 10<sup>8</sup>]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> n = 6\n<strong>Output:</strong> 7\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> n = 8\n<strong>Output:</strong> 11\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> n = 13\n<strong>Output:</strong> 101\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer n, return _the smallest**prime palindrome** greater than or equal to _`n`.\n\nAn integer is **prime** if it has exactly two divisors: `1` and itself. Note that `1` is not a prime number.\n\n  * For example, `2`, `3`, `5`, `7`, `11`, and `13` are all primes.\n\n\n\nAn integer is a **palindrome** if it reads the same from left to right as it does from right to left.\n\n  * For example, `101` and `12321` are palindromes.\n\n\n\nThe test cases are generated so that the answer always exists and is in the range `[2, 2 * 108]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 6\n    **Output:** 7\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 8\n    **Output:** 11\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 13\n    **Output:** 101\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 108`",
+  "question": "Given an integer n, return _the smallest**prime palindrome** greater than or equal to _`n`.\n\nAn integer is **prime** if it has exactly two divisors: `1` and itself. Note that `1` is not a prime number.\n\n  * For example, `2`, `3`, `5`, `7`, `11`, and `13` are all primes.\n\n\n\nAn integer is a **palindrome** if it reads the same from left to right as it does from right to left.\n\n  * For example, `101` and `12321` are palindromes.\n\n\n\nThe test cases are generated so that the answer always exists and is in the range `[2, 2 * 108]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 6\n    **Output:** 7\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 8\n    **Output:** 11\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 13\n    **Output:** 101",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 108`",
+  "topics": ["Math", "Number Theory"],
+  "total_accepted": 48580,
+  "total_submissions": 173798,
+  "acceptance_rate": "28.0%",
+  "similar_questions": [
+    {
+      "title": "Sum of k-Mirror Numbers",
+      "slug": "sum-of-k-mirror-numbers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sum-of-k-mirror-numbers/"
+    }
+  ],
+  "hints": []
+}

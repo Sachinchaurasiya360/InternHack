@@ -1,0 +1,18 @@
+{
+  "id": "513",
+  "title": "Find Bottom Left Tree Value",
+  "slug": "find-bottom-left-tree-value",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree, return the leftmost value in the last row of the tree.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/14/tree1.jpg\" style=\"width: 302px; height: 182px;\" />\n<pre>\n<strong>Input:</strong> root = [2,1,3]\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/14/tree2.jpg\" style=\"width: 432px; height: 421px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3,4,null,5,6,null,null,7]\n<strong>Output:</strong> 7\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-2<sup>31</sup> &lt;= Node.val &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree, return the leftmost value in the last row of the tree.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/14/tree1.jpg)\n    \n    \n    **Input:** root = [2,1,3]\n    **Output:** 1\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/14/tree2.jpg)\n    \n    \n    **Input:** root = [1,2,3,4,null,5,6,null,null,7]\n    **Output:** 7\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-231 <= Node.val <= 231 - 1`",
+  "question": "Given the `root` of a binary tree, return the leftmost value in the last row of the tree.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/14/tree1.jpg)\n    \n    \n    **Input:** root = [2,1,3]\n    **Output:** 1\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/14/tree2.jpg)\n    \n    \n    **Input:** root = [1,2,3,4,null,5,6,null,null,7]\n    **Output:** 7",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-231 <= Node.val <= 231 - 1`",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 437390,
+  "total_submissions": 605955,
+  "acceptance_rate": "72.2%",
+  "similar_questions": [],
+  "hints": []
+}

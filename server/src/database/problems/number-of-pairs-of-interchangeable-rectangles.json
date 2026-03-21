@@ -1,0 +1,40 @@
+{
+  "id": "2001",
+  "title": "Number of Pairs of Interchangeable Rectangles",
+  "slug": "number-of-pairs-of-interchangeable-rectangles",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given <code>n</code> rectangles represented by a <strong>0-indexed</strong> 2D integer array <code>rectangles</code>, where <code>rectangles[i] = [width<sub>i</sub>, height<sub>i</sub>]</code> denotes the width and height of the <code>i<sup>th</sup></code> rectangle.</p>\n\n<p>Two rectangles <code>i</code> and <code>j</code> (<code>i &lt; j</code>) are considered <strong>interchangeable</strong> if they have the <strong>same</strong> width-to-height ratio. More formally, two rectangles are <strong>interchangeable</strong> if <code>width<sub>i</sub>/height<sub>i</sub> == width<sub>j</sub>/height<sub>j</sub></code> (using decimal division, not integer division).</p>\n\n<p>Return <em>the <strong>number</strong> of pairs of <strong>interchangeable</strong> rectangles in </em><code>rectangles</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> rectangles = [[4,8],[3,6],[10,20],[15,30]]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The following are the interchangeable pairs of rectangles by index (0-indexed):\n- Rectangle 0 with rectangle 1: 4/8 == 3/6.\n- Rectangle 0 with rectangle 2: 4/8 == 10/20.\n- Rectangle 0 with rectangle 3: 4/8 == 15/30.\n- Rectangle 1 with rectangle 2: 3/6 == 10/20.\n- Rectangle 1 with rectangle 3: 3/6 == 15/30.\n- Rectangle 2 with rectangle 3: 10/20 == 15/30.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> rectangles = [[4,5],[7,8]]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There are no interchangeable pairs of rectangles.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == rectangles.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>rectangles[i].length == 2</code></li>\n\t<li><code>1 &lt;= width<sub>i</sub>, height<sub>i</sub> &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given `n` rectangles represented by a **0-indexed** 2D integer array `rectangles`, where `rectangles[i] = [widthi, heighti]` denotes the width and height of the `ith` rectangle.\n\nTwo rectangles `i` and `j` (`i < j`) are considered **interchangeable** if they have the **same** width-to-height ratio. More formally, two rectangles are **interchangeable** if `widthi/heighti == widthj/heightj` (using decimal division, not integer division).\n\nReturn _the**number** of pairs of **interchangeable** rectangles in _`rectangles`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** rectangles = [[4,8],[3,6],[10,20],[15,30]]\n    **Output:** 6\n    **Explanation:** The following are the interchangeable pairs of rectangles by index (0-indexed):\n    - Rectangle 0 with rectangle 1: 4/8 == 3/6.\n    - Rectangle 0 with rectangle 2: 4/8 == 10/20.\n    - Rectangle 0 with rectangle 3: 4/8 == 15/30.\n    - Rectangle 1 with rectangle 2: 3/6 == 10/20.\n    - Rectangle 1 with rectangle 3: 3/6 == 15/30.\n    - Rectangle 2 with rectangle 3: 10/20 == 15/30.\n    \n\n**Example 2:**\n    \n    \n    **Input:** rectangles = [[4,5],[7,8]]\n    **Output:** 0\n    **Explanation:** There are no interchangeable pairs of rectangles.\n    \n\n \n\n**Constraints:**\n\n  * `n == rectangles.length`\n  * `1 <= n <= 105`\n  * `rectangles[i].length == 2`\n  * `1 <= widthi, heighti <= 105`",
+  "question": "You are given `n` rectangles represented by a **0-indexed** 2D integer array `rectangles`, where `rectangles[i] = [widthi, heighti]` denotes the width and height of the `ith` rectangle.\n\nTwo rectangles `i` and `j` (`i < j`) are considered **interchangeable** if they have the **same** width-to-height ratio. More formally, two rectangles are **interchangeable** if `widthi/heighti == widthj/heightj` (using decimal division, not integer division).\n\nReturn _the**number** of pairs of **interchangeable** rectangles in _`rectangles`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** rectangles = [[4,8],[3,6],[10,20],[15,30]]\n    **Output:** 6\n    **Explanation:** The following are the interchangeable pairs of rectangles by index (0-indexed):\n    - Rectangle 0 with rectangle 1: 4/8 == 3/6.\n    - Rectangle 0 with rectangle 2: 4/8 == 10/20.\n    - Rectangle 0 with rectangle 3: 4/8 == 15/30.\n    - Rectangle 1 with rectangle 2: 3/6 == 10/20.\n    - Rectangle 1 with rectangle 3: 3/6 == 15/30.\n    - Rectangle 2 with rectangle 3: 10/20 == 15/30.\n    \n\n**Example 2:**\n    \n    \n    **Input:** rectangles = [[4,5],[7,8]]\n    **Output:** 0\n    **Explanation:** There are no interchangeable pairs of rectangles.",
+  "constraints": "**Constraints:**\n\n  * `n == rectangles.length`\n  * `1 <= n <= 105`\n  * `rectangles[i].length == 2`\n  * `1 <= widthi, heighti <= 105`",
+  "topics": ["Array", "Hash Table", "Math", "Counting", "Number Theory"],
+  "total_accepted": 58384,
+  "total_submissions": 111382,
+  "acceptance_rate": "52.4%",
+  "similar_questions": [
+    {
+      "title": "Number of Good Pairs",
+      "slug": "number-of-good-pairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-good-pairs/"
+    },
+    {
+      "title": "Count Nice Pairs in an Array",
+      "slug": "count-nice-pairs-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-nice-pairs-in-an-array/"
+    },
+    {
+      "title": "Replace Non-Coprime Numbers in Array",
+      "slug": "replace-non-coprime-numbers-in-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/replace-non-coprime-numbers-in-array/"
+    }
+  ],
+  "hints": [
+    "Store the rectangle height and width ratio in a hashmap.",
+    "Traverse the ratios, and for each ratio, use the frequency of the ratio to add to the total pair count."
+  ]
+}

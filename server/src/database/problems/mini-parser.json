@@ -1,0 +1,37 @@
+{
+  "id": "385",
+  "title": "Mini Parser",
+  "slug": "mini-parser",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string s represents the serialization of a nested list, implement a parser to deserialize it and return <em>the deserialized</em> <code>NestedInteger</code>.</p>\n\n<p>Each element is either an integer or a list whose elements may also be integers or other lists.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;324&quot;\n<strong>Output:</strong> 324\n<strong>Explanation:</strong> You should return a NestedInteger object which contains a single integer 324.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;[123,[456,[789]]]&quot;\n<strong>Output:</strong> [123,[456,[789]]]\n<strong>Explanation:</strong> Return a NestedInteger object containing a nested list with 2 elements:\n1. An integer containing value 123.\n2. A nested list containing two elements:\n    i.  An integer containing value 456.\n    ii. A nested list with one element:\n         a. An integer containing value 789\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of digits, square brackets <code>&quot;[]&quot;</code>, negative sign <code>&#39;-&#39;</code>, and commas <code>&#39;,&#39;</code>.</li>\n\t<li><code>s</code> is the serialization of valid <code>NestedInteger</code>.</li>\n\t<li>All the values in the input are in the range <code>[-10<sup>6</sup>, 10<sup>6</sup>]</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string s represents the serialization of a nested list, implement a parser to deserialize it and return _the deserialized_ `NestedInteger`.\n\nEach element is either an integer or a list whose elements may also be integers or other lists.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"324\"\n    **Output:** 324\n    **Explanation:** You should return a NestedInteger object which contains a single integer 324.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"[123,[456,[789]]]\"\n    **Output:** [123,[456,[789]]]\n    **Explanation:** Return a NestedInteger object containing a nested list with 2 elements:\n    1. An integer containing value 123.\n    2. A nested list containing two elements:\n        i.  An integer containing value 456.\n        ii. A nested list with one element:\n             a. An integer containing value 789\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `s` consists of digits, square brackets `\"[]\"`, negative sign `'-'`, and commas `','`.\n  * `s` is the serialization of valid `NestedInteger`.\n  * All the values in the input are in the range `[-106, 106]`.",
+  "question": "Given a string s represents the serialization of a nested list, implement a parser to deserialize it and return _the deserialized_ `NestedInteger`.\n\nEach element is either an integer or a list whose elements may also be integers or other lists.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"324\"\n    **Output:** 324\n    **Explanation:** You should return a NestedInteger object which contains a single integer 324.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"[123,[456,[789]]]\"\n    **Output:** [123,[456,[789]]]\n    **Explanation:** Return a NestedInteger object containing a nested list with 2 elements:\n    1. An integer containing value 123.\n    2. A nested list containing two elements:\n        i.  An integer containing value 456.\n        ii. A nested list with one element:\n             a. An integer containing value 789",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `s` consists of digits, square brackets `\"[]\"`, negative sign `'-'`, and commas `','`.\n  * `s` is the serialization of valid `NestedInteger`.\n  * All the values in the input are in the range `[-106, 106]`.",
+  "topics": ["String", "Stack", "Depth-First Search"],
+  "total_accepted": 72515,
+  "total_submissions": 172555,
+  "acceptance_rate": "42.0%",
+  "similar_questions": [
+    {
+      "title": "Flatten Nested List Iterator",
+      "slug": "flatten-nested-list-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-nested-list-iterator/"
+    },
+    {
+      "title": "Ternary Expression Parser",
+      "slug": "ternary-expression-parser",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/ternary-expression-parser/"
+    },
+    {
+      "title": "Remove Comments",
+      "slug": "remove-comments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-comments/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,37 @@
+{
+  "id": "116",
+  "title": "Populating Next Right Pointers in Each Node",
+  "slug": "populating-next-right-pointers-in-each-node",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>perfect binary tree</strong> where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:</p>\n\n<pre>\nstruct Node {\n  int val;\n  Node *left;\n  Node *right;\n  Node *next;\n}\n</pre>\n\n<p>Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to <code>NULL</code>.</p>\n\n<p>Initially, all next pointers are set to <code>NULL</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/02/14/116_sample.png\" style=\"width: 500px; height: 171px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3,4,5,6,7]\n<strong>Output:</strong> [1,#,2,3,#,4,5,6,7,#]\n<strong>Explanation: </strong>Given the above perfect binary tree (Figure A), your function should populate each next pointer to point to its next right node, just like in Figure B. The serialized output is in level order as connected by the next pointers, with &#39;#&#39; signifying the end of each level.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = []\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 2<sup>12</sup> - 1]</code>.</li>\n\t<li><code>-1000 &lt;= Node.val &lt;= 1000</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow-up:</strong></p>\n\n<ul>\n\t<li>You may only use constant extra space.</li>\n\t<li>The recursive approach is fine. You may assume implicit stack space does not count as extra space for this problem.</li>\n</ul>\n",
+  "content_markdown": "You are given a **perfect binary tree** where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:\n    \n    \n    struct Node {\n      int val;\n      Node *left;\n      Node *right;\n      Node *next;\n    }\n    \n\nPopulate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to `NULL`.\n\nInitially, all next pointers are set to `NULL`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/02/14/116_sample.png)\n    \n    \n    **Input:** root = [1,2,3,4,5,6,7]\n    **Output:** [1,#,2,3,#,4,5,6,7,#]\n    **Explanation:** Given the above perfect binary tree (Figure A), your function should populate each next pointer to point to its next right node, just like in Figure B. The serialized output is in level order as connected by the next pointers, with '#' signifying the end of each level.\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = []\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 212 - 1]`.\n  * `-1000 <= Node.val <= 1000`\n\n\n\n \n\n**Follow-up:**\n\n  * You may only use constant extra space.\n  * The recursive approach is fine. You may assume implicit stack space does not count as extra space for this problem.",
+  "question": "You are given a **perfect binary tree** where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:\n    \n    \n    struct Node {\n      int val;\n      Node *left;\n      Node *right;\n      Node *next;\n    }\n    \n\nPopulate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to `NULL`.\n\nInitially, all next pointers are set to `NULL`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/02/14/116_sample.png)\n    \n    \n    **Input:** root = [1,2,3,4,5,6,7]\n    **Output:** [1,#,2,3,#,4,5,6,7,#]\n    **Explanation:** Given the above perfect binary tree (Figure A), your function should populate each next pointer to point to its next right node, just like in Figure B. The serialized output is in level order as connected by the next pointers, with '#' signifying the end of each level.\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = []\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 212 - 1]`.\n  * `-1000 <= Node.val <= 1000`",
+  "topics": ["Linked List", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 1315950,
+  "total_submissions": 1968315,
+  "acceptance_rate": "66.9%",
+  "similar_questions": [
+    {
+      "title": "Populating Next Right Pointers in Each Node II",
+      "slug": "populating-next-right-pointers-in-each-node-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/"
+    },
+    {
+      "title": "Binary Tree Right Side View",
+      "slug": "binary-tree-right-side-view",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-right-side-view/"
+    },
+    {
+      "title": "Cycle Length Queries in a Tree",
+      "slug": "cycle-length-queries-in-a-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/cycle-length-queries-in-a-tree/"
+    }
+  ],
+  "hints": []
+}

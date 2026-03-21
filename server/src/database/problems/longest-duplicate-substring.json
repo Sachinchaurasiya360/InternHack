@@ -1,0 +1,28 @@
+{
+  "id": "1044",
+  "title": "Longest Duplicate Substring",
+  "slug": "longest-duplicate-substring",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, consider all <em>duplicated substrings</em>: (contiguous) substrings of s that occur 2 or more times.&nbsp;The occurrences&nbsp;may overlap.</p>\n\n<p>Return <strong>any</strong> duplicated&nbsp;substring that has the longest possible length.&nbsp;If <code>s</code> does not have a duplicated substring, the answer is <code>&quot;&quot;</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"banana\"\n<strong>Output:</strong> \"ana\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"abcd\"\n<strong>Output:</strong> \"\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, consider all _duplicated substrings_ : (contiguous) substrings of s that occur 2 or more times. The occurrences may overlap.\n\nReturn **any** duplicated substring that has the longest possible length. If `s` does not have a duplicated substring, the answer is `\"\"`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"banana\"\n    **Output:** \"ana\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\"\n    **Output:** \"\"\n    \n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 3 * 104`\n  * `s` consists of lowercase English letters.",
+  "question": "Given a string `s`, consider all _duplicated substrings_ : (contiguous) substrings of s that occur 2 or more times. The occurrences may overlap.\n\nReturn **any** duplicated substring that has the longest possible length. If `s` does not have a duplicated substring, the answer is `\"\"`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"banana\"\n    **Output:** \"ana\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcd\"\n    **Output:** \"\"",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 3 * 104`\n  * `s` consists of lowercase English letters.",
+  "topics": [
+    "String",
+    "Binary Search",
+    "Sliding Window",
+    "Rolling Hash",
+    "Suffix Array",
+    "Hash Function"
+  ],
+  "total_accepted": 83466,
+  "total_submissions": 268439,
+  "acceptance_rate": "31.1%",
+  "similar_questions": [],
+  "hints": [
+    "Binary search for the length of the answer.  (If there's an answer of length 10, then there are answers of length 9, 8, 7, ...)",
+    "To check whether an answer of length K exists, we can use Rabin-Karp 's algorithm."
+  ]
+}

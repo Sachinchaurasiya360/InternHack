@@ -1,0 +1,44 @@
+{
+  "id": "703",
+  "title": "Kth Largest Element in a Stream",
+  "slug": "kth-largest-element-in-a-stream",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are part of a university admissions office and need to keep track of the <code>kth</code> highest test score from applicants in real-time. This helps to determine cut-off marks for interviews and admissions dynamically as new applicants submit their scores.</p>\n\n<p>You are tasked to implement a class which, for a given integer&nbsp;<code>k</code>, maintains a stream of test scores and continuously returns the&nbsp;<code>k</code>th highest test score&nbsp;<strong>after</strong>&nbsp;a new score has been submitted. More specifically, we are looking for the <code>k</code>th highest score in the sorted list of all scores.</p>\n\n<p>Implement the&nbsp;<code>KthLargest</code> class:</p>\n\n<ul>\n\t<li><code>KthLargest(int k, int[] nums)</code> Initializes the object with the integer <code>k</code> and the stream of test scores&nbsp;<code>nums</code>.</li>\n\t<li><code>int add(int val)</code> Adds a new test score&nbsp;<code>val</code> to the stream and returns the element representing the <code>k<sup>th</sup></code> largest element in the pool of test scores so far.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong><br />\n<span class=\"example-io\">[&quot;KthLargest&quot;, &quot;add&quot;, &quot;add&quot;, &quot;add&quot;, &quot;add&quot;, &quot;add&quot;]<br />\n[[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[null, 4, 5, 5, 8, 8]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>KthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]);<br />\nkthLargest.add(3); // return 4<br />\nkthLargest.add(5); // return 5<br />\nkthLargest.add(10); // return 5<br />\nkthLargest.add(9); // return 8<br />\nkthLargest.add(4); // return 8</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong><br />\n<span class=\"example-io\">[&quot;KthLargest&quot;, &quot;add&quot;, &quot;add&quot;, &quot;add&quot;, &quot;add&quot;]<br />\n[[4, [7, 7, 7, 7, 8, 3]], [2], [10], [9], [9]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[null, 7, 7, 7, 8]</span></p>\n\n<p><strong>Explanation:</strong></p>\nKthLargest kthLargest = new KthLargest(4, [7, 7, 7, 7, 8, 3]);<br />\nkthLargest.add(2); // return 7<br />\nkthLargest.add(10); // return 7<br />\nkthLargest.add(9); // return 7<br />\nkthLargest.add(9); // return 8</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length + 1</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= val &lt;= 10<sup>4</sup></code></li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>add</code>.</li>\n</ul>\n",
+  "content_markdown": "You are part of a university admissions office and need to keep track of the `kth` highest test score from applicants in real-time. This helps to determine cut-off marks for interviews and admissions dynamically as new applicants submit their scores.\n\nYou are tasked to implement a class which, for a given integer `k`, maintains a stream of test scores and continuously returns the `k`th highest test score **after**  a new score has been submitted. More specifically, we are looking for the `k`th highest score in the sorted list of all scores.\n\nImplement the `KthLargest` class:\n\n  * `KthLargest(int k, int[] nums)` Initializes the object with the integer `k` and the stream of test scores `nums`.\n  * `int add(int val)` Adds a new test score `val` to the stream and returns the element representing the `kth` largest element in the pool of test scores so far.\n\n\n\n \n\n**Example 1:**\n\n**Input:**  \n[\"KthLargest\", \"add\", \"add\", \"add\", \"add\", \"add\"]  \n[[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]\n\n**Output:** [null, 4, 5, 5, 8, 8]\n\n**Explanation:**\n\nKthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]);  \nkthLargest.add(3); // return 4  \nkthLargest.add(5); // return 5  \nkthLargest.add(10); // return 5  \nkthLargest.add(9); // return 8  \nkthLargest.add(4); // return 8\n\n**Example 2:**\n\n**Input:**  \n[\"KthLargest\", \"add\", \"add\", \"add\", \"add\"]  \n[[4, [7, 7, 7, 7, 8, 3]], [2], [10], [9], [9]]\n\n**Output:** [null, 7, 7, 7, 8]\n\n**Explanation:**\n\nKthLargest kthLargest = new KthLargest(4, [7, 7, 7, 7, 8, 3]);  \nkthLargest.add(2); // return 7  \nkthLargest.add(10); // return 7  \nkthLargest.add(9); // return 7  \nkthLargest.add(9); // return 8\n\n \n\n**Constraints:**\n\n  * `0 <= nums.length <= 104`\n  * `1 <= k <= nums.length + 1`\n  * `-104 <= nums[i] <= 104`\n  * `-104 <= val <= 104`\n  * At most `104` calls will be made to `add`.",
+  "question": "You are part of a university admissions office and need to keep track of the `kth` highest test score from applicants in real-time. This helps to determine cut-off marks for interviews and admissions dynamically as new applicants submit their scores.\n\nYou are tasked to implement a class which, for a given integer `k`, maintains a stream of test scores and continuously returns the `k`th highest test score **after**  a new score has been submitted. More specifically, we are looking for the `k`th highest score in the sorted list of all scores.\n\nImplement the `KthLargest` class:\n\n  * `KthLargest(int k, int[] nums)` Initializes the object with the integer `k` and the stream of test scores `nums`.\n  * `int add(int val)` Adds a new test score `val` to the stream and returns the element representing the `kth` largest element in the pool of test scores so far.",
+  "examples": "**Example 1:**\n\n**Input:**  \n[\"KthLargest\", \"add\", \"add\", \"add\", \"add\", \"add\"]  \n[[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]\n\n**Output:** [null, 4, 5, 5, 8, 8]\n\n**Explanation:**\n\nKthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]);  \nkthLargest.add(3); // return 4  \nkthLargest.add(5); // return 5  \nkthLargest.add(10); // return 5  \nkthLargest.add(9); // return 8  \nkthLargest.add(4); // return 8\n\n**Example 2:**\n\n**Input:**  \n[\"KthLargest\", \"add\", \"add\", \"add\", \"add\"]  \n[[4, [7, 7, 7, 7, 8, 3]], [2], [10], [9], [9]]\n\n**Output:** [null, 7, 7, 7, 8]\n\n**Explanation:**\n\nKthLargest kthLargest = new KthLargest(4, [7, 7, 7, 7, 8, 3]);  \nkthLargest.add(2); // return 7  \nkthLargest.add(10); // return 7  \nkthLargest.add(9); // return 7  \nkthLargest.add(9); // return 8",
+  "constraints": "**Constraints:**\n\n  * `0 <= nums.length <= 104`\n  * `1 <= k <= nums.length + 1`\n  * `-104 <= nums[i] <= 104`\n  * `-104 <= val <= 104`\n  * At most `104` calls will be made to `add`.",
+  "topics": [
+    "Tree",
+    "Design",
+    "Binary Search Tree",
+    "Heap (Priority Queue)",
+    "Binary Tree",
+    "Data Stream"
+  ],
+  "total_accepted": 954502,
+  "total_submissions": 1572206,
+  "acceptance_rate": "60.7%",
+  "similar_questions": [
+    {
+      "title": "Kth Largest Element in an Array",
+      "slug": "kth-largest-element-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/"
+    },
+    {
+      "title": "Finding MK Average",
+      "slug": "finding-mk-average",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/finding-mk-average/"
+    },
+    {
+      "title": "Sequentially Ordinal Rank Tracker",
+      "slug": "sequentially-ordinal-rank-tracker",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sequentially-ordinal-rank-tracker/"
+    }
+  ],
+  "hints": []
+}

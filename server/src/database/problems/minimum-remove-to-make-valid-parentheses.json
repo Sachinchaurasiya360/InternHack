@@ -1,0 +1,34 @@
+{
+  "id": "1249",
+  "title": "Minimum Remove to Make Valid Parentheses",
+  "slug": "minimum-remove-to-make-valid-parentheses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <font face=\"monospace\">s</font> of <code>&#39;(&#39;</code> , <code>&#39;)&#39;</code> and lowercase English characters.</p>\n\n<p>Your task is to remove the minimum number of parentheses ( <code>&#39;(&#39;</code> or <code>&#39;)&#39;</code>, in any positions ) so that the resulting <em>parentheses string</em> is valid and return <strong>any</strong> valid string.</p>\n\n<p>Formally, a <em>parentheses string</em> is valid if and only if:</p>\n\n<ul>\n\t<li>It is the empty string, contains only lowercase characters, or</li>\n\t<li>It can be written as <code>AB</code> (<code>A</code> concatenated with <code>B</code>), where <code>A</code> and <code>B</code> are valid strings, or</li>\n\t<li>It can be written as <code>(A)</code>, where <code>A</code> is a valid string.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;lee(t(c)o)de)&quot;\n<strong>Output:</strong> &quot;lee(t(c)o)de&quot;\n<strong>Explanation:</strong> &quot;lee(t(co)de)&quot; , &quot;lee(t(c)ode)&quot; would also be accepted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a)b(c)d&quot;\n<strong>Output:</strong> &quot;ab(c)d&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;))((&quot;\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> An empty string is also valid.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either&nbsp;<code>&#39;(&#39;</code> , <code>&#39;)&#39;</code>, or lowercase English letter.</li>\n</ul>\n",
+  "content_markdown": "Given a string s of `'('` , `')'` and lowercase English characters.\n\nYour task is to remove the minimum number of parentheses ( `'('` or `')'`, in any positions ) so that the resulting _parentheses string_ is valid and return **any** valid string.\n\nFormally, a _parentheses string_ is valid if and only if:\n\n  * It is the empty string, contains only lowercase characters, or\n  * It can be written as `AB` (`A` concatenated with `B`), where `A` and `B` are valid strings, or\n  * It can be written as `(A)`, where `A` is a valid string.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"lee(t(c)o)de)\"\n    **Output:** \"lee(t(c)o)de\"\n    **Explanation:** \"lee(t(co)de)\" , \"lee(t(c)ode)\" would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a)b(c)d\"\n    **Output:** \"ab(c)d\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"))((\"\n    **Output:** \"\"\n    **Explanation:** An empty string is also valid.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'('` , `')'`, or lowercase English letter.",
+  "question": "Given a string s of `'('` , `')'` and lowercase English characters.\n\nYour task is to remove the minimum number of parentheses ( `'('` or `')'`, in any positions ) so that the resulting _parentheses string_ is valid and return **any** valid string.\n\nFormally, a _parentheses string_ is valid if and only if:\n\n  * It is the empty string, contains only lowercase characters, or\n  * It can be written as `AB` (`A` concatenated with `B`), where `A` and `B` are valid strings, or\n  * It can be written as `(A)`, where `A` is a valid string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"lee(t(c)o)de)\"\n    **Output:** \"lee(t(c)o)de\"\n    **Explanation:** \"lee(t(co)de)\" , \"lee(t(c)ode)\" would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a)b(c)d\"\n    **Output:** \"ab(c)d\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"))((\"\n    **Output:** \"\"\n    **Explanation:** An empty string is also valid.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'('` , `')'`, or lowercase English letter.",
+  "topics": ["String", "Stack"],
+  "total_accepted": 1039123,
+  "total_submissions": 1457758,
+  "acceptance_rate": "71.3%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Swaps to Make the String Balanced",
+      "slug": "minimum-number-of-swaps-to-make-the-string-balanced",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-swaps-to-make-the-string-balanced/"
+    },
+    {
+      "title": "Check if a Parentheses String Can Be Valid",
+      "slug": "check-if-a-parentheses-string-can-be-valid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/"
+    }
+  ],
+  "hints": [
+    "Each prefix of a balanced parentheses has a number of open parentheses greater or equal than closed parentheses, similar idea with each suffix.",
+    "Check the array from left to right, remove characters that do not meet the property mentioned above, same idea in backward way."
+  ]
+}

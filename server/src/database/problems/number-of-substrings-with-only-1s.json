@@ -1,0 +1,33 @@
+{
+  "id": "1513",
+  "title": "Number of Substrings With Only 1s",
+  "slug": "number-of-substrings-with-only-1s",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary string <code>s</code>, return <em>the number of substrings with all characters</em> <code>1</code><em>&#39;s</em>. Since the answer may be too large, return it modulo <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;0110111&quot;\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> There are 9 substring in total with only 1&#39;s characters.\n&quot;1&quot; -&gt; 5 times.\n&quot;11&quot; -&gt; 3 times.\n&quot;111&quot; -&gt; 1 time.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;101&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Substring &quot;1&quot; is shown 2 times in s.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;111111&quot;\n<strong>Output:</strong> 21\n<strong>Explanation:</strong> Each substring contains only 1&#39;s characters.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a binary string `s`, return _the number of substrings with all characters_ `1` _' s_. Since the answer may be too large, return it modulo `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"0110111\"\n    **Output:** 9\n    **Explanation:** There are 9 substring in total with only 1's characters.\n    \"1\" -> 5 times.\n    \"11\" -> 3 times.\n    \"111\" -> 1 time.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"101\"\n    **Output:** 2\n    **Explanation:** Substring \"1\" is shown 2 times in s.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"111111\"\n    **Output:** 21\n    **Explanation:** Each substring contains only 1's characters.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "question": "Given a binary string `s`, return _the number of substrings with all characters_ `1` _' s_. Since the answer may be too large, return it modulo `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"0110111\"\n    **Output:** 9\n    **Explanation:** There are 9 substring in total with only 1's characters.\n    \"1\" -> 5 times.\n    \"11\" -> 3 times.\n    \"111\" -> 1 time.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"101\"\n    **Output:** 2\n    **Explanation:** Substring \"1\" is shown 2 times in s.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"111111\"\n    **Output:** 21\n    **Explanation:** Each substring contains only 1's characters.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "topics": ["Math", "String"],
+  "total_accepted": 157874,
+  "total_submissions": 274995,
+  "acceptance_rate": "57.4%",
+  "similar_questions": [
+    {
+      "title": "Count Number of Homogenous Substrings",
+      "slug": "count-number-of-homogenous-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-homogenous-substrings/"
+    },
+    {
+      "title": "Count Vowel Substrings of a String",
+      "slug": "count-vowel-substrings-of-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-vowel-substrings-of-a-string/"
+    }
+  ],
+  "hints": [
+    "Count number of 1s in each consecutive-1 group. For a group with n consecutive 1s, the total contribution of it to the final answer is (n + 1) * n // 2."
+  ]
+}

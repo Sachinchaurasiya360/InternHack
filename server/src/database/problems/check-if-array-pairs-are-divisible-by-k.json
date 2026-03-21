@@ -1,0 +1,47 @@
+{
+  "id": "1497",
+  "title": "Check If Array Pairs Are Divisible by k",
+  "slug": "check-if-array-pairs-are-divisible-by-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>arr</code> of even length <code>n</code> and an integer <code>k</code>.</p>\n\n<p>We want to divide the array into exactly <code>n / 2</code> pairs such that the sum of each pair is divisible by <code>k</code>.</p>\n\n<p>Return <code>true</code><em> If you can find a way to do that or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3,4,5,10,6,7,8,9], k = 5\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Pairs are (1,9),(2,8),(3,7),(4,6) and (5,10).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3,4,5,6], k = 7\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Pairs are (1,6),(2,5) and(3,4).\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3,4,5,6], k = 10\n<strong>Output:</strong> false\n<strong>Explanation:</strong> You can try all possible pairs to see that there is no way to divide arr into 3 pairs each with sum divisible by 10.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>arr.length == n</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>n</code> is even.</li>\n\t<li><code>-10<sup>9</sup> &lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `arr` of even length `n` and an integer `k`.\n\nWe want to divide the array into exactly `n / 2` pairs such that the sum of each pair is divisible by `k`.\n\nReturn `true` _If you can find a way to do that or_`false` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,4,5,10,6,7,8,9], k = 5\n    **Output:** true\n    **Explanation:** Pairs are (1,9),(2,8),(3,7),(4,6) and (5,10).\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3,4,5,6], k = 7\n    **Output:** true\n    **Explanation:** Pairs are (1,6),(2,5) and(3,4).\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1,2,3,4,5,6], k = 10\n    **Output:** false\n    **Explanation:** You can try all possible pairs to see that there is no way to divide arr into 3 pairs each with sum divisible by 10.\n    \n\n \n\n**Constraints:**\n\n  * `arr.length == n`\n  * `1 <= n <= 105`\n  * `n` is even.\n  * `-109 <= arr[i] <= 109`\n  * `1 <= k <= 105`",
+  "question": "Given an array of integers `arr` of even length `n` and an integer `k`.\n\nWe want to divide the array into exactly `n / 2` pairs such that the sum of each pair is divisible by `k`.\n\nReturn `true` _If you can find a way to do that or_`false` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,4,5,10,6,7,8,9], k = 5\n    **Output:** true\n    **Explanation:** Pairs are (1,9),(2,8),(3,7),(4,6) and (5,10).\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3,4,5,6], k = 7\n    **Output:** true\n    **Explanation:** Pairs are (1,6),(2,5) and(3,4).\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1,2,3,4,5,6], k = 10\n    **Output:** false\n    **Explanation:** You can try all possible pairs to see that there is no way to divide arr into 3 pairs each with sum divisible by 10.",
+  "constraints": "**Constraints:**\n\n  * `arr.length == n`\n  * `1 <= n <= 105`\n  * `n` is even.\n  * `-109 <= arr[i] <= 109`\n  * `1 <= k <= 105`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 206678,
+  "total_submissions": 447603,
+  "acceptance_rate": "46.2%",
+  "similar_questions": [
+    {
+      "title": "Count Array Pairs Divisible by K",
+      "slug": "count-array-pairs-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-array-pairs-divisible-by-k/"
+    },
+    {
+      "title": "Minimum Deletions to Make Array Divisible",
+      "slug": "minimum-deletions-to-make-array-divisible",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-deletions-to-make-array-divisible/"
+    },
+    {
+      "title": "Count Pairs That Form a Complete Day II",
+      "slug": "count-pairs-that-form-a-complete-day-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-pairs-that-form-a-complete-day-ii/"
+    },
+    {
+      "title": "Count Pairs That Form a Complete Day I",
+      "slug": "count-pairs-that-form-a-complete-day-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-pairs-that-form-a-complete-day-i/"
+    }
+  ],
+  "hints": [
+    "Keep an array of the frequencies of ((x % k) + k) % k for each x in arr.",
+    "for each i in [0, k - 1] we need to check if freq[i] == freq[k - i]",
+    "Take care of the case when i == k - i and when i == 0"
+  ]
+}

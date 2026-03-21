@@ -1,0 +1,39 @@
+{
+  "id": "862",
+  "title": "Shortest Subarray with Sum at Least K",
+  "slug": "shortest-subarray-with-sum-at-least-k",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the length of the shortest non-empty <strong>subarray</strong> of </em><code>nums</code><em> with a sum of at least </em><code>k</code>. If there is no such <strong>subarray</strong>, return <code>-1</code>.</p>\n\n<p>A <strong>subarray</strong> is a <strong>contiguous</strong> part of an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1], k = 1\n<strong>Output:</strong> 1\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2], k = 4\n<strong>Output:</strong> -1\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> nums = [2,-1,2], k = 3\n<strong>Output:</strong> 3\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return _the length of the shortest non-empty**subarray** of _`nums` _with a sum of at least_`k`. If there is no such **subarray** , return `-1`.\n\nA **subarray** is a **contiguous** part of an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1], k = 1\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2], k = 4\n    **Output:** -1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,-1,2], k = 3\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-105 <= nums[i] <= 105`\n  * `1 <= k <= 109`",
+  "question": "Given an integer array `nums` and an integer `k`, return _the length of the shortest non-empty**subarray** of _`nums` _with a sum of at least_`k`. If there is no such **subarray** , return `-1`.\n\nA **subarray** is a **contiguous** part of an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1], k = 1\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2], k = 4\n    **Output:** -1\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,-1,2], k = 3\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-105 <= nums[i] <= 105`\n  * `1 <= k <= 109`",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Queue",
+    "Sliding Window",
+    "Heap (Priority Queue)",
+    "Prefix Sum",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 207012,
+  "total_submissions": 634632,
+  "acceptance_rate": "32.6%",
+  "similar_questions": [
+    {
+      "title": "Shortest Subarray With OR at Least K II",
+      "slug": "shortest-subarray-with-or-at-least-k-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-subarray-with-or-at-least-k-ii/"
+    },
+    {
+      "title": "Shortest Subarray With OR at Least K I",
+      "slug": "shortest-subarray-with-or-at-least-k-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/shortest-subarray-with-or-at-least-k-i/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,29 @@
+{
+  "id": "1477",
+  "title": "Find Two Non-overlapping Sub-arrays Each With Target Sum",
+  "slug": "find-two-non-overlapping-sub-arrays-each-with-target-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers <code>arr</code> and an integer <code>target</code>.</p>\n\n<p>You have to find <strong>two non-overlapping sub-arrays</strong> of <code>arr</code> each with a sum equal <code>target</code>. There can be multiple answers so you have to find an answer where the sum of the lengths of the two sub-arrays is <strong>minimum</strong>.</p>\n\n<p>Return <em>the minimum sum of the lengths</em> of the two required sub-arrays, or return <code>-1</code> if you cannot find such two sub-arrays.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [3,2,2,4,3], target = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Only two sub-arrays have sum = 3 ([3] and [3]). The sum of their lengths is 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [7,3,4,7], target = 7\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Although we have three non-overlapping sub-arrays of sum = 7 ([7], [3,4] and [7]), but we will choose the first and third sub-arrays as the sum of their lengths is 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,3,2,6,2,3,4], target = 6\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> We have only one sub-array of sum = 6.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 1000</code></li>\n\t<li><code>1 &lt;= target &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `arr` and an integer `target`.\n\nYou have to find **two non-overlapping sub-arrays** of `arr` each with a sum equal `target`. There can be multiple answers so you have to find an answer where the sum of the lengths of the two sub-arrays is **minimum**.\n\nReturn _the minimum sum of the lengths_ of the two required sub-arrays, or return `-1` if you cannot find such two sub-arrays.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [3,2,2,4,3], target = 3\n    **Output:** 2\n    **Explanation:** Only two sub-arrays have sum = 3 ([3] and [3]). The sum of their lengths is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [7,3,4,7], target = 7\n    **Output:** 2\n    **Explanation:** Although we have three non-overlapping sub-arrays of sum = 7 ([7], [3,4] and [7]), but we will choose the first and third sub-arrays as the sum of their lengths is 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [4,3,2,6,2,3,4], target = 6\n    **Output:** -1\n    **Explanation:** We have only one sub-array of sum = 6.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `1 <= arr[i] <= 1000`\n  * `1 <= target <= 108`",
+  "question": "You are given an array of integers `arr` and an integer `target`.\n\nYou have to find **two non-overlapping sub-arrays** of `arr` each with a sum equal `target`. There can be multiple answers so you have to find an answer where the sum of the lengths of the two sub-arrays is **minimum**.\n\nReturn _the minimum sum of the lengths_ of the two required sub-arrays, or return `-1` if you cannot find such two sub-arrays.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [3,2,2,4,3], target = 3\n    **Output:** 2\n    **Explanation:** Only two sub-arrays have sum = 3 ([3] and [3]). The sum of their lengths is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [7,3,4,7], target = 7\n    **Output:** 2\n    **Explanation:** Although we have three non-overlapping sub-arrays of sum = 7 ([7], [3,4] and [7]), but we will choose the first and third sub-arrays as the sum of their lengths is 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [4,3,2,6,2,3,4], target = 6\n    **Output:** -1\n    **Explanation:** We have only one sub-array of sum = 6.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `1 <= arr[i] <= 1000`\n  * `1 <= target <= 108`",
+  "topics": ["Array", "Hash Table", "Binary Search", "Dynamic Programming", "Sliding Window"],
+  "total_accepted": 54775,
+  "total_submissions": 149091,
+  "acceptance_rate": "36.7%",
+  "similar_questions": [
+    {
+      "title": "Find Subarrays With Equal Sum",
+      "slug": "find-subarrays-with-equal-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-subarrays-with-equal-sum/"
+    }
+  ],
+  "hints": [
+    "Let's create two arrays prefix and suffix where prefix[i] is the minimum length of sub-array ends before i and has sum = k, suffix[i] is the minimum length of sub-array starting at or after i and has sum = k.",
+    "The answer we are searching for is min(prefix[i] + suffix[i]) for all values of i from 0 to n-1 where n == arr.length.",
+    "If you are still stuck with how to build prefix and suffix, you can store for each index i the length of the sub-array starts at i and has sum = k or infinity otherwise, and you can use it to build both prefix and suffix."
+  ]
+}

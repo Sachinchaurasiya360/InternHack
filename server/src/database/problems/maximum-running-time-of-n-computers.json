@@ -1,0 +1,52 @@
+{
+  "id": "2141",
+  "title": "Maximum Running Time of N Computers",
+  "slug": "maximum-running-time-of-n-computers",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You have <code>n</code> computers. You are given the integer <code>n</code> and a <strong>0-indexed</strong> integer array <code>batteries</code> where the <code>i<sup>th</sup></code> battery can <strong>run</strong> a computer for <code>batteries[i]</code> minutes. You are interested in running <strong>all</strong> <code>n</code> computers <strong>simultaneously</strong> using the given batteries.</p>\n\n<p>Initially, you can insert <strong>at most one battery</strong> into each computer. After that and at any integer time moment, you can remove a battery from a computer and insert another battery <strong>any number of times</strong>. The inserted battery can be a totally new battery or a battery from another computer. You may assume that the removing and inserting processes take no time.</p>\n\n<p>Note that the batteries cannot be recharged.</p>\n\n<p>Return <em>the <strong>maximum</strong> number of minutes you can run all the </em><code>n</code><em> computers simultaneously.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/01/06/example1-fit.png\" style=\"width: 762px; height: 150px;\" />\n<pre>\n<strong>Input:</strong> n = 2, batteries = [3,3,3]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> \nInitially, insert battery 0 into the first computer and battery 1 into the second computer.\nAfter two minutes, remove battery 1 from the second computer and insert battery 2 instead. Note that battery 1 can still run for one minute.\nAt the end of the third minute, battery 0 is drained, and you need to remove it from the first computer and insert battery 1 instead.\nBy the end of the fourth minute, battery 1 is also drained, and the first computer is no longer running.\nWe can run the two computers simultaneously for at most 4 minutes, so we return 4.\n\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/01/06/example2.png\" style=\"width: 629px; height: 150px;\" />\n<pre>\n<strong>Input:</strong> n = 2, batteries = [1,1,1,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> \nInitially, insert battery 0 into the first computer and battery 2 into the second computer. \nAfter one minute, battery 0 and battery 2 are drained so you need to remove them and insert battery 1 into the first computer and battery 3 into the second computer. \nAfter another minute, battery 1 and battery 3 are also drained so the first and second computers are no longer running.\nWe can run the two computers simultaneously for at most 2 minutes, so we return 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= batteries.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= batteries[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You have `n` computers. You are given the integer `n` and a **0-indexed** integer array `batteries` where the `ith` battery can **run** a computer for `batteries[i]` minutes. You are interested in running **all** `n` computers **simultaneously** using the given batteries.\n\nInitially, you can insert **at most one battery** into each computer. After that and at any integer time moment, you can remove a battery from a computer and insert another battery **any number of times**. The inserted battery can be a totally new battery or a battery from another computer. You may assume that the removing and inserting processes take no time.\n\nNote that the batteries cannot be recharged.\n\nReturn _the**maximum** number of minutes you can run all the _`n` _computers simultaneously._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/01/06/example1-fit.png)\n    \n    \n    **Input:** n = 2, batteries = [3,3,3]\n    **Output:** 4\n    **Explanation:** \n    Initially, insert battery 0 into the first computer and battery 1 into the second computer.\n    After two minutes, remove battery 1 from the second computer and insert battery 2 instead. Note that battery 1 can still run for one minute.\n    At the end of the third minute, battery 0 is drained, and you need to remove it from the first computer and insert battery 1 instead.\n    By the end of the fourth minute, battery 1 is also drained, and the first computer is no longer running.\n    We can run the two computers simultaneously for at most 4 minutes, so we return 4.\n    \n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/01/06/example2.png)\n    \n    \n    **Input:** n = 2, batteries = [1,1,1,1]\n    **Output:** 2\n    **Explanation:** \n    Initially, insert battery 0 into the first computer and battery 2 into the second computer. \n    After one minute, battery 0 and battery 2 are drained so you need to remove them and insert battery 1 into the first computer and battery 3 into the second computer. \n    After another minute, battery 1 and battery 3 are also drained so the first and second computers are no longer running.\n    We can run the two computers simultaneously for at most 2 minutes, so we return 2.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= batteries.length <= 105`\n  * `1 <= batteries[i] <= 109`",
+  "question": "You have `n` computers. You are given the integer `n` and a **0-indexed** integer array `batteries` where the `ith` battery can **run** a computer for `batteries[i]` minutes. You are interested in running **all** `n` computers **simultaneously** using the given batteries.\n\nInitially, you can insert **at most one battery** into each computer. After that and at any integer time moment, you can remove a battery from a computer and insert another battery **any number of times**. The inserted battery can be a totally new battery or a battery from another computer. You may assume that the removing and inserting processes take no time.\n\nNote that the batteries cannot be recharged.\n\nReturn _the**maximum** number of minutes you can run all the _`n` _computers simultaneously._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/01/06/example1-fit.png)\n    \n    \n    **Input:** n = 2, batteries = [3,3,3]\n    **Output:** 4\n    **Explanation:** \n    Initially, insert battery 0 into the first computer and battery 1 into the second computer.\n    After two minutes, remove battery 1 from the second computer and insert battery 2 instead. Note that battery 1 can still run for one minute.\n    At the end of the third minute, battery 0 is drained, and you need to remove it from the first computer and insert battery 1 instead.\n    By the end of the fourth minute, battery 1 is also drained, and the first computer is no longer running.\n    We can run the two computers simultaneously for at most 4 minutes, so we return 4.\n    \n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/01/06/example2.png)\n    \n    \n    **Input:** n = 2, batteries = [1,1,1,1]\n    **Output:** 2\n    **Explanation:** \n    Initially, insert battery 0 into the first computer and battery 2 into the second computer. \n    After one minute, battery 0 and battery 2 are drained so you need to remove them and insert battery 1 into the first computer and battery 3 into the second computer. \n    After another minute, battery 1 and battery 3 are also drained so the first and second computers are no longer running.\n    We can run the two computers simultaneously for at most 2 minutes, so we return 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= batteries.length <= 105`\n  * `1 <= batteries[i] <= 109`",
+  "topics": ["Array", "Binary Search", "Greedy", "Sorting"],
+  "total_accepted": 138673,
+  "total_submissions": 245844,
+  "acceptance_rate": "56.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Moves to Equal Array Elements",
+      "slug": "minimum-moves-to-equal-array-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements/"
+    },
+    {
+      "title": "Sell Diminishing-Valued Colored Balls",
+      "slug": "sell-diminishing-valued-colored-balls",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sell-diminishing-valued-colored-balls/"
+    },
+    {
+      "title": "Maximum Number of Tasks You Can Assign",
+      "slug": "maximum-number-of-tasks-you-can-assign",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-tasks-you-can-assign/"
+    },
+    {
+      "title": "Minimum Time to Complete Trips",
+      "slug": "minimum-time-to-complete-trips",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-time-to-complete-trips/"
+    },
+    {
+      "title": "Minimum Amount of Time to Fill Cups",
+      "slug": "minimum-amount-of-time-to-fill-cups",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-amount-of-time-to-fill-cups/"
+    }
+  ],
+  "hints": [
+    "For a given running time, can you determine if it is possible to run all n computers simultaneously?",
+    "Try to use Binary Search to find the maximal running time"
+  ]
+}

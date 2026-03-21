@@ -1,0 +1,43 @@
+{
+  "id": "3235",
+  "title": "Check if the Rectangle Corner Is Reachable",
+  "slug": "check-if-the-rectangle-corner-is-reachable",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two positive integers <code>xCorner</code> and <code>yCorner</code>, and a 2D array <code>circles</code>, where <code>circles[i] = [x<sub>i</sub>, y<sub>i</sub>, r<sub>i</sub>]</code> denotes a circle with center at <code>(x<sub>i</sub>, y<sub>i</sub>)</code> and radius <code>r<sub>i</sub></code>.</p>\n\n<p>There is a rectangle in the coordinate plane with its bottom left corner at the origin and top right corner at the coordinate <code>(xCorner, yCorner)</code>. You need to check whether there is a path from the bottom left corner to the top right corner such that the <strong>entire path</strong> lies inside the rectangle, <strong>does not</strong> touch or lie inside <strong>any</strong> circle, and touches the rectangle <strong>only</strong> at the two corners.</p>\n\n<p>Return <code>true</code> if such a path exists, and <code>false</code> otherwise.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">xCorner = 3, yCorner = 4, circles = [[2,1,1]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/05/18/example2circle1.png\" style=\"width: 346px; height: 264px;\" /></p>\n\n<p>The black curve shows a possible path between <code>(0, 0)</code> and <code>(3, 4)</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">xCorner = 3, yCorner = 3, circles = [[1,1,2]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/05/18/example1circle.png\" style=\"width: 346px; height: 264px;\" /></p>\n\n<p>No path exists from <code>(0, 0)</code> to <code>(3, 3)</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">xCorner = 3, yCorner = 3, circles = [[2,1,1],[1,2,1]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/05/18/example0circle.png\" style=\"width: 346px; height: 264px;\" /></p>\n\n<p>No path exists from <code>(0, 0)</code> to <code>(3, 3)</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 4:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">xCorner = 4, yCorner = 4, circles = [[5,5,1]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/08/04/rectangles.png\" style=\"width: 346px; height: 264px;\" /></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= xCorner, yCorner &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= circles.length &lt;= 1000</code></li>\n\t<li><code>circles[i].length == 3</code></li>\n\t<li><code>1 &lt;= x<sub>i</sub>, y<sub>i</sub>, r<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two positive integers `xCorner` and `yCorner`, and a 2D array `circles`, where `circles[i] = [xi, yi, ri]` denotes a circle with center at `(xi, yi)` and radius `ri`.\n\nThere is a rectangle in the coordinate plane with its bottom left corner at the origin and top right corner at the coordinate `(xCorner, yCorner)`. You need to check whether there is a path from the bottom left corner to the top right corner such that the **entire path** lies inside the rectangle, **does not** touch or lie inside **any** circle, and touches the rectangle **only** at the two corners.\n\nReturn `true` if such a path exists, and `false` otherwise.\n\n \n\n**Example 1:**\n\n**Input:** xCorner = 3, yCorner = 4, circles = [[2,1,1]]\n\n**Output:** true\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/18/example2circle1.png)\n\nThe black curve shows a possible path between `(0, 0)` and `(3, 4)`.\n\n**Example 2:**\n\n**Input:** xCorner = 3, yCorner = 3, circles = [[1,1,2]]\n\n**Output:** false\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/18/example1circle.png)\n\nNo path exists from `(0, 0)` to `(3, 3)`.\n\n**Example 3:**\n\n**Input:** xCorner = 3, yCorner = 3, circles = [[2,1,1],[1,2,1]]\n\n**Output:** false\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/18/example0circle.png)\n\nNo path exists from `(0, 0)` to `(3, 3)`.\n\n**Example 4:**\n\n**Input:** xCorner = 4, yCorner = 4, circles = [[5,5,1]]\n\n**Output:** true\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/08/04/rectangles.png)\n\n \n\n**Constraints:**\n\n  * `3 <= xCorner, yCorner <= 109`\n  * `1 <= circles.length <= 1000`\n  * `circles[i].length == 3`\n  * `1 <= xi, yi, ri <= 109`",
+  "question": "You are given two positive integers `xCorner` and `yCorner`, and a 2D array `circles`, where `circles[i] = [xi, yi, ri]` denotes a circle with center at `(xi, yi)` and radius `ri`.\n\nThere is a rectangle in the coordinate plane with its bottom left corner at the origin and top right corner at the coordinate `(xCorner, yCorner)`. You need to check whether there is a path from the bottom left corner to the top right corner such that the **entire path** lies inside the rectangle, **does not** touch or lie inside **any** circle, and touches the rectangle **only** at the two corners.\n\nReturn `true` if such a path exists, and `false` otherwise.",
+  "examples": "**Example 1:**\n\n**Input:** xCorner = 3, yCorner = 4, circles = [[2,1,1]]\n\n**Output:** true\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/18/example2circle1.png)\n\nThe black curve shows a possible path between `(0, 0)` and `(3, 4)`.\n\n**Example 2:**\n\n**Input:** xCorner = 3, yCorner = 3, circles = [[1,1,2]]\n\n**Output:** false\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/18/example1circle.png)\n\nNo path exists from `(0, 0)` to `(3, 3)`.\n\n**Example 3:**\n\n**Input:** xCorner = 3, yCorner = 3, circles = [[2,1,1],[1,2,1]]\n\n**Output:** false\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/18/example0circle.png)\n\nNo path exists from `(0, 0)` to `(3, 3)`.\n\n**Example 4:**\n\n**Input:** xCorner = 4, yCorner = 4, circles = [[5,5,1]]\n\n**Output:** true\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/08/04/rectangles.png)",
+  "constraints": "**Constraints:**\n\n  * `3 <= xCorner, yCorner <= 109`\n  * `1 <= circles.length <= 1000`\n  * `circles[i].length == 3`\n  * `1 <= xi, yi, ri <= 109`",
+  "topics": [
+    "Array",
+    "Math",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Geometry"
+  ],
+  "total_accepted": 7874,
+  "total_submissions": 31116,
+  "acceptance_rate": "25.3%",
+  "similar_questions": [
+    {
+      "title": "Queries on Number of Points Inside a Circle",
+      "slug": "queries-on-number-of-points-inside-a-circle",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/queries-on-number-of-points-inside-a-circle/"
+    },
+    {
+      "title": "Check if Point Is Reachable",
+      "slug": "check-if-point-is-reachable",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/check-if-point-is-reachable/"
+    }
+  ],
+  "hints": [
+    "Create a graph with <code>n + 4</code> vertices.",
+    "Vertices 0 to <code>n - 1</code> represent the circles, vertex <code>n</code> represents upper edge, vertex <code>n + 1</code> represents right edge, vertex <code>n + 2</code> represents lower edge, and vertex <code>n + 3</code> represents left edge.",
+    "Add an edge between these vertices if they intersect or touch.",
+    "Answer will be <code>false</code> when any of two sides left-right, left-bottom, right-top or top-bottom are reachable using the edges."
+  ]
+}

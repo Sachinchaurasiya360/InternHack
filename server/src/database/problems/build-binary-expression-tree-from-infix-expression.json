@@ -1,0 +1,34 @@
+{
+  "id": "1597",
+  "title": "Build Binary Expression Tree From Infix Expression",
+  "slug": "build-binary-expression-tree-from-infix-expression",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Stack", "Tree", "Binary Tree"],
+  "total_accepted": 14737,
+  "total_submissions": 23468,
+  "acceptance_rate": "62.8%",
+  "similar_questions": [
+    {
+      "title": "Basic Calculator III",
+      "slug": "basic-calculator-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/basic-calculator-iii/"
+    },
+    {
+      "title": "Check If Two Expression Trees are Equivalent",
+      "slug": "check-if-two-expression-trees-are-equivalent",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-two-expression-trees-are-equivalent/"
+    }
+  ],
+  "hints": [
+    "Convert infix expression to postfix expression.",
+    "Build an expression tree from the postfix expression."
+  ]
+}

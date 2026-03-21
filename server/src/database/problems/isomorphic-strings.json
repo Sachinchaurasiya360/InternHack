@@ -1,0 +1,31 @@
+{
+  "id": "205",
+  "title": "Isomorphic Strings",
+  "slug": "isomorphic-strings",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s</code> and <code>t</code>, <em>determine if they are isomorphic</em>.</p>\n\n<p>Two strings <code>s</code> and <code>t</code> are isomorphic if the characters in <code>s</code> can be replaced to get <code>t</code>.</p>\n\n<p>All occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character, but a character may map to itself.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;egg&quot;, t = &quot;add&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The strings <code>s</code> and <code>t</code> can be made identical by:</p>\n\n<ul>\n\t<li>Mapping <code>&#39;e&#39;</code> to <code>&#39;a&#39;</code>.</li>\n\t<li>Mapping <code>&#39;g&#39;</code> to <code>&#39;d&#39;</code>.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;f11&quot;, t = &quot;b23&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The strings <code>s</code> and <code>t</code> can not be made identical as <code>&#39;1&#39;</code> needs to be mapped to both <code>&#39;2&#39;</code> and <code>&#39;3&#39;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;paper&quot;, t = &quot;title&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>t.length == s.length</code></li>\n\t<li><code>s</code> and <code>t</code> consist of any valid ascii character.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `s` and `t`, _determine if they are isomorphic_.\n\nTwo strings `s` and `t` are isomorphic if the characters in `s` can be replaced to get `t`.\n\nAll occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character, but a character may map to itself.\n\n \n\n**Example 1:**\n\n**Input:** s = \"egg\", t = \"add\"\n\n**Output:** true\n\n**Explanation:**\n\nThe strings `s` and `t` can be made identical by:\n\n  * Mapping `'e'` to `'a'`.\n  * Mapping `'g'` to `'d'`.\n\n\n\n**Example 2:**\n\n**Input:** s = \"f11\", t = \"b23\"\n\n**Output:** false\n\n**Explanation:**\n\nThe strings `s` and `t` can not be made identical as `'1'` needs to be mapped to both `'2'` and `'3'`.\n\n**Example 3:**\n\n**Input:** s = \"paper\", t = \"title\"\n\n**Output:** true\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `t.length == s.length`\n  * `s` and `t` consist of any valid ascii character.",
+  "question": "Given two strings `s` and `t`, _determine if they are isomorphic_.\n\nTwo strings `s` and `t` are isomorphic if the characters in `s` can be replaced to get `t`.\n\nAll occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character, but a character may map to itself.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"egg\", t = \"add\"\n\n**Output:** true\n\n**Explanation:**\n\nThe strings `s` and `t` can be made identical by:\n\n  * Mapping `'e'` to `'a'`.\n  * Mapping `'g'` to `'d'`.\n\n\n\n**Example 2:**\n\n**Input:** s = \"f11\", t = \"b23\"\n\n**Output:** false\n\n**Explanation:**\n\nThe strings `s` and `t` can not be made identical as `'1'` needs to be mapped to both `'2'` and `'3'`.\n\n**Example 3:**\n\n**Input:** s = \"paper\", t = \"title\"\n\n**Output:** true",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `t.length == s.length`\n  * `s` and `t` consist of any valid ascii character.",
+  "topics": ["Hash Table", "String"],
+  "total_accepted": 2098612,
+  "total_submissions": 4366687,
+  "acceptance_rate": "48.1%",
+  "similar_questions": [
+    {
+      "title": "Word Pattern",
+      "slug": "word-pattern",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/word-pattern/"
+    },
+    {
+      "title": "Find and Replace Pattern",
+      "slug": "find-and-replace-pattern",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-and-replace-pattern/"
+    }
+  ],
+  "hints": []
+}

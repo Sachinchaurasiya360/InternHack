@@ -1,0 +1,30 @@
+{
+  "id": "1101",
+  "title": "The Earliest Moment When Everyone Become Friends",
+  "slug": "the-earliest-moment-when-everyone-become-friends",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Union-Find", "Sorting"],
+  "total_accepted": 130774,
+  "total_submissions": 198365,
+  "acceptance_rate": "65.9%",
+  "similar_questions": [
+    {
+      "title": "Number of Provinces",
+      "slug": "number-of-provinces",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-provinces/"
+    }
+  ],
+  "hints": [
+    "Sort the log items by their timestamp.",
+    "How can we model this problem as a graph problem?",
+    "Let's use a union-find data structure. At the beginning we have a graph with N nodes but no edges.",
+    "Then we loop through the events and unite each node until the number of connected components reach to 1. Notice that each time two different connected components are united the number of connected components decreases by 1."
+  ]
+}

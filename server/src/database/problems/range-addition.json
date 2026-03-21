@@ -1,0 +1,42 @@
+{
+  "id": "370",
+  "title": "Range Addition",
+  "slug": "range-addition",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Prefix Sum"],
+  "total_accepted": 105703,
+  "total_submissions": 144938,
+  "acceptance_rate": "72.9%",
+  "similar_questions": [
+    {
+      "title": "Range Addition II",
+      "slug": "range-addition-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/range-addition-ii/"
+    },
+    {
+      "title": "Count Positions on Street With Required Brightness",
+      "slug": "count-positions-on-street-with-required-brightness",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-positions-on-street-with-required-brightness/"
+    },
+    {
+      "title": "Shifting Letters II",
+      "slug": "shifting-letters-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shifting-letters-ii/"
+    }
+  ],
+  "hints": [
+    "Thinking of using advanced data structures? You are thinking it too complicated.",
+    "For each update operation, do you really need to update all elements between i and j?",
+    "Update only the first and end element is sufficient.",
+    "The optimal time complexity is O(<b><i>k</i></b> + <b><i>n</i></b>) and uses O(1) extra space."
+  ]
+}

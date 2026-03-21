@@ -1,0 +1,21 @@
+{
+  "id": "3138",
+  "title": "Minimum Length of Anagram Concatenation",
+  "slug": "minimum-length-of-anagram-concatenation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code>, which is known to be a concatenation of <strong>anagrams</strong> of some string <code>t</code>.</p>\n\n<p>Return the <strong>minimum</strong> possible length of the string <code>t</code>.</p>\n\n<p>An <strong>anagram</strong> is formed by rearranging the letters of a string. For example, &quot;aab&quot;, &quot;aba&quot;, and, &quot;baa&quot; are anagrams of &quot;aab&quot;.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;abba&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>One possible string <code>t</code> could be <code>&quot;ba&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;cdef&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>One possible string <code>t</code> could be <code>&quot;cdef&quot;</code>, notice that <code>t</code> can be equal to <code>s</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;abcbcacabbaccba&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consist only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s`, which is known to be a concatenation of **anagrams** of some string `t`.\n\nReturn the **minimum** possible length of the string `t`.\n\nAn **anagram** is formed by rearranging the letters of a string. For example, \"aab\", \"aba\", and, \"baa\" are anagrams of \"aab\".\n\n \n\n**Example 1:**\n\n**Input:** s = \"abba\"\n\n**Output:** 2\n\n**Explanation:**\n\nOne possible string `t` could be `\"ba\"`.\n\n**Example 2:**\n\n**Input:** s = \"cdef\"\n\n**Output:** 4\n\n**Explanation:**\n\nOne possible string `t` could be `\"cdef\"`, notice that `t` can be equal to `s`.\n\n**Example 2:**\n\n**Input:** s = \"abcbcacabbaccba\"\n\n**Output:** 3\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consist only of lowercase English letters.",
+  "question": "You are given a string `s`, which is known to be a concatenation of **anagrams** of some string `t`.\n\nReturn the **minimum** possible length of the string `t`.\n\nAn **anagram** is formed by rearranging the letters of a string. For example, \"aab\", \"aba\", and, \"baa\" are anagrams of \"aab\".",
+  "examples": "**Example 1:**\n\n**Input:** s = \"abba\"\n\n**Output:** 2\n\n**Explanation:**\n\nOne possible string `t` could be `\"ba\"`.\n\n**Example 2:**\n\n**Input:** s = \"cdef\"\n\n**Output:** 4\n\n**Explanation:**\n\nOne possible string `t` could be `\"cdef\"`, notice that `t` can be equal to `s`.\n\n**Example 2:**\n\n**Input:** s = \"abcbcacabbaccba\"\n\n**Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consist only of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 33371,
+  "total_submissions": 83753,
+  "acceptance_rate": "39.8%",
+  "similar_questions": [],
+  "hints": [
+    "The answer should be a divisor of <code>s.length</code>.",
+    "Check each candidate naively."
+  ]
+}

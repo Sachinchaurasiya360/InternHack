@@ -1,0 +1,28 @@
+{
+  "id": "1662",
+  "title": "Check If Two String Arrays are Equivalent",
+  "slug": "check-if-two-string-arrays-are-equivalent",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two string arrays <code>word1</code> and <code>word2</code>, return<em> </em><code>true</code><em> if the two arrays <strong>represent</strong> the same string, and </em><code>false</code><em> otherwise.</em></p>\n\n<p>A string is <strong>represented</strong> by an array if the array elements concatenated <strong>in order</strong> forms the string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = [&quot;ab&quot;, &quot;c&quot;], word2 = [&quot;a&quot;, &quot;bc&quot;]\n<strong>Output:</strong> true\n<strong>Explanation:</strong>\nword1 represents string &quot;ab&quot; + &quot;c&quot; -&gt; &quot;abc&quot;\nword2 represents string &quot;a&quot; + &quot;bc&quot; -&gt; &quot;abc&quot;\nThe strings are the same, so return true.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = [&quot;a&quot;, &quot;cb&quot;], word2 = [&quot;ab&quot;, &quot;c&quot;]\n<strong>Output:</strong> false\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1  = [&quot;abc&quot;, &quot;d&quot;, &quot;defg&quot;], word2 = [&quot;abcddefg&quot;]\n<strong>Output:</strong> true\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word1.length, word2.length &lt;= 10<sup>3</sup></code></li>\n\t<li><code>1 &lt;= word1[i].length, word2[i].length &lt;= 10<sup>3</sup></code></li>\n\t<li><code>1 &lt;= sum(word1[i].length), sum(word2[i].length) &lt;= 10<sup>3</sup></code></li>\n\t<li><code>word1[i]</code> and <code>word2[i]</code> consist of lowercase letters.</li>\n</ul>\n",
+  "content_markdown": "Given two string arrays `word1` and `word2`, return __`true` _if the two arrays**represent** the same string, and _`false` _otherwise._\n\nA string is **represented** by an array if the array elements concatenated **in order** forms the string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word1 = [\"ab\", \"c\"], word2 = [\"a\", \"bc\"]\n    **Output:** true\n    **Explanation:**\n    word1 represents string \"ab\" + \"c\" -> \"abc\"\n    word2 represents string \"a\" + \"bc\" -> \"abc\"\n    The strings are the same, so return true.\n\n**Example 2:**\n    \n    \n    **Input:** word1 = [\"a\", \"cb\"], word2 = [\"ab\", \"c\"]\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** word1  = [\"abc\", \"d\", \"defg\"], word2 = [\"abcddefg\"]\n    **Output:** true\n    \n\n \n\n**Constraints:**\n\n  * `1 <= word1.length, word2.length <= 103`\n  * `1 <= word1[i].length, word2[i].length <= 103`\n  * `1 <= sum(word1[i].length), sum(word2[i].length) <= 103`\n  * `word1[i]` and `word2[i]` consist of lowercase letters.",
+  "question": "Given two string arrays `word1` and `word2`, return __`true` _if the two arrays**represent** the same string, and _`false` _otherwise._\n\nA string is **represented** by an array if the array elements concatenated **in order** forms the string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word1 = [\"ab\", \"c\"], word2 = [\"a\", \"bc\"]\n    **Output:** true\n    **Explanation:**\n    word1 represents string \"ab\" + \"c\" -> \"abc\"\n    word2 represents string \"a\" + \"bc\" -> \"abc\"\n    The strings are the same, so return true.\n\n**Example 2:**\n    \n    \n    **Input:** word1 = [\"a\", \"cb\"], word2 = [\"ab\", \"c\"]\n    **Output:** false\n    \n\n**Example 3:**\n    \n    \n    **Input:** word1  = [\"abc\", \"d\", \"defg\"], word2 = [\"abcddefg\"]\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `1 <= word1.length, word2.length <= 103`\n  * `1 <= word1[i].length, word2[i].length <= 103`\n  * `1 <= sum(word1[i].length), sum(word2[i].length) <= 103`\n  * `word1[i]` and `word2[i]` consist of lowercase letters.",
+  "topics": ["Array", "String"],
+  "total_accepted": 605167,
+  "total_submissions": 703245,
+  "acceptance_rate": "86.1%",
+  "similar_questions": [
+    {
+      "title": "Check if an Original String Exists Given Two Encoded Strings",
+      "slug": "check-if-an-original-string-exists-given-two-encoded-strings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/check-if-an-original-string-exists-given-two-encoded-strings/"
+    }
+  ],
+  "hints": [
+    "Concatenate all strings in the first array into a single string in the given order, the same for the second array.",
+    "Both arrays represent the same string if and only if the generated strings are the same."
+  ]
+}

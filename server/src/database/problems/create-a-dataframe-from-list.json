@@ -1,0 +1,20 @@
+{
+  "id": "2877",
+  "title": "Create a DataFrame from List",
+  "slug": "create-a-dataframe-from-list",
+  "difficulty": "Easy",
+  "category": "pandas",
+  "content_html": "<p>Write a solution to <strong>create</strong> a DataFrame from a 2D list called <code>student_data</code>. This 2D list contains the IDs and ages of some students.</p>\n\n<p>The DataFrame should have two columns, <code>student_id</code> and <code>age</code>, and be in the same order as the original 2D list.</p>\n\n<p>The result format is in the following example.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:\n</strong>student_data:<strong>\n</strong><code>[\n  [1, 15],\n  [2, 11],\n  [3, 11],\n  [4, 20]\n]</code>\n<strong>Output:</strong>\n+------------+-----+\n| student_id | age |\n+------------+-----+\n| 1          | 15  |\n| 2          | 11  |\n| 3          | 11  |\n| 4          | 20  |\n+------------+-----+\n<strong>Explanation:</strong>\nA DataFrame was created on top of student_data, with two columns named <code>student_id</code> and <code>age</code>.\n</pre>\n",
+  "content_markdown": "Write a solution to **create** a DataFrame from a 2D list called `student_data`. This 2D list contains the IDs and ages of some students.\n\nThe DataFrame should have two columns, `student_id` and `age`, and be in the same order as the original 2D list.\n\nThe result format is in the following example.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** student_data:****[\n      [1, 15],\n      [2, 11],\n      [3, 11],\n      [4, 20]\n    ]\n    **Output:**\n    +------------+-----+\n    | student_id | age |\n    +------------+-----+\n    | 1          | 15  |\n    | 2          | 11  |\n    | 3          | 11  |\n    | 4          | 20  |\n    +------------+-----+\n    **Explanation:**\n    A DataFrame was created on top of student_data, with two columns named student_id and age.",
+  "question": "Write a solution to **create** a DataFrame from a 2D list called `student_data`. This 2D list contains the IDs and ages of some students.\n\nThe DataFrame should have two columns, `student_id` and `age`, and be in the same order as the original 2D list.\n\nThe result format is in the following example.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** student_data:****[\n      [1, 15],\n      [2, 11],\n      [3, 11],\n      [4, 20]\n    ]\n    **Output:**\n    +------------+-----+\n    | student_id | age |\n    +------------+-----+\n    | 1          | 15  |\n    | 2          | 11  |\n    | 3          | 11  |\n    | 4          | 20  |\n    +------------+-----+\n    **Explanation:**\n    A DataFrame was created on top of student_data, with two columns named student_id and age.",
+  "constraints": "",
+  "topics": [],
+  "total_accepted": 246580,
+  "total_submissions": 304057,
+  "acceptance_rate": "81.1%",
+  "similar_questions": [],
+  "hints": [
+    "Consider using a built-in function in pandas library and specifying the column names within it."
+  ]
+}

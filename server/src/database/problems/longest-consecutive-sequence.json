@@ -1,0 +1,49 @@
+{
+  "id": "128",
+  "title": "Longest Consecutive Sequence",
+  "slug": "longest-consecutive-sequence",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an unsorted array of integers <code>nums</code>, return <em>the length of the longest consecutive elements sequence.</em></p>\n\n<p>You must write an algorithm that runs in&nbsp;<code>O(n)</code>&nbsp;time.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [100,4,200,1,3,2]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The longest consecutive elements sequence is <code>[1, 2, 3, 4]</code>. Therefore its length is 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,3,7,2,5,8,4,6,0,1]\n<strong>Output:</strong> 9\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,0,1,2]\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an unsorted array of integers `nums`, return _the length of the longest consecutive elements sequence._\n\nYou must write an algorithm that runs in `O(n)` time.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [100,4,200,1,3,2]\n    **Output:** 4\n    **Explanation:** The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,3,7,2,5,8,4,6,0,1]\n    **Output:** 9\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,0,1,2]\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `0 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`",
+  "question": "Given an unsorted array of integers `nums`, return _the length of the longest consecutive elements sequence._\n\nYou must write an algorithm that runs in `O(n)` time.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [100,4,200,1,3,2]\n    **Output:** 4\n    **Explanation:** The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,3,7,2,5,8,4,6,0,1]\n    **Output:** 9\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,0,1,2]\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `0 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Union-Find"],
+  "total_accepted": 3168545,
+  "total_submissions": 6739762,
+  "acceptance_rate": "47.0%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Longest Consecutive Sequence",
+      "slug": "binary-tree-longest-consecutive-sequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-longest-consecutive-sequence/"
+    },
+    {
+      "title": "Find Three Consecutive Integers That Sum to a Given Number",
+      "slug": "find-three-consecutive-integers-that-sum-to-a-given-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-three-consecutive-integers-that-sum-to-a-given-number/"
+    },
+    {
+      "title": "Maximum Consecutive Floors Without Special Floors",
+      "slug": "maximum-consecutive-floors-without-special-floors",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-consecutive-floors-without-special-floors/"
+    },
+    {
+      "title": "Length of the Longest Alphabetical Continuous Substring",
+      "slug": "length-of-the-longest-alphabetical-continuous-substring",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/length-of-the-longest-alphabetical-continuous-substring/"
+    },
+    {
+      "title": "Find the Maximum Number of Elements in Subset",
+      "slug": "find-the-maximum-number-of-elements-in-subset",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-maximum-number-of-elements-in-subset/"
+    }
+  ],
+  "hints": []
+}

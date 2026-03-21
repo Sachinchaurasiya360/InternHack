@@ -1,0 +1,65 @@
+{
+  "id": "448",
+  "title": "Find All Numbers Disappeared in an Array",
+  "slug": "find-all-numbers-disappeared-in-an-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> of <code>n</code> integers where <code>nums[i]</code> is in the range <code>[1, n]</code>, return <em>an array of all the integers in the range</em> <code>[1, n]</code> <em>that do not appear in</em> <code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [4,3,2,7,8,2,3,1]\n<strong>Output:</strong> [5,6]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [1,1]\n<strong>Output:</strong> [2]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= n</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Could you do it without extra space and in <code>O(n)</code> runtime? You may assume the returned list does not count as extra space.</p>\n",
+  "content_markdown": "Given an array `nums` of `n` integers where `nums[i]` is in the range `[1, n]`, return _an array of all the integers in the range_ `[1, n]` _that do not appear in_ `nums`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,3,2,7,8,2,3,1]\n    **Output:** [5,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1]\n    **Output:** [2]\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i] <= n`\n\n\n\n \n\n**Follow up:** Could you do it without extra space and in `O(n)` runtime? You may assume the returned list does not count as extra space.",
+  "question": "Given an array `nums` of `n` integers where `nums[i]` is in the range `[1, n]`, return _an array of all the integers in the range_ `[1, n]` _that do not appear in_ `nums`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,3,2,7,8,2,3,1]\n    **Output:** [5,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1]\n    **Output:** [2]",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i] <= n`",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 1325138,
+  "total_submissions": 2077978,
+  "acceptance_rate": "63.8%",
+  "similar_questions": [
+    {
+      "title": "First Missing Positive",
+      "slug": "first-missing-positive",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/first-missing-positive/"
+    },
+    {
+      "title": "Find All Duplicates in an Array",
+      "slug": "find-all-duplicates-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-duplicates-in-an-array/"
+    },
+    {
+      "title": "Find Unique Binary String",
+      "slug": "find-unique-binary-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-unique-binary-string/"
+    },
+    {
+      "title": "Append K Integers With Minimal Sum",
+      "slug": "append-k-integers-with-minimal-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/append-k-integers-with-minimal-sum/"
+    },
+    {
+      "title": "Replace Elements in an Array",
+      "slug": "replace-elements-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/replace-elements-in-an-array/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range I",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-i/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range II",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-ii/"
+    }
+  ],
+  "hints": [
+    "This is a really easy problem if you decide to use additional memory. For those trying to write an initial solution using additional memory, think <b>counters!</b>",
+    "However, the trick really is to not use any additional space than what is already available to use. Sometimes, multiple passes over the input array help find the solution. However, there's an interesting piece of information in this problem that makes it easy to re-use the input array itself for the solution.",
+    "The problem specifies that the numbers in the array will be in the range [1, n] where n is the number of elements in the array. Can we use this information and modify the array in-place somehow to find what we need?"
+  ]
+}

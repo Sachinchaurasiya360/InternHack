@@ -1,0 +1,39 @@
+{
+  "id": "140",
+  "title": "Word Break II",
+  "slug": "word-break-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> and a dictionary of strings <code>wordDict</code>, add spaces in <code>s</code> to construct a sentence where each word is a valid dictionary word. Return all such possible sentences in <strong>any order</strong>.</p>\n\n<p><strong>Note</strong> that the same word in the dictionary may be reused multiple times in the segmentation.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;catsanddog&quot;, wordDict = [&quot;cat&quot;,&quot;cats&quot;,&quot;and&quot;,&quot;sand&quot;,&quot;dog&quot;]\n<strong>Output:</strong> [&quot;cats and dog&quot;,&quot;cat sand dog&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;pineapplepenapple&quot;, wordDict = [&quot;apple&quot;,&quot;pen&quot;,&quot;applepen&quot;,&quot;pine&quot;,&quot;pineapple&quot;]\n<strong>Output:</strong> [&quot;pine apple pen apple&quot;,&quot;pineapple pen apple&quot;,&quot;pine applepen apple&quot;]\n<strong>Explanation:</strong> Note that you are allowed to reuse a dictionary word.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;catsandog&quot;, wordDict = [&quot;cats&quot;,&quot;dog&quot;,&quot;sand&quot;,&quot;and&quot;,&quot;cat&quot;]\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 20</code></li>\n\t<li><code>1 &lt;= wordDict.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= wordDict[i].length &lt;= 10</code></li>\n\t<li><code>s</code> and <code>wordDict[i]</code> consist of only lowercase English letters.</li>\n\t<li>All the strings of <code>wordDict</code> are <strong>unique</strong>.</li>\n\t<li>Input is generated in a way that the length of the answer doesn&#39;t exceed&nbsp;10<sup>5</sup>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` and a dictionary of strings `wordDict`, add spaces in `s` to construct a sentence where each word is a valid dictionary word. Return all such possible sentences in **any order**.\n\n**Note** that the same word in the dictionary may be reused multiple times in the segmentation.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"catsanddog\", wordDict = [\"cat\",\"cats\",\"and\",\"sand\",\"dog\"]\n    **Output:** [\"cats and dog\",\"cat sand dog\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"pineapplepenapple\", wordDict = [\"apple\",\"pen\",\"applepen\",\"pine\",\"pineapple\"]\n    **Output:** [\"pine apple pen apple\",\"pineapple pen apple\",\"pine applepen apple\"]\n    **Explanation:** Note that you are allowed to reuse a dictionary word.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"catsandog\", wordDict = [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 20`\n  * `1 <= wordDict.length <= 1000`\n  * `1 <= wordDict[i].length <= 10`\n  * `s` and `wordDict[i]` consist of only lowercase English letters.\n  * All the strings of `wordDict` are **unique**.\n  * Input is generated in a way that the length of the answer doesn't exceed 105.",
+  "question": "Given a string `s` and a dictionary of strings `wordDict`, add spaces in `s` to construct a sentence where each word is a valid dictionary word. Return all such possible sentences in **any order**.\n\n**Note** that the same word in the dictionary may be reused multiple times in the segmentation.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"catsanddog\", wordDict = [\"cat\",\"cats\",\"and\",\"sand\",\"dog\"]\n    **Output:** [\"cats and dog\",\"cat sand dog\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"pineapplepenapple\", wordDict = [\"apple\",\"pen\",\"applepen\",\"pine\",\"pineapple\"]\n    **Output:** [\"pine apple pen apple\",\"pineapple pen apple\",\"pine applepen apple\"]\n    **Explanation:** Note that you are allowed to reuse a dictionary word.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"catsandog\", wordDict = [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 20`\n  * `1 <= wordDict.length <= 1000`\n  * `1 <= wordDict[i].length <= 10`\n  * `s` and `wordDict[i]` consist of only lowercase English letters.\n  * All the strings of `wordDict` are **unique**.\n  * Input is generated in a way that the length of the answer doesn't exceed 105.",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Dynamic Programming",
+    "Backtracking",
+    "Trie",
+    "Memoization"
+  ],
+  "total_accepted": 805190,
+  "total_submissions": 1460820,
+  "acceptance_rate": "55.1%",
+  "similar_questions": [
+    {
+      "title": "Word Break",
+      "slug": "word-break",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/word-break/"
+    },
+    {
+      "title": "Concatenated Words",
+      "slug": "concatenated-words",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/concatenated-words/"
+    }
+  ],
+  "hints": []
+}

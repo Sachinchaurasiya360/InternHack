@@ -1,0 +1,34 @@
+{
+  "id": "1223",
+  "title": "Dice Roll Simulation",
+  "slug": "dice-roll-simulation",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>A die simulator generates a random number from <code>1</code> to <code>6</code> for each roll. You introduced a constraint to the generator such that it cannot roll the number <code>i</code> more than <code>rollMax[i]</code> (<strong>1-indexed</strong>) consecutive times.</p>\n\n<p>Given an array of integers <code>rollMax</code> and an integer <code>n</code>, return <em>the number of distinct sequences that can be obtained with exact </em><code>n</code><em> rolls</em>. Since the answer may be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>Two sequences are considered different if at least one element differs from each other.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, rollMax = [1,1,2,2,2,3]\n<strong>Output:</strong> 34\n<strong>Explanation:</strong> There will be 2 rolls of die, if there are no constraints on the die, there are 6 * 6 = 36 possible combinations. In this case, looking at rollMax array, the numbers 1 and 2 appear at most once consecutively, therefore sequences (1,1) and (2,2) cannot occur, so the final answer is 36-2 = 34.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, rollMax = [1,1,1,1,1,1]\n<strong>Output:</strong> 30\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, rollMax = [1,1,1,2,2,3]\n<strong>Output:</strong> 181\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 5000</code></li>\n\t<li><code>rollMax.length == 6</code></li>\n\t<li><code>1 &lt;= rollMax[i] &lt;= 15</code></li>\n</ul>\n",
+  "content_markdown": "A die simulator generates a random number from `1` to `6` for each roll. You introduced a constraint to the generator such that it cannot roll the number `i` more than `rollMax[i]` (**1-indexed**) consecutive times.\n\nGiven an array of integers `rollMax` and an integer `n`, return _the number of distinct sequences that can be obtained with exact_`n` _rolls_. Since the answer may be too large, return it **modulo** `109 + 7`.\n\nTwo sequences are considered different if at least one element differs from each other.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2, rollMax = [1,1,2,2,2,3]\n    **Output:** 34\n    **Explanation:** There will be 2 rolls of die, if there are no constraints on the die, there are 6 * 6 = 36 possible combinations. In this case, looking at rollMax array, the numbers 1 and 2 appear at most once consecutively, therefore sequences (1,1) and (2,2) cannot occur, so the final answer is 36-2 = 34.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2, rollMax = [1,1,1,1,1,1]\n    **Output:** 30\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3, rollMax = [1,1,1,2,2,3]\n    **Output:** 181\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 5000`\n  * `rollMax.length == 6`\n  * `1 <= rollMax[i] <= 15`",
+  "question": "A die simulator generates a random number from `1` to `6` for each roll. You introduced a constraint to the generator such that it cannot roll the number `i` more than `rollMax[i]` (**1-indexed**) consecutive times.\n\nGiven an array of integers `rollMax` and an integer `n`, return _the number of distinct sequences that can be obtained with exact_`n` _rolls_. Since the answer may be too large, return it **modulo** `109 + 7`.\n\nTwo sequences are considered different if at least one element differs from each other.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2, rollMax = [1,1,2,2,2,3]\n    **Output:** 34\n    **Explanation:** There will be 2 rolls of die, if there are no constraints on the die, there are 6 * 6 = 36 possible combinations. In this case, looking at rollMax array, the numbers 1 and 2 appear at most once consecutively, therefore sequences (1,1) and (2,2) cannot occur, so the final answer is 36-2 = 34.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2, rollMax = [1,1,1,1,1,1]\n    **Output:** 30\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 3, rollMax = [1,1,1,2,2,3]\n    **Output:** 181",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 5000`\n  * `rollMax.length == 6`\n  * `1 <= rollMax[i] <= 15`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 37261,
+  "total_submissions": 73497,
+  "acceptance_rate": "50.7%",
+  "similar_questions": [
+    {
+      "title": "Find Missing Observations",
+      "slug": "find-missing-observations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-missing-observations/"
+    },
+    {
+      "title": "Number of Distinct Roll Sequences",
+      "slug": "number-of-distinct-roll-sequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-distinct-roll-sequences/"
+    }
+  ],
+  "hints": [
+    "Think on Dynamic Programming.",
+    "DP(pos, last) which means we are at the position pos having as last the last character seen."
+  ]
+}

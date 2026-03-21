@@ -1,0 +1,21 @@
+{
+  "id": "1124",
+  "title": "Longest Well-Performing Interval",
+  "slug": "longest-well-performing-interval",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>We are given <code>hours</code>, a list of the number of hours worked per day for a given employee.</p>\n\n<p>A day is considered to be a <em>tiring day</em> if and only if the number of hours worked is (strictly) greater than <code>8</code>.</p>\n\n<p>A <em>well-performing interval</em> is an interval of days for which the number of tiring days is strictly larger than the number of non-tiring days.</p>\n\n<p>Return the length of the longest well-performing interval.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> hours = [9,9,6,0,6,6,9]\n<strong>Output:</strong> 3\n<strong>Explanation: </strong>The longest well-performing interval is [9,9,6].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> hours = [6,6,6]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= hours.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= hours[i] &lt;= 16</code></li>\n</ul>\n",
+  "content_markdown": "We are given `hours`, a list of the number of hours worked per day for a given employee.\n\nA day is considered to be a _tiring day_ if and only if the number of hours worked is (strictly) greater than `8`.\n\nA _well-performing interval_ is an interval of days for which the number of tiring days is strictly larger than the number of non-tiring days.\n\nReturn the length of the longest well-performing interval.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** hours = [9,9,6,0,6,6,9]\n    **Output:** 3\n    **Explanation:** The longest well-performing interval is [9,9,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** hours = [6,6,6]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= hours.length <= 104`\n  * `0 <= hours[i] <= 16`",
+  "question": "We are given `hours`, a list of the number of hours worked per day for a given employee.\n\nA day is considered to be a _tiring day_ if and only if the number of hours worked is (strictly) greater than `8`.\n\nA _well-performing interval_ is an interval of days for which the number of tiring days is strictly larger than the number of non-tiring days.\n\nReturn the length of the longest well-performing interval.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** hours = [9,9,6,0,6,6,9]\n    **Output:** 3\n    **Explanation:** The longest well-performing interval is [9,9,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** hours = [6,6,6]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= hours.length <= 104`\n  * `0 <= hours[i] <= 16`",
+  "topics": ["Array", "Hash Table", "Stack", "Monotonic Stack", "Prefix Sum"],
+  "total_accepted": 45081,
+  "total_submissions": 121705,
+  "acceptance_rate": "37.0%",
+  "similar_questions": [],
+  "hints": [
+    "Make a new array A of +1/-1s corresponding to if hours[i] is > 8 or not. The goal is to find the longest subarray with positive sum.",
+    "Using prefix sums (PrefixSum[i+1] = A[0] + A[1] + ... + A[i]), you need to find for each j, the smallest i < j with PrefixSum[i] + 1 == PrefixSum[j]."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "1631",
+  "title": "Path With Minimum Effort",
+  "slug": "path-with-minimum-effort",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are a hiker preparing for an upcoming hike. You are given <code>heights</code>, a 2D array of size <code>rows x columns</code>, where <code>heights[row][col]</code> represents the height of cell <code>(row, col)</code>. You are situated in the top-left cell, <code>(0, 0)</code>, and you hope to travel to the bottom-right cell, <code>(rows-1, columns-1)</code> (i.e.,&nbsp;<strong>0-indexed</strong>). You can move <strong>up</strong>, <strong>down</strong>, <strong>left</strong>, or <strong>right</strong>, and you wish to find a route that requires the minimum <strong>effort</strong>.</p>\n\n<p>A route&#39;s <strong>effort</strong> is the <strong>maximum absolute difference</strong><strong> </strong>in heights between two consecutive cells of the route.</p>\n\n<p>Return <em>the minimum <strong>effort</strong> required to travel from the top-left cell to the bottom-right cell.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/04/ex1.png\" style=\"width: 300px; height: 300px;\" /></p>\n\n<pre>\n<strong>Input:</strong> heights = [[1,2,2],[3,8,2],[5,3,5]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The route of [1,3,5,3,5] has a maximum absolute difference of 2 in consecutive cells.\nThis is better than the route of [1,2,2,2,5], where the maximum absolute difference is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/04/ex2.png\" style=\"width: 300px; height: 300px;\" /></p>\n\n<pre>\n<strong>Input:</strong> heights = [[1,2,3],[3,8,4],[5,3,5]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The route of [1,2,3,4,5] has a maximum absolute difference of 1 in consecutive cells, which is better than route [1,3,5,3,5].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/04/ex3.png\" style=\"width: 300px; height: 300px;\" />\n<pre>\n<strong>Input:</strong> heights = [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> This route does not require any effort.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>rows == heights.length</code></li>\n\t<li><code>columns == heights[i].length</code></li>\n\t<li><code>1 &lt;= rows, columns &lt;= 100</code></li>\n\t<li><code>1 &lt;= heights[i][j] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are a hiker preparing for an upcoming hike. You are given `heights`, a 2D array of size `rows x columns`, where `heights[row][col]` represents the height of cell `(row, col)`. You are situated in the top-left cell, `(0, 0)`, and you hope to travel to the bottom-right cell, `(rows-1, columns-1)` (i.e., **0-indexed**). You can move **up** , **down** , **left** , or **right** , and you wish to find a route that requires the minimum **effort**.\n\nA route's **effort** is the **maximum absolute difference****** in heights between two consecutive cells of the route.\n\nReturn _the minimum**effort** required to travel from the top-left cell to the bottom-right cell._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/04/ex1.png)\n    \n    \n    **Input:** heights = [[1,2,2],[3,8,2],[5,3,5]]\n    **Output:** 2\n    **Explanation:** The route of [1,3,5,3,5] has a maximum absolute difference of 2 in consecutive cells.\n    This is better than the route of [1,2,2,2,5], where the maximum absolute difference is 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/10/04/ex2.png)\n    \n    \n    **Input:** heights = [[1,2,3],[3,8,4],[5,3,5]]\n    **Output:** 1\n    **Explanation:** The route of [1,2,3,4,5] has a maximum absolute difference of 1 in consecutive cells, which is better than route [1,3,5,3,5].\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2020/10/04/ex3.png)\n    \n    \n    **Input:** heights = [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]]\n    **Output:** 0\n    **Explanation:** This route does not require any effort.\n    \n\n \n\n**Constraints:**\n\n  * `rows == heights.length`\n  * `columns == heights[i].length`\n  * `1 <= rows, columns <= 100`\n  * `1 <= heights[i][j] <= 106`",
+  "question": "You are a hiker preparing for an upcoming hike. You are given `heights`, a 2D array of size `rows x columns`, where `heights[row][col]` represents the height of cell `(row, col)`. You are situated in the top-left cell, `(0, 0)`, and you hope to travel to the bottom-right cell, `(rows-1, columns-1)` (i.e., **0-indexed**). You can move **up** , **down** , **left** , or **right** , and you wish to find a route that requires the minimum **effort**.\n\nA route's **effort** is the **maximum absolute difference****** in heights between two consecutive cells of the route.\n\nReturn _the minimum**effort** required to travel from the top-left cell to the bottom-right cell._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/04/ex1.png)\n    \n    \n    **Input:** heights = [[1,2,2],[3,8,2],[5,3,5]]\n    **Output:** 2\n    **Explanation:** The route of [1,3,5,3,5] has a maximum absolute difference of 2 in consecutive cells.\n    This is better than the route of [1,2,2,2,5], where the maximum absolute difference is 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/10/04/ex2.png)\n    \n    \n    **Input:** heights = [[1,2,3],[3,8,4],[5,3,5]]\n    **Output:** 1\n    **Explanation:** The route of [1,2,3,4,5] has a maximum absolute difference of 1 in consecutive cells, which is better than route [1,3,5,3,5].\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2020/10/04/ex3.png)\n    \n    \n    **Input:** heights = [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]]\n    **Output:** 0\n    **Explanation:** This route does not require any effort.",
+  "constraints": "**Constraints:**\n\n  * `rows == heights.length`\n  * `columns == heights[i].length`\n  * `1 <= rows, columns <= 100`\n  * `1 <= heights[i][j] <= 106`",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Heap (Priority Queue)",
+    "Matrix"
+  ],
+  "total_accepted": 439433,
+  "total_submissions": 699551,
+  "acceptance_rate": "62.8%",
+  "similar_questions": [
+    {
+      "title": "Swim in Rising Water",
+      "slug": "swim-in-rising-water",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/swim-in-rising-water/"
+    },
+    {
+      "title": "Path With Maximum Minimum Value",
+      "slug": "path-with-maximum-minimum-value",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/path-with-maximum-minimum-value/"
+    },
+    {
+      "title": "Find the Safest Path in a Grid",
+      "slug": "find-the-safest-path-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-safest-path-in-a-grid/"
+    }
+  ],
+  "hints": [
+    "Consider the grid as a graph, where adjacent cells have an edge with cost of the difference between the cells.",
+    "If you are given threshold k, check if it is possible to go from (0, 0) to (n-1, m-1) using only edges of ≤ k cost.",
+    "Binary search the k value."
+  ]
+}

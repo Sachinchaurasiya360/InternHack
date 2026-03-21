@@ -1,0 +1,35 @@
+{
+  "id": "2953",
+  "title": "Count Complete Substrings",
+  "slug": "count-complete-substrings",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>word</code> and an integer <code>k</code>.</p>\n\n<p>A substring <code>s</code> of <code>word</code> is <strong>complete</strong> if:</p>\n\n<ul>\n\t<li>Each character in <code>s</code> occurs <strong>exactly</strong> <code>k</code> times.</li>\n\t<li>The difference between two adjacent characters is <strong>at most</strong> <code>2</code>. That is, for any two adjacent characters <code>c1</code> and <code>c2</code> in <code>s</code>, the absolute difference in their positions in the alphabet is <strong>at most</strong> <code>2</code>.</li>\n</ul>\n\n<p>Return <em>the number of <strong>complete </strong>substrings of</em> <code>word</code>.</p>\n\n<p>A <strong>substring</strong> is a <strong>non-empty</strong> contiguous sequence of characters in a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> word = &quot;igigee&quot;, k = 2\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The complete substrings where each character appears exactly twice and the difference between adjacent characters is at most 2 are: <u><strong>igig</strong></u>ee, igig<u><strong>ee</strong></u>, <u><strong>igigee</strong></u>.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> word = &quot;aaabbbccc&quot;, k = 3\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The complete substrings where each character appears exactly three times and the difference between adjacent characters is at most 2 are: <strong><u>aaa</u></strong>bbbccc, aaa<u><strong>bbb</strong></u>ccc, aaabbb<u><strong>ccc</strong></u>, <strong><u>aaabbb</u></strong>ccc, aaa<u><strong>bbbccc</strong></u>, <u><strong>aaabbbccc</strong></u>.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>word</code> consists only of lowercase English letters.</li>\n\t<li><code>1 &lt;= k &lt;= word.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given a string `word` and an integer `k`.\n\nA substring `s` of `word` is **complete** if:\n\n  * Each character in `s` occurs **exactly** `k` times.\n  * The difference between two adjacent characters is **at most** `2`. That is, for any two adjacent characters `c1` and `c2` in `s`, the absolute difference in their positions in the alphabet is **at most** `2`.\n\n\n\nReturn _the number of**complete** substrings of_ `word`.\n\nA **substring** is a **non-empty** contiguous sequence of characters in a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word = \"igigee\", k = 2\n    **Output:** 3\n    **Explanation:** The complete substrings where each character appears exactly twice and the difference between adjacent characters is at most 2 are: _**igig**_ ee, igig _**ee**_ , _**igigee**_.\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"aaabbbccc\", k = 3\n    **Output:** 6\n    **Explanation:** The complete substrings where each character appears exactly three times and the difference between adjacent characters is at most 2 are: **_aaa_** bbbccc, aaa _**bbb**_ ccc, aaabbb _**ccc**_ , **_aaabbb_** ccc, aaa _**bbbccc**_ , _**aaabbbccc**_.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 105`\n  * `word` consists only of lowercase English letters.\n  * `1 <= k <= word.length`",
+  "question": "You are given a string `word` and an integer `k`.\n\nA substring `s` of `word` is **complete** if:\n\n  * Each character in `s` occurs **exactly** `k` times.\n  * The difference between two adjacent characters is **at most** `2`. That is, for any two adjacent characters `c1` and `c2` in `s`, the absolute difference in their positions in the alphabet is **at most** `2`.\n\n\n\nReturn _the number of**complete** substrings of_ `word`.\n\nA **substring** is a **non-empty** contiguous sequence of characters in a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word = \"igigee\", k = 2\n    **Output:** 3\n    **Explanation:** The complete substrings where each character appears exactly twice and the difference between adjacent characters is at most 2 are: _**igig**_ ee, igig _**ee**_ , _**igigee**_.\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"aaabbbccc\", k = 3\n    **Output:** 6\n    **Explanation:** The complete substrings where each character appears exactly three times and the difference between adjacent characters is at most 2 are: **_aaa_** bbbccc, aaa _**bbb**_ ccc, aaabbb _**ccc**_ , **_aaabbb_** ccc, aaa _**bbbccc**_ , _**aaabbbccc**_.",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 105`\n  * `word` consists only of lowercase English letters.\n  * `1 <= k <= word.length`",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 10876,
+  "total_submissions": 36345,
+  "acceptance_rate": "29.9%",
+  "similar_questions": [
+    {
+      "title": "Number of Substrings Containing All Three Characters",
+      "slug": "number-of-substrings-containing-all-three-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/"
+    },
+    {
+      "title": "Count Substrings Without Repeating Character",
+      "slug": "count-substrings-without-repeating-character",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-substrings-without-repeating-character/"
+    }
+  ],
+  "hints": [
+    "There are at most 26 different lengths of the complete substrings: <code>k *1, k * 2, … k * 26</code>.****",
+    "For each length, we can use sliding window to count the frequency of each letter in the window.",
+    "We still need to check for all characters in the window that <code>abs(word[i] - word[i - 1]) <= 2</code>. We do this by maintaining the values of <code>abs(word[i] - word[i - 1])</code> in the sliding window dynamically in an ordered multiset or priority queue, so that we know the maximum value at each iteration."
+  ]
+}

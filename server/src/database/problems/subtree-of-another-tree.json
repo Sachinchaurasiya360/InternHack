@@ -1,0 +1,36 @@
+{
+  "id": "572",
+  "title": "Subtree of Another Tree",
+  "slug": "subtree-of-another-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the roots of two binary trees <code>root</code> and <code>subRoot</code>, return <code>true</code> if there is a subtree of <code>root</code> with the same structure and node values of<code> subRoot</code> and <code>false</code> otherwise.</p>\n\n<p>A subtree of a binary tree <code>tree</code> is a tree that consists of a node in <code>tree</code> and all of this node&#39;s descendants. The tree <code>tree</code> could also be considered as a subtree of itself.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/28/subtree1-tree.jpg\" style=\"width: 532px; height: 400px;\" />\n<pre>\n<strong>Input:</strong> root = [3,4,5,1,2], subRoot = [4,1,2]\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/04/28/subtree2-tree.jpg\" style=\"width: 502px; height: 458px;\" />\n<pre>\n<strong>Input:</strong> root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the <code>root</code> tree is in the range <code>[1, 2000]</code>.</li>\n\t<li>The number of nodes in the <code>subRoot</code> tree is in the range <code>[1, 1000]</code>.</li>\n\t<li><code>-10<sup>4</sup> &lt;= root.val &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= subRoot.val &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given the roots of two binary trees `root` and `subRoot`, return `true` if there is a subtree of `root` with the same structure and node values of` subRoot` and `false` otherwise.\n\nA subtree of a binary tree `tree` is a tree that consists of a node in `tree` and all of this node's descendants. The tree `tree` could also be considered as a subtree of itself.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/subtree1-tree.jpg)\n    \n    \n    **Input:** root = [3,4,5,1,2], subRoot = [4,1,2]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/subtree2-tree.jpg)\n    \n    \n    **Input:** root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the `root` tree is in the range `[1, 2000]`.\n  * The number of nodes in the `subRoot` tree is in the range `[1, 1000]`.\n  * `-104 <= root.val <= 104`\n  * `-104 <= subRoot.val <= 104`",
+  "question": "Given the roots of two binary trees `root` and `subRoot`, return `true` if there is a subtree of `root` with the same structure and node values of` subRoot` and `false` otherwise.\n\nA subtree of a binary tree `tree` is a tree that consists of a node in `tree` and all of this node's descendants. The tree `tree` could also be considered as a subtree of itself.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/subtree1-tree.jpg)\n    \n    \n    **Input:** root = [3,4,5,1,2], subRoot = [4,1,2]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/04/28/subtree2-tree.jpg)\n    \n    \n    **Input:** root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the `root` tree is in the range `[1, 2000]`.\n  * The number of nodes in the `subRoot` tree is in the range `[1, 1000]`.\n  * `-104 <= root.val <= 104`\n  * `-104 <= subRoot.val <= 104`",
+  "topics": ["Tree", "Depth-First Search", "String Matching", "Binary Tree", "Hash Function"],
+  "total_accepted": 1226812,
+  "total_submissions": 2393196,
+  "acceptance_rate": "51.3%",
+  "similar_questions": [
+    {
+      "title": "Count Univalue Subtrees",
+      "slug": "count-univalue-subtrees",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-univalue-subtrees/"
+    },
+    {
+      "title": "Most Frequent Subtree Sum",
+      "slug": "most-frequent-subtree-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/most-frequent-subtree-sum/"
+    }
+  ],
+  "hints": [
+    "Which approach is better here- recursive or iterative?",
+    "If recursive approach is better, can you write recursive function with its parameters?",
+    "Two trees <b>s</b> and <b>t</b> are said to be identical if their root values are same and their left and right subtrees are identical. Can you write this in form of recursive formulae?",
+    "Recursive formulae can be: \r\nisIdentical(s,t)= s.val==t.val AND isIdentical(s.left,t.left) AND isIdentical(s.right,t.right)"
+  ]
+}

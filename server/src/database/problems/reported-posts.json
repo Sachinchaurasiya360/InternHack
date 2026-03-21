@@ -1,0 +1,18 @@
+{
+  "id": "1113",
+  "title": "Reported Posts",
+  "slug": "reported-posts",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 53829,
+  "total_submissions": 83031,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,37 @@
+{
+  "id": "314",
+  "title": "Binary Tree Vertical Order Traversal",
+  "slug": "binary-tree-vertical-order-traversal",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Hash Table",
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Sorting",
+    "Binary Tree"
+  ],
+  "total_accepted": 591229,
+  "total_submissions": 1023737,
+  "acceptance_rate": "57.8%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Level Order Traversal",
+      "slug": "binary-tree-level-order-traversal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/"
+    }
+  ],
+  "hints": [
+    "Do BFS from the root. Let the root be at column 0. In the BFS, keep in the queue the node and its column.",
+    "When you traverse a node, store its value in the column index. For example, the root's value should be stored at index 0.",
+    "If the node has a left node, it column should be col - 1. Similarly, if the node has a right node, its column should be col + 1.",
+    "At the end, check the minimum and maximum col and output their values."
+  ]
+}

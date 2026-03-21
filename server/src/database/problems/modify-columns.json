@@ -1,0 +1,20 @@
+{
+  "id": "2884",
+  "title": "Modify Columns",
+  "slug": "modify-columns",
+  "difficulty": "Easy",
+  "category": "pandas",
+  "content_html": "<pre>\nDataFrame <code>employees</code>\n+-------------+--------+\n| Column Name | Type   |\n+-------------+--------+\n| name        | object |\n| salary      | int    |\n+-------------+--------+\n</pre>\n\n<p>A company intends to give its employees a pay rise.</p>\n\n<p>Write a solution to <strong>modify</strong> the <code>salary</code> column by multiplying each salary by 2.</p>\n\n<p>The result format is in the following example.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:\n</strong>DataFrame employees\n+---------+--------+\n| name    | salary |\n+---------+--------+\n| Jack    | 19666  |\n| Piper   | 74754  |\n| Mia     | 62509  |\n| Ulysses | 54866  |\n+---------+--------+\n<strong>Output:\n</strong>+---------+--------+\n| name    | salary |\n+---------+--------+\n| Jack    | 39332  |\n| Piper   | 149508 |\n| Mia     | 125018 |\n| Ulysses | 109732 |\n+---------+--------+\n<strong>Explanation:\n</strong>Every salary has been doubled.</pre>\n",
+  "content_markdown": "DataFrame employees\n    +-------------+--------+\n    | Column Name | Type   |\n    +-------------+--------+\n    | name        | object |\n    | salary      | int    |\n    +-------------+--------+\n    \n\nA company intends to give its employees a pay rise.\n\nWrite a solution to **modify** the `salary` column by multiplying each salary by 2.\n\nThe result format is in the following example.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** DataFrame employees\n    +---------+--------+\n    | name    | salary |\n    +---------+--------+\n    | Jack    | 19666  |\n    | Piper   | 74754  |\n    | Mia     | 62509  |\n    | Ulysses | 54866  |\n    +---------+--------+\n    **Output:** +---------+--------+\n    | name    | salary |\n    +---------+--------+\n    | Jack    | 39332  |\n    | Piper   | 149508 |\n    | Mia     | 125018 |\n    | Ulysses | 109732 |\n    +---------+--------+\n    **Explanation:** Every salary has been doubled.",
+  "question": "DataFrame employees\n    +-------------+--------+\n    | Column Name | Type   |\n    +-------------+--------+\n    | name        | object |\n    | salary      | int    |\n    +-------------+--------+\n    \n\nA company intends to give its employees a pay rise.\n\nWrite a solution to **modify** the `salary` column by multiplying each salary by 2.\n\nThe result format is in the following example.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** DataFrame employees\n    +---------+--------+\n    | name    | salary |\n    +---------+--------+\n    | Jack    | 19666  |\n    | Piper   | 74754  |\n    | Mia     | 62509  |\n    | Ulysses | 54866  |\n    +---------+--------+\n    **Output:** +---------+--------+\n    | name    | salary |\n    +---------+--------+\n    | Jack    | 39332  |\n    | Piper   | 149508 |\n    | Mia     | 125018 |\n    | Ulysses | 109732 |\n    +---------+--------+\n    **Explanation:** Every salary has been doubled.",
+  "constraints": "",
+  "topics": [],
+  "total_accepted": 141478,
+  "total_submissions": 153151,
+  "acceptance_rate": "92.4%",
+  "similar_questions": [],
+  "hints": [
+    "Considering multiplying each salary value by 2, using a simple assignment operation. The calculation of the value is done column-wise."
+  ]
+}

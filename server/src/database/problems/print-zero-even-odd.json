@@ -1,0 +1,31 @@
+{
+  "id": "1116",
+  "title": "Print Zero Even Odd",
+  "slug": "print-zero-even-odd",
+  "difficulty": "Medium",
+  "category": "Concurrency",
+  "content_html": "<p>You have a function <code>printNumber</code> that can be called with an integer parameter and prints it to the console.</p>\n\n<ul>\n\t<li>For example, calling <code>printNumber(7)</code> prints <code>7</code> to the console.</li>\n</ul>\n\n<p>You are given an instance of the class <code>ZeroEvenOdd</code> that has three functions: <code>zero</code>, <code>even</code>, and <code>odd</code>. The same instance of <code>ZeroEvenOdd</code> will be passed to three different threads:</p>\n\n<ul>\n\t<li><strong>Thread A:</strong> calls <code>zero()</code> that should only output <code>0</code>&#39;s.</li>\n\t<li><strong>Thread B:</strong> calls <code>even()</code> that should only output even numbers.</li>\n\t<li><strong>Thread C:</strong> calls <code>odd()</code> that should only output odd numbers.</li>\n</ul>\n\n<p>Modify the given class to output the series <code>&quot;010203040506...&quot;</code> where the length of the series must be <code>2n</code>.</p>\n\n<p>Implement the <code>ZeroEvenOdd</code> class:</p>\n\n<ul>\n\t<li><code>ZeroEvenOdd(int n)</code> Initializes the object with the number <code>n</code> that represents the numbers that should be printed.</li>\n\t<li><code>void zero(printNumber)</code> Calls <code>printNumber</code> to output one zero.</li>\n\t<li><code>void even(printNumber)</code> Calls <code>printNumber</code> to output one even number.</li>\n\t<li><code>void odd(printNumber)</code> Calls <code>printNumber</code> to output one odd number.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> &quot;0102&quot;\n<strong>Explanation:</strong> There are three threads being fired asynchronously.\nOne of them calls zero(), the other calls even(), and the last one calls odd().\n&quot;0102&quot; is the correct output.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5\n<strong>Output:</strong> &quot;0102030405&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You have a function `printNumber` that can be called with an integer parameter and prints it to the console.\n\n  * For example, calling `printNumber(7)` prints `7` to the console.\n\n\n\nYou are given an instance of the class `ZeroEvenOdd` that has three functions: `zero`, `even`, and `odd`. The same instance of `ZeroEvenOdd` will be passed to three different threads:\n\n  * **Thread A:** calls `zero()` that should only output `0`'s.\n  * **Thread B:** calls `even()` that should only output even numbers.\n  * **Thread C:** calls `odd()` that should only output odd numbers.\n\n\n\nModify the given class to output the series `\"010203040506...\"` where the length of the series must be `2n`.\n\nImplement the `ZeroEvenOdd` class:\n\n  * `ZeroEvenOdd(int n)` Initializes the object with the number `n` that represents the numbers that should be printed.\n  * `void zero(printNumber)` Calls `printNumber` to output one zero.\n  * `void even(printNumber)` Calls `printNumber` to output one even number.\n  * `void odd(printNumber)` Calls `printNumber` to output one odd number.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** \"0102\"\n    **Explanation:** There are three threads being fired asynchronously.\n    One of them calls zero(), the other calls even(), and the last one calls odd().\n    \"0102\" is the correct output.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** \"0102030405\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "question": "You have a function `printNumber` that can be called with an integer parameter and prints it to the console.\n\n  * For example, calling `printNumber(7)` prints `7` to the console.\n\n\n\nYou are given an instance of the class `ZeroEvenOdd` that has three functions: `zero`, `even`, and `odd`. The same instance of `ZeroEvenOdd` will be passed to three different threads:\n\n  * **Thread A:** calls `zero()` that should only output `0`'s.\n  * **Thread B:** calls `even()` that should only output even numbers.\n  * **Thread C:** calls `odd()` that should only output odd numbers.\n\n\n\nModify the given class to output the series `\"010203040506...\"` where the length of the series must be `2n`.\n\nImplement the `ZeroEvenOdd` class:\n\n  * `ZeroEvenOdd(int n)` Initializes the object with the number `n` that represents the numbers that should be printed.\n  * `void zero(printNumber)` Calls `printNumber` to output one zero.\n  * `void even(printNumber)` Calls `printNumber` to output one even number.\n  * `void odd(printNumber)` Calls `printNumber` to output one odd number.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** \"0102\"\n    **Explanation:** There are three threads being fired asynchronously.\n    One of them calls zero(), the other calls even(), and the last one calls odd().\n    \"0102\" is the correct output.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** \"0102030405\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "topics": ["Concurrency"],
+  "total_accepted": 81208,
+  "total_submissions": 124454,
+  "acceptance_rate": "65.3%",
+  "similar_questions": [
+    {
+      "title": "Print FooBar Alternately",
+      "slug": "print-foobar-alternately",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/print-foobar-alternately/"
+    },
+    {
+      "title": "Fizz Buzz Multithreaded",
+      "slug": "fizz-buzz-multithreaded",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fizz-buzz-multithreaded/"
+    }
+  ],
+  "hints": []
+}

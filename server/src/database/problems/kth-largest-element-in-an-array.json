@@ -1,0 +1,67 @@
+{
+  "id": "215",
+  "title": "Kth Largest Element in an Array",
+  "slug": "kth-largest-element-in-an-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the</em> <code>k<sup>th</sup></code> <em>largest element in the array</em>.</p>\n\n<p>Note that it is the <code>k<sup>th</sup></code> largest element in the sorted order, not the <code>k<sup>th</sup></code> distinct element.</p>\n\n<p>Can you solve it without sorting?</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [3,2,1,5,6,4], k = 2\n<strong>Output:</strong> 5\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [3,2,3,1,2,4,5,5,6], k = 4\n<strong>Output:</strong> 4\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return _the_ `kth` _largest element in the array_.\n\nNote that it is the `kth` largest element in the sorted order, not the `kth` distinct element.\n\nCan you solve it without sorting?\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,2,1,5,6,4], k = 2\n    **Output:** 5\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,3,1,2,4,5,5,6], k = 4\n    **Output:** 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= nums.length <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "question": "Given an integer array `nums` and an integer `k`, return _the_ `kth` _largest element in the array_.\n\nNote that it is the `kth` largest element in the sorted order, not the `kth` distinct element.\n\nCan you solve it without sorting?",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,2,1,5,6,4], k = 2\n    **Output:** 5\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,3,1,2,4,5,5,6], k = 4\n    **Output:** 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= nums.length <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "topics": ["Array", "Divide and Conquer", "Sorting", "Heap (Priority Queue)", "Quickselect"],
+  "total_accepted": 3503229,
+  "total_submissions": 5092750,
+  "acceptance_rate": "68.8%",
+  "similar_questions": [
+    {
+      "title": "Wiggle Sort II",
+      "slug": "wiggle-sort-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/wiggle-sort-ii/"
+    },
+    {
+      "title": "Top K Frequent Elements",
+      "slug": "top-k-frequent-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/top-k-frequent-elements/"
+    },
+    {
+      "title": "Third Maximum Number",
+      "slug": "third-maximum-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/third-maximum-number/"
+    },
+    {
+      "title": "Kth Largest Element in a Stream",
+      "slug": "kth-largest-element-in-a-stream",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/kth-largest-element-in-a-stream/"
+    },
+    {
+      "title": "K Closest Points to Origin",
+      "slug": "k-closest-points-to-origin",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-closest-points-to-origin/"
+    },
+    {
+      "title": "Find the Kth Largest Integer in the Array",
+      "slug": "find-the-kth-largest-integer-in-the-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-kth-largest-integer-in-the-array/"
+    },
+    {
+      "title": "Find Subsequence of Length K With the Largest Sum",
+      "slug": "find-subsequence-of-length-k-with-the-largest-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-subsequence-of-length-k-with-the-largest-sum/"
+    },
+    {
+      "title": "K Highest Ranked Items Within a Price Range",
+      "slug": "k-highest-ranked-items-within-a-price-range",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-highest-ranked-items-within-a-price-range/"
+    }
+  ],
+  "hints": []
+}

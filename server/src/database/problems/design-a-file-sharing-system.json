@@ -1,0 +1,28 @@
+{
+  "id": "1500",
+  "title": "Design a File Sharing System",
+  "slug": "design-a-file-sharing-system",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Design", "Sorting", "Heap (Priority Queue)", "Data Stream"],
+  "total_accepted": 6580,
+  "total_submissions": 15817,
+  "acceptance_rate": "41.6%",
+  "similar_questions": [
+    {
+      "title": "Design Twitter",
+      "slug": "design-twitter",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-twitter/"
+    }
+  ],
+  "hints": [
+    "Try to solve it by keeping for each file chunk, the users who have this chunk.",
+    "Try to solve it by keeping all the users in the system with their owned chunks, and when you request a chunk, check all users for it."
+  ]
+}

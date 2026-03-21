@@ -1,0 +1,49 @@
+{
+  "id": "668",
+  "title": "Kth Smallest Number in Multiplication Table",
+  "slug": "kth-smallest-number-in-multiplication-table",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Nearly everyone has used the <a href=\"https://en.wikipedia.org/wiki/Multiplication_table\" target=\"_blank\">Multiplication Table</a>. The multiplication table of size <code>m x n</code> is an integer matrix <code>mat</code> where <code>mat[i][j] == i * j</code> (<strong>1-indexed</strong>).</p>\n\n<p>Given three integers <code>m</code>, <code>n</code>, and <code>k</code>, return <em>the </em><code>k<sup>th</sup></code><em> smallest element in the </em><code>m x n</code><em> multiplication table</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/05/02/multtable1-grid.jpg\" style=\"width: 500px; height: 254px;\" />\n<pre>\n<strong>Input:</strong> m = 3, n = 3, k = 5\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The 5<sup>th</sup> smallest number is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/05/02/multtable2-grid.jpg\" style=\"width: 493px; height: 293px;\" />\n<pre>\n<strong>Input:</strong> m = 2, n = 3, k = 6\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The 6<sup>th</sup> smallest number is 6.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= m, n &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= m * n</code></li>\n</ul>\n",
+  "content_markdown": "Nearly everyone has used the [Multiplication Table](<https://en.wikipedia.org/wiki/Multiplication_table>). The multiplication table of size `m x n` is an integer matrix `mat` where `mat[i][j] == i * j` (**1-indexed**).\n\nGiven three integers `m`, `n`, and `k`, return _the_`kth` _smallest element in the_`m x n` _multiplication table_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/05/02/multtable1-grid.jpg)\n    \n    \n    **Input:** m = 3, n = 3, k = 5\n    **Output:** 3\n    **Explanation:** The 5th smallest number is 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/05/02/multtable2-grid.jpg)\n    \n    \n    **Input:** m = 2, n = 3, k = 6\n    **Output:** 6\n    **Explanation:** The 6th smallest number is 6.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= m, n <= 3 * 104`\n  * `1 <= k <= m * n`",
+  "question": "Nearly everyone has used the [Multiplication Table](<https://en.wikipedia.org/wiki/Multiplication_table>). The multiplication table of size `m x n` is an integer matrix `mat` where `mat[i][j] == i * j` (**1-indexed**).\n\nGiven three integers `m`, `n`, and `k`, return _the_`kth` _smallest element in the_`m x n` _multiplication table_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/05/02/multtable1-grid.jpg)\n    \n    \n    **Input:** m = 3, n = 3, k = 5\n    **Output:** 3\n    **Explanation:** The 5th smallest number is 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/05/02/multtable2-grid.jpg)\n    \n    \n    **Input:** m = 2, n = 3, k = 6\n    **Output:** 6\n    **Explanation:** The 6th smallest number is 6.",
+  "constraints": "**Constraints:**\n\n  * `1 <= m, n <= 3 * 104`\n  * `1 <= k <= m * n`",
+  "topics": ["Math", "Binary Search"],
+  "total_accepted": 83188,
+  "total_submissions": 154682,
+  "acceptance_rate": "53.8%",
+  "similar_questions": [
+    {
+      "title": "Kth Smallest Element in a Sorted Matrix",
+      "slug": "kth-smallest-element-in-a-sorted-matrix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/"
+    },
+    {
+      "title": "Find K-th Smallest Pair Distance",
+      "slug": "find-k-th-smallest-pair-distance",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-k-th-smallest-pair-distance/"
+    },
+    {
+      "title": "K-th Smallest Prime Fraction",
+      "slug": "k-th-smallest-prime-fraction",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-th-smallest-prime-fraction/"
+    },
+    {
+      "title": "Minimum Time to Eat All Grains",
+      "slug": "minimum-time-to-eat-all-grains",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-time-to-eat-all-grains/"
+    },
+    {
+      "title": "Kth Smallest Amount With Single Denomination Combination",
+      "slug": "kth-smallest-amount-with-single-denomination-combination",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/kth-smallest-amount-with-single-denomination-combination/"
+    }
+  ],
+  "hints": []
+}

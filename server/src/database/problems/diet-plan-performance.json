@@ -1,0 +1,18 @@
+{
+  "id": "1176",
+  "title": "Diet Plan Performance",
+  "slug": "diet-plan-performance",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sliding Window"],
+  "total_accepted": 41417,
+  "total_submissions": 74149,
+  "acceptance_rate": "55.9%",
+  "similar_questions": [],
+  "hints": ["Use sliding window technique (aka two pointers)."]
+}

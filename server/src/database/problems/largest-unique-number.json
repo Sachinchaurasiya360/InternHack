@@ -1,0 +1,22 @@
+{
+  "id": "1133",
+  "title": "Largest Unique Number",
+  "slug": "largest-unique-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Sorting"],
+  "total_accepted": 109523,
+  "total_submissions": 153636,
+  "acceptance_rate": "71.3%",
+  "similar_questions": [],
+  "hints": [
+    "Find the number of occurrences of each value.",
+    "Use an array or a hash table to do that.",
+    "Look for the largest value with number of occurrences = 1."
+  ]
+}

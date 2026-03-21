@@ -1,0 +1,33 @@
+{
+  "id": "3163",
+  "title": "String Compression III",
+  "slug": "string-compression-iii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>word</code>, compress it using the following algorithm:</p>\n\n<ul>\n\t<li>Begin with an empty string <code>comp</code>. While <code>word</code> is <strong>not</strong> empty, use the following operation:\n\n\t<ul>\n\t\t<li>Remove a maximum length prefix of <code>word</code> made of a <em>single character</em> <code>c</code> repeating <strong>at most</strong> 9 times.</li>\n\t\t<li>Append the length of the prefix followed by <code>c</code> to <code>comp</code>.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p>Return the string <code>comp</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;abcde&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;1a1b1c1d1e&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Initially, <code>comp = &quot;&quot;</code>. Apply the operation 5 times, choosing <code>&quot;a&quot;</code>, <code>&quot;b&quot;</code>, <code>&quot;c&quot;</code>, <code>&quot;d&quot;</code>, and <code>&quot;e&quot;</code> as the prefix in each operation.</p>\n\n<p>For each prefix, append <code>&quot;1&quot;</code> followed by the character to <code>comp</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;aaaaaaaaaaaaaabb&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;9a5a2b&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Initially, <code>comp = &quot;&quot;</code>. Apply the operation 3 times, choosing <code>&quot;aaaaaaaaa&quot;</code>, <code>&quot;aaaaa&quot;</code>, and <code>&quot;bb&quot;</code> as the prefix in each operation.</p>\n\n<ul>\n\t<li>For prefix <code>&quot;aaaaaaaaa&quot;</code>, append <code>&quot;9&quot;</code> followed by <code>&quot;a&quot;</code> to <code>comp</code>.</li>\n\t<li>For prefix <code>&quot;aaaaa&quot;</code>, append <code>&quot;5&quot;</code> followed by <code>&quot;a&quot;</code> to <code>comp</code>.</li>\n\t<li>For prefix <code>&quot;bb&quot;</code>, append <code>&quot;2&quot;</code> followed by <code>&quot;b&quot;</code> to <code>comp</code>.</li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 2 * 10<sup>5</sup></code></li>\n\t<li><code>word</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `word`, compress it using the following algorithm:\n\n  * Begin with an empty string `comp`. While `word` is **not** empty, use the following operation: \n    * Remove a maximum length prefix of `word` made of a _single character_ `c` repeating **at most** 9 times.\n    * Append the length of the prefix followed by `c` to `comp`.\n\n\n\nReturn the string `comp`.\n\n \n\n**Example 1:**\n\n**Input:** word = \"abcde\"\n\n**Output:** \"1a1b1c1d1e\"\n\n**Explanation:**\n\nInitially, `comp = \"\"`. Apply the operation 5 times, choosing `\"a\"`, `\"b\"`, `\"c\"`, `\"d\"`, and `\"e\"` as the prefix in each operation.\n\nFor each prefix, append `\"1\"` followed by the character to `comp`.\n\n**Example 2:**\n\n**Input:** word = \"aaaaaaaaaaaaaabb\"\n\n**Output:** \"9a5a2b\"\n\n**Explanation:**\n\nInitially, `comp = \"\"`. Apply the operation 3 times, choosing `\"aaaaaaaaa\"`, `\"aaaaa\"`, and `\"bb\"` as the prefix in each operation.\n\n  * For prefix `\"aaaaaaaaa\"`, append `\"9\"` followed by `\"a\"` to `comp`.\n  * For prefix `\"aaaaa\"`, append `\"5\"` followed by `\"a\"` to `comp`.\n  * For prefix `\"bb\"`, append `\"2\"` followed by `\"b\"` to `comp`.\n\n\n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 2 * 105`\n  * `word` consists only of lowercase English letters.",
+  "question": "Given a string `word`, compress it using the following algorithm:\n\n  * Begin with an empty string `comp`. While `word` is **not** empty, use the following operation: \n    * Remove a maximum length prefix of `word` made of a _single character_ `c` repeating **at most** 9 times.\n    * Append the length of the prefix followed by `c` to `comp`.\n\n\n\nReturn the string `comp`.",
+  "examples": "**Example 1:**\n\n**Input:** word = \"abcde\"\n\n**Output:** \"1a1b1c1d1e\"\n\n**Explanation:**\n\nInitially, `comp = \"\"`. Apply the operation 5 times, choosing `\"a\"`, `\"b\"`, `\"c\"`, `\"d\"`, and `\"e\"` as the prefix in each operation.\n\nFor each prefix, append `\"1\"` followed by the character to `comp`.\n\n**Example 2:**\n\n**Input:** word = \"aaaaaaaaaaaaaabb\"\n\n**Output:** \"9a5a2b\"\n\n**Explanation:**\n\nInitially, `comp = \"\"`. Apply the operation 3 times, choosing `\"aaaaaaaaa\"`, `\"aaaaa\"`, and `\"bb\"` as the prefix in each operation.\n\n  * For prefix `\"aaaaaaaaa\"`, append `\"9\"` followed by `\"a\"` to `comp`.\n  * For prefix `\"aaaaa\"`, append `\"5\"` followed by `\"a\"` to `comp`.\n  * For prefix `\"bb\"`, append `\"2\"` followed by `\"b\"` to `comp`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 2 * 105`\n  * `word` consists only of lowercase English letters.",
+  "topics": ["String"],
+  "total_accepted": 201104,
+  "total_submissions": 300080,
+  "acceptance_rate": "67.0%",
+  "similar_questions": [
+    {
+      "title": "String Compression",
+      "slug": "string-compression",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/string-compression/"
+    },
+    {
+      "title": "String Compression II",
+      "slug": "string-compression-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/string-compression-ii/"
+    }
+  ],
+  "hints": [
+    "Each time, just cut the same character in prefix up to at max 9 times. It’s always better to cut a bigger prefix."
+  ]
+}

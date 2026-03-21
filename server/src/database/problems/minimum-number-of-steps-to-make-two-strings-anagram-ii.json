@@ -1,0 +1,29 @@
+{
+  "id": "2186",
+  "title": "Minimum Number of Steps to Make Two Strings Anagram II",
+  "slug": "minimum-number-of-steps-to-make-two-strings-anagram-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two strings <code>s</code> and <code>t</code>. In one step, you can append <strong>any character</strong> to either <code>s</code> or <code>t</code>.</p>\n\n<p>Return <em>the minimum number of steps to make </em><code>s</code><em> and </em><code>t</code><em> <strong>anagrams</strong> of each other.</em></p>\n\n<p>An <strong>anagram</strong> of a string is a string that contains the same characters with a different (or the same) ordering.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;<strong><u>lee</u></strong>tco<u><strong>de</strong></u>&quot;, t = &quot;co<u><strong>a</strong></u>t<u><strong>s</strong></u>&quot;\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> \n- In 2 steps, we can append the letters in &quot;as&quot; onto s = &quot;leetcode&quot;, forming s = &quot;leetcode<strong><u>as</u></strong>&quot;.\n- In 5 steps, we can append the letters in &quot;leede&quot; onto t = &quot;coats&quot;, forming t = &quot;coats<u><strong>leede</strong></u>&quot;.\n&quot;leetcodeas&quot; and &quot;coatsleede&quot; are now anagrams of each other.\nWe used a total of 2 + 5 = 7 steps.\nIt can be shown that there is no way to make them anagrams of each other with less than 7 steps.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;night&quot;, t = &quot;thing&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The given strings are already anagrams of each other. Thus, we do not need any further steps.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length, t.length &lt;= 2 * 10<sup>5</sup></code></li>\n\t<li><code>s</code> and <code>t</code> consist of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given two strings `s` and `t`. In one step, you can append **any character** to either `s` or `t`.\n\nReturn _the minimum number of steps to make_`s` _and_`t` _**anagrams** of each other._\n\nAn **anagram** of a string is a string that contains the same characters with a different (or the same) ordering.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"**_lee_** tco _**de**_ \", t = \"co _**a**_ t _**s**_ \"\n    **Output:** 7\n    **Explanation:** \n    - In 2 steps, we can append the letters in \"as\" onto s = \"leetcode\", forming s = \"leetcode** _as_** \".\n    - In 5 steps, we can append the letters in \"leede\" onto t = \"coats\", forming t = \"coats _**leede**_ \".\n    \"leetcodeas\" and \"coatsleede\" are now anagrams of each other.\n    We used a total of 2 + 5 = 7 steps.\n    It can be shown that there is no way to make them anagrams of each other with less than 7 steps.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"night\", t = \"thing\"\n    **Output:** 0\n    **Explanation:** The given strings are already anagrams of each other. Thus, we do not need any further steps.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length, t.length <= 2 * 105`\n  * `s` and `t` consist of lowercase English letters.",
+  "question": "You are given two strings `s` and `t`. In one step, you can append **any character** to either `s` or `t`.\n\nReturn _the minimum number of steps to make_`s` _and_`t` _**anagrams** of each other._\n\nAn **anagram** of a string is a string that contains the same characters with a different (or the same) ordering.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"**_lee_** tco _**de**_ \", t = \"co _**a**_ t _**s**_ \"\n    **Output:** 7\n    **Explanation:** \n    - In 2 steps, we can append the letters in \"as\" onto s = \"leetcode\", forming s = \"leetcode** _as_** \".\n    - In 5 steps, we can append the letters in \"leede\" onto t = \"coats\", forming t = \"coats _**leede**_ \".\n    \"leetcodeas\" and \"coatsleede\" are now anagrams of each other.\n    We used a total of 2 + 5 = 7 steps.\n    It can be shown that there is no way to make them anagrams of each other with less than 7 steps.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"night\", t = \"thing\"\n    **Output:** 0\n    **Explanation:** The given strings are already anagrams of each other. Thus, we do not need any further steps.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length, t.length <= 2 * 105`\n  * `s` and `t` consist of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 53807,
+  "total_submissions": 73678,
+  "acceptance_rate": "73.0%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Steps to Make Two Strings Anagram",
+      "slug": "minimum-number-of-steps-to-make-two-strings-anagram",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram/"
+    }
+  ],
+  "hints": [
+    "Notice that for anagrams, the order of the letters is irrelevant.",
+    "For each letter, we can count its frequency in s and t.",
+    "For each letter, its contribution to the answer is the absolute difference between its frequency in s and t."
+  ]
+}

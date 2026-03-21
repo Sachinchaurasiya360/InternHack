@@ -1,0 +1,25 @@
+{
+  "id": "926",
+  "title": "Flip String to Monotone Increasing",
+  "slug": "flip-string-to-monotone-increasing",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A binary string is monotone increasing if it consists of some number of <code>0</code>&#39;s (possibly none), followed by some number of <code>1</code>&#39;s (also possibly none).</p>\n\n<p>You are given a binary string <code>s</code>. You can flip <code>s[i]</code> changing it from <code>0</code> to <code>1</code> or from <code>1</code> to <code>0</code>.</p>\n\n<p>Return <em>the minimum number of flips to make </em><code>s</code><em> monotone increasing</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;00110&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> We flip the last digit to get 00111.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;010110&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We flip to get 011111, or alternatively 000111.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;00011000&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We flip to get 00000000.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "A binary string is monotone increasing if it consists of some number of `0`'s (possibly none), followed by some number of `1`'s (also possibly none).\n\nYou are given a binary string `s`. You can flip `s[i]` changing it from `0` to `1` or from `1` to `0`.\n\nReturn _the minimum number of flips to make_`s` _monotone increasing_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"00110\"\n    **Output:** 1\n    **Explanation:** We flip the last digit to get 00111.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"010110\"\n    **Output:** 2\n    **Explanation:** We flip to get 011111, or alternatively 000111.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"00011000\"\n    **Output:** 2\n    **Explanation:** We flip to get 00000000.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "question": "A binary string is monotone increasing if it consists of some number of `0`'s (possibly none), followed by some number of `1`'s (also possibly none).\n\nYou are given a binary string `s`. You can flip `s[i]` changing it from `0` to `1` or from `1` to `0`.\n\nReturn _the minimum number of flips to make_`s` _monotone increasing_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"00110\"\n    **Output:** 1\n    **Explanation:** We flip the last digit to get 00111.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"010110\"\n    **Output:** 2\n    **Explanation:** We flip to get 011111, or alternatively 000111.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"00011000\"\n    **Output:** 2\n    **Explanation:** We flip to get 00000000.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 215459,
+  "total_submissions": 348306,
+  "acceptance_rate": "61.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost to Make All Characters Equal",
+      "slug": "minimum-cost-to-make-all-characters-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-to-make-all-characters-equal/"
+    }
+  ],
+  "hints": []
+}

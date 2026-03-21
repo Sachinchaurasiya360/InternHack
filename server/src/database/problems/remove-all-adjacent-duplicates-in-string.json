@@ -1,0 +1,37 @@
+{
+  "id": "1047",
+  "title": "Remove All Adjacent Duplicates In String",
+  "slug": "remove-all-adjacent-duplicates-in-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting of lowercase English letters. A <strong>duplicate removal</strong> consists of choosing two <strong>adjacent</strong> and <strong>equal</strong> letters and removing them.</p>\n\n<p>We repeatedly make <strong>duplicate removals</strong> on <code>s</code> until we no longer can.</p>\n\n<p>Return <em>the final string after all such duplicate removals have been made</em>. It can be proven that the answer is <strong>unique</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abbaca&quot;\n<strong>Output:</strong> &quot;ca&quot;\n<strong>Explanation:</strong> \nFor example, in &quot;abbaca&quot; we could remove &quot;bb&quot; since the letters are adjacent and equal, and this is the only possible move.  The result of this move is that the string is &quot;aaca&quot;, of which only &quot;aa&quot; is possible, so the final string is &quot;ca&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;azxxzy&quot;\n<strong>Output:</strong> &quot;ay&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting of lowercase English letters. A **duplicate removal** consists of choosing two **adjacent** and **equal** letters and removing them.\n\nWe repeatedly make **duplicate removals** on `s` until we no longer can.\n\nReturn _the final string after all such duplicate removals have been made_. It can be proven that the answer is **unique**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abbaca\"\n    **Output:** \"ca\"\n    **Explanation:** \n    For example, in \"abbaca\" we could remove \"bb\" since the letters are adjacent and equal, and this is the only possible move.  The result of this move is that the string is \"aaca\", of which only \"aa\" is possible, so the final string is \"ca\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"azxxzy\"\n    **Output:** \"ay\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "question": "You are given a string `s` consisting of lowercase English letters. A **duplicate removal** consists of choosing two **adjacent** and **equal** letters and removing them.\n\nWe repeatedly make **duplicate removals** on `s` until we no longer can.\n\nReturn _the final string after all such duplicate removals have been made_. It can be proven that the answer is **unique**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abbaca\"\n    **Output:** \"ca\"\n    **Explanation:** \n    For example, in \"abbaca\" we could remove \"bb\" since the letters are adjacent and equal, and this is the only possible move.  The result of this move is that the string is \"aaca\", of which only \"aa\" is possible, so the final string is \"ca\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"azxxzy\"\n    **Output:** \"ay\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "topics": ["String", "Stack"],
+  "total_accepted": 844311,
+  "total_submissions": 1159119,
+  "acceptance_rate": "72.8%",
+  "similar_questions": [
+    {
+      "title": "Remove All Adjacent Duplicates in String II",
+      "slug": "remove-all-adjacent-duplicates-in-string-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/"
+    },
+    {
+      "title": "Removing Stars From a String",
+      "slug": "removing-stars-from-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/removing-stars-from-a-string/"
+    },
+    {
+      "title": "Minimize String Length",
+      "slug": "minimize-string-length",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimize-string-length/"
+    }
+  ],
+  "hints": ["Use a stack to process everything greedily."]
+}

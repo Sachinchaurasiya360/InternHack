@@ -1,0 +1,20 @@
+{
+  "id": "723",
+  "title": "Candy Crush",
+  "slug": "candy-crush",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Matrix", "Simulation"],
+  "total_accepted": 89274,
+  "total_submissions": 115450,
+  "acceptance_rate": "77.3%",
+  "similar_questions": [],
+  "hints": [
+    "Carefully perform the \"crush\" and \"gravity\" steps.  In the crush step, flag each candy that should be removed, then go through and crush each flagged candy.  In the gravity step, collect the candy in each column and then rewrite the column appropriately.  Do these steps repeatedly until there's no work left to do."
+  ]
+}

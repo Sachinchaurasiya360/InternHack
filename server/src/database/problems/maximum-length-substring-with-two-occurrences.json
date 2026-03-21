@@ -1,0 +1,18 @@
+{
+  "id": "3090",
+  "title": "Maximum Length Substring With Two Occurrences",
+  "slug": "maximum-length-substring-with-two-occurrences",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "Given a string <code>s</code>, return the <strong>maximum</strong> length of a <span data-keyword=\"substring\">substring</span>&nbsp;such that it contains <em>at most two occurrences</em> of each character.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;bcbbbcba&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\nThe following substring has a length of 4 and contains at most two occurrences of each character: <code>&quot;bcbb<u>bcba</u>&quot;</code>.</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;aaaa&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\nThe following substring has a length of 2 and contains at most two occurrences of each character: <code>&quot;<u>aa</u>aa&quot;</code>.</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return the **maximum** length of a substring such that it contains _at most two occurrences_ of each character. \n\n \n\n**Example 1:**\n\n**Input:** s = \"bcbbbcba\"\n\n**Output:** 4\n\n**Explanation:**\n\nThe following substring has a length of 4 and contains at most two occurrences of each character: `\"bcbb _bcba_ \"`.\n\n**Example 2:**\n\n**Input:** s = \"aaaa\"\n\n**Output:** 2\n\n**Explanation:**\n\nThe following substring has a length of 2 and contains at most two occurrences of each character: `\"_aa_ aa\"`.\n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists only of lowercase English letters.",
+  "question": "Given a string `s`, return the **maximum** length of a substring such that it contains _at most two occurrences_ of each character.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"bcbbbcba\"\n\n**Output:** 4\n\n**Explanation:**\n\nThe following substring has a length of 4 and contains at most two occurrences of each character: `\"bcbb _bcba_ \"`.\n\n**Example 2:**\n\n**Input:** s = \"aaaa\"\n\n**Output:** 2\n\n**Explanation:**\n\nThe following substring has a length of 2 and contains at most two occurrences of each character: `\"_aa_ aa\"`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists only of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 62360,
+  "total_submissions": 95685,
+  "acceptance_rate": "65.2%",
+  "similar_questions": [],
+  "hints": ["We can try all substrings by brute-force since the constraints are very small."]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "1714",
+  "title": "Sum Of Special Evenly-Spaced Elements In Array",
+  "slug": "sum-of-special-evenly-spaced-elements-in-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 1715,
+  "total_submissions": 3436,
+  "acceptance_rate": "49.9%",
+  "similar_questions": [],
+  "hints": [
+    "Think if y cannot be small. You can solve a query in O(n/y), so if y is large enough, it won't be a problem.",
+    "If y is small, like less than B, you can preprocess the answers for all such ys in O(n * B), then answer each such query in O(1).",
+    "As you might have already guessed, the optimal value for B is ~sqrt(n)."
+  ]
+}

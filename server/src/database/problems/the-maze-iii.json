@@ -1,0 +1,40 @@
+{
+  "id": "499",
+  "title": "The Maze III",
+  "slug": "the-maze-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "String",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Heap (Priority Queue)",
+    "Matrix",
+    "Shortest Path"
+  ],
+  "total_accepted": 40118,
+  "total_submissions": 76725,
+  "acceptance_rate": "52.3%",
+  "similar_questions": [
+    {
+      "title": "The Maze",
+      "slug": "the-maze",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-maze/"
+    },
+    {
+      "title": "The Maze II",
+      "slug": "the-maze-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-maze-ii/"
+    }
+  ],
+  "hints": []
+}

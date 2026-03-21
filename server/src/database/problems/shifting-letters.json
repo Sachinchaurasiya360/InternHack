@@ -1,0 +1,55 @@
+{
+  "id": "848",
+  "title": "Shifting Letters",
+  "slug": "shifting-letters",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> of lowercase English letters and an integer array <code>shifts</code> of the same length.</p>\n\n<p>Call the <code>shift()</code> of a letter, the next letter in the alphabet, (wrapping around so that <code>&#39;z&#39;</code> becomes <code>&#39;a&#39;</code>).</p>\n\n<ul>\n\t<li>For example, <code>shift(&#39;a&#39;) = &#39;b&#39;</code>, <code>shift(&#39;t&#39;) = &#39;u&#39;</code>, and <code>shift(&#39;z&#39;) = &#39;a&#39;</code>.</li>\n</ul>\n\n<p>Now for each <code>shifts[i] = x</code>, we want to shift the first <code>i + 1</code> letters of <code>s</code>, <code>x</code> times.</p>\n\n<p>Return <em>the final string after all such shifts to s are applied</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abc&quot;, shifts = [3,5,9]\n<strong>Output:</strong> &quot;rpl&quot;\n<strong>Explanation:</strong> We start with &quot;abc&quot;.\nAfter shifting the first 1 letters of s by 3, we have &quot;dbc&quot;.\nAfter shifting the first 2 letters of s by 5, we have &quot;igc&quot;.\nAfter shifting the first 3 letters of s by 9, we have &quot;rpl&quot;, the answer.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaa&quot;, shifts = [1,2,3]\n<strong>Output:</strong> &quot;gfd&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n\t<li><code>shifts.length == s.length</code></li>\n\t<li><code>0 &lt;= shifts[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` of lowercase English letters and an integer array `shifts` of the same length.\n\nCall the `shift()` of a letter, the next letter in the alphabet, (wrapping around so that `'z'` becomes `'a'`).\n\n  * For example, `shift('a') = 'b'`, `shift('t') = 'u'`, and `shift('z') = 'a'`.\n\n\n\nNow for each `shifts[i] = x`, we want to shift the first `i + 1` letters of `s`, `x` times.\n\nReturn _the final string after all such shifts to s are applied_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abc\", shifts = [3,5,9]\n    **Output:** \"rpl\"\n    **Explanation:** We start with \"abc\".\n    After shifting the first 1 letters of s by 3, we have \"dbc\".\n    After shifting the first 2 letters of s by 5, we have \"igc\".\n    After shifting the first 3 letters of s by 9, we have \"rpl\", the answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaa\", shifts = [1,2,3]\n    **Output:** \"gfd\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.\n  * `shifts.length == s.length`\n  * `0 <= shifts[i] <= 109`",
+  "question": "You are given a string `s` of lowercase English letters and an integer array `shifts` of the same length.\n\nCall the `shift()` of a letter, the next letter in the alphabet, (wrapping around so that `'z'` becomes `'a'`).\n\n  * For example, `shift('a') = 'b'`, `shift('t') = 'u'`, and `shift('z') = 'a'`.\n\n\n\nNow for each `shifts[i] = x`, we want to shift the first `i + 1` letters of `s`, `x` times.\n\nReturn _the final string after all such shifts to s are applied_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abc\", shifts = [3,5,9]\n    **Output:** \"rpl\"\n    **Explanation:** We start with \"abc\".\n    After shifting the first 1 letters of s by 3, we have \"dbc\".\n    After shifting the first 2 letters of s by 5, we have \"igc\".\n    After shifting the first 3 letters of s by 9, we have \"rpl\", the answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaa\", shifts = [1,2,3]\n    **Output:** \"gfd\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.\n  * `shifts.length == s.length`\n  * `0 <= shifts[i] <= 109`",
+  "topics": ["Array", "String", "Prefix Sum"],
+  "total_accepted": 134149,
+  "total_submissions": 290968,
+  "acceptance_rate": "46.1%",
+  "similar_questions": [
+    {
+      "title": "Replace All Digits with Characters",
+      "slug": "replace-all-digits-with-characters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/replace-all-digits-with-characters/"
+    },
+    {
+      "title": "Shifting Letters II",
+      "slug": "shifting-letters-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shifting-letters-ii/"
+    },
+    {
+      "title": "Lexicographically Smallest String After Substring Operation",
+      "slug": "lexicographically-smallest-string-after-substring-operation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lexicographically-smallest-string-after-substring-operation/"
+    },
+    {
+      "title": "Shift Distance Between Two Strings",
+      "slug": "shift-distance-between-two-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shift-distance-between-two-strings/"
+    },
+    {
+      "title": "Find the K-th Character in String Game I",
+      "slug": "find-the-k-th-character-in-string-game-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-k-th-character-in-string-game-i/"
+    },
+    {
+      "title": "Find the K-th Character in String Game II",
+      "slug": "find-the-k-th-character-in-string-game-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-k-th-character-in-string-game-ii/"
+    }
+  ],
+  "hints": []
+}

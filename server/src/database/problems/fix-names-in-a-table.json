@@ -1,0 +1,18 @@
+{
+  "id": "1667",
+  "title": "Fix Names in a Table",
+  "slug": "fix-names-in-a-table",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "<p>Table: <code>Users</code></p>\n\n<pre>\n+----------------+---------+\n| Column Name    | Type    |\n+----------------+---------+\n| user_id        | int     |\n| name           | varchar |\n+----------------+---------+\nuser_id is the primary key (column with unique values) for this table.\nThis table contains the ID and the name of the user. The name consists of only lowercase and uppercase characters.\n</pre>\n\n<p>&nbsp;</p>\n\n<p>Write a solution to fix the names so that only the first character is uppercase and the rest are lowercase.</p>\n\n<p>Return the result table ordered by <code>user_id</code>.</p>\n\n<p>The result format is in the following example.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nUsers table:\n+---------+-------+\n| user_id | name  |\n+---------+-------+\n| 1       | aLice |\n| 2       | bOB   |\n+---------+-------+\n<strong>Output:</strong> \n+---------+-------+\n| user_id | name  |\n+---------+-------+\n| 1       | Alice |\n| 2       | Bob   |\n+---------+-------+\n</pre>\n",
+  "content_markdown": "Table: `Users`\n    \n    \n    +----------------+---------+\n    | Column Name    | Type    |\n    +----------------+---------+\n    | user_id        | int     |\n    | name           | varchar |\n    +----------------+---------+\n    user_id is the primary key (column with unique values) for this table.\n    This table contains the ID and the name of the user. The name consists of only lowercase and uppercase characters.\n    \n\n \n\nWrite a solution to fix the names so that only the first character is uppercase and the rest are lowercase.\n\nReturn the result table ordered by `user_id`.\n\nThe result format is in the following example.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \n    Users table:\n    +---------+-------+\n    | user_id | name  |\n    +---------+-------+\n    | 1       | aLice |\n    | 2       | bOB   |\n    +---------+-------+\n    **Output:** \n    +---------+-------+\n    | user_id | name  |\n    +---------+-------+\n    | 1       | Alice |\n    | 2       | Bob   |\n    +---------+-------+",
+  "question": "Table: `Users`\n    \n    \n    +----------------+---------+\n    | Column Name    | Type    |\n    +----------------+---------+\n    | user_id        | int     |\n    | name           | varchar |\n    +----------------+---------+\n    user_id is the primary key (column with unique values) for this table.\n    This table contains the ID and the name of the user. The name consists of only lowercase and uppercase characters.\n    \n\n \n\nWrite a solution to fix the names so that only the first character is uppercase and the rest are lowercase.\n\nReturn the result table ordered by `user_id`.\n\nThe result format is in the following example.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \n    Users table:\n    +---------+-------+\n    | user_id | name  |\n    +---------+-------+\n    | 1       | aLice |\n    | 2       | bOB   |\n    +---------+-------+\n    **Output:** \n    +---------+-------+\n    | user_id | name  |\n    +---------+-------+\n    | 1       | Alice |\n    | 2       | Bob   |\n    +---------+-------+",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 441623,
+  "total_submissions": 728939,
+  "acceptance_rate": "60.6%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,52 @@
+{
+  "id": "1870",
+  "title": "Minimum Speed to Arrive on Time",
+  "slug": "minimum-speed-to-arrive-on-time",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a floating-point number <code>hour</code>, representing the amount of time you have to reach the office. To commute to the office, you must take <code>n</code> trains in sequential order. You are also given an integer array <code>dist</code> of length <code>n</code>, where <code>dist[i]</code> describes the distance (in kilometers) of the <code>i<sup>th</sup></code> train ride.</p>\n\n<p>Each train can only depart at an integer hour, so you may need to wait in between each train ride.</p>\n\n<ul>\n\t<li>For example, if the <code>1<sup>st</sup></code> train ride takes <code>1.5</code> hours, you must wait for an additional <code>0.5</code> hours before you can depart on the <code>2<sup>nd</sup></code> train ride at the 2 hour mark.</li>\n</ul>\n\n<p>Return <em>the <strong>minimum positive integer</strong> speed <strong>(in kilometers per hour)</strong> that all the trains must travel at for you to reach the office on time, or </em><code>-1</code><em> if it is impossible to be on time</em>.</p>\n\n<p>Tests are generated such that the answer will not exceed <code>10<sup>7</sup></code> and <code>hour</code> will have <strong>at most two digits after the decimal point</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> dist = [1,3,2], hour = 6\n<strong>Output:</strong> 1\n<strong>Explanation: </strong>At speed 1:\n- The first train ride takes 1/1 = 1 hour.\n- Since we are already at an integer hour, we depart immediately at the 1 hour mark. The second train takes 3/1 = 3 hours.\n- Since we are already at an integer hour, we depart immediately at the 4 hour mark. The third train takes 2/1 = 2 hours.\n- You will arrive at exactly the 6 hour mark.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> dist = [1,3,2], hour = 2.7\n<strong>Output:</strong> 3\n<strong>Explanation: </strong>At speed 3:\n- The first train ride takes 1/3 = 0.33333 hours.\n- Since we are not at an integer hour, we wait until the 1 hour mark to depart. The second train ride takes 3/3 = 1 hour.\n- Since we are already at an integer hour, we depart immediately at the 2 hour mark. The third train takes 2/3 = 0.66667 hours.\n- You will arrive at the 2.66667 hour mark.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> dist = [1,3,2], hour = 1.9\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> It is impossible because the earliest the third train can depart is at the 2 hour mark.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == dist.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= dist[i] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= hour &lt;= 10<sup>9</sup></code></li>\n\t<li>There will be at most two digits after the decimal point in <code>hour</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a floating-point number `hour`, representing the amount of time you have to reach the office. To commute to the office, you must take `n` trains in sequential order. You are also given an integer array `dist` of length `n`, where `dist[i]` describes the distance (in kilometers) of the `ith` train ride.\n\nEach train can only depart at an integer hour, so you may need to wait in between each train ride.\n\n  * For example, if the `1st` train ride takes `1.5` hours, you must wait for an additional `0.5` hours before you can depart on the `2nd` train ride at the 2 hour mark.\n\n\n\nReturn _the**minimum positive integer** speed **(in kilometers per hour)** that all the trains must travel at for you to reach the office on time, or _`-1` _if it is impossible to be on time_.\n\nTests are generated such that the answer will not exceed `107` and `hour` will have **at most two digits after the decimal point**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** dist = [1,3,2], hour = 6\n    **Output:** 1\n    **Explanation:** At speed 1:\n    - The first train ride takes 1/1 = 1 hour.\n    - Since we are already at an integer hour, we depart immediately at the 1 hour mark. The second train takes 3/1 = 3 hours.\n    - Since we are already at an integer hour, we depart immediately at the 4 hour mark. The third train takes 2/1 = 2 hours.\n    - You will arrive at exactly the 6 hour mark.\n    \n\n**Example 2:**\n    \n    \n    **Input:** dist = [1,3,2], hour = 2.7\n    **Output:** 3\n    **Explanation:** At speed 3:\n    - The first train ride takes 1/3 = 0.33333 hours.\n    - Since we are not at an integer hour, we wait until the 1 hour mark to depart. The second train ride takes 3/3 = 1 hour.\n    - Since we are already at an integer hour, we depart immediately at the 2 hour mark. The third train takes 2/3 = 0.66667 hours.\n    - You will arrive at the 2.66667 hour mark.\n    \n\n**Example 3:**\n    \n    \n    **Input:** dist = [1,3,2], hour = 1.9\n    **Output:** -1\n    **Explanation:** It is impossible because the earliest the third train can depart is at the 2 hour mark.\n    \n\n \n\n**Constraints:**\n\n  * `n == dist.length`\n  * `1 <= n <= 105`\n  * `1 <= dist[i] <= 105`\n  * `1 <= hour <= 109`\n  * There will be at most two digits after the decimal point in `hour`.",
+  "question": "You are given a floating-point number `hour`, representing the amount of time you have to reach the office. To commute to the office, you must take `n` trains in sequential order. You are also given an integer array `dist` of length `n`, where `dist[i]` describes the distance (in kilometers) of the `ith` train ride.\n\nEach train can only depart at an integer hour, so you may need to wait in between each train ride.\n\n  * For example, if the `1st` train ride takes `1.5` hours, you must wait for an additional `0.5` hours before you can depart on the `2nd` train ride at the 2 hour mark.\n\n\n\nReturn _the**minimum positive integer** speed **(in kilometers per hour)** that all the trains must travel at for you to reach the office on time, or _`-1` _if it is impossible to be on time_.\n\nTests are generated such that the answer will not exceed `107` and `hour` will have **at most two digits after the decimal point**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** dist = [1,3,2], hour = 6\n    **Output:** 1\n    **Explanation:** At speed 1:\n    - The first train ride takes 1/1 = 1 hour.\n    - Since we are already at an integer hour, we depart immediately at the 1 hour mark. The second train takes 3/1 = 3 hours.\n    - Since we are already at an integer hour, we depart immediately at the 4 hour mark. The third train takes 2/1 = 2 hours.\n    - You will arrive at exactly the 6 hour mark.\n    \n\n**Example 2:**\n    \n    \n    **Input:** dist = [1,3,2], hour = 2.7\n    **Output:** 3\n    **Explanation:** At speed 3:\n    - The first train ride takes 1/3 = 0.33333 hours.\n    - Since we are not at an integer hour, we wait until the 1 hour mark to depart. The second train ride takes 3/3 = 1 hour.\n    - Since we are already at an integer hour, we depart immediately at the 2 hour mark. The third train takes 2/3 = 0.66667 hours.\n    - You will arrive at the 2.66667 hour mark.\n    \n\n**Example 3:**\n    \n    \n    **Input:** dist = [1,3,2], hour = 1.9\n    **Output:** -1\n    **Explanation:** It is impossible because the earliest the third train can depart is at the 2 hour mark.",
+  "constraints": "**Constraints:**\n\n  * `n == dist.length`\n  * `1 <= n <= 105`\n  * `1 <= dist[i] <= 105`\n  * `1 <= hour <= 109`\n  * There will be at most two digits after the decimal point in `hour`.",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 125006,
+  "total_submissions": 262184,
+  "acceptance_rate": "47.7%",
+  "similar_questions": [
+    {
+      "title": "Maximum Candies Allocated to K Children",
+      "slug": "maximum-candies-allocated-to-k-children",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-candies-allocated-to-k-children/"
+    },
+    {
+      "title": "Minimum Skips to Arrive at Meeting On Time",
+      "slug": "minimum-skips-to-arrive-at-meeting-on-time",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-skips-to-arrive-at-meeting-on-time/"
+    },
+    {
+      "title": "Minimum Time to Complete Trips",
+      "slug": "minimum-time-to-complete-trips",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-time-to-complete-trips/"
+    },
+    {
+      "title": "The Latest Time to Catch a Bus",
+      "slug": "the-latest-time-to-catch-a-bus",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-latest-time-to-catch-a-bus/"
+    },
+    {
+      "title": "Minimize Maximum of Array",
+      "slug": "minimize-maximum-of-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-maximum-of-array/"
+    }
+  ],
+  "hints": [
+    "Given the speed the trains are traveling at, can you find the total time it takes for you to arrive?",
+    "Is there a cutoff where any speeds larger will always allow you to arrive on time?"
+  ]
+}

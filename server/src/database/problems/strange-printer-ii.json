@@ -1,0 +1,39 @@
+{
+  "id": "1591",
+  "title": "Strange Printer II",
+  "slug": "strange-printer-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There is a strange printer with the following two special requirements:</p>\n\n<ul>\n\t<li>On each turn, the printer will print a solid rectangular pattern of a single color on the grid. This will cover up the existing colors in the rectangle.</li>\n\t<li>Once the printer has used a color for the above operation, <strong>the same color cannot be used again</strong>.</li>\n</ul>\n\n<p>You are given a <code>m x n</code> matrix <code>targetGrid</code>, where <code>targetGrid[row][col]</code> is the color in the position <code>(row, col)</code> of the grid.</p>\n\n<p>Return <code>true</code><em> if it is possible to print the matrix </em><code>targetGrid</code><em>,</em><em> otherwise, return </em><code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/23/print1.jpg\" style=\"width: 600px; height: 175px;\" />\n<pre>\n<strong>Input:</strong> targetGrid = [[1,1,1,1],[1,2,2,1],[1,2,2,1],[1,1,1,1]]\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/23/print2.jpg\" style=\"width: 600px; height: 367px;\" />\n<pre>\n<strong>Input:</strong> targetGrid = [[1,1,1,1],[1,1,3,3],[1,1,3,4],[5,5,1,4]]\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> targetGrid = [[1,2,1],[2,1,2],[1,2,1]]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> It is impossible to form targetGrid because it is not allowed to print the same color in different turns.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == targetGrid.length</code></li>\n\t<li><code>n == targetGrid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 60</code></li>\n\t<li><code>1 &lt;= targetGrid[row][col] &lt;= 60</code></li>\n</ul>\n",
+  "content_markdown": "There is a strange printer with the following two special requirements:\n\n  * On each turn, the printer will print a solid rectangular pattern of a single color on the grid. This will cover up the existing colors in the rectangle.\n  * Once the printer has used a color for the above operation, **the same color cannot be used again**.\n\n\n\nYou are given a `m x n` matrix `targetGrid`, where `targetGrid[row][col]` is the color in the position `(row, col)` of the grid.\n\nReturn `true` _if it is possible to print the matrix_`targetGrid` _,__otherwise, return_`false`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/23/print1.jpg)\n    \n    \n    **Input:** targetGrid = [[1,1,1,1],[1,2,2,1],[1,2,2,1],[1,1,1,1]]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/23/print2.jpg)\n    \n    \n    **Input:** targetGrid = [[1,1,1,1],[1,1,3,3],[1,1,3,4],[5,5,1,4]]\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** targetGrid = [[1,2,1],[2,1,2],[1,2,1]]\n    **Output:** false\n    **Explanation:** It is impossible to form targetGrid because it is not allowed to print the same color in different turns.\n    \n\n \n\n**Constraints:**\n\n  * `m == targetGrid.length`\n  * `n == targetGrid[i].length`\n  * `1 <= m, n <= 60`\n  * `1 <= targetGrid[row][col] <= 60`",
+  "question": "There is a strange printer with the following two special requirements:\n\n  * On each turn, the printer will print a solid rectangular pattern of a single color on the grid. This will cover up the existing colors in the rectangle.\n  * Once the printer has used a color for the above operation, **the same color cannot be used again**.\n\n\n\nYou are given a `m x n` matrix `targetGrid`, where `targetGrid[row][col]` is the color in the position `(row, col)` of the grid.\n\nReturn `true` _if it is possible to print the matrix_`targetGrid` _,__otherwise, return_`false`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/23/print1.jpg)\n    \n    \n    **Input:** targetGrid = [[1,1,1,1],[1,2,2,1],[1,2,2,1],[1,1,1,1]]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/23/print2.jpg)\n    \n    \n    **Input:** targetGrid = [[1,1,1,1],[1,1,3,3],[1,1,3,4],[5,5,1,4]]\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** targetGrid = [[1,2,1],[2,1,2],[1,2,1]]\n    **Output:** false\n    **Explanation:** It is impossible to form targetGrid because it is not allowed to print the same color in different turns.",
+  "constraints": "**Constraints:**\n\n  * `m == targetGrid.length`\n  * `n == targetGrid[i].length`\n  * `1 <= m, n <= 60`\n  * `1 <= targetGrid[row][col] <= 60`",
+  "topics": ["Array", "Graph Theory", "Topological Sort", "Matrix"],
+  "total_accepted": 16085,
+  "total_submissions": 26515,
+  "acceptance_rate": "60.7%",
+  "similar_questions": [
+    {
+      "title": "Strange Printer",
+      "slug": "strange-printer",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/strange-printer/"
+    },
+    {
+      "title": "Longest Cycle in a Graph",
+      "slug": "longest-cycle-in-a-graph",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-cycle-in-a-graph/"
+    },
+    {
+      "title": "Sort Array by Moving Items to Empty Space",
+      "slug": "sort-array-by-moving-items-to-empty-space",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sort-array-by-moving-items-to-empty-space/"
+    }
+  ],
+  "hints": [
+    "Try thinking in reverse. Given the grid, how can you tell if a colour was painted last?"
+  ]
+}

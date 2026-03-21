@@ -1,0 +1,50 @@
+{
+  "id": "272",
+  "title": "Closest Binary Search Tree Value II",
+  "slug": "closest-binary-search-tree-value-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Two Pointers",
+    "Stack",
+    "Tree",
+    "Depth-First Search",
+    "Binary Search Tree",
+    "Heap (Priority Queue)",
+    "Binary Tree"
+  ],
+  "total_accepted": 138902,
+  "total_submissions": 227332,
+  "acceptance_rate": "61.1%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Inorder Traversal",
+      "slug": "binary-tree-inorder-traversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/"
+    },
+    {
+      "title": "Closest Binary Search Tree Value",
+      "slug": "closest-binary-search-tree-value",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/closest-binary-search-tree-value/"
+    },
+    {
+      "title": "Closest Nodes Queries in a Binary Search Tree",
+      "slug": "closest-nodes-queries-in-a-binary-search-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/closest-nodes-queries-in-a-binary-search-tree/"
+    }
+  ],
+  "hints": [
+    "Consider implement these two helper functions:\r\n<ol type=\"i\"><li><code>getPredecessor(N)</code>, which returns the next smaller node to N.</li>\r\n<li><code>getSuccessor(N)</code>, which returns the next larger node to N.</li>\r\n</ol>",
+    "Try to assume that each node has a parent pointer, it makes the problem much easier.",
+    "Without parent pointer we just need to keep track of the path from the root to the current node using a stack.",
+    "You would need two stacks to track the path in finding predecessor and successor node separately."
+  ]
+}

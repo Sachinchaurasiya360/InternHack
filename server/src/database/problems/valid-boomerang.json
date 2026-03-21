@@ -1,0 +1,20 @@
+{
+  "id": "1037",
+  "title": "Valid Boomerang",
+  "slug": "valid-boomerang",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>points</code> where <code>points[i] = [x<sub>i</sub>, y<sub>i</sub>]</code> represents a point on the <strong>X-Y</strong> plane, return <code>true</code> <em>if these points are a <strong>boomerang</strong></em>.</p>\n\n<p>A <strong>boomerang</strong> is a set of three points that are <strong>all distinct</strong> and <strong>not in a straight line</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> points = [[1,1],[2,3],[3,2]]\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> points = [[1,1],[2,2],[3,3]]\n<strong>Output:</strong> false\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>points.length == 3</code></li>\n\t<li><code>points[i].length == 2</code></li>\n\t<li><code>0 &lt;= x<sub>i</sub>, y<sub>i</sub> &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given an array `points` where `points[i] = [xi, yi]` represents a point on the **X-Y** plane, return `true` _if these points are a**boomerang**_.\n\nA **boomerang** is a set of three points that are **all distinct** and **not in a straight line**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** points = [[1,1],[2,3],[3,2]]\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** points = [[1,1],[2,2],[3,3]]\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `points.length == 3`\n  * `points[i].length == 2`\n  * `0 <= xi, yi <= 100`",
+  "question": "Given an array `points` where `points[i] = [xi, yi]` represents a point on the **X-Y** plane, return `true` _if these points are a**boomerang**_.\n\nA **boomerang** is a set of three points that are **all distinct** and **not in a straight line**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** points = [[1,1],[2,3],[3,2]]\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** points = [[1,1],[2,2],[3,3]]\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `points.length == 3`\n  * `points[i].length == 2`\n  * `0 <= xi, yi <= 100`",
+  "topics": ["Array", "Math", "Geometry"],
+  "total_accepted": 74025,
+  "total_submissions": 188946,
+  "acceptance_rate": "39.2%",
+  "similar_questions": [],
+  "hints": [
+    "3 points form a boomerang if and only if the triangle formed from them has non-zero area."
+  ]
+}

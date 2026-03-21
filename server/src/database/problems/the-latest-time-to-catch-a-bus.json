@@ -1,0 +1,52 @@
+{
+  "id": "2332",
+  "title": "The Latest Time to Catch a Bus",
+  "slug": "the-latest-time-to-catch-a-bus",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>buses</code> of length <code>n</code>, where <code>buses[i]</code> represents the departure time of the <code>i<sup>th</sup></code> bus. You are also given a <strong>0-indexed</strong> integer array <code>passengers</code> of length <code>m</code>, where <code>passengers[j]</code> represents the arrival time of the <code>j<sup>th</sup></code> passenger. All bus departure times are unique. All passenger arrival times are unique.</p>\n\n<p>You are given an integer <code>capacity</code>, which represents the <strong>maximum</strong> number of passengers that can get on each bus.</p>\n\n<p>When a passenger arrives, they will wait in line for the next available bus. You can get on a bus that departs at <code>x</code> minutes if you arrive at <code>y</code> minutes where <code>y &lt;= x</code>, and the bus is not full. Passengers with the <strong>earliest</strong> arrival times get on the bus first.</p>\n\n<p>More formally when a bus arrives, either:</p>\n\n<ul>\n\t<li>If <code>capacity</code> or fewer passengers are waiting for a bus, they will <strong>all</strong> get on the bus, or</li>\n\t<li>The <code>capacity</code> passengers with the <strong>earliest</strong> arrival times will get on the bus.</li>\n</ul>\n\n<p>Return <em>the latest time you may arrive at the bus station to catch a bus</em>. You <strong>cannot</strong> arrive at the same time as another passenger.</p>\n\n<p><strong>Note: </strong>The arrays <code>buses</code> and <code>passengers</code> are not necessarily sorted.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> buses = [10,20], passengers = [2,17,18,19], capacity = 2\n<strong>Output:</strong> 16\n<strong>Explanation:</strong> Suppose you arrive at time 16.\nAt time 10, the first bus departs with the 0<sup>th</sup> passenger. \nAt time 20, the second bus departs with you and the 1<sup>st</sup> passenger.\nNote that you may not arrive at the same time as another passenger, which is why you must arrive before the 1<sup>st</sup> passenger to catch the bus.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> buses = [20,30,10], passengers = [19,13,26,4,25,11,21], capacity = 2\n<strong>Output:</strong> 20\n<strong>Explanation:</strong> Suppose you arrive at time 20.\nAt time 10, the first bus departs with the 3<sup>rd</sup> passenger. \nAt time 20, the second bus departs with the 5<sup>th</sup> and 1<sup>st</sup> passengers.\nAt time 30, the third bus departs with the 0<sup>th</sup> passenger and you.\nNotice if you had arrived any later, then the 6<sup>th</sup> passenger would have taken your seat on the third bus.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == buses.length</code></li>\n\t<li><code>m == passengers.length</code></li>\n\t<li><code>1 &lt;= n, m, capacity &lt;= 10<sup>5</sup></code></li>\n\t<li><code>2 &lt;= buses[i], passengers[i] &lt;= 10<sup>9</sup></code></li>\n\t<li>Each element in <code>buses</code> is <strong>unique</strong>.</li>\n\t<li>Each element in <code>passengers</code> is <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `buses` of length `n`, where `buses[i]` represents the departure time of the `ith` bus. You are also given a **0-indexed** integer array `passengers` of length `m`, where `passengers[j]` represents the arrival time of the `jth` passenger. All bus departure times are unique. All passenger arrival times are unique.\n\nYou are given an integer `capacity`, which represents the **maximum** number of passengers that can get on each bus.\n\nWhen a passenger arrives, they will wait in line for the next available bus. You can get on a bus that departs at `x` minutes if you arrive at `y` minutes where `y <= x`, and the bus is not full. Passengers with the **earliest** arrival times get on the bus first.\n\nMore formally when a bus arrives, either:\n\n  * If `capacity` or fewer passengers are waiting for a bus, they will **all** get on the bus, or\n  * The `capacity` passengers with the **earliest** arrival times will get on the bus.\n\n\n\nReturn _the latest time you may arrive at the bus station to catch a bus_. You **cannot** arrive at the same time as another passenger.\n\n**Note:** The arrays `buses` and `passengers` are not necessarily sorted.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** buses = [10,20], passengers = [2,17,18,19], capacity = 2\n    **Output:** 16\n    **Explanation:** Suppose you arrive at time 16.\n    At time 10, the first bus departs with the 0th passenger. \n    At time 20, the second bus departs with you and the 1st passenger.\n    Note that you may not arrive at the same time as another passenger, which is why you must arrive before the 1st passenger to catch the bus.\n\n**Example 2:**\n    \n    \n    **Input:** buses = [20,30,10], passengers = [19,13,26,4,25,11,21], capacity = 2\n    **Output:** 20\n    **Explanation:** Suppose you arrive at time 20.\n    At time 10, the first bus departs with the 3rd passenger. \n    At time 20, the second bus departs with the 5th and 1st passengers.\n    At time 30, the third bus departs with the 0th passenger and you.\n    Notice if you had arrived any later, then the 6th passenger would have taken your seat on the third bus.\n\n \n\n**Constraints:**\n\n  * `n == buses.length`\n  * `m == passengers.length`\n  * `1 <= n, m, capacity <= 105`\n  * `2 <= buses[i], passengers[i] <= 109`\n  * Each element in `buses` is **unique**.\n  * Each element in `passengers` is **unique**.",
+  "question": "You are given a **0-indexed** integer array `buses` of length `n`, where `buses[i]` represents the departure time of the `ith` bus. You are also given a **0-indexed** integer array `passengers` of length `m`, where `passengers[j]` represents the arrival time of the `jth` passenger. All bus departure times are unique. All passenger arrival times are unique.\n\nYou are given an integer `capacity`, which represents the **maximum** number of passengers that can get on each bus.\n\nWhen a passenger arrives, they will wait in line for the next available bus. You can get on a bus that departs at `x` minutes if you arrive at `y` minutes where `y <= x`, and the bus is not full. Passengers with the **earliest** arrival times get on the bus first.\n\nMore formally when a bus arrives, either:\n\n  * If `capacity` or fewer passengers are waiting for a bus, they will **all** get on the bus, or\n  * The `capacity` passengers with the **earliest** arrival times will get on the bus.\n\n\n\nReturn _the latest time you may arrive at the bus station to catch a bus_. You **cannot** arrive at the same time as another passenger.\n\n**Note:** The arrays `buses` and `passengers` are not necessarily sorted.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** buses = [10,20], passengers = [2,17,18,19], capacity = 2\n    **Output:** 16\n    **Explanation:** Suppose you arrive at time 16.\n    At time 10, the first bus departs with the 0th passenger. \n    At time 20, the second bus departs with you and the 1st passenger.\n    Note that you may not arrive at the same time as another passenger, which is why you must arrive before the 1st passenger to catch the bus.\n\n**Example 2:**\n    \n    \n    **Input:** buses = [20,30,10], passengers = [19,13,26,4,25,11,21], capacity = 2\n    **Output:** 20\n    **Explanation:** Suppose you arrive at time 20.\n    At time 10, the first bus departs with the 3rd passenger. \n    At time 20, the second bus departs with the 5th and 1st passengers.\n    At time 30, the third bus departs with the 0th passenger and you.\n    Notice if you had arrived any later, then the 6th passenger would have taken your seat on the third bus.",
+  "constraints": "**Constraints:**\n\n  * `n == buses.length`\n  * `m == passengers.length`\n  * `1 <= n, m, capacity <= 105`\n  * `2 <= buses[i], passengers[i] <= 109`\n  * Each element in `buses` is **unique**.\n  * Each element in `passengers` is **unique**.",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 35144,
+  "total_submissions": 117354,
+  "acceptance_rate": "29.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Speed to Arrive on Time",
+      "slug": "minimum-speed-to-arrive-on-time",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-speed-to-arrive-on-time/"
+    },
+    {
+      "title": "Maximum Matching of Players With Trainers",
+      "slug": "maximum-matching-of-players-with-trainers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-matching-of-players-with-trainers/"
+    },
+    {
+      "title": "Time Taken to Cross the Door",
+      "slug": "time-taken-to-cross-the-door",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/time-taken-to-cross-the-door/"
+    },
+    {
+      "title": "Time to Cross a Bridge",
+      "slug": "time-to-cross-a-bridge",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/time-to-cross-a-bridge/"
+    },
+    {
+      "title": "Rearranging Fruits",
+      "slug": "rearranging-fruits",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/rearranging-fruits/"
+    }
+  ],
+  "hints": [
+    "Sort the buses and passengers arrays.",
+    "Use 2 pointers to traverse buses and passengers with a simulation of passengers getting on a particular bus."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "861",
+  "title": "Score After Flipping Matrix",
+  "slug": "score-after-flipping-matrix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> binary matrix <code>grid</code>.</p>\n\n<p>A <strong>move</strong> consists of choosing any row or column and toggling each value in that row or column (i.e., changing all <code>0</code>&#39;s to <code>1</code>&#39;s, and all <code>1</code>&#39;s to <code>0</code>&#39;s).</p>\n\n<p>Every row of the matrix is interpreted as a binary number, and the <strong>score</strong> of the matrix is the sum of these numbers.</p>\n\n<p>Return <em>the highest possible <strong>score</strong> after making any number of <strong>moves</strong> (including zero moves)</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/07/23/lc-toogle1.jpg\" style=\"width: 500px; height: 299px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,0,1,1],[1,0,1,0],[1,1,0,0]]\n<strong>Output:</strong> 39\n<strong>Explanation:</strong> 0b1111 + 0b1001 + 0b1111 = 15 + 9 + 15 = 39\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[0]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 20</code></li>\n\t<li><code>grid[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` binary matrix `grid`.\n\nA **move** consists of choosing any row or column and toggling each value in that row or column (i.e., changing all `0`'s to `1`'s, and all `1`'s to `0`'s).\n\nEvery row of the matrix is interpreted as a binary number, and the **score** of the matrix is the sum of these numbers.\n\nReturn _the highest possible**score** after making any number of **moves** (including zero moves)_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/07/23/lc-toogle1.jpg)\n    \n    \n    **Input:** grid = [[0,0,1,1],[1,0,1,0],[1,1,0,0]]\n    **Output:** 39\n    **Explanation:** 0b1111 + 0b1001 + 0b1111 = 15 + 9 + 15 = 39\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[0]]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 20`\n  * `grid[i][j]` is either `0` or `1`.",
+  "question": "You are given an `m x n` binary matrix `grid`.\n\nA **move** consists of choosing any row or column and toggling each value in that row or column (i.e., changing all `0`'s to `1`'s, and all `1`'s to `0`'s).\n\nEvery row of the matrix is interpreted as a binary number, and the **score** of the matrix is the sum of these numbers.\n\nReturn _the highest possible**score** after making any number of **moves** (including zero moves)_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/07/23/lc-toogle1.jpg)\n    \n    \n    **Input:** grid = [[0,0,1,1],[1,0,1,0],[1,1,0,0]]\n    **Output:** 39\n    **Explanation:** 0b1111 + 0b1001 + 0b1111 = 15 + 9 + 15 = 39\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[0]]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 20`\n  * `grid[i][j]` is either `0` or `1`.",
+  "topics": ["Array", "Greedy", "Bit Manipulation", "Matrix"],
+  "total_accepted": 166139,
+  "total_submissions": 206941,
+  "acceptance_rate": "80.3%",
+  "similar_questions": [
+    {
+      "title": "Remove All Ones With Row and Column Flips",
+      "slug": "remove-all-ones-with-row-and-column-flips",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-all-ones-with-row-and-column-flips/"
+    }
+  ],
+  "hints": []
+}

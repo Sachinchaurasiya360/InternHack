@@ -1,0 +1,22 @@
+{
+  "id": "1175",
+  "title": "Prime Arrangements",
+  "slug": "prime-arrangements",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Return the number of permutations of 1 to <code>n</code> so that prime numbers are at prime indices (1-indexed.)</p>\n\n<p><em>(Recall that an integer&nbsp;is prime if and only if it is greater than 1, and cannot be written as a product of two positive integers&nbsp;both smaller than it.)</em></p>\n\n<p>Since the answer may be large, return the answer <strong>modulo <code>10^9 + 7</code></strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5\n<strong>Output:</strong> 12\n<strong>Explanation:</strong> For example [1,2,5,4,3] is a valid permutation, but [5,2,3,4,1] is not because the prime number 5 is at index 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 100\n<strong>Output:</strong> 682289015\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Return the number of permutations of 1 to `n` so that prime numbers are at prime indices (1-indexed.)\n\n_(Recall that an integer  is prime if and only if it is greater than 1, and cannot be written as a product of two positive integers both smaller than it.)_\n\nSince the answer may be large, return the answer **modulo`10^9 + 7`**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** 12\n    **Explanation:** For example [1,2,5,4,3] is a valid permutation, but [5,2,3,4,1] is not because the prime number 5 is at index 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 100\n    **Output:** 682289015\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 100`",
+  "question": "Return the number of permutations of 1 to `n` so that prime numbers are at prime indices (1-indexed.)\n\n_(Recall that an integer  is prime if and only if it is greater than 1, and cannot be written as a product of two positive integers both smaller than it.)_\n\nSince the answer may be large, return the answer **modulo`10^9 + 7`**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** 12\n    **Explanation:** For example [1,2,5,4,3] is a valid permutation, but [5,2,3,4,1] is not because the prime number 5 is at index 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 100\n    **Output:** 682289015",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 100`",
+  "topics": ["Math"],
+  "total_accepted": 42543,
+  "total_submissions": 70017,
+  "acceptance_rate": "60.8%",
+  "similar_questions": [],
+  "hints": [
+    "Solve the problem for prime numbers and composite numbers separately.",
+    "Multiply the number of permutations of prime numbers over prime indices with the number of permutations of composite numbers over composite indices.",
+    "The number of permutations equals the factorial."
+  ]
+}

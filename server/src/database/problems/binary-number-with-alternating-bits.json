@@ -1,0 +1,25 @@
+{
+  "id": "693",
+  "title": "Binary Number with Alternating Bits",
+  "slug": "binary-number-with-alternating-bits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer, check whether it has alternating bits: namely, if two adjacent bits will always have different values.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The binary representation of 5 is: 101\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 7\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The binary representation of 7 is: 111.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 11\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The binary representation of 11 is: 1011.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer, check whether it has alternating bits: namely, if two adjacent bits will always have different values.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** true\n    **Explanation:** The binary representation of 5 is: 101\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 7\n    **Output:** false\n    **Explanation:** The binary representation of 7 is: 111.\n\n**Example 3:**\n    \n    \n    **Input:** n = 11\n    **Output:** false\n    **Explanation:** The binary representation of 11 is: 1011.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 231 - 1`",
+  "question": "Given a positive integer, check whether it has alternating bits: namely, if two adjacent bits will always have different values.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** true\n    **Explanation:** The binary representation of 5 is: 101\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 7\n    **Output:** false\n    **Explanation:** The binary representation of 7 is: 111.\n\n**Example 3:**\n    \n    \n    **Input:** n = 11\n    **Output:** false\n    **Explanation:** The binary representation of 11 is: 1011.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 231 - 1`",
+  "topics": ["Bit Manipulation"],
+  "total_accepted": 295758,
+  "total_submissions": 423829,
+  "acceptance_rate": "69.8%",
+  "similar_questions": [
+    {
+      "title": "Number of 1 Bits",
+      "slug": "number-of-1-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-1-bits/"
+    }
+  ],
+  "hints": []
+}

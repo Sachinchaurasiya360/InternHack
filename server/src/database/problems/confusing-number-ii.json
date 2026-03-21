@@ -1,0 +1,28 @@
+{
+  "id": "1088",
+  "title": "Confusing Number II",
+  "slug": "confusing-number-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Backtracking"],
+  "total_accepted": 39251,
+  "total_submissions": 83248,
+  "acceptance_rate": "47.1%",
+  "similar_questions": [
+    {
+      "title": "Confusing Number",
+      "slug": "confusing-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/confusing-number/"
+    }
+  ],
+  "hints": [
+    "Which set of digits have the valid numbers?",
+    "Only 0, 1, 6, 8, 9 are the valid set of digits, do a backtracking to generate all the numbers containing this digits and check they are valid."
+  ]
+}

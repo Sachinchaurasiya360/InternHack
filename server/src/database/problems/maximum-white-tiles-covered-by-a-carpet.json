@@ -1,0 +1,28 @@
+{
+  "id": "2271",
+  "title": "Maximum White Tiles Covered by a Carpet",
+  "slug": "maximum-white-tiles-covered-by-a-carpet",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D integer array <code>tiles</code> where <code>tiles[i] = [l<sub>i</sub>, r<sub>i</sub>]</code> represents that every tile <code>j</code> in the range <code>l<sub>i</sub> &lt;= j &lt;= r<sub>i</sub></code> is colored white.</p>\n\n<p>You are also given an integer <code>carpetLen</code>, the length of a single carpet that can be placed <strong>anywhere</strong>.</p>\n\n<p>Return <em>the <strong>maximum</strong> number of white tiles that can be covered by the carpet</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/03/25/example1drawio3.png\" style=\"width: 644px; height: 158px;\" />\n<pre>\n<strong>Input:</strong> tiles = [[1,5],[10,11],[12,18],[20,25],[30,32]], carpetLen = 10\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> Place the carpet starting on tile 10. \nIt covers 9 white tiles, so we return 9.\nNote that there may be other places where the carpet covers 9 white tiles.\nIt can be shown that the carpet cannot cover more than 9 white tiles.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/03/24/example2drawio.png\" style=\"width: 231px; height: 168px;\" />\n<pre>\n<strong>Input:</strong> tiles = [[10,11],[1,1]], carpetLen = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Place the carpet starting on tile 10. \nIt covers 2 white tiles, so we return 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= tiles.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>tiles[i].length == 2</code></li>\n\t<li><code>1 &lt;= l<sub>i</sub> &lt;= r<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= carpetLen &lt;= 10<sup>9</sup></code></li>\n\t<li>The <code>tiles</code> are <strong>non-overlapping</strong>.</li>\n</ul>\n",
+  "content_markdown": "You are given a 2D integer array `tiles` where `tiles[i] = [li, ri]` represents that every tile `j` in the range `li <= j <= ri` is colored white.\n\nYou are also given an integer `carpetLen`, the length of a single carpet that can be placed **anywhere**.\n\nReturn _the**maximum** number of white tiles that can be covered by the carpet_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/03/25/example1drawio3.png)\n    \n    \n    **Input:** tiles = [[1,5],[10,11],[12,18],[20,25],[30,32]], carpetLen = 10\n    **Output:** 9\n    **Explanation:** Place the carpet starting on tile 10. \n    It covers 9 white tiles, so we return 9.\n    Note that there may be other places where the carpet covers 9 white tiles.\n    It can be shown that the carpet cannot cover more than 9 white tiles.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/03/24/example2drawio.png)\n    \n    \n    **Input:** tiles = [[10,11],[1,1]], carpetLen = 2\n    **Output:** 2\n    **Explanation:** Place the carpet starting on tile 10. \n    It covers 2 white tiles, so we return 2.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= tiles.length <= 5 * 104`\n  * `tiles[i].length == 2`\n  * `1 <= li <= ri <= 109`\n  * `1 <= carpetLen <= 109`\n  * The `tiles` are **non-overlapping**.",
+  "question": "You are given a 2D integer array `tiles` where `tiles[i] = [li, ri]` represents that every tile `j` in the range `li <= j <= ri` is colored white.\n\nYou are also given an integer `carpetLen`, the length of a single carpet that can be placed **anywhere**.\n\nReturn _the**maximum** number of white tiles that can be covered by the carpet_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/03/25/example1drawio3.png)\n    \n    \n    **Input:** tiles = [[1,5],[10,11],[12,18],[20,25],[30,32]], carpetLen = 10\n    **Output:** 9\n    **Explanation:** Place the carpet starting on tile 10. \n    It covers 9 white tiles, so we return 9.\n    Note that there may be other places where the carpet covers 9 white tiles.\n    It can be shown that the carpet cannot cover more than 9 white tiles.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/03/24/example2drawio.png)\n    \n    \n    **Input:** tiles = [[10,11],[1,1]], carpetLen = 2\n    **Output:** 2\n    **Explanation:** Place the carpet starting on tile 10. \n    It covers 2 white tiles, so we return 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= tiles.length <= 5 * 104`\n  * `tiles[i].length == 2`\n  * `1 <= li <= ri <= 109`\n  * `1 <= carpetLen <= 109`\n  * The `tiles` are **non-overlapping**.",
+  "topics": ["Array", "Binary Search", "Greedy", "Sliding Window", "Sorting", "Prefix Sum"],
+  "total_accepted": 21593,
+  "total_submissions": 60537,
+  "acceptance_rate": "35.7%",
+  "similar_questions": [
+    {
+      "title": "Maximum Number of Vowels in a Substring of Given Length",
+      "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/"
+    }
+  ],
+  "hints": [
+    "Think about the potential placements of the carpet in an optimal solution.",
+    "Can we use Prefix Sum and Binary Search to determine how many tiles are covered for a given placement?"
+  ]
+}

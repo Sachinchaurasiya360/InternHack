@@ -1,0 +1,55 @@
+{
+  "id": "123",
+  "title": "Best Time to Buy and Sell Stock III",
+  "slug": "best-time-to-buy-and-sell-stock-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>prices</code> where <code>prices[i]</code> is the price of a given stock on the <code>i<sup>th</sup></code> day.</p>\n\n<p>Find the maximum profit you can achieve. You may complete <strong>at most two transactions</strong>.</p>\n\n<p><strong>Note:</strong> You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [3,3,5,0,0,3,1,4]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> Buy on day 4 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.\nThen buy on day 7 (price = 1) and sell on day 8 (price = 4), profit = 4-1 = 3.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [1,2,3,4,5]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.\nNote that you cannot buy on day 1, buy on day 2 and sell them later, as you are engaging multiple transactions at the same time. You must sell before buying again.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> prices = [7,6,4,3,1]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> In this case, no transaction is done, i.e. max profit = 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= prices.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= prices[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nFind the maximum profit you can achieve. You may complete **at most two transactions**.\n\n**Note:** You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** prices = [3,3,5,0,0,3,1,4]\n    **Output:** 6\n    **Explanation:** Buy on day 4 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.\n    Then buy on day 7 (price = 1) and sell on day 8 (price = 4), profit = 4-1 = 3.\n\n**Example 2:**\n    \n    \n    **Input:** prices = [1,2,3,4,5]\n    **Output:** 4\n    **Explanation:** Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.\n    Note that you cannot buy on day 1, buy on day 2 and sell them later, as you are engaging multiple transactions at the same time. You must sell before buying again.\n    \n\n**Example 3:**\n    \n    \n    **Input:** prices = [7,6,4,3,1]\n    **Output:** 0\n    **Explanation:** In this case, no transaction is done, i.e. max profit = 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= prices.length <= 105`\n  * `0 <= prices[i] <= 105`",
+  "question": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nFind the maximum profit you can achieve. You may complete **at most two transactions**.\n\n**Note:** You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** prices = [3,3,5,0,0,3,1,4]\n    **Output:** 6\n    **Explanation:** Buy on day 4 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.\n    Then buy on day 7 (price = 1) and sell on day 8 (price = 4), profit = 4-1 = 3.\n\n**Example 2:**\n    \n    \n    **Input:** prices = [1,2,3,4,5]\n    **Output:** 4\n    **Explanation:** Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.\n    Note that you cannot buy on day 1, buy on day 2 and sell them later, as you are engaging multiple transactions at the same time. You must sell before buying again.\n    \n\n**Example 3:**\n    \n    \n    **Input:** prices = [7,6,4,3,1]\n    **Output:** 0\n    **Explanation:** In this case, no transaction is done, i.e. max profit = 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= prices.length <= 105`\n  * `0 <= prices[i] <= 105`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 928937,
+  "total_submissions": 1746745,
+  "acceptance_rate": "53.2%",
+  "similar_questions": [
+    {
+      "title": "Best Time to Buy and Sell Stock",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock II",
+      "slug": "best-time-to-buy-and-sell-stock-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/"
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock IV",
+      "slug": "best-time-to-buy-and-sell-stock-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/"
+    },
+    {
+      "title": "Maximum Sum of 3 Non-Overlapping Subarrays",
+      "slug": "maximum-sum-of-3-non-overlapping-subarrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-sum-of-3-non-overlapping-subarrays/"
+    },
+    {
+      "title": "Maximum Profit From Trading Stocks",
+      "slug": "maximum-profit-from-trading-stocks",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-profit-from-trading-stocks/"
+    },
+    {
+      "title": "Maximize Win From Two Segments",
+      "slug": "maximize-win-from-two-segments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-win-from-two-segments/"
+    }
+  ],
+  "hints": []
+}

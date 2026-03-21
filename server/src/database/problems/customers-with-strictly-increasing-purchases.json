@@ -1,0 +1,31 @@
+{
+  "id": "2474",
+  "title": "Customers With Strictly Increasing Purchases",
+  "slug": "customers-with-strictly-increasing-purchases",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 5782,
+  "total_submissions": 11690,
+  "acceptance_rate": "49.5%",
+  "similar_questions": [
+    {
+      "title": "Report Contiguous Dates",
+      "slug": "report-contiguous-dates",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/report-contiguous-dates/"
+    },
+    {
+      "title": "Find the Start and End Number of Continuous Ranges",
+      "slug": "find-the-start-and-end-number-of-continuous-ranges",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-start-and-end-number-of-continuous-ranges/"
+    }
+  ],
+  "hints": []
+}

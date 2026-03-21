@@ -1,0 +1,40 @@
+{
+  "id": "1711",
+  "title": "Count Good Meals",
+  "slug": "count-good-meals",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A <strong>good meal</strong> is a meal that contains <strong>exactly two different food items</strong> with a sum of deliciousness equal to a power of two.</p>\n\n<p>You can pick <strong>any</strong> two different foods to make a good meal.</p>\n\n<p>Given an array of integers <code>deliciousness</code> where <code>deliciousness[i]</code> is the deliciousness of the <code>i<sup>​​​​​​th</sup>​​​​</code>​​​​ item of food, return <em>the number of different <strong>good meals</strong> you can make from this list modulo</em> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>Note that items with different indices are considered different even if they have the same deliciousness value.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> deliciousness = [1,3,5,7,9]\n<strong>Output:</strong> 4\n<strong>Explanation: </strong>The good meals are (1,3), (1,7), (3,5) and, (7,9).\nTheir respective sums are 4, 8, 8, and 16, all of which are powers of 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> deliciousness = [1,1,1,3,3,3,7]\n<strong>Output:</strong> 15\n<strong>Explanation: </strong>The good meals are (1,1) with 3 ways, (1,3) with 9 ways, and (1,7) with 3 ways.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= deliciousness.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= deliciousness[i] &lt;= 2<sup>20</sup></code></li>\n</ul>\n",
+  "content_markdown": "A **good meal** is a meal that contains **exactly two different food items** with a sum of deliciousness equal to a power of two.\n\nYou can pick **any** two different foods to make a good meal.\n\nGiven an array of integers `deliciousness` where `deliciousness[i]` is the deliciousness of the `i​​​​​​th​​​​`​​​​ item of food, return _the number of different**good meals** you can make from this list modulo_ `109 + 7`.\n\nNote that items with different indices are considered different even if they have the same deliciousness value.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** deliciousness = [1,3,5,7,9]\n    **Output:** 4\n    **Explanation:** The good meals are (1,3), (1,7), (3,5) and, (7,9).\n    Their respective sums are 4, 8, 8, and 16, all of which are powers of 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** deliciousness = [1,1,1,3,3,3,7]\n    **Output:** 15\n    **Explanation:** The good meals are (1,1) with 3 ways, (1,3) with 9 ways, and (1,7) with 3 ways.\n\n \n\n**Constraints:**\n\n  * `1 <= deliciousness.length <= 105`\n  * `0 <= deliciousness[i] <= 220`",
+  "question": "A **good meal** is a meal that contains **exactly two different food items** with a sum of deliciousness equal to a power of two.\n\nYou can pick **any** two different foods to make a good meal.\n\nGiven an array of integers `deliciousness` where `deliciousness[i]` is the deliciousness of the `i​​​​​​th​​​​`​​​​ item of food, return _the number of different**good meals** you can make from this list modulo_ `109 + 7`.\n\nNote that items with different indices are considered different even if they have the same deliciousness value.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** deliciousness = [1,3,5,7,9]\n    **Output:** 4\n    **Explanation:** The good meals are (1,3), (1,7), (3,5) and, (7,9).\n    Their respective sums are 4, 8, 8, and 16, all of which are powers of 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** deliciousness = [1,1,1,3,3,3,7]\n    **Output:** 15\n    **Explanation:** The good meals are (1,1) with 3 ways, (1,3) with 9 ways, and (1,7) with 3 ways.",
+  "constraints": "**Constraints:**\n\n  * `1 <= deliciousness.length <= 105`\n  * `0 <= deliciousness[i] <= 220`",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 52866,
+  "total_submissions": 162143,
+  "acceptance_rate": "32.6%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "Max Number of K-Sum Pairs",
+      "slug": "max-number-of-k-sum-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-number-of-k-sum-pairs/"
+    },
+    {
+      "title": "Find All Possible Recipes from Given Supplies",
+      "slug": "find-all-possible-recipes-from-given-supplies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/"
+    }
+  ],
+  "hints": [
+    "Note that the number of powers of 2 is at most 21 so this turns the problem to a classic find the number of pairs that sum to a certain value but for 21 values",
+    "You need to use something fasters than the NlogN approach since there is already the log of iterating over the powers so one idea is two pointers"
+  ]
+}

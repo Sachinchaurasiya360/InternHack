@@ -1,0 +1,40 @@
+{
+  "id": "1905",
+  "title": "Count Sub Islands",
+  "slug": "count-sub-islands",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <code>m x n</code> binary matrices <code>grid1</code> and <code>grid2</code> containing only <code>0</code>&#39;s (representing water) and <code>1</code>&#39;s (representing land). An <strong>island</strong> is a group of <code>1</code>&#39;s connected <strong>4-directionally</strong> (horizontal or vertical). Any cells outside of the grid are considered water cells.</p>\n\n<p>An island in <code>grid2</code> is considered a <strong>sub-island </strong>if there is an island in <code>grid1</code> that contains <strong>all</strong> the cells that make up <strong>this</strong> island in <code>grid2</code>.</p>\n\n<p>Return the <em><strong>number</strong> of islands in </em><code>grid2</code> <em>that are considered <strong>sub-islands</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/10/test1.png\" style=\"width: 493px; height: 205px;\" />\n<pre>\n<strong>Input:</strong> grid1 = [[1,1,1,0,0],[0,1,1,1,1],[0,0,0,0,0],[1,0,0,0,0],[1,1,0,1,1]], grid2 = [[1,1,1,0,0],[0,0,1,1,1],[0,1,0,0,0],[1,0,1,1,0],[0,1,0,1,0]]\n<strong>Output:</strong> 3\n<strong>Explanation: </strong>In the picture above, the grid on the left is grid1 and the grid on the right is grid2.\nThe 1s colored red in grid2 are those considered to be part of a sub-island. There are three sub-islands.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/03/testcasex2.png\" style=\"width: 491px; height: 201px;\" />\n<pre>\n<strong>Input:</strong> grid1 = [[1,0,1,0,1],[1,1,1,1,1],[0,0,0,0,0],[1,1,1,1,1],[1,0,1,0,1]], grid2 = [[0,0,0,0,0],[1,1,1,1,1],[0,1,0,1,0],[0,1,0,1,0],[1,0,0,0,1]]\n<strong>Output:</strong> 2 \n<strong>Explanation: </strong>In the picture above, the grid on the left is grid1 and the grid on the right is grid2.\nThe 1s colored red in grid2 are those considered to be part of a sub-island. There are two sub-islands.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid1.length == grid2.length</code></li>\n\t<li><code>n == grid1[i].length == grid2[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 500</code></li>\n\t<li><code>grid1[i][j]</code> and <code>grid2[i][j]</code> are either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given two `m x n` binary matrices `grid1` and `grid2` containing only `0`'s (representing water) and `1`'s (representing land). An **island** is a group of `1`'s connected **4-directionally** (horizontal or vertical). Any cells outside of the grid are considered water cells.\n\nAn island in `grid2` is considered a **sub-island** if there is an island in `grid1` that contains **all** the cells that make up **this** island in `grid2`.\n\nReturn the _**number** of islands in _`grid2` _that are considered**sub-islands**_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/06/10/test1.png)\n    \n    \n    **Input:** grid1 = [[1,1,1,0,0],[0,1,1,1,1],[0,0,0,0,0],[1,0,0,0,0],[1,1,0,1,1]], grid2 = [[1,1,1,0,0],[0,0,1,1,1],[0,1,0,0,0],[1,0,1,1,0],[0,1,0,1,0]]\n    **Output:** 3\n    **Explanation:** In the picture above, the grid on the left is grid1 and the grid on the right is grid2.\n    The 1s colored red in grid2 are those considered to be part of a sub-island. There are three sub-islands.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/06/03/testcasex2.png)\n    \n    \n    **Input:** grid1 = [[1,0,1,0,1],[1,1,1,1,1],[0,0,0,0,0],[1,1,1,1,1],[1,0,1,0,1]], grid2 = [[0,0,0,0,0],[1,1,1,1,1],[0,1,0,1,0],[0,1,0,1,0],[1,0,0,0,1]]\n    **Output:** 2 \n    **Explanation:** In the picture above, the grid on the left is grid1 and the grid on the right is grid2.\n    The 1s colored red in grid2 are those considered to be part of a sub-island. There are two sub-islands.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid1.length == grid2.length`\n  * `n == grid1[i].length == grid2[i].length`\n  * `1 <= m, n <= 500`\n  * `grid1[i][j]` and `grid2[i][j]` are either `0` or `1`.",
+  "question": "You are given two `m x n` binary matrices `grid1` and `grid2` containing only `0`'s (representing water) and `1`'s (representing land). An **island** is a group of `1`'s connected **4-directionally** (horizontal or vertical). Any cells outside of the grid are considered water cells.\n\nAn island in `grid2` is considered a **sub-island** if there is an island in `grid1` that contains **all** the cells that make up **this** island in `grid2`.\n\nReturn the _**number** of islands in _`grid2` _that are considered**sub-islands**_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/06/10/test1.png)\n    \n    \n    **Input:** grid1 = [[1,1,1,0,0],[0,1,1,1,1],[0,0,0,0,0],[1,0,0,0,0],[1,1,0,1,1]], grid2 = [[1,1,1,0,0],[0,0,1,1,1],[0,1,0,0,0],[1,0,1,1,0],[0,1,0,1,0]]\n    **Output:** 3\n    **Explanation:** In the picture above, the grid on the left is grid1 and the grid on the right is grid2.\n    The 1s colored red in grid2 are those considered to be part of a sub-island. There are three sub-islands.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/06/03/testcasex2.png)\n    \n    \n    **Input:** grid1 = [[1,0,1,0,1],[1,1,1,1,1],[0,0,0,0,0],[1,1,1,1,1],[1,0,1,0,1]], grid2 = [[0,0,0,0,0],[1,1,1,1,1],[0,1,0,1,0],[0,1,0,1,0],[1,0,0,0,1]]\n    **Output:** 2 \n    **Explanation:** In the picture above, the grid on the left is grid1 and the grid on the right is grid2.\n    The 1s colored red in grid2 are those considered to be part of a sub-island. There are two sub-islands.",
+  "constraints": "**Constraints:**\n\n  * `m == grid1.length == grid2.length`\n  * `n == grid1[i].length == grid2[i].length`\n  * `1 <= m, n <= 500`\n  * `grid1[i][j]` and `grid2[i][j]` are either `0` or `1`.",
+  "topics": ["Array", "Depth-First Search", "Breadth-First Search", "Union-Find", "Matrix"],
+  "total_accepted": 219520,
+  "total_submissions": 300775,
+  "acceptance_rate": "73.0%",
+  "similar_questions": [
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-islands/"
+    },
+    {
+      "title": "Number of Distinct Islands",
+      "slug": "number-of-distinct-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-distinct-islands/"
+    },
+    {
+      "title": "Find All Groups of Farmland",
+      "slug": "find-all-groups-of-farmland",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-groups-of-farmland/"
+    }
+  ],
+  "hints": [
+    "Let's use floodfill to iterate over the islands of the second grid",
+    "Let's note that if all the cells in an island in the second grid if they are represented by land in the first grid then they are connected hence making that island a sub-island"
+  ]
+}

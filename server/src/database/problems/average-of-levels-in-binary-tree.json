@@ -1,0 +1,31 @@
+{
+  "id": "637",
+  "title": "Average of Levels in Binary Tree",
+  "slug": "average-of-levels-in-binary-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "Given the <code>root</code> of a binary tree, return <em>the average value of the nodes on each level in the form of an array</em>. Answers within <code>10<sup>-5</sup></code> of the actual answer will be accepted.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/09/avg1-tree.jpg\" style=\"width: 277px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> root = [3,9,20,null,null,15,7]\n<strong>Output:</strong> [3.00000,14.50000,11.00000]\nExplanation: The average value of nodes on level 0 is 3, on level 1 is 14.5, and on level 2 is 11.\nHence return [3, 14.5, 11].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/09/avg2-tree.jpg\" style=\"width: 292px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> root = [3,9,20,15,7]\n<strong>Output:</strong> [3.00000,14.50000,11.00000]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-2<sup>31</sup> &lt;= Node.val &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree, return _the average value of the nodes on each level in the form of an array_. Answers within `10-5` of the actual answer will be accepted. \n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/09/avg1-tree.jpg)\n    \n    \n    **Input:** root = [3,9,20,null,null,15,7]\n    **Output:** [3.00000,14.50000,11.00000]\n    Explanation: The average value of nodes on level 0 is 3, on level 1 is 14.5, and on level 2 is 11.\n    Hence return [3, 14.5, 11].\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/09/avg2-tree.jpg)\n    \n    \n    **Input:** root = [3,9,20,15,7]\n    **Output:** [3.00000,14.50000,11.00000]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-231 <= Node.val <= 231 - 1`",
+  "question": "Given the `root` of a binary tree, return _the average value of the nodes on each level in the form of an array_. Answers within `10-5` of the actual answer will be accepted.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/09/avg1-tree.jpg)\n    \n    \n    **Input:** root = [3,9,20,null,null,15,7]\n    **Output:** [3.00000,14.50000,11.00000]\n    Explanation: The average value of nodes on level 0 is 3, on level 1 is 14.5, and on level 2 is 11.\n    Hence return [3, 14.5, 11].\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/09/avg2-tree.jpg)\n    \n    \n    **Input:** root = [3,9,20,15,7]\n    **Output:** [3.00000,14.50000,11.00000]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-231 <= Node.val <= 231 - 1`",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 728912,
+  "total_submissions": 975277,
+  "acceptance_rate": "74.7%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Level Order Traversal",
+      "slug": "binary-tree-level-order-traversal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/"
+    },
+    {
+      "title": "Binary Tree Level Order Traversal II",
+      "slug": "binary-tree-level-order-traversal-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-level-order-traversal-ii/"
+    }
+  ],
+  "hints": []
+}

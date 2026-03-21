@@ -1,0 +1,37 @@
+{
+  "id": "1613",
+  "title": "Find the Missing IDs",
+  "slug": "find-the-missing-ids",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 23098,
+  "total_submissions": 31680,
+  "acceptance_rate": "72.9%",
+  "similar_questions": [
+    {
+      "title": "Report Contiguous Dates",
+      "slug": "report-contiguous-dates",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/report-contiguous-dates/"
+    },
+    {
+      "title": "Find the Start and End Number of Continuous Ranges",
+      "slug": "find-the-start-and-end-number-of-continuous-ranges",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-start-and-end-number-of-continuous-ranges/"
+    },
+    {
+      "title": "Number of Transactions per Visit",
+      "slug": "number-of-transactions-per-visit",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-transactions-per-visit/"
+    }
+  ],
+  "hints": []
+}

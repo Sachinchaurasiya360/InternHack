@@ -1,0 +1,46 @@
+{
+  "id": "2510",
+  "title": "Check if There is a Path With Equal Number of 0's And 1's",
+  "slug": "check-if-there-is-a-path-with-equal-number-of-0s-and-1s",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 7736,
+  "total_submissions": 14912,
+  "acceptance_rate": "51.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Path Sum",
+      "slug": "minimum-path-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-sum/"
+    },
+    {
+      "title": "Dungeon Game",
+      "slug": "dungeon-game",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/dungeon-game/"
+    },
+    {
+      "title": "Minimum Cost Homecoming of a Robot in a Grid",
+      "slug": "minimum-cost-homecoming-of-a-robot-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/"
+    },
+    {
+      "title": "Paths in Matrix Whose Sum Is Divisible by K",
+      "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paths-in-matrix-whose-sum-is-divisible-by-k/"
+    }
+  ],
+  "hints": [
+    "Can you use dynamic programming to solve the problem?",
+    "Let dp[i][j][diff] be true if there is a path from the cell (i, j) to (m - 1, n - 1) such that the difference between the number of 0’s and the number of 1’s that we visited so far is diff, or false otherwise. The answer to the problem will be dp[0][0][0]. How do you compute this dp?"
+  ]
+}

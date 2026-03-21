@@ -1,0 +1,31 @@
+{
+  "id": "3104",
+  "title": "Find Longest Self-Contained Substring",
+  "slug": "find-longest-self-contained-substring",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Sorting"],
+  "total_accepted": 2953,
+  "total_submissions": 5022,
+  "acceptance_rate": "58.8%",
+  "similar_questions": [
+    {
+      "title": "Select K Disjoint Special Substrings",
+      "slug": "select-k-disjoint-special-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/select-k-disjoint-special-substrings/"
+    }
+  ],
+  "hints": [
+    "Fix the start index of the substring.",
+    "For some fixed index <code>start</code>, let's try to find some index <code>end</code> such that this substring satisfies the property and also <code>end</code> is as maximum as possible.",
+    "Write some recursive function <code>shrink(start, end)</code> that gives a substring. If the substring is valid, then return <code>end</code>. Otherwise, it reduces <<code>end</code> to reach some valid <code>end</code>.",
+    "For some <code>shrink(start, end)</code>, if the substring is not valid, it means there is some character that is both inside and outside of the substring. Now try to reduce <code>end</code> such that it does not contain that character anymore.",
+    "If you implement the <code>shrink(start, end)</code> function optimally, you'll achieve <code>O(n * 26 * 26)</code> by using partial sum."
+  ]
+}

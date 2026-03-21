@@ -1,0 +1,18 @@
+{
+  "id": "946",
+  "title": "Validate Stack Sequences",
+  "slug": "validate-stack-sequences",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integer arrays <code>pushed</code> and <code>popped</code> each with distinct values, return <code>true</code><em> if this could have been the result of a sequence of push and pop operations on an initially empty stack, or </em><code>false</code><em> otherwise.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> pushed = [1,2,3,4,5], popped = [4,5,3,2,1]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> We might do the following sequence:\npush(1), push(2), push(3), push(4),\npop() -&gt; 4,\npush(5),\npop() -&gt; 5, pop() -&gt; 3, pop() -&gt; 2, pop() -&gt; 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> pushed = [1,2,3,4,5], popped = [4,3,5,1,2]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> 1 cannot be popped before 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= pushed.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= pushed[i] &lt;= 1000</code></li>\n\t<li>All the elements of <code>pushed</code> are <strong>unique</strong>.</li>\n\t<li><code>popped.length == pushed.length</code></li>\n\t<li><code>popped</code> is a permutation of <code>pushed</code>.</li>\n</ul>\n",
+  "content_markdown": "Given two integer arrays `pushed` and `popped` each with distinct values, return `true` _if this could have been the result of a sequence of push and pop operations on an initially empty stack, or_`false` _otherwise._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** pushed = [1,2,3,4,5], popped = [4,5,3,2,1]\n    **Output:** true\n    **Explanation:** We might do the following sequence:\n    push(1), push(2), push(3), push(4),\n    pop() -> 4,\n    push(5),\n    pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** pushed = [1,2,3,4,5], popped = [4,3,5,1,2]\n    **Output:** false\n    **Explanation:** 1 cannot be popped before 2.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= pushed.length <= 1000`\n  * `0 <= pushed[i] <= 1000`\n  * All the elements of `pushed` are **unique**.\n  * `popped.length == pushed.length`\n  * `popped` is a permutation of `pushed`.",
+  "question": "Given two integer arrays `pushed` and `popped` each with distinct values, return `true` _if this could have been the result of a sequence of push and pop operations on an initially empty stack, or_`false` _otherwise._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** pushed = [1,2,3,4,5], popped = [4,5,3,2,1]\n    **Output:** true\n    **Explanation:** We might do the following sequence:\n    push(1), push(2), push(3), push(4),\n    pop() -> 4,\n    push(5),\n    pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** pushed = [1,2,3,4,5], popped = [4,3,5,1,2]\n    **Output:** false\n    **Explanation:** 1 cannot be popped before 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= pushed.length <= 1000`\n  * `0 <= pushed[i] <= 1000`\n  * All the elements of `pushed` are **unique**.\n  * `popped.length == pushed.length`\n  * `popped` is a permutation of `pushed`.",
+  "topics": ["Array", "Stack", "Simulation"],
+  "total_accepted": 366704,
+  "total_submissions": 522548,
+  "acceptance_rate": "70.2%",
+  "similar_questions": [],
+  "hints": []
+}

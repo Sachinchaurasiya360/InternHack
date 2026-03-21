@@ -1,0 +1,28 @@
+{
+  "id": "2496",
+  "title": "Maximum Value of a String in an Array",
+  "slug": "maximum-value-of-a-string-in-an-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>The <strong>value</strong> of an alphanumeric string can be defined as:</p>\n\n<ul>\n\t<li>The <strong>numeric</strong> representation of the string in base <code>10</code>, if it comprises of digits <strong>only</strong>.</li>\n\t<li>The <strong>length</strong> of the string, otherwise.</li>\n</ul>\n\n<p>Given an array <code>strs</code> of alphanumeric strings, return <em>the <strong>maximum value</strong> of any string in </em><code>strs</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> strs = [&quot;alic3&quot;,&quot;bob&quot;,&quot;3&quot;,&quot;4&quot;,&quot;00000&quot;]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> \n- &quot;alic3&quot; consists of both letters and digits, so its value is its length, i.e. 5.\n- &quot;bob&quot; consists only of letters, so its value is also its length, i.e. 3.\n- &quot;3&quot; consists only of digits, so its value is its numeric equivalent, i.e. 3.\n- &quot;4&quot; also consists only of digits, so its value is 4.\n- &quot;00000&quot; consists only of digits, so its value is 0.\nHence, the maximum value is 5, of &quot;alic3&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> strs = [&quot;1&quot;,&quot;01&quot;,&quot;001&quot;,&quot;0001&quot;]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> \nEach string in the array has value 1. Hence, we return 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= strs.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= strs[i].length &lt;= 9</code></li>\n\t<li><code>strs[i]</code> consists of only lowercase English letters and digits.</li>\n</ul>\n",
+  "content_markdown": "The **value** of an alphanumeric string can be defined as:\n\n  * The **numeric** representation of the string in base `10`, if it comprises of digits **only**.\n  * The **length** of the string, otherwise.\n\n\n\nGiven an array `strs` of alphanumeric strings, return _the**maximum value** of any string in _`strs`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** strs = [\"alic3\",\"bob\",\"3\",\"4\",\"00000\"]\n    **Output:** 5\n    **Explanation:** \n    - \"alic3\" consists of both letters and digits, so its value is its length, i.e. 5.\n    - \"bob\" consists only of letters, so its value is also its length, i.e. 3.\n    - \"3\" consists only of digits, so its value is its numeric equivalent, i.e. 3.\n    - \"4\" also consists only of digits, so its value is 4.\n    - \"00000\" consists only of digits, so its value is 0.\n    Hence, the maximum value is 5, of \"alic3\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"1\",\"01\",\"001\",\"0001\"]\n    **Output:** 1\n    **Explanation:** \n    Each string in the array has value 1. Hence, we return 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= strs.length <= 100`\n  * `1 <= strs[i].length <= 9`\n  * `strs[i]` consists of only lowercase English letters and digits.",
+  "question": "The **value** of an alphanumeric string can be defined as:\n\n  * The **numeric** representation of the string in base `10`, if it comprises of digits **only**.\n  * The **length** of the string, otherwise.\n\n\n\nGiven an array `strs` of alphanumeric strings, return _the**maximum value** of any string in _`strs`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** strs = [\"alic3\",\"bob\",\"3\",\"4\",\"00000\"]\n    **Output:** 5\n    **Explanation:** \n    - \"alic3\" consists of both letters and digits, so its value is its length, i.e. 5.\n    - \"bob\" consists only of letters, so its value is also its length, i.e. 3.\n    - \"3\" consists only of digits, so its value is its numeric equivalent, i.e. 3.\n    - \"4\" also consists only of digits, so its value is 4.\n    - \"00000\" consists only of digits, so its value is 0.\n    Hence, the maximum value is 5, of \"alic3\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"1\",\"01\",\"001\",\"0001\"]\n    **Output:** 1\n    **Explanation:** \n    Each string in the array has value 1. Hence, we return 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= strs.length <= 100`\n  * `1 <= strs[i].length <= 9`\n  * `strs[i]` consists of only lowercase English letters and digits.",
+  "topics": ["Array", "String"],
+  "total_accepted": 63475,
+  "total_submissions": 85612,
+  "acceptance_rate": "74.1%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray/"
+    }
+  ],
+  "hints": [
+    "For strings comprising only of digits, convert them into integers.",
+    "For all other strings, calculate their length."
+  ]
+}

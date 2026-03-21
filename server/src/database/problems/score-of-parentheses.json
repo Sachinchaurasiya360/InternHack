@@ -1,0 +1,18 @@
+{
+  "id": "856",
+  "title": "Score of Parentheses",
+  "slug": "score-of-parentheses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a balanced parentheses string <code>s</code>, return <em>the <strong>score</strong> of the string</em>.</p>\n\n<p>The <strong>score</strong> of a balanced parentheses string is based on the following rule:</p>\n\n<ul>\n\t<li><code>&quot;()&quot;</code> has score <code>1</code>.</li>\n\t<li><code>AB</code> has score <code>A + B</code>, where <code>A</code> and <code>B</code> are balanced parentheses strings.</li>\n\t<li><code>(A)</code> has score <code>2 * A</code>, where <code>A</code> is a balanced parentheses string.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;()&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(())&quot;\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;()()&quot;\n<strong>Output:</strong> 2\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 50</code></li>\n\t<li><code>s</code> consists of only <code>&#39;(&#39;</code> and <code>&#39;)&#39;</code>.</li>\n\t<li><code>s</code> is a balanced parentheses string.</li>\n</ul>\n",
+  "content_markdown": "Given a balanced parentheses string `s`, return _the**score** of the string_.\n\nThe **score** of a balanced parentheses string is based on the following rule:\n\n  * `\"()\"` has score `1`.\n  * `AB` has score `A + B`, where `A` and `B` are balanced parentheses strings.\n  * `(A)` has score `2 * A`, where `A` is a balanced parentheses string.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"()\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(())\"\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"()()\"\n    **Output:** 2\n    \n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 50`\n  * `s` consists of only `'('` and `')'`.\n  * `s` is a balanced parentheses string.",
+  "question": "Given a balanced parentheses string `s`, return _the**score** of the string_.\n\nThe **score** of a balanced parentheses string is based on the following rule:\n\n  * `\"()\"` has score `1`.\n  * `AB` has score `A + B`, where `A` and `B` are balanced parentheses strings.\n  * `(A)` has score `2 * A`, where `A` is a balanced parentheses string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"()\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(())\"\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"()()\"\n    **Output:** 2",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 50`\n  * `s` consists of only `'('` and `')'`.\n  * `s` is a balanced parentheses string.",
+  "topics": ["String", "Stack"],
+  "total_accepted": 219624,
+  "total_submissions": 345119,
+  "acceptance_rate": "63.6%",
+  "similar_questions": [],
+  "hints": []
+}

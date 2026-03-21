@@ -1,0 +1,46 @@
+{
+  "id": "1986",
+  "title": "Minimum Number of Work Sessions to Finish the Tasks",
+  "slug": "minimum-number-of-work-sessions-to-finish-the-tasks",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> tasks assigned to you. The task times are represented as an integer array <code>tasks</code> of length <code>n</code>, where the <code>i<sup>th</sup></code> task takes <code>tasks[i]</code> hours to finish. A <strong>work session</strong> is when you work for <strong>at most</strong> <code>sessionTime</code> consecutive hours and then take a break.</p>\n\n<p>You should finish the given tasks in a way that satisfies the following conditions:</p>\n\n<ul>\n\t<li>If you start a task in a work session, you must complete it in the <strong>same</strong> work session.</li>\n\t<li>You can start a new task <strong>immediately</strong> after finishing the previous one.</li>\n\t<li>You may complete the tasks in <strong>any order</strong>.</li>\n</ul>\n\n<p>Given <code>tasks</code> and <code>sessionTime</code>, return <em>the <strong>minimum</strong> number of <strong>work sessions</strong> needed to finish all the tasks following the conditions above.</em></p>\n\n<p>The tests are generated such that <code>sessionTime</code> is <strong>greater</strong> than or <strong>equal</strong> to the <strong>maximum</strong> element in <code>tasks[i]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> tasks = [1,2,3], sessionTime = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You can finish the tasks in two work sessions.\n- First work session: finish the first and the second tasks in 1 + 2 = 3 hours.\n- Second work session: finish the third task in 3 hours.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> tasks = [3,1,3,1,1], sessionTime = 8\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You can finish the tasks in two work sessions.\n- First work session: finish all the tasks except the last one in 3 + 1 + 3 + 1 = 8 hours.\n- Second work session: finish the last task in 1 hour.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> tasks = [1,2,3,4,5], sessionTime = 15\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> You can finish all the tasks in one work session.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == tasks.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 14</code></li>\n\t<li><code>1 &lt;= tasks[i] &lt;= 10</code></li>\n\t<li><code>max(tasks[i]) &lt;= sessionTime &lt;= 15</code></li>\n</ul>\n",
+  "content_markdown": "There are `n` tasks assigned to you. The task times are represented as an integer array `tasks` of length `n`, where the `ith` task takes `tasks[i]` hours to finish. A **work session** is when you work for **at most** `sessionTime` consecutive hours and then take a break.\n\nYou should finish the given tasks in a way that satisfies the following conditions:\n\n  * If you start a task in a work session, you must complete it in the **same** work session.\n  * You can start a new task **immediately** after finishing the previous one.\n  * You may complete the tasks in **any order**.\n\n\n\nGiven `tasks` and `sessionTime`, return _the**minimum** number of **work sessions** needed to finish all the tasks following the conditions above._\n\nThe tests are generated such that `sessionTime` is **greater** than or **equal** to the **maximum** element in `tasks[i]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** tasks = [1,2,3], sessionTime = 3\n    **Output:** 2\n    **Explanation:** You can finish the tasks in two work sessions.\n    - First work session: finish the first and the second tasks in 1 + 2 = 3 hours.\n    - Second work session: finish the third task in 3 hours.\n    \n\n**Example 2:**\n    \n    \n    **Input:** tasks = [3,1,3,1,1], sessionTime = 8\n    **Output:** 2\n    **Explanation:** You can finish the tasks in two work sessions.\n    - First work session: finish all the tasks except the last one in 3 + 1 + 3 + 1 = 8 hours.\n    - Second work session: finish the last task in 1 hour.\n    \n\n**Example 3:**\n    \n    \n    **Input:** tasks = [1,2,3,4,5], sessionTime = 15\n    **Output:** 1\n    **Explanation:** You can finish all the tasks in one work session.\n    \n\n \n\n**Constraints:**\n\n  * `n == tasks.length`\n  * `1 <= n <= 14`\n  * `1 <= tasks[i] <= 10`\n  * `max(tasks[i]) <= sessionTime <= 15`",
+  "question": "There are `n` tasks assigned to you. The task times are represented as an integer array `tasks` of length `n`, where the `ith` task takes `tasks[i]` hours to finish. A **work session** is when you work for **at most** `sessionTime` consecutive hours and then take a break.\n\nYou should finish the given tasks in a way that satisfies the following conditions:\n\n  * If you start a task in a work session, you must complete it in the **same** work session.\n  * You can start a new task **immediately** after finishing the previous one.\n  * You may complete the tasks in **any order**.\n\n\n\nGiven `tasks` and `sessionTime`, return _the**minimum** number of **work sessions** needed to finish all the tasks following the conditions above._\n\nThe tests are generated such that `sessionTime` is **greater** than or **equal** to the **maximum** element in `tasks[i]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** tasks = [1,2,3], sessionTime = 3\n    **Output:** 2\n    **Explanation:** You can finish the tasks in two work sessions.\n    - First work session: finish the first and the second tasks in 1 + 2 = 3 hours.\n    - Second work session: finish the third task in 3 hours.\n    \n\n**Example 2:**\n    \n    \n    **Input:** tasks = [3,1,3,1,1], sessionTime = 8\n    **Output:** 2\n    **Explanation:** You can finish the tasks in two work sessions.\n    - First work session: finish all the tasks except the last one in 3 + 1 + 3 + 1 = 8 hours.\n    - Second work session: finish the last task in 1 hour.\n    \n\n**Example 3:**\n    \n    \n    **Input:** tasks = [1,2,3,4,5], sessionTime = 15\n    **Output:** 1\n    **Explanation:** You can finish all the tasks in one work session.",
+  "constraints": "**Constraints:**\n\n  * `n == tasks.length`\n  * `1 <= n <= 14`\n  * `1 <= tasks[i] <= 10`\n  * `max(tasks[i]) <= sessionTime <= 15`",
+  "topics": ["Array", "Dynamic Programming", "Backtracking", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 34086,
+  "total_submissions": 98622,
+  "acceptance_rate": "34.6%",
+  "similar_questions": [
+    {
+      "title": "Smallest Sufficient Team",
+      "slug": "smallest-sufficient-team",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/smallest-sufficient-team/"
+    },
+    {
+      "title": "Fair Distribution of Cookies",
+      "slug": "fair-distribution-of-cookies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fair-distribution-of-cookies/"
+    },
+    {
+      "title": "Find Minimum Time to Finish All Jobs",
+      "slug": "find-minimum-time-to-finish-all-jobs",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/"
+    },
+    {
+      "title": "Find Minimum Time to Finish All Jobs II",
+      "slug": "find-minimum-time-to-finish-all-jobs-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs-ii/"
+    }
+  ],
+  "hints": [
+    "Try all possible ways of assignment.",
+    "If we can store the assignments in form of a state then we can reuse that state and solve the problem in a faster way."
+  ]
+}

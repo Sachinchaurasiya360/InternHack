@@ -1,0 +1,43 @@
+{
+  "id": "1635",
+  "title": "Hopper Company Queries I",
+  "slug": "hopper-company-queries-i",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 11121,
+  "total_submissions": 23145,
+  "acceptance_rate": "48.0%",
+  "similar_questions": [
+    {
+      "title": "Trips and Users",
+      "slug": "trips-and-users",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/trips-and-users/"
+    },
+    {
+      "title": "Hopper Company Queries II",
+      "slug": "hopper-company-queries-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/hopper-company-queries-ii/"
+    },
+    {
+      "title": "Hopper Company Queries III",
+      "slug": "hopper-company-queries-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/hopper-company-queries-iii/"
+    },
+    {
+      "title": "Number of Times a Driver Was a Passenger",
+      "slug": "number-of-times-a-driver-was-a-passenger",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-times-a-driver-was-a-passenger/"
+    }
+  ],
+  "hints": []
+}

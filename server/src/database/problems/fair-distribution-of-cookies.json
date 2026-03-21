@@ -1,0 +1,76 @@
+{
+  "id": "2305",
+  "title": "Fair Distribution of Cookies",
+  "slug": "fair-distribution-of-cookies",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>cookies</code>, where <code>cookies[i]</code> denotes the number of cookies in the <code>i<sup>th</sup></code> bag. You are also given an integer <code>k</code> that denotes the number of children to distribute <strong>all</strong> the bags of cookies to. All the cookies in the same bag must go to the same child and cannot be split up.</p>\n\n<p>The <strong>unfairness</strong> of a distribution is defined as the <strong>maximum</strong> <strong>total</strong> cookies obtained by a single child in the distribution.</p>\n\n<p>Return <em>the <strong>minimum</strong> unfairness of all distributions</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> cookies = [8,15,10,20,8], k = 2\n<strong>Output:</strong> 31\n<strong>Explanation:</strong> One optimal distribution is [8,15,8] and [10,20]\n- The 1<sup>st</sup> child receives [8,15,8] which has a total of 8 + 15 + 8 = 31 cookies.\n- The 2<sup>nd</sup> child receives [10,20] which has a total of 10 + 20 = 30 cookies.\nThe unfairness of the distribution is max(31,30) = 31.\nIt can be shown that there is no distribution with an unfairness less than 31.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> cookies = [6,1,3,2,2,4,1,2], k = 3\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> One optimal distribution is [6,1], [3,2,2], and [4,1,2]\n- The 1<sup>st</sup> child receives [6,1] which has a total of 6 + 1 = 7 cookies.\n- The 2<sup>nd</sup> child receives [3,2,2] which has a total of 3 + 2 + 2 = 7 cookies.\n- The 3<sup>rd</sup> child receives [4,1,2] which has a total of 4 + 1 + 2 = 7 cookies.\nThe unfairness of the distribution is max(7,7,7) = 7.\nIt can be shown that there is no distribution with an unfairness less than 7.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= cookies.length &lt;= 8</code></li>\n\t<li><code>1 &lt;= cookies[i] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>2 &lt;= k &lt;= cookies.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `cookies`, where `cookies[i]` denotes the number of cookies in the `ith` bag. You are also given an integer `k` that denotes the number of children to distribute **all** the bags of cookies to. All the cookies in the same bag must go to the same child and cannot be split up.\n\nThe **unfairness** of a distribution is defined as the **maximum** **total** cookies obtained by a single child in the distribution.\n\nReturn _the**minimum** unfairness of all distributions_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** cookies = [8,15,10,20,8], k = 2\n    **Output:** 31\n    **Explanation:** One optimal distribution is [8,15,8] and [10,20]\n    - The 1st child receives [8,15,8] which has a total of 8 + 15 + 8 = 31 cookies.\n    - The 2nd child receives [10,20] which has a total of 10 + 20 = 30 cookies.\n    The unfairness of the distribution is max(31,30) = 31.\n    It can be shown that there is no distribution with an unfairness less than 31.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cookies = [6,1,3,2,2,4,1,2], k = 3\n    **Output:** 7\n    **Explanation:** One optimal distribution is [6,1], [3,2,2], and [4,1,2]\n    - The 1st child receives [6,1] which has a total of 6 + 1 = 7 cookies.\n    - The 2nd child receives [3,2,2] which has a total of 3 + 2 + 2 = 7 cookies.\n    - The 3rd child receives [4,1,2] which has a total of 4 + 1 + 2 = 7 cookies.\n    The unfairness of the distribution is max(7,7,7) = 7.\n    It can be shown that there is no distribution with an unfairness less than 7.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= cookies.length <= 8`\n  * `1 <= cookies[i] <= 105`\n  * `2 <= k <= cookies.length`",
+  "question": "You are given an integer array `cookies`, where `cookies[i]` denotes the number of cookies in the `ith` bag. You are also given an integer `k` that denotes the number of children to distribute **all** the bags of cookies to. All the cookies in the same bag must go to the same child and cannot be split up.\n\nThe **unfairness** of a distribution is defined as the **maximum** **total** cookies obtained by a single child in the distribution.\n\nReturn _the**minimum** unfairness of all distributions_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** cookies = [8,15,10,20,8], k = 2\n    **Output:** 31\n    **Explanation:** One optimal distribution is [8,15,8] and [10,20]\n    - The 1st child receives [8,15,8] which has a total of 8 + 15 + 8 = 31 cookies.\n    - The 2nd child receives [10,20] which has a total of 10 + 20 = 30 cookies.\n    The unfairness of the distribution is max(31,30) = 31.\n    It can be shown that there is no distribution with an unfairness less than 31.\n    \n\n**Example 2:**\n    \n    \n    **Input:** cookies = [6,1,3,2,2,4,1,2], k = 3\n    **Output:** 7\n    **Explanation:** One optimal distribution is [6,1], [3,2,2], and [4,1,2]\n    - The 1st child receives [6,1] which has a total of 6 + 1 = 7 cookies.\n    - The 2nd child receives [3,2,2] which has a total of 3 + 2 + 2 = 7 cookies.\n    - The 3rd child receives [4,1,2] which has a total of 4 + 1 + 2 = 7 cookies.\n    The unfairness of the distribution is max(7,7,7) = 7.\n    It can be shown that there is no distribution with an unfairness less than 7.",
+  "constraints": "**Constraints:**\n\n  * `2 <= cookies.length <= 8`\n  * `1 <= cookies[i] <= 105`\n  * `2 <= k <= cookies.length`",
+  "topics": ["Array", "Dynamic Programming", "Backtracking", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 119131,
+  "total_submissions": 170650,
+  "acceptance_rate": "69.8%",
+  "similar_questions": [
+    {
+      "title": "Split Array Largest Sum",
+      "slug": "split-array-largest-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-largest-sum/"
+    },
+    {
+      "title": "Split Array with Equal Sum",
+      "slug": "split-array-with-equal-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-with-equal-sum/"
+    },
+    {
+      "title": "Partition to K Equal Sum Subsets",
+      "slug": "partition-to-k-equal-sum-subsets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-to-k-equal-sum-subsets/"
+    },
+    {
+      "title": "Minimum XOR Sum of Two Arrays",
+      "slug": "minimum-xor-sum-of-two-arrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-xor-sum-of-two-arrays/"
+    },
+    {
+      "title": "The Number of Good Subsets",
+      "slug": "the-number-of-good-subsets",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/the-number-of-good-subsets/"
+    },
+    {
+      "title": "Minimum Number of Work Sessions to Finish the Tasks",
+      "slug": "minimum-number-of-work-sessions-to-finish-the-tasks",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-work-sessions-to-finish-the-tasks/"
+    },
+    {
+      "title": "Partition Array Into Two Arrays to Minimize Sum Difference",
+      "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/"
+    },
+    {
+      "title": "Maximum Rows Covered by Columns",
+      "slug": "maximum-rows-covered-by-columns",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-rows-covered-by-columns/"
+    },
+    {
+      "title": "Distribute Money to Maximum Children",
+      "slug": "distribute-money-to-maximum-children",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/distribute-money-to-maximum-children/"
+    }
+  ],
+  "hints": [
+    "We have to give each bag to one of the children. How can we enumerate all of the possibilities?",
+    "Use recursion and keep track of the current number of cookies each child has. Once all the bags have been distributed, find the child with the most cookies."
+  ]
+}

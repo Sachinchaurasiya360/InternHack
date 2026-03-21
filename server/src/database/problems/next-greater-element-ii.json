@@ -1,0 +1,37 @@
+{
+  "id": "503",
+  "title": "Next Greater Element II",
+  "slug": "next-greater-element-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a circular integer array <code>nums</code> (i.e., the next element of <code>nums[nums.length - 1]</code> is <code>nums[0]</code>), return <em>the <strong>next greater number</strong> for every element in</em> <code>nums</code>.</p>\n\n<p>The <strong>next greater number</strong> of a number <code>x</code> is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn&#39;t exist, return <code>-1</code> for this number.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1]\n<strong>Output:</strong> [2,-1,2]\nExplanation: The first 1&#39;s next greater number is 2; \nThe number 2 can&#39;t find next greater number. \nThe second 1&#39;s next greater number needs to search circularly, which is also 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,3]\n<strong>Output:</strong> [2,3,4,-1,4]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a circular integer array `nums` (i.e., the next element of `nums[nums.length - 1]` is `nums[0]`), return _the**next greater number** for every element in_ `nums`.\n\nThe **next greater number** of a number `x` is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, return `-1` for this number.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1]\n    **Output:** [2,-1,2]\n    Explanation: The first 1's next greater number is 2; \n    The number 2 can't find next greater number. \n    The second 1's next greater number needs to search circularly, which is also 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,3]\n    **Output:** [2,3,4,-1,4]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-109 <= nums[i] <= 109`",
+  "question": "Given a circular integer array `nums` (i.e., the next element of `nums[nums.length - 1]` is `nums[0]`), return _the**next greater number** for every element in_ `nums`.\n\nThe **next greater number** of a number `x` is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, return `-1` for this number.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1]\n    **Output:** [2,-1,2]\n    Explanation: The first 1's next greater number is 2; \n    The number 2 can't find next greater number. \n    The second 1's next greater number needs to search circularly, which is also 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,3]\n    **Output:** [2,3,4,-1,4]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 758669,
+  "total_submissions": 1116881,
+  "acceptance_rate": "67.9%",
+  "similar_questions": [
+    {
+      "title": "Next Greater Element I",
+      "slug": "next-greater-element-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/next-greater-element-i/"
+    },
+    {
+      "title": "Next Greater Element III",
+      "slug": "next-greater-element-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/next-greater-element-iii/"
+    },
+    {
+      "title": "Maximum and Minimum Sums of at Most Size K Subarrays",
+      "slug": "maximum-and-minimum-sums-of-at-most-size-k-subarrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-and-minimum-sums-of-at-most-size-k-subarrays/"
+    }
+  ],
+  "hints": []
+}

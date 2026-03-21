@@ -1,0 +1,34 @@
+{
+  "id": "2309",
+  "title": "Greatest English Letter in Upper and Lower Case",
+  "slug": "greatest-english-letter-in-upper-and-lower-case",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string of English letters <code>s</code>, return <em>the <strong>greatest </strong>English letter which occurs as <strong>both</strong> a lowercase and uppercase letter in</em> <code>s</code>. The returned letter should be in <strong>uppercase</strong>. If no such letter exists, return <em>an empty string</em>.</p>\n\n<p>An English letter <code>b</code> is <strong>greater</strong> than another letter <code>a</code> if <code>b</code> appears <strong>after</strong> <code>a</code> in the English alphabet.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;l<strong><u>Ee</u></strong>TcOd<u><strong>E</strong></u>&quot;\n<strong>Output:</strong> &quot;E&quot;\n<strong>Explanation:</strong>\nThe letter &#39;E&#39; is the only letter to appear in both lower and upper case.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a<strong><u>rR</u></strong>AzFif&quot;\n<strong>Output:</strong> &quot;R&quot;\n<strong>Explanation:</strong>\nThe letter &#39;R&#39; is the greatest letter to appear in both lower and upper case.\nNote that &#39;A&#39; and &#39;F&#39; also appear in both lower and upper case, but &#39;R&#39; is greater than &#39;F&#39; or &#39;A&#39;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;AbCdEfGhIjK&quot;\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong>\nThere is no letter that appears in both lower and upper case.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s</code> consists of lowercase and uppercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string of English letters `s`, return _the**greatest** English letter which occurs as **both** a lowercase and uppercase letter in_ `s`. The returned letter should be in **uppercase**. If no such letter exists, return _an empty string_.\n\nAn English letter `b` is **greater** than another letter `a` if `b` appears **after** `a` in the English alphabet.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"l** _Ee_** TcOd _**E**_ \"\n    **Output:** \"E\"\n    **Explanation:**\n    The letter 'E' is the only letter to appear in both lower and upper case.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a** _rR_** AzFif\"\n    **Output:** \"R\"\n    **Explanation:**\n    The letter 'R' is the greatest letter to appear in both lower and upper case.\n    Note that 'A' and 'F' also appear in both lower and upper case, but 'R' is greater than 'F' or 'A'.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"AbCdEfGhIjK\"\n    **Output:** \"\"\n    **Explanation:**\n    There is no letter that appears in both lower and upper case.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of lowercase and uppercase English letters.",
+  "question": "Given a string of English letters `s`, return _the**greatest** English letter which occurs as **both** a lowercase and uppercase letter in_ `s`. The returned letter should be in **uppercase**. If no such letter exists, return _an empty string_.\n\nAn English letter `b` is **greater** than another letter `a` if `b` appears **after** `a` in the English alphabet.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"l** _Ee_** TcOd _**E**_ \"\n    **Output:** \"E\"\n    **Explanation:**\n    The letter 'E' is the only letter to appear in both lower and upper case.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a** _rR_** AzFif\"\n    **Output:** \"R\"\n    **Explanation:**\n    The letter 'R' is the greatest letter to appear in both lower and upper case.\n    Note that 'A' and 'F' also appear in both lower and upper case, but 'R' is greater than 'F' or 'A'.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"AbCdEfGhIjK\"\n    **Output:** \"\"\n    **Explanation:**\n    There is no letter that appears in both lower and upper case.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of lowercase and uppercase English letters.",
+  "topics": ["Hash Table", "String", "Enumeration"],
+  "total_accepted": 71804,
+  "total_submissions": 99891,
+  "acceptance_rate": "71.9%",
+  "similar_questions": [
+    {
+      "title": "Count the Number of Special Characters II",
+      "slug": "count-the-number-of-special-characters-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-special-characters-ii/"
+    },
+    {
+      "title": "Count the Number of Special Characters I",
+      "slug": "count-the-number-of-special-characters-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-the-number-of-special-characters-i/"
+    }
+  ],
+  "hints": [
+    "Consider iterating through the string and storing each unique character that occurs in a set.",
+    "From Z to A, check whether both the uppercase and lowercase version occur in the set."
+  ]
+}

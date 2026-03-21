@@ -1,0 +1,18 @@
+{
+  "id": "1445",
+  "title": "Apples & Oranges",
+  "slug": "apples-oranges",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 65536,
+  "total_submissions": 76182,
+  "acceptance_rate": "86.0%",
+  "similar_questions": [],
+  "hints": []
+}

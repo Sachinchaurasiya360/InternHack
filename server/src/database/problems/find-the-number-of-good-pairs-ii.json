@@ -1,0 +1,29 @@
+{
+  "id": "3164",
+  "title": "Find the Number of Good Pairs II",
+  "slug": "find-the-number-of-good-pairs-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given 2 integer arrays <code>nums1</code> and <code>nums2</code> of lengths <code>n</code> and <code>m</code> respectively. You are also given a <strong>positive</strong> integer <code>k</code>.</p>\n\n<p>A pair <code>(i, j)</code> is called <strong>good</strong> if <code>nums1[i]</code> is divisible by <code>nums2[j] * k</code> (<code>0 &lt;= i &lt;= n - 1</code>, <code>0 &lt;= j &lt;= m - 1</code>).</p>\n\n<p>Return the total number of <strong>good</strong> pairs.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums1 = [1,3,4], nums2 = [1,3,4], k = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\nThe 5 good pairs are <code>(0, 0)</code>, <code>(1, 0)</code>, <code>(1, 1)</code>, <code>(2, 0)</code>, and <code>(2, 2)</code>.</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums1 = [1,2,4,12], nums2 = [2,4], k = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The 2 good pairs are <code>(3, 0)</code> and <code>(3, 1)</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n, m &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums1[i], nums2[j] &lt;= 10<sup>6</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>3</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given 2 integer arrays `nums1` and `nums2` of lengths `n` and `m` respectively. You are also given a **positive** integer `k`.\n\nA pair `(i, j)` is called **good** if `nums1[i]` is divisible by `nums2[j] * k` (`0 <= i <= n - 1`, `0 <= j <= m - 1`).\n\nReturn the total number of **good** pairs.\n\n \n\n**Example 1:**\n\n**Input:** nums1 = [1,3,4], nums2 = [1,3,4], k = 1\n\n**Output:** 5\n\n**Explanation:**\n\nThe 5 good pairs are `(0, 0)`, `(1, 0)`, `(1, 1)`, `(2, 0)`, and `(2, 2)`.\n\n**Example 2:**\n\n**Input:** nums1 = [1,2,4,12], nums2 = [2,4], k = 3\n\n**Output:** 2\n\n**Explanation:**\n\nThe 2 good pairs are `(3, 0)` and `(3, 1)`.\n\n \n\n**Constraints:**\n\n  * `1 <= n, m <= 105`\n  * `1 <= nums1[i], nums2[j] <= 106`\n  * `1 <= k <= 103`",
+  "question": "You are given 2 integer arrays `nums1` and `nums2` of lengths `n` and `m` respectively. You are also given a **positive** integer `k`.\n\nA pair `(i, j)` is called **good** if `nums1[i]` is divisible by `nums2[j] * k` (`0 <= i <= n - 1`, `0 <= j <= m - 1`).\n\nReturn the total number of **good** pairs.",
+  "examples": "**Example 1:**\n\n**Input:** nums1 = [1,3,4], nums2 = [1,3,4], k = 1\n\n**Output:** 5\n\n**Explanation:**\n\nThe 5 good pairs are `(0, 0)`, `(1, 0)`, `(1, 1)`, `(2, 0)`, and `(2, 2)`.\n\n**Example 2:**\n\n**Input:** nums1 = [1,2,4,12], nums2 = [2,4], k = 3\n\n**Output:** 2\n\n**Explanation:**\n\nThe 2 good pairs are `(3, 0)` and `(3, 1)`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n, m <= 105`\n  * `1 <= nums1[i], nums2[j] <= 106`\n  * `1 <= k <= 103`",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 29392,
+  "total_submissions": 110454,
+  "acceptance_rate": "26.6%",
+  "similar_questions": [
+    {
+      "title": "Count Array Pairs Divisible by K",
+      "slug": "count-array-pairs-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-array-pairs-divisible-by-k/"
+    }
+  ],
+  "hints": [
+    "Let <code>f[v]</code> be the number of occurrences of <code>v/k</code> in nums2.",
+    "For each value <code>v</code> in nums1, enumerating all its factors <code>d</code> (in <code>sqrt(v)</code> time) and sum up all the <code>f[d]</code> to get the final answer.",
+    "It is also possible to improve the complexity from <code>len(nums1) * sqrt(v)</code> to <code>len(nums1) * log(v)</code> - How?"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "2204",
+  "title": "Distance to a Cycle in Undirected Graph",
+  "slug": "distance-to-a-cycle-in-undirected-graph",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Depth-First Search", "Breadth-First Search", "Graph Theory", "Topological Sort"],
+  "total_accepted": 7085,
+  "total_submissions": 9575,
+  "acceptance_rate": "74.0%",
+  "similar_questions": [
+    {
+      "title": "Paths in Maze That Lead to Same Room",
+      "slug": "paths-in-maze-that-lead-to-same-room",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/paths-in-maze-that-lead-to-same-room/"
+    }
+  ],
+  "hints": [
+    "This problem can be broken down into two parts: finding the cycle, and finding the distance between each node and the cycle.",
+    "How can we find the cycle? We can use DFS and keep track of the nodes we’ve seen, and the order that we see them in. Once we see a node we’ve already visited, we know that the cycle contains the node that was seen twice and all the nodes that we visited in between.",
+    "Now that we know which nodes are part of the cycle, how can we find the distances? We can run a multi-source BFS starting from the nodes in the cycle and expanding outward."
+  ]
+}

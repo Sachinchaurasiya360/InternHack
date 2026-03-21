@@ -1,0 +1,40 @@
+{
+  "id": "1293",
+  "title": "Shortest Path in a Grid with Obstacles Elimination",
+  "slug": "shortest-path-in-a-grid-with-obstacles-elimination",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> integer matrix <code>grid</code> where each cell is either <code>0</code> (empty) or <code>1</code> (obstacle). You can move up, down, left, or right from and to an empty cell in <strong>one step</strong>.</p>\n\n<p>Return <em>the minimum number of <strong>steps</strong> to walk from the upper left corner </em><code>(0, 0)</code><em> to the lower right corner </em><code>(m - 1, n - 1)</code><em> given that you can eliminate <strong>at most</strong> </em><code>k</code><em> obstacles</em>. If it is not possible to find such walk return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/09/30/short1-grid.jpg\" style=\"width: 244px; height: 405px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,0,0],[1,1,0],[0,0,0],[0,1,1],[0,0,0]], k = 1\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> \nThe shortest path without eliminating any obstacle is 10.\nThe shortest path with one obstacle elimination at position (3,2) is 6. Such path is (0,0) -&gt; (0,1) -&gt; (0,2) -&gt; (1,2) -&gt; (2,2) -&gt; <strong>(3,2)</strong> -&gt; (4,2).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/09/30/short2-grid.jpg\" style=\"width: 244px; height: 245px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,1,1],[1,1,1],[1,0,0]], k = 1\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> We need to eliminate at least two obstacles to find such a walk.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 40</code></li>\n\t<li><code>1 &lt;= k &lt;= m * n</code></li>\n\t<li><code>grid[i][j]</code> is either <code>0</code> <strong>or</strong> <code>1</code>.</li>\n\t<li><code>grid[0][0] == grid[m - 1][n - 1] == 0</code></li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` integer matrix `grid` where each cell is either `0` (empty) or `1` (obstacle). You can move up, down, left, or right from and to an empty cell in **one step**.\n\nReturn _the minimum number of**steps** to walk from the upper left corner _`(0, 0)`_to the lower right corner_`(m - 1, n - 1)`_given that you can eliminate**at most** _`k` _obstacles_. If it is not possible to find such walk return `-1`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/09/30/short1-grid.jpg)\n    \n    \n    **Input:** grid = [[0,0,0],[1,1,0],[0,0,0],[0,1,1],[0,0,0]], k = 1\n    **Output:** 6\n    **Explanation:** \n    The shortest path without eliminating any obstacle is 10.\n    The shortest path with one obstacle elimination at position (3,2) is 6. Such path is (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2) -> **(3,2)** -> (4,2).\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/09/30/short2-grid.jpg)\n    \n    \n    **Input:** grid = [[0,1,1],[1,1,1],[1,0,0]], k = 1\n    **Output:** -1\n    **Explanation:** We need to eliminate at least two obstacles to find such a walk.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 40`\n  * `1 <= k <= m * n`\n  * `grid[i][j]` is either `0` **or** `1`.\n  * `grid[0][0] == grid[m - 1][n - 1] == 0`",
+  "question": "You are given an `m x n` integer matrix `grid` where each cell is either `0` (empty) or `1` (obstacle). You can move up, down, left, or right from and to an empty cell in **one step**.\n\nReturn _the minimum number of**steps** to walk from the upper left corner _`(0, 0)`_to the lower right corner_`(m - 1, n - 1)`_given that you can eliminate**at most** _`k` _obstacles_. If it is not possible to find such walk return `-1`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/09/30/short1-grid.jpg)\n    \n    \n    **Input:** grid = [[0,0,0],[1,1,0],[0,0,0],[0,1,1],[0,0,0]], k = 1\n    **Output:** 6\n    **Explanation:** \n    The shortest path without eliminating any obstacle is 10.\n    The shortest path with one obstacle elimination at position (3,2) is 6. Such path is (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2) -> **(3,2)** -> (4,2).\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/09/30/short2-grid.jpg)\n    \n    \n    **Input:** grid = [[0,1,1],[1,1,1],[1,0,0]], k = 1\n    **Output:** -1\n    **Explanation:** We need to eliminate at least two obstacles to find such a walk.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 40`\n  * `1 <= k <= m * n`\n  * `grid[i][j]` is either `0` **or** `1`.\n  * `grid[0][0] == grid[m - 1][n - 1] == 0`",
+  "topics": ["Array", "Breadth-First Search", "Matrix"],
+  "total_accepted": 268709,
+  "total_submissions": 582781,
+  "acceptance_rate": "46.1%",
+  "similar_questions": [
+    {
+      "title": "Shortest Path to Get Food",
+      "slug": "shortest-path-to-get-food",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-path-to-get-food/"
+    },
+    {
+      "title": "Minimum Obstacle Removal to Reach Corner",
+      "slug": "minimum-obstacle-removal-to-reach-corner",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-obstacle-removal-to-reach-corner/"
+    },
+    {
+      "title": "Find a Safe Walk Through a Grid",
+      "slug": "find-a-safe-walk-through-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-a-safe-walk-through-a-grid/"
+    }
+  ],
+  "hints": [
+    "Use BFS.",
+    "BFS on (x,y,r) x,y is coordinate, r is remain number of obstacles you can remove."
+  ]
+}

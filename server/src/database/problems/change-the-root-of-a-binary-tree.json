@@ -1,0 +1,21 @@
+{
+  "id": "1666",
+  "title": "Change the Root of a Binary Tree",
+  "slug": "change-the-root-of-a-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 5902,
+  "total_submissions": 7857,
+  "acceptance_rate": "75.1%",
+  "similar_questions": [],
+  "hints": [
+    "Start traversing from the leaf. Always go up till you reach the root.",
+    "Change pointers as asked, make the current node's parent its left child, and make the left child the right one if needed."
+  ]
+}

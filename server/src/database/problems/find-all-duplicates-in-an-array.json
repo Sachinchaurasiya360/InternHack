@@ -1,0 +1,37 @@
+{
+  "id": "442",
+  "title": "Find All Duplicates in an Array",
+  "slug": "find-all-duplicates-in-an-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> of length <code>n</code> where all the integers of <code>nums</code> are in the range <code>[1, n]</code> and each integer appears <strong>at most</strong> <strong>twice</strong>, return <em>an array of all the integers that appears <strong>twice</strong></em>.</p>\n\n<p>You must write an algorithm that runs in <code>O(n)</code> time and uses only <em>constant</em> auxiliary space, excluding the space needed to store the output</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [4,3,2,7,8,2,3,1]\n<strong>Output:</strong> [2,3]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [1,1,2]\n<strong>Output:</strong> [1]\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> nums = [1]\n<strong>Output:</strong> []\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= n</code></li>\n\t<li>Each element in <code>nums</code> appears <strong>once</strong> or <strong>twice</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` of length `n` where all the integers of `nums` are in the range `[1, n]` and each integer appears **at most** **twice** , return _an array of all the integers that appears**twice**_.\n\nYou must write an algorithm that runs in `O(n)` time and uses only _constant_ auxiliary space, excluding the space needed to store the output\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,3,2,7,8,2,3,1]\n    **Output:** [2,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,2]\n    **Output:** [1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i] <= n`\n  * Each element in `nums` appears **once** or **twice**.",
+  "question": "Given an integer array `nums` of length `n` where all the integers of `nums` are in the range `[1, n]` and each integer appears **at most** **twice** , return _an array of all the integers that appears**twice**_.\n\nYou must write an algorithm that runs in `O(n)` time and uses only _constant_ auxiliary space, excluding the space needed to store the output",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,3,2,7,8,2,3,1]\n    **Output:** [2,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,2]\n    **Output:** [1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1]\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i] <= n`\n  * Each element in `nums` appears **once** or **twice**.",
+  "topics": ["Array", "Hash Table", "Sorting"],
+  "total_accepted": 1014946,
+  "total_submissions": 1321391,
+  "acceptance_rate": "76.8%",
+  "similar_questions": [
+    {
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+    },
+    {
+      "title": "Sum of Distances",
+      "slug": "sum-of-distances",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-distances/"
+    },
+    {
+      "title": "The Two Sneaky Numbers of Digitville",
+      "slug": "the-two-sneaky-numbers-of-digitville",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/the-two-sneaky-numbers-of-digitville/"
+    }
+  ],
+  "hints": []
+}

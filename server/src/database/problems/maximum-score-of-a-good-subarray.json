@@ -1,0 +1,28 @@
+{
+  "id": "1793",
+  "title": "Maximum Score of a Good Subarray",
+  "slug": "maximum-score-of-a-good-subarray",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers <code>nums</code> <strong>(0-indexed)</strong> and an integer <code>k</code>.</p>\n\n<p>The <strong>score</strong> of a subarray <code>(i, j)</code> is defined as <code>min(nums[i], nums[i+1], ..., nums[j]) * (j - i + 1)</code>. A <strong>good</strong> subarray is a subarray where <code>i &lt;= k &lt;= j</code>.</p>\n\n<p>Return <em>the maximum possible <strong>score</strong> of a <strong>good</strong> subarray.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,4,3,7,4,5], k = 3\n<strong>Output:</strong> 15\n<strong>Explanation:</strong> The optimal subarray is (1, 5) with a score of min(4,3,7,4,5) * (5-1+1) = 3 * 5 = 15. \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5,5,4,5,4,1,1,1], k = 0\n<strong>Output:</strong> 20\n<strong>Explanation:</strong> The optimal subarray is (0, 4) with a score of min(5,5,4,5,4) * (4-0+1) = 4 * 5 = 20.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= k &lt; nums.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `nums` **(0-indexed)** and an integer `k`.\n\nThe **score** of a subarray `(i, j)` is defined as `min(nums[i], nums[i+1], ..., nums[j]) * (j - i + 1)`. A **good** subarray is a subarray where `i <= k <= j`.\n\nReturn _the maximum possible**score** of a **good** subarray._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,4,3,7,4,5], k = 3\n    **Output:** 15\n    **Explanation:** The optimal subarray is (1, 5) with a score of min(4,3,7,4,5) * (5-1+1) = 3 * 5 = 15. \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,5,4,5,4,1,1,1], k = 0\n    **Output:** 20\n    **Explanation:** The optimal subarray is (0, 4) with a score of min(5,5,4,5,4) * (4-0+1) = 4 * 5 = 20.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 2 * 104`\n  * `0 <= k < nums.length`",
+  "question": "You are given an array of integers `nums` **(0-indexed)** and an integer `k`.\n\nThe **score** of a subarray `(i, j)` is defined as `min(nums[i], nums[i+1], ..., nums[j]) * (j - i + 1)`. A **good** subarray is a subarray where `i <= k <= j`.\n\nReturn _the maximum possible**score** of a **good** subarray._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,4,3,7,4,5], k = 3\n    **Output:** 15\n    **Explanation:** The optimal subarray is (1, 5) with a score of min(4,3,7,4,5) * (5-1+1) = 3 * 5 = 15. \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [5,5,4,5,4,1,1,1], k = 0\n    **Output:** 20\n    **Explanation:** The optimal subarray is (0, 4) with a score of min(5,5,4,5,4) * (4-0+1) = 4 * 5 = 20.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 2 * 104`\n  * `0 <= k < nums.length`",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Stack", "Monotonic Stack"],
+  "total_accepted": 88746,
+  "total_submissions": 137809,
+  "acceptance_rate": "64.4%",
+  "similar_questions": [
+    {
+      "title": "Largest Rectangle in Histogram",
+      "slug": "largest-rectangle-in-histogram",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/"
+    }
+  ],
+  "hints": [
+    "Try thinking about the prefix before index k and the suffix after index k as two separate arrays.",
+    "Using two pointers or binary search, we can find the maximum prefix of each array where the numbers are less than or equal to a certain value"
+  ]
+}

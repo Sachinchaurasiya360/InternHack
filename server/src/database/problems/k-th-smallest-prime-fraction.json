@@ -1,0 +1,37 @@
+{
+  "id": "786",
+  "title": "K-th Smallest Prime Fraction",
+  "slug": "k-th-smallest-prime-fraction",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a sorted integer array <code>arr</code> containing <code>1</code> and <strong>prime</strong> numbers, where all the integers of <code>arr</code> are unique. You are also given an integer <code>k</code>.</p>\n\n<p>For every <code>i</code> and <code>j</code> where <code>0 &lt;= i &lt; j &lt; arr.length</code>, we consider the fraction <code>arr[i] / arr[j]</code>.</p>\n\n<p>Return <em>the</em> <code>k<sup>th</sup></code> <em>smallest fraction considered</em>. Return your answer as an array of integers of size <code>2</code>, where <code>answer[0] == arr[i]</code> and <code>answer[1] == arr[j]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3,5], k = 3\n<strong>Output:</strong> [2,5]\n<strong>Explanation:</strong> The fractions to be considered in sorted order are:\n1/5, 1/3, 2/5, 1/2, 3/5, and 2/3.\nThe third fraction is 2/5.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,7], k = 1\n<strong>Output:</strong> [1,7]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= arr.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>arr[0] == 1</code></li>\n\t<li><code>arr[i]</code> is a <strong>prime</strong> number for <code>i &gt; 0</code>.</li>\n\t<li>All the numbers of <code>arr</code> are <strong>unique</strong> and sorted in <strong>strictly increasing</strong> order.</li>\n\t<li><code>1 &lt;= k &lt;= arr.length * (arr.length - 1) / 2</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Can you solve the problem with better than <code>O(n<sup>2</sup>)</code> complexity?",
+  "content_markdown": "You are given a sorted integer array `arr` containing `1` and **prime** numbers, where all the integers of `arr` are unique. You are also given an integer `k`.\n\nFor every `i` and `j` where `0 <= i < j < arr.length`, we consider the fraction `arr[i] / arr[j]`.\n\nReturn _the_ `kth` _smallest fraction considered_. Return your answer as an array of integers of size `2`, where `answer[0] == arr[i]` and `answer[1] == arr[j]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,5], k = 3\n    **Output:** [2,5]\n    **Explanation:** The fractions to be considered in sorted order are:\n    1/5, 1/3, 2/5, 1/2, 3/5, and 2/3.\n    The third fraction is 2/5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,7], k = 1\n    **Output:** [1,7]\n    \n\n \n\n**Constraints:**\n\n  * `2 <= arr.length <= 1000`\n  * `1 <= arr[i] <= 3 * 104`\n  * `arr[0] == 1`\n  * `arr[i]` is a **prime** number for `i > 0`.\n  * All the numbers of `arr` are **unique** and sorted in **strictly increasing** order.\n  * `1 <= k <= arr.length * (arr.length - 1) / 2`\n\n\n\n \n\n**Follow up:** Can you solve the problem with better than `O(n2)` complexity?",
+  "question": "You are given a sorted integer array `arr` containing `1` and **prime** numbers, where all the integers of `arr` are unique. You are also given an integer `k`.\n\nFor every `i` and `j` where `0 <= i < j < arr.length`, we consider the fraction `arr[i] / arr[j]`.\n\nReturn _the_ `kth` _smallest fraction considered_. Return your answer as an array of integers of size `2`, where `answer[0] == arr[i]` and `answer[1] == arr[j]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,5], k = 3\n    **Output:** [2,5]\n    **Explanation:** The fractions to be considered in sorted order are:\n    1/5, 1/3, 2/5, 1/2, 3/5, and 2/3.\n    The third fraction is 2/5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,7], k = 1\n    **Output:** [1,7]",
+  "constraints": "**Constraints:**\n\n  * `2 <= arr.length <= 1000`\n  * `1 <= arr[i] <= 3 * 104`\n  * `arr[0] == 1`\n  * `arr[i]` is a **prime** number for `i > 0`.\n  * All the numbers of `arr` are **unique** and sorted in **strictly increasing** order.\n  * `1 <= k <= arr.length * (arr.length - 1) / 2`",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 170490,
+  "total_submissions": 247165,
+  "acceptance_rate": "69.0%",
+  "similar_questions": [
+    {
+      "title": "Kth Smallest Element in a Sorted Matrix",
+      "slug": "kth-smallest-element-in-a-sorted-matrix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/"
+    },
+    {
+      "title": "Kth Smallest Number in Multiplication Table",
+      "slug": "kth-smallest-number-in-multiplication-table",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/kth-smallest-number-in-multiplication-table/"
+    },
+    {
+      "title": "Find K-th Smallest Pair Distance",
+      "slug": "find-k-th-smallest-pair-distance",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-k-th-smallest-pair-distance/"
+    }
+  ],
+  "hints": []
+}

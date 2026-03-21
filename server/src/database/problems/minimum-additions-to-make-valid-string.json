@@ -1,0 +1,28 @@
+{
+  "id": "2645",
+  "title": "Minimum Additions to Make Valid String",
+  "slug": "minimum-additions-to-make-valid-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>word</code> to which you can insert letters &quot;a&quot;, &quot;b&quot; or &quot;c&quot; anywhere and any number of times, return <em>the minimum number of letters that must be inserted so that <code>word</code> becomes <strong>valid</strong>.</em></p>\n\n<p>A string is called <strong>valid </strong>if it can be formed by concatenating the string &quot;abc&quot; several times.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> word = &quot;b&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Insert the letter &quot;a&quot; right before &quot;b&quot;, and the letter &quot;c&quot; right next to &quot;b&quot; to obtain the valid string &quot;<strong>a</strong>b<strong>c</strong>&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> word = &quot;aaa&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> Insert letters &quot;b&quot; and &quot;c&quot; next to each &quot;a&quot; to obtain the valid string &quot;a<strong>bc</strong>a<strong>bc</strong>a<strong>bc</strong>&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> word = &quot;abc&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> word is already valid. No modifications are needed. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 50</code></li>\n\t<li><code>word</code> consists of letters &quot;a&quot;, &quot;b&quot;&nbsp;and &quot;c&quot; only.&nbsp;</li>\n</ul>\n",
+  "content_markdown": "Given a string `word` to which you can insert letters \"a\", \"b\" or \"c\" anywhere and any number of times, return _the minimum number of letters that must be inserted so that`word` becomes **valid**._\n\nA string is called **valid** if it can be formed by concatenating the string \"abc\" several times.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word = \"b\"\n    **Output:** 2\n    **Explanation:** Insert the letter \"a\" right before \"b\", and the letter \"c\" right next to \"b\" to obtain the valid string \"**a** b**c** \".\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"aaa\"\n    **Output:** 6\n    **Explanation:** Insert letters \"b\" and \"c\" next to each \"a\" to obtain the valid string \"a**bc** a**bc** a**bc** \".\n    \n\n**Example 3:**\n    \n    \n    **Input:** word = \"abc\"\n    **Output:** 0\n    **Explanation:** word is already valid. No modifications are needed. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 50`\n  * `word` consists of letters \"a\", \"b\" and \"c\" only.",
+  "question": "Given a string `word` to which you can insert letters \"a\", \"b\" or \"c\" anywhere and any number of times, return _the minimum number of letters that must be inserted so that`word` becomes **valid**._\n\nA string is called **valid** if it can be formed by concatenating the string \"abc\" several times.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word = \"b\"\n    **Output:** 2\n    **Explanation:** Insert the letter \"a\" right before \"b\", and the letter \"c\" right next to \"b\" to obtain the valid string \"**a** b**c** \".\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"aaa\"\n    **Output:** 6\n    **Explanation:** Insert letters \"b\" and \"c\" next to each \"a\" to obtain the valid string \"a**bc** a**bc** a**bc** \".\n    \n\n**Example 3:**\n    \n    \n    **Input:** word = \"abc\"\n    **Output:** 0\n    **Explanation:** word is already valid. No modifications are needed.",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 50`\n  * `word` consists of letters \"a\", \"b\" and \"c\" only.",
+  "topics": ["String", "Dynamic Programming", "Stack", "Greedy"],
+  "total_accepted": 37707,
+  "total_submissions": 73938,
+  "acceptance_rate": "51.0%",
+  "similar_questions": [
+    {
+      "title": "Merge Strings Alternately",
+      "slug": "merge-strings-alternately",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-strings-alternately/"
+    }
+  ],
+  "hints": [
+    "Maintain a pointer on word and another pointer on string “abc”.",
+    "If the two characters that are being pointed to differ, Increment the answer and the pointer to the string “abc” by one."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "3405",
+  "title": "Count the Number of Arrays with K Matching Adjacent Elements",
+  "slug": "count-the-number-of-arrays-with-k-matching-adjacent-elements",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given three integers <code>n</code>, <code>m</code>, <code>k</code>. A <strong>good array</strong> <code>arr</code> of size <code>n</code> is defined as follows:</p>\n\n<ul>\n\t<li>Each element in <code>arr</code> is in the <strong>inclusive</strong> range <code>[1, m]</code>.</li>\n\t<li><em>Exactly</em> <code>k</code> indices <code>i</code> (where <code>1 &lt;= i &lt; n</code>) satisfy the condition <code>arr[i - 1] == arr[i]</code>.</li>\n</ul>\n\n<p>Return the number of <strong>good arrays</strong> that can be formed.</p>\n\n<p>Since the answer may be very large, return it <strong>modulo </strong><code>10<sup>9 </sup>+ 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3, m = 2, k = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>There are 4 good arrays. They are <code>[1, 1, 2]</code>, <code>[1, 2, 2]</code>, <code>[2, 1, 1]</code> and <code>[2, 2, 1]</code>.</li>\n\t<li>Hence, the answer is 4.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 4, m = 2, k = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>The good arrays are <code>[1, 1, 1, 2]</code>, <code>[1, 1, 2, 2]</code>, <code>[1, 2, 2, 2]</code>, <code>[2, 1, 1, 1]</code>, <code>[2, 2, 1, 1]</code> and <code>[2, 2, 2, 1]</code>.</li>\n\t<li>Hence, the answer is 6.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 5, m = 2, k = 0</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>The good arrays are <code>[1, 2, 1, 2, 1]</code> and <code>[2, 1, 2, 1, 2]</code>. Hence, the answer is 2.</li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= m &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= k &lt;= n - 1</code></li>\n</ul>\n",
+  "content_markdown": "You are given three integers `n`, `m`, `k`. A **good array** `arr` of size `n` is defined as follows:\n\n  * Each element in `arr` is in the **inclusive** range `[1, m]`.\n  * _Exactly_ `k` indices `i` (where `1 <= i < n`) satisfy the condition `arr[i - 1] == arr[i]`.\n\n\n\nReturn the number of **good arrays** that can be formed.\n\nSince the answer may be very large, return it **modulo**`109 + 7`.\n\n \n\n**Example 1:**\n\n**Input:** n = 3, m = 2, k = 1\n\n**Output:** 4\n\n**Explanation:**\n\n  * There are 4 good arrays. They are `[1, 1, 2]`, `[1, 2, 2]`, `[2, 1, 1]` and `[2, 2, 1]`.\n  * Hence, the answer is 4.\n\n\n\n**Example 2:**\n\n**Input:** n = 4, m = 2, k = 2\n\n**Output:** 6\n\n**Explanation:**\n\n  * The good arrays are `[1, 1, 1, 2]`, `[1, 1, 2, 2]`, `[1, 2, 2, 2]`, `[2, 1, 1, 1]`, `[2, 2, 1, 1]` and `[2, 2, 2, 1]`.\n  * Hence, the answer is 6.\n\n\n\n**Example 3:**\n\n**Input:** n = 5, m = 2, k = 0\n\n**Output:** 2\n\n**Explanation:**\n\n  * The good arrays are `[1, 2, 1, 2, 1]` and `[2, 1, 2, 1, 2]`. Hence, the answer is 2.\n\n\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= m <= 105`\n  * `0 <= k <= n - 1`",
+  "question": "You are given three integers `n`, `m`, `k`. A **good array** `arr` of size `n` is defined as follows:\n\n  * Each element in `arr` is in the **inclusive** range `[1, m]`.\n  * _Exactly_ `k` indices `i` (where `1 <= i < n`) satisfy the condition `arr[i - 1] == arr[i]`.\n\n\n\nReturn the number of **good arrays** that can be formed.\n\nSince the answer may be very large, return it **modulo**`109 + 7`.",
+  "examples": "**Example 1:**\n\n**Input:** n = 3, m = 2, k = 1\n\n**Output:** 4\n\n**Explanation:**\n\n  * There are 4 good arrays. They are `[1, 1, 2]`, `[1, 2, 2]`, `[2, 1, 1]` and `[2, 2, 1]`.\n  * Hence, the answer is 4.\n\n\n\n**Example 2:**\n\n**Input:** n = 4, m = 2, k = 2\n\n**Output:** 6\n\n**Explanation:**\n\n  * The good arrays are `[1, 1, 1, 2]`, `[1, 1, 2, 2]`, `[1, 2, 2, 2]`, `[2, 1, 1, 1]`, `[2, 2, 1, 1]` and `[2, 2, 2, 1]`.\n  * Hence, the answer is 6.\n\n\n\n**Example 3:**\n\n**Input:** n = 5, m = 2, k = 0\n\n**Output:** 2\n\n**Explanation:**\n\n  * The good arrays are `[1, 2, 1, 2, 1]` and `[2, 1, 2, 1, 2]`. Hence, the answer is 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= m <= 105`\n  * `0 <= k <= n - 1`",
+  "topics": ["Math", "Combinatorics"],
+  "total_accepted": 68022,
+  "total_submissions": 116558,
+  "acceptance_rate": "58.4%",
+  "similar_questions": [
+    {
+      "title": "Count Good Numbers",
+      "slug": "count-good-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-good-numbers/"
+    }
+  ],
+  "hints": [
+    "The first position <code>arr[0]</code> has <code>m</code> choices.",
+    "For each of the remaining <code>n - 1</code> indices, <code>0 < i < n</code>, select <code>k</code> positions from left to right and set <code>arr[i] = arr[i - 1]</code>.",
+    "For all other indices, <code>set arr[i] != arr[i - 1]</code> with (<code>m - 1</code>) choices for each of the <code>n - 1 - k</code> positions."
+  ]
+}

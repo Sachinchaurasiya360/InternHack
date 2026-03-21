@@ -1,0 +1,39 @@
+{
+  "id": "2848",
+  "title": "Points That Intersect With Cars",
+  "slug": "points-that-intersect-with-cars",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> 2D integer array <code>nums</code> representing the coordinates of the cars parking on a number line. For any index <code>i</code>, <code>nums[i] = [start<sub>i</sub>, end<sub>i</sub>]</code> where <code>start<sub>i</sub></code> is the starting point of the <code>i<sup>th</sup></code> car and <code>end<sub>i</sub></code> is the ending point of the <code>i<sup>th</sup></code> car.</p>\n\n<p>Return <em>the number of integer points on the line that are covered with <strong>any part</strong> of a car.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [[3,6],[1,5],[4,7]]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> All the points from 1 to 7 intersect at least one car, therefore the answer would be 7.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [[1,3],[5,8]]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> Points intersecting at least one car are 1, 2, 3, 5, 6, 7, 8. There are a total of 7 points, therefore the answer would be 7.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>nums[i].length == 2</code></li>\n\t<li><code><font face=\"monospace\">1 &lt;= start<sub>i</sub>&nbsp;&lt;= end<sub>i</sub>&nbsp;&lt;= 100</font></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** 2D integer array `nums` representing the coordinates of the cars parking on a number line. For any index `i`, `nums[i] = [starti, endi]` where `starti` is the starting point of the `ith` car and `endi` is the ending point of the `ith` car.\n\nReturn _the number of integer points on the line that are covered with**any part** of a car._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [[3,6],[1,5],[4,7]]\n    **Output:** 7\n    **Explanation:** All the points from 1 to 7 intersect at least one car, therefore the answer would be 7.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [[1,3],[5,8]]\n    **Output:** 7\n    **Explanation:** Points intersecting at least one car are 1, 2, 3, 5, 6, 7, 8. There are a total of 7 points, therefore the answer would be 7.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `nums[i].length == 2`\n  * `1 <= starti <= endi <= 100`",
+  "question": "You are given a **0-indexed** 2D integer array `nums` representing the coordinates of the cars parking on a number line. For any index `i`, `nums[i] = [starti, endi]` where `starti` is the starting point of the `ith` car and `endi` is the ending point of the `ith` car.\n\nReturn _the number of integer points on the line that are covered with**any part** of a car._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [[3,6],[1,5],[4,7]]\n    **Output:** 7\n    **Explanation:** All the points from 1 to 7 intersect at least one car, therefore the answer would be 7.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [[1,3],[5,8]]\n    **Output:** 7\n    **Explanation:** Points intersecting at least one car are 1, 2, 3, 5, 6, 7, 8. There are a total of 7 points, therefore the answer would be 7.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `nums[i].length == 2`\n  * `1 <= starti <= endi <= 100`",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 74404,
+  "total_submissions": 101421,
+  "acceptance_rate": "73.4%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Meeting Rooms",
+      "slug": "meeting-rooms",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/meeting-rooms/"
+    },
+    {
+      "title": "Meeting Rooms II",
+      "slug": "meeting-rooms-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/meeting-rooms-ii/"
+    }
+  ],
+  "hints": [
+    "Sort the array according to first element and then starting from the <code>0<sup>th</sup></code> index remove the overlapping parts and return the count of non-overlapping points."
+  ]
+}

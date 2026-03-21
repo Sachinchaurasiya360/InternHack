@@ -1,0 +1,27 @@
+{
+  "id": "774",
+  "title": "Minimize Max Distance to Gas Station",
+  "slug": "minimize-max-distance-to-gas-station",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 37240,
+  "total_submissions": 69066,
+  "acceptance_rate": "53.9%",
+  "similar_questions": [
+    {
+      "title": "Koko Eating Bananas",
+      "slug": "koko-eating-bananas",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/koko-eating-bananas/"
+    }
+  ],
+  "hints": [
+    "Use a binary search.  We'll binary search the monotone function \"possible(D) = can we use K or less gas stations to ensure each adjacent distance between gas stations is at most D?\""
+  ]
+}

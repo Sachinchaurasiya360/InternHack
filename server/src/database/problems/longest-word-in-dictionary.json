@@ -1,0 +1,39 @@
+{
+  "id": "720",
+  "title": "Longest Word in Dictionary",
+  "slug": "longest-word-in-dictionary",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>words</code> representing an English Dictionary, return <em>the longest word in</em> <code>words</code> <em>that can be built one character at a time by other words in</em> <code>words</code>.</p>\n\n<p>If there is more than one possible answer, return the longest word with the smallest lexicographical order. If there is no answer, return the empty string.</p>\n\n<p>Note that the word should be built from left to right with each additional character being added to the end of a previous word.&nbsp;</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;w&quot;,&quot;wo&quot;,&quot;wor&quot;,&quot;worl&quot;,&quot;world&quot;]\n<strong>Output:</strong> &quot;world&quot;\n<strong>Explanation:</strong> The word &quot;world&quot; can be built one character at a time by &quot;w&quot;, &quot;wo&quot;, &quot;wor&quot;, and &quot;worl&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;a&quot;,&quot;banana&quot;,&quot;app&quot;,&quot;appl&quot;,&quot;ap&quot;,&quot;apply&quot;,&quot;apple&quot;]\n<strong>Output:</strong> &quot;apple&quot;\n<strong>Explanation:</strong> Both &quot;apply&quot; and &quot;apple&quot; can be built from other words in the dictionary. However, &quot;apple&quot; is lexicographically smaller than &quot;apply&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 30</code></li>\n\t<li><code>words[i]</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given an array of strings `words` representing an English Dictionary, return _the longest word in_ `words` _that can be built one character at a time by other words in_ `words`.\n\nIf there is more than one possible answer, return the longest word with the smallest lexicographical order. If there is no answer, return the empty string.\n\nNote that the word should be built from left to right with each additional character being added to the end of a previous word. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"w\",\"wo\",\"wor\",\"worl\",\"world\"]\n    **Output:** \"world\"\n    **Explanation:** The word \"world\" can be built one character at a time by \"w\", \"wo\", \"wor\", and \"worl\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"a\",\"banana\",\"app\",\"appl\",\"ap\",\"apply\",\"apple\"]\n    **Output:** \"apple\"\n    **Explanation:** Both \"apply\" and \"apple\" can be built from other words in the dictionary. However, \"apple\" is lexicographically smaller than \"apply\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 1000`\n  * `1 <= words[i].length <= 30`\n  * `words[i]` consists of lowercase English letters.",
+  "question": "Given an array of strings `words` representing an English Dictionary, return _the longest word in_ `words` _that can be built one character at a time by other words in_ `words`.\n\nIf there is more than one possible answer, return the longest word with the smallest lexicographical order. If there is no answer, return the empty string.\n\nNote that the word should be built from left to right with each additional character being added to the end of a previous word.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"w\",\"wo\",\"wor\",\"worl\",\"world\"]\n    **Output:** \"world\"\n    **Explanation:** The word \"world\" can be built one character at a time by \"w\", \"wo\", \"wor\", and \"worl\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"a\",\"banana\",\"app\",\"appl\",\"ap\",\"apply\",\"apple\"]\n    **Output:** \"apple\"\n    **Explanation:** Both \"apply\" and \"apple\" can be built from other words in the dictionary. However, \"apple\" is lexicographically smaller than \"apply\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 1000`\n  * `1 <= words[i].length <= 30`\n  * `words[i]` consists of lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String", "Trie", "Sorting"],
+  "total_accepted": 188741,
+  "total_submissions": 346345,
+  "acceptance_rate": "54.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Word in Dictionary through Deleting",
+      "slug": "longest-word-in-dictionary-through-deleting",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/"
+    },
+    {
+      "title": "Implement Magic Dictionary",
+      "slug": "implement-magic-dictionary",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/implement-magic-dictionary/"
+    },
+    {
+      "title": "Longest Word With All Prefixes",
+      "slug": "longest-word-with-all-prefixes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-word-with-all-prefixes/"
+    }
+  ],
+  "hints": [
+    "For every word in the input list, we can check whether all prefixes of that word are in the input list by using a Set."
+  ]
+}

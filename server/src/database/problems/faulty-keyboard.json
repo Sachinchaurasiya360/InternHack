@@ -1,0 +1,51 @@
+{
+  "id": "2810",
+  "title": "Faulty Keyboard",
+  "slug": "faulty-keyboard",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Your laptop keyboard is faulty, and whenever you type a character <code>&#39;i&#39;</code> on it, it reverses the string that you have written. Typing other characters works as expected.</p>\n\n<p>You are given a <strong>0-indexed</strong> string <code>s</code>, and you type each character of <code>s</code> using your faulty keyboard.</p>\n\n<p>Return <em>the final string that will be present on your laptop screen.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;string&quot;\n<strong>Output:</strong> &quot;rtsng&quot;\n<strong>Explanation:</strong> \nAfter typing first character, the text on the screen is &quot;s&quot;.\nAfter the second character, the text is &quot;st&quot;. \nAfter the third character, the text is &quot;str&quot;.\nSince the fourth character is an &#39;i&#39;, the text gets reversed and becomes &quot;rts&quot;.\nAfter the fifth character, the text is &quot;rtsn&quot;. \nAfter the sixth character, the text is &quot;rtsng&quot;. \nTherefore, we return &quot;rtsng&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;poiinter&quot;\n<strong>Output:</strong> &quot;ponter&quot;\n<strong>Explanation:</strong> \nAfter the first character, the text on the screen is &quot;p&quot;.\nAfter the second character, the text is &quot;po&quot;. \nSince the third character you type is an &#39;i&#39;, the text gets reversed and becomes &quot;op&quot;. \nSince the fourth character you type is an &#39;i&#39;, the text gets reversed and becomes &quot;po&quot;.\nAfter the fifth character, the text is &quot;pon&quot;.\nAfter the sixth character, the text is &quot;pont&quot;. \nAfter the seventh character, the text is &quot;ponte&quot;. \nAfter the eighth character, the text is &quot;ponter&quot;. \nTherefore, we return &quot;ponter&quot;.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n\t<li><code>s[0] != &#39;i&#39;</code></li>\n</ul>\n",
+  "content_markdown": "Your laptop keyboard is faulty, and whenever you type a character `'i'` on it, it reverses the string that you have written. Typing other characters works as expected.\n\nYou are given a **0-indexed** string `s`, and you type each character of `s` using your faulty keyboard.\n\nReturn _the final string that will be present on your laptop screen._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"string\"\n    **Output:** \"rtsng\"\n    **Explanation:** \n    After typing first character, the text on the screen is \"s\".\n    After the second character, the text is \"st\". \n    After the third character, the text is \"str\".\n    Since the fourth character is an 'i', the text gets reversed and becomes \"rts\".\n    After the fifth character, the text is \"rtsn\". \n    After the sixth character, the text is \"rtsng\". \n    Therefore, we return \"rtsng\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"poiinter\"\n    **Output:** \"ponter\"\n    **Explanation:** \n    After the first character, the text on the screen is \"p\".\n    After the second character, the text is \"po\". \n    Since the third character you type is an 'i', the text gets reversed and becomes \"op\". \n    Since the fourth character you type is an 'i', the text gets reversed and becomes \"po\".\n    After the fifth character, the text is \"pon\".\n    After the sixth character, the text is \"pont\". \n    After the seventh character, the text is \"ponte\". \n    After the eighth character, the text is \"ponter\". \n    Therefore, we return \"ponter\".\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of lowercase English letters.\n  * `s[0] != 'i'`",
+  "question": "Your laptop keyboard is faulty, and whenever you type a character `'i'` on it, it reverses the string that you have written. Typing other characters works as expected.\n\nYou are given a **0-indexed** string `s`, and you type each character of `s` using your faulty keyboard.\n\nReturn _the final string that will be present on your laptop screen._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"string\"\n    **Output:** \"rtsng\"\n    **Explanation:** \n    After typing first character, the text on the screen is \"s\".\n    After the second character, the text is \"st\". \n    After the third character, the text is \"str\".\n    Since the fourth character is an 'i', the text gets reversed and becomes \"rts\".\n    After the fifth character, the text is \"rtsn\". \n    After the sixth character, the text is \"rtsng\". \n    Therefore, we return \"rtsng\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"poiinter\"\n    **Output:** \"ponter\"\n    **Explanation:** \n    After the first character, the text on the screen is \"p\".\n    After the second character, the text is \"po\". \n    Since the third character you type is an 'i', the text gets reversed and becomes \"op\". \n    Since the fourth character you type is an 'i', the text gets reversed and becomes \"po\".\n    After the fifth character, the text is \"pon\".\n    After the sixth character, the text is \"pont\". \n    After the seventh character, the text is \"ponte\". \n    After the eighth character, the text is \"ponter\". \n    Therefore, we return \"ponter\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of lowercase English letters.\n  * `s[0] != 'i'`",
+  "topics": ["String", "Simulation"],
+  "total_accepted": 117239,
+  "total_submissions": 146503,
+  "acceptance_rate": "80.0%",
+  "similar_questions": [
+    {
+      "title": "Reverse Vowels of a String",
+      "slug": "reverse-vowels-of-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-vowels-of-a-string/"
+    },
+    {
+      "title": "Reverse String II",
+      "slug": "reverse-string-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-string-ii/"
+    },
+    {
+      "title": "Reverse Only Letters",
+      "slug": "reverse-only-letters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-only-letters/"
+    },
+    {
+      "title": "Find the Original Typed String I",
+      "slug": "find-the-original-typed-string-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-original-typed-string-i/"
+    },
+    {
+      "title": "Find the Original Typed String II",
+      "slug": "find-the-original-typed-string-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-original-typed-string-ii/"
+    }
+  ],
+  "hints": [
+    "Try to build a new string by traversing the given string and reversing whenever you get the character ‘i’."
+  ]
+}

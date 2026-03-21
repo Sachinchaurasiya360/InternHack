@@ -1,0 +1,41 @@
+{
+  "id": "1245",
+  "title": "Tree Diameter",
+  "slug": "tree-diameter",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Topological Sort"
+  ],
+  "total_accepted": 56043,
+  "total_submissions": 91498,
+  "acceptance_rate": "61.3%",
+  "similar_questions": [
+    {
+      "title": "Count Subtrees With Max Distance Between Cities",
+      "slug": "count-subtrees-with-max-distance-between-cities",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-subtrees-with-max-distance-between-cities/"
+    },
+    {
+      "title": "Find Minimum Diameter After Merging Two Trees",
+      "slug": "find-minimum-diameter-after-merging-two-trees",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-minimum-diameter-after-merging-two-trees/"
+    }
+  ],
+  "hints": [
+    "Start at any node A and traverse the tree to find the furthest node from it, let's call it B.",
+    "Having found the furthest node B, traverse the tree from B to find the furthest node from it, lets call it C.",
+    "The distance between B and C is the tree diameter."
+  ]
+}

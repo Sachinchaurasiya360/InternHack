@@ -1,0 +1,18 @@
+{
+  "id": "3230",
+  "title": "Customer Purchasing Behavior Analysis",
+  "slug": "customer-purchasing-behavior-analysis",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 2824,
+  "total_submissions": 7748,
+  "acceptance_rate": "36.4%",
+  "similar_questions": [],
+  "hints": []
+}

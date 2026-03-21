@@ -1,0 +1,18 @@
+{
+  "id": "1843",
+  "title": "Suspicious Bank Accounts",
+  "slug": "suspicious-bank-accounts",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 14950,
+  "total_submissions": 33813,
+  "acceptance_rate": "44.2%",
+  "similar_questions": [],
+  "hints": []
+}

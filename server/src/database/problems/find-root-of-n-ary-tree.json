@@ -1,0 +1,25 @@
+{
+  "id": "1506",
+  "title": "Find Root of N-Ary Tree",
+  "slug": "find-root-of-n-ary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Bit Manipulation", "Tree", "Depth-First Search"],
+  "total_accepted": 41063,
+  "total_submissions": 52251,
+  "acceptance_rate": "78.6%",
+  "similar_questions": [
+    {
+      "title": "Move Sub-Tree of N-Ary Tree",
+      "slug": "move-sub-tree-of-n-ary-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/move-sub-tree-of-n-ary-tree/"
+    }
+  ],
+  "hints": ["Node with indegree 0 is the root"]
+}

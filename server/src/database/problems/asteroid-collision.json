@@ -1,0 +1,45 @@
+{
+  "id": "735",
+  "title": "Asteroid Collision",
+  "slug": "asteroid-collision",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>We are given an array <code>asteroids</code> of integers representing asteroids in a row. The indices of the asteroid in the array represent their relative position in space.</p>\n\n<p>For each asteroid, the absolute value represents its size, and the sign represents its direction (positive meaning right, negative meaning left). Each asteroid moves at the same speed.</p>\n\n<p>Find out the state of the asteroids after all collisions. If two asteroids meet, the smaller one will explode. If both are the same size, both will explode. Two asteroids moving in the same direction will never meet.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> asteroids = [5,10,-5]\n<strong>Output:</strong> [5,10]\n<strong>Explanation:</strong> The 10 and -5 collide resulting in 10. The 5 and 10 never collide.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> asteroids = [8,-8]\n<strong>Output:</strong> []\n<strong>Explanation:</strong> The 8 and -8 collide exploding each other.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> asteroids = [10,2,-5]\n<strong>Output:</strong> [10]\n<strong>Explanation:</strong> The 2 and -5 collide resulting in -5. The 10 and -5 collide resulting in 10.\n</pre>\n\n<p><strong class=\"example\">Example 4:</strong></p>\n\n<pre>\n<strong>Input:</strong> asteroids = [3,5,-6,2,-1,4]​​​​​​​\n<strong>Output:</strong> [-6,2,4]\n<strong>Explanation:</strong> The asteroid -6 makes the asteroid 3 and 5 explode, and then continues going left. On the other side, the asteroid 2 makes the asteroid -1 explode and then continues going right, without reaching asteroid 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= asteroids.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-1000 &lt;= asteroids[i] &lt;= 1000</code></li>\n\t<li><code>asteroids[i] != 0</code></li>\n</ul>\n",
+  "content_markdown": "We are given an array `asteroids` of integers representing asteroids in a row. The indices of the asteroid in the array represent their relative position in space.\n\nFor each asteroid, the absolute value represents its size, and the sign represents its direction (positive meaning right, negative meaning left). Each asteroid moves at the same speed.\n\nFind out the state of the asteroids after all collisions. If two asteroids meet, the smaller one will explode. If both are the same size, both will explode. Two asteroids moving in the same direction will never meet.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** asteroids = [5,10,-5]\n    **Output:** [5,10]\n    **Explanation:** The 10 and -5 collide resulting in 10. The 5 and 10 never collide.\n    \n\n**Example 2:**\n    \n    \n    **Input:** asteroids = [8,-8]\n    **Output:** []\n    **Explanation:** The 8 and -8 collide exploding each other.\n    \n\n**Example 3:**\n    \n    \n    **Input:** asteroids = [10,2,-5]\n    **Output:** [10]\n    **Explanation:** The 2 and -5 collide resulting in -5. The 10 and -5 collide resulting in 10.\n    \n\n**Example 4:**\n    \n    \n    **Input:** asteroids = [3,5,-6,2,-1,4]​​​​​​​\n    **Output:** [-6,2,4]\n    **Explanation:** The asteroid -6 makes the asteroid 3 and 5 explode, and then continues going left. On the other side, the asteroid 2 makes the asteroid -1 explode and then continues going right, without reaching asteroid 4.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= asteroids.length <= 104`\n  * `-1000 <= asteroids[i] <= 1000`\n  * `asteroids[i] != 0`",
+  "question": "We are given an array `asteroids` of integers representing asteroids in a row. The indices of the asteroid in the array represent their relative position in space.\n\nFor each asteroid, the absolute value represents its size, and the sign represents its direction (positive meaning right, negative meaning left). Each asteroid moves at the same speed.\n\nFind out the state of the asteroids after all collisions. If two asteroids meet, the smaller one will explode. If both are the same size, both will explode. Two asteroids moving in the same direction will never meet.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** asteroids = [5,10,-5]\n    **Output:** [5,10]\n    **Explanation:** The 10 and -5 collide resulting in 10. The 5 and 10 never collide.\n    \n\n**Example 2:**\n    \n    \n    **Input:** asteroids = [8,-8]\n    **Output:** []\n    **Explanation:** The 8 and -8 collide exploding each other.\n    \n\n**Example 3:**\n    \n    \n    **Input:** asteroids = [10,2,-5]\n    **Output:** [10]\n    **Explanation:** The 2 and -5 collide resulting in -5. The 10 and -5 collide resulting in 10.\n    \n\n**Example 4:**\n    \n    \n    **Input:** asteroids = [3,5,-6,2,-1,4]​​​​​​​\n    **Output:** [-6,2,4]\n    **Explanation:** The asteroid -6 makes the asteroid 3 and 5 explode, and then continues going left. On the other side, the asteroid 2 makes the asteroid -1 explode and then continues going right, without reaching asteroid 4.",
+  "constraints": "**Constraints:**\n\n  * `2 <= asteroids.length <= 104`\n  * `-1000 <= asteroids[i] <= 1000`\n  * `asteroids[i] != 0`",
+  "topics": ["Array", "Stack", "Simulation"],
+  "total_accepted": 977672,
+  "total_submissions": 2072076,
+  "acceptance_rate": "47.2%",
+  "similar_questions": [
+    {
+      "title": "Can Place Flowers",
+      "slug": "can-place-flowers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/can-place-flowers/"
+    },
+    {
+      "title": "Destroying Asteroids",
+      "slug": "destroying-asteroids",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/destroying-asteroids/"
+    },
+    {
+      "title": "Count Collisions on a Road",
+      "slug": "count-collisions-on-a-road",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-collisions-on-a-road/"
+    },
+    {
+      "title": "Robot Collisions",
+      "slug": "robot-collisions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/robot-collisions/"
+    }
+  ],
+  "hints": [
+    "Say a row of asteroids is stable.  What happens when a new asteroid is added on the right?"
+  ]
+}

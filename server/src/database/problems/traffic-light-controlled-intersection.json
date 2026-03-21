@@ -1,0 +1,18 @@
+{
+  "id": "1279",
+  "title": "Traffic Light Controlled Intersection",
+  "slug": "traffic-light-controlled-intersection",
+  "difficulty": "Easy",
+  "category": "Concurrency",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Concurrency"],
+  "total_accepted": 20671,
+  "total_submissions": 28408,
+  "acceptance_rate": "72.8%",
+  "similar_questions": [],
+  "hints": []
+}

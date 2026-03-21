@@ -1,0 +1,27 @@
+{
+  "id": "738",
+  "title": "Monotone Increasing Digits",
+  "slug": "monotone-increasing-digits",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>An integer has <strong>monotone increasing digits</strong> if and only if each pair of adjacent digits <code>x</code> and <code>y</code> satisfy <code>x &lt;= y</code>.</p>\n\n<p>Given an integer <code>n</code>, return <em>the largest number that is less than or equal to </em><code>n</code><em> with <strong>monotone increasing digits</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 10\n<strong>Output:</strong> 9\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1234\n<strong>Output:</strong> 1234\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 332\n<strong>Output:</strong> 299\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "An integer has **monotone increasing digits** if and only if each pair of adjacent digits `x` and `y` satisfy `x <= y`.\n\nGiven an integer `n`, return _the largest number that is less than or equal to_`n` _with**monotone increasing digits**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 10\n    **Output:** 9\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1234\n    **Output:** 1234\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 332\n    **Output:** 299\n    \n\n \n\n**Constraints:**\n\n  * `0 <= n <= 109`",
+  "question": "An integer has **monotone increasing digits** if and only if each pair of adjacent digits `x` and `y` satisfy `x <= y`.\n\nGiven an integer `n`, return _the largest number that is less than or equal to_`n` _with**monotone increasing digits**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 10\n    **Output:** 9\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1234\n    **Output:** 1234\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 332\n    **Output:** 299",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 109`",
+  "topics": ["Math", "Greedy"],
+  "total_accepted": 67891,
+  "total_submissions": 137427,
+  "acceptance_rate": "49.4%",
+  "similar_questions": [
+    {
+      "title": "Remove K Digits",
+      "slug": "remove-k-digits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-k-digits/"
+    }
+  ],
+  "hints": [
+    "Build the answer digit by digit, adding the largest possible one that would make the number still less than or equal to N."
+  ]
+}

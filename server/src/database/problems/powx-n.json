@@ -1,0 +1,37 @@
+{
+  "id": "50",
+  "title": "Pow(x, n)",
+  "slug": "powx-n",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Implement <a href=\"http://www.cplusplus.com/reference/valarray/pow/\" target=\"_blank\">pow(x, n)</a>, which calculates <code>x</code> raised to the power <code>n</code> (i.e., <code>x<sup>n</sup></code>).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 2.00000, n = 10\n<strong>Output:</strong> 1024.00000\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 2.10000, n = 3\n<strong>Output:</strong> 9.26100\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 2.00000, n = -2\n<strong>Output:</strong> 0.25000\n<strong>Explanation:</strong> 2<sup>-2</sup> = 1/2<sup>2</sup> = 1/4 = 0.25\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-100.0 &lt; x &lt; 100.0</code></li>\n\t<li><code>-2<sup>31</sup> &lt;= n &lt;= 2<sup>31</sup>-1</code></li>\n\t<li><code>n</code> is an integer.</li>\n\t<li>Either <code>x</code> is not zero or <code>n &gt; 0</code>.</li>\n\t<li><code>-10<sup>4</sup> &lt;= x<sup>n</sup> &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Implement [pow(x, n)](<http://www.cplusplus.com/reference/valarray/pow/>), which calculates `x` raised to the power `n` (i.e., `xn`).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** x = 2.00000, n = 10\n    **Output:** 1024.00000\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 2.10000, n = 3\n    **Output:** 9.26100\n    \n\n**Example 3:**\n    \n    \n    **Input:** x = 2.00000, n = -2\n    **Output:** 0.25000\n    **Explanation:** 2-2 = 1/22 = 1/4 = 0.25\n    \n\n \n\n**Constraints:**\n\n  * `-100.0 < x < 100.0`\n  * `-231 <= n <= 231-1`\n  * `n` is an integer.\n  * Either `x` is not zero or `n > 0`.\n  * `-104 <= xn <= 104`",
+  "question": "Implement [pow(x, n)](<http://www.cplusplus.com/reference/valarray/pow/>), which calculates `x` raised to the power `n` (i.e., `xn`).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** x = 2.00000, n = 10\n    **Output:** 1024.00000\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 2.10000, n = 3\n    **Output:** 9.26100\n    \n\n**Example 3:**\n    \n    \n    **Input:** x = 2.00000, n = -2\n    **Output:** 0.25000\n    **Explanation:** 2-2 = 1/22 = 1/4 = 0.25",
+  "constraints": "**Constraints:**\n\n  * `-100.0 < x < 100.0`\n  * `-231 <= n <= 231-1`\n  * `n` is an integer.\n  * Either `x` is not zero or `n > 0`.\n  * `-104 <= xn <= 104`",
+  "topics": ["Math", "Recursion"],
+  "total_accepted": 2623017,
+  "total_submissions": 6851140,
+  "acceptance_rate": "38.3%",
+  "similar_questions": [
+    {
+      "title": "Sqrt(x)",
+      "slug": "sqrtx",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sqrtx/"
+    },
+    {
+      "title": "Super Pow",
+      "slug": "super-pow",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/super-pow/"
+    },
+    {
+      "title": "Count Collisions of Monkeys on a Polygon",
+      "slug": "count-collisions-of-monkeys-on-a-polygon",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-collisions-of-monkeys-on-a-polygon/"
+    }
+  ],
+  "hints": []
+}

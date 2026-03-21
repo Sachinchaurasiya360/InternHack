@@ -1,0 +1,28 @@
+{
+  "id": "1796",
+  "title": "Second Largest Digit in a String",
+  "slug": "second-largest-digit-in-a-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an alphanumeric string <code>s</code>, return <em>the <strong>second largest</strong> numerical digit that appears in </em><code>s</code><em>, or </em><code>-1</code><em> if it does not exist</em>.</p>\n\n<p>An <strong>alphanumeric</strong><strong> </strong>string is a string consisting of lowercase English letters and digits.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;dfa12321afd&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The digits that appear in s are [1, 2, 3]. The second largest digit is 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abc1111&quot;\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> The digits that appear in s are [1]. There is no second largest digit. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 500</code></li>\n\t<li><code>s</code> consists of only lowercase English letters and digits.</li>\n</ul>\n",
+  "content_markdown": "Given an alphanumeric string `s`, return _the**second largest** numerical digit that appears in _`s` _, or_`-1` _if it does not exist_.\n\nAn **alphanumeric****** string is a string consisting of lowercase English letters and digits.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"dfa12321afd\"\n    **Output:** 2\n    **Explanation:** The digits that appear in s are [1, 2, 3]. The second largest digit is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abc1111\"\n    **Output:** -1\n    **Explanation:** The digits that appear in s are [1]. There is no second largest digit. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of only lowercase English letters and digits.",
+  "question": "Given an alphanumeric string `s`, return _the**second largest** numerical digit that appears in _`s` _, or_`-1` _if it does not exist_.\n\nAn **alphanumeric****** string is a string consisting of lowercase English letters and digits.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"dfa12321afd\"\n    **Output:** 2\n    **Explanation:** The digits that appear in s are [1, 2, 3]. The second largest digit is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abc1111\"\n    **Output:** -1\n    **Explanation:** The digits that appear in s are [1]. There is no second largest digit.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 500`\n  * `s` consists of only lowercase English letters and digits.",
+  "topics": ["Hash Table", "String"],
+  "total_accepted": 97255,
+  "total_submissions": 180672,
+  "acceptance_rate": "53.8%",
+  "similar_questions": [
+    {
+      "title": "Remove Digit From Number to Maximize Result",
+      "slug": "remove-digit-from-number-to-maximize-result",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-digit-from-number-to-maximize-result/"
+    }
+  ],
+  "hints": [
+    "First of all, get the distinct characters since we are only interested in those",
+    "Let's note that there might not be any digits."
+  ]
+}

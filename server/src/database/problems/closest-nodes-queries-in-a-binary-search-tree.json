@@ -1,0 +1,47 @@
+{
+  "id": "2476",
+  "title": "Closest Nodes Queries in a Binary Search Tree",
+  "slug": "closest-nodes-queries-in-a-binary-search-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> of a <strong>binary search tree </strong>and an array <code>queries</code> of size <code>n</code> consisting of positive integers.</p>\n\n<p>Find a <strong>2D</strong> array <code>answer</code> of size <code>n</code> where <code>answer[i] = [min<sub>i</sub>, max<sub>i</sub>]</code>:</p>\n\n<ul>\n\t<li><code>min<sub>i</sub></code> is the <strong>largest</strong> value in the tree that is smaller than or equal to <code>queries[i]</code>. If a such value does not exist, add <code>-1</code> instead.</li>\n\t<li><code>max<sub>i</sub></code> is the <strong>smallest</strong> value in the tree that is greater than or equal to <code>queries[i]</code>. If a such value does not exist, add <code>-1</code> instead.</li>\n</ul>\n\n<p>Return <em>the array</em> <code>answer</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/09/28/bstreeedrawioo.png\" style=\"width: 261px; height: 281px;\" />\n<pre>\n<strong>Input:</strong> root = [6,2,13,1,4,9,15,null,null,null,null,null,null,14], queries = [2,5,16]\n<strong>Output:</strong> [[2,2],[4,6],[15,-1]]\n<strong>Explanation:</strong> We answer the queries in the following way:\n- The largest number that is smaller or equal than 2 in the tree is 2, and the smallest number that is greater or equal than 2 is still 2. So the answer for the first query is [2,2].\n- The largest number that is smaller or equal than 5 in the tree is 4, and the smallest number that is greater or equal than 5 is 6. So the answer for the second query is [4,6].\n- The largest number that is smaller or equal than 16 in the tree is 15, and the smallest number that is greater or equal than 16 does not exist. So the answer for the third query is [15,-1].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/09/28/bstttreee.png\" style=\"width: 101px; height: 121px;\" />\n<pre>\n<strong>Input:</strong> root = [4,null,9], queries = [3]\n<strong>Output:</strong> [[-1,4]]\n<strong>Explanation:</strong> The largest number that is smaller or equal to 3 in the tree does not exist, and the smallest number that is greater or equal to 3 is 4. So the answer for the query is [-1,4].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[2, 10<sup>5</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 10<sup>6</sup></code></li>\n\t<li><code>n == queries.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= queries[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given the `root` of a **binary search tree** and an array `queries` of size `n` consisting of positive integers.\n\nFind a **2D** array `answer` of size `n` where `answer[i] = [mini, maxi]`:\n\n  * `mini` is the **largest** value in the tree that is smaller than or equal to `queries[i]`. If a such value does not exist, add `-1` instead.\n  * `maxi` is the **smallest** value in the tree that is greater than or equal to `queries[i]`. If a such value does not exist, add `-1` instead.\n\n\n\nReturn _the array_ `answer`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/09/28/bstreeedrawioo.png)\n    \n    \n    **Input:** root = [6,2,13,1,4,9,15,null,null,null,null,null,null,14], queries = [2,5,16]\n    **Output:** [[2,2],[4,6],[15,-1]]\n    **Explanation:** We answer the queries in the following way:\n    - The largest number that is smaller or equal than 2 in the tree is 2, and the smallest number that is greater or equal than 2 is still 2. So the answer for the first query is [2,2].\n    - The largest number that is smaller or equal than 5 in the tree is 4, and the smallest number that is greater or equal than 5 is 6. So the answer for the second query is [4,6].\n    - The largest number that is smaller or equal than 16 in the tree is 15, and the smallest number that is greater or equal than 16 does not exist. So the answer for the third query is [15,-1].\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/09/28/bstttreee.png)\n    \n    \n    **Input:** root = [4,null,9], queries = [3]\n    **Output:** [[-1,4]]\n    **Explanation:** The largest number that is smaller or equal to 3 in the tree does not exist, and the smallest number that is greater or equal to 3 is 4. So the answer for the query is [-1,4].\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 105]`.\n  * `1 <= Node.val <= 106`\n  * `n == queries.length`\n  * `1 <= n <= 105`\n  * `1 <= queries[i] <= 106`",
+  "question": "You are given the `root` of a **binary search tree** and an array `queries` of size `n` consisting of positive integers.\n\nFind a **2D** array `answer` of size `n` where `answer[i] = [mini, maxi]`:\n\n  * `mini` is the **largest** value in the tree that is smaller than or equal to `queries[i]`. If a such value does not exist, add `-1` instead.\n  * `maxi` is the **smallest** value in the tree that is greater than or equal to `queries[i]`. If a such value does not exist, add `-1` instead.\n\n\n\nReturn _the array_ `answer`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/09/28/bstreeedrawioo.png)\n    \n    \n    **Input:** root = [6,2,13,1,4,9,15,null,null,null,null,null,null,14], queries = [2,5,16]\n    **Output:** [[2,2],[4,6],[15,-1]]\n    **Explanation:** We answer the queries in the following way:\n    - The largest number that is smaller or equal than 2 in the tree is 2, and the smallest number that is greater or equal than 2 is still 2. So the answer for the first query is [2,2].\n    - The largest number that is smaller or equal than 5 in the tree is 4, and the smallest number that is greater or equal than 5 is 6. So the answer for the second query is [4,6].\n    - The largest number that is smaller or equal than 16 in the tree is 15, and the smallest number that is greater or equal than 16 does not exist. So the answer for the third query is [15,-1].\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/09/28/bstttreee.png)\n    \n    \n    **Input:** root = [4,null,9], queries = [3]\n    **Output:** [[-1,4]]\n    **Explanation:** The largest number that is smaller or equal to 3 in the tree does not exist, and the smallest number that is greater or equal to 3 is 4. So the answer for the query is [-1,4].",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 105]`.\n  * `1 <= Node.val <= 106`\n  * `n == queries.length`\n  * `1 <= n <= 105`\n  * `1 <= queries[i] <= 106`",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Tree",
+    "Depth-First Search",
+    "Binary Search Tree",
+    "Binary Tree"
+  ],
+  "total_accepted": 38016,
+  "total_submissions": 86138,
+  "acceptance_rate": "44.1%",
+  "similar_questions": [
+    {
+      "title": "Closest Binary Search Tree Value",
+      "slug": "closest-binary-search-tree-value",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/closest-binary-search-tree-value/"
+    },
+    {
+      "title": "Closest Binary Search Tree Value II",
+      "slug": "closest-binary-search-tree-value-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/closest-binary-search-tree-value-ii/"
+    },
+    {
+      "title": "Search in a Binary Search Tree",
+      "slug": "search-in-a-binary-search-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/search-in-a-binary-search-tree/"
+    }
+  ],
+  "hints": [
+    "Try to first convert the tree into a sorted array.",
+    "How do you solve each query in O(log(n)) time using the array of the tree?"
+  ]
+}

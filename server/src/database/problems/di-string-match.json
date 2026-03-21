@@ -1,0 +1,25 @@
+{
+  "id": "942",
+  "title": "DI String Match",
+  "slug": "di-string-match",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A permutation <code>perm</code> of <code>n + 1</code> integers of all the integers in the range <code>[0, n]</code> can be represented as a string <code>s</code> of length <code>n</code> where:</p>\n\n<ul>\n\t<li><code>s[i] == &#39;I&#39;</code> if <code>perm[i] &lt; perm[i + 1]</code>, and</li>\n\t<li><code>s[i] == &#39;D&#39;</code> if <code>perm[i] &gt; perm[i + 1]</code>.</li>\n</ul>\n\n<p>Given a string <code>s</code>, reconstruct the permutation <code>perm</code> and return it. If there are multiple valid permutations perm, return <strong>any of them</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"IDID\"\n<strong>Output:</strong> [0,4,1,3,2]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"III\"\n<strong>Output:</strong> [0,1,2,3]\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> s = \"DDI\"\n<strong>Output:</strong> [3,2,0,1]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;I&#39;</code> or <code>&#39;D&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "A permutation `perm` of `n + 1` integers of all the integers in the range `[0, n]` can be represented as a string `s` of length `n` where:\n\n  * `s[i] == 'I'` if `perm[i] < perm[i + 1]`, and\n  * `s[i] == 'D'` if `perm[i] > perm[i + 1]`.\n\n\n\nGiven a string `s`, reconstruct the permutation `perm` and return it. If there are multiple valid permutations perm, return **any of them**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"IDID\"\n    **Output:** [0,4,1,3,2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"III\"\n    **Output:** [0,1,2,3]\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"DDI\"\n    **Output:** [3,2,0,1]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'I'` or `'D'`.",
+  "question": "A permutation `perm` of `n + 1` integers of all the integers in the range `[0, n]` can be represented as a string `s` of length `n` where:\n\n  * `s[i] == 'I'` if `perm[i] < perm[i + 1]`, and\n  * `s[i] == 'D'` if `perm[i] > perm[i + 1]`.\n\n\n\nGiven a string `s`, reconstruct the permutation `perm` and return it. If there are multiple valid permutations perm, return **any of them**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"IDID\"\n    **Output:** [0,4,1,3,2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"III\"\n    **Output:** [0,1,2,3]\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"DDI\"\n    **Output:** [3,2,0,1]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is either `'I'` or `'D'`.",
+  "topics": ["Array", "Two Pointers", "String", "Greedy"],
+  "total_accepted": 205086,
+  "total_submissions": 253463,
+  "acceptance_rate": "80.9%",
+  "similar_questions": [
+    {
+      "title": "Construct Smallest Number From DI String",
+      "slug": "construct-smallest-number-from-di-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/construct-smallest-number-from-di-string/"
+    }
+  ],
+  "hints": []
+}

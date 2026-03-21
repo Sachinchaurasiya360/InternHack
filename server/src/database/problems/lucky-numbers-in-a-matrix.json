@@ -1,0 +1,21 @@
+{
+  "id": "1380",
+  "title": "Lucky Numbers in a Matrix",
+  "slug": "lucky-numbers-in-a-matrix",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> matrix of <strong>distinct </strong>numbers, return <em>all <strong>lucky numbers</strong> in the matrix in <strong>any </strong>order</em>.</p>\n\n<p>A <strong>lucky number</strong> is an element of the matrix such that it is the minimum element in its row and maximum in its column.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[3,7,8],[9,11,13],[15,16,17]]\n<strong>Output:</strong> [15]\n<strong>Explanation:</strong> 15 is the only lucky number since it is the minimum in its row and the maximum in its column.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[1,10,4,2],[9,3,8,7],[15,16,17,12]]\n<strong>Output:</strong> [12]\n<strong>Explanation:</strong> 12 is the only lucky number since it is the minimum in its row and the maximum in its column.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[7,8],[1,2]]\n<strong>Output:</strong> [7]\n<strong>Explanation:</strong> 7 is the only lucky number since it is the minimum in its row and the maximum in its column.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == mat.length</code></li>\n\t<li><code>n == mat[i].length</code></li>\n\t<li><code>1 &lt;= n, m &lt;= 50</code></li>\n\t<li><code>1 &lt;= matrix[i][j] &lt;= 10<sup>5</sup></code>.</li>\n\t<li>All elements in the matrix are distinct.</li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` matrix of **distinct** numbers, return _all**lucky numbers** in the matrix in **any** order_.\n\nA **lucky number** is an element of the matrix such that it is the minimum element in its row and maximum in its column.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** matrix = [[3,7,8],[9,11,13],[15,16,17]]\n    **Output:** [15]\n    **Explanation:** 15 is the only lucky number since it is the minimum in its row and the maximum in its column.\n    \n\n**Example 2:**\n    \n    \n    **Input:** matrix = [[1,10,4,2],[9,3,8,7],[15,16,17,12]]\n    **Output:** [12]\n    **Explanation:** 12 is the only lucky number since it is the minimum in its row and the maximum in its column.\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[7,8],[1,2]]\n    **Output:** [7]\n    **Explanation:** 7 is the only lucky number since it is the minimum in its row and the maximum in its column.\n    \n\n \n\n**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= n, m <= 50`\n  * `1 <= matrix[i][j] <= 105`.\n  * All elements in the matrix are distinct.",
+  "question": "Given an `m x n` matrix of **distinct** numbers, return _all**lucky numbers** in the matrix in **any** order_.\n\nA **lucky number** is an element of the matrix such that it is the minimum element in its row and maximum in its column.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** matrix = [[3,7,8],[9,11,13],[15,16,17]]\n    **Output:** [15]\n    **Explanation:** 15 is the only lucky number since it is the minimum in its row and the maximum in its column.\n    \n\n**Example 2:**\n    \n    \n    **Input:** matrix = [[1,10,4,2],[9,3,8,7],[15,16,17,12]]\n    **Output:** [12]\n    **Explanation:** 12 is the only lucky number since it is the minimum in its row and the maximum in its column.\n    \n\n**Example 3:**\n    \n    \n    **Input:** matrix = [[7,8],[1,2]]\n    **Output:** [7]\n    **Explanation:** 7 is the only lucky number since it is the minimum in its row and the maximum in its column.",
+  "constraints": "**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= n, m <= 50`\n  * `1 <= matrix[i][j] <= 105`.\n  * All elements in the matrix are distinct.",
+  "topics": ["Array", "Matrix"],
+  "total_accepted": 292424,
+  "total_submissions": 365580,
+  "acceptance_rate": "80.0%",
+  "similar_questions": [],
+  "hints": [
+    "Find out and save the minimum of each row and maximum of each column in two lists.",
+    "Then scan through the whole matrix to identify the elements that satisfy the criteria."
+  ]
+}

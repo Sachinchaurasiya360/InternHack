@@ -1,0 +1,28 @@
+{
+  "id": "2189",
+  "title": "Number of Ways to Build House of Cards",
+  "slug": "number-of-ways-to-build-house-of-cards",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming"],
+  "total_accepted": 3725,
+  "total_submissions": 5940,
+  "acceptance_rate": "62.7%",
+  "similar_questions": [
+    {
+      "title": "Champagne Tower",
+      "slug": "champagne-tower",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/champagne-tower/"
+    }
+  ],
+  "hints": [
+    "If a row has k triangles, how many cards does it take to build that row? It takes 3 * k - 1 cards.",
+    "If you still have i cards left, and on the previous row there were k triangles, what are the possible ways to build the current row? You can start at 1 triangle and continue adding more until you run out of cards or reach k - 1 triangles."
+  ]
+}

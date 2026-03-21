@@ -1,0 +1,43 @@
+{
+  "id": "674",
+  "title": "Longest Continuous Increasing Subsequence",
+  "slug": "longest-continuous-increasing-subsequence",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an unsorted array of integers <code>nums</code>, return <em>the length of the longest <strong>continuous increasing subsequence</strong> (i.e. subarray)</em>. The subsequence must be <strong>strictly</strong> increasing.</p>\n\n<p>A <strong>continuous increasing subsequence</strong> is defined by two indices <code>l</code> and <code>r</code> (<code>l &lt; r</code>) such that it is <code>[nums[l], nums[l + 1], ..., nums[r - 1], nums[r]]</code> and for each <code>l &lt;= i &lt; r</code>, <code>nums[i] &lt; nums[i + 1]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,5,4,7]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The longest continuous increasing subsequence is [1,3,5] with length 3.\nEven though [1,3,5,7] is an increasing subsequence, it is not continuous as elements 5 and 7 are separated by element\n4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,2,2,2,2]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The longest continuous increasing subsequence is [2] with length 1. Note that it must be strictly\nincreasing.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an unsorted array of integers `nums`, return _the length of the longest**continuous increasing subsequence** (i.e. subarray)_. The subsequence must be **strictly** increasing.\n\nA **continuous increasing subsequence** is defined by two indices `l` and `r` (`l < r`) such that it is `[nums[l], nums[l + 1], ..., nums[r - 1], nums[r]]` and for each `l <= i < r`, `nums[i] < nums[i + 1]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,5,4,7]\n    **Output:** 3\n    **Explanation:** The longest continuous increasing subsequence is [1,3,5] with length 3.\n    Even though [1,3,5,7] is an increasing subsequence, it is not continuous as elements 5 and 7 are separated by element\n    4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,2,2,2]\n    **Output:** 1\n    **Explanation:** The longest continuous increasing subsequence is [2] with length 1. Note that it must be strictly\n    increasing.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-109 <= nums[i] <= 109`",
+  "question": "Given an unsorted array of integers `nums`, return _the length of the longest**continuous increasing subsequence** (i.e. subarray)_. The subsequence must be **strictly** increasing.\n\nA **continuous increasing subsequence** is defined by two indices `l` and `r` (`l < r`) such that it is `[nums[l], nums[l + 1], ..., nums[r - 1], nums[r]]` and for each `l <= i < r`, `nums[i] < nums[i + 1]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,5,4,7]\n    **Output:** 3\n    **Explanation:** The longest continuous increasing subsequence is [1,3,5] with length 3.\n    Even though [1,3,5,7] is an increasing subsequence, it is not continuous as elements 5 and 7 are separated by element\n    4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,2,2,2]\n    **Output:** 1\n    **Explanation:** The longest continuous increasing subsequence is [2] with length 1. Note that it must be strictly\n    increasing.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array"],
+  "total_accepted": 343297,
+  "total_submissions": 662229,
+  "acceptance_rate": "51.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Longest Increasing Subsequence",
+      "slug": "number-of-longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-longest-increasing-subsequence/"
+    },
+    {
+      "title": "Minimum Window Subsequence",
+      "slug": "minimum-window-subsequence",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-window-subsequence/"
+    },
+    {
+      "title": "Consecutive Characters",
+      "slug": "consecutive-characters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/consecutive-characters/"
+    },
+    {
+      "title": "Longest Increasing Subsequence II",
+      "slug": "longest-increasing-subsequence-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence-ii/"
+    }
+  ],
+  "hints": []
+}

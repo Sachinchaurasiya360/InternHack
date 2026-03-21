@@ -1,0 +1,47 @@
+{
+  "id": "336",
+  "title": "Palindrome Pairs",
+  "slug": "palindrome-pairs",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array of <strong>unique</strong> strings <code>words</code>.</p>\n\n<p>A <strong>palindrome pair</strong> is a pair of integers <code>(i, j)</code> such that:</p>\n\n<ul>\n\t<li><code>0 &lt;= i, j &lt; words.length</code>,</li>\n\t<li><code>i != j</code>, and</li>\n\t<li><code>words[i] + words[j]</code> (the concatenation of the two strings) is a <span data-keyword=\"palindrome-string\">palindrome</span>.</li>\n</ul>\n\n<p>Return <em>an array of all the <strong>palindrome pairs</strong> of </em><code>words</code>.</p>\n\n<p>You must write an algorithm with&nbsp;<code>O(sum of words[i].length)</code>&nbsp;runtime complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;abcd&quot;,&quot;dcba&quot;,&quot;lls&quot;,&quot;s&quot;,&quot;sssll&quot;]\n<strong>Output:</strong> [[0,1],[1,0],[3,2],[2,4]]\n<strong>Explanation:</strong> The palindromes are [&quot;abcddcba&quot;,&quot;dcbaabcd&quot;,&quot;slls&quot;,&quot;llssssll&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;bat&quot;,&quot;tab&quot;,&quot;cat&quot;]\n<strong>Output:</strong> [[0,1],[1,0]]\n<strong>Explanation:</strong> The palindromes are [&quot;battab&quot;,&quot;tabbat&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;a&quot;,&quot;&quot;]\n<strong>Output:</strong> [[0,1],[1,0]]\n<strong>Explanation:</strong> The palindromes are [&quot;a&quot;,&quot;a&quot;]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 5000</code></li>\n\t<li><code>0 &lt;= words[i].length &lt;= 300</code></li>\n\t<li><code>words[i]</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array of **unique** strings `words`.\n\nA **palindrome pair** is a pair of integers `(i, j)` such that:\n\n  * `0 <= i, j < words.length`,\n  * `i != j`, and\n  * `words[i] + words[j]` (the concatenation of the two strings) is a palindrome.\n\n\n\nReturn _an array of all the**palindrome pairs** of _`words`.\n\nYou must write an algorithm with `O(sum of words[i].length)` runtime complexity.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"abcd\",\"dcba\",\"lls\",\"s\",\"sssll\"]\n    **Output:** [[0,1],[1,0],[3,2],[2,4]]\n    **Explanation:** The palindromes are [\"abcddcba\",\"dcbaabcd\",\"slls\",\"llssssll\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"bat\",\"tab\",\"cat\"]\n    **Output:** [[0,1],[1,0]]\n    **Explanation:** The palindromes are [\"battab\",\"tabbat\"]\n    \n\n**Example 3:**\n    \n    \n    **Input:** words = [\"a\",\"\"]\n    **Output:** [[0,1],[1,0]]\n    **Explanation:** The palindromes are [\"a\",\"a\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 5000`\n  * `0 <= words[i].length <= 300`\n  * `words[i]` consists of lowercase English letters.",
+  "question": "You are given a **0-indexed** array of **unique** strings `words`.\n\nA **palindrome pair** is a pair of integers `(i, j)` such that:\n\n  * `0 <= i, j < words.length`,\n  * `i != j`, and\n  * `words[i] + words[j]` (the concatenation of the two strings) is a palindrome.\n\n\n\nReturn _an array of all the**palindrome pairs** of _`words`.\n\nYou must write an algorithm with `O(sum of words[i].length)` runtime complexity.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"abcd\",\"dcba\",\"lls\",\"s\",\"sssll\"]\n    **Output:** [[0,1],[1,0],[3,2],[2,4]]\n    **Explanation:** The palindromes are [\"abcddcba\",\"dcbaabcd\",\"slls\",\"llssssll\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"bat\",\"tab\",\"cat\"]\n    **Output:** [[0,1],[1,0]]\n    **Explanation:** The palindromes are [\"battab\",\"tabbat\"]\n    \n\n**Example 3:**\n    \n    \n    **Input:** words = [\"a\",\"\"]\n    **Output:** [[0,1],[1,0]]\n    **Explanation:** The palindromes are [\"a\",\"a\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 5000`\n  * `0 <= words[i].length <= 300`\n  * `words[i]` consists of lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String", "Trie"],
+  "total_accepted": 238243,
+  "total_submissions": 644386,
+  "acceptance_rate": "37.0%",
+  "similar_questions": [
+    {
+      "title": "Longest Palindromic Substring",
+      "slug": "longest-palindromic-substring",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-palindromic-substring/"
+    },
+    {
+      "title": "Shortest Palindrome",
+      "slug": "shortest-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/shortest-palindrome/"
+    },
+    {
+      "title": "Longest Palindrome by Concatenating Two Letter Words",
+      "slug": "longest-palindrome-by-concatenating-two-letter-words",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-palindrome-by-concatenating-two-letter-words/"
+    },
+    {
+      "title": "Find Maximum Number of String Pairs",
+      "slug": "find-maximum-number-of-string-pairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-maximum-number-of-string-pairs/"
+    }
+  ],
+  "hints": [
+    "Checking every two pairs will exceed the time limit. It will be O(n^2 * k). We need a faster way.",
+    "If we hash every string in the array, how can we check if two pairs form a palindrome after the concatenation?",
+    "We can check every string in words and consider it as words[j] (i.e., the suffix of the target palindrome). We can check if there is a hash of string that can be the prefix to make it a palindrome."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "2927",
+  "title": "Distribute Candies Among Children III",
+  "slug": "distribute-candies-among-children-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Combinatorics"],
+  "total_accepted": 3011,
+  "total_submissions": 5262,
+  "acceptance_rate": "57.2%",
+  "similar_questions": [],
+  "hints": [
+    "Try to solve the problem using combinatorics.",
+    "If the limit didn’t exist, the problem would be distributing <code>n</code> candies between <code>3</code> children.",
+    "The answer to the above problem would be <code>C(n + 2, 2)</code>.",
+    "Now try to combine this with the Inclusion-exclusion principle.",
+    "Apart from the above solution, there are other mathematical solutions that you can think of."
+  ]
+}

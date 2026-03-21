@@ -1,0 +1,49 @@
+{
+  "id": "922",
+  "title": "Sort Array By Parity II",
+  "slug": "sort-array-by-parity-ii",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>nums</code>, half of the integers in <code>nums</code> are <strong>odd</strong>, and the other half are <strong>even</strong>.</p>\n\n<p>Sort the array so that whenever <code>nums[i]</code> is odd, <code>i</code> is <strong>odd</strong>, and whenever <code>nums[i]</code> is even, <code>i</code> is <strong>even</strong>.</p>\n\n<p>Return <em>any answer array that satisfies this condition</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,2,5,7]\n<strong>Output:</strong> [4,5,2,7]\n<strong>Explanation:</strong> [4,7,2,5], [2,5,4,7], [2,7,4,5] would also have been accepted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3]\n<strong>Output:</strong> [2,3]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>nums.length</code> is even.</li>\n\t<li>Half of the integers in <code>nums</code> are even.</li>\n\t<li><code>0 &lt;= nums[i] &lt;= 1000</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow Up:</strong> Could you solve it in-place?</p>\n",
+  "content_markdown": "Given an array of integers `nums`, half of the integers in `nums` are **odd** , and the other half are **even**.\n\nSort the array so that whenever `nums[i]` is odd, `i` is **odd** , and whenever `nums[i]` is even, `i` is **even**.\n\nReturn _any answer array that satisfies this condition_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,2,5,7]\n    **Output:** [4,5,2,7]\n    **Explanation:** [4,7,2,5], [2,5,4,7], [2,7,4,5] would also have been accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,3]\n    **Output:** [2,3]\n    \n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 2 * 104`\n  * `nums.length` is even.\n  * Half of the integers in `nums` are even.\n  * `0 <= nums[i] <= 1000`\n\n\n\n \n\n**Follow Up:** Could you solve it in-place?",
+  "question": "Given an array of integers `nums`, half of the integers in `nums` are **odd** , and the other half are **even**.\n\nSort the array so that whenever `nums[i]` is odd, `i` is **odd** , and whenever `nums[i]` is even, `i` is **even**.\n\nReturn _any answer array that satisfies this condition_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,2,5,7]\n    **Output:** [4,5,2,7]\n    **Explanation:** [4,7,2,5], [2,5,4,7], [2,7,4,5] would also have been accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,3]\n    **Output:** [2,3]",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 2 * 104`\n  * `nums.length` is even.\n  * Half of the integers in `nums` are even.\n  * `0 <= nums[i] <= 1000`",
+  "topics": ["Array", "Two Pointers", "Sorting"],
+  "total_accepted": 338897,
+  "total_submissions": 475830,
+  "acceptance_rate": "71.2%",
+  "similar_questions": [
+    {
+      "title": "Sort Array By Parity",
+      "slug": "sort-array-by-parity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-parity/"
+    },
+    {
+      "title": "Rearrange Array Elements by Sign",
+      "slug": "rearrange-array-elements-by-sign",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rearrange-array-elements-by-sign/"
+    },
+    {
+      "title": "Sort Even and Odd Indices Independently",
+      "slug": "sort-even-and-odd-indices-independently",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-even-and-odd-indices-independently/"
+    },
+    {
+      "title": "Largest Number After Digit Swaps by Parity",
+      "slug": "largest-number-after-digit-swaps-by-parity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/largest-number-after-digit-swaps-by-parity/"
+    },
+    {
+      "title": "Find the Number of K-Even Arrays",
+      "slug": "find-the-number-of-k-even-arrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-number-of-k-even-arrays/"
+    }
+  ],
+  "hints": []
+}

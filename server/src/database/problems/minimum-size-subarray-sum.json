@@ -1,0 +1,67 @@
+{
+  "id": "209",
+  "title": "Minimum Size Subarray Sum",
+  "slug": "minimum-size-subarray-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of positive integers <code>nums</code> and a positive integer <code>target</code>, return <em>the <strong>minimal length</strong> of a </em><span data-keyword=\"subarray-nonempty\"><em>subarray</em></span><em> whose sum is greater than or equal to</em> <code>target</code>. If there is no such subarray, return <code>0</code> instead.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = 7, nums = [2,3,1,2,4,3]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The subarray [4,3] has the minimal length under the problem constraint.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = 4, nums = [1,4,4]\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = 11, nums = [1,1,1,1,1,1,1,1]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= target &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> If you have figured out the <code>O(n)</code> solution, try coding another solution of which the time complexity is <code>O(n log(n))</code>.",
+  "content_markdown": "Given an array of positive integers `nums` and a positive integer `target`, return _the**minimal length** of a __subarray_ _whose sum is greater than or equal to_ `target`. If there is no such subarray, return `0` instead.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** target = 7, nums = [2,3,1,2,4,3]\n    **Output:** 2\n    **Explanation:** The subarray [4,3] has the minimal length under the problem constraint.\n    \n\n**Example 2:**\n    \n    \n    **Input:** target = 4, nums = [1,4,4]\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** target = 11, nums = [1,1,1,1,1,1,1,1]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= target <= 109`\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 104`\n\n\n\n \n\n**Follow up:** If you have figured out the `O(n)` solution, try coding another solution of which the time complexity is `O(n log(n))`.",
+  "question": "Given an array of positive integers `nums` and a positive integer `target`, return _the**minimal length** of a __subarray_ _whose sum is greater than or equal to_ `target`. If there is no such subarray, return `0` instead.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** target = 7, nums = [2,3,1,2,4,3]\n    **Output:** 2\n    **Explanation:** The subarray [4,3] has the minimal length under the problem constraint.\n    \n\n**Example 2:**\n    \n    \n    **Input:** target = 4, nums = [1,4,4]\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** target = 11, nums = [1,1,1,1,1,1,1,1]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= target <= 109`\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 104`",
+  "topics": ["Array", "Binary Search", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 1792293,
+  "total_submissions": 3508660,
+  "acceptance_rate": "51.1%",
+  "similar_questions": [
+    {
+      "title": "Minimum Window Substring",
+      "slug": "minimum-window-substring",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-window-substring/"
+    },
+    {
+      "title": "Maximum Size Subarray Sum Equals k",
+      "slug": "maximum-size-subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/"
+    },
+    {
+      "title": "Maximum Length of Repeated Subarray",
+      "slug": "maximum-length-of-repeated-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-length-of-repeated-subarray/"
+    },
+    {
+      "title": "Minimum Operations to Reduce X to Zero",
+      "slug": "minimum-operations-to-reduce-x-to-zero",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/"
+    },
+    {
+      "title": "K Radius Subarray Averages",
+      "slug": "k-radius-subarray-averages",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-radius-subarray-averages/"
+    },
+    {
+      "title": "Maximum Product After K Increments",
+      "slug": "maximum-product-after-k-increments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-after-k-increments/"
+    },
+    {
+      "title": "Shortest Subarray With OR at Least K I",
+      "slug": "shortest-subarray-with-or-at-least-k-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/shortest-subarray-with-or-at-least-k-i/"
+    },
+    {
+      "title": "Minimum Positive Sum Subarray ",
+      "slug": "minimum-positive-sum-subarray",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-positive-sum-subarray/"
+    }
+  ],
+  "hints": []
+}

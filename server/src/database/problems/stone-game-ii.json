@@ -1,0 +1,51 @@
+{
+  "id": "1140",
+  "title": "Stone Game II",
+  "slug": "stone-game-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Alice and Bob continue their games with piles of stones. There are a number of piles <strong>arranged in a row</strong>, and each pile has a positive integer number of stones <code>piles[i]</code>. The objective of the game is to end with the most stones.</p>\n\n<p>Alice and Bob take turns, with Alice starting first.</p>\n\n<p>On each player&#39;s turn, that player can take <strong>all the stones</strong> in the <strong>first</strong> <code>X</code> remaining piles, where <code>1 &lt;= X &lt;= 2M</code>. Then, we set <code>M = max(M, X)</code>. Initially, M = 1.</p>\n\n<p>The game continues until all the stones have been taken.</p>\n\n<p>Assuming Alice and Bob play optimally, return the maximum number of stones Alice can get.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">piles = [2,7,9,4,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">10</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>If Alice takes one pile at the beginning, Bob takes two piles, then Alice takes 2 piles again. Alice can get <code>2 + 4 + 4 = 10</code> stones in total.</li>\n\t<li>If Alice takes two piles at the beginning, then Bob can take all three piles left. In this case, Alice get <code>2 + 7 = 9</code> stones in total.</li>\n</ul>\n\n<p>So we return 10 since it&#39;s larger.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">piles = [1,2,3,4,5,100]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">104</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= piles.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= piles[i]&nbsp;&lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Alice and Bob continue their games with piles of stones. There are a number of piles **arranged in a row** , and each pile has a positive integer number of stones `piles[i]`. The objective of the game is to end with the most stones.\n\nAlice and Bob take turns, with Alice starting first.\n\nOn each player's turn, that player can take **all the stones** in the **first** `X` remaining piles, where `1 <= X <= 2M`. Then, we set `M = max(M, X)`. Initially, M = 1.\n\nThe game continues until all the stones have been taken.\n\nAssuming Alice and Bob play optimally, return the maximum number of stones Alice can get.\n\n \n\n**Example 1:**\n\n**Input:** piles = [2,7,9,4,4]\n\n**Output:** 10\n\n**Explanation:**\n\n  * If Alice takes one pile at the beginning, Bob takes two piles, then Alice takes 2 piles again. Alice can get `2 + 4 + 4 = 10` stones in total.\n  * If Alice takes two piles at the beginning, then Bob can take all three piles left. In this case, Alice get `2 + 7 = 9` stones in total.\n\n\n\nSo we return 10 since it's larger.\n\n**Example 2:**\n\n**Input:** piles = [1,2,3,4,5,100]\n\n**Output:** 104\n\n \n\n**Constraints:**\n\n  * `1 <= piles.length <= 100`\n  * `1 <= piles[i] <= 104`",
+  "question": "Alice and Bob continue their games with piles of stones. There are a number of piles **arranged in a row** , and each pile has a positive integer number of stones `piles[i]`. The objective of the game is to end with the most stones.\n\nAlice and Bob take turns, with Alice starting first.\n\nOn each player's turn, that player can take **all the stones** in the **first** `X` remaining piles, where `1 <= X <= 2M`. Then, we set `M = max(M, X)`. Initially, M = 1.\n\nThe game continues until all the stones have been taken.\n\nAssuming Alice and Bob play optimally, return the maximum number of stones Alice can get.",
+  "examples": "**Example 1:**\n\n**Input:** piles = [2,7,9,4,4]\n\n**Output:** 10\n\n**Explanation:**\n\n  * If Alice takes one pile at the beginning, Bob takes two piles, then Alice takes 2 piles again. Alice can get `2 + 4 + 4 = 10` stones in total.\n  * If Alice takes two piles at the beginning, then Bob can take all three piles left. In this case, Alice get `2 + 7 = 9` stones in total.\n\n\n\nSo we return 10 since it's larger.\n\n**Example 2:**\n\n**Input:** piles = [1,2,3,4,5,100]\n\n**Output:** 104",
+  "constraints": "**Constraints:**\n\n  * `1 <= piles.length <= 100`\n  * `1 <= piles[i] <= 104`",
+  "topics": ["Array", "Math", "Dynamic Programming", "Prefix Sum", "Game Theory"],
+  "total_accepted": 196035,
+  "total_submissions": 268972,
+  "acceptance_rate": "72.9%",
+  "similar_questions": [
+    {
+      "title": "Stone Game V",
+      "slug": "stone-game-v",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-v/"
+    },
+    {
+      "title": "Stone Game VI",
+      "slug": "stone-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vi/"
+    },
+    {
+      "title": "Stone Game VII",
+      "slug": "stone-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vii/"
+    },
+    {
+      "title": "Stone Game VIII",
+      "slug": "stone-game-viii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-viii/"
+    },
+    {
+      "title": "Stone Game IX",
+      "slug": "stone-game-ix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ix/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming: the states are (i, m) for the answer of piles[i:] and that given m."
+  ]
+}

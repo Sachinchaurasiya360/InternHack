@@ -1,0 +1,50 @@
+{
+  "id": "2031",
+  "title": "Count Subarrays With More Ones Than Zeros",
+  "slug": "count-subarrays-with-more-ones-than-zeros",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Binary Search",
+    "Divide and Conquer",
+    "Binary Indexed Tree",
+    "Segment Tree",
+    "Merge Sort",
+    "Ordered Set"
+  ],
+  "total_accepted": 5333,
+  "total_submissions": 10853,
+  "acceptance_rate": "49.1%",
+  "similar_questions": [
+    {
+      "title": "Ones and Zeroes",
+      "slug": "ones-and-zeroes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/ones-and-zeroes/"
+    },
+    {
+      "title": "Longer Contiguous Segments of Ones than Zeros",
+      "slug": "longer-contiguous-segments-of-ones-than-zeros",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longer-contiguous-segments-of-ones-than-zeros/"
+    },
+    {
+      "title": "All Divisions With the Highest Score of a Binary Array",
+      "slug": "all-divisions-with-the-highest-score-of-a-binary-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/"
+    }
+  ],
+  "hints": [
+    "Change the zeros in nums to -1 and create a prefix sum array prefixSum using the new nums.",
+    "If prefixSum[i] for any index i in the range 0 <= i < prefixSum.length is positive, that means that there are more ones than zeros in the prefix ending at index i.",
+    "If prefixSum[j] > prefixSum[i] for two indexes i and j such that 0 <= i < j < prefixSum.length, that means that there are more ones than zeros in nums in the range [i + 1 : j] (inclusive)"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "2991",
+  "title": "Top Three Wineries ",
+  "slug": "top-three-wineries",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 3511,
+  "total_submissions": 6551,
+  "acceptance_rate": "53.6%",
+  "similar_questions": [],
+  "hints": []
+}

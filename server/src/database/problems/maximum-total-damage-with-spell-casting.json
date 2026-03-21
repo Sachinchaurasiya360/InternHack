@@ -1,0 +1,30 @@
+{
+  "id": "3186",
+  "title": "Maximum Total Damage With Spell Casting",
+  "slug": "maximum-total-damage-with-spell-casting",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A magician has various spells.</p>\n\n<p>You are given an array <code>power</code>, where each element represents the damage of a spell. Multiple spells can have the same damage value.</p>\n\n<p>It is a known fact that if a magician decides to cast a spell with a damage of <code>power[i]</code>, they <strong>cannot</strong> cast any spell with a damage of <code>power[i] - 2</code>, <code>power[i] - 1</code>, <code>power[i] + 1</code>, or <code>power[i] + 2</code>.</p>\n\n<p>Each spell can be cast <strong>only once</strong>.</p>\n\n<p>Return the <strong>maximum</strong> possible <em>total damage</em> that a magician can cast.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">power = [1,1,3,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The maximum possible damage of 6 is produced by casting spells 0, 1, 3 with damage 1, 1, 4.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">power = [7,1,6,6]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">13</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The maximum possible damage of 13 is produced by casting spells 1, 2, 3 with damage 1, 6, 6.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= power.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= power[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "A magician has various spells.\n\nYou are given an array `power`, where each element represents the damage of a spell. Multiple spells can have the same damage value.\n\nIt is a known fact that if a magician decides to cast a spell with a damage of `power[i]`, they **cannot** cast any spell with a damage of `power[i] - 2`, `power[i] - 1`, `power[i] + 1`, or `power[i] + 2`.\n\nEach spell can be cast **only once**.\n\nReturn the **maximum** possible _total damage_ that a magician can cast.\n\n \n\n**Example 1:**\n\n**Input:** power = [1,1,3,4]\n\n**Output:** 6\n\n**Explanation:**\n\nThe maximum possible damage of 6 is produced by casting spells 0, 1, 3 with damage 1, 1, 4.\n\n**Example 2:**\n\n**Input:** power = [7,1,6,6]\n\n**Output:** 13\n\n**Explanation:**\n\nThe maximum possible damage of 13 is produced by casting spells 1, 2, 3 with damage 1, 6, 6.\n\n \n\n**Constraints:**\n\n  * `1 <= power.length <= 105`\n  * `1 <= power[i] <= 109`",
+  "question": "A magician has various spells.\n\nYou are given an array `power`, where each element represents the damage of a spell. Multiple spells can have the same damage value.\n\nIt is a known fact that if a magician decides to cast a spell with a damage of `power[i]`, they **cannot** cast any spell with a damage of `power[i] - 2`, `power[i] - 1`, `power[i] + 1`, or `power[i] + 2`.\n\nEach spell can be cast **only once**.\n\nReturn the **maximum** possible _total damage_ that a magician can cast.",
+  "examples": "**Example 1:**\n\n**Input:** power = [1,1,3,4]\n\n**Output:** 6\n\n**Explanation:**\n\nThe maximum possible damage of 6 is produced by casting spells 0, 1, 3 with damage 1, 1, 4.\n\n**Example 2:**\n\n**Input:** power = [7,1,6,6]\n\n**Output:** 13\n\n**Explanation:**\n\nThe maximum possible damage of 13 is produced by casting spells 1, 2, 3 with damage 1, 6, 6.",
+  "constraints": "**Constraints:**\n\n  * `1 <= power.length <= 105`\n  * `1 <= power[i] <= 109`",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Two Pointers",
+    "Binary Search",
+    "Dynamic Programming",
+    "Sorting",
+    "Counting"
+  ],
+  "total_accepted": 113081,
+  "total_submissions": 251067,
+  "acceptance_rate": "45.0%",
+  "similar_questions": [],
+  "hints": [
+    "If we ever decide to use some spell with power <code>x</code>, then we will use all spells with power <code>x</code>.",
+    "Think of dynamic programming.",
+    "<code>dp[i][j]</code> represents the maximum damage considering up to the <code>i</code>-th unique spell and <code>j</code> represents the number of spells skipped (up to 3 as per constraints)."
+  ]
+}

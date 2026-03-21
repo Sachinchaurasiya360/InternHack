@@ -1,0 +1,25 @@
+{
+  "id": "931",
+  "title": "Minimum Falling Path Sum",
+  "slug": "minimum-falling-path-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>n x n</code> array of integers <code>matrix</code>, return <em>the <strong>minimum sum</strong> of any <strong>falling path</strong> through</em> <code>matrix</code>.</p>\n\n<p>A <strong>falling path</strong> starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position <code>(row, col)</code> will be <code>(row + 1, col - 1)</code>, <code>(row + 1, col)</code>, or <code>(row + 1, col + 1)</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/03/failing1-grid.jpg\" style=\"width: 499px; height: 500px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[2,1,3],[6,5,4],[7,8,9]]\n<strong>Output:</strong> 13\n<strong>Explanation:</strong> There are two falling paths with a minimum sum as shown.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/03/failing2-grid.jpg\" style=\"width: 164px; height: 365px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[-19,57],[-40,-5]]\n<strong>Output:</strong> -59\n<strong>Explanation:</strong> The falling path with a minimum sum is shown.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == matrix.length == matrix[i].length</code></li>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n\t<li><code>-100 &lt;= matrix[i][j] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given an `n x n` array of integers `matrix`, return _the**minimum sum** of any **falling path** through_ `matrix`.\n\nA **falling path** starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position `(row, col)` will be `(row + 1, col - 1)`, `(row + 1, col)`, or `(row + 1, col + 1)`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/failing1-grid.jpg)\n    \n    \n    **Input:** matrix = [[2,1,3],[6,5,4],[7,8,9]]\n    **Output:** 13\n    **Explanation:** There are two falling paths with a minimum sum as shown.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/failing2-grid.jpg)\n    \n    \n    **Input:** matrix = [[-19,57],[-40,-5]]\n    **Output:** -59\n    **Explanation:** The falling path with a minimum sum is shown.\n    \n\n \n\n**Constraints:**\n\n  * `n == matrix.length == matrix[i].length`\n  * `1 <= n <= 100`\n  * `-100 <= matrix[i][j] <= 100`",
+  "question": "Given an `n x n` array of integers `matrix`, return _the**minimum sum** of any **falling path** through_ `matrix`.\n\nA **falling path** starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position `(row, col)` will be `(row + 1, col - 1)`, `(row + 1, col)`, or `(row + 1, col + 1)`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/failing1-grid.jpg)\n    \n    \n    **Input:** matrix = [[2,1,3],[6,5,4],[7,8,9]]\n    **Output:** 13\n    **Explanation:** There are two falling paths with a minimum sum as shown.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/11/03/failing2-grid.jpg)\n    \n    \n    **Input:** matrix = [[-19,57],[-40,-5]]\n    **Output:** -59\n    **Explanation:** The falling path with a minimum sum is shown.",
+  "constraints": "**Constraints:**\n\n  * `n == matrix.length == matrix[i].length`\n  * `1 <= n <= 100`\n  * `-100 <= matrix[i][j] <= 100`",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 647085,
+  "total_submissions": 1064344,
+  "acceptance_rate": "60.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Falling Path Sum II",
+      "slug": "minimum-falling-path-sum-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-falling-path-sum-ii/"
+    }
+  ],
+  "hints": []
+}

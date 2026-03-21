@@ -1,0 +1,18 @@
+{
+  "id": "1767",
+  "title": "Find the Subtasks That Did Not Execute",
+  "slug": "find-the-subtasks-that-did-not-execute",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 19382,
+  "total_submissions": 24739,
+  "acceptance_rate": "78.3%",
+  "similar_questions": [],
+  "hints": []
+}

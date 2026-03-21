@@ -1,0 +1,34 @@
+{
+  "id": "2843",
+  "title": "  Count Symmetric Integers",
+  "slug": "count-symmetric-integers",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two positive integers <code>low</code> and <code>high</code>.</p>\n\n<p>An integer <code>x</code> consisting of <code>2 * n</code> digits is <strong>symmetric</strong> if the sum of the first <code>n</code> digits of <code>x</code> is equal to the sum of the last <code>n</code> digits of <code>x</code>. Numbers with an odd number of digits are never symmetric.</p>\n\n<p>Return <em>the <strong>number of symmetric</strong> integers in the range</em> <code>[low, high]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> low = 1, high = 100\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> There are 9 symmetric integers between 1 and 100: 11, 22, 33, 44, 55, 66, 77, 88, and 99.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> low = 1200, high = 1230\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> There are 4 symmetric integers between 1200 and 1230: 1203, 1212, 1221, and 1230.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= low &lt;= high &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two positive integers `low` and `high`.\n\nAn integer `x` consisting of `2 * n` digits is **symmetric** if the sum of the first `n` digits of `x` is equal to the sum of the last `n` digits of `x`. Numbers with an odd number of digits are never symmetric.\n\nReturn _the**number of symmetric** integers in the range_ `[low, high]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** low = 1, high = 100\n    **Output:** 9\n    **Explanation:** There are 9 symmetric integers between 1 and 100: 11, 22, 33, 44, 55, 66, 77, 88, and 99.\n    \n\n**Example 2:**\n    \n    \n    **Input:** low = 1200, high = 1230\n    **Output:** 4\n    **Explanation:** There are 4 symmetric integers between 1200 and 1230: 1203, 1212, 1221, and 1230.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= low <= high <= 104`",
+  "question": "You are given two positive integers `low` and `high`.\n\nAn integer `x` consisting of `2 * n` digits is **symmetric** if the sum of the first `n` digits of `x` is equal to the sum of the last `n` digits of `x`. Numbers with an odd number of digits are never symmetric.\n\nReturn _the**number of symmetric** integers in the range_ `[low, high]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** low = 1, high = 100\n    **Output:** 9\n    **Explanation:** There are 9 symmetric integers between 1 and 100: 11, 22, 33, 44, 55, 66, 77, 88, and 99.\n    \n\n**Example 2:**\n    \n    \n    **Input:** low = 1200, high = 1230\n    **Output:** 4\n    **Explanation:** There are 4 symmetric integers between 1200 and 1230: 1203, 1212, 1221, and 1230.",
+  "constraints": "**Constraints:**\n\n  * `1 <= low <= high <= 104`",
+  "topics": ["Math", "Enumeration"],
+  "total_accepted": 195596,
+  "total_submissions": 235423,
+  "acceptance_rate": "83.1%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Number",
+      "slug": "palindrome-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-number/"
+    },
+    {
+      "title": "Sum of Digits in Base K",
+      "slug": "sum-of-digits-in-base-k",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sum-of-digits-in-base-k/"
+    }
+  ],
+  "hints": [
+    "<div class=\"_1l1MA\">Iterate over all numbers from <code>low</code> to <code>high</code></div>",
+    "<div class=\"_1l1MA\">Convert each number to a string and compare the sum of the first half with that of the second.</div>"
+  ]
+}

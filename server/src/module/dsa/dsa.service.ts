@@ -2,108 +2,105 @@ import { prisma } from "../../database/db.js";
 
 export class DsaService {
   async listTopics(studentId?: number, sheet?: string, difficulty?: string[]) {
-    const problemWhere: Record<string, unknown> = {};
-    if (sheet) problemWhere.sheets = { has: sheet };
-    if (difficulty?.length) problemWhere.difficulty = { in: difficulty };
-
-    const hasProblemFilter = Object.keys(problemWhere).length > 0;
-
     const topics = await prisma.dsaTopic.findMany({
       orderBy: { orderIndex: "asc" },
-      include: {
-        subTopics: {
-          include: {
-            problems: hasProblemFilter
-              ? { where: problemWhere, select: { id: true } }
-              : { select: { id: true } },
-          },
-        },
-      },
     });
 
-    const topicsWithCounts = topics
-      .map((t) => {
-        const problemCount = t.subTopics.reduce((sum, st) => sum + st.problems.length, 0);
-        const problemIds = t.subTopics.flatMap((st) => st.problems.map((p) => p.id));
-        return {
-          id: t.id,
-          name: t.name,
-          slug: t.slug,
-          description: t.description,
-          orderIndex: t.orderIndex,
-          problemCount,
-          solvedCount: 0,
-          _problemIds: problemIds,
-        };
-      })
-      .filter((t) => t.problemCount > 0);
+    // Build problem filter
+    const baseWhere: Record<string, unknown> = {};
+    if (sheet) baseWhere.sheets = { has: sheet };
+    if (difficulty?.length) baseWhere.difficulty = { in: difficulty };
 
-    if (studentId) {
-      const solved = await prisma.studentDsaProgress.findMany({
-        where: { studentId, solved: true },
-        select: { problemId: true },
-      });
-      const solvedIds = new Set(solved.map((s) => s.problemId));
+    const results = [];
 
-      for (const t of topicsWithCounts) {
-        t.solvedCount = t._problemIds.filter((id) => solvedIds.has(id)).length;
+    for (const topic of topics) {
+      const problemWhere = { ...baseWhere, tags: { has: topic.slug } };
+      const problemCount = await prisma.dsaProblem.count({ where: problemWhere });
+      if (problemCount < 10) continue;
+
+      let solvedCount = 0;
+      if (studentId) {
+        solvedCount = await prisma.studentDsaProgress.count({
+          where: { studentId, solved: true, problem: problemWhere },
+        });
       }
+
+      results.push({
+        id: topic.id,
+        name: topic.name,
+        slug: topic.slug,
+        description: topic.description,
+        orderIndex: topic.orderIndex,
+        problemCount,
+        solvedCount,
+      });
     }
 
-    return topicsWithCounts.map(({ _problemIds, ...rest }) => rest);
+    return results;
   }
 
-  async getTopicBySlug(slug: string, studentId?: number) {
-    const topic = await prisma.dsaTopic.findUnique({
-      where: { slug },
-      include: {
-        subTopics: {
-          orderBy: { orderIndex: "asc" },
-          include: {
-            problems: {
-              orderBy: { orderIndex: "asc" },
-            },
-          },
-        },
-      },
-    });
+  async getTopicBySlug(slug: string, studentId?: number, page = 1, limit = 50, difficulty?: string, search?: string) {
+    const topic = await prisma.dsaTopic.findUnique({ where: { slug } });
     if (!topic) throw new Error("Topic not found");
+
+    const problemWhere: Record<string, unknown> = { tags: { has: slug } };
+    if (difficulty && difficulty !== "All") problemWhere.difficulty = difficulty;
+    if (search) problemWhere.title = { contains: search, mode: "insensitive" };
+
+    const [problems, totalProblems] = await Promise.all([
+      prisma.dsaProblem.findMany({
+        where: problemWhere,
+        orderBy: [{ difficulty: "asc" }, { title: "asc" }],
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.dsaProblem.count({ where: problemWhere }),
+    ]);
 
     let solvedMap = new Map<number, { notes: string | null }>();
     let bookmarkedIds = new Set<number>();
+    let totalSolved = 0;
 
     if (studentId) {
-      const progress = await prisma.studentDsaProgress.findMany({
-        where: {
-          studentId,
-          problem: { subTopic: { topicId: topic.id } },
-        },
-        select: { problemId: true, solved: true, notes: true },
-      });
+      const pIds = problems.map((p) => p.id);
+      const [progress, bookmarks, solvedTotal] = await Promise.all([
+        prisma.studentDsaProgress.findMany({
+          where: { studentId, problemId: { in: pIds } },
+          select: { problemId: true, solved: true, notes: true },
+        }),
+        prisma.dsaBookmark.findMany({
+          where: { studentId, problemId: { in: pIds } },
+          select: { problemId: true },
+        }),
+        prisma.studentDsaProgress.count({
+          where: { studentId, solved: true, problem: { tags: { has: slug } } },
+        }),
+      ]);
+
       for (const p of progress) {
         if (p.solved) solvedMap.set(p.problemId, { notes: p.notes });
         else if (p.notes) solvedMap.set(p.problemId, { notes: p.notes });
       }
-
-      const bookmarks = await prisma.dsaBookmark.findMany({
-        where: {
-          studentId,
-          problem: { subTopic: { topicId: topic.id } },
-        },
-        select: { problemId: true },
-      });
       bookmarkedIds = new Set(bookmarks.map((b) => b.problemId));
+      totalSolved = solvedTotal;
     }
 
-    const subTopics = topic.subTopics.map((st) => ({
-      id: st.id,
-      name: st.name,
-      orderIndex: st.orderIndex,
-      problems: st.problems.map((p) => {
+    return {
+      id: topic.id,
+      name: topic.name,
+      slug: topic.slug,
+      description: topic.description,
+      orderIndex: topic.orderIndex,
+      totalProblems,
+      totalSolved,
+      totalPages: Math.ceil(totalProblems / limit),
+      page,
+      problems: problems.map((p) => {
         const progressData = solvedMap.get(p.id);
         return {
           id: p.id,
           title: p.title,
+          slug: p.slug,
           difficulty: p.difficulty,
           leetcodeUrl: p.leetcodeUrl,
           gfgUrl: p.gfgUrl,
@@ -115,28 +112,65 @@ export class DsaService {
           companies: p.companies,
           hints: p.hints,
           sheets: p.sheets,
-          solved: solvedMap.has(p.id) && (progressData !== undefined),
+          acceptanceRate: p.acceptanceRate,
+          solved: !!progressData,
           notes: progressData?.notes ?? null,
           bookmarked: bookmarkedIds.has(p.id),
         };
       }),
-    }));
+    };
+  }
 
-    const totalProblems = subTopics.reduce((sum, st) => sum + st.problems.length, 0);
-    const totalSolved = subTopics.reduce(
-      (sum, st) => sum + st.problems.filter((p) => p.solved).length,
-      0,
-    );
+  async getProblemBySlug(slug: string, studentId?: number) {
+    const problem = await prisma.dsaProblem.findUnique({ where: { slug } });
+    if (!problem) throw new Error("Problem not found");
+
+    let solved = false;
+    let bookmarked = false;
+    let notes: string | null = null;
+
+    if (studentId) {
+      const [progress, bookmark] = await Promise.all([
+        prisma.studentDsaProgress.findUnique({
+          where: { studentId_problemId: { studentId, problemId: problem.id } },
+        }),
+        prisma.dsaBookmark.findUnique({
+          where: { studentId_problemId: { studentId, problemId: problem.id } },
+        }),
+      ]);
+      solved = progress?.solved ?? false;
+      notes = progress?.notes ?? null;
+      bookmarked = !!bookmark;
+    }
 
     return {
-      id: topic.id,
-      name: topic.name,
-      slug: topic.slug,
-      description: topic.description,
-      orderIndex: topic.orderIndex,
-      totalProblems,
-      totalSolved,
-      subTopics,
+      id: problem.id,
+      title: problem.title,
+      slug: problem.slug,
+      difficulty: problem.difficulty,
+      leetcodeId: problem.leetcodeId,
+      leetcodeUrl: problem.leetcodeUrl,
+      gfgUrl: problem.gfgUrl,
+      articleUrl: problem.articleUrl,
+      videoUrl: problem.videoUrl,
+      hackerrankUrl: problem.hackerrankUrl,
+      codechefUrl: problem.codechefUrl,
+      tags: problem.tags,
+      companies: problem.companies,
+      hints: problem.hints,
+      sheets: problem.sheets,
+      description: problem.description,
+      examples: problem.examples,
+      constraints: problem.constraints,
+      acceptanceRate: problem.acceptanceRate,
+      totalAccepted: problem.totalAccepted,
+      totalSubmissions: problem.totalSubmissions,
+      similarQuestions: problem.similarQuestions,
+      category: problem.category,
+      isPremium: problem.isPremium,
+      solved,
+      bookmarked,
+      notes,
     };
   }
 
@@ -150,7 +184,6 @@ export class DsaService {
 
     if (existing) {
       if (existing.solved) {
-        // Keep the record if there are notes, just mark unsolved
         if (existing.notes) {
           await prisma.studentDsaProgress.update({
             where: { id: existing.id },
@@ -192,7 +225,6 @@ export class DsaService {
       return { problemId, notes: updated.notes };
     }
 
-    // Create progress entry with notes only (not solved)
     const created = await prisma.studentDsaProgress.create({
       data: { studentId, problemId, solved: false, notes: trimmed || null },
     });
@@ -219,19 +251,10 @@ export class DsaService {
   async getBookmarks(studentId: number) {
     const bookmarks = await prisma.dsaBookmark.findMany({
       where: { studentId },
-      include: {
-        problem: {
-          include: {
-            subTopic: {
-              include: { topic: { select: { name: true, slug: true } } },
-            },
-          },
-        },
-      },
+      include: { problem: true },
       orderBy: { createdAt: "desc" },
     });
 
-    // Get solved status
     const problemIds = bookmarks.map((b) => b.problemId);
     const progress = await prisma.studentDsaProgress.findMany({
       where: { studentId, problemId: { in: problemIds } },
@@ -243,14 +266,14 @@ export class DsaService {
       id: b.id,
       problemId: b.problemId,
       title: b.problem.title,
+      slug: b.problem.slug,
       difficulty: b.problem.difficulty,
       leetcodeUrl: b.problem.leetcodeUrl,
       gfgUrl: b.problem.gfgUrl,
       tags: b.problem.tags,
       companies: b.problem.companies,
       sheets: b.problem.sheets,
-      topicName: b.problem.subTopic.topic.name,
-      topicSlug: b.problem.subTopic.topic.slug,
+      acceptanceRate: b.problem.acceptanceRate,
       solved: solvedIds.has(b.problemId),
       createdAt: b.createdAt,
     }));
@@ -274,16 +297,18 @@ export class DsaService {
       .sort((a, b) => b.count - a.count);
   }
 
-  async getCompanyProblems(company: string, studentId?: number) {
-    const problems = await prisma.dsaProblem.findMany({
-      where: { companies: { has: company } },
-      include: {
-        subTopic: {
-          include: { topic: { select: { name: true, slug: true } } },
-        },
-      },
-      orderBy: { difficulty: "asc" },
-    });
+  async getCompanyProblems(company: string, studentId?: number, page = 1, limit = 50) {
+    const where = { companies: { has: company } };
+
+    const [problems, total] = await Promise.all([
+      prisma.dsaProblem.findMany({
+        where,
+        orderBy: { difficulty: "asc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.dsaProblem.count({ where }),
+    ]);
 
     let solvedIds = new Set<number>();
     let bookmarkedIds = new Set<number>();
@@ -303,21 +328,26 @@ export class DsaService {
       bookmarkedIds = new Set(bookmarks.map((b) => b.problemId));
     }
 
-    return problems.map((p) => ({
-      id: p.id,
-      title: p.title,
-      difficulty: p.difficulty,
-      leetcodeUrl: p.leetcodeUrl,
-      gfgUrl: p.gfgUrl,
-      tags: p.tags,
-      companies: p.companies,
-      hints: p.hints,
-      sheets: p.sheets,
-      topicName: p.subTopic.topic.name,
-      topicSlug: p.subTopic.topic.slug,
-      solved: solvedIds.has(p.id),
-      bookmarked: bookmarkedIds.has(p.id),
-    }));
+    return {
+      problems: problems.map((p) => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        difficulty: p.difficulty,
+        leetcodeUrl: p.leetcodeUrl,
+        gfgUrl: p.gfgUrl,
+        tags: p.tags,
+        companies: p.companies,
+        hints: p.hints,
+        sheets: p.sheets,
+        acceptanceRate: p.acceptanceRate,
+        solved: solvedIds.has(p.id),
+        bookmarked: bookmarkedIds.has(p.id),
+      })),
+      total,
+      totalPages: Math.ceil(total / limit),
+      page,
+    };
   }
 
   async getPatterns() {
@@ -338,16 +368,18 @@ export class DsaService {
       .sort((a, b) => b.count - a.count);
   }
 
-  async getPatternProblems(pattern: string, studentId?: number) {
-    const problems = await prisma.dsaProblem.findMany({
-      where: { tags: { has: pattern } },
-      include: {
-        subTopic: {
-          include: { topic: { select: { name: true, slug: true } } },
-        },
-      },
-      orderBy: { difficulty: "asc" },
-    });
+  async getPatternProblems(pattern: string, studentId?: number, page = 1, limit = 50) {
+    const where = { tags: { has: pattern } };
+
+    const [problems, total] = await Promise.all([
+      prisma.dsaProblem.findMany({
+        where,
+        orderBy: { difficulty: "asc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.dsaProblem.count({ where }),
+    ]);
 
     let solvedIds = new Set<number>();
     let bookmarkedIds = new Set<number>();
@@ -367,21 +399,26 @@ export class DsaService {
       bookmarkedIds = new Set(bookmarks.map((b) => b.problemId));
     }
 
-    return problems.map((p) => ({
-      id: p.id,
-      title: p.title,
-      difficulty: p.difficulty,
-      leetcodeUrl: p.leetcodeUrl,
-      gfgUrl: p.gfgUrl,
-      tags: p.tags,
-      companies: p.companies,
-      hints: p.hints,
-      sheets: p.sheets,
-      topicName: p.subTopic.topic.name,
-      topicSlug: p.subTopic.topic.slug,
-      solved: solvedIds.has(p.id),
-      bookmarked: bookmarkedIds.has(p.id),
-    }));
+    return {
+      problems: problems.map((p) => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        difficulty: p.difficulty,
+        leetcodeUrl: p.leetcodeUrl,
+        gfgUrl: p.gfgUrl,
+        tags: p.tags,
+        companies: p.companies,
+        hints: p.hints,
+        sheets: p.sheets,
+        acceptanceRate: p.acceptanceRate,
+        solved: solvedIds.has(p.id),
+        bookmarked: bookmarkedIds.has(p.id),
+      })),
+      total,
+      totalPages: Math.ceil(total / limit),
+      page,
+    };
   }
 
   async getSheetStats(studentId?: number) {

@@ -1,0 +1,41 @@
+{
+  "id": "2488",
+  "title": "Count Subarrays With Median K",
+  "slug": "count-subarrays-with-median-k",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> of size <code>n</code> consisting of <strong>distinct </strong>integers from <code>1</code> to <code>n</code> and a positive integer <code>k</code>.</p>\n\n<p>Return <em>the number of non-empty subarrays in </em><code>nums</code><em> that have a <strong>median</strong> equal to </em><code>k</code>.</p>\n\n<p><strong>Note</strong>:</p>\n\n<ul>\n\t<li>The median of an array is the <strong>middle </strong>element after sorting the array in <strong>ascending </strong>order. If the array is of even length, the median is the <strong>left </strong>middle element.\n\n\t<ul>\n\t\t<li>For example, the median of <code>[2,3,1,4]</code> is <code>2</code>, and the median of <code>[8,4,3,5,1]</code> is <code>4</code>.</li>\n\t</ul>\n\t</li>\n\t<li>A subarray is a contiguous part of an array.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,1,4,5], k = 4\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The subarrays that have a median equal to 4 are: [4], [4,5] and [1,4,5].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3,1], k = 3\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> [3] is the only subarray that has a median equal to 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i], k &lt;= n</code></li>\n\t<li>The integers in <code>nums</code> are distinct.</li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` of size `n` consisting of **distinct** integers from `1` to `n` and a positive integer `k`.\n\nReturn _the number of non-empty subarrays in_`nums` _that have a**median** equal to _`k`.\n\n**Note** :\n\n  * The median of an array is the **middle** element after sorting the array in **ascending** order. If the array is of even length, the median is the **left** middle element. \n    * For example, the median of `[2,3,1,4]` is `2`, and the median of `[8,4,3,5,1]` is `4`.\n  * A subarray is a contiguous part of an array.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,2,1,4,5], k = 4\n    **Output:** 3\n    **Explanation:** The subarrays that have a median equal to 4 are: [4], [4,5] and [1,4,5].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,3,1], k = 3\n    **Output:** 1\n    **Explanation:** [3] is the only subarray that has a median equal to 3.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i], k <= n`\n  * The integers in `nums` are distinct.",
+  "question": "You are given an array `nums` of size `n` consisting of **distinct** integers from `1` to `n` and a positive integer `k`.\n\nReturn _the number of non-empty subarrays in_`nums` _that have a**median** equal to _`k`.\n\n**Note** :\n\n  * The median of an array is the **middle** element after sorting the array in **ascending** order. If the array is of even length, the median is the **left** middle element. \n    * For example, the median of `[2,3,1,4]` is `2`, and the median of `[8,4,3,5,1]` is `4`.\n  * A subarray is a contiguous part of an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,2,1,4,5], k = 4\n    **Output:** 3\n    **Explanation:** The subarrays that have a median equal to 4 are: [4], [4,5] and [1,4,5].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,3,1], k = 3\n    **Output:** 1\n    **Explanation:** [3] is the only subarray that has a median equal to 3.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 105`\n  * `1 <= nums[i], k <= n`\n  * The integers in `nums` are distinct.",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 19198,
+  "total_submissions": 40261,
+  "acceptance_rate": "47.7%",
+  "similar_questions": [
+    {
+      "title": "Number of Subarrays with Bounded Maximum",
+      "slug": "number-of-subarrays-with-bounded-maximum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/"
+    },
+    {
+      "title": "Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold",
+      "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/"
+    },
+    {
+      "title": "Sum of Imbalance Numbers of All Subarrays",
+      "slug": "sum-of-imbalance-numbers-of-all-subarrays",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sum-of-imbalance-numbers-of-all-subarrays/"
+    }
+  ],
+  "hints": [
+    "Consider changing the numbers that are strictly greater than k in the array to 1, the numbers that are strictly smaller than k to -1, and k to 0.",
+    "After the change, what property does a subarray with median k have in the new array?",
+    "An array with median k should have a sum equal to either 0 or 1 in the new array and should contain the element k. How do you count such subarrays?"
+  ]
+}

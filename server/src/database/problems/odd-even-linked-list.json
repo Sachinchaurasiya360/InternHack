@@ -1,0 +1,31 @@
+{
+  "id": "328",
+  "title": "Odd Even Linked List",
+  "slug": "odd-even-linked-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return <em>the reordered list</em>.</p>\n\n<p>The <strong>first</strong> node is considered <strong>odd</strong>, and the <strong>second</strong> node is <strong>even</strong>, and so on.</p>\n\n<p>Note that the relative order inside both the even and odd groups should remain as it was in the input.</p>\n\n<p>You must solve the problem&nbsp;in <code>O(1)</code>&nbsp;extra space complexity and <code>O(n)</code> time complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/10/oddeven-linked-list.jpg\" style=\"width: 300px; height: 123px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2,3,4,5]\n<strong>Output:</strong> [1,3,5,2,4]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/10/oddeven2-linked-list.jpg\" style=\"width: 500px; height: 142px;\" />\n<pre>\n<strong>Input:</strong> head = [2,1,3,5,6,4,7]\n<strong>Output:</strong> [2,3,6,7,1,5,4]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the linked list is in the range <code>[0, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-10<sup>6</sup> &lt;= Node.val &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given the `head` of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return _the reordered list_.\n\nThe **first** node is considered **odd** , and the **second** node is **even** , and so on.\n\nNote that the relative order inside both the even and odd groups should remain as it was in the input.\n\nYou must solve the problem in `O(1)` extra space complexity and `O(n)` time complexity.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/10/oddeven-linked-list.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5]\n    **Output:** [1,3,5,2,4]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/10/oddeven2-linked-list.jpg)\n    \n    \n    **Input:** head = [2,1,3,5,6,4,7]\n    **Output:** [2,3,6,7,1,5,4]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the linked list is in the range `[0, 104]`.\n  * `-106 <= Node.val <= 106`",
+  "question": "Given the `head` of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return _the reordered list_.\n\nThe **first** node is considered **odd** , and the **second** node is **even** , and so on.\n\nNote that the relative order inside both the even and odd groups should remain as it was in the input.\n\nYou must solve the problem in `O(1)` extra space complexity and `O(n)` time complexity.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/10/oddeven-linked-list.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5]\n    **Output:** [1,3,5,2,4]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/10/oddeven2-linked-list.jpg)\n    \n    \n    **Input:** head = [2,1,3,5,6,4,7]\n    **Output:** [2,3,6,7,1,5,4]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the linked list is in the range `[0, 104]`.\n  * `-106 <= Node.val <= 106`",
+  "topics": ["Linked List"],
+  "total_accepted": 1448784,
+  "total_submissions": 2324676,
+  "acceptance_rate": "62.3%",
+  "similar_questions": [
+    {
+      "title": "Split Linked List in Parts",
+      "slug": "split-linked-list-in-parts",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/split-linked-list-in-parts/"
+    },
+    {
+      "title": "Transform Array by Parity",
+      "slug": "transform-array-by-parity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/transform-array-by-parity/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,87 @@
+{
+  "id": "3",
+  "title": "Longest Substring Without Repeating Characters",
+  "slug": "longest-substring-without-repeating-characters",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, find the length of the <strong>longest</strong> <span data-keyword=\"substring-nonempty\"><strong>substring</strong></span> without duplicate characters.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcabcbb&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The answer is &quot;abc&quot;, with the length of 3. Note that <code>&quot;bca&quot;</code> and <code>&quot;cab&quot;</code> are also correct answers.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bbbbb&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The answer is &quot;b&quot;, with the length of 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;pwwkew&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The answer is &quot;wke&quot;, with the length of 3.\nNotice that the answer must be a substring, &quot;pwke&quot; is a subsequence and not a substring.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of English letters, digits, symbols and spaces.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, find the length of the **longest** **substring** without duplicate characters.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abcabcbb\"\n    **Output:** 3\n    **Explanation:** The answer is \"abc\", with the length of 3. Note that \"bca\" and \"cab\" are also correct answers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"bbbbb\"\n    **Output:** 1\n    **Explanation:** The answer is \"b\", with the length of 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"pwwkew\"\n    **Output:** 3\n    **Explanation:** The answer is \"wke\", with the length of 3.\n    Notice that the answer must be a substring, \"pwke\" is a subsequence and not a substring.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= s.length <= 5 * 104`\n  * `s` consists of English letters, digits, symbols and spaces.",
+  "question": "Given a string `s`, find the length of the **longest** **substring** without duplicate characters.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abcabcbb\"\n    **Output:** 3\n    **Explanation:** The answer is \"abc\", with the length of 3. Note that \"bca\" and \"cab\" are also correct answers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"bbbbb\"\n    **Output:** 1\n    **Explanation:** The answer is \"b\", with the length of 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"pwwkew\"\n    **Output:** 3\n    **Explanation:** The answer is \"wke\", with the length of 3.\n    Notice that the answer must be a substring, \"pwke\" is a subsequence and not a substring.",
+  "constraints": "**Constraints:**\n\n  * `0 <= s.length <= 5 * 104`\n  * `s` consists of English letters, digits, symbols and spaces.",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 9053871,
+  "total_submissions": 23494055,
+  "acceptance_rate": "38.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Substring with At Most Two Distinct Characters",
+      "slug": "longest-substring-with-at-most-two-distinct-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/"
+    },
+    {
+      "title": "Longest Substring with At Most K Distinct Characters",
+      "slug": "longest-substring-with-at-most-k-distinct-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/"
+    },
+    {
+      "title": "Subarrays with K Different Integers",
+      "slug": "subarrays-with-k-different-integers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/subarrays-with-k-different-integers/"
+    },
+    {
+      "title": "Maximum Erasure Value",
+      "slug": "maximum-erasure-value",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-erasure-value/"
+    },
+    {
+      "title": "Number of Equal Count Substrings",
+      "slug": "number-of-equal-count-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-equal-count-substrings/"
+    },
+    {
+      "title": "Minimum Consecutive Cards to Pick Up",
+      "slug": "minimum-consecutive-cards-to-pick-up",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-consecutive-cards-to-pick-up/"
+    },
+    {
+      "title": "Longest Nice Subarray",
+      "slug": "longest-nice-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-nice-subarray/"
+    },
+    {
+      "title": "Optimal Partition of String",
+      "slug": "optimal-partition-of-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/optimal-partition-of-string/"
+    },
+    {
+      "title": "Count Complete Subarrays in an Array",
+      "slug": "count-complete-subarrays-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-complete-subarrays-in-an-array/"
+    },
+    {
+      "title": "Find Longest Special Substring That Occurs Thrice II",
+      "slug": "find-longest-special-substring-that-occurs-thrice-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-longest-special-substring-that-occurs-thrice-ii/"
+    },
+    {
+      "title": "Find Longest Special Substring That Occurs Thrice I",
+      "slug": "find-longest-special-substring-that-occurs-thrice-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-longest-special-substring-that-occurs-thrice-i/"
+    }
+  ],
+  "hints": [
+    "Generate all possible substrings & check for each substring if it's valid and keep updating maxLen accordingly."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "2021",
+  "title": "Brightest Position on Street",
+  "slug": "brightest-position-on-street",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sorting", "Prefix Sum", "Ordered Set"],
+  "total_accepted": 16629,
+  "total_submissions": 27451,
+  "acceptance_rate": "60.6%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Food Buckets to Feed the Hamsters",
+      "slug": "minimum-number-of-food-buckets-to-feed-the-hamsters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-food-buckets-to-feed-the-hamsters/"
+    },
+    {
+      "title": "Count Positions on Street With Required Brightness",
+      "slug": "count-positions-on-street-with-required-brightness",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-positions-on-street-with-required-brightness/"
+    }
+  ],
+  "hints": [
+    "Convert lights into an array of ranges representing the range where each street light can light up and sort the start and end points of the ranges.",
+    "Do we need to traverse all possible positions on the street?",
+    "No, we don't, we only need to go to the start and end points of the ranges for each streetlight."
+  ]
+}

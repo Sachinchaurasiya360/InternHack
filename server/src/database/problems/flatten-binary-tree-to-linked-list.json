@@ -1,0 +1,33 @@
+{
+  "id": "114",
+  "title": "Flatten Binary Tree to Linked List",
+  "slug": "flatten-binary-tree-to-linked-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree, flatten the tree into a &quot;linked list&quot;:</p>\n\n<ul>\n\t<li>The &quot;linked list&quot; should use the same <code>TreeNode</code> class where the <code>right</code> child pointer points to the next node in the list and the <code>left</code> child pointer is always <code>null</code>.</li>\n\t<li>The &quot;linked list&quot; should be in the same order as a <a href=\"https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR\" target=\"_blank\"><strong>pre-order</strong><strong> traversal</strong></a> of the binary tree.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/14/flaten.jpg\" style=\"width: 500px; height: 226px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,5,3,4,null,6]\n<strong>Output:</strong> [1,null,2,null,3,null,4,null,5,null,6]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = []\n<strong>Output:</strong> []\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [0]\n<strong>Output:</strong> [0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 2000]</code>.</li>\n\t<li><code>-100 &lt;= Node.val &lt;= 100</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Can you flatten the tree in-place (with <code>O(1)</code> extra space)?",
+  "content_markdown": "Given the `root` of a binary tree, flatten the tree into a \"linked list\":\n\n  * The \"linked list\" should use the same `TreeNode` class where the `right` child pointer points to the next node in the list and the `left` child pointer is always `null`.\n  * The \"linked list\" should be in the same order as a [**pre-order****traversal**](<https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR>) of the binary tree.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/14/flaten.jpg)\n    \n    \n    **Input:** root = [1,2,5,3,4,null,6]\n    **Output:** [1,null,2,null,3,null,4,null,5,null,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = []\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [0]\n    **Output:** [0]\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 2000]`.\n  * `-100 <= Node.val <= 100`\n\n\n\n \n\n**Follow up:** Can you flatten the tree in-place (with `O(1)` extra space)?",
+  "question": "Given the `root` of a binary tree, flatten the tree into a \"linked list\":\n\n  * The \"linked list\" should use the same `TreeNode` class where the `right` child pointer points to the next node in the list and the `left` child pointer is always `null`.\n  * The \"linked list\" should be in the same order as a [**pre-order****traversal**](<https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR>) of the binary tree.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/14/flaten.jpg)\n    \n    \n    **Input:** root = [1,2,5,3,4,null,6]\n    **Output:** [1,null,2,null,3,null,4,null,5,null,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = []\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [0]\n    **Output:** [0]",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 2000]`.\n  * `-100 <= Node.val <= 100`",
+  "topics": ["Linked List", "Stack", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 1359481,
+  "total_submissions": 1935317,
+  "acceptance_rate": "70.2%",
+  "similar_questions": [
+    {
+      "title": "Flatten a Multilevel Doubly Linked List",
+      "slug": "flatten-a-multilevel-doubly-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/"
+    },
+    {
+      "title": "Correct a Binary Tree",
+      "slug": "correct-a-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/correct-a-binary-tree/"
+    }
+  ],
+  "hints": [
+    "If you notice carefully in the flattened tree, each node's right child points to the next node of a pre-order traversal."
+  ]
+}

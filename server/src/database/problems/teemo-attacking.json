@@ -1,0 +1,37 @@
+{
+  "id": "495",
+  "title": "Teemo Attacking",
+  "slug": "teemo-attacking",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Our hero Teemo is attacking an enemy Ashe with poison attacks! When Teemo attacks Ashe, Ashe gets poisoned for a exactly <code>duration</code> seconds. More formally, an attack at second <code>t</code> will mean Ashe is poisoned during the <strong>inclusive</strong> time interval <code>[t, t + duration - 1]</code>. If Teemo attacks again <strong>before</strong> the poison effect ends, the timer for it is <strong>reset</strong>, and the poison effect will end <code>duration</code> seconds after the new attack.</p>\n\n<p>You are given a <strong>non-decreasing</strong> integer array <code>timeSeries</code>, where <code>timeSeries[i]</code> denotes that Teemo attacks Ashe at second <code>timeSeries[i]</code>, and an integer <code>duration</code>.</p>\n\n<p>Return <em>the <strong>total</strong> number of seconds that Ashe is poisoned</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> timeSeries = [1,4], duration = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Teemo&#39;s attacks on Ashe go as follows:\n- At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.\n- At second 4, Teemo attacks, and Ashe is poisoned for seconds 4 and 5.\nAshe is poisoned for seconds 1, 2, 4, and 5, which is 4 seconds in total.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> timeSeries = [1,2], duration = 2\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> Teemo&#39;s attacks on Ashe go as follows:\n- At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.\n- At second 2 however, Teemo attacks again and resets the poison timer. Ashe is poisoned for seconds 2 and 3.\nAshe is poisoned for seconds 1, 2, and 3, which is 3 seconds in total.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= timeSeries.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= timeSeries[i], duration &lt;= 10<sup>7</sup></code></li>\n\t<li><code>timeSeries</code> is sorted in <strong>non-decreasing</strong> order.</li>\n</ul>\n",
+  "content_markdown": "Our hero Teemo is attacking an enemy Ashe with poison attacks! When Teemo attacks Ashe, Ashe gets poisoned for a exactly `duration` seconds. More formally, an attack at second `t` will mean Ashe is poisoned during the **inclusive** time interval `[t, t + duration - 1]`. If Teemo attacks again **before** the poison effect ends, the timer for it is **reset** , and the poison effect will end `duration` seconds after the new attack.\n\nYou are given a **non-decreasing** integer array `timeSeries`, where `timeSeries[i]` denotes that Teemo attacks Ashe at second `timeSeries[i]`, and an integer `duration`.\n\nReturn _the**total** number of seconds that Ashe is poisoned_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** timeSeries = [1,4], duration = 2\n    **Output:** 4\n    **Explanation:** Teemo's attacks on Ashe go as follows:\n    - At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.\n    - At second 4, Teemo attacks, and Ashe is poisoned for seconds 4 and 5.\n    Ashe is poisoned for seconds 1, 2, 4, and 5, which is 4 seconds in total.\n    \n\n**Example 2:**\n    \n    \n    **Input:** timeSeries = [1,2], duration = 2\n    **Output:** 3\n    **Explanation:** Teemo's attacks on Ashe go as follows:\n    - At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.\n    - At second 2 however, Teemo attacks again and resets the poison timer. Ashe is poisoned for seconds 2 and 3.\n    Ashe is poisoned for seconds 1, 2, and 3, which is 3 seconds in total.\n\n \n\n**Constraints:**\n\n  * `1 <= timeSeries.length <= 104`\n  * `0 <= timeSeries[i], duration <= 107`\n  * `timeSeries` is sorted in **non-decreasing** order.",
+  "question": "Our hero Teemo is attacking an enemy Ashe with poison attacks! When Teemo attacks Ashe, Ashe gets poisoned for a exactly `duration` seconds. More formally, an attack at second `t` will mean Ashe is poisoned during the **inclusive** time interval `[t, t + duration - 1]`. If Teemo attacks again **before** the poison effect ends, the timer for it is **reset** , and the poison effect will end `duration` seconds after the new attack.\n\nYou are given a **non-decreasing** integer array `timeSeries`, where `timeSeries[i]` denotes that Teemo attacks Ashe at second `timeSeries[i]`, and an integer `duration`.\n\nReturn _the**total** number of seconds that Ashe is poisoned_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** timeSeries = [1,4], duration = 2\n    **Output:** 4\n    **Explanation:** Teemo's attacks on Ashe go as follows:\n    - At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.\n    - At second 4, Teemo attacks, and Ashe is poisoned for seconds 4 and 5.\n    Ashe is poisoned for seconds 1, 2, 4, and 5, which is 4 seconds in total.\n    \n\n**Example 2:**\n    \n    \n    **Input:** timeSeries = [1,2], duration = 2\n    **Output:** 3\n    **Explanation:** Teemo's attacks on Ashe go as follows:\n    - At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.\n    - At second 2 however, Teemo attacks again and resets the poison timer. Ashe is poisoned for seconds 2 and 3.\n    Ashe is poisoned for seconds 1, 2, and 3, which is 3 seconds in total.",
+  "constraints": "**Constraints:**\n\n  * `1 <= timeSeries.length <= 104`\n  * `0 <= timeSeries[i], duration <= 107`\n  * `timeSeries` is sorted in **non-decreasing** order.",
+  "topics": ["Array", "Simulation"],
+  "total_accepted": 215749,
+  "total_submissions": 375259,
+  "acceptance_rate": "57.5%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Can Place Flowers",
+      "slug": "can-place-flowers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/can-place-flowers/"
+    },
+    {
+      "title": "Dota2 Senate",
+      "slug": "dota2-senate",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/dota2-senate/"
+    }
+  ],
+  "hints": []
+}

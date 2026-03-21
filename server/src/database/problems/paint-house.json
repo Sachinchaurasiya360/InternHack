@@ -1,0 +1,49 @@
+{
+  "id": "256",
+  "title": "Paint House",
+  "slug": "paint-house",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 243594,
+  "total_submissions": 378969,
+  "acceptance_rate": "64.3%",
+  "similar_questions": [
+    {
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber/"
+    },
+    {
+      "title": "House Robber II",
+      "slug": "house-robber-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber-ii/"
+    },
+    {
+      "title": "Paint House II",
+      "slug": "paint-house-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paint-house-ii/"
+    },
+    {
+      "title": "Paint Fence",
+      "slug": "paint-fence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/paint-fence/"
+    },
+    {
+      "title": "Minimum Path Cost in a Grid",
+      "slug": "minimum-path-cost-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-cost-in-a-grid/"
+    }
+  ],
+  "hints": []
+}

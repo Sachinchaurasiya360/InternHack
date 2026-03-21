@@ -1,0 +1,43 @@
+{
+  "id": "252",
+  "title": "Meeting Rooms",
+  "slug": "meeting-rooms",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 510099,
+  "total_submissions": 859690,
+  "acceptance_rate": "59.3%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Meeting Rooms II",
+      "slug": "meeting-rooms-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/meeting-rooms-ii/"
+    },
+    {
+      "title": "Meeting Rooms III",
+      "slug": "meeting-rooms-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/meeting-rooms-iii/"
+    },
+    {
+      "title": "Points That Intersect With Cars",
+      "slug": "points-that-intersect-with-cars",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/points-that-intersect-with-cars/"
+    }
+  ],
+  "hints": []
+}

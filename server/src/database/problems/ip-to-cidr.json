@@ -1,0 +1,33 @@
+{
+  "id": "751",
+  "title": "IP to CIDR",
+  "slug": "ip-to-cidr",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Bit Manipulation"],
+  "total_accepted": 38218,
+  "total_submissions": 71272,
+  "acceptance_rate": "53.6%",
+  "similar_questions": [
+    {
+      "title": "Restore IP Addresses",
+      "slug": "restore-ip-addresses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/restore-ip-addresses/"
+    },
+    {
+      "title": "Validate IP Address",
+      "slug": "validate-ip-address",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/validate-ip-address/"
+    }
+  ],
+  "hints": [
+    "Convert the ip addresses to and from (long) integers.  You want to know what is the most addresses you can put in this block starting from the \"start\" ip, up to n.  It is the smallest between the lowest bit of start and the highest bit of n.  Then, repeat this process with a new start and n."
+  ]
+}

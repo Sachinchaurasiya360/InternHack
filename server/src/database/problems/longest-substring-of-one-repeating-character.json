@@ -1,0 +1,54 @@
+{
+  "id": "2213",
+  "title": "Longest Substring of One Repeating Character",
+  "slug": "longest-substring-of-one-repeating-character",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> string <code>s</code>. You are also given a <strong>0-indexed</strong> string <code>queryCharacters</code> of length <code>k</code> and a <strong>0-indexed</strong> array of integer <strong>indices</strong> <code>queryIndices</code> of length <code>k</code>, both of which are used to describe <code>k</code> queries.</p>\n\n<p>The <code>i<sup>th</sup></code> query updates the character in <code>s</code> at index <code>queryIndices[i]</code> to the character <code>queryCharacters[i]</code>.</p>\n\n<p>Return <em>an array</em> <code>lengths</code> <em>of length </em><code>k</code><em> where</em> <code>lengths[i]</code> <em>is the <strong>length</strong> of the <strong>longest substring</strong> of </em><code>s</code><em> consisting of <strong>only one repeating</strong> character <strong>after</strong> the</em> <code>i<sup>th</sup></code> <em>query</em><em> is performed.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;babacc&quot;, queryCharacters = &quot;bcb&quot;, queryIndices = [1,3,3]\n<strong>Output:</strong> [3,3,4]\n<strong>Explanation:</strong> \n- 1<sup>st</sup> query updates s = &quot;<u>b<strong>b</strong>b</u>acc&quot;. The longest substring consisting of one repeating character is &quot;bbb&quot; with length 3.\n- 2<sup>nd</sup> query updates s = &quot;bbb<u><strong>c</strong>cc</u>&quot;. \n  The longest substring consisting of one repeating character can be &quot;bbb&quot; or &quot;ccc&quot; with length 3.\n- 3<sup>rd</sup> query updates s = &quot;<u>bbb<strong>b</strong></u>cc&quot;. The longest substring consisting of one repeating character is &quot;bbbb&quot; with length 4.\nThus, we return [3,3,4].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abyzz&quot;, queryCharacters = &quot;aa&quot;, queryIndices = [2,1]\n<strong>Output:</strong> [2,3]\n<strong>Explanation:</strong>\n- 1<sup>st</sup> query updates s = &quot;ab<strong>a</strong><u>zz</u>&quot;. The longest substring consisting of one repeating character is &quot;zz&quot; with length 2.\n- 2<sup>nd</sup> query updates s = &quot;<u>a<strong>a</strong>a</u>zz&quot;. The longest substring consisting of one repeating character is &quot;aaa&quot; with length 3.\nThus, we return [2,3].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n\t<li><code>k == queryCharacters.length == queryIndices.length</code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>5</sup></code></li>\n\t<li><code>queryCharacters</code> consists of lowercase English letters.</li>\n\t<li><code>0 &lt;= queryIndices[i] &lt; s.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** string `s`. You are also given a **0-indexed** string `queryCharacters` of length `k` and a **0-indexed** array of integer **indices** `queryIndices` of length `k`, both of which are used to describe `k` queries.\n\nThe `ith` query updates the character in `s` at index `queryIndices[i]` to the character `queryCharacters[i]`.\n\nReturn _an array_ `lengths` _of length_`k` _where_ `lengths[i]` _is the**length** of the **longest substring** of _`s` _consisting of**only one repeating** character **after** the_ `ith` _query_ _is performed._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"babacc\", queryCharacters = \"bcb\", queryIndices = [1,3,3]\n    **Output:** [3,3,4]\n    **Explanation:** \n    - 1st query updates s = \"_b**b** b_acc\". The longest substring consisting of one repeating character is \"bbb\" with length 3.\n    - 2nd query updates s = \"bbb _**c** cc_\". \n      The longest substring consisting of one repeating character can be \"bbb\" or \"ccc\" with length 3.\n    - 3rd query updates s = \"_bbb**b**_ cc\". The longest substring consisting of one repeating character is \"bbbb\" with length 4.\n    Thus, we return [3,3,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abyzz\", queryCharacters = \"aa\", queryIndices = [2,1]\n    **Output:** [2,3]\n    **Explanation:**\n    - 1st query updates s = \"ab**a** _zz_ \". The longest substring consisting of one repeating character is \"zz\" with length 2.\n    - 2nd query updates s = \"_a**a** a_zz\". The longest substring consisting of one repeating character is \"aaa\" with length 3.\n    Thus, we return [2,3].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.\n  * `k == queryCharacters.length == queryIndices.length`\n  * `1 <= k <= 105`\n  * `queryCharacters` consists of lowercase English letters.\n  * `0 <= queryIndices[i] < s.length`",
+  "question": "You are given a **0-indexed** string `s`. You are also given a **0-indexed** string `queryCharacters` of length `k` and a **0-indexed** array of integer **indices** `queryIndices` of length `k`, both of which are used to describe `k` queries.\n\nThe `ith` query updates the character in `s` at index `queryIndices[i]` to the character `queryCharacters[i]`.\n\nReturn _an array_ `lengths` _of length_`k` _where_ `lengths[i]` _is the**length** of the **longest substring** of _`s` _consisting of**only one repeating** character **after** the_ `ith` _query_ _is performed._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"babacc\", queryCharacters = \"bcb\", queryIndices = [1,3,3]\n    **Output:** [3,3,4]\n    **Explanation:** \n    - 1st query updates s = \"_b**b** b_acc\". The longest substring consisting of one repeating character is \"bbb\" with length 3.\n    - 2nd query updates s = \"bbb _**c** cc_\". \n      The longest substring consisting of one repeating character can be \"bbb\" or \"ccc\" with length 3.\n    - 3rd query updates s = \"_bbb**b**_ cc\". The longest substring consisting of one repeating character is \"bbbb\" with length 4.\n    Thus, we return [3,3,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abyzz\", queryCharacters = \"aa\", queryIndices = [2,1]\n    **Output:** [2,3]\n    **Explanation:**\n    - 1st query updates s = \"ab**a** _zz_ \". The longest substring consisting of one repeating character is \"zz\" with length 2.\n    - 2nd query updates s = \"_a**a** a_zz\". The longest substring consisting of one repeating character is \"aaa\" with length 3.\n    Thus, we return [2,3].",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.\n  * `k == queryCharacters.length == queryIndices.length`\n  * `1 <= k <= 105`\n  * `queryCharacters` consists of lowercase English letters.\n  * `0 <= queryIndices[i] < s.length`",
+  "topics": ["Array", "String", "Segment Tree", "Ordered Set"],
+  "total_accepted": 6545,
+  "total_submissions": 19161,
+  "acceptance_rate": "34.2%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Longest Repeating Character Replacement",
+      "slug": "longest-repeating-character-replacement",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-repeating-character-replacement/"
+    },
+    {
+      "title": "Consecutive Characters",
+      "slug": "consecutive-characters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/consecutive-characters/"
+    },
+    {
+      "title": "Create Sorted Array through Instructions",
+      "slug": "create-sorted-array-through-instructions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/create-sorted-array-through-instructions/"
+    },
+    {
+      "title": "Longest Increasing Subsequence II",
+      "slug": "longest-increasing-subsequence-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence-ii/"
+    }
+  ],
+  "hints": [
+    "Use a segment tree to perform fast point updates and range queries.",
+    "We need each segment tree node to store the length of the longest substring of that segment consisting of only 1 repeating character.",
+    "We will also have each segment tree node store the leftmost and rightmost character of the segment, the max length of a prefix substring consisting of only 1 repeating character, and the max length of a suffix substring consisting of only 1 repeating character.",
+    "Use this information to properly merge the two segment tree nodes together."
+  ]
+}

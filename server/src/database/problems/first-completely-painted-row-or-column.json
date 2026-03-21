@@ -1,0 +1,36 @@
+{
+  "id": "2661",
+  "title": "First Completely Painted Row or Column",
+  "slug": "first-completely-painted-row-or-column",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>arr</code>, and an <code>m x n</code> integer <strong>matrix</strong> <code>mat</code>. <code>arr</code> and <code>mat</code> both contain <strong>all</strong> the integers in the range <code>[1, m * n]</code>.</p>\n\n<p>Go through each index <code>i</code> in <code>arr</code> starting from index <code>0</code> and paint the cell in <code>mat</code> containing the integer <code>arr[i]</code>.</p>\n\n<p>Return <em>the smallest index</em> <code>i</code> <em>at which either a row or a column will be completely painted in</em> <code>mat</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"image explanation for example 1\" /><img alt=\"image explanation for example 1\" src=\"https://assets.leetcode.com/uploads/2023/01/18/grid1.jpg\" style=\"width: 321px; height: 81px;\" />\n<pre>\n<strong>Input:</strong> arr = [1,3,4,2], mat = [[1,4],[2,3]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The moves are shown in order, and both the first row and second column of the matrix become fully painted at arr[2].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"image explanation for example 2\" src=\"https://assets.leetcode.com/uploads/2023/01/18/grid2.jpg\" style=\"width: 601px; height: 121px;\" />\n<pre>\n<strong>Input:</strong> arr = [2,8,7,4,1,3,5,6,9], mat = [[3,2,5],[1,4,6],[8,7,9]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The second column becomes fully painted at arr[3].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == mat.length</code></li>\n\t<li><code>n = mat[i].length</code></li>\n\t<li><code>arr.length == m * n</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= m * n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= arr[i], mat[r][c] &lt;= m * n</code></li>\n\t<li>All the integers of <code>arr</code> are <strong>unique</strong>.</li>\n\t<li>All the integers of <code>mat</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `arr`, and an `m x n` integer **matrix** `mat`. `arr` and `mat` both contain **all** the integers in the range `[1, m * n]`.\n\nGo through each index `i` in `arr` starting from index `0` and paint the cell in `mat` containing the integer `arr[i]`.\n\nReturn _the smallest index_ `i` _at which either a row or a column will be completely painted in_ `mat`.\n\n \n\n**Example 1:**\n\n![](image explanation for example 1)![image explanation for example 1](https://assets.leetcode.com/uploads/2023/01/18/grid1.jpg)\n    \n    \n    **Input:** arr = [1,3,4,2], mat = [[1,4],[2,3]]\n    **Output:** 2\n    **Explanation:** The moves are shown in order, and both the first row and second column of the matrix become fully painted at arr[2].\n    \n\n**Example 2:**\n\n![image explanation for example 2](https://assets.leetcode.com/uploads/2023/01/18/grid2.jpg)\n    \n    \n    **Input:** arr = [2,8,7,4,1,3,5,6,9], mat = [[3,2,5],[1,4,6],[8,7,9]]\n    **Output:** 3\n    **Explanation:** The second column becomes fully painted at arr[3].\n    \n\n \n\n**Constraints:**\n\n  * `m == mat.length`\n  * `n = mat[i].length`\n  * `arr.length == m * n`\n  * `1 <= m, n <= 105`\n  * `1 <= m * n <= 105`\n  * `1 <= arr[i], mat[r][c] <= m * n`\n  * All the integers of `arr` are **unique**.\n  * All the integers of `mat` are **unique**.",
+  "question": "You are given a **0-indexed** integer array `arr`, and an `m x n` integer **matrix** `mat`. `arr` and `mat` both contain **all** the integers in the range `[1, m * n]`.\n\nGo through each index `i` in `arr` starting from index `0` and paint the cell in `mat` containing the integer `arr[i]`.\n\nReturn _the smallest index_ `i` _at which either a row or a column will be completely painted in_ `mat`.",
+  "examples": "**Example 1:**\n\n![](image explanation for example 1)![image explanation for example 1](https://assets.leetcode.com/uploads/2023/01/18/grid1.jpg)\n    \n    \n    **Input:** arr = [1,3,4,2], mat = [[1,4],[2,3]]\n    **Output:** 2\n    **Explanation:** The moves are shown in order, and both the first row and second column of the matrix become fully painted at arr[2].\n    \n\n**Example 2:**\n\n![image explanation for example 2](https://assets.leetcode.com/uploads/2023/01/18/grid2.jpg)\n    \n    \n    **Input:** arr = [2,8,7,4,1,3,5,6,9], mat = [[3,2,5],[1,4,6],[8,7,9]]\n    **Output:** 3\n    **Explanation:** The second column becomes fully painted at arr[3].",
+  "constraints": "**Constraints:**\n\n  * `m == mat.length`\n  * `n = mat[i].length`\n  * `arr.length == m * n`\n  * `1 <= m, n <= 105`\n  * `1 <= m * n <= 105`\n  * `1 <= arr[i], mat[r][c] <= m * n`\n  * All the integers of `arr` are **unique**.\n  * All the integers of `mat` are **unique**.",
+  "topics": ["Array", "Hash Table", "Matrix"],
+  "total_accepted": 158539,
+  "total_submissions": 248137,
+  "acceptance_rate": "63.9%",
+  "similar_questions": [
+    {
+      "title": "Check if Every Row and Column Contains All Numbers",
+      "slug": "check-if-every-row-and-column-contains-all-numbers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-every-row-and-column-contains-all-numbers/"
+    },
+    {
+      "title": "Difference Between Ones and Zeros in Row and Column",
+      "slug": "difference-between-ones-and-zeros-in-row-and-column",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/difference-between-ones-and-zeros-in-row-and-column/"
+    }
+  ],
+  "hints": [
+    "Can we use a frequency array?",
+    "Pre-process the positions of the values in the matrix.",
+    "Traverse the array and increment the corresponding row and column frequency using the pre-processed positions.",
+    "If the row frequency becomes equal to the number of columns, or vice-versa return the current index."
+  ]
+}

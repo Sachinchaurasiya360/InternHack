@@ -1,0 +1,18 @@
+{
+  "id": "540",
+  "title": "Single Element in a Sorted Array",
+  "slug": "single-element-in-a-sorted-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once.</p>\n\n<p>Return <em>the single element that appears only once</em>.</p>\n\n<p>Your solution must run in <code>O(log n)</code> time and <code>O(1)</code> space.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,1,2,3,3,4,4,8,8]\n<strong>Output:</strong> 2\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [3,3,7,7,10,11,11]\n<strong>Output:</strong> 10\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once.\n\nReturn _the single element that appears only once_.\n\nYour solution must run in `O(log n)` time and `O(1)` space.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,1,2,3,3,4,4,8,8]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,3,7,7,10,11,11]\n    **Output:** 10\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 105`",
+  "question": "You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once.\n\nReturn _the single element that appears only once_.\n\nYour solution must run in `O(log n)` time and `O(1)` space.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,1,2,3,3,4,4,8,8]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,3,7,7,10,11,11]\n    **Output:** 10",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 105`",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 1162273,
+  "total_submissions": 1962700,
+  "acceptance_rate": "59.2%",
+  "similar_questions": [],
+  "hints": []
+}

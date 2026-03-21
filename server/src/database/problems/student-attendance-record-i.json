@@ -1,0 +1,25 @@
+{
+  "id": "551",
+  "title": "Student Attendance Record I",
+  "slug": "student-attendance-record-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> representing an attendance record for a student where each character signifies whether the student was absent, late, or present on that day. The record only contains the following three characters:</p>\n\n<ul>\n\t<li><code>&#39;A&#39;</code>: Absent.</li>\n\t<li><code>&#39;L&#39;</code>: Late.</li>\n\t<li><code>&#39;P&#39;</code>: Present.</li>\n</ul>\n\n<p>The student is eligible for an attendance award if they meet <strong>both</strong> of the following criteria:</p>\n\n<ul>\n\t<li>The student was absent (<code>&#39;A&#39;</code>) for <strong>strictly</strong> fewer than 2 days <strong>total</strong>.</li>\n\t<li>The student was <strong>never</strong> late (<code>&#39;L&#39;</code>) for 3 or more <strong>consecutive</strong> days.</li>\n</ul>\n\n<p>Return <code>true</code><em> if the student is eligible for an attendance award, or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;PPALLP&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The student has fewer than 2 absences and was never late 3 or more consecutive days.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;PPALLL&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The student was late 3 consecutive days in the last 3 days, so is not eligible for the award.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;A&#39;</code>, <code>&#39;L&#39;</code>, or <code>&#39;P&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` representing an attendance record for a student where each character signifies whether the student was absent, late, or present on that day. The record only contains the following three characters:\n\n  * `'A'`: Absent.\n  * `'L'`: Late.\n  * `'P'`: Present.\n\n\n\nThe student is eligible for an attendance award if they meet **both** of the following criteria:\n\n  * The student was absent (`'A'`) for **strictly** fewer than 2 days **total**.\n  * The student was **never** late (`'L'`) for 3 or more **consecutive** days.\n\n\n\nReturn `true` _if the student is eligible for an attendance award, or_`false` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"PPALLP\"\n    **Output:** true\n    **Explanation:** The student has fewer than 2 absences and was never late 3 or more consecutive days.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"PPALLL\"\n    **Output:** false\n    **Explanation:** The student was late 3 consecutive days in the last 3 days, so is not eligible for the award.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'A'`, `'L'`, or `'P'`.",
+  "question": "You are given a string `s` representing an attendance record for a student where each character signifies whether the student was absent, late, or present on that day. The record only contains the following three characters:\n\n  * `'A'`: Absent.\n  * `'L'`: Late.\n  * `'P'`: Present.\n\n\n\nThe student is eligible for an attendance award if they meet **both** of the following criteria:\n\n  * The student was absent (`'A'`) for **strictly** fewer than 2 days **total**.\n  * The student was **never** late (`'L'`) for 3 or more **consecutive** days.\n\n\n\nReturn `true` _if the student is eligible for an attendance award, or_`false` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"PPALLP\"\n    **Output:** true\n    **Explanation:** The student has fewer than 2 absences and was never late 3 or more consecutive days.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"PPALLL\"\n    **Output:** false\n    **Explanation:** The student was late 3 consecutive days in the last 3 days, so is not eligible for the award.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s[i]` is either `'A'`, `'L'`, or `'P'`.",
+  "topics": ["String"],
+  "total_accepted": 283473,
+  "total_submissions": 566689,
+  "acceptance_rate": "50.0%",
+  "similar_questions": [
+    {
+      "title": "Student Attendance Record II",
+      "slug": "student-attendance-record-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/student-attendance-record-ii/"
+    }
+  ],
+  "hints": []
+}

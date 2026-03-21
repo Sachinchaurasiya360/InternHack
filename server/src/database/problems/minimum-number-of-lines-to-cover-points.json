@@ -1,0 +1,51 @@
+{
+  "id": "2152",
+  "title": "Minimum Number of Lines to Cover Points",
+  "slug": "minimum-number-of-lines-to-cover-points",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Math",
+    "Dynamic Programming",
+    "Backtracking",
+    "Bit Manipulation",
+    "Geometry",
+    "Bitmask"
+  ],
+  "total_accepted": 2802,
+  "total_submissions": 6389,
+  "acceptance_rate": "43.9%",
+  "similar_questions": [
+    {
+      "title": "Max Points on a Line",
+      "slug": "max-points-on-a-line",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/max-points-on-a-line/"
+    },
+    {
+      "title": "Min Cost to Connect All Points",
+      "slug": "min-cost-to-connect-all-points",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/min-cost-to-connect-all-points/"
+    },
+    {
+      "title": "Minimum Lines to Represent a Line Chart",
+      "slug": "minimum-lines-to-represent-a-line-chart",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-lines-to-represent-a-line-chart/"
+    }
+  ],
+  "hints": [
+    "What is the highest possible answer for a set of n points?",
+    "The highest possible answer is n / 2 (rounded up). This is because you can cover at least two points with a line, and if n is odd, you need to add one extra line to cover the last point.",
+    "Suppose you have a line covering two points, how can you quickly check if a third point is also covered by that line?",
+    "Calculate the slope from the first point to the second point. If the slope from the first point to the third point is the same, then it is also covered by that line."
+  ]
+}

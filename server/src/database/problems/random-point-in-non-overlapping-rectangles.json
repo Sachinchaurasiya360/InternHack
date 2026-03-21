@@ -1,0 +1,39 @@
+{
+  "id": "497",
+  "title": "Random Point in Non-overlapping Rectangles",
+  "slug": "random-point-in-non-overlapping-rectangles",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of non-overlapping axis-aligned rectangles <code>rects</code> where <code>rects[i] = [a<sub>i</sub>, b<sub>i</sub>, x<sub>i</sub>, y<sub>i</sub>]</code> indicates that <code>(a<sub>i</sub>, b<sub>i</sub>)</code> is the bottom-left corner point of the <code>i<sup>th</sup></code> rectangle and <code>(x<sub>i</sub>, y<sub>i</sub>)</code> is the top-right corner point of the <code>i<sup>th</sup></code> rectangle. Design an algorithm to pick a random integer point inside the space covered by one of the given rectangles. A point on the perimeter of a rectangle is included in the space covered by the rectangle.</p>\n\n<p>Any integer point inside the space covered by one of the given rectangles should be equally likely to be returned.</p>\n\n<p><strong>Note</strong> that an integer point is a point that has integer coordinates.</p>\n\n<p>Implement the <code>Solution</code> class:</p>\n\n<ul>\n\t<li><code>Solution(int[][] rects)</code> Initializes the object with the given rectangles <code>rects</code>.</li>\n\t<li><code>int[] pick()</code> Returns a random integer point <code>[u, v]</code> inside the space covered by one of the given rectangles.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/07/24/lc-pickrandomrec.jpg\" style=\"width: 419px; height: 539px;\" />\n<pre>\n<strong>Input</strong>\n[&quot;Solution&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;]\n[[[[-2, -2, 1, 1], [2, 2, 4, 6]]], [], [], [], [], []]\n<strong>Output</strong>\n[null, [1, -2], [1, -1], [-1, -2], [-2, -2], [0, 0]]\n\n<strong>Explanation</strong>\nSolution solution = new Solution([[-2, -2, 1, 1], [2, 2, 4, 6]]);\nsolution.pick(); // return [1, -2]\nsolution.pick(); // return [1, -1]\nsolution.pick(); // return [-1, -2]\nsolution.pick(); // return [-2, -2]\nsolution.pick(); // return [0, 0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= rects.length &lt;= 100</code></li>\n\t<li><code>rects[i].length == 4</code></li>\n\t<li><code>-10<sup>9</sup> &lt;= a<sub>i</sub> &lt; x<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= b<sub>i</sub> &lt; y<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>x<sub>i</sub> - a<sub>i</sub> &lt;= 2000</code></li>\n\t<li><code>y<sub>i</sub> - b<sub>i</sub> &lt;= 2000</code></li>\n\t<li>All the rectangles do not overlap.</li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>pick</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of non-overlapping axis-aligned rectangles `rects` where `rects[i] = [ai, bi, xi, yi]` indicates that `(ai, bi)` is the bottom-left corner point of the `ith` rectangle and `(xi, yi)` is the top-right corner point of the `ith` rectangle. Design an algorithm to pick a random integer point inside the space covered by one of the given rectangles. A point on the perimeter of a rectangle is included in the space covered by the rectangle.\n\nAny integer point inside the space covered by one of the given rectangles should be equally likely to be returned.\n\n**Note** that an integer point is a point that has integer coordinates.\n\nImplement the `Solution` class:\n\n  * `Solution(int[][] rects)` Initializes the object with the given rectangles `rects`.\n  * `int[] pick()` Returns a random integer point `[u, v]` inside the space covered by one of the given rectangles.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/07/24/lc-pickrandomrec.jpg)\n    \n    \n    **Input**\n    [\"Solution\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\"]\n    [[[[-2, -2, 1, 1], [2, 2, 4, 6]]], [], [], [], [], []]\n    **Output**\n    [null, [1, -2], [1, -1], [-1, -2], [-2, -2], [0, 0]]\n    \n    **Explanation**\n    Solution solution = new Solution([[-2, -2, 1, 1], [2, 2, 4, 6]]);\n    solution.pick(); // return [1, -2]\n    solution.pick(); // return [1, -1]\n    solution.pick(); // return [-1, -2]\n    solution.pick(); // return [-2, -2]\n    solution.pick(); // return [0, 0]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= rects.length <= 100`\n  * `rects[i].length == 4`\n  * `-109 <= ai < xi <= 109`\n  * `-109 <= bi < yi <= 109`\n  * `xi - ai <= 2000`\n  * `yi - bi <= 2000`\n  * All the rectangles do not overlap.\n  * At most `104` calls will be made to `pick`.",
+  "question": "You are given an array of non-overlapping axis-aligned rectangles `rects` where `rects[i] = [ai, bi, xi, yi]` indicates that `(ai, bi)` is the bottom-left corner point of the `ith` rectangle and `(xi, yi)` is the top-right corner point of the `ith` rectangle. Design an algorithm to pick a random integer point inside the space covered by one of the given rectangles. A point on the perimeter of a rectangle is included in the space covered by the rectangle.\n\nAny integer point inside the space covered by one of the given rectangles should be equally likely to be returned.\n\n**Note** that an integer point is a point that has integer coordinates.\n\nImplement the `Solution` class:\n\n  * `Solution(int[][] rects)` Initializes the object with the given rectangles `rects`.\n  * `int[] pick()` Returns a random integer point `[u, v]` inside the space covered by one of the given rectangles.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/07/24/lc-pickrandomrec.jpg)\n    \n    \n    **Input**\n    [\"Solution\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\"]\n    [[[[-2, -2, 1, 1], [2, 2, 4, 6]]], [], [], [], [], []]\n    **Output**\n    [null, [1, -2], [1, -1], [-1, -2], [-2, -2], [0, 0]]\n    \n    **Explanation**\n    Solution solution = new Solution([[-2, -2, 1, 1], [2, 2, 4, 6]]);\n    solution.pick(); // return [1, -2]\n    solution.pick(); // return [1, -1]\n    solution.pick(); // return [-1, -2]\n    solution.pick(); // return [-2, -2]\n    solution.pick(); // return [0, 0]",
+  "constraints": "**Constraints:**\n\n  * `1 <= rects.length <= 100`\n  * `rects[i].length == 4`\n  * `-109 <= ai < xi <= 109`\n  * `-109 <= bi < yi <= 109`\n  * `xi - ai <= 2000`\n  * `yi - bi <= 2000`\n  * All the rectangles do not overlap.\n  * At most `104` calls will be made to `pick`.",
+  "topics": [
+    "Array",
+    "Math",
+    "Binary Search",
+    "Reservoir Sampling",
+    "Prefix Sum",
+    "Ordered Set",
+    "Randomized"
+  ],
+  "total_accepted": 52047,
+  "total_submissions": 132089,
+  "acceptance_rate": "39.4%",
+  "similar_questions": [
+    {
+      "title": "Random Pick with Weight",
+      "slug": "random-pick-with-weight",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/random-pick-with-weight/"
+    },
+    {
+      "title": "Generate Random Point in a Circle",
+      "slug": "generate-random-point-in-a-circle",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/generate-random-point-in-a-circle/"
+    }
+  ],
+  "hints": []
+}

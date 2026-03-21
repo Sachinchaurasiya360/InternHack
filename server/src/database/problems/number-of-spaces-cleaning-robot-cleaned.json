@@ -1,0 +1,29 @@
+{
+  "id": "2061",
+  "title": "Number of Spaces Cleaning Robot Cleaned",
+  "slug": "number-of-spaces-cleaning-robot-cleaned",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Matrix", "Simulation"],
+  "total_accepted": 10893,
+  "total_submissions": 17411,
+  "acceptance_rate": "62.6%",
+  "similar_questions": [
+    {
+      "title": "Robot Room Cleaner",
+      "slug": "robot-room-cleaner",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/robot-room-cleaner/"
+    }
+  ],
+  "hints": [
+    "Simulate how the robot moves and keep track of how many spaces it has cleaned so far.",
+    "When can we stop the simulation?",
+    "When the robot reaches a space that it has already cleaned and is facing the same direction as before, we can stop the simulation."
+  ]
+}

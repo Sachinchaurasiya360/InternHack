@@ -1,0 +1,31 @@
+{
+  "id": "628",
+  "title": "Maximum Product of Three Numbers",
+  "slug": "maximum-product-of-three-numbers",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, <em>find three numbers whose product is maximum and return the maximum product</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,3]\n<strong>Output:</strong> 6\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,3,4]\n<strong>Output:</strong> 24\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> nums = [-1,-2,-3]\n<strong>Output:</strong> -6\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= nums.length &lt;=&nbsp;10<sup>4</sup></code></li>\n\t<li><code>-1000 &lt;= nums[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, _find three numbers whose product is maximum and return the maximum product_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 24\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,-2,-3]\n    **Output:** -6\n    \n\n \n\n**Constraints:**\n\n  * `3 <= nums.length <= 104`\n  * `-1000 <= nums[i] <= 1000`",
+  "question": "Given an integer array `nums`, _find three numbers whose product is maximum and return the maximum product_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3]\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 24\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,-2,-3]\n    **Output:** -6",
+  "constraints": "**Constraints:**\n\n  * `3 <= nums.length <= 104`\n  * `-1000 <= nums[i] <= 1000`",
+  "topics": ["Array", "Math", "Sorting"],
+  "total_accepted": 478305,
+  "total_submissions": 1045696,
+  "acceptance_rate": "45.7%",
+  "similar_questions": [
+    {
+      "title": "Maximum Product Subarray",
+      "slug": "maximum-product-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-subarray/"
+    },
+    {
+      "title": "Maximum Product of Three Elements After One Replacement",
+      "slug": "maximum-product-of-three-elements-after-one-replacement",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-of-three-elements-after-one-replacement/"
+    }
+  ],
+  "hints": []
+}

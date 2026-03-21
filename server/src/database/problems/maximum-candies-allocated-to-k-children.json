@@ -1,0 +1,70 @@
+{
+  "id": "2226",
+  "title": "Maximum Candies Allocated to K Children",
+  "slug": "maximum-candies-allocated-to-k-children",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>candies</code>. Each element in the array denotes a pile of candies of size <code>candies[i]</code>. You can divide each pile into any number of <strong>sub piles</strong>, but you <strong>cannot</strong> merge two piles together.</p>\n\n<p>You are also given an integer <code>k</code>. You should allocate piles of candies to <code>k</code> children such that each child gets the <strong>same</strong> number of candies. Each child can be allocated candies from <strong>only one</strong> pile of candies and some piles of candies may go unused.</p>\n\n<p>Return <em>the <strong>maximum number of candies</strong> each child can get.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> candies = [5,8,6], k = 3\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> We can divide candies[1] into 2 piles of size 5 and 3, and candies[2] into 2 piles of size 5 and 1. We now have five piles of candies of sizes 5, 5, 3, 5, and 1. We can allocate the 3 piles of size 5 to 3 children. It can be proven that each child cannot receive more than 5 candies.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> candies = [2,5], k = 11\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There are 11 children but only 7 candies in total, so it is impossible to ensure each child receives at least one candy. Thus, each child gets no candy and the answer is 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= candies.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= candies[i] &lt;= 10<sup>7</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>12</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `candies`. Each element in the array denotes a pile of candies of size `candies[i]`. You can divide each pile into any number of **sub piles** , but you **cannot** merge two piles together.\n\nYou are also given an integer `k`. You should allocate piles of candies to `k` children such that each child gets the **same** number of candies. Each child can be allocated candies from **only one** pile of candies and some piles of candies may go unused.\n\nReturn _the**maximum number of candies** each child can get._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** candies = [5,8,6], k = 3\n    **Output:** 5\n    **Explanation:** We can divide candies[1] into 2 piles of size 5 and 3, and candies[2] into 2 piles of size 5 and 1. We now have five piles of candies of sizes 5, 5, 3, 5, and 1. We can allocate the 3 piles of size 5 to 3 children. It can be proven that each child cannot receive more than 5 candies.\n    \n\n**Example 2:**\n    \n    \n    **Input:** candies = [2,5], k = 11\n    **Output:** 0\n    **Explanation:** There are 11 children but only 7 candies in total, so it is impossible to ensure each child receives at least one candy. Thus, each child gets no candy and the answer is 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= candies.length <= 105`\n  * `1 <= candies[i] <= 107`\n  * `1 <= k <= 1012`",
+  "question": "You are given a **0-indexed** integer array `candies`. Each element in the array denotes a pile of candies of size `candies[i]`. You can divide each pile into any number of **sub piles** , but you **cannot** merge two piles together.\n\nYou are also given an integer `k`. You should allocate piles of candies to `k` children such that each child gets the **same** number of candies. Each child can be allocated candies from **only one** pile of candies and some piles of candies may go unused.\n\nReturn _the**maximum number of candies** each child can get._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** candies = [5,8,6], k = 3\n    **Output:** 5\n    **Explanation:** We can divide candies[1] into 2 piles of size 5 and 3, and candies[2] into 2 piles of size 5 and 1. We now have five piles of candies of sizes 5, 5, 3, 5, and 1. We can allocate the 3 piles of size 5 to 3 children. It can be proven that each child cannot receive more than 5 candies.\n    \n\n**Example 2:**\n    \n    \n    **Input:** candies = [2,5], k = 11\n    **Output:** 0\n    **Explanation:** There are 11 children but only 7 candies in total, so it is impossible to ensure each child receives at least one candy. Thus, each child gets no candy and the answer is 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= candies.length <= 105`\n  * `1 <= candies[i] <= 107`\n  * `1 <= k <= 1012`",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 202721,
+  "total_submissions": 406299,
+  "acceptance_rate": "49.9%",
+  "similar_questions": [
+    {
+      "title": "Koko Eating Bananas",
+      "slug": "koko-eating-bananas",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/koko-eating-bananas/"
+    },
+    {
+      "title": "Minimum Limit of Balls in a Bag",
+      "slug": "minimum-limit-of-balls-in-a-bag",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-limit-of-balls-in-a-bag/"
+    },
+    {
+      "title": "Minimum Speed to Arrive on Time",
+      "slug": "minimum-speed-to-arrive-on-time",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-speed-to-arrive-on-time/"
+    },
+    {
+      "title": "Maximum Number of Removable Characters",
+      "slug": "maximum-number-of-removable-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-removable-characters/"
+    },
+    {
+      "title": "Minimized Maximum of Products Distributed to Any Store",
+      "slug": "minimized-maximum-of-products-distributed-to-any-store",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/"
+    },
+    {
+      "title": "Minimum Time to Complete Trips",
+      "slug": "minimum-time-to-complete-trips",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-time-to-complete-trips/"
+    },
+    {
+      "title": "Minimize Maximum of Array",
+      "slug": "minimize-maximum-of-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-maximum-of-array/"
+    },
+    {
+      "title": "Maximize Happiness of Selected Children",
+      "slug": "maximize-happiness-of-selected-children",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-happiness-of-selected-children/"
+    }
+  ],
+  "hints": [
+    "For a fixed number of candies c, how can you check if each child can get c candies?",
+    "Use binary search to find the maximum c as the answer."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "1588",
+  "title": "Sum of All Odd Length Subarrays",
+  "slug": "sum-of-all-odd-length-subarrays",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of positive integers <code>arr</code>, return <em>the sum of all possible <strong>odd-length subarrays</strong> of </em><code>arr</code>.</p>\n\n<p>A <strong>subarray</strong> is a contiguous subsequence of the array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,4,2,5,3]\n<strong>Output:</strong> 58\n<strong>Explanation: </strong>The odd-length subarrays of arr and their sums are:\n[1] = 1\n[4] = 4\n[2] = 2\n[5] = 5\n[3] = 3\n[1,4,2] = 7\n[4,2,5] = 11\n[2,5,3] = 10\n[1,4,2,5,3] = 15\nIf we add all these together we get 1 + 4 + 2 + 5 + 3 + 7 + 11 + 10 + 15 = 58</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2]\n<strong>Output:</strong> 3\n<b>Explanation: </b>There are only 2 subarrays of odd length, [1] and [2]. Their sum is 3.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [10,11,12]\n<strong>Output:</strong> 66\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 1000</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong></p>\n\n<p>Could you solve this problem in O(n) time complexity?</p>\n",
+  "content_markdown": "Given an array of positive integers `arr`, return _the sum of all possible**odd-length subarrays** of _`arr`.\n\nA **subarray** is a contiguous subsequence of the array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,4,2,5,3]\n    **Output:** 58\n    **Explanation:** The odd-length subarrays of arr and their sums are:\n    [1] = 1\n    [4] = 4\n    [2] = 2\n    [5] = 5\n    [3] = 3\n    [1,4,2] = 7\n    [4,2,5] = 11\n    [2,5,3] = 10\n    [1,4,2,5,3] = 15\n    If we add all these together we get 1 + 4 + 2 + 5 + 3 + 7 + 11 + 10 + 15 = 58\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2]\n    **Output:** 3\n    **Explanation:** There are only 2 subarrays of odd length, [1] and [2]. Their sum is 3.\n\n**Example 3:**\n    \n    \n    **Input:** arr = [10,11,12]\n    **Output:** 66\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 100`\n  * `1 <= arr[i] <= 1000`\n\n\n\n \n\n**Follow up:**\n\nCould you solve this problem in O(n) time complexity?",
+  "question": "Given an array of positive integers `arr`, return _the sum of all possible**odd-length subarrays** of _`arr`.\n\nA **subarray** is a contiguous subsequence of the array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,4,2,5,3]\n    **Output:** 58\n    **Explanation:** The odd-length subarrays of arr and their sums are:\n    [1] = 1\n    [4] = 4\n    [2] = 2\n    [5] = 5\n    [3] = 3\n    [1,4,2] = 7\n    [4,2,5] = 11\n    [2,5,3] = 10\n    [1,4,2,5,3] = 15\n    If we add all these together we get 1 + 4 + 2 + 5 + 3 + 7 + 11 + 10 + 15 = 58\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2]\n    **Output:** 3\n    **Explanation:** There are only 2 subarrays of odd length, [1] and [2]. Their sum is 3.\n\n**Example 3:**\n    \n    \n    **Input:** arr = [10,11,12]\n    **Output:** 66",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 100`\n  * `1 <= arr[i] <= 1000`",
+  "topics": ["Array", "Math", "Prefix Sum"],
+  "total_accepted": 252025,
+  "total_submissions": 300287,
+  "acceptance_rate": "83.9%",
+  "similar_questions": [
+    {
+      "title": "Sum of Squares of Special Elements ",
+      "slug": "sum-of-squares-of-special-elements",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sum-of-squares-of-special-elements/"
+    }
+  ],
+  "hints": [
+    "You can brute force – try every (i,j) pair, and if the length is odd, go through and add the sum to the answer."
+  ]
+}

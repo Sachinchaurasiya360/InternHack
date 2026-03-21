@@ -1,0 +1,18 @@
+{
+  "id": "1127",
+  "title": "User Purchase Platform",
+  "slug": "user-purchase-platform",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 19628,
+  "total_submissions": 42531,
+  "acceptance_rate": "46.1%",
+  "similar_questions": [],
+  "hints": []
+}

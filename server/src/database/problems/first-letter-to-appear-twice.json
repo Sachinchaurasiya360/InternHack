@@ -1,0 +1,34 @@
+{
+  "id": "2351",
+  "title": "First Letter to Appear Twice",
+  "slug": "first-letter-to-appear-twice",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> consisting of lowercase English letters, return <em>the first letter to appear <strong>twice</strong></em>.</p>\n\n<p><strong>Note</strong>:</p>\n\n<ul>\n\t<li>A letter <code>a</code> appears twice before another letter <code>b</code> if the <strong>second</strong> occurrence of <code>a</code> is before the <strong>second</strong> occurrence of <code>b</code>.</li>\n\t<li><code>s</code> will contain at least one letter that appears twice.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abccbaacz&quot;\n<strong>Output:</strong> &quot;c&quot;\n<strong>Explanation:</strong>\nThe letter &#39;a&#39; appears on the indexes 0, 5 and 6.\nThe letter &#39;b&#39; appears on the indexes 1 and 4.\nThe letter &#39;c&#39; appears on the indexes 2, 3 and 7.\nThe letter &#39;z&#39; appears on the index 8.\nThe letter &#39;c&#39; is the first letter to appear twice, because out of all the letters the index of its second occurrence is the smallest.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcdd&quot;\n<strong>Output:</strong> &quot;d&quot;\n<strong>Explanation:</strong>\nThe only letter that appears twice is &#39;d&#39; so we return &#39;d&#39;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n\t<li><code>s</code> has at least one repeated letter.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` consisting of lowercase English letters, return _the first letter to appear**twice**_.\n\n**Note** :\n\n  * A letter `a` appears twice before another letter `b` if the **second** occurrence of `a` is before the **second** occurrence of `b`.\n  * `s` will contain at least one letter that appears twice.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abccbaacz\"\n    **Output:** \"c\"\n    **Explanation:**\n    The letter 'a' appears on the indexes 0, 5 and 6.\n    The letter 'b' appears on the indexes 1 and 4.\n    The letter 'c' appears on the indexes 2, 3 and 7.\n    The letter 'z' appears on the index 8.\n    The letter 'c' is the first letter to appear twice, because out of all the letters the index of its second occurrence is the smallest.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcdd\"\n    **Output:** \"d\"\n    **Explanation:**\n    The only letter that appears twice is 'd' so we return 'd'.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists of lowercase English letters.\n  * `s` has at least one repeated letter.",
+  "question": "Given a string `s` consisting of lowercase English letters, return _the first letter to appear**twice**_.\n\n**Note** :\n\n  * A letter `a` appears twice before another letter `b` if the **second** occurrence of `a` is before the **second** occurrence of `b`.\n  * `s` will contain at least one letter that appears twice.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abccbaacz\"\n    **Output:** \"c\"\n    **Explanation:**\n    The letter 'a' appears on the indexes 0, 5 and 6.\n    The letter 'b' appears on the indexes 1 and 4.\n    The letter 'c' appears on the indexes 2, 3 and 7.\n    The letter 'z' appears on the index 8.\n    The letter 'c' is the first letter to appear twice, because out of all the letters the index of its second occurrence is the smallest.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcdd\"\n    **Output:** \"d\"\n    **Explanation:**\n    The only letter that appears twice is 'd' so we return 'd'.",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists of lowercase English letters.\n  * `s` has at least one repeated letter.",
+  "topics": ["Hash Table", "String", "Bit Manipulation", "Counting"],
+  "total_accepted": 192970,
+  "total_submissions": 257653,
+  "acceptance_rate": "74.9%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "First Unique Character in a String",
+      "slug": "first-unique-character-in-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/first-unique-character-in-a-string/"
+    }
+  ],
+  "hints": [
+    "Iterate through the string from left to right. Keep track of the elements you have already seen in a set.",
+    "If the current element is already in the set, return that element."
+  ]
+}

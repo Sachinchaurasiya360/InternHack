@@ -1,0 +1,35 @@
+{
+  "id": "3026",
+  "title": "Maximum Good Subarray Sum",
+  "slug": "maximum-good-subarray-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> of length <code>n</code> and a <strong>positive</strong> integer <code>k</code>.</p>\n\n<p>A <span data-keyword=\"subarray-nonempty\">subarray</span> of <code>nums</code> is called <strong>good</strong> if the <strong>absolute difference</strong> between its first and last element is <strong>exactly</strong> <code>k</code>, in other words, the subarray <code>nums[i..j]</code> is good if <code>|nums[i] - nums[j]| == k</code>.</p>\n\n<p>Return <em>the <strong>maximum</strong> sum of a <strong>good</strong> subarray of </em><code>nums</code>. <em>If there are no good subarrays</em><em>, return </em><code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5,6], k = 1\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> The absolute difference between the first and last element<!-- notionvc: 2a6d66c9-0149-4294-b267-8be9fe252de9 --> must be 1 for a good subarray. All the good subarrays are: [1,2], [2,3], [3,4], [4,5], and [5,6]. The maximum subarray sum is 11 for the subarray [5,6].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,3,2,4,5], k = 3\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> The absolute difference between the first and last element<!-- notionvc: 2a6d66c9-0149-4294-b267-8be9fe252de9 --> must be 3 for a good subarray. All the good subarrays are: [-1,3,2], and [2,4,5]. The maximum subarray sum is 11 for the subarray [2,4,5].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,-2,-3,-4], k = 2\n<strong>Output:</strong> -6\n<strong>Explanation:</strong> The absolute difference between the first and last element<!-- notionvc: 2a6d66c9-0149-4294-b267-8be9fe252de9 --> must be 2 for a good subarray. All the good subarrays are: [-1,-2,-3], and [-2,-3,-4]. The maximum subarray sum is -6 for the subarray [-1,-2,-3].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` of length `n` and a **positive** integer `k`.\n\nA subarray of `nums` is called **good** if the **absolute difference** between its first and last element is **exactly** `k`, in other words, the subarray `nums[i..j]` is good if `|nums[i] - nums[j]| == k`.\n\nReturn _the**maximum** sum of a **good** subarray of _`nums`. _If there are no good subarrays_ _, return_`0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4,5,6], k = 1\n    **Output:** 11\n    **Explanation:** The absolute difference between the first and last element must be 1 for a good subarray. All the good subarrays are: [1,2], [2,3], [3,4], [4,5], and [5,6]. The maximum subarray sum is 11 for the subarray [5,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,3,2,4,5], k = 3\n    **Output:** 11\n    **Explanation:** The absolute difference between the first and last element must be 3 for a good subarray. All the good subarrays are: [-1,3,2], and [2,4,5]. The maximum subarray sum is 11 for the subarray [2,4,5].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,-2,-3,-4], k = 2\n    **Output:** -6\n    **Explanation:** The absolute difference between the first and last element must be 2 for a good subarray. All the good subarrays are: [-1,-2,-3], and [-2,-3,-4]. The maximum subarray sum is -6 for the subarray [-1,-2,-3].\n    \n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "question": "You are given an array `nums` of length `n` and a **positive** integer `k`.\n\nA subarray of `nums` is called **good** if the **absolute difference** between its first and last element is **exactly** `k`, in other words, the subarray `nums[i..j]` is good if `|nums[i] - nums[j]| == k`.\n\nReturn _the**maximum** sum of a **good** subarray of _`nums`. _If there are no good subarrays_ _, return_`0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4,5,6], k = 1\n    **Output:** 11\n    **Explanation:** The absolute difference between the first and last element must be 1 for a good subarray. All the good subarrays are: [1,2], [2,3], [3,4], [4,5], and [5,6]. The maximum subarray sum is 11 for the subarray [5,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,3,2,4,5], k = 3\n    **Output:** 11\n    **Explanation:** The absolute difference between the first and last element must be 3 for a good subarray. All the good subarrays are: [-1,3,2], and [2,4,5]. The maximum subarray sum is 11 for the subarray [2,4,5].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [-1,-2,-3,-4], k = 2\n    **Output:** -6\n    **Explanation:** The absolute difference between the first and last element must be 2 for a good subarray. All the good subarrays are: [-1,-2,-3], and [-2,-3,-4]. The maximum subarray sum is -6 for the subarray [-1,-2,-3].",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 31238,
+  "total_submissions": 145751,
+  "acceptance_rate": "21.4%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray/"
+    },
+    {
+      "title": "Maximum Sum of Distinct Subarrays With Length K",
+      "slug": "maximum-sum-of-distinct-subarrays-with-length-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-sum-of-distinct-subarrays-with-length-k/"
+    }
+  ],
+  "hints": [
+    "Save all the prefix sums into a HashMap.",
+    "For the index <code>i</code> store the element at index <code>i + 1</code> as the key and the prefix sum till <code>i</code> as the value.",
+    "For each prefix sum ending at <code>nums[i]</code>, try finding <code>nums[i] - k</code> and <code>nums[i] + k</code> in the HashMap and update the answer."
+  ]
+}

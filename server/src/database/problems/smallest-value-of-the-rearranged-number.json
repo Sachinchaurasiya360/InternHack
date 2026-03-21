@@ -1,0 +1,28 @@
+{
+  "id": "2165",
+  "title": "Smallest Value of the Rearranged Number",
+  "slug": "smallest-value-of-the-rearranged-number",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>num.</code> <strong>Rearrange</strong> the digits of <code>num</code> such that its value is <strong>minimized</strong> and it does not contain <strong>any</strong> leading zeros.</p>\n\n<p>Return <em>the rearranged number with minimal value</em>.</p>\n\n<p>Note that the sign of the number does not change after rearranging the digits.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 310\n<strong>Output:</strong> 103\n<strong>Explanation:</strong> The possible arrangements for the digits of 310 are 013, 031, 103, 130, 301, 310. \nThe arrangement with the smallest value that does not contain any leading zeros is 103.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = -7605\n<strong>Output:</strong> -7650\n<strong>Explanation:</strong> Some possible arrangements for the digits of -7605 are -7650, -6705, -5076, -0567.\nThe arrangement with the smallest value that does not contain any leading zeros is -7650.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-10<sup>15</sup> &lt;= num &lt;= 10<sup>15</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `num.` **Rearrange** the digits of `num` such that its value is **minimized** and it does not contain **any** leading zeros.\n\nReturn _the rearranged number with minimal value_.\n\nNote that the sign of the number does not change after rearranging the digits.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 310\n    **Output:** 103\n    **Explanation:** The possible arrangements for the digits of 310 are 013, 031, 103, 130, 301, 310. \n    The arrangement with the smallest value that does not contain any leading zeros is 103.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = -7605\n    **Output:** -7650\n    **Explanation:** Some possible arrangements for the digits of -7605 are -7650, -6705, -5076, -0567.\n    The arrangement with the smallest value that does not contain any leading zeros is -7650.\n    \n\n \n\n**Constraints:**\n\n  * `-1015 <= num <= 1015`",
+  "question": "You are given an integer `num.` **Rearrange** the digits of `num` such that its value is **minimized** and it does not contain **any** leading zeros.\n\nReturn _the rearranged number with minimal value_.\n\nNote that the sign of the number does not change after rearranging the digits.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 310\n    **Output:** 103\n    **Explanation:** The possible arrangements for the digits of 310 are 013, 031, 103, 130, 301, 310. \n    The arrangement with the smallest value that does not contain any leading zeros is 103.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = -7605\n    **Output:** -7650\n    **Explanation:** Some possible arrangements for the digits of -7605 are -7650, -6705, -5076, -0567.\n    The arrangement with the smallest value that does not contain any leading zeros is -7650.",
+  "constraints": "**Constraints:**\n\n  * `-1015 <= num <= 1015`",
+  "topics": ["Math", "Sorting"],
+  "total_accepted": 47402,
+  "total_submissions": 88713,
+  "acceptance_rate": "53.4%",
+  "similar_questions": [
+    {
+      "title": "Largest Number",
+      "slug": "largest-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/largest-number/"
+    }
+  ],
+  "hints": [
+    "For positive numbers, the leading digit should be the smallest nonzero digit. Then the remaining digits follow in ascending order.",
+    "For negative numbers, the digits should be arranged in descending order."
+  ]
+}

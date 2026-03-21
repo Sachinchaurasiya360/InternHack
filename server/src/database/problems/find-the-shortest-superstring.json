@@ -1,0 +1,37 @@
+{
+  "id": "943",
+  "title": "Find the Shortest Superstring",
+  "slug": "find-the-shortest-superstring",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>words</code>, return <em>the smallest string that contains each string in</em> <code>words</code> <em>as a substring</em>. If there are multiple valid strings of the smallest length, return <strong>any of them</strong>.</p>\n\n<p>You may assume that no string in <code>words</code> is a substring of another string in <code>words</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;alex&quot;,&quot;loves&quot;,&quot;leetcode&quot;]\n<strong>Output:</strong> &quot;alexlovesleetcode&quot;\n<strong>Explanation:</strong> All permutations of &quot;alex&quot;,&quot;loves&quot;,&quot;leetcode&quot; would also be accepted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;catg&quot;,&quot;ctaagt&quot;,&quot;gcta&quot;,&quot;ttca&quot;,&quot;atgcatc&quot;]\n<strong>Output:</strong> &quot;gctaagttcatgcatc&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 12</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 20</code></li>\n\t<li><code>words[i]</code> consists of lowercase English letters.</li>\n\t<li>All the strings of <code>words</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given an array of strings `words`, return _the smallest string that contains each string in_ `words` _as a substring_. If there are multiple valid strings of the smallest length, return **any of them**.\n\nYou may assume that no string in `words` is a substring of another string in `words`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"alex\",\"loves\",\"leetcode\"]\n    **Output:** \"alexlovesleetcode\"\n    **Explanation:** All permutations of \"alex\",\"loves\",\"leetcode\" would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"catg\",\"ctaagt\",\"gcta\",\"ttca\",\"atgcatc\"]\n    **Output:** \"gctaagttcatgcatc\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 12`\n  * `1 <= words[i].length <= 20`\n  * `words[i]` consists of lowercase English letters.\n  * All the strings of `words` are **unique**.",
+  "question": "Given an array of strings `words`, return _the smallest string that contains each string in_ `words` _as a substring_. If there are multiple valid strings of the smallest length, return **any of them**.\n\nYou may assume that no string in `words` is a substring of another string in `words`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"alex\",\"loves\",\"leetcode\"]\n    **Output:** \"alexlovesleetcode\"\n    **Explanation:** All permutations of \"alex\",\"loves\",\"leetcode\" would also be accepted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"catg\",\"ctaagt\",\"gcta\",\"ttca\",\"atgcatc\"]\n    **Output:** \"gctaagttcatgcatc\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 12`\n  * `1 <= words[i].length <= 20`\n  * `words[i]` consists of lowercase English letters.\n  * All the strings of `words` are **unique**.",
+  "topics": ["Array", "String", "Dynamic Programming", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 35020,
+  "total_submissions": 77693,
+  "acceptance_rate": "45.1%",
+  "similar_questions": [
+    {
+      "title": "Maximum Rows Covered by Columns",
+      "slug": "maximum-rows-covered-by-columns",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-rows-covered-by-columns/"
+    },
+    {
+      "title": "Find the Minimum Cost Array Permutation",
+      "slug": "find-the-minimum-cost-array-permutation",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-minimum-cost-array-permutation/"
+    },
+    {
+      "title": "Find the Shortest Superstring II",
+      "slug": "find-the-shortest-superstring-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-shortest-superstring-ii/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,46 @@
+{
+  "id": "2545",
+  "title": "Sort the Students by Their Kth Score",
+  "slug": "sort-the-students-by-their-kth-score",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a class with <code>m</code> students and <code>n</code> exams. You are given a <strong>0-indexed</strong> <code>m x n</code> integer matrix <code>score</code>, where each row represents one student and <code>score[i][j]</code> denotes the score the <code>i<sup>th</sup></code> student got in the <code>j<sup>th</sup></code> exam. The matrix <code>score</code> contains <strong>distinct</strong> integers only.</p>\n\n<p>You are also given an integer <code>k</code>. Sort the students (i.e., the rows of the matrix) by their scores in the <code>k<sup>th</sup></code>&nbsp;(<strong>0-indexed</strong>) exam from the highest to the lowest.</p>\n\n<p>Return <em>the matrix after sorting it.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/11/30/example1.png\" style=\"width: 600px; height: 136px;\" />\n<pre>\n<strong>Input:</strong> score = [[10,6,9,1],[7,5,11,2],[4,8,3,15]], k = 2\n<strong>Output:</strong> [[7,5,11,2],[10,6,9,1],[4,8,3,15]]\n<strong>Explanation:</strong> In the above diagram, S denotes the student, while E denotes the exam.\n- The student with index 1 scored 11 in exam 2, which is the highest score, so they got first place.\n- The student with index 0 scored 9 in exam 2, which is the second highest score, so they got second place.\n- The student with index 2 scored 3 in exam 2, which is the lowest score, so they got third place.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/11/30/example2.png\" style=\"width: 486px; height: 121px;\" />\n<pre>\n<strong>Input:</strong> score = [[3,4],[5,6]], k = 0\n<strong>Output:</strong> [[5,6],[3,4]]\n<strong>Explanation:</strong> In the above diagram, S denotes the student, while E denotes the exam.\n- The student with index 1 scored 5 in exam 0, which is the highest score, so they got first place.\n- The student with index 0 scored 3 in exam 0, which is the lowest score, so they got second place.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == score.length</code></li>\n\t<li><code>n == score[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 250</code></li>\n\t<li><code>1 &lt;= score[i][j] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>score</code> consists of <strong>distinct</strong> integers.</li>\n\t<li><code>0 &lt;= k &lt; n</code></li>\n</ul>\n",
+  "content_markdown": "There is a class with `m` students and `n` exams. You are given a **0-indexed** `m x n` integer matrix `score`, where each row represents one student and `score[i][j]` denotes the score the `ith` student got in the `jth` exam. The matrix `score` contains **distinct** integers only.\n\nYou are also given an integer `k`. Sort the students (i.e., the rows of the matrix) by their scores in the `kth` (**0-indexed**) exam from the highest to the lowest.\n\nReturn _the matrix after sorting it._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/11/30/example1.png)\n    \n    \n    **Input:** score = [[10,6,9,1],[7,5,11,2],[4,8,3,15]], k = 2\n    **Output:** [[7,5,11,2],[10,6,9,1],[4,8,3,15]]\n    **Explanation:** In the above diagram, S denotes the student, while E denotes the exam.\n    - The student with index 1 scored 11 in exam 2, which is the highest score, so they got first place.\n    - The student with index 0 scored 9 in exam 2, which is the second highest score, so they got second place.\n    - The student with index 2 scored 3 in exam 2, which is the lowest score, so they got third place.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/11/30/example2.png)\n    \n    \n    **Input:** score = [[3,4],[5,6]], k = 0\n    **Output:** [[5,6],[3,4]]\n    **Explanation:** In the above diagram, S denotes the student, while E denotes the exam.\n    - The student with index 1 scored 5 in exam 0, which is the highest score, so they got first place.\n    - The student with index 0 scored 3 in exam 0, which is the lowest score, so they got second place.\n    \n\n \n\n**Constraints:**\n\n  * `m == score.length`\n  * `n == score[i].length`\n  * `1 <= m, n <= 250`\n  * `1 <= score[i][j] <= 105`\n  * `score` consists of **distinct** integers.\n  * `0 <= k < n`",
+  "question": "There is a class with `m` students and `n` exams. You are given a **0-indexed** `m x n` integer matrix `score`, where each row represents one student and `score[i][j]` denotes the score the `ith` student got in the `jth` exam. The matrix `score` contains **distinct** integers only.\n\nYou are also given an integer `k`. Sort the students (i.e., the rows of the matrix) by their scores in the `kth` (**0-indexed**) exam from the highest to the lowest.\n\nReturn _the matrix after sorting it._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/11/30/example1.png)\n    \n    \n    **Input:** score = [[10,6,9,1],[7,5,11,2],[4,8,3,15]], k = 2\n    **Output:** [[7,5,11,2],[10,6,9,1],[4,8,3,15]]\n    **Explanation:** In the above diagram, S denotes the student, while E denotes the exam.\n    - The student with index 1 scored 11 in exam 2, which is the highest score, so they got first place.\n    - The student with index 0 scored 9 in exam 2, which is the second highest score, so they got second place.\n    - The student with index 2 scored 3 in exam 2, which is the lowest score, so they got third place.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/11/30/example2.png)\n    \n    \n    **Input:** score = [[3,4],[5,6]], k = 0\n    **Output:** [[5,6],[3,4]]\n    **Explanation:** In the above diagram, S denotes the student, while E denotes the exam.\n    - The student with index 1 scored 5 in exam 0, which is the highest score, so they got first place.\n    - The student with index 0 scored 3 in exam 0, which is the lowest score, so they got second place.",
+  "constraints": "**Constraints:**\n\n  * `m == score.length`\n  * `n == score[i].length`\n  * `1 <= m, n <= 250`\n  * `1 <= score[i][j] <= 105`\n  * `score` consists of **distinct** integers.\n  * `0 <= k < n`",
+  "topics": ["Array", "Sorting", "Matrix"],
+  "total_accepted": 87912,
+  "total_submissions": 102217,
+  "acceptance_rate": "86.0%",
+  "similar_questions": [
+    {
+      "title": "Erect the Fence",
+      "slug": "erect-the-fence",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/erect-the-fence/"
+    },
+    {
+      "title": "Custom Sort String",
+      "slug": "custom-sort-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/custom-sort-string/"
+    },
+    {
+      "title": "Sort the People",
+      "slug": "sort-the-people",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-the-people/"
+    },
+    {
+      "title": "Sort Threats by Severity and Exploitability",
+      "slug": "sort-threats-by-severity-and-exploitability",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sort-threats-by-severity-and-exploitability/"
+    }
+  ],
+  "hints": [
+    "Find the row with the highest score in the kth exam and swap it with the first row.",
+    "After fixing the first row, perform the same operation for the rest of the rows, and the matrix's rows will get sorted one by one."
+  ]
+}

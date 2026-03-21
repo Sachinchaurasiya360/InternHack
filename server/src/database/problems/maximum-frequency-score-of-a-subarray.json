@@ -1,0 +1,21 @@
+{
+  "id": "2524",
+  "title": "Maximum Frequency Score of a Subarray",
+  "slug": "maximum-frequency-score-of-a-subarray",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Math", "Stack", "Sliding Window"],
+  "total_accepted": 1652,
+  "total_submissions": 4530,
+  "acceptance_rate": "36.5%",
+  "similar_questions": [],
+  "hints": [
+    "Calculate the frequency score of each subarray of size k and return the maximum one.",
+    "Use the sliding window technique to keep the frequency scores."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "2665",
+  "title": "Counter II",
+  "slug": "counter-ii",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "<p>Write a function&nbsp;<code>createCounter</code>. It should accept an initial integer&nbsp;<code>init</code>. It should return an object with three functions.</p>\n\n<p>The three functions are:</p>\n\n<ul>\n\t<li><code>increment()</code>&nbsp;increases&nbsp;the current value by 1 and then returns it.</li>\n\t<li><code>decrement()</code>&nbsp;reduces the current value by 1 and then returns it.</li>\n\t<li><code>reset()</code>&nbsp;sets the current value to&nbsp;<code>init</code>&nbsp;and then returns it.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> init = 5, calls = [&quot;increment&quot;,&quot;reset&quot;,&quot;decrement&quot;]\n<strong>Output:</strong> [6,5,4]\n<strong>Explanation:</strong>\nconst counter = createCounter(5);\ncounter.increment(); // 6\ncounter.reset(); // 5\ncounter.decrement(); // 4\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> init = 0, calls = [&quot;increment&quot;,&quot;increment&quot;,&quot;decrement&quot;,&quot;reset&quot;,&quot;reset&quot;]\n<strong>Output:</strong> [1,2,1,0,0]\n<strong>Explanation:</strong>\nconst counter = createCounter(0);\ncounter.increment(); // 1\ncounter.increment(); // 2\ncounter.decrement(); // 1\ncounter.reset(); // 0\ncounter.reset(); // 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-1000 &lt;= init &lt;= 1000</code></li>\n\t<li><code>0 &lt;= calls.length &lt;= 1000</code></li>\n\t<li><code>calls[i]</code> is one of &quot;increment&quot;, &quot;decrement&quot; and&nbsp;&quot;reset&quot;</li>\n</ul>\n",
+  "content_markdown": "Write a function `createCounter`. It should accept an initial integer `init`. It should return an object with three functions.\n\nThe three functions are:\n\n  * `increment()` increases the current value by 1 and then returns it.\n  * `decrement()` reduces the current value by 1 and then returns it.\n  * `reset()` sets the current value to `init` and then returns it.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** init = 5, calls = [\"increment\",\"reset\",\"decrement\"]\n    **Output:** [6,5,4]\n    **Explanation:**\n    const counter = createCounter(5);\n    counter.increment(); // 6\n    counter.reset(); // 5\n    counter.decrement(); // 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** init = 0, calls = [\"increment\",\"increment\",\"decrement\",\"reset\",\"reset\"]\n    **Output:** [1,2,1,0,0]\n    **Explanation:**\n    const counter = createCounter(0);\n    counter.increment(); // 1\n    counter.increment(); // 2\n    counter.decrement(); // 1\n    counter.reset(); // 0\n    counter.reset(); // 0\n    \n\n \n\n**Constraints:**\n\n  * `-1000 <= init <= 1000`\n  * `0 <= calls.length <= 1000`\n  * `calls[i]` is one of \"increment\", \"decrement\" and \"reset\"",
+  "question": "Write a function `createCounter`. It should accept an initial integer `init`. It should return an object with three functions.\n\nThe three functions are:\n\n  * `increment()` increases the current value by 1 and then returns it.\n  * `decrement()` reduces the current value by 1 and then returns it.\n  * `reset()` sets the current value to `init` and then returns it.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** init = 5, calls = [\"increment\",\"reset\",\"decrement\"]\n    **Output:** [6,5,4]\n    **Explanation:**\n    const counter = createCounter(5);\n    counter.increment(); // 6\n    counter.reset(); // 5\n    counter.decrement(); // 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** init = 0, calls = [\"increment\",\"increment\",\"decrement\",\"reset\",\"reset\"]\n    **Output:** [1,2,1,0,0]\n    **Explanation:**\n    const counter = createCounter(0);\n    counter.increment(); // 1\n    counter.increment(); // 2\n    counter.decrement(); // 1\n    counter.reset(); // 0\n    counter.reset(); // 0",
+  "constraints": "**Constraints:**\n\n  * `-1000 <= init <= 1000`\n  * `0 <= calls.length <= 1000`\n  * `calls[i]` is one of \"increment\", \"decrement\" and \"reset\"",
+  "topics": [],
+  "total_accepted": 373545,
+  "total_submissions": 459839,
+  "acceptance_rate": "81.2%",
+  "similar_questions": [
+    {
+      "title": "Counter",
+      "slug": "counter",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/counter/"
+    }
+  ],
+  "hints": [
+    "You can return an object with methods.",
+    "Initialize a variable for currentCount. Inside these methods, add the appropriate logic which mutates currentCount."
+  ]
+}

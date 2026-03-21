@@ -1,0 +1,28 @@
+{
+  "id": "1653",
+  "title": "Minimum Deletions to Make String Balanced",
+  "slug": "minimum-deletions-to-make-string-balanced",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting only of characters <code>&#39;a&#39;</code> and <code>&#39;b&#39;</code>​​​​.</p>\n\n<p>You can delete any number of characters in <code>s</code> to make <code>s</code> <strong>balanced</strong>. <code>s</code> is <strong>balanced</strong> if there is no pair of indices <code>(i,j)</code> such that <code>i &lt; j</code> and <code>s[i] = &#39;b&#39;</code> and <code>s[j]= &#39;a&#39;</code>.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of deletions needed to make </em><code>s</code><em> <strong>balanced</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aababbab&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You can either:\nDelete the characters at 0-indexed positions 2 and 6 (&quot;aa<u>b</u>abb<u>a</u>b&quot; -&gt; &quot;aaabbb&quot;), or\nDelete the characters at 0-indexed positions 3 and 6 (&quot;aab<u>a</u>bb<u>a</u>b&quot; -&gt; &quot;aabbbb&quot;).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bbaaaaabb&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The only solution is to delete the first two characters.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is&nbsp;<code>&#39;a&#39;</code> or <code>&#39;b&#39;</code>​​.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting only of characters `'a'` and `'b'`​​​​.\n\nYou can delete any number of characters in `s` to make `s` **balanced**. `s` is **balanced** if there is no pair of indices `(i,j)` such that `i < j` and `s[i] = 'b'` and `s[j]= 'a'`.\n\nReturn _the**minimum** number of deletions needed to make _`s` _**balanced**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aababbab\"\n    **Output:** 2\n    **Explanation:** You can either:\n    Delete the characters at 0-indexed positions 2 and 6 (\"aa _b_ abb _a_ b\" -> \"aaabbb\"), or\n    Delete the characters at 0-indexed positions 3 and 6 (\"aab _a_ bb _a_ b\" -> \"aabbbb\").\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"bbaaaaabb\"\n    **Output:** 2\n    **Explanation:** The only solution is to delete the first two characters.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is `'a'` or `'b'`​​.",
+  "question": "You are given a string `s` consisting only of characters `'a'` and `'b'`​​​​.\n\nYou can delete any number of characters in `s` to make `s` **balanced**. `s` is **balanced** if there is no pair of indices `(i,j)` such that `i < j` and `s[i] = 'b'` and `s[j]= 'a'`.\n\nReturn _the**minimum** number of deletions needed to make _`s` _**balanced**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aababbab\"\n    **Output:** 2\n    **Explanation:** You can either:\n    Delete the characters at 0-indexed positions 2 and 6 (\"aa _b_ abb _a_ b\" -> \"aaabbb\"), or\n    Delete the characters at 0-indexed positions 3 and 6 (\"aab _a_ bb _a_ b\" -> \"aabbbb\").\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"bbaaaaabb\"\n    **Output:** 2\n    **Explanation:** The only solution is to delete the first two characters.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s[i]` is `'a'` or `'b'`​​.",
+  "topics": ["String", "Dynamic Programming", "Stack"],
+  "total_accepted": 286687,
+  "total_submissions": 420375,
+  "acceptance_rate": "68.2%",
+  "similar_questions": [
+    {
+      "title": "Check if All A's Appears Before All B's",
+      "slug": "check-if-all-as-appears-before-all-bs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-all-as-appears-before-all-bs/"
+    }
+  ],
+  "hints": [
+    "You need to find for every index the number of Bs before it and the number of A's after it",
+    "You can speed up the finding of A's and B's in suffix and prefix using preprocessing"
+  ]
+}

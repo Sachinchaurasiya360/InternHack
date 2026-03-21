@@ -1,0 +1,29 @@
+{
+  "id": "2307",
+  "title": "Check for Contradictions in Equations",
+  "slug": "check-for-contradictions-in-equations",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Depth-First Search", "Union-Find", "Graph Theory"],
+  "total_accepted": 5192,
+  "total_submissions": 11859,
+  "acceptance_rate": "43.8%",
+  "similar_questions": [
+    {
+      "title": "Evaluate Division",
+      "slug": "evaluate-division",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/evaluate-division/"
+    }
+  ],
+  "hints": [
+    "Try treating this as a graph problem.",
+    "Each variable is a node, and each equation is an edge.",
+    "Try performing DFS multiple times to find contradictions."
+  ]
+}

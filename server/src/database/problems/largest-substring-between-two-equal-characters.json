@@ -1,0 +1,21 @@
+{
+  "id": "1624",
+  "title": "Largest Substring Between Two Equal Characters",
+  "slug": "largest-substring-between-two-equal-characters",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return <em>the length of the longest substring between two equal characters, excluding the two characters.</em> If there is no such substring return <code>-1</code>.</p>\n\n<p>A <strong>substring</strong> is a contiguous sequence of characters within a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The optimal substring here is an empty substring between the two <code>&#39;a&#39;s</code>.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abca&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The optimal substring here is &quot;bc&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;cbzxy&quot;\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There are no characters that appear twice in s.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 300</code></li>\n\t<li><code>s</code> contains only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return _the length of the longest substring between two equal characters, excluding the two characters._ If there is no such substring return `-1`.\n\nA **substring** is a contiguous sequence of characters within a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aa\"\n    **Output:** 0\n    **Explanation:** The optimal substring here is an empty substring between the two 'a's.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"abca\"\n    **Output:** 2\n    **Explanation:** The optimal substring here is \"bc\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"cbzxy\"\n    **Output:** -1\n    **Explanation:** There are no characters that appear twice in s.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 300`\n  * `s` contains only lowercase English letters.",
+  "question": "Given a string `s`, return _the length of the longest substring between two equal characters, excluding the two characters._ If there is no such substring return `-1`.\n\nA **substring** is a contiguous sequence of characters within a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aa\"\n    **Output:** 0\n    **Explanation:** The optimal substring here is an empty substring between the two 'a's.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"abca\"\n    **Output:** 2\n    **Explanation:** The optimal substring here is \"bc\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"cbzxy\"\n    **Output:** -1\n    **Explanation:** There are no characters that appear twice in s.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 300`\n  * `s` contains only lowercase English letters.",
+  "topics": ["Hash Table", "String"],
+  "total_accepted": 179401,
+  "total_submissions": 262683,
+  "acceptance_rate": "68.3%",
+  "similar_questions": [],
+  "hints": [
+    "Try saving the first and last position of each character",
+    "Try finding every pair of indexes with equal characters"
+  ]
+}

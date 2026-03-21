@@ -1,0 +1,25 @@
+{
+  "id": "840",
+  "title": "Magic Squares In Grid",
+  "slug": "magic-squares-in-grid",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A <code>3 x 3</code> <strong>magic square</strong> is a <code>3 x 3</code> grid filled with distinct numbers <strong>from </strong>1<strong> to </strong>9 such that each row, column, and both diagonals all have the same sum.</p>\n\n<p>Given a <code>row x col</code> <code>grid</code> of integers, how many <code>3 x 3</code> magic square subgrids are there?</p>\n\n<p>Note: while a magic square can only contain numbers from 1 to 9, <code>grid</code> may contain numbers up to 15.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/11/magic_main.jpg\" style=\"width: 322px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> grid = [[4,3,8,4],[9,5,1,9],[2,7,6,2]]\n<strong>Output:</strong> 1\n<strong>Explanation: </strong>\nThe following subgrid is a 3 x 3 magic square:\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/11/magic_valid.jpg\" style=\"width: 242px; height: 242px;\" />\nwhile this one is not:\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/11/magic_invalid.jpg\" style=\"width: 242px; height: 242px;\" />\nIn total, there is only one magic square inside the given grid.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[8]]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>row == grid.length</code></li>\n\t<li><code>col == grid[i].length</code></li>\n\t<li><code>1 &lt;= row, col &lt;= 10</code></li>\n\t<li><code>0 &lt;= grid[i][j] &lt;= 15</code></li>\n</ul>\n",
+  "content_markdown": "A `3 x 3` **magic square** is a `3 x 3` grid filled with distinct numbers **from** 1**to** 9 such that each row, column, and both diagonals all have the same sum.\n\nGiven a `row x col` `grid` of integers, how many `3 x 3` magic square subgrids are there?\n\nNote: while a magic square can only contain numbers from 1 to 9, `grid` may contain numbers up to 15.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/11/magic_main.jpg)\n    \n    \n    **Input:** grid = [[4,3,8,4],[9,5,1,9],[2,7,6,2]]\n    **Output:** 1\n    **Explanation:**\n    The following subgrid is a 3 x 3 magic square:\n    ![](https://assets.leetcode.com/uploads/2020/09/11/magic_valid.jpg)\n    while this one is not:\n    ![](https://assets.leetcode.com/uploads/2020/09/11/magic_invalid.jpg)\n    In total, there is only one magic square inside the given grid.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[8]]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `row == grid.length`\n  * `col == grid[i].length`\n  * `1 <= row, col <= 10`\n  * `0 <= grid[i][j] <= 15`",
+  "question": "A `3 x 3` **magic square** is a `3 x 3` grid filled with distinct numbers **from** 1**to** 9 such that each row, column, and both diagonals all have the same sum.\n\nGiven a `row x col` `grid` of integers, how many `3 x 3` magic square subgrids are there?\n\nNote: while a magic square can only contain numbers from 1 to 9, `grid` may contain numbers up to 15.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/09/11/magic_main.jpg)\n    \n    \n    **Input:** grid = [[4,3,8,4],[9,5,1,9],[2,7,6,2]]\n    **Output:** 1\n    **Explanation:**\n    The following subgrid is a 3 x 3 magic square:\n    ![](https://assets.leetcode.com/uploads/2020/09/11/magic_valid.jpg)\n    while this one is not:\n    ![](https://assets.leetcode.com/uploads/2020/09/11/magic_invalid.jpg)\n    In total, there is only one magic square inside the given grid.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[8]]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `row == grid.length`\n  * `col == grid[i].length`\n  * `1 <= row, col <= 10`\n  * `0 <= grid[i][j] <= 15`",
+  "topics": ["Array", "Hash Table", "Math", "Matrix"],
+  "total_accepted": 226022,
+  "total_submissions": 410048,
+  "acceptance_rate": "55.1%",
+  "similar_questions": [
+    {
+      "title": "Largest Magic Square",
+      "slug": "largest-magic-square",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/largest-magic-square/"
+    }
+  ],
+  "hints": []
+}

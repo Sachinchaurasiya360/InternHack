@@ -1,0 +1,27 @@
+{
+  "id": "1518",
+  "title": "Water Bottles",
+  "slug": "water-bottles",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>numBottles</code> water bottles that are initially full of water. You can exchange <code>numExchange</code> empty water bottles from the market with one full water bottle.</p>\n\n<p>The operation of drinking a full water bottle turns it into an empty bottle.</p>\n\n<p>Given the two integers <code>numBottles</code> and <code>numExchange</code>, return <em>the <strong>maximum</strong> number of water bottles you can drink</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/07/01/sample_1_1875.png\" style=\"width: 500px; height: 245px;\" />\n<pre>\n<strong>Input:</strong> numBottles = 9, numExchange = 3\n<strong>Output:</strong> 13\n<strong>Explanation:</strong> You can exchange 3 empty bottles to get 1 full water bottle.\nNumber of water bottles you can drink: 9 + 3 + 1 = 13.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/07/01/sample_2_1875.png\" style=\"width: 500px; height: 183px;\" />\n<pre>\n<strong>Input:</strong> numBottles = 15, numExchange = 4\n<strong>Output:</strong> 19\n<strong>Explanation:</strong> You can exchange 4 empty bottles to get 1 full water bottle. \nNumber of water bottles you can drink: 15 + 3 + 1 = 19.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= numBottles &lt;= 100</code></li>\n\t<li><code>2 &lt;= numExchange &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "There are `numBottles` water bottles that are initially full of water. You can exchange `numExchange` empty water bottles from the market with one full water bottle.\n\nThe operation of drinking a full water bottle turns it into an empty bottle.\n\nGiven the two integers `numBottles` and `numExchange`, return _the**maximum** number of water bottles you can drink_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/07/01/sample_1_1875.png)\n    \n    \n    **Input:** numBottles = 9, numExchange = 3\n    **Output:** 13\n    **Explanation:** You can exchange 3 empty bottles to get 1 full water bottle.\n    Number of water bottles you can drink: 9 + 3 + 1 = 13.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/07/01/sample_2_1875.png)\n    \n    \n    **Input:** numBottles = 15, numExchange = 4\n    **Output:** 19\n    **Explanation:** You can exchange 4 empty bottles to get 1 full water bottle. \n    Number of water bottles you can drink: 15 + 3 + 1 = 19.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= numBottles <= 100`\n  * `2 <= numExchange <= 100`",
+  "question": "There are `numBottles` water bottles that are initially full of water. You can exchange `numExchange` empty water bottles from the market with one full water bottle.\n\nThe operation of drinking a full water bottle turns it into an empty bottle.\n\nGiven the two integers `numBottles` and `numExchange`, return _the**maximum** number of water bottles you can drink_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/07/01/sample_1_1875.png)\n    \n    \n    **Input:** numBottles = 9, numExchange = 3\n    **Output:** 13\n    **Explanation:** You can exchange 3 empty bottles to get 1 full water bottle.\n    Number of water bottles you can drink: 9 + 3 + 1 = 13.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/07/01/sample_2_1875.png)\n    \n    \n    **Input:** numBottles = 15, numExchange = 4\n    **Output:** 19\n    **Explanation:** You can exchange 4 empty bottles to get 1 full water bottle. \n    Number of water bottles you can drink: 15 + 3 + 1 = 19.",
+  "constraints": "**Constraints:**\n\n  * `1 <= numBottles <= 100`\n  * `2 <= numExchange <= 100`",
+  "topics": ["Math", "Simulation"],
+  "total_accepted": 434257,
+  "total_submissions": 598361,
+  "acceptance_rate": "72.6%",
+  "similar_questions": [
+    {
+      "title": "Water Bottles II",
+      "slug": "water-bottles-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/water-bottles-ii/"
+    }
+  ],
+  "hints": [
+    "Simulate the process until there are not enough empty bottles for even one full bottle of water."
+  ]
+}

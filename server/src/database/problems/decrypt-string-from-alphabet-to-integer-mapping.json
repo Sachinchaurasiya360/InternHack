@@ -1,0 +1,20 @@
+{
+  "id": "1309",
+  "title": "Decrypt String from Alphabet to Integer Mapping",
+  "slug": "decrypt-string-from-alphabet-to-integer-mapping",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> formed by digits and <code>&#39;#&#39;</code>. We want to map <code>s</code> to English lowercase characters as follows:</p>\n\n<ul>\n\t<li>Characters (<code>&#39;a&#39;</code> to <code>&#39;i&#39;</code>) are represented by (<code>&#39;1&#39;</code> to <code>&#39;9&#39;</code>) respectively.</li>\n\t<li>Characters (<code>&#39;j&#39;</code> to <code>&#39;z&#39;</code>) are represented by (<code>&#39;10#&#39;</code> to <code>&#39;26#&#39;</code>) respectively.</li>\n</ul>\n\n<p>Return <em>the string formed after mapping</em>.</p>\n\n<p>The test cases are generated so that a unique mapping will always exist.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;10#11#12&quot;\n<strong>Output:</strong> &quot;jkab&quot;\n<strong>Explanation:</strong> &quot;j&quot; -&gt; &quot;10#&quot; , &quot;k&quot; -&gt; &quot;11#&quot; , &quot;a&quot; -&gt; &quot;1&quot; , &quot;b&quot; -&gt; &quot;2&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1326#&quot;\n<strong>Output:</strong> &quot;acz&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s</code> consists of digits and the <code>&#39;#&#39;</code> letter.</li>\n\t<li><code>s</code> will be a valid string such that mapping is always possible.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` formed by digits and `'#'`. We want to map `s` to English lowercase characters as follows:\n\n  * Characters (`'a'` to `'i'`) are represented by (`'1'` to `'9'`) respectively.\n  * Characters (`'j'` to `'z'`) are represented by (`'10#'` to `'26#'`) respectively.\n\n\n\nReturn _the string formed after mapping_.\n\nThe test cases are generated so that a unique mapping will always exist.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"10#11#12\"\n    **Output:** \"jkab\"\n    **Explanation:** \"j\" -> \"10#\" , \"k\" -> \"11#\" , \"a\" -> \"1\" , \"b\" -> \"2\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"1326#\"\n    **Output:** \"acz\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of digits and the `'#'` letter.\n  * `s` will be a valid string such that mapping is always possible.",
+  "question": "You are given a string `s` formed by digits and `'#'`. We want to map `s` to English lowercase characters as follows:\n\n  * Characters (`'a'` to `'i'`) are represented by (`'1'` to `'9'`) respectively.\n  * Characters (`'j'` to `'z'`) are represented by (`'10#'` to `'26#'`) respectively.\n\n\n\nReturn _the string formed after mapping_.\n\nThe test cases are generated so that a unique mapping will always exist.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"10#11#12\"\n    **Output:** \"jkab\"\n    **Explanation:** \"j\" -> \"10#\" , \"k\" -> \"11#\" , \"a\" -> \"1\" , \"b\" -> \"2\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"1326#\"\n    **Output:** \"acz\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of digits and the `'#'` letter.\n  * `s` will be a valid string such that mapping is always possible.",
+  "topics": ["String"],
+  "total_accepted": 147987,
+  "total_submissions": 183720,
+  "acceptance_rate": "80.6%",
+  "similar_questions": [],
+  "hints": [
+    "Scan from right to left, in each step of the scanning check whether there is a trailing \"#\" 2 indexes away."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "1892",
+  "title": "Page Recommendations II",
+  "slug": "page-recommendations-ii",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 10381,
+  "total_submissions": 22800,
+  "acceptance_rate": "45.5%",
+  "similar_questions": [
+    {
+      "title": "Page Recommendations",
+      "slug": "page-recommendations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/page-recommendations/"
+    },
+    {
+      "title": "Strong Friendship",
+      "slug": "strong-friendship",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/strong-friendship/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "44",
+  "title": "Wildcard Matching",
+  "slug": "wildcard-matching",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an input string (<code>s</code>) and a pattern (<code>p</code>), implement wildcard pattern matching with support for <code>&#39;?&#39;</code> and <code>&#39;*&#39;</code> where:</p>\n\n<ul>\n\t<li><code>&#39;?&#39;</code> Matches any single character.</li>\n\t<li><code>&#39;*&#39;</code> Matches any sequence of characters (including the empty sequence).</li>\n</ul>\n\n<p>The matching should cover the <strong>entire</strong> input string (not partial).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;, p = &quot;a&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> &quot;a&quot; does not match the entire string &quot;aa&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;, p = &quot;*&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong>&nbsp;&#39;*&#39; matches any sequence.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;cb&quot;, p = &quot;?a&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong>&nbsp;&#39;?&#39; matches &#39;c&#39;, but the second letter is &#39;a&#39;, which does not match &#39;b&#39;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= s.length, p.length &lt;= 2000</code></li>\n\t<li><code>s</code> contains only lowercase English letters.</li>\n\t<li><code>p</code> contains only lowercase English letters, <code>&#39;?&#39;</code> or <code>&#39;*&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an input string (`s`) and a pattern (`p`), implement wildcard pattern matching with support for `'?'` and `'*'` where:\n\n  * `'?'` Matches any single character.\n  * `'*'` Matches any sequence of characters (including the empty sequence).\n\n\n\nThe matching should cover the **entire** input string (not partial).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aa\", p = \"a\"\n    **Output:** false\n    **Explanation:** \"a\" does not match the entire string \"aa\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aa\", p = \"*\"\n    **Output:** true\n    **Explanation:**  '*' matches any sequence.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"cb\", p = \"?a\"\n    **Output:** false\n    **Explanation:**  '?' matches 'c', but the second letter is 'a', which does not match 'b'.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= s.length, p.length <= 2000`\n  * `s` contains only lowercase English letters.\n  * `p` contains only lowercase English letters, `'?'` or `'*'`.",
+  "question": "Given an input string (`s`) and a pattern (`p`), implement wildcard pattern matching with support for `'?'` and `'*'` where:\n\n  * `'?'` Matches any single character.\n  * `'*'` Matches any sequence of characters (including the empty sequence).\n\n\n\nThe matching should cover the **entire** input string (not partial).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aa\", p = \"a\"\n    **Output:** false\n    **Explanation:** \"a\" does not match the entire string \"aa\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aa\", p = \"*\"\n    **Output:** true\n    **Explanation:**  '*' matches any sequence.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"cb\", p = \"?a\"\n    **Output:** false\n    **Explanation:**  '?' matches 'c', but the second letter is 'a', which does not match 'b'.",
+  "constraints": "**Constraints:**\n\n  * `0 <= s.length, p.length <= 2000`\n  * `s` contains only lowercase English letters.\n  * `p` contains only lowercase English letters, `'?'` or `'*'`.",
+  "topics": ["String", "Dynamic Programming", "Greedy", "Recursion"],
+  "total_accepted": 842673,
+  "total_submissions": 2682240,
+  "acceptance_rate": "31.4%",
+  "similar_questions": [
+    {
+      "title": "Regular Expression Matching",
+      "slug": "regular-expression-matching",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/regular-expression-matching/"
+    },
+    {
+      "title": "Substring Matching Pattern",
+      "slug": "substring-matching-pattern",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/substring-matching-pattern/"
+    }
+  ],
+  "hints": []
+}

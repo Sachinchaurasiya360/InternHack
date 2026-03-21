@@ -1,0 +1,27 @@
+{
+  "id": "1081",
+  "title": "Smallest Subsequence of Distinct Characters",
+  "slug": "smallest-subsequence-of-distinct-characters",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return <em>the </em><span data-keyword=\"lexicographically-smaller-string\"><em>lexicographically smallest</em></span> <span data-keyword=\"subsequence-string\"><em>subsequence</em></span><em> of</em> <code>s</code> <em>that contains all the distinct characters of</em> <code>s</code> <em>exactly once</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bcabc&quot;\n<strong>Output:</strong> &quot;abc&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;cbacdcbc&quot;\n<strong>Output:</strong> &quot;acdb&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Note:</strong> This question is the same as 316: <a href=\"https://leetcode.com/problems/remove-duplicate-letters/\" target=\"_blank\">https://leetcode.com/problems/remove-duplicate-letters/</a>",
+  "content_markdown": "Given a string `s`, return _the_ _lexicographically smallest_ _subsequence_ _of_ `s` _that contains all the distinct characters of_ `s` _exactly once_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"bcabc\"\n    **Output:** \"abc\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"cbacdcbc\"\n    **Output:** \"acdb\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of lowercase English letters.\n\n\n\n \n\n**Note:** This question is the same as 316: <https://leetcode.com/problems/remove-duplicate-letters/>",
+  "question": "Given a string `s`, return _the_ _lexicographically smallest_ _subsequence_ _of_ `s` _that contains all the distinct characters of_ `s` _exactly once_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"bcabc\"\n    **Output:** \"abc\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"cbacdcbc\"\n    **Output:** \"acdb\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of lowercase English letters.\n\n\n\n \n\n**Note:** This question is the same as 316: <https://leetcode.com/problems/remove-duplicate-letters/>",
+  "topics": ["String", "Stack", "Greedy", "Monotonic Stack"],
+  "total_accepted": 94342,
+  "total_submissions": 149479,
+  "acceptance_rate": "63.1%",
+  "similar_questions": [
+    {
+      "title": "Find the Most Competitive Subsequence",
+      "slug": "find-the-most-competitive-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-most-competitive-subsequence/"
+    }
+  ],
+  "hints": [
+    "Greedily try to add one missing character. How to check if adding some character will not cause problems ? Use bit-masks to check whether you will be able to complete the sub-sequence if you add the character at some index i."
+  ]
+}

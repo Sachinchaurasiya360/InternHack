@@ -1,0 +1,29 @@
+{
+  "id": "568",
+  "title": "Maximum Vacation Days",
+  "slug": "maximum-vacation-days",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 41265,
+  "total_submissions": 88313,
+  "acceptance_rate": "46.7%",
+  "similar_questions": [
+    {
+      "title": "Cheapest Flights Within K Stops",
+      "slug": "cheapest-flights-within-k-stops",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/"
+    }
+  ],
+  "hints": [
+    "First try to understand the problem carefully and then take some example and solve it on a paper.",
+    "Can you interpret the given input as a graph? Which graph traversal technique is suitable here?",
+    "Can we use some space to avoid redundant function calls?"
+  ]
+}

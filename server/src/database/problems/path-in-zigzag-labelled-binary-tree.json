@@ -1,0 +1,27 @@
+{
+  "id": "1104",
+  "title": "Path In Zigzag Labelled Binary Tree",
+  "slug": "path-in-zigzag-labelled-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>In an infinite binary tree where every node has two children, the nodes are labelled in row order.</p>\n\n<p>In the odd numbered rows (ie., the first, third, fifth,...), the labelling is left to right, while in the even numbered rows (second, fourth, sixth,...), the labelling is right to left.</p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/06/24/tree.png\" style=\"width: 300px; height: 138px;\" /></p>\n\n<p>Given the <code>label</code> of a node in this tree, return the labels in the path from the root of the tree to the&nbsp;node with that <code>label</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> label = 14\n<strong>Output:</strong> [1,3,4,14]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> label = 26\n<strong>Output:</strong> [1,2,6,10,26]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= label &lt;= 10^6</code></li>\n</ul>\n",
+  "content_markdown": "In an infinite binary tree where every node has two children, the nodes are labelled in row order.\n\nIn the odd numbered rows (ie., the first, third, fifth,...), the labelling is left to right, while in the even numbered rows (second, fourth, sixth,...), the labelling is right to left.\n\n![](https://assets.leetcode.com/uploads/2019/06/24/tree.png)\n\nGiven the `label` of a node in this tree, return the labels in the path from the root of the tree to the node with that `label`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** label = 14\n    **Output:** [1,3,4,14]\n    \n\n**Example 2:**\n    \n    \n    **Input:** label = 26\n    **Output:** [1,2,6,10,26]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= label <= 10^6`",
+  "question": "In an infinite binary tree where every node has two children, the nodes are labelled in row order.\n\nIn the odd numbered rows (ie., the first, third, fifth,...), the labelling is left to right, while in the even numbered rows (second, fourth, sixth,...), the labelling is right to left.\n\n![](https://assets.leetcode.com/uploads/2019/06/24/tree.png)\n\nGiven the `label` of a node in this tree, return the labels in the path from the root of the tree to the node with that `label`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** label = 14\n    **Output:** [1,3,4,14]\n    \n\n**Example 2:**\n    \n    \n    **Input:** label = 26\n    **Output:** [1,2,6,10,26]",
+  "constraints": "**Constraints:**\n\n  * `1 <= label <= 10^6`",
+  "topics": ["Math", "Tree", "Binary Tree"],
+  "total_accepted": 53095,
+  "total_submissions": 70094,
+  "acceptance_rate": "75.7%",
+  "similar_questions": [
+    {
+      "title": "Cycle Length Queries in a Tree",
+      "slug": "cycle-length-queries-in-a-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/cycle-length-queries-in-a-tree/"
+    }
+  ],
+  "hints": [
+    "Based on the label of the current node, find what the label must be for the parent of that node."
+  ]
+}

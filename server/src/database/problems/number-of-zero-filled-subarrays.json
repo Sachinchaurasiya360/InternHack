@@ -1,0 +1,46 @@
+{
+  "id": "2348",
+  "title": "Number of Zero-Filled Subarrays",
+  "slug": "number-of-zero-filled-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>the number of <strong>subarrays</strong> filled with </em><code>0</code>.</p>\n\n<p>A <strong>subarray</strong> is a contiguous non-empty sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,0,0,2,0,0,4]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> \nThere are 4 occurrences of [0] as a subarray.\nThere are 2 occurrences of [0,0] as a subarray.\nThere is no occurrence of a subarray with a size more than 2 filled with 0. Therefore, we return 6.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,0,0,2,0,0]\n<strong>Output:</strong> 9\n<strong>Explanation:\n</strong>There are 5 occurrences of [0] as a subarray.\nThere are 3 occurrences of [0,0] as a subarray.\nThere is 1 occurrence of [0,0,0] as a subarray.\nThere is no occurrence of a subarray with a size more than 3 filled with 0. Therefore, we return 9.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,10,2019]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There is no subarray filled with 0. Therefore, we return 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, return _the number of**subarrays** filled with _`0`.\n\nA **subarray** is a contiguous non-empty sequence of elements within an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,0,0,2,0,0,4]\n    **Output:** 6\n    **Explanation:** \n    There are 4 occurrences of [0] as a subarray.\n    There are 2 occurrences of [0,0] as a subarray.\n    There is no occurrence of a subarray with a size more than 2 filled with 0. Therefore, we return 6.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,0,0,2,0,0]\n    **Output:** 9\n    **Explanation:** There are 5 occurrences of [0] as a subarray.\n    There are 3 occurrences of [0,0] as a subarray.\n    There is 1 occurrence of [0,0,0] as a subarray.\n    There is no occurrence of a subarray with a size more than 3 filled with 0. Therefore, we return 9.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,10,2019]\n    **Output:** 0\n    **Explanation:** There is no subarray filled with 0. Therefore, we return 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`",
+  "question": "Given an integer array `nums`, return _the number of**subarrays** filled with _`0`.\n\nA **subarray** is a contiguous non-empty sequence of elements within an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,0,0,2,0,0,4]\n    **Output:** 6\n    **Explanation:** \n    There are 4 occurrences of [0] as a subarray.\n    There are 2 occurrences of [0,0] as a subarray.\n    There is no occurrence of a subarray with a size more than 2 filled with 0. Therefore, we return 6.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,0,0,2,0,0]\n    **Output:** 9\n    **Explanation:** There are 5 occurrences of [0] as a subarray.\n    There are 3 occurrences of [0,0] as a subarray.\n    There is 1 occurrence of [0,0,0] as a subarray.\n    There is no occurrence of a subarray with a size more than 3 filled with 0. Therefore, we return 9.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,10,2019]\n    **Output:** 0\n    **Explanation:** There is no subarray filled with 0. Therefore, we return 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 305867,
+  "total_submissions": 436181,
+  "acceptance_rate": "70.1%",
+  "similar_questions": [
+    {
+      "title": "Arithmetic Slices",
+      "slug": "arithmetic-slices",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/arithmetic-slices/"
+    },
+    {
+      "title": "Number of Smooth Descent Periods of a Stock",
+      "slug": "number-of-smooth-descent-periods-of-a-stock",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-smooth-descent-periods-of-a-stock/"
+    },
+    {
+      "title": "Length of the Longest Alphabetical Continuous Substring",
+      "slug": "length-of-the-longest-alphabetical-continuous-substring",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/length-of-the-longest-alphabetical-continuous-substring/"
+    },
+    {
+      "title": "Find Consecutive Integers from a Data Stream",
+      "slug": "find-consecutive-integers-from-a-data-stream",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-consecutive-integers-from-a-data-stream/"
+    }
+  ],
+  "hints": [
+    "For each zero, you can calculate the number of zero-filled subarrays that end on that index, which is the number of consecutive zeros behind the current element + 1.",
+    "Maintain the number of consecutive zeros behind the current element, count the number of zero-filled subarrays that end on each index, sum it up to get the answer."
+  ]
+}

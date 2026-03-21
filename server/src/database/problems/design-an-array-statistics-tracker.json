@@ -1,0 +1,26 @@
+{
+  "id": "3369",
+  "title": "Design an Array Statistics Tracker ",
+  "slug": "design-an-array-statistics-tracker",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Hash Table",
+    "Binary Search",
+    "Design",
+    "Queue",
+    "Heap (Priority Queue)",
+    "Data Stream",
+    "Ordered Set"
+  ],
+  "total_accepted": 1380,
+  "total_submissions": 3867,
+  "acceptance_rate": "35.7%",
+  "similar_questions": [],
+  "hints": ["Maintain separate data structures for each statistic."]
+}

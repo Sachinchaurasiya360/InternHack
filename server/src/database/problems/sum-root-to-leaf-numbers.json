@@ -1,0 +1,37 @@
+{
+  "id": "129",
+  "title": "Sum Root to Leaf Numbers",
+  "slug": "sum-root-to-leaf-numbers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> of a binary tree containing digits from <code>0</code> to <code>9</code> only.</p>\n\n<p>Each root-to-leaf path in the tree represents a number.</p>\n\n<ul>\n\t<li>For example, the root-to-leaf path <code>1 -&gt; 2 -&gt; 3</code> represents the number <code>123</code>.</li>\n</ul>\n\n<p>Return <em>the total sum of all root-to-leaf numbers</em>. Test cases are generated so that the answer will fit in a <strong>32-bit</strong> integer.</p>\n\n<p>A <strong>leaf</strong> node is a node with no children.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/19/num1tree.jpg\" style=\"width: 212px; height: 182px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3]\n<strong>Output:</strong> 25\n<strong>Explanation:</strong>\nThe root-to-leaf path <code>1-&gt;2</code> represents the number <code>12</code>.\nThe root-to-leaf path <code>1-&gt;3</code> represents the number <code>13</code>.\nTherefore, sum = 12 + 13 = <code>25</code>.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/19/num2tree.jpg\" style=\"width: 292px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> root = [4,9,0,5,1]\n<strong>Output:</strong> 1026\n<strong>Explanation:</strong>\nThe root-to-leaf path <code>4-&gt;9-&gt;5</code> represents the number 495.\nThe root-to-leaf path <code>4-&gt;9-&gt;1</code> represents the number 491.\nThe root-to-leaf path <code>4-&gt;0</code> represents the number 40.\nTherefore, sum = 495 + 491 + 40 = <code>1026</code>.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 1000]</code>.</li>\n\t<li><code>0 &lt;= Node.val &lt;= 9</code></li>\n\t<li>The depth of the tree will not exceed <code>10</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given the `root` of a binary tree containing digits from `0` to `9` only.\n\nEach root-to-leaf path in the tree represents a number.\n\n  * For example, the root-to-leaf path `1 -> 2 -> 3` represents the number `123`.\n\n\n\nReturn _the total sum of all root-to-leaf numbers_. Test cases are generated so that the answer will fit in a **32-bit** integer.\n\nA **leaf** node is a node with no children.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/num1tree.jpg)\n    \n    \n    **Input:** root = [1,2,3]\n    **Output:** 25\n    **Explanation:**\n    The root-to-leaf path 1->2 represents the number 12.\n    The root-to-leaf path 1->3 represents the number 13.\n    Therefore, sum = 12 + 13 = 25.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/num2tree.jpg)\n    \n    \n    **Input:** root = [4,9,0,5,1]\n    **Output:** 1026\n    **Explanation:**\n    The root-to-leaf path 4->9->5 represents the number 495.\n    The root-to-leaf path 4->9->1 represents the number 491.\n    The root-to-leaf path 4->0 represents the number 40.\n    Therefore, sum = 495 + 491 + 40 = 1026.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 1000]`.\n  * `0 <= Node.val <= 9`\n  * The depth of the tree will not exceed `10`.",
+  "question": "You are given the `root` of a binary tree containing digits from `0` to `9` only.\n\nEach root-to-leaf path in the tree represents a number.\n\n  * For example, the root-to-leaf path `1 -> 2 -> 3` represents the number `123`.\n\n\n\nReturn _the total sum of all root-to-leaf numbers_. Test cases are generated so that the answer will fit in a **32-bit** integer.\n\nA **leaf** node is a node with no children.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/num1tree.jpg)\n    \n    \n    **Input:** root = [1,2,3]\n    **Output:** 25\n    **Explanation:**\n    The root-to-leaf path 1->2 represents the number 12.\n    The root-to-leaf path 1->3 represents the number 13.\n    Therefore, sum = 12 + 13 = 25.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/num2tree.jpg)\n    \n    \n    **Input:** root = [4,9,0,5,1]\n    **Output:** 1026\n    **Explanation:**\n    The root-to-leaf path 4->9->5 represents the number 495.\n    The root-to-leaf path 4->9->1 represents the number 491.\n    The root-to-leaf path 4->0 represents the number 40.\n    Therefore, sum = 495 + 491 + 40 = 1026.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 1000]`.\n  * `0 <= Node.val <= 9`\n  * The depth of the tree will not exceed `10`.",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 1247859,
+  "total_submissions": 1792716,
+  "acceptance_rate": "69.6%",
+  "similar_questions": [
+    {
+      "title": "Path Sum",
+      "slug": "path-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/path-sum/"
+    },
+    {
+      "title": "Binary Tree Maximum Path Sum",
+      "slug": "binary-tree-maximum-path-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/binary-tree-maximum-path-sum/"
+    },
+    {
+      "title": "Smallest String Starting From Leaf",
+      "slug": "smallest-string-starting-from-leaf",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-string-starting-from-leaf/"
+    }
+  ],
+  "hints": []
+}

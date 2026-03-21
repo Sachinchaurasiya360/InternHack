@@ -1,0 +1,27 @@
+{
+  "id": "1716",
+  "title": "Calculate Money in Leetcode Bank",
+  "slug": "calculate-money-in-leetcode-bank",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Hercy wants to save money for his first car. He puts money in the Leetcode&nbsp;bank <strong>every day</strong>.</p>\n\n<p>He starts by putting in <code>$1</code> on Monday, the first day. Every day from Tuesday to Sunday, he will put in <code>$1</code> more than the day before. On every subsequent Monday, he will put in <code>$1</code> more than the <strong>previous Monday</strong>.<span style=\"display: none;\"> </span></p>\n\n<p>Given <code>n</code>, return <em>the total amount of money he will have in the Leetcode bank at the end of the </em><code>n<sup>th</sup></code><em> day.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> 10\n<strong>Explanation:</strong>&nbsp;After the 4<sup>th</sup> day, the total is 1 + 2 + 3 + 4 = 10.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 10\n<strong>Output:</strong> 37\n<strong>Explanation:</strong>&nbsp;After the 10<sup>th</sup> day, the total is (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4) = 37. Notice that on the 2<sup>nd</sup> Monday, Hercy only puts in $2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 20\n<strong>Output:</strong> 96\n<strong>Explanation:</strong>&nbsp;After the 20<sup>th</sup> day, the total is (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4 + 5 + 6 + 7 + 8) + (3 + 4 + 5 + 6 + 7 + 8) = 96.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Hercy wants to save money for his first car. He puts money in the Leetcode bank **every day**.\n\nHe starts by putting in `$1` on Monday, the first day. Every day from Tuesday to Sunday, he will put in `$1` more than the day before. On every subsequent Monday, he will put in `$1` more than the **previous Monday**.\n\nGiven `n`, return _the total amount of money he will have in the Leetcode bank at the end of the_`nth` _day._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** 10\n    **Explanation:**  After the 4th day, the total is 1 + 2 + 3 + 4 = 10.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 10\n    **Output:** 37\n    **Explanation:**  After the 10th day, the total is (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4) = 37. Notice that on the 2nd Monday, Hercy only puts in $2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 20\n    **Output:** 96\n    **Explanation:**  After the 20th day, the total is (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4 + 5 + 6 + 7 + 8) + (3 + 4 + 5 + 6 + 7 + 8) = 96.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "question": "Hercy wants to save money for his first car. He puts money in the Leetcode bank **every day**.\n\nHe starts by putting in `$1` on Monday, the first day. Every day from Tuesday to Sunday, he will put in `$1` more than the day before. On every subsequent Monday, he will put in `$1` more than the **previous Monday**.\n\nGiven `n`, return _the total amount of money he will have in the Leetcode bank at the end of the_`nth` _day._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** 10\n    **Explanation:**  After the 4th day, the total is 1 + 2 + 3 + 4 = 10.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 10\n    **Output:** 37\n    **Explanation:**  After the 10th day, the total is (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4) = 37. Notice that on the 2nd Monday, Hercy only puts in $2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 20\n    **Output:** 96\n    **Explanation:**  After the 20th day, the total is (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4 + 5 + 6 + 7 + 8) + (3 + 4 + 5 + 6 + 7 + 8) = 96.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "topics": ["Math"],
+  "total_accepted": 297631,
+  "total_submissions": 361484,
+  "acceptance_rate": "82.3%",
+  "similar_questions": [
+    {
+      "title": "Distribute Money to Maximum Children",
+      "slug": "distribute-money-to-maximum-children",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/distribute-money-to-maximum-children/"
+    }
+  ],
+  "hints": [
+    "Simulate the process by keeping track of how much money Hercy is putting in and which day of the week it is, and use this information to deduce how much money Hercy will put in the next day."
+  ]
+}

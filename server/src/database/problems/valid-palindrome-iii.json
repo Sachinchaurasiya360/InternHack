@@ -1,0 +1,36 @@
+{
+  "id": "1216",
+  "title": "Valid Palindrome III",
+  "slug": "valid-palindrome-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 108377,
+  "total_submissions": 220598,
+  "acceptance_rate": "49.1%",
+  "similar_questions": [
+    {
+      "title": "Valid Palindrome II",
+      "slug": "valid-palindrome-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-palindrome-ii/"
+    },
+    {
+      "title": "Valid Palindrome IV",
+      "slug": "valid-palindrome-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/valid-palindrome-iv/"
+    }
+  ],
+  "hints": [
+    "Can you reduce this problem to a classic problem?",
+    "The problem is equivalent to finding any palindromic subsequence of length at least N-K where N is the length of the string.",
+    "Try to find the longest palindromic subsequence.",
+    "Use DP to do that."
+  ]
+}

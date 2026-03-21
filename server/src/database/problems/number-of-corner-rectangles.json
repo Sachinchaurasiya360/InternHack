@@ -1,0 +1,20 @@
+{
+  "id": "750",
+  "title": "Number Of Corner Rectangles",
+  "slug": "number-of-corner-rectangles",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Dynamic Programming", "Matrix"],
+  "total_accepted": 40267,
+  "total_submissions": 59315,
+  "acceptance_rate": "67.9%",
+  "similar_questions": [],
+  "hints": [
+    "For each pair of 1s in the new row (say at `new_row[i]` and `new_row[j]`), we could create more rectangles where that pair forms the base.  The number of new rectangles is the number of times some previous row had `row[i] = row[j] = 1`."
+  ]
+}

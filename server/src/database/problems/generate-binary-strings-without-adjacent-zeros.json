@@ -1,0 +1,29 @@
+{
+  "id": "3211",
+  "title": "Generate Binary Strings Without Adjacent Zeros",
+  "slug": "generate-binary-strings-without-adjacent-zeros",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>n</code>.</p>\n\n<p>A binary string <code>x</code> is <strong>valid</strong> if all <span data-keyword=\"substring-nonempty\">substrings</span> of <code>x</code> of length 2 contain <strong>at least</strong> one <code>&quot;1&quot;</code>.</p>\n\n<p>Return all <strong>valid</strong> strings with length <code>n</code><strong>, </strong>in <em>any</em> order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[&quot;010&quot;,&quot;011&quot;,&quot;101&quot;,&quot;110&quot;,&quot;111&quot;]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The valid strings of length 3 are: <code>&quot;010&quot;</code>, <code>&quot;011&quot;</code>, <code>&quot;101&quot;</code>, <code>&quot;110&quot;</code>, and <code>&quot;111&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[&quot;0&quot;,&quot;1&quot;]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The valid strings of length 1 are: <code>&quot;0&quot;</code> and <code>&quot;1&quot;</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 18</code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `n`.\n\nA binary string `x` is **valid** if all substrings of `x` of length 2 contain **at least** one `\"1\"`.\n\nReturn all **valid** strings with length `n`**,** in _any_ order.\n\n \n\n**Example 1:**\n\n**Input:** n = 3\n\n**Output:** [\"010\",\"011\",\"101\",\"110\",\"111\"]\n\n**Explanation:**\n\nThe valid strings of length 3 are: `\"010\"`, `\"011\"`, `\"101\"`, `\"110\"`, and `\"111\"`.\n\n**Example 2:**\n\n**Input:** n = 1\n\n**Output:** [\"0\",\"1\"]\n\n**Explanation:**\n\nThe valid strings of length 1 are: `\"0\"` and `\"1\"`.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 18`",
+  "question": "You are given a positive integer `n`.\n\nA binary string `x` is **valid** if all substrings of `x` of length 2 contain **at least** one `\"1\"`.\n\nReturn all **valid** strings with length `n`**,** in _any_ order.",
+  "examples": "**Example 1:**\n\n**Input:** n = 3\n\n**Output:** [\"010\",\"011\",\"101\",\"110\",\"111\"]\n\n**Explanation:**\n\nThe valid strings of length 3 are: `\"010\"`, `\"011\"`, `\"101\"`, `\"110\"`, and `\"111\"`.\n\n**Example 2:**\n\n**Input:** n = 1\n\n**Output:** [\"0\",\"1\"]\n\n**Explanation:**\n\nThe valid strings of length 1 are: `\"0\"` and `\"1\"`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 18`",
+  "topics": ["String", "Backtracking", "Bit Manipulation"],
+  "total_accepted": 78611,
+  "total_submissions": 89082,
+  "acceptance_rate": "88.2%",
+  "similar_questions": [
+    {
+      "title": "Non-negative Integers without Consecutive Ones",
+      "slug": "non-negative-integers-without-consecutive-ones",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/"
+    }
+  ],
+  "hints": [
+    "If we have a string <code>s</code> of length <code>x</code>, we can generate all strings of length <code>x + 1</code>.",
+    "If <code>s</code> has 0 as the last character, we can only append 1, whereas if the last character is 1, we can append both 0 and 1.",
+    "We can use recursion and backtracking to generate all such strings."
+  ]
+}

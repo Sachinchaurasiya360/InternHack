@@ -1,0 +1,36 @@
+{
+  "id": "678",
+  "title": "Valid Parenthesis String",
+  "slug": "valid-parenthesis-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> containing only three types of characters: <code>&#39;(&#39;</code>, <code>&#39;)&#39;</code> and <code>&#39;*&#39;</code>, return <code>true</code> <em>if</em> <code>s</code> <em>is <strong>valid</strong></em>.</p>\n\n<p>The following rules define a <strong>valid</strong> string:</p>\n\n<ul>\n\t<li>Any left parenthesis <code>&#39;(&#39;</code> must have a corresponding right parenthesis <code>&#39;)&#39;</code>.</li>\n\t<li>Any right parenthesis <code>&#39;)&#39;</code> must have a corresponding left parenthesis <code>&#39;(&#39;</code>.</li>\n\t<li>Left parenthesis <code>&#39;(&#39;</code> must go before the corresponding right parenthesis <code>&#39;)&#39;</code>.</li>\n\t<li><code>&#39;*&#39;</code> could be treated as a single right parenthesis <code>&#39;)&#39;</code> or a single left parenthesis <code>&#39;(&#39;</code> or an empty string <code>&quot;&quot;</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"()\"\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"(*)\"\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> s = \"(*))\"\n<strong>Output:</strong> true\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s[i]</code> is <code>&#39;(&#39;</code>, <code>&#39;)&#39;</code> or <code>&#39;*&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` containing only three types of characters: `'('`, `')'` and `'*'`, return `true` _if_ `s` _is**valid**_.\n\nThe following rules define a **valid** string:\n\n  * Any left parenthesis `'('` must have a corresponding right parenthesis `')'`.\n  * Any right parenthesis `')'` must have a corresponding left parenthesis `'('`.\n  * Left parenthesis `'('` must go before the corresponding right parenthesis `')'`.\n  * `'*'` could be treated as a single right parenthesis `')'` or a single left parenthesis `'('` or an empty string `\"\"`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"()\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(*)\"\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"(*))\"\n    **Output:** true\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s[i]` is `'('`, `')'` or `'*'`.",
+  "question": "Given a string `s` containing only three types of characters: `'('`, `')'` and `'*'`, return `true` _if_ `s` _is**valid**_.\n\nThe following rules define a **valid** string:\n\n  * Any left parenthesis `'('` must have a corresponding right parenthesis `')'`.\n  * Any right parenthesis `')'` must have a corresponding left parenthesis `'('`.\n  * Left parenthesis `'('` must go before the corresponding right parenthesis `')'`.\n  * `'*'` could be treated as a single right parenthesis `')'` or a single left parenthesis `'('` or an empty string `\"\"`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"()\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"(*)\"\n    **Output:** true\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"(*))\"\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s[i]` is `'('`, `')'` or `'*'`.",
+  "topics": ["String", "Dynamic Programming", "Stack", "Greedy"],
+  "total_accepted": 572404,
+  "total_submissions": 1437409,
+  "acceptance_rate": "39.8%",
+  "similar_questions": [
+    {
+      "title": "Special Binary String",
+      "slug": "special-binary-string",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/special-binary-string/"
+    },
+    {
+      "title": "Check if a Parentheses String Can Be Valid",
+      "slug": "check-if-a-parentheses-string-can-be-valid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/"
+    }
+  ],
+  "hints": [
+    "Use backtracking to explore all possible combinations of treating '*' as either '(', ')', or an empty string. If any combination leads to a valid string, return true.",
+    "DP[i][j] represents whether the substring s[i:j] is valid.",
+    "Keep track of the count of open parentheses encountered so far. If you encounter a close parenthesis, it should balance with an open parenthesis. Utilize a stack to handle this effectively.",
+    "How about using 2 stacks instead of 1? Think about it."
+  ]
+}

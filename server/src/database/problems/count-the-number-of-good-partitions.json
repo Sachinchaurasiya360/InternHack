@@ -1,0 +1,29 @@
+{
+  "id": "2963",
+  "title": "Count the Number of Good Partitions",
+  "slug": "count-the-number-of-good-partitions",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>nums</code> consisting of <strong>positive</strong> integers.</p>\n\n<p>A partition of an array into one or more <strong>contiguous</strong> subarrays is called <strong>good</strong> if no two subarrays contain the same number.</p>\n\n<p>Return <em>the <strong>total number</strong> of good partitions of </em><code>nums</code>.</p>\n\n<p>Since the answer may be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4]\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> The 8 possible good partitions are: ([1], [2], [3], [4]), ([1], [2], [3,4]), ([1], [2,3], [4]), ([1], [2,3,4]), ([1,2], [3], [4]), ([1,2], [3,4]), ([1,2,3], [4]), and ([1,2,3,4]).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,1,1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The only possible good partition is: ([1,1,1,1]).\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,3]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The 2 possible good partitions are: ([1,2,1], [3]) and ([1,2,1,3]).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `nums` consisting of **positive** integers.\n\nA partition of an array into one or more **contiguous** subarrays is called **good** if no two subarrays contain the same number.\n\nReturn _the**total number** of good partitions of _`nums`.\n\nSince the answer may be large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 8\n    **Explanation:** The 8 possible good partitions are: ([1], [2], [3], [4]), ([1], [2], [3,4]), ([1], [2,3], [4]), ([1], [2,3,4]), ([1,2], [3], [4]), ([1,2], [3,4]), ([1,2,3], [4]), and ([1,2,3,4]).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,1,1]\n    **Output:** 1\n    **Explanation:** The only possible good partition is: ([1,1,1,1]).\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,1,3]\n    **Output:** 2\n    **Explanation:** The 2 possible good partitions are: ([1,2,1], [3]) and ([1,2,1,3]).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given a **0-indexed** array `nums` consisting of **positive** integers.\n\nA partition of an array into one or more **contiguous** subarrays is called **good** if no two subarrays contain the same number.\n\nReturn _the**total number** of good partitions of _`nums`.\n\nSince the answer may be large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** 8\n    **Explanation:** The 8 possible good partitions are: ([1], [2], [3], [4]), ([1], [2], [3,4]), ([1], [2,3], [4]), ([1], [2,3,4]), ([1,2], [3], [4]), ([1,2], [3,4]), ([1,2,3], [4]), and ([1,2,3,4]).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,1,1]\n    **Output:** 1\n    **Explanation:** The only possible good partition is: ([1,1,1,1]).\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,1,3]\n    **Output:** 2\n    **Explanation:** The 2 possible good partitions are: ([1,2,1], [3]) and ([1,2,1,3]).",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Math", "Combinatorics"],
+  "total_accepted": 15375,
+  "total_submissions": 31368,
+  "acceptance_rate": "49.0%",
+  "similar_questions": [
+    {
+      "title": "Check if There is a Valid Partition For The Array",
+      "slug": "check-if-there-is-a-valid-partition-for-the-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/"
+    }
+  ],
+  "hints": [
+    "If a segment contains a value, it must contain all occurrences of the same value.",
+    "Partition the array into segments making each one as short as possible. This can be achieved by two-pointers or using a Set.",
+    "If we have <code>m</code> segments, we can arbitrarily group the neighboring segments. How many ways are there to group these <code>m</code> segments?"
+  ]
+}

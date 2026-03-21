@@ -1,0 +1,61 @@
+{
+  "id": "169",
+  "title": "Majority Element",
+  "slug": "majority-element",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> of size <code>n</code>, return <em>the majority element</em>.</p>\n\n<p>The majority element is the element that appears more than <code>&lfloor;n / 2&rfloor;</code> times. You may assume that the majority element always exists in the array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [3,2,3]\n<strong>Output:</strong> 3\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [2,2,1,1,1,2,2]\n<strong>Output:</strong> 2\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li>The input is generated such that a majority element will exist in the array.</li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow-up:</strong> Could you solve the problem in linear time and in <code>O(1)</code> space?",
+  "content_markdown": "Given an array `nums` of size `n`, return _the majority element_.\n\nThe majority element is the element that appears more than `⌊n / 2⌋` times. You may assume that the majority element always exists in the array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,2,3]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,1,1,1,2,2]\n    **Output:** 2\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 5 * 104`\n  * `-109 <= nums[i] <= 109`\n  * The input is generated such that a majority element will exist in the array.\n\n\n\n \n\n**Follow-up:** Could you solve the problem in linear time and in `O(1)` space?",
+  "question": "Given an array `nums` of size `n`, return _the majority element_.\n\nThe majority element is the element that appears more than `⌊n / 2⌋` times. You may assume that the majority element always exists in the array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,2,3]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,2,1,1,1,2,2]\n    **Output:** 2",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 5 * 104`\n  * `-109 <= nums[i] <= 109`\n  * The input is generated such that a majority element will exist in the array.",
+  "topics": ["Array", "Hash Table", "Divide and Conquer", "Sorting", "Counting"],
+  "total_accepted": 5264256,
+  "total_submissions": 7960691,
+  "acceptance_rate": "66.1%",
+  "similar_questions": [
+    {
+      "title": "Majority Element II",
+      "slug": "majority-element-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/majority-element-ii/"
+    },
+    {
+      "title": "Check If a Number Is Majority Element in a Sorted Array",
+      "slug": "check-if-a-number-is-majority-element-in-a-sorted-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-a-number-is-majority-element-in-a-sorted-array/"
+    },
+    {
+      "title": "Most Frequent Even Element",
+      "slug": "most-frequent-even-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/most-frequent-even-element/"
+    },
+    {
+      "title": "Minimum Index of a Valid Split",
+      "slug": "minimum-index-of-a-valid-split",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-index-of-a-valid-split/"
+    },
+    {
+      "title": "Minimum Operations to Exceed Threshold Value I",
+      "slug": "minimum-operations-to-exceed-threshold-value-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-operations-to-exceed-threshold-value-i/"
+    },
+    {
+      "title": "Find the Most Common Response",
+      "slug": "find-the-most-common-response",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-most-common-response/"
+    },
+    {
+      "title": "Find Valid Pair of Adjacent Digits in String",
+      "slug": "find-valid-pair-of-adjacent-digits-in-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-valid-pair-of-adjacent-digits-in-string/"
+    }
+  ],
+  "hints": []
+}

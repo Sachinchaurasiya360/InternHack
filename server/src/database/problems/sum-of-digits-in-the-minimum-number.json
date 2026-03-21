@@ -1,0 +1,30 @@
+{
+  "id": "1085",
+  "title": "Sum of Digits in the Minimum Number",
+  "slug": "sum-of-digits-in-the-minimum-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math"],
+  "total_accepted": 26000,
+  "total_submissions": 33902,
+  "acceptance_rate": "76.7%",
+  "similar_questions": [
+    {
+      "title": "Add Digits",
+      "slug": "add-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-digits/"
+    }
+  ],
+  "hints": [
+    "How to find the minimum number in an array?",
+    "Loop over the array and compare each one of the numbers.",
+    "How to find the sum of digits?",
+    "Divide the number consecutively and get their remainder modulus 10. Sum those remainders and return the answer as the problem asks."
+  ]
+}

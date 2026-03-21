@@ -1,0 +1,43 @@
+{
+  "id": "509",
+  "title": "Fibonacci Number",
+  "slug": "fibonacci-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>The <b>Fibonacci numbers</b>, commonly denoted <code>F(n)</code> form a sequence, called the <b>Fibonacci sequence</b>, such that each number is the sum of the two preceding ones, starting from <code>0</code> and <code>1</code>. That is,</p>\n\n<pre>\nF(0) = 0, F(1) = 1\nF(n) = F(n - 1) + F(n - 2), for n &gt; 1.\n</pre>\n\n<p>Given <code>n</code>, calculate <code>F(n)</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> F(2) = F(1) + F(0) = 1 + 0 = 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> F(3) = F(2) + F(1) = 1 + 1 = 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> F(4) = F(3) + F(2) = 2 + 1 = 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 30</code></li>\n</ul>\n",
+  "content_markdown": "The **Fibonacci numbers** , commonly denoted `F(n)` form a sequence, called the **Fibonacci sequence** , such that each number is the sum of the two preceding ones, starting from `0` and `1`. That is,\n    \n    \n    F(0) = 0, F(1) = 1\n    F(n) = F(n - 1) + F(n - 2), for n > 1.\n    \n\nGiven `n`, calculate `F(n)`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** 1\n    **Explanation:** F(2) = F(1) + F(0) = 1 + 0 = 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** F(3) = F(2) + F(1) = 1 + 1 = 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 4\n    **Output:** 3\n    **Explanation:** F(4) = F(3) + F(2) = 2 + 1 = 3.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= n <= 30`",
+  "question": "The **Fibonacci numbers** , commonly denoted `F(n)` form a sequence, called the **Fibonacci sequence** , such that each number is the sum of the two preceding ones, starting from `0` and `1`. That is,\n    \n    \n    F(0) = 0, F(1) = 1\n    F(n) = F(n - 1) + F(n - 2), for n > 1.\n    \n\nGiven `n`, calculate `F(n)`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** 1\n    **Explanation:** F(2) = F(1) + F(0) = 1 + 0 = 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** F(3) = F(2) + F(1) = 1 + 1 = 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 4\n    **Output:** 3\n    **Explanation:** F(4) = F(3) + F(2) = 2 + 1 = 3.",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 30`",
+  "topics": ["Math", "Dynamic Programming", "Recursion", "Memoization"],
+  "total_accepted": 2938622,
+  "total_submissions": 3977020,
+  "acceptance_rate": "73.9%",
+  "similar_questions": [
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/climbing-stairs/"
+    },
+    {
+      "title": "Split Array into Fibonacci Sequence",
+      "slug": "split-array-into-fibonacci-sequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/split-array-into-fibonacci-sequence/"
+    },
+    {
+      "title": "Length of Longest Fibonacci Subsequence",
+      "slug": "length-of-longest-fibonacci-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/length-of-longest-fibonacci-subsequence/"
+    },
+    {
+      "title": "N-th Tribonacci Number",
+      "slug": "n-th-tribonacci-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/n-th-tribonacci-number/"
+    }
+  ],
+  "hints": []
+}

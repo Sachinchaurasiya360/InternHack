@@ -1,0 +1,25 @@
+{
+  "id": "754",
+  "title": "Reach a Number",
+  "slug": "reach-a-number",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are standing at position <code>0</code> on an infinite number line. There is a destination at position <code>target</code>.</p>\n\n<p>You can make some number of moves <code>numMoves</code> so that:</p>\n\n<ul>\n\t<li>On each move, you can either go left or right.</li>\n\t<li>During the <code>i<sup>th</sup></code> move (starting from <code>i == 1</code> to <code>i == numMoves</code>), you take <code>i</code> steps in the chosen direction.</li>\n</ul>\n\n<p>Given the integer <code>target</code>, return <em>the <strong>minimum</strong> number of moves required (i.e., the minimum </em><code>numMoves</code><em>) to reach the destination</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = 2\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nOn the 1<sup>st</sup> move, we step from 0 to 1 (1 step).\nOn the 2<sup>nd</sup> move, we step from 1 to -1 (2 steps).\nOn the 3<sup>rd</sup> move, we step from -1 to 2 (3 steps).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nOn the 1<sup>st</sup> move, we step from 0 to 1 (1 step).\nOn the 2<sup>nd</sup> move, we step from 1 to 3 (2 steps).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></code></li>\n\t<li><code>target != 0</code></li>\n</ul>\n",
+  "content_markdown": "You are standing at position `0` on an infinite number line. There is a destination at position `target`.\n\nYou can make some number of moves `numMoves` so that:\n\n  * On each move, you can either go left or right.\n  * During the `ith` move (starting from `i == 1` to `i == numMoves`), you take `i` steps in the chosen direction.\n\n\n\nGiven the integer `target`, return _the**minimum** number of moves required (i.e., the minimum _`numMoves` _) to reach the destination_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** target = 2\n    **Output:** 3\n    **Explanation:**\n    On the 1st move, we step from 0 to 1 (1 step).\n    On the 2nd move, we step from 1 to -1 (2 steps).\n    On the 3rd move, we step from -1 to 2 (3 steps).\n    \n\n**Example 2:**\n    \n    \n    **Input:** target = 3\n    **Output:** 2\n    **Explanation:**\n    On the 1st move, we step from 0 to 1 (1 step).\n    On the 2nd move, we step from 1 to 3 (2 steps).\n    \n\n \n\n**Constraints:**\n\n  * `-109 <= target <= 109`\n  * `target != 0`",
+  "question": "You are standing at position `0` on an infinite number line. There is a destination at position `target`.\n\nYou can make some number of moves `numMoves` so that:\n\n  * On each move, you can either go left or right.\n  * During the `ith` move (starting from `i == 1` to `i == numMoves`), you take `i` steps in the chosen direction.\n\n\n\nGiven the integer `target`, return _the**minimum** number of moves required (i.e., the minimum _`numMoves` _) to reach the destination_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** target = 2\n    **Output:** 3\n    **Explanation:**\n    On the 1st move, we step from 0 to 1 (1 step).\n    On the 2nd move, we step from 1 to -1 (2 steps).\n    On the 3rd move, we step from -1 to 2 (3 steps).\n    \n\n**Example 2:**\n    \n    \n    **Input:** target = 3\n    **Output:** 2\n    **Explanation:**\n    On the 1st move, we step from 0 to 1 (1 step).\n    On the 2nd move, we step from 1 to 3 (2 steps).",
+  "constraints": "**Constraints:**\n\n  * `-109 <= target <= 109`\n  * `target != 0`",
+  "topics": ["Math", "Binary Search"],
+  "total_accepted": 70216,
+  "total_submissions": 157281,
+  "acceptance_rate": "44.6%",
+  "similar_questions": [
+    {
+      "title": "Number of Ways to Reach a Position After Exactly k Steps",
+      "slug": "number-of-ways-to-reach-a-position-after-exactly-k-steps",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-reach-a-position-after-exactly-k-steps/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,71 @@
+{
+  "id": "239",
+  "title": "Sliding Window Maximum",
+  "slug": "sliding-window-maximum",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers&nbsp;<code>nums</code>, there is a sliding window of size <code>k</code> which is moving from the very left of the array to the very right. You can only see the <code>k</code> numbers in the window. Each time the sliding window moves right by one position.</p>\n\n<p>Return <em>the max sliding window</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,-1,-3,5,3,6,7], k = 3\n<strong>Output:</strong> [3,3,5,5,6,7]\n<strong>Explanation:</strong> \nWindow position                Max\n---------------               -----\n[1  3  -1] -3  5  3  6  7       <strong>3</strong>\n 1 [3  -1  -3] 5  3  6  7       <strong>3</strong>\n 1  3 [-1  -3  5] 3  6  7      <strong> 5</strong>\n 1  3  -1 [-3  5  3] 6  7       <strong>5</strong>\n 1  3  -1  -3 [5  3  6] 7       <strong>6</strong>\n 1  3  -1  -3  5 [3  6  7]      <strong>7</strong>\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1], k = 1\n<strong>Output:</strong> [1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position.\n\nReturn _the max sliding window_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,-1,-3,5,3,6,7], k = 3\n    **Output:** [3,3,5,5,6,7]\n    **Explanation:** \n    Window position                Max\n    ---------------               -----\n    [1  3  -1] -3  5  3  6  7       **3**\n     1 [3  -1  -3] 5  3  6  7       **3**\n     1  3 [-1  -3  5] 3  6  7      **5**\n     1  3  -1 [-3  5  3] 6  7       **5**\n     1  3  -1  -3 [5  3  6] 7       **6**\n     1  3  -1  -3  5 [3  6  7]      **7**\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1], k = 1\n    **Output:** [1]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-104 <= nums[i] <= 104`\n  * `1 <= k <= nums.length`",
+  "question": "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position.\n\nReturn _the max sliding window_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,-1,-3,5,3,6,7], k = 3\n    **Output:** [3,3,5,5,6,7]\n    **Explanation:** \n    Window position                Max\n    ---------------               -----\n    [1  3  -1] -3  5  3  6  7       **3**\n     1 [3  -1  -3] 5  3  6  7       **3**\n     1  3 [-1  -3  5] 3  6  7      **5**\n     1  3  -1 [-3  5  3] 6  7       **5**\n     1  3  -1  -3 [5  3  6] 7       **6**\n     1  3  -1  -3  5 [3  6  7]      **7**\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1], k = 1\n    **Output:** [1]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `-104 <= nums[i] <= 104`\n  * `1 <= k <= nums.length`",
+  "topics": ["Array", "Queue", "Sliding Window", "Heap (Priority Queue)", "Monotonic Queue"],
+  "total_accepted": 1603922,
+  "total_submissions": 3309704,
+  "acceptance_rate": "48.5%",
+  "similar_questions": [
+    {
+      "title": "Minimum Window Substring",
+      "slug": "minimum-window-substring",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-window-substring/"
+    },
+    {
+      "title": "Min Stack",
+      "slug": "min-stack",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/min-stack/"
+    },
+    {
+      "title": "Longest Substring with At Most Two Distinct Characters",
+      "slug": "longest-substring-with-at-most-two-distinct-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/"
+    },
+    {
+      "title": "Paint House II",
+      "slug": "paint-house-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paint-house-ii/"
+    },
+    {
+      "title": "Jump Game VI",
+      "slug": "jump-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vi/"
+    },
+    {
+      "title": "Maximum Number of Robots Within Budget",
+      "slug": "maximum-number-of-robots-within-budget",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-robots-within-budget/"
+    },
+    {
+      "title": "Maximum Tastiness of Candy Basket",
+      "slug": "maximum-tastiness-of-candy-basket",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-tastiness-of-candy-basket/"
+    },
+    {
+      "title": "Maximal Score After Applying K Operations",
+      "slug": "maximal-score-after-applying-k-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximal-score-after-applying-k-operations/"
+    }
+  ],
+  "hints": [
+    "How about using a data structure such as deque (double-ended queue)?",
+    "The queue size need not be the same as the window’s size.",
+    "Remove redundant elements and the queue should store only elements that need to be considered."
+  ]
+}

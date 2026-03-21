@@ -1,0 +1,47 @@
+{
+  "id": "2276",
+  "title": "Count Integers in Intervals",
+  "slug": "count-integers-in-intervals",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <strong>empty</strong> set of intervals, implement a data structure that can:</p>\n\n<ul>\n\t<li><strong>Add</strong> an interval to the set of intervals.</li>\n\t<li><strong>Count</strong> the number of integers that are present in <strong>at least one</strong> interval.</li>\n</ul>\n\n<p>Implement the <code>CountIntervals</code> class:</p>\n\n<ul>\n\t<li><code>CountIntervals()</code> Initializes the object with an empty set of intervals.</li>\n\t<li><code>void add(int left, int right)</code> Adds the interval <code>[left, right]</code> to the set of intervals.</li>\n\t<li><code>int count()</code> Returns the number of integers that are present in <strong>at least one</strong> interval.</li>\n</ul>\n\n<p><strong>Note</strong> that an interval <code>[left, right]</code> denotes all the integers <code>x</code> where <code>left &lt;= x &lt;= right</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;CountIntervals&quot;, &quot;add&quot;, &quot;add&quot;, &quot;count&quot;, &quot;add&quot;, &quot;count&quot;]\n[[], [2, 3], [7, 10], [], [5, 8], []]\n<strong>Output</strong>\n[null, null, null, 6, null, 8]\n\n<strong>Explanation</strong>\nCountIntervals countIntervals = new CountIntervals(); // initialize the object with an empty set of intervals. \ncountIntervals.add(2, 3);  // add [2, 3] to the set of intervals.\ncountIntervals.add(7, 10); // add [7, 10] to the set of intervals.\ncountIntervals.count();    // return 6\n                           // the integers 2 and 3 are present in the interval [2, 3].\n                           // the integers 7, 8, 9, and 10 are present in the interval [7, 10].\ncountIntervals.add(5, 8);  // add [5, 8] to the set of intervals.\ncountIntervals.count();    // return 8\n                           // the integers 2 and 3 are present in the interval [2, 3].\n                           // the integers 5 and 6 are present in the interval [5, 8].\n                           // the integers 7 and 8 are present in the intervals [5, 8] and [7, 10].\n                           // the integers 9 and 10 are present in the interval [7, 10].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= left &lt;= right &lt;= 10<sup>9</sup></code></li>\n\t<li>At most <code>10<sup>5</sup></code> calls <strong>in total</strong> will be made to <code>add</code> and <code>count</code>.</li>\n\t<li>At least <strong>one</strong> call will be made to <code>count</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an **empty** set of intervals, implement a data structure that can:\n\n  * **Add** an interval to the set of intervals.\n  * **Count** the number of integers that are present in **at least one** interval.\n\n\n\nImplement the `CountIntervals` class:\n\n  * `CountIntervals()` Initializes the object with an empty set of intervals.\n  * `void add(int left, int right)` Adds the interval `[left, right]` to the set of intervals.\n  * `int count()` Returns the number of integers that are present in **at least one** interval.\n\n\n\n**Note** that an interval `[left, right]` denotes all the integers `x` where `left <= x <= right`.\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"CountIntervals\", \"add\", \"add\", \"count\", \"add\", \"count\"]\n    [[], [2, 3], [7, 10], [], [5, 8], []]\n    **Output**\n    [null, null, null, 6, null, 8]\n    \n    **Explanation**\n    CountIntervals countIntervals = new CountIntervals(); // initialize the object with an empty set of intervals. \n    countIntervals.add(2, 3);  // add [2, 3] to the set of intervals.\n    countIntervals.add(7, 10); // add [7, 10] to the set of intervals.\n    countIntervals.count();    // return 6\n                               // the integers 2 and 3 are present in the interval [2, 3].\n                               // the integers 7, 8, 9, and 10 are present in the interval [7, 10].\n    countIntervals.add(5, 8);  // add [5, 8] to the set of intervals.\n    countIntervals.count();    // return 8\n                               // the integers 2 and 3 are present in the interval [2, 3].\n                               // the integers 5 and 6 are present in the interval [5, 8].\n                               // the integers 7 and 8 are present in the intervals [5, 8] and [7, 10].\n                               // the integers 9 and 10 are present in the interval [7, 10].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= left <= right <= 109`\n  * At most `105` calls **in total** will be made to `add` and `count`.\n  * At least **one** call will be made to `count`.",
+  "question": "Given an **empty** set of intervals, implement a data structure that can:\n\n  * **Add** an interval to the set of intervals.\n  * **Count** the number of integers that are present in **at least one** interval.\n\n\n\nImplement the `CountIntervals` class:\n\n  * `CountIntervals()` Initializes the object with an empty set of intervals.\n  * `void add(int left, int right)` Adds the interval `[left, right]` to the set of intervals.\n  * `int count()` Returns the number of integers that are present in **at least one** interval.\n\n\n\n**Note** that an interval `[left, right]` denotes all the integers `x` where `left <= x <= right`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"CountIntervals\", \"add\", \"add\", \"count\", \"add\", \"count\"]\n    [[], [2, 3], [7, 10], [], [5, 8], []]\n    **Output**\n    [null, null, null, 6, null, 8]\n    \n    **Explanation**\n    CountIntervals countIntervals = new CountIntervals(); // initialize the object with an empty set of intervals. \n    countIntervals.add(2, 3);  // add [2, 3] to the set of intervals.\n    countIntervals.add(7, 10); // add [7, 10] to the set of intervals.\n    countIntervals.count();    // return 6\n                               // the integers 2 and 3 are present in the interval [2, 3].\n                               // the integers 7, 8, 9, and 10 are present in the interval [7, 10].\n    countIntervals.add(5, 8);  // add [5, 8] to the set of intervals.\n    countIntervals.count();    // return 8\n                               // the integers 2 and 3 are present in the interval [2, 3].\n                               // the integers 5 and 6 are present in the interval [5, 8].\n                               // the integers 7 and 8 are present in the intervals [5, 8] and [7, 10].\n                               // the integers 9 and 10 are present in the interval [7, 10].",
+  "constraints": "**Constraints:**\n\n  * `1 <= left <= right <= 109`\n  * At most `105` calls **in total** will be made to `add` and `count`.\n  * At least **one** call will be made to `count`.",
+  "topics": ["Design", "Segment Tree", "Ordered Set"],
+  "total_accepted": 28625,
+  "total_submissions": 80095,
+  "acceptance_rate": "35.7%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Insert Interval",
+      "slug": "insert-interval",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/insert-interval/"
+    },
+    {
+      "title": "Data Stream as Disjoint Intervals",
+      "slug": "data-stream-as-disjoint-intervals",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/data-stream-as-disjoint-intervals/"
+    },
+    {
+      "title": "My Calendar III",
+      "slug": "my-calendar-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/my-calendar-iii/"
+    }
+  ],
+  "hints": [
+    "How can you efficiently add intervals to the set of intervals? Can a data structure like a Binary Search Tree help?",
+    "How can you ensure that the intervals present in the set are non-overlapping? Try merging the overlapping intervals whenever a new interval is added.",
+    "How can you update the count of integers present in at least one interval when a new interval is added to the set?"
+  ]
+}

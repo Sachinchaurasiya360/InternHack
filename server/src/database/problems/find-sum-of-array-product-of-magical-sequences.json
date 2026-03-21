@@ -1,0 +1,45 @@
+{
+  "id": "3539",
+  "title": "Find Sum of Array Product of Magical Sequences",
+  "slug": "find-sum-of-array-product-of-magical-sequences",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integers, <code>m</code> and <code>k</code>, and an integer array <code>nums</code>.</p>\nA sequence of integers <code>seq</code> is called <strong>magical</strong> if:\n\n<ul>\n\t<li><code>seq</code> has a size of <code>m</code>.</li>\n\t<li><code>0 &lt;= seq[i] &lt; nums.length</code></li>\n\t<li>The <strong>binary representation</strong> of <code>2<sup>seq[0]</sup> + 2<sup>seq[1]</sup> + ... + 2<sup>seq[m - 1]</sup></code> has <code>k</code> <strong>set bits</strong>.</li>\n</ul>\n\n<p>The <strong>array product</strong> of this sequence is defined as <code>prod(seq) = (nums[seq[0]] * nums[seq[1]] * ... * nums[seq[m - 1]])</code>.</p>\n\n<p>Return the <strong>sum</strong> of the <strong>array products</strong> for all valid <strong>magical</strong> sequences.</p>\n\n<p>Since the answer may be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>A <strong>set bit</strong> refers to a bit in the binary representation of a number that has a value of 1.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">m = 5, k = 5, nums = [1,10,100,10000,1000000]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">991600007</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>All permutations of <code>[0, 1, 2, 3, 4]</code> are magical sequences, each with an array product of 10<sup>13</sup>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">m = 2, k = 2, nums = [5,4,3,2,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">170</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The magical sequences are <code>[0, 1]</code>, <code>[0, 2]</code>, <code>[0, 3]</code>, <code>[0, 4]</code>, <code>[1, 0]</code>, <code>[1, 2]</code>, <code>[1, 3]</code>, <code>[1, 4]</code>, <code>[2, 0]</code>, <code>[2, 1]</code>, <code>[2, 3]</code>, <code>[2, 4]</code>, <code>[3, 0]</code>, <code>[3, 1]</code>, <code>[3, 2]</code>, <code>[3, 4]</code>, <code>[4, 0]</code>, <code>[4, 1]</code>, <code>[4, 2]</code>, and <code>[4, 3]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">m = 1, k = 1, nums = [28]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">28</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The only magical sequence is <code>[0]</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= m &lt;= 30</code></li>\n\t<li><code>1 &lt;= nums.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two integers, `m` and `k`, and an integer array `nums`.\n\nA sequence of integers `seq` is called **magical** if: \n\n  * `seq` has a size of `m`.\n  * `0 <= seq[i] < nums.length`\n  * The **binary representation** of `2seq[0] + 2seq[1] + ... + 2seq[m - 1]` has `k` **set bits**.\n\n\n\nThe **array product** of this sequence is defined as `prod(seq) = (nums[seq[0]] * nums[seq[1]] * ... * nums[seq[m - 1]])`.\n\nReturn the **sum** of the **array products** for all valid **magical** sequences.\n\nSince the answer may be large, return it **modulo** `109 + 7`.\n\nA **set bit** refers to a bit in the binary representation of a number that has a value of 1.\n\n \n\n**Example 1:**\n\n**Input:** m = 5, k = 5, nums = [1,10,100,10000,1000000]\n\n**Output:** 991600007\n\n**Explanation:**\n\nAll permutations of `[0, 1, 2, 3, 4]` are magical sequences, each with an array product of 1013.\n\n**Example 2:**\n\n**Input:** m = 2, k = 2, nums = [5,4,3,2,1]\n\n**Output:** 170\n\n**Explanation:**\n\nThe magical sequences are `[0, 1]`, `[0, 2]`, `[0, 3]`, `[0, 4]`, `[1, 0]`, `[1, 2]`, `[1, 3]`, `[1, 4]`, `[2, 0]`, `[2, 1]`, `[2, 3]`, `[2, 4]`, `[3, 0]`, `[3, 1]`, `[3, 2]`, `[3, 4]`, `[4, 0]`, `[4, 1]`, `[4, 2]`, and `[4, 3]`.\n\n**Example 3:**\n\n**Input:** m = 1, k = 1, nums = [28]\n\n**Output:** 28\n\n**Explanation:**\n\nThe only magical sequence is `[0]`.\n\n \n\n**Constraints:**\n\n  * `1 <= k <= m <= 30`\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 108`",
+  "question": "You are given two integers, `m` and `k`, and an integer array `nums`.\n\nA sequence of integers `seq` is called **magical** if: \n\n  * `seq` has a size of `m`.\n  * `0 <= seq[i] < nums.length`\n  * The **binary representation** of `2seq[0] + 2seq[1] + ... + 2seq[m - 1]` has `k` **set bits**.\n\n\n\nThe **array product** of this sequence is defined as `prod(seq) = (nums[seq[0]] * nums[seq[1]] * ... * nums[seq[m - 1]])`.\n\nReturn the **sum** of the **array products** for all valid **magical** sequences.\n\nSince the answer may be large, return it **modulo** `109 + 7`.\n\nA **set bit** refers to a bit in the binary representation of a number that has a value of 1.",
+  "examples": "**Example 1:**\n\n**Input:** m = 5, k = 5, nums = [1,10,100,10000,1000000]\n\n**Output:** 991600007\n\n**Explanation:**\n\nAll permutations of `[0, 1, 2, 3, 4]` are magical sequences, each with an array product of 1013.\n\n**Example 2:**\n\n**Input:** m = 2, k = 2, nums = [5,4,3,2,1]\n\n**Output:** 170\n\n**Explanation:**\n\nThe magical sequences are `[0, 1]`, `[0, 2]`, `[0, 3]`, `[0, 4]`, `[1, 0]`, `[1, 2]`, `[1, 3]`, `[1, 4]`, `[2, 0]`, `[2, 1]`, `[2, 3]`, `[2, 4]`, `[3, 0]`, `[3, 1]`, `[3, 2]`, `[3, 4]`, `[4, 0]`, `[4, 1]`, `[4, 2]`, and `[4, 3]`.\n\n**Example 3:**\n\n**Input:** m = 1, k = 1, nums = [28]\n\n**Output:** 28\n\n**Explanation:**\n\nThe only magical sequence is `[0]`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= m <= 30`\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 108`",
+  "topics": [
+    "Array",
+    "Math",
+    "Dynamic Programming",
+    "Bit Manipulation",
+    "Combinatorics",
+    "Bitmask"
+  ],
+  "total_accepted": 52476,
+  "total_submissions": 84668,
+  "acceptance_rate": "62.0%",
+  "similar_questions": [
+    {
+      "title": "Product of Array Except Self",
+      "slug": "product-of-array-except-self",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/product-of-array-except-self/"
+    },
+    {
+      "title": "Smallest Number With All Set Bits",
+      "slug": "smallest-number-with-all-set-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/smallest-number-with-all-set-bits/"
+    }
+  ],
+  "hints": [
+    "Use Dynamic Programming",
+    "Let <code>dp[i][j][mask]</code> be the state after choosing <code>i</code> numbers (indices)",
+    "The partial sum <code>S = 2^(seq[0]) + 2^(seq[1]) + ... + 2^(seq[i - 1])</code> has produced exactly <code>j</code> set bits once you’ve fully propagated any carries",
+    "The <code>mask</code> represents the \"window\" of lower-order bits from <code>S</code> that have not yet been fully processed (i.e. bits that might later create new set bits when additional terms are added)",
+    "Use combinatorics",
+    "How many ways are there to permute a sequence of entities where some are repetitive?"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "657",
+  "title": "Robot Return to Origin",
+  "slug": "robot-return-to-origin",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>There is a robot starting at the position <code>(0, 0)</code>, the origin, on a 2D plane. Given a sequence of its moves, judge if this robot <strong>ends up at </strong><code>(0, 0)</code> after it completes its moves.</p>\n\n<p>You are given a string <code>moves</code> that represents the move sequence of the robot where <code>moves[i]</code> represents its <code>i<sup>th</sup></code> move. Valid moves are <code>&#39;R&#39;</code> (right), <code>&#39;L&#39;</code> (left), <code>&#39;U&#39;</code> (up), and <code>&#39;D&#39;</code> (down).</p>\n\n<p>Return <code>true</code><em> if the robot returns to the origin after it finishes all of its moves, or </em><code>false</code><em> otherwise</em>.</p>\n\n<p><strong>Note</strong>: The way that the robot is &quot;facing&quot; is irrelevant. <code>&#39;R&#39;</code> will always make the robot move to the right once, <code>&#39;L&#39;</code> will always make it move left, etc. Also, assume that the magnitude of the robot&#39;s movement is the same for each move.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> moves = &quot;UD&quot;\n<strong>Output:</strong> true\n<strong>Explanation</strong>: The robot moves up once, and then down once. All moves have the same magnitude, so it ended up at the origin where it started. Therefore, we return true.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> moves = &quot;LL&quot;\n<strong>Output:</strong> false\n<strong>Explanation</strong>: The robot moves left twice. It ends up two &quot;moves&quot; to the left of the origin. We return false because it is not at the origin at the end of its moves.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= moves.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>moves</code> only contains the characters <code>&#39;U&#39;</code>, <code>&#39;D&#39;</code>, <code>&#39;L&#39;</code> and <code>&#39;R&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "There is a robot starting at the position `(0, 0)`, the origin, on a 2D plane. Given a sequence of its moves, judge if this robot **ends up at**`(0, 0)` after it completes its moves.\n\nYou are given a string `moves` that represents the move sequence of the robot where `moves[i]` represents its `ith` move. Valid moves are `'R'` (right), `'L'` (left), `'U'` (up), and `'D'` (down).\n\nReturn `true` _if the robot returns to the origin after it finishes all of its moves, or_`false` _otherwise_.\n\n**Note** : The way that the robot is \"facing\" is irrelevant. `'R'` will always make the robot move to the right once, `'L'` will always make it move left, etc. Also, assume that the magnitude of the robot's movement is the same for each move.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** moves = \"UD\"\n    **Output:** true\n    **Explanation** : The robot moves up once, and then down once. All moves have the same magnitude, so it ended up at the origin where it started. Therefore, we return true.\n    \n\n**Example 2:**\n    \n    \n    **Input:** moves = \"LL\"\n    **Output:** false\n    **Explanation** : The robot moves left twice. It ends up two \"moves\" to the left of the origin. We return false because it is not at the origin at the end of its moves.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= moves.length <= 2 * 104`\n  * `moves` only contains the characters `'U'`, `'D'`, `'L'` and `'R'`.",
+  "question": "There is a robot starting at the position `(0, 0)`, the origin, on a 2D plane. Given a sequence of its moves, judge if this robot **ends up at**`(0, 0)` after it completes its moves.\n\nYou are given a string `moves` that represents the move sequence of the robot where `moves[i]` represents its `ith` move. Valid moves are `'R'` (right), `'L'` (left), `'U'` (up), and `'D'` (down).\n\nReturn `true` _if the robot returns to the origin after it finishes all of its moves, or_`false` _otherwise_.\n\n**Note** : The way that the robot is \"facing\" is irrelevant. `'R'` will always make the robot move to the right once, `'L'` will always make it move left, etc. Also, assume that the magnitude of the robot's movement is the same for each move.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** moves = \"UD\"\n    **Output:** true\n    **Explanation** : The robot moves up once, and then down once. All moves have the same magnitude, so it ended up at the origin where it started. Therefore, we return true.\n    \n\n**Example 2:**\n    \n    \n    **Input:** moves = \"LL\"\n    **Output:** false\n    **Explanation** : The robot moves left twice. It ends up two \"moves\" to the left of the origin. We return false because it is not at the origin at the end of its moves.",
+  "constraints": "**Constraints:**\n\n  * `1 <= moves.length <= 2 * 104`\n  * `moves` only contains the characters `'U'`, `'D'`, `'L'` and `'R'`.",
+  "topics": ["String", "Simulation"],
+  "total_accepted": 541817,
+  "total_submissions": 708183,
+  "acceptance_rate": "76.5%",
+  "similar_questions": [
+    {
+      "title": "Number of Provinces",
+      "slug": "number-of-provinces",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-provinces/"
+    },
+    {
+      "title": "Execution of All Suffix Instructions Staying in a Grid",
+      "slug": "execution-of-all-suffix-instructions-staying-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/execution-of-all-suffix-instructions-staying-in-a-grid/"
+    },
+    {
+      "title": "Furthest Point From Origin",
+      "slug": "furthest-point-from-origin",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/furthest-point-from-origin/"
+    }
+  ],
+  "hints": []
+}

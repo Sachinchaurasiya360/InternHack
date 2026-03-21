@@ -1,0 +1,40 @@
+{
+  "id": "2635",
+  "title": "Apply Transform Over Each Element in Array",
+  "slug": "apply-transform-over-each-element-in-array",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "<p>Given an integer array&nbsp;<code>arr</code>&nbsp;and a mapping function&nbsp;<code>fn</code>, return&nbsp;a new array with a transformation applied to each element.</p>\n\n<p>The returned array should be created such that&nbsp;<code>returnedArray[i] = fn(arr[i], i)</code>.</p>\n\n<p>Please solve it without the built-in <code>Array.map</code> method.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3], fn = function plusone(n) { return n + 1; }\n<strong>Output:</strong> [2,3,4]\n<strong>Explanation:</strong>\nconst newArray = map(arr, plusone); // [2,3,4]\nThe function increases each value in the array by one. \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3], fn = function plusI(n, i) { return n + i; }\n<strong>Output:</strong> [1,3,5]\n<strong>Explanation:</strong> The function increases each value by the index it resides in.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [10,20,30], fn = function constant() { return 42; }\n<strong>Output:</strong> [42,42,42]\n<strong>Explanation:</strong> The function always returns 42.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= arr.length &lt;= 1000</code></li>\n\t<li><code><font face=\"monospace\">-10<sup>9</sup>&nbsp;&lt;= arr[i] &lt;= 10<sup>9</sup></font></code></li>\n\t<li><code>fn</code> returns an integer.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr` and a mapping function `fn`, return a new array with a transformation applied to each element.\n\nThe returned array should be created such that `returnedArray[i] = fn(arr[i], i)`.\n\nPlease solve it without the built-in `Array.map` method.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3], fn = function plusone(n) { return n + 1; }\n    **Output:** [2,3,4]\n    **Explanation:**\n    const newArray = map(arr, plusone); // [2,3,4]\n    The function increases each value in the array by one. \n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3], fn = function plusI(n, i) { return n + i; }\n    **Output:** [1,3,5]\n    **Explanation:** The function increases each value by the index it resides in.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [10,20,30], fn = function constant() { return 42; }\n    **Output:** [42,42,42]\n    **Explanation:** The function always returns 42.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= arr.length <= 1000`\n  * `-109 <= arr[i] <= 109`\n  * `fn` returns an integer.",
+  "question": "Given an integer array `arr` and a mapping function `fn`, return a new array with a transformation applied to each element.\n\nThe returned array should be created such that `returnedArray[i] = fn(arr[i], i)`.\n\nPlease solve it without the built-in `Array.map` method.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3], fn = function plusone(n) { return n + 1; }\n    **Output:** [2,3,4]\n    **Explanation:**\n    const newArray = map(arr, plusone); // [2,3,4]\n    The function increases each value in the array by one. \n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,3], fn = function plusI(n, i) { return n + i; }\n    **Output:** [1,3,5]\n    **Explanation:** The function increases each value by the index it resides in.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [10,20,30], fn = function constant() { return 42; }\n    **Output:** [42,42,42]\n    **Explanation:** The function always returns 42.",
+  "constraints": "**Constraints:**\n\n  * `0 <= arr.length <= 1000`\n  * `-109 <= arr[i] <= 109`\n  * `fn` returns an integer.",
+  "topics": [],
+  "total_accepted": 332349,
+  "total_submissions": 385367,
+  "acceptance_rate": "86.2%",
+  "similar_questions": [
+    {
+      "title": "Group By",
+      "slug": "group-by",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-by/"
+    },
+    {
+      "title": "Filter Elements from Array",
+      "slug": "filter-elements-from-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/filter-elements-from-array/"
+    },
+    {
+      "title": "Array Reduce Transformation",
+      "slug": "array-reduce-transformation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/array-reduce-transformation/"
+    }
+  ],
+  "hints": [
+    "Start by creating an array that will eventually be returned.",
+    "Loop over each element in the passed array. Push fn(arr[i]) to the returned array."
+  ]
+}

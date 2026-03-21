@@ -1,0 +1,27 @@
+{
+  "id": "1066",
+  "title": "Campus Bikes II",
+  "slug": "campus-bikes-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Backtracking", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 57102,
+  "total_submissions": 102243,
+  "acceptance_rate": "55.8%",
+  "similar_questions": [
+    {
+      "title": "Campus Bikes",
+      "slug": "campus-bikes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/campus-bikes/"
+    }
+  ],
+  "hints": [
+    "Model the problem with a dp(pos, mask) where pos represents the current bike to be assigned and mask the set of available workers."
+  ]
+}

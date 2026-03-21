@@ -1,0 +1,37 @@
+{
+  "id": "852",
+  "title": "Peak Index in a Mountain Array",
+  "slug": "peak-index-in-a-mountain-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <strong>mountain</strong> array <code>arr</code> of length <code>n</code> where the values increase to a <strong>peak element</strong> and then decrease.</p>\n\n<p>Return the index of the peak element.</p>\n\n<p>Your task is to solve it in <code>O(log(n))</code> time complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">arr = [0,1,0]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">arr = [0,2,1,0]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">arr = [0,10,5,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>6</sup></code></li>\n\t<li><code>arr</code> is <strong>guaranteed</strong> to be a mountain array.</li>\n</ul>\n",
+  "content_markdown": "You are given an integer **mountain** array `arr` of length `n` where the values increase to a **peak element** and then decrease.\n\nReturn the index of the peak element.\n\nYour task is to solve it in `O(log(n))` time complexity.\n\n \n\n**Example 1:**\n\n**Input:** arr = [0,1,0]\n\n**Output:** 1\n\n**Example 2:**\n\n**Input:** arr = [0,2,1,0]\n\n**Output:** 1\n\n**Example 3:**\n\n**Input:** arr = [0,10,5,2]\n\n**Output:** 1\n\n \n\n**Constraints:**\n\n  * `3 <= arr.length <= 105`\n  * `0 <= arr[i] <= 106`\n  * `arr` is **guaranteed** to be a mountain array.",
+  "question": "You are given an integer **mountain** array `arr` of length `n` where the values increase to a **peak element** and then decrease.\n\nReturn the index of the peak element.\n\nYour task is to solve it in `O(log(n))` time complexity.",
+  "examples": "**Example 1:**\n\n**Input:** arr = [0,1,0]\n\n**Output:** 1\n\n**Example 2:**\n\n**Input:** arr = [0,2,1,0]\n\n**Output:** 1\n\n**Example 3:**\n\n**Input:** arr = [0,10,5,2]\n\n**Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `3 <= arr.length <= 105`\n  * `0 <= arr[i] <= 106`\n  * `arr` is **guaranteed** to be a mountain array.",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 1165461,
+  "total_submissions": 1741439,
+  "acceptance_rate": "66.9%",
+  "similar_questions": [
+    {
+      "title": "Find Peak Element",
+      "slug": "find-peak-element",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-peak-element/"
+    },
+    {
+      "title": "Find in Mountain Array",
+      "slug": "find-in-mountain-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-in-mountain-array/"
+    },
+    {
+      "title": "Minimum Number of Removals to Make Mountain Array",
+      "slug": "minimum-number-of-removals-to-make-mountain-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-removals-to-make-mountain-array/"
+    }
+  ],
+  "hints": []
+}

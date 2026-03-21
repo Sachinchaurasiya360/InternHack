@@ -1,0 +1,35 @@
+{
+  "id": "1231",
+  "title": "Divide Chocolate",
+  "slug": "divide-chocolate",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 69784,
+  "total_submissions": 115376,
+  "acceptance_rate": "60.5%",
+  "similar_questions": [
+    {
+      "title": "Split Array Largest Sum",
+      "slug": "split-array-largest-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-largest-sum/"
+    },
+    {
+      "title": "Capacity To Ship Packages Within D Days",
+      "slug": "capacity-to-ship-packages-within-d-days",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/"
+    }
+  ],
+  "hints": [
+    "After dividing the array into K+1 sub-arrays, you will pick the sub-array with the minimum sum.",
+    "Divide the sub-array into K+1 sub-arrays such that the minimum sub-array sum is as maximum as possible.",
+    "Use binary search with greedy check."
+  ]
+}

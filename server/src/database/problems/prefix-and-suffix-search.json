@@ -1,0 +1,29 @@
+{
+  "id": "745",
+  "title": "Prefix and Suffix Search",
+  "slug": "prefix-and-suffix-search",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Design a special dictionary that searches the words in it by a prefix and a suffix.</p>\n\n<p>Implement the <code>WordFilter</code> class:</p>\n\n<ul>\n\t<li><code>WordFilter(string[] words)</code> Initializes the object with the <code>words</code> in the dictionary.</li>\n\t<li><code>f(string pref, string suff)</code> Returns <em>the index of the word in the dictionary,</em> which has the prefix <code>pref</code> and the suffix <code>suff</code>. If there is more than one valid index, return <strong>the largest</strong> of them. If there is no such word in the dictionary, return <code>-1</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;WordFilter&quot;, &quot;f&quot;]\n[[[&quot;apple&quot;]], [&quot;a&quot;, &quot;e&quot;]]\n<strong>Output</strong>\n[null, 0]\n<strong>Explanation</strong>\nWordFilter wordFilter = new WordFilter([&quot;apple&quot;]);\nwordFilter.f(&quot;a&quot;, &quot;e&quot;); // return 0, because the word at index 0 has prefix = &quot;a&quot; and suffix = &quot;e&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 7</code></li>\n\t<li><code>1 &lt;= pref.length, suff.length &lt;= 7</code></li>\n\t<li><code>words[i]</code>, <code>pref</code> and <code>suff</code> consist of lowercase English letters only.</li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to the function <code>f</code>.</li>\n</ul>\n",
+  "content_markdown": "Design a special dictionary that searches the words in it by a prefix and a suffix.\n\nImplement the `WordFilter` class:\n\n  * `WordFilter(string[] words)` Initializes the object with the `words` in the dictionary.\n  * `f(string pref, string suff)` Returns _the index of the word in the dictionary,_ which has the prefix `pref` and the suffix `suff`. If there is more than one valid index, return **the largest** of them. If there is no such word in the dictionary, return `-1`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"WordFilter\", \"f\"]\n    [[[\"apple\"]], [\"a\", \"e\"]]\n    **Output**\n    [null, 0]\n    **Explanation**\n    WordFilter wordFilter = new WordFilter([\"apple\"]);\n    wordFilter.f(\"a\", \"e\"); // return 0, because the word at index 0 has prefix = \"a\" and suffix = \"e\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 104`\n  * `1 <= words[i].length <= 7`\n  * `1 <= pref.length, suff.length <= 7`\n  * `words[i]`, `pref` and `suff` consist of lowercase English letters only.\n  * At most `104` calls will be made to the function `f`.",
+  "question": "Design a special dictionary that searches the words in it by a prefix and a suffix.\n\nImplement the `WordFilter` class:\n\n  * `WordFilter(string[] words)` Initializes the object with the `words` in the dictionary.\n  * `f(string pref, string suff)` Returns _the index of the word in the dictionary,_ which has the prefix `pref` and the suffix `suff`. If there is more than one valid index, return **the largest** of them. If there is no such word in the dictionary, return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"WordFilter\", \"f\"]\n    [[[\"apple\"]], [\"a\", \"e\"]]\n    **Output**\n    [null, 0]\n    **Explanation**\n    WordFilter wordFilter = new WordFilter([\"apple\"]);\n    wordFilter.f(\"a\", \"e\"); // return 0, because the word at index 0 has prefix = \"a\" and suffix = \"e\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 104`\n  * `1 <= words[i].length <= 7`\n  * `1 <= pref.length, suff.length <= 7`\n  * `words[i]`, `pref` and `suff` consist of lowercase English letters only.\n  * At most `104` calls will be made to the function `f`.",
+  "topics": ["Array", "Hash Table", "String", "Design", "Trie"],
+  "total_accepted": 109662,
+  "total_submissions": 268977,
+  "acceptance_rate": "40.8%",
+  "similar_questions": [
+    {
+      "title": "Design Add and Search Words Data Structure",
+      "slug": "design-add-and-search-words-data-structure",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/"
+    }
+  ],
+  "hints": [
+    "Take \"apple\" as an example, we will insert add \"apple{apple\", \"pple{apple\", \"ple{apple\", \"le{apple\", \"e{apple\", \"{apple\" into the Trie Tree.",
+    "If the query is: prefix = \"app\", suffix = \"le\", we can find it by querying our trie for\r\n\"le { app\".",
+    "We use '{' because in ASCii Table, '{' is next to 'z', so we just need to create new TrieNode[27] instead of 26. Also, compared with traditional Trie, we add the attribute weight in class TrieNode.\r\nYou can still choose any different character."
+  ]
+}

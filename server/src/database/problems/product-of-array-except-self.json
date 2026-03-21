@@ -1,0 +1,58 @@
+{
+  "id": "238",
+  "title": "Product of Array Except Self",
+  "slug": "product-of-array-except-self",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>an array</em> <code>answer</code> <em>such that</em> <code>answer[i]</code> <em>is equal to the product of all the elements of</em> <code>nums</code> <em>except</em> <code>nums[i]</code>.</p>\n\n<p>The product of any prefix or suffix of <code>nums</code> is <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer.</p>\n\n<p>You must write an algorithm that runs in&nbsp;<code>O(n)</code>&nbsp;time and without using the division operation.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,3,4]\n<strong>Output:</strong> [24,12,8,6]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [-1,1,0,-3,3]\n<strong>Output:</strong> [0,0,9,0,0]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-30 &lt;= nums[i] &lt;= 30</code></li>\n\t<li>The input is generated such that <code>answer[i]</code> is <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong>&nbsp;Can you solve the problem in <code>O(1)</code>&nbsp;extra&nbsp;space complexity? (The output array <strong>does not</strong> count as extra space for space complexity analysis.)</p>\n",
+  "content_markdown": "Given an integer array `nums`, return _an array_ `answer` _such that_ `answer[i]` _is equal to the product of all the elements of_ `nums` _except_ `nums[i]`.\n\nThe product of any prefix or suffix of `nums` is **guaranteed** to fit in a **32-bit** integer.\n\nYou must write an algorithm that runs in `O(n)` time and without using the division operation.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** [24,12,8,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,1,0,-3,3]\n    **Output:** [0,0,9,0,0]\n    \n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `-30 <= nums[i] <= 30`\n  * The input is generated such that `answer[i]` is **guaranteed** to fit in a **32-bit** integer.\n\n\n\n \n\n**Follow up:**  Can you solve the problem in `O(1)` extra space complexity? (The output array **does not** count as extra space for space complexity analysis.)",
+  "question": "Given an integer array `nums`, return _an array_ `answer` _such that_ `answer[i]` _is equal to the product of all the elements of_ `nums` _except_ `nums[i]`.\n\nThe product of any prefix or suffix of `nums` is **guaranteed** to fit in a **32-bit** integer.\n\nYou must write an algorithm that runs in `O(n)` time and without using the division operation.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4]\n    **Output:** [24,12,8,6]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,1,0,-3,3]\n    **Output:** [0,0,9,0,0]",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `-30 <= nums[i] <= 30`\n  * The input is generated such that `answer[i]` is **guaranteed** to fit in a **32-bit** integer.",
+  "topics": ["Array", "Prefix Sum"],
+  "total_accepted": 4361565,
+  "total_submissions": 6357529,
+  "acceptance_rate": "68.6%",
+  "similar_questions": [
+    {
+      "title": "Trapping Rain Water",
+      "slug": "trapping-rain-water",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/trapping-rain-water/"
+    },
+    {
+      "title": "Maximum Product Subarray",
+      "slug": "maximum-product-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-product-subarray/"
+    },
+    {
+      "title": "Paint House II",
+      "slug": "paint-house-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paint-house-ii/"
+    },
+    {
+      "title": "Minimum Difference in Sums After Removal of Elements",
+      "slug": "minimum-difference-in-sums-after-removal-of-elements",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-difference-in-sums-after-removal-of-elements/"
+    },
+    {
+      "title": "Construct Product Matrix",
+      "slug": "construct-product-matrix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/construct-product-matrix/"
+    },
+    {
+      "title": "Find Sum of Array Product of Magical Sequences",
+      "slug": "find-sum-of-array-product-of-magical-sequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-sum-of-array-product-of-magical-sequences/"
+    }
+  ],
+  "hints": [
+    "Think how you can efficiently utilize prefix and suffix products to calculate the product of all elements except self for each index. Can you pre-compute the prefix and suffix products in linear time to avoid redundant calculations?",
+    "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?"
+  ]
+}

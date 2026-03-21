@@ -1,0 +1,22 @@
+{
+  "id": "2638",
+  "title": "Count the Number of K-Free Subsets",
+  "slug": "count-the-number-of-k-free-subsets",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Dynamic Programming", "Sorting", "Combinatorics"],
+  "total_accepted": 5263,
+  "total_submissions": 11147,
+  "acceptance_rate": "47.2%",
+  "similar_questions": [],
+  "hints": [
+    "Split all numbers into several groups, with each group being an arithmetic sequence with a common difference of k.",
+    "How many K-free subsets are there for each group? This can be solved by dp: dp[i] = dp[i-1] + dp[i-2], meaning if we choose ith element, we cannot choose (i-1)th; otherwise we can choose (i-1)th element.",
+    "After solving the problem for every group, the final result is just the product of the sub-problems."
+  ]
+}

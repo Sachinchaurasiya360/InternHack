@@ -1,0 +1,52 @@
+{
+  "id": "1306",
+  "title": "Jump Game III",
+  "slug": "jump-game-iii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of non-negative integers <code>arr</code>, you are initially positioned at <code>start</code>&nbsp;index of the array. When you are at index <code>i</code>, you can jump&nbsp;to <code>i + arr[i]</code> or <code>i - arr[i]</code>, check if you can reach&nbsp;<strong>any</strong> index with value 0.</p>\n\n<p>Notice that you can not jump outside of the array at any time.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,2,3,0,3,1,2], start = 5\n<strong>Output:</strong> true\n<strong>Explanation:</strong> \nAll possible ways to reach at index 3 with value 0 are: \nindex 5 -&gt; index 4 -&gt; index 1 -&gt; index 3 \nindex 5 -&gt; index 6 -&gt; index 4 -&gt; index 1 -&gt; index 3 \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,2,3,0,3,1,2], start = 0\n<strong>Output:</strong> true \n<strong>Explanation: \n</strong>One possible way to reach at index 3 with value 0 is: \nindex 0 -&gt; index 4 -&gt; index 1 -&gt; index 3\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [3,0,2,1,2], start = 2\n<strong>Output:</strong> false\n<strong>Explanation: </strong>There is no way to reach at index 1 with value 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;&nbsp;arr.length</code></li>\n\t<li><code>0 &lt;= start &lt; arr.length</code></li>\n</ul>\n",
+  "content_markdown": "Given an array of non-negative integers `arr`, you are initially positioned at `start` index of the array. When you are at index `i`, you can jump to `i + arr[i]` or `i - arr[i]`, check if you can reach **any** index with value 0.\n\nNotice that you can not jump outside of the array at any time.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [4,2,3,0,3,1,2], start = 5\n    **Output:** true\n    **Explanation:** \n    All possible ways to reach at index 3 with value 0 are: \n    index 5 -> index 4 -> index 1 -> index 3 \n    index 5 -> index 6 -> index 4 -> index 1 -> index 3 \n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [4,2,3,0,3,1,2], start = 0\n    **Output:** true \n    **Explanation:** One possible way to reach at index 3 with value 0 is: \n    index 0 -> index 4 -> index 1 -> index 3\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [3,0,2,1,2], start = 2\n    **Output:** false\n    **Explanation:** There is no way to reach at index 1 with value 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 5 * 104`\n  * `0 <= arr[i] < arr.length`\n  * `0 <= start < arr.length`",
+  "question": "Given an array of non-negative integers `arr`, you are initially positioned at `start` index of the array. When you are at index `i`, you can jump to `i + arr[i]` or `i - arr[i]`, check if you can reach **any** index with value 0.\n\nNotice that you can not jump outside of the array at any time.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [4,2,3,0,3,1,2], start = 5\n    **Output:** true\n    **Explanation:** \n    All possible ways to reach at index 3 with value 0 are: \n    index 5 -> index 4 -> index 1 -> index 3 \n    index 5 -> index 6 -> index 4 -> index 1 -> index 3 \n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [4,2,3,0,3,1,2], start = 0\n    **Output:** true \n    **Explanation:** One possible way to reach at index 3 with value 0 is: \n    index 0 -> index 4 -> index 1 -> index 3\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [3,0,2,1,2], start = 2\n    **Output:** false\n    **Explanation:** There is no way to reach at index 1 with value 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 5 * 104`\n  * `0 <= arr[i] < arr.length`\n  * `0 <= start < arr.length`",
+  "topics": ["Array", "Depth-First Search", "Breadth-First Search"],
+  "total_accepted": 295410,
+  "total_submissions": 442929,
+  "acceptance_rate": "66.7%",
+  "similar_questions": [
+    {
+      "title": "Jump Game II",
+      "slug": "jump-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-ii/"
+    },
+    {
+      "title": "Jump Game",
+      "slug": "jump-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game/"
+    },
+    {
+      "title": "Jump Game VII",
+      "slug": "jump-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vii/"
+    },
+    {
+      "title": "Jump Game VIII",
+      "slug": "jump-game-viii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-viii/"
+    },
+    {
+      "title": "Maximum Number of Jumps to Reach the Last Index",
+      "slug": "maximum-number-of-jumps-to-reach-the-last-index",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-jumps-to-reach-the-last-index/"
+    }
+  ],
+  "hints": [
+    "Think of BFS to solve the problem.",
+    "When you reach a position with a value = 0 then return true."
+  ]
+}

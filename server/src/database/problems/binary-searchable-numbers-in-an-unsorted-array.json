@@ -1,0 +1,22 @@
+{
+  "id": "1966",
+  "title": "Binary Searchable Numbers in an Unsorted Array",
+  "slug": "binary-searchable-numbers-in-an-unsorted-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Stack", "Monotonic Stack"],
+  "total_accepted": 3737,
+  "total_submissions": 5903,
+  "acceptance_rate": "63.3%",
+  "similar_questions": [],
+  "hints": [
+    "The target will not be found if it is removed from the sequence. When does this occur?",
+    "If a pivot is to the left of and is greater than the target, then the target will be removed. The same occurs when the pivot is to the right of and is less than the target.",
+    "Since any element can be chosen as the pivot, for any target NOT to be removed, the condition described in the previous hint must never occur."
+  ]
+}

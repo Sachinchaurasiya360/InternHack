@@ -1,0 +1,25 @@
+{
+  "id": "644",
+  "title": "Maximum Average Subarray II",
+  "slug": "maximum-average-subarray-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Prefix Sum"],
+  "total_accepted": 22917,
+  "total_submissions": 60817,
+  "acceptance_rate": "37.7%",
+  "similar_questions": [
+    {
+      "title": "Maximum Average Subarray I",
+      "slug": "maximum-average-subarray-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-average-subarray-i/"
+    }
+  ],
+  "hints": []
+}

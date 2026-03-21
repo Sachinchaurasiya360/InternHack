@@ -1,0 +1,52 @@
+{
+  "id": "2024",
+  "title": "Maximize the Confusion of an Exam",
+  "slug": "maximize-the-confusion-of-an-exam",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A teacher is writing a test with <code>n</code> true/false questions, with <code>&#39;T&#39;</code> denoting true and <code>&#39;F&#39;</code> denoting false. He wants to confuse the students by <strong>maximizing</strong> the number of <strong>consecutive</strong> questions with the <strong>same</strong> answer (multiple trues or multiple falses in a row).</p>\n\n<p>You are given a string <code>answerKey</code>, where <code>answerKey[i]</code> is the original answer to the <code>i<sup>th</sup></code> question. In addition, you are given an integer <code>k</code>, the maximum number of times you may perform the following operation:</p>\n\n<ul>\n\t<li>Change the answer key for any question to <code>&#39;T&#39;</code> or <code>&#39;F&#39;</code> (i.e., set <code>answerKey[i]</code> to <code>&#39;T&#39;</code> or <code>&#39;F&#39;</code>).</li>\n</ul>\n\n<p>Return <em>the <strong>maximum</strong> number of consecutive</em> <code>&#39;T&#39;</code>s or <code>&#39;F&#39;</code>s <em>in the answer key after performing the operation at most</em> <code>k</code> <em>times</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> answerKey = &quot;TTFF&quot;, k = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> We can replace both the &#39;F&#39;s with &#39;T&#39;s to make answerKey = &quot;<u>TTTT</u>&quot;.\nThere are four consecutive &#39;T&#39;s.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> answerKey = &quot;TFFT&quot;, k = 1\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can replace the first &#39;T&#39; with an &#39;F&#39; to make answerKey = &quot;<u>FFF</u>T&quot;.\nAlternatively, we can replace the second &#39;T&#39; with an &#39;F&#39; to make answerKey = &quot;T<u>FFF</u>&quot;.\nIn both cases, there are three consecutive &#39;F&#39;s.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> answerKey = &quot;TTFTTFTT&quot;, k = 1\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> We can replace the first &#39;F&#39; to make answerKey = &quot;<u>TTTTT</u>FTT&quot;\nAlternatively, we can replace the second &#39;F&#39; to make answerKey = &quot;TTF<u>TTTTT</u>&quot;. \nIn both cases, there are five consecutive &#39;T&#39;s.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == answerKey.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>answerKey[i]</code> is either <code>&#39;T&#39;</code> or <code>&#39;F&#39;</code></li>\n\t<li><code>1 &lt;= k &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "A teacher is writing a test with `n` true/false questions, with `'T'` denoting true and `'F'` denoting false. He wants to confuse the students by **maximizing** the number of **consecutive** questions with the **same** answer (multiple trues or multiple falses in a row).\n\nYou are given a string `answerKey`, where `answerKey[i]` is the original answer to the `ith` question. In addition, you are given an integer `k`, the maximum number of times you may perform the following operation:\n\n  * Change the answer key for any question to `'T'` or `'F'` (i.e., set `answerKey[i]` to `'T'` or `'F'`).\n\n\n\nReturn _the**maximum** number of consecutive_ `'T'`s or `'F'`s _in the answer key after performing the operation at most_ `k` _times_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** answerKey = \"TTFF\", k = 2\n    **Output:** 4\n    **Explanation:** We can replace both the 'F's with 'T's to make answerKey = \"_TTTT_ \".\n    There are four consecutive 'T's.\n    \n\n**Example 2:**\n    \n    \n    **Input:** answerKey = \"TFFT\", k = 1\n    **Output:** 3\n    **Explanation:** We can replace the first 'T' with an 'F' to make answerKey = \"_FFF_ T\".\n    Alternatively, we can replace the second 'T' with an 'F' to make answerKey = \"T _FFF_ \".\n    In both cases, there are three consecutive 'F's.\n    \n\n**Example 3:**\n    \n    \n    **Input:** answerKey = \"TTFTTFTT\", k = 1\n    **Output:** 5\n    **Explanation:** We can replace the first 'F' to make answerKey = \"_TTTTT_ FTT\"\n    Alternatively, we can replace the second 'F' to make answerKey = \"TTF _TTTTT_ \". \n    In both cases, there are five consecutive 'T's.\n    \n\n \n\n**Constraints:**\n\n  * `n == answerKey.length`\n  * `1 <= n <= 5 * 104`\n  * `answerKey[i]` is either `'T'` or `'F'`\n  * `1 <= k <= n`",
+  "question": "A teacher is writing a test with `n` true/false questions, with `'T'` denoting true and `'F'` denoting false. He wants to confuse the students by **maximizing** the number of **consecutive** questions with the **same** answer (multiple trues or multiple falses in a row).\n\nYou are given a string `answerKey`, where `answerKey[i]` is the original answer to the `ith` question. In addition, you are given an integer `k`, the maximum number of times you may perform the following operation:\n\n  * Change the answer key for any question to `'T'` or `'F'` (i.e., set `answerKey[i]` to `'T'` or `'F'`).\n\n\n\nReturn _the**maximum** number of consecutive_ `'T'`s or `'F'`s _in the answer key after performing the operation at most_ `k` _times_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** answerKey = \"TTFF\", k = 2\n    **Output:** 4\n    **Explanation:** We can replace both the 'F's with 'T's to make answerKey = \"_TTTT_ \".\n    There are four consecutive 'T's.\n    \n\n**Example 2:**\n    \n    \n    **Input:** answerKey = \"TFFT\", k = 1\n    **Output:** 3\n    **Explanation:** We can replace the first 'T' with an 'F' to make answerKey = \"_FFF_ T\".\n    Alternatively, we can replace the second 'T' with an 'F' to make answerKey = \"T _FFF_ \".\n    In both cases, there are three consecutive 'F's.\n    \n\n**Example 3:**\n    \n    \n    **Input:** answerKey = \"TTFTTFTT\", k = 1\n    **Output:** 5\n    **Explanation:** We can replace the first 'F' to make answerKey = \"_TTTTT_ FTT\"\n    Alternatively, we can replace the second 'F' to make answerKey = \"TTF _TTTTT_ \". \n    In both cases, there are five consecutive 'T's.",
+  "constraints": "**Constraints:**\n\n  * `n == answerKey.length`\n  * `1 <= n <= 5 * 104`\n  * `answerKey[i]` is either `'T'` or `'F'`\n  * `1 <= k <= n`",
+  "topics": ["String", "Binary Search", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 142341,
+  "total_submissions": 204124,
+  "acceptance_rate": "69.7%",
+  "similar_questions": [
+    {
+      "title": "Longest Substring with At Most K Distinct Characters",
+      "slug": "longest-substring-with-at-most-k-distinct-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/"
+    },
+    {
+      "title": "Longest Repeating Character Replacement",
+      "slug": "longest-repeating-character-replacement",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-repeating-character-replacement/"
+    },
+    {
+      "title": "Max Consecutive Ones III",
+      "slug": "max-consecutive-ones-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-consecutive-ones-iii/"
+    },
+    {
+      "title": "Minimum Number of Days to Make m Bouquets",
+      "slug": "minimum-number-of-days-to-make-m-bouquets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/"
+    },
+    {
+      "title": "Longest Nice Subarray",
+      "slug": "longest-nice-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-nice-subarray/"
+    }
+  ],
+  "hints": [
+    "Can we use the maximum length at the previous position to help us find the answer for the current position?",
+    "Can we use binary search to find the maximum consecutive same answer at every position?"
+  ]
+}

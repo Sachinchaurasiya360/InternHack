@@ -1,0 +1,25 @@
+{
+  "id": "545",
+  "title": "Boundary of Binary Tree",
+  "slug": "boundary-of-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 172869,
+  "total_submissions": 360962,
+  "acceptance_rate": "47.9%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Right Side View",
+      "slug": "binary-tree-right-side-view",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-right-side-view/"
+    }
+  ],
+  "hints": []
+}

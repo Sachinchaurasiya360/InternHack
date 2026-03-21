@@ -1,0 +1,55 @@
+{
+  "id": "104",
+  "title": "Maximum Depth of Binary Tree",
+  "slug": "maximum-depth-of-binary-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree, return <em>its maximum depth</em>.</p>\n\n<p>A binary tree&#39;s <strong>maximum depth</strong>&nbsp;is the number of nodes along the longest path from the root node down to the farthest leaf node.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/26/tmp-tree.jpg\" style=\"width: 400px; height: 277px;\" />\n<pre>\n<strong>Input:</strong> root = [3,9,20,null,null,15,7]\n<strong>Output:</strong> 3\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [1,null,2]\n<strong>Output:</strong> 2\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-100 &lt;= Node.val &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree, return _its maximum depth_.\n\nA binary tree's **maximum depth**  is the number of nodes along the longest path from the root node down to the farthest leaf node.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/26/tmp-tree.jpg)\n    \n    \n    **Input:** root = [3,9,20,null,null,15,7]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [1,null,2]\n    **Output:** 2\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 104]`.\n  * `-100 <= Node.val <= 100`",
+  "question": "Given the `root` of a binary tree, return _its maximum depth_.\n\nA binary tree's **maximum depth**  is the number of nodes along the longest path from the root node down to the farthest leaf node.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/26/tmp-tree.jpg)\n    \n    \n    **Input:** root = [3,9,20,null,null,15,7]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [1,null,2]\n    **Output:** 2",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 104]`.\n  * `-100 <= Node.val <= 100`",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 4626597,
+  "total_submissions": 5936167,
+  "acceptance_rate": "77.9%",
+  "similar_questions": [
+    {
+      "title": "Balanced Binary Tree",
+      "slug": "balanced-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/balanced-binary-tree/"
+    },
+    {
+      "title": "Minimum Depth of Binary Tree",
+      "slug": "minimum-depth-of-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-depth-of-binary-tree/"
+    },
+    {
+      "title": "Maximum Depth of N-ary Tree",
+      "slug": "maximum-depth-of-n-ary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-depth-of-n-ary-tree/"
+    },
+    {
+      "title": "Time Needed to Inform All Employees",
+      "slug": "time-needed-to-inform-all-employees",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/time-needed-to-inform-all-employees/"
+    },
+    {
+      "title": "Amount of Time for Binary Tree to Be Infected",
+      "slug": "amount-of-time-for-binary-tree-to-be-infected",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/"
+    },
+    {
+      "title": "Height of Binary Tree After Subtree Removal Queries",
+      "slug": "height-of-binary-tree-after-subtree-removal-queries",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/height-of-binary-tree-after-subtree-removal-queries/"
+    }
+  ],
+  "hints": []
+}

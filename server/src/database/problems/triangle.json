@@ -1,0 +1,18 @@
+{
+  "id": "120",
+  "title": "Triangle",
+  "slug": "triangle",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>triangle</code> array, return <em>the minimum path sum from top to bottom</em>.</p>\n\n<p>For each step, you may move to an adjacent number of the row below. More formally, if you are on index <code>i</code> on the current row, you may move to either index <code>i</code> or index <code>i + 1</code> on the next row.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> The triangle looks like:\n   <u>2</u>\n  <u>3</u> 4\n 6 <u>5</u> 7\n4 <u>1</u> 8 3\nThe minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> triangle = [[-10]]\n<strong>Output:</strong> -10\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= triangle.length &lt;= 200</code></li>\n\t<li><code>triangle[0].length == 1</code></li>\n\t<li><code>triangle[i].length == triangle[i - 1].length + 1</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= triangle[i][j] &lt;= 10<sup>4</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Could you&nbsp;do this using only <code>O(n)</code> extra space, where <code>n</code> is the total number of rows in the triangle?",
+  "content_markdown": "Given a `triangle` array, return _the minimum path sum from top to bottom_.\n\nFor each step, you may move to an adjacent number of the row below. More formally, if you are on index `i` on the current row, you may move to either index `i` or index `i + 1` on the next row.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]\n    **Output:** 11\n    **Explanation:** The triangle looks like:\n       _2_\n      _3_ 4\n     6 _5_ 7\n    4 _1_ 8 3\n    The minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).\n    \n\n**Example 2:**\n    \n    \n    **Input:** triangle = [[-10]]\n    **Output:** -10\n    \n\n \n\n**Constraints:**\n\n  * `1 <= triangle.length <= 200`\n  * `triangle[0].length == 1`\n  * `triangle[i].length == triangle[i - 1].length + 1`\n  * `-104 <= triangle[i][j] <= 104`\n\n\n\n \n\n**Follow up:** Could you do this using only `O(n)` extra space, where `n` is the total number of rows in the triangle?",
+  "question": "Given a `triangle` array, return _the minimum path sum from top to bottom_.\n\nFor each step, you may move to an adjacent number of the row below. More formally, if you are on index `i` on the current row, you may move to either index `i` or index `i + 1` on the next row.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]\n    **Output:** 11\n    **Explanation:** The triangle looks like:\n       _2_\n      _3_ 4\n     6 _5_ 7\n    4 _1_ 8 3\n    The minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).\n    \n\n**Example 2:**\n    \n    \n    **Input:** triangle = [[-10]]\n    **Output:** -10",
+  "constraints": "**Constraints:**\n\n  * `1 <= triangle.length <= 200`\n  * `triangle[0].length == 1`\n  * `triangle[i].length == triangle[i - 1].length + 1`\n  * `-104 <= triangle[i][j] <= 104`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 1258477,
+  "total_submissions": 2102607,
+  "acceptance_rate": "59.9%",
+  "similar_questions": [],
+  "hints": []
+}

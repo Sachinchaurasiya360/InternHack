@@ -1,0 +1,21 @@
+{
+  "id": "1414",
+  "title": "Find the Minimum Number of Fibonacci Numbers Whose Sum Is K",
+  "slug": "find-the-minimum-number-of-fibonacci-numbers-whose-sum-is-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer&nbsp;<code>k</code>, <em>return the minimum number of Fibonacci numbers whose sum is equal to </em><code>k</code>. The same Fibonacci number can be used multiple times.</p>\n\n<p>The Fibonacci numbers are defined as:</p>\n\n<ul>\n\t<li><code>F<sub>1</sub> = 1</code></li>\n\t<li><code>F<sub>2</sub> = 1</code></li>\n\t<li><code>F<sub>n</sub> = F<sub>n-1</sub> + F<sub>n-2</sub></code> for <code>n &gt; 2.</code></li>\n</ul>\nIt is guaranteed that for the given constraints we can always find such Fibonacci numbers that sum up to <code>k</code>.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 7\n<strong>Output:</strong> 2 \n<strong>Explanation:</strong> The Fibonacci numbers are: 1, 1, 2, 3, 5, 8, 13, ... \nFor k = 7 we can use 2 + 5 = 7.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 10\n<strong>Output:</strong> 2 \n<strong>Explanation:</strong> For k = 10 we can use 2 + 8 = 10.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> k = 19\n<strong>Output:</strong> 3 \n<strong>Explanation:</strong> For k = 19 we can use 1 + 5 + 13 = 19.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `k`, _return the minimum number of Fibonacci numbers whose sum is equal to_`k`. The same Fibonacci number can be used multiple times.\n\nThe Fibonacci numbers are defined as:\n\n  * `F1 = 1`\n  * `F2 = 1`\n  * `Fn = Fn-1 + Fn-2` for `n > 2.`\n\nIt is guaranteed that for the given constraints we can always find such Fibonacci numbers that sum up to `k`. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** k = 7\n    **Output:** 2 \n    **Explanation:** The Fibonacci numbers are: 1, 1, 2, 3, 5, 8, 13, ... \n    For k = 7 we can use 2 + 5 = 7.\n\n**Example 2:**\n    \n    \n    **Input:** k = 10\n    **Output:** 2 \n    **Explanation:** For k = 10 we can use 2 + 8 = 10.\n    \n\n**Example 3:**\n    \n    \n    **Input:** k = 19\n    **Output:** 3 \n    **Explanation:** For k = 19 we can use 1 + 5 + 13 = 19.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= 109`",
+  "question": "Given an integer `k`, _return the minimum number of Fibonacci numbers whose sum is equal to_`k`. The same Fibonacci number can be used multiple times.\n\nThe Fibonacci numbers are defined as:\n\n  * `F1 = 1`\n  * `F2 = 1`\n  * `Fn = Fn-1 + Fn-2` for `n > 2.`\n\nIt is guaranteed that for the given constraints we can always find such Fibonacci numbers that sum up to `k`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** k = 7\n    **Output:** 2 \n    **Explanation:** The Fibonacci numbers are: 1, 1, 2, 3, 5, 8, 13, ... \n    For k = 7 we can use 2 + 5 = 7.\n\n**Example 2:**\n    \n    \n    **Input:** k = 10\n    **Output:** 2 \n    **Explanation:** For k = 10 we can use 2 + 8 = 10.\n    \n\n**Example 3:**\n    \n    \n    **Input:** k = 19\n    **Output:** 3 \n    **Explanation:** For k = 19 we can use 1 + 5 + 13 = 19.",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= 109`",
+  "topics": ["Math", "Greedy"],
+  "total_accepted": 51762,
+  "total_submissions": 79839,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [],
+  "hints": [
+    "Generate all Fibonacci numbers up to the limit (they are few).",
+    "Use greedy solution, taking at every time the greatest Fibonacci number which is smaller than or equal to the current number. Subtract this Fibonacci number from the current number and repeat again the process."
+  ]
+}

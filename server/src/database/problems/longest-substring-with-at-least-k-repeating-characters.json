@@ -1,0 +1,55 @@
+{
+  "id": "395",
+  "title": "Longest Substring with At Least K Repeating Characters",
+  "slug": "longest-substring-with-at-least-k-repeating-characters",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> and an integer <code>k</code>, return <em>the length of the longest substring of</em> <code>s</code> <em>such that the frequency of each character in this substring is greater than or equal to</em> <code>k</code>.</p>\n\n<p data-pm-slice=\"1 1 []\">if no such substring exists, return 0.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaabb&quot;, k = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The longest substring is &quot;aaa&quot;, as &#39;a&#39; is repeated 3 times.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ababbc&quot;, k = 2\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The longest substring is &quot;ababb&quot;, as &#39;a&#39; is repeated 2 times and &#39;b&#39; is repeated 3 times.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of only lowercase English letters.</li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a string `s` and an integer `k`, return _the length of the longest substring of_ `s` _such that the frequency of each character in this substring is greater than or equal to_ `k`.\n\nif no such substring exists, return 0.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aaabb\", k = 3\n    **Output:** 3\n    **Explanation:** The longest substring is \"aaa\", as 'a' is repeated 3 times.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"ababbc\", k = 2\n    **Output:** 5\n    **Explanation:** The longest substring is \"ababb\", as 'a' is repeated 2 times and 'b' is repeated 3 times.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of only lowercase English letters.\n  * `1 <= k <= 105`",
+  "question": "Given a string `s` and an integer `k`, return _the length of the longest substring of_ `s` _such that the frequency of each character in this substring is greater than or equal to_ `k`.\n\nif no such substring exists, return 0.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aaabb\", k = 3\n    **Output:** 3\n    **Explanation:** The longest substring is \"aaa\", as 'a' is repeated 3 times.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"ababbc\", k = 2\n    **Output:** 5\n    **Explanation:** The longest substring is \"ababb\", as 'a' is repeated 2 times and 'b' is repeated 3 times.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of only lowercase English letters.\n  * `1 <= k <= 105`",
+  "topics": ["Hash Table", "String", "Divide and Conquer", "Sliding Window"],
+  "total_accepted": 292222,
+  "total_submissions": 634288,
+  "acceptance_rate": "46.1%",
+  "similar_questions": [
+    {
+      "title": "Longest Subsequence Repeated k Times",
+      "slug": "longest-subsequence-repeated-k-times",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-subsequence-repeated-k-times/"
+    },
+    {
+      "title": "Number of Equal Count Substrings",
+      "slug": "number-of-equal-count-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-equal-count-substrings/"
+    },
+    {
+      "title": "Optimal Partition of String",
+      "slug": "optimal-partition-of-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/optimal-partition-of-string/"
+    },
+    {
+      "title": "Length of Longest Subarray With at Most K Frequency",
+      "slug": "length-of-longest-subarray-with-at-most-k-frequency",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/length-of-longest-subarray-with-at-most-k-frequency/"
+    },
+    {
+      "title": "Find Longest Special Substring That Occurs Thrice II",
+      "slug": "find-longest-special-substring-that-occurs-thrice-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-longest-special-substring-that-occurs-thrice-ii/"
+    },
+    {
+      "title": "Find Longest Special Substring That Occurs Thrice I",
+      "slug": "find-longest-special-substring-that-occurs-thrice-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-longest-special-substring-that-occurs-thrice-i/"
+    }
+  ],
+  "hints": []
+}

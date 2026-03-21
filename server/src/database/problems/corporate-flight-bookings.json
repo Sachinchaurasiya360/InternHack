@@ -1,0 +1,31 @@
+{
+  "id": "1109",
+  "title": "Corporate Flight Bookings",
+  "slug": "corporate-flight-bookings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> flights that are labeled from <code>1</code> to <code>n</code>.</p>\n\n<p>You are given an array of flight bookings <code>bookings</code>, where <code>bookings[i] = [first<sub>i</sub>, last<sub>i</sub>, seats<sub>i</sub>]</code> represents a booking for flights <code>first<sub>i</sub></code> through <code>last<sub>i</sub></code> (<strong>inclusive</strong>) with <code>seats<sub>i</sub></code> seats reserved for <strong>each flight</strong> in the range.</p>\n\n<p>Return <em>an array </em><code>answer</code><em> of length </em><code>n</code><em>, where </em><code>answer[i]</code><em> is the total number of seats reserved for flight </em><code>i</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5\n<strong>Output:</strong> [10,55,45,25,25]\n<strong>Explanation:</strong>\nFlight labels:        1   2   3   4   5\nBooking 1 reserved:  10  10\nBooking 2 reserved:      20  20\nBooking 3 reserved:      25  25  25  25\nTotal seats:         10  55  45  25  25\nHence, answer = [10,55,45,25,25]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> bookings = [[1,2,10],[2,2,15]], n = 2\n<strong>Output:</strong> [10,25]\n<strong>Explanation:</strong>\nFlight labels:        1   2\nBooking 1 reserved:  10  10\nBooking 2 reserved:      15\nTotal seats:         10  25\nHence, answer = [10,25]\n\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= bookings.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>bookings[i].length == 3</code></li>\n\t<li><code>1 &lt;= first<sub>i</sub> &lt;= last<sub>i</sub> &lt;= n</code></li>\n\t<li><code>1 &lt;= seats<sub>i</sub> &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "There are `n` flights that are labeled from `1` to `n`.\n\nYou are given an array of flight bookings `bookings`, where `bookings[i] = [firsti, lasti, seatsi]` represents a booking for flights `firsti` through `lasti` (**inclusive**) with `seatsi` seats reserved for **each flight** in the range.\n\nReturn _an array_`answer` _of length_`n` _, where_`answer[i]`_is the total number of seats reserved for flight_`i`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5\n    **Output:** [10,55,45,25,25]\n    **Explanation:**\n    Flight labels:        1   2   3   4   5\n    Booking 1 reserved:  10  10\n    Booking 2 reserved:      20  20\n    Booking 3 reserved:      25  25  25  25\n    Total seats:         10  55  45  25  25\n    Hence, answer = [10,55,45,25,25]\n    \n\n**Example 2:**\n    \n    \n    **Input:** bookings = [[1,2,10],[2,2,15]], n = 2\n    **Output:** [10,25]\n    **Explanation:**\n    Flight labels:        1   2\n    Booking 1 reserved:  10  10\n    Booking 2 reserved:      15\n    Total seats:         10  25\n    Hence, answer = [10,25]\n    \n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 2 * 104`\n  * `1 <= bookings.length <= 2 * 104`\n  * `bookings[i].length == 3`\n  * `1 <= firsti <= lasti <= n`\n  * `1 <= seatsi <= 104`",
+  "question": "There are `n` flights that are labeled from `1` to `n`.\n\nYou are given an array of flight bookings `bookings`, where `bookings[i] = [firsti, lasti, seatsi]` represents a booking for flights `firsti` through `lasti` (**inclusive**) with `seatsi` seats reserved for **each flight** in the range.\n\nReturn _an array_`answer` _of length_`n` _, where_`answer[i]`_is the total number of seats reserved for flight_`i`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5\n    **Output:** [10,55,45,25,25]\n    **Explanation:**\n    Flight labels:        1   2   3   4   5\n    Booking 1 reserved:  10  10\n    Booking 2 reserved:      20  20\n    Booking 3 reserved:      25  25  25  25\n    Total seats:         10  55  45  25  25\n    Hence, answer = [10,55,45,25,25]\n    \n\n**Example 2:**\n    \n    \n    **Input:** bookings = [[1,2,10],[2,2,15]], n = 2\n    **Output:** [10,25]\n    **Explanation:**\n    Flight labels:        1   2\n    Booking 1 reserved:  10  10\n    Booking 2 reserved:      15\n    Total seats:         10  25\n    Hence, answer = [10,25]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 2 * 104`\n  * `1 <= bookings.length <= 2 * 104`\n  * `bookings[i].length == 3`\n  * `1 <= firsti <= lasti <= n`\n  * `1 <= seatsi <= 104`",
+  "topics": ["Array", "Prefix Sum"],
+  "total_accepted": 100245,
+  "total_submissions": 150667,
+  "acceptance_rate": "66.5%",
+  "similar_questions": [
+    {
+      "title": "Zero Array Transformation II",
+      "slug": "zero-array-transformation-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/zero-array-transformation-ii/"
+    },
+    {
+      "title": "Zero Array Transformation III",
+      "slug": "zero-array-transformation-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/zero-array-transformation-iii/"
+    }
+  ],
+  "hints": []
+}

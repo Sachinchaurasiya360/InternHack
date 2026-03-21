@@ -1,0 +1,43 @@
+{
+  "id": "352",
+  "title": "Data Stream as Disjoint Intervals",
+  "slug": "data-stream-as-disjoint-intervals",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a data stream input of non-negative integers <code>a<sub>1</sub>, a<sub>2</sub>, ..., a<sub>n</sub></code>, summarize the numbers seen so far as a list of disjoint intervals.</p>\n\n<p>Implement the <code>SummaryRanges</code> class:</p>\n\n<ul>\n\t<li><code>SummaryRanges()</code> Initializes the object with an empty stream.</li>\n\t<li><code>void addNum(int value)</code> Adds the integer <code>value</code> to the stream.</li>\n\t<li><code>int[][] getIntervals()</code> Returns a summary of the integers in the stream currently as a list of disjoint intervals <code>[start<sub>i</sub>, end<sub>i</sub>]</code>. The answer should be sorted by <code>start<sub>i</sub></code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;SummaryRanges&quot;, &quot;addNum&quot;, &quot;getIntervals&quot;, &quot;addNum&quot;, &quot;getIntervals&quot;, &quot;addNum&quot;, &quot;getIntervals&quot;, &quot;addNum&quot;, &quot;getIntervals&quot;, &quot;addNum&quot;, &quot;getIntervals&quot;]\n[[], [1], [], [3], [], [7], [], [2], [], [6], []]\n<strong>Output</strong>\n[null, null, [[1, 1]], null, [[1, 1], [3, 3]], null, [[1, 1], [3, 3], [7, 7]], null, [[1, 3], [7, 7]], null, [[1, 3], [6, 7]]]\n\n<strong>Explanation</strong>\nSummaryRanges summaryRanges = new SummaryRanges();\nsummaryRanges.addNum(1);      // arr = [1]\nsummaryRanges.getIntervals(); // return [[1, 1]]\nsummaryRanges.addNum(3);      // arr = [1, 3]\nsummaryRanges.getIntervals(); // return [[1, 1], [3, 3]]\nsummaryRanges.addNum(7);      // arr = [1, 3, 7]\nsummaryRanges.getIntervals(); // return [[1, 1], [3, 3], [7, 7]]\nsummaryRanges.addNum(2);      // arr = [1, 2, 3, 7]\nsummaryRanges.getIntervals(); // return [[1, 3], [7, 7]]\nsummaryRanges.addNum(6);      // arr = [1, 2, 3, 6, 7]\nsummaryRanges.getIntervals(); // return [[1, 3], [6, 7]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= value &lt;= 10<sup>4</sup></code></li>\n\t<li>At most <code>3 * 10<sup>4</sup></code> calls will be made to <code>addNum</code> and <code>getIntervals</code>.</li>\n\t<li>At most <code>10<sup>2</sup></code>&nbsp;calls will be made to&nbsp;<code>getIntervals</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> What if there are lots of merges and the number of disjoint intervals is small compared to the size of the data stream?</p>\n",
+  "content_markdown": "Given a data stream input of non-negative integers `a1, a2, ..., an`, summarize the numbers seen so far as a list of disjoint intervals.\n\nImplement the `SummaryRanges` class:\n\n  * `SummaryRanges()` Initializes the object with an empty stream.\n  * `void addNum(int value)` Adds the integer `value` to the stream.\n  * `int[][] getIntervals()` Returns a summary of the integers in the stream currently as a list of disjoint intervals `[starti, endi]`. The answer should be sorted by `starti`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"SummaryRanges\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\"]\n    [[], [1], [], [3], [], [7], [], [2], [], [6], []]\n    **Output**\n    [null, null, [[1, 1]], null, [[1, 1], [3, 3]], null, [[1, 1], [3, 3], [7, 7]], null, [[1, 3], [7, 7]], null, [[1, 3], [6, 7]]]\n    \n    **Explanation**\n    SummaryRanges summaryRanges = new SummaryRanges();\n    summaryRanges.addNum(1);      // arr = [1]\n    summaryRanges.getIntervals(); // return [[1, 1]]\n    summaryRanges.addNum(3);      // arr = [1, 3]\n    summaryRanges.getIntervals(); // return [[1, 1], [3, 3]]\n    summaryRanges.addNum(7);      // arr = [1, 3, 7]\n    summaryRanges.getIntervals(); // return [[1, 1], [3, 3], [7, 7]]\n    summaryRanges.addNum(2);      // arr = [1, 2, 3, 7]\n    summaryRanges.getIntervals(); // return [[1, 3], [7, 7]]\n    summaryRanges.addNum(6);      // arr = [1, 2, 3, 6, 7]\n    summaryRanges.getIntervals(); // return [[1, 3], [6, 7]]\n    \n\n \n\n**Constraints:**\n\n  * `0 <= value <= 104`\n  * At most `3 * 104` calls will be made to `addNum` and `getIntervals`.\n  * At most `102` calls will be made to `getIntervals`.\n\n\n\n \n\n**Follow up:** What if there are lots of merges and the number of disjoint intervals is small compared to the size of the data stream?",
+  "question": "Given a data stream input of non-negative integers `a1, a2, ..., an`, summarize the numbers seen so far as a list of disjoint intervals.\n\nImplement the `SummaryRanges` class:\n\n  * `SummaryRanges()` Initializes the object with an empty stream.\n  * `void addNum(int value)` Adds the integer `value` to the stream.\n  * `int[][] getIntervals()` Returns a summary of the integers in the stream currently as a list of disjoint intervals `[starti, endi]`. The answer should be sorted by `starti`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"SummaryRanges\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\", \"addNum\", \"getIntervals\"]\n    [[], [1], [], [3], [], [7], [], [2], [], [6], []]\n    **Output**\n    [null, null, [[1, 1]], null, [[1, 1], [3, 3]], null, [[1, 1], [3, 3], [7, 7]], null, [[1, 3], [7, 7]], null, [[1, 3], [6, 7]]]\n    \n    **Explanation**\n    SummaryRanges summaryRanges = new SummaryRanges();\n    summaryRanges.addNum(1);      // arr = [1]\n    summaryRanges.getIntervals(); // return [[1, 1]]\n    summaryRanges.addNum(3);      // arr = [1, 3]\n    summaryRanges.getIntervals(); // return [[1, 1], [3, 3]]\n    summaryRanges.addNum(7);      // arr = [1, 3, 7]\n    summaryRanges.getIntervals(); // return [[1, 1], [3, 3], [7, 7]]\n    summaryRanges.addNum(2);      // arr = [1, 2, 3, 7]\n    summaryRanges.getIntervals(); // return [[1, 3], [7, 7]]\n    summaryRanges.addNum(6);      // arr = [1, 2, 3, 6, 7]\n    summaryRanges.getIntervals(); // return [[1, 3], [6, 7]]",
+  "constraints": "**Constraints:**\n\n  * `0 <= value <= 104`\n  * At most `3 * 104` calls will be made to `addNum` and `getIntervals`.\n  * At most `102` calls will be made to `getIntervals`.",
+  "topics": ["Hash Table", "Binary Search", "Union-Find", "Design", "Data Stream", "Ordered Set"],
+  "total_accepted": 131044,
+  "total_submissions": 218481,
+  "acceptance_rate": "60.0%",
+  "similar_questions": [
+    {
+      "title": "Summary Ranges",
+      "slug": "summary-ranges",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/summary-ranges/"
+    },
+    {
+      "title": "Find Right Interval",
+      "slug": "find-right-interval",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-right-interval/"
+    },
+    {
+      "title": "Range Module",
+      "slug": "range-module",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/range-module/"
+    },
+    {
+      "title": "Count Integers in Intervals",
+      "slug": "count-integers-in-intervals",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-integers-in-intervals/"
+    }
+  ],
+  "hints": []
+}

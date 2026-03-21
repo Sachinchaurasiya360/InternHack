@@ -1,0 +1,40 @@
+{
+  "id": "2420",
+  "title": "Find All Good Indices",
+  "slug": "find-all-good-indices",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code> of size <code>n</code> and a positive integer <code>k</code>.</p>\n\n<p>We call an index <code>i</code> in the range <code>k &lt;= i &lt; n - k</code> <strong>good</strong> if the following conditions are satisfied:</p>\n\n<ul>\n\t<li>The <code>k</code> elements that are just <strong>before</strong> the index <code>i</code> are in <strong>non-increasing</strong> order.</li>\n\t<li>The <code>k</code> elements that are just <strong>after</strong> the index <code>i</code> are in <strong>non-decreasing</strong> order.</li>\n</ul>\n\n<p>Return <em>an array of all good indices sorted in <strong>increasing</strong> order</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,1,1,1,3,4,1], k = 2\n<strong>Output:</strong> [2,3]\n<strong>Explanation:</strong> There are two good indices in the array:\n- Index 2. The subarray [2,1] is in non-increasing order, and the subarray [1,3] is in non-decreasing order.\n- Index 3. The subarray [1,1] is in non-increasing order, and the subarray [3,4] is in non-decreasing order.\nNote that the index 4 is not good because [4,1] is not non-decreasing.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,1,1,2], k = 2\n<strong>Output:</strong> []\n<strong>Explanation:</strong> There are no good indices in this array.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>3 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= n / 2</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums` of size `n` and a positive integer `k`.\n\nWe call an index `i` in the range `k <= i < n - k` **good** if the following conditions are satisfied:\n\n  * The `k` elements that are just **before** the index `i` are in **non-increasing** order.\n  * The `k` elements that are just **after** the index `i` are in **non-decreasing** order.\n\n\n\nReturn _an array of all good indices sorted in**increasing** order_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,1,1,1,3,4,1], k = 2\n    **Output:** [2,3]\n    **Explanation:** There are two good indices in the array:\n    - Index 2. The subarray [2,1] is in non-increasing order, and the subarray [1,3] is in non-decreasing order.\n    - Index 3. The subarray [1,1] is in non-increasing order, and the subarray [3,4] is in non-decreasing order.\n    Note that the index 4 is not good because [4,1] is not non-decreasing.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1,1,2], k = 2\n    **Output:** []\n    **Explanation:** There are no good indices in this array.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `3 <= n <= 105`\n  * `1 <= nums[i] <= 106`\n  * `1 <= k <= n / 2`",
+  "question": "You are given a **0-indexed** integer array `nums` of size `n` and a positive integer `k`.\n\nWe call an index `i` in the range `k <= i < n - k` **good** if the following conditions are satisfied:\n\n  * The `k` elements that are just **before** the index `i` are in **non-increasing** order.\n  * The `k` elements that are just **after** the index `i` are in **non-decreasing** order.\n\n\n\nReturn _an array of all good indices sorted in**increasing** order_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,1,1,1,3,4,1], k = 2\n    **Output:** [2,3]\n    **Explanation:** There are two good indices in the array:\n    - Index 2. The subarray [2,1] is in non-increasing order, and the subarray [1,3] is in non-decreasing order.\n    - Index 3. The subarray [1,1] is in non-increasing order, and the subarray [3,4] is in non-decreasing order.\n    Note that the index 4 is not good because [4,1] is not non-decreasing.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,1,1,2], k = 2\n    **Output:** []\n    **Explanation:** There are no good indices in this array.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `3 <= n <= 105`\n  * `1 <= nums[i] <= 106`\n  * `1 <= k <= n / 2`",
+  "topics": ["Array", "Dynamic Programming", "Prefix Sum"],
+  "total_accepted": 31654,
+  "total_submissions": 77750,
+  "acceptance_rate": "40.7%",
+  "similar_questions": [
+    {
+      "title": "Find Good Days to Rob the Bank",
+      "slug": "find-good-days-to-rob-the-bank",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-good-days-to-rob-the-bank/"
+    },
+    {
+      "title": "Abbreviating the Product of a Range",
+      "slug": "abbreviating-the-product-of-a-range",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/abbreviating-the-product-of-a-range/"
+    },
+    {
+      "title": "Count the Number of K-Big Indices",
+      "slug": "count-the-number-of-k-big-indices",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-the-number-of-k-big-indices/"
+    }
+  ],
+  "hints": [
+    "Iterate over all indices i. How do you quickly check the two conditions?",
+    "Precompute for each index whether the conditions are satisfied on the left and the right of the index. You can do that with two iterations, from left to right and right to left."
+  ]
+}

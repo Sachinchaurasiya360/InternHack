@@ -1,0 +1,29 @@
+{
+  "id": "3171",
+  "title": "Find Subarray With Bitwise OR Closest to K",
+  "slug": "find-subarray-with-bitwise-or-closest-to-k",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> and an integer <code>k</code>. You need to find a <span data-keyword=\"subarray-nonempty\">subarray</span> of <code>nums</code> such that the <strong>absolute difference</strong> between <code>k</code> and the bitwise <code>OR</code> of the subarray elements is as<strong> small</strong> as possible. In other words, select a subarray <code>nums[l..r]</code> such that <code>|k - (nums[l] OR nums[l + 1] ... OR nums[r])|</code> is minimum.</p>\n\n<p>Return the <strong>minimum</strong> possible value of the absolute difference.</p>\n\n<p>A <strong>subarray</strong> is a contiguous <b>non-empty</b> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,4,5], k = 3</span></p>\n\n<p><strong>Output:</strong> 0</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The subarray <code>nums[0..1]</code> has <code>OR</code> value 3, which gives the minimum absolute difference <code>|3 - 3| = 0</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,3,1,3], k = 2</span></p>\n\n<p><strong>Output:</strong> 1</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The subarray <code>nums[1..1]</code> has <code>OR</code> value 3, which gives the minimum absolute difference <code>|3 - 2| = 1</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1], k = 10</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">9</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There is a single subarray with <code>OR</code> value 1, which gives the minimum absolute difference <code>|10 - 1| = 9</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` and an integer `k`. You need to find a subarray of `nums` such that the **absolute difference** between `k` and the bitwise `OR` of the subarray elements is as**small** as possible. In other words, select a subarray `nums[l..r]` such that `|k - (nums[l] OR nums[l + 1] ... OR nums[r])|` is minimum.\n\nReturn the **minimum** possible value of the absolute difference.\n\nA **subarray** is a contiguous **non-empty** sequence of elements within an array.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,4,5], k = 3\n\n**Output:** 0\n\n**Explanation:**\n\nThe subarray `nums[0..1]` has `OR` value 3, which gives the minimum absolute difference `|3 - 3| = 0`.\n\n**Example 2:**\n\n**Input:** nums = [1,3,1,3], k = 2\n\n**Output:** 1\n\n**Explanation:**\n\nThe subarray `nums[1..1]` has `OR` value 3, which gives the minimum absolute difference `|3 - 2| = 1`.\n\n**Example 3:**\n\n**Input:** nums = [1], k = 10\n\n**Output:** 9\n\n**Explanation:**\n\nThere is a single subarray with `OR` value 1, which gives the minimum absolute difference `|10 - 1| = 9`.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "question": "You are given an array `nums` and an integer `k`. You need to find a subarray of `nums` such that the **absolute difference** between `k` and the bitwise `OR` of the subarray elements is as**small** as possible. In other words, select a subarray `nums[l..r]` such that `|k - (nums[l] OR nums[l + 1] ... OR nums[r])|` is minimum.\n\nReturn the **minimum** possible value of the absolute difference.\n\nA **subarray** is a contiguous **non-empty** sequence of elements within an array.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,4,5], k = 3\n\n**Output:** 0\n\n**Explanation:**\n\nThe subarray `nums[0..1]` has `OR` value 3, which gives the minimum absolute difference `|3 - 3| = 0`.\n\n**Example 2:**\n\n**Input:** nums = [1,3,1,3], k = 2\n\n**Output:** 1\n\n**Explanation:**\n\nThe subarray `nums[1..1]` has `OR` value 3, which gives the minimum absolute difference `|3 - 2| = 1`.\n\n**Example 3:**\n\n**Input:** nums = [1], k = 10\n\n**Output:** 9\n\n**Explanation:**\n\nThere is a single subarray with `OR` value 1, which gives the minimum absolute difference `|10 - 1| = 9`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= 109`",
+  "topics": ["Array", "Binary Search", "Bit Manipulation", "Segment Tree"],
+  "total_accepted": 15381,
+  "total_submissions": 49858,
+  "acceptance_rate": "30.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Sum of Values by Dividing Array",
+      "slug": "minimum-sum-of-values-by-dividing-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-sum-of-values-by-dividing-array/"
+    }
+  ],
+  "hints": [
+    "Let <code>dp[i]</code> be the set of all the bitwise <code>OR</code> of all the subarrays ending at index <code>i</code>.",
+    "We start from <code>nums[i]</code>, taking the bitwise <code>OR</code> result by including elements one by one from <code>i</code> towards left. Notice that only unset bits can become set on adding an element, and set bits never become unset again.",
+    "Hence <code>dp[i]</code> can contain at most 30 elements."
+  ]
+}

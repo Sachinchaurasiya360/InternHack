@@ -1,0 +1,49 @@
+{
+  "id": "42",
+  "title": "Trapping Rain Water",
+  "slug": "trapping-rain-water",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given <code>n</code> non-negative integers representing an elevation map where the width of each bar is <code>1</code>, compute how much water it can trap after raining.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img src=\"https://assets.leetcode.com/uploads/2018/10/22/rainwatertrap.png\" style=\"width: 412px; height: 161px;\" />\n<pre>\n<strong>Input:</strong> height = [0,1,0,2,1,0,1,3,2,1,2,1]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> height = [4,2,0,3,2,5]\n<strong>Output:</strong> 9\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == height.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= height[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/10/22/rainwatertrap.png)\n    \n    \n    **Input:** height = [0,1,0,2,1,0,1,3,2,1,2,1]\n    **Output:** 6\n    **Explanation:** The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n    \n\n**Example 2:**\n    \n    \n    **Input:** height = [4,2,0,3,2,5]\n    **Output:** 9\n    \n\n \n\n**Constraints:**\n\n  * `n == height.length`\n  * `1 <= n <= 2 * 104`\n  * `0 <= height[i] <= 105`",
+  "question": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/10/22/rainwatertrap.png)\n    \n    \n    **Input:** height = [0,1,0,2,1,0,1,3,2,1,2,1]\n    **Output:** 6\n    **Explanation:** The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n    \n\n**Example 2:**\n    \n    \n    **Input:** height = [4,2,0,3,2,5]\n    **Output:** 9",
+  "constraints": "**Constraints:**\n\n  * `n == height.length`\n  * `1 <= n <= 2 * 104`\n  * `0 <= height[i] <= 105`",
+  "topics": ["Array", "Two Pointers", "Dynamic Programming", "Stack", "Monotonic Stack"],
+  "total_accepted": 3404514,
+  "total_submissions": 5094377,
+  "acceptance_rate": "66.8%",
+  "similar_questions": [
+    {
+      "title": "Container With Most Water",
+      "slug": "container-with-most-water",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/container-with-most-water/"
+    },
+    {
+      "title": "Product of Array Except Self",
+      "slug": "product-of-array-except-self",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/product-of-array-except-self/"
+    },
+    {
+      "title": "Trapping Rain Water II",
+      "slug": "trapping-rain-water-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/trapping-rain-water-ii/"
+    },
+    {
+      "title": "Pour Water",
+      "slug": "pour-water",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/pour-water/"
+    },
+    {
+      "title": "Maximum Value of an Ordered Triplet II",
+      "slug": "maximum-value-of-an-ordered-triplet-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-value-of-an-ordered-triplet-ii/"
+    }
+  ],
+  "hints": []
+}

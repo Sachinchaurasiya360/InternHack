@@ -1,0 +1,46 @@
+{
+  "id": "88",
+  "title": "Merge Sorted Array",
+  "slug": "merge-sorted-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integer arrays <code>nums1</code> and <code>nums2</code>, sorted in <strong>non-decreasing order</strong>, and two integers <code>m</code> and <code>n</code>, representing the number of elements in <code>nums1</code> and <code>nums2</code> respectively.</p>\n\n<p><strong>Merge</strong> <code>nums1</code> and <code>nums2</code> into a single array sorted in <strong>non-decreasing order</strong>.</p>\n\n<p>The final sorted array should not be returned by the function, but instead be <em>stored inside the array </em><code>nums1</code>. To accommodate this, <code>nums1</code> has a length of <code>m + n</code>, where the first <code>m</code> elements denote the elements that should be merged, and the last <code>n</code> elements are set to <code>0</code> and should be ignored. <code>nums2</code> has a length of <code>n</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3\n<strong>Output:</strong> [1,2,2,3,5,6]\n<strong>Explanation:</strong> The arrays we are merging are [1,2,3] and [2,5,6].\nThe result of the merge is [<u>1</u>,<u>2</u>,2,<u>3</u>,5,6] with the underlined elements coming from nums1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1], m = 1, nums2 = [], n = 0\n<strong>Output:</strong> [1]\n<strong>Explanation:</strong> The arrays we are merging are [1] and [].\nThe result of the merge is [1].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [0], m = 0, nums2 = [1], n = 1\n<strong>Output:</strong> [1]\n<strong>Explanation:</strong> The arrays we are merging are [] and [1].\nThe result of the merge is [1].\nNote that because m = 0, there are no elements in nums1. The 0 is only there to ensure the merge result can fit in nums1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>nums1.length == m + n</code></li>\n\t<li><code>nums2.length == n</code></li>\n\t<li><code>0 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>1 &lt;= m + n &lt;= 200</code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums1[i], nums2[j] &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up: </strong>Can you come up with an algorithm that runs in <code>O(m + n)</code> time?</p>\n",
+  "content_markdown": "You are given two integer arrays `nums1` and `nums2`, sorted in **non-decreasing order** , and two integers `m` and `n`, representing the number of elements in `nums1` and `nums2` respectively.\n\n**Merge** `nums1` and `nums2` into a single array sorted in **non-decreasing order**.\n\nThe final sorted array should not be returned by the function, but instead be _stored inside the array_`nums1`. To accommodate this, `nums1` has a length of `m + n`, where the first `m` elements denote the elements that should be merged, and the last `n` elements are set to `0` and should be ignored. `nums2` has a length of `n`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3\n    **Output:** [1,2,2,3,5,6]\n    **Explanation:** The arrays we are merging are [1,2,3] and [2,5,6].\n    The result of the merge is [_1_ ,_2_ ,2,_3_ ,5,6] with the underlined elements coming from nums1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1], m = 1, nums2 = [], n = 0\n    **Output:** [1]\n    **Explanation:** The arrays we are merging are [1] and [].\n    The result of the merge is [1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [0], m = 0, nums2 = [1], n = 1\n    **Output:** [1]\n    **Explanation:** The arrays we are merging are [] and [1].\n    The result of the merge is [1].\n    Note that because m = 0, there are no elements in nums1. The 0 is only there to ensure the merge result can fit in nums1.\n    \n\n \n\n**Constraints:**\n\n  * `nums1.length == m + n`\n  * `nums2.length == n`\n  * `0 <= m, n <= 200`\n  * `1 <= m + n <= 200`\n  * `-109 <= nums1[i], nums2[j] <= 109`\n\n\n\n \n\n**Follow up:** Can you come up with an algorithm that runs in `O(m + n)` time?",
+  "question": "You are given two integer arrays `nums1` and `nums2`, sorted in **non-decreasing order** , and two integers `m` and `n`, representing the number of elements in `nums1` and `nums2` respectively.\n\n**Merge** `nums1` and `nums2` into a single array sorted in **non-decreasing order**.\n\nThe final sorted array should not be returned by the function, but instead be _stored inside the array_`nums1`. To accommodate this, `nums1` has a length of `m + n`, where the first `m` elements denote the elements that should be merged, and the last `n` elements are set to `0` and should be ignored. `nums2` has a length of `n`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3\n    **Output:** [1,2,2,3,5,6]\n    **Explanation:** The arrays we are merging are [1,2,3] and [2,5,6].\n    The result of the merge is [_1_ ,_2_ ,2,_3_ ,5,6] with the underlined elements coming from nums1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1], m = 1, nums2 = [], n = 0\n    **Output:** [1]\n    **Explanation:** The arrays we are merging are [1] and [].\n    The result of the merge is [1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums1 = [0], m = 0, nums2 = [1], n = 1\n    **Output:** [1]\n    **Explanation:** The arrays we are merging are [] and [1].\n    The result of the merge is [1].\n    Note that because m = 0, there are no elements in nums1. The 0 is only there to ensure the merge result can fit in nums1.",
+  "constraints": "**Constraints:**\n\n  * `nums1.length == m + n`\n  * `nums2.length == n`\n  * `0 <= m, n <= 200`\n  * `1 <= m + n <= 200`\n  * `-109 <= nums1[i], nums2[j] <= 109`",
+  "topics": ["Array", "Two Pointers", "Sorting"],
+  "total_accepted": 5479680,
+  "total_submissions": 10069598,
+  "acceptance_rate": "54.4%",
+  "similar_questions": [
+    {
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-two-sorted-lists/"
+    },
+    {
+      "title": "Squares of a Sorted Array",
+      "slug": "squares-of-a-sorted-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/squares-of-a-sorted-array/"
+    },
+    {
+      "title": "Interval List Intersections",
+      "slug": "interval-list-intersections",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/interval-list-intersections/"
+    },
+    {
+      "title": "Take K of Each Character From Left and Right",
+      "slug": "take-k-of-each-character-from-left-and-right",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/take-k-of-each-character-from-left-and-right/"
+    }
+  ],
+  "hints": [
+    "You can easily solve this problem if you simply think about two elements at a time rather than two arrays. We know that each of the individual arrays is sorted. What we don't know is how they will intertwine. Can we take a local decision and arrive at an optimal solution?",
+    "If you simply consider one element each at a time from the two arrays and make a decision and proceed accordingly, you will arrive at the optimal solution."
+  ]
+}

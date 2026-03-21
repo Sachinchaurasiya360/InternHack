@@ -1,0 +1,31 @@
+{
+  "id": "706",
+  "title": "Design HashMap",
+  "slug": "design-hashmap",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Design a HashMap without using any built-in hash table libraries.</p>\n\n<p>Implement the <code>MyHashMap</code> class:</p>\n\n<ul>\n\t<li><code>MyHashMap()</code> initializes the object with an empty map.</li>\n\t<li><code>void put(int key, int value)</code> inserts a <code>(key, value)</code> pair into the HashMap. If the <code>key</code> already exists in the map, update the corresponding <code>value</code>.</li>\n\t<li><code>int get(int key)</code> returns the <code>value</code> to which the specified <code>key</code> is mapped, or <code>-1</code> if this map contains no mapping for the <code>key</code>.</li>\n\t<li><code>void remove(key)</code> removes the <code>key</code> and its corresponding <code>value</code> if the map contains the mapping for the <code>key</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;MyHashMap&quot;, &quot;put&quot;, &quot;put&quot;, &quot;get&quot;, &quot;get&quot;, &quot;put&quot;, &quot;get&quot;, &quot;remove&quot;, &quot;get&quot;]\n[[], [1, 1], [2, 2], [1], [3], [2, 1], [2], [2], [2]]\n<strong>Output</strong>\n[null, null, null, 1, -1, null, 1, null, -1]\n\n<strong>Explanation</strong>\nMyHashMap myHashMap = new MyHashMap();\nmyHashMap.put(1, 1); // The map is now [[1,1]]\nmyHashMap.put(2, 2); // The map is now [[1,1], [2,2]]\nmyHashMap.get(1);    // return 1, The map is now [[1,1], [2,2]]\nmyHashMap.get(3);    // return -1 (i.e., not found), The map is now [[1,1], [2,2]]\nmyHashMap.put(2, 1); // The map is now [[1,1], [2,1]] (i.e., update the existing value)\nmyHashMap.get(2);    // return 1, The map is now [[1,1], [2,1]]\nmyHashMap.remove(2); // remove the mapping for 2, The map is now [[1,1]]\nmyHashMap.get(2);    // return -1 (i.e., not found), The map is now [[1,1]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= key, value &lt;= 10<sup>6</sup></code></li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>put</code>, <code>get</code>, and <code>remove</code>.</li>\n</ul>\n",
+  "content_markdown": "Design a HashMap without using any built-in hash table libraries.\n\nImplement the `MyHashMap` class:\n\n  * `MyHashMap()` initializes the object with an empty map.\n  * `void put(int key, int value)` inserts a `(key, value)` pair into the HashMap. If the `key` already exists in the map, update the corresponding `value`.\n  * `int get(int key)` returns the `value` to which the specified `key` is mapped, or `-1` if this map contains no mapping for the `key`.\n  * `void remove(key)` removes the `key` and its corresponding `value` if the map contains the mapping for the `key`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"MyHashMap\", \"put\", \"put\", \"get\", \"get\", \"put\", \"get\", \"remove\", \"get\"]\n    [[], [1, 1], [2, 2], [1], [3], [2, 1], [2], [2], [2]]\n    **Output**\n    [null, null, null, 1, -1, null, 1, null, -1]\n    \n    **Explanation**\n    MyHashMap myHashMap = new MyHashMap();\n    myHashMap.put(1, 1); // The map is now [[1,1]]\n    myHashMap.put(2, 2); // The map is now [[1,1], [2,2]]\n    myHashMap.get(1);    // return 1, The map is now [[1,1], [2,2]]\n    myHashMap.get(3);    // return -1 (i.e., not found), The map is now [[1,1], [2,2]]\n    myHashMap.put(2, 1); // The map is now [[1,1], [2,1]] (i.e., update the existing value)\n    myHashMap.get(2);    // return 1, The map is now [[1,1], [2,1]]\n    myHashMap.remove(2); // remove the mapping for 2, The map is now [[1,1]]\n    myHashMap.get(2);    // return -1 (i.e., not found), The map is now [[1,1]]\n    \n\n \n\n**Constraints:**\n\n  * `0 <= key, value <= 106`\n  * At most `104` calls will be made to `put`, `get`, and `remove`.",
+  "question": "Design a HashMap without using any built-in hash table libraries.\n\nImplement the `MyHashMap` class:\n\n  * `MyHashMap()` initializes the object with an empty map.\n  * `void put(int key, int value)` inserts a `(key, value)` pair into the HashMap. If the `key` already exists in the map, update the corresponding `value`.\n  * `int get(int key)` returns the `value` to which the specified `key` is mapped, or `-1` if this map contains no mapping for the `key`.\n  * `void remove(key)` removes the `key` and its corresponding `value` if the map contains the mapping for the `key`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"MyHashMap\", \"put\", \"put\", \"get\", \"get\", \"put\", \"get\", \"remove\", \"get\"]\n    [[], [1, 1], [2, 2], [1], [3], [2, 1], [2], [2], [2]]\n    **Output**\n    [null, null, null, 1, -1, null, 1, null, -1]\n    \n    **Explanation**\n    MyHashMap myHashMap = new MyHashMap();\n    myHashMap.put(1, 1); // The map is now [[1,1]]\n    myHashMap.put(2, 2); // The map is now [[1,1], [2,2]]\n    myHashMap.get(1);    // return 1, The map is now [[1,1], [2,2]]\n    myHashMap.get(3);    // return -1 (i.e., not found), The map is now [[1,1], [2,2]]\n    myHashMap.put(2, 1); // The map is now [[1,1], [2,1]] (i.e., update the existing value)\n    myHashMap.get(2);    // return 1, The map is now [[1,1], [2,1]]\n    myHashMap.remove(2); // remove the mapping for 2, The map is now [[1,1]]\n    myHashMap.get(2);    // return -1 (i.e., not found), The map is now [[1,1]]",
+  "constraints": "**Constraints:**\n\n  * `0 <= key, value <= 106`\n  * At most `104` calls will be made to `put`, `get`, and `remove`.",
+  "topics": ["Array", "Hash Table", "Linked List", "Design", "Hash Function"],
+  "total_accepted": 750182,
+  "total_submissions": 1130120,
+  "acceptance_rate": "66.4%",
+  "similar_questions": [
+    {
+      "title": "Design HashSet",
+      "slug": "design-hashset",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/design-hashset/"
+    },
+    {
+      "title": "Design Skiplist",
+      "slug": "design-skiplist",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/design-skiplist/"
+    }
+  ],
+  "hints": []
+}

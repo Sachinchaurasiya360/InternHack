@@ -1,0 +1,21 @@
+{
+  "id": "1304",
+  "title": "Find N Unique Integers Sum up to Zero",
+  "slug": "find-n-unique-integers-sum-up-to-zero",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <strong>any</strong> array containing <code>n</code> <strong>unique</strong> integers such that they add up to <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5\n<strong>Output:</strong> [-7,-1,1,3,4]\n<strong>Explanation:</strong> These arrays also are accepted [-5,-1,1,2,3] , [-3,-1,2,-2,4].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> [-1,0,1]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> [0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, return **any** array containing `n` **unique** integers such that they add up to `0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** [-7,-1,1,3,4]\n    **Explanation:** These arrays also are accepted [-5,-1,1,2,3] , [-3,-1,2,-2,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** [-1,0,1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 1\n    **Output:** [0]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "question": "Given an integer `n`, return **any** array containing `n` **unique** integers such that they add up to `0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5\n    **Output:** [-7,-1,1,3,4]\n    **Explanation:** These arrays also are accepted [-5,-1,1,2,3] , [-3,-1,2,-2,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** [-1,0,1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 1\n    **Output:** [0]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 395127,
+  "total_submissions": 503556,
+  "acceptance_rate": "78.5%",
+  "similar_questions": [],
+  "hints": [
+    "Return an array where the values are symmetric. (+x , -x).",
+    "If n is odd, append value 0 in your returned array."
+  ]
+}

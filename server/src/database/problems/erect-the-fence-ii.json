@@ -1,0 +1,28 @@
+{
+  "id": "1924",
+  "title": "Erect the Fence II",
+  "slug": "erect-the-fence-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Geometry"],
+  "total_accepted": 971,
+  "total_submissions": 1889,
+  "acceptance_rate": "51.4%",
+  "similar_questions": [
+    {
+      "title": "Erect the Fence",
+      "slug": "erect-the-fence",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/erect-the-fence/"
+    }
+  ],
+  "hints": [
+    "First, we need to note that this is a classic problem given n points you need to find the minimum enclosing circle to bind them",
+    "Second, we need to apply a well known algorithm called welzls algorithm to help us find the minimum enclosing circle"
+  ]
+}

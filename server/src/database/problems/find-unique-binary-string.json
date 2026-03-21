@@ -1,0 +1,40 @@
+{
+  "id": "1980",
+  "title": "Find Unique Binary String",
+  "slug": "find-unique-binary-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>nums</code> containing <code>n</code> <strong>unique</strong> binary strings each of length <code>n</code>, return <em>a binary string of length </em><code>n</code><em> that <strong>does not appear</strong> in </em><code>nums</code><em>. If there are multiple answers, you may return <strong>any</strong> of them</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;01&quot;,&quot;10&quot;]\n<strong>Output:</strong> &quot;11&quot;\n<strong>Explanation:</strong> &quot;11&quot; does not appear in nums. &quot;00&quot; would also be correct.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;00&quot;,&quot;01&quot;]\n<strong>Output:</strong> &quot;11&quot;\n<strong>Explanation:</strong> &quot;11&quot; does not appear in nums. &quot;10&quot; would also be correct.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;111&quot;,&quot;011&quot;,&quot;001&quot;]\n<strong>Output:</strong> &quot;101&quot;\n<strong>Explanation:</strong> &quot;101&quot; does not appear in nums. &quot;000&quot;, &quot;010&quot;, &quot;100&quot;, and &quot;110&quot; would also be correct.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 16</code></li>\n\t<li><code>nums[i].length == n</code></li>\n\t<li><code>nums[i] </code>is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n\t<li>All the strings of <code>nums</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given an array of strings `nums` containing `n` **unique** binary strings each of length `n`, return _a binary string of length_`n` _that**does not appear** in _`nums` _. If there are multiple answers, you may return**any** of them_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [\"01\",\"10\"]\n    **Output:** \"11\"\n    **Explanation:** \"11\" does not appear in nums. \"00\" would also be correct.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [\"00\",\"01\"]\n    **Output:** \"11\"\n    **Explanation:** \"11\" does not appear in nums. \"10\" would also be correct.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [\"111\",\"011\",\"001\"]\n    **Output:** \"101\"\n    **Explanation:** \"101\" does not appear in nums. \"000\", \"010\", \"100\", and \"110\" would also be correct.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 16`\n  * `nums[i].length == n`\n  * `nums[i] `is either `'0'` or `'1'`.\n  * All the strings of `nums` are **unique**.",
+  "question": "Given an array of strings `nums` containing `n` **unique** binary strings each of length `n`, return _a binary string of length_`n` _that**does not appear** in _`nums` _. If there are multiple answers, you may return**any** of them_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [\"01\",\"10\"]\n    **Output:** \"11\"\n    **Explanation:** \"11\" does not appear in nums. \"00\" would also be correct.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [\"00\",\"01\"]\n    **Output:** \"11\"\n    **Explanation:** \"11\" does not appear in nums. \"10\" would also be correct.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [\"111\",\"011\",\"001\"]\n    **Output:** \"101\"\n    **Explanation:** \"101\" does not appear in nums. \"000\", \"010\", \"100\", and \"110\" would also be correct.",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `1 <= n <= 16`\n  * `nums[i].length == n`\n  * `nums[i] `is either `'0'` or `'1'`.\n  * All the strings of `nums` are **unique**.",
+  "topics": ["Array", "Hash Table", "String", "Backtracking"],
+  "total_accepted": 302366,
+  "total_submissions": 380583,
+  "acceptance_rate": "79.4%",
+  "similar_questions": [
+    {
+      "title": "Missing Number",
+      "slug": "missing-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/missing-number/"
+    },
+    {
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+    },
+    {
+      "title": "Random Pick with Blacklist",
+      "slug": "random-pick-with-blacklist",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/random-pick-with-blacklist/"
+    }
+  ],
+  "hints": [
+    "We can convert the given strings into base 10 integers.",
+    "Can we use recursion to generate all possible strings?"
+  ]
+}

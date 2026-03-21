@@ -1,0 +1,27 @@
+{
+  "id": "1564",
+  "title": "Put Boxes Into the Warehouse I",
+  "slug": "put-boxes-into-the-warehouse-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 19224,
+  "total_submissions": 28519,
+  "acceptance_rate": "67.4%",
+  "similar_questions": [
+    {
+      "title": "Put Boxes Into the Warehouse II",
+      "slug": "put-boxes-into-the-warehouse-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/put-boxes-into-the-warehouse-ii/"
+    }
+  ],
+  "hints": [
+    "Sort the boxes in ascending order, try to process the box with the smallest height first."
+  ]
+}

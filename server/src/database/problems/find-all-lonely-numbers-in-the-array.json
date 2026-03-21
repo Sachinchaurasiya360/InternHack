@@ -1,0 +1,28 @@
+{
+  "id": "2150",
+  "title": "Find All Lonely Numbers in the Array",
+  "slug": "find-all-lonely-numbers-in-the-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. A number <code>x</code> is <strong>lonely</strong> when it appears only <strong>once</strong>, and no <strong>adjacent</strong> numbers (i.e. <code>x + 1</code> and <code>x - 1)</code> appear in the array.</p>\n\n<p>Return <em><strong>all</strong> lonely numbers in </em><code>nums</code>. You may return the answer in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,6,5,8]\n<strong>Output:</strong> [10,8]\n<strong>Explanation:</strong> \n- 10 is a lonely number since it appears exactly once and 9 and 11 does not appear in nums.\n- 8 is a lonely number since it appears exactly once and 7 and 9 does not appear in nums.\n- 5 is not a lonely number since 6 appears in nums and vice versa.\nHence, the lonely numbers in nums are [10, 8].\nNote that [8, 10] may also be returned.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,5,3]\n<strong>Output:</strong> [1,5]\n<strong>Explanation:</strong> \n- 1 is a lonely number since it appears exactly once and 0 and 2 does not appear in nums.\n- 5 is a lonely number since it appears exactly once and 4 and 6 does not appear in nums.\n- 3 is not a lonely number since it appears twice.\nHence, the lonely numbers in nums are [1, 5].\nNote that [5, 1] may also be returned.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`. A number `x` is **lonely** when it appears only **once** , and no **adjacent** numbers (i.e. `x + 1` and `x - 1)` appear in the array.\n\nReturn _**all** lonely numbers in _`nums`. You may return the answer in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [10,6,5,8]\n    **Output:** [10,8]\n    **Explanation:** \n    - 10 is a lonely number since it appears exactly once and 9 and 11 does not appear in nums.\n    - 8 is a lonely number since it appears exactly once and 7 and 9 does not appear in nums.\n    - 5 is not a lonely number since 6 appears in nums and vice versa.\n    Hence, the lonely numbers in nums are [10, 8].\n    Note that [8, 10] may also be returned.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,5,3]\n    **Output:** [1,5]\n    **Explanation:** \n    - 1 is a lonely number since it appears exactly once and 0 and 2 does not appear in nums.\n    - 5 is a lonely number since it appears exactly once and 4 and 6 does not appear in nums.\n    - 3 is not a lonely number since it appears twice.\n    Hence, the lonely numbers in nums are [1, 5].\n    Note that [5, 1] may also be returned.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 106`",
+  "question": "You are given an integer array `nums`. A number `x` is **lonely** when it appears only **once** , and no **adjacent** numbers (i.e. `x + 1` and `x - 1)` appear in the array.\n\nReturn _**all** lonely numbers in _`nums`. You may return the answer in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [10,6,5,8]\n    **Output:** [10,8]\n    **Explanation:** \n    - 10 is a lonely number since it appears exactly once and 9 and 11 does not appear in nums.\n    - 8 is a lonely number since it appears exactly once and 7 and 9 does not appear in nums.\n    - 5 is not a lonely number since 6 appears in nums and vice versa.\n    Hence, the lonely numbers in nums are [10, 8].\n    Note that [8, 10] may also be returned.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,3,5,3]\n    **Output:** [1,5]\n    **Explanation:** \n    - 1 is a lonely number since it appears exactly once and 0 and 2 does not appear in nums.\n    - 5 is a lonely number since it appears exactly once and 4 and 6 does not appear in nums.\n    - 3 is not a lonely number since it appears twice.\n    Hence, the lonely numbers in nums are [1, 5].\n    Note that [5, 1] may also be returned.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 106`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 68990,
+  "total_submissions": 110053,
+  "acceptance_rate": "62.7%",
+  "similar_questions": [
+    {
+      "title": "Frequency of the Most Frequent Element",
+      "slug": "frequency-of-the-most-frequent-element",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/frequency-of-the-most-frequent-element/"
+    }
+  ],
+  "hints": [
+    "For a given element x, how can you quickly check if x - 1 and x + 1 are present in the array without reiterating through the entire array?",
+    "Use a set or a hash map."
+  ]
+}

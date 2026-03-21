@@ -1,0 +1,25 @@
+{
+  "id": "539",
+  "title": "Minimum Time Difference",
+  "slug": "minimum-time-difference",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "Given a list of 24-hour clock time points in <strong>&quot;HH:MM&quot;</strong> format, return <em>the minimum <b>minutes</b> difference between any two time-points in the list</em>.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> timePoints = [\"23:59\",\"00:00\"]\n<strong>Output:</strong> 1\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> timePoints = [\"00:00\",\"23:59\",\"00:00\"]\n<strong>Output:</strong> 0\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= timePoints.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>timePoints[i]</code> is in the format <strong>&quot;HH:MM&quot;</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given a list of 24-hour clock time points in **\" HH:MM\"** format, return _the minimum**minutes** difference between any two time-points in the list_. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** timePoints = [\"23:59\",\"00:00\"]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** timePoints = [\"00:00\",\"23:59\",\"00:00\"]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `2 <= timePoints.length <= 2 * 104`\n  * `timePoints[i]` is in the format **\" HH:MM\"**.",
+  "question": "Given a list of 24-hour clock time points in **\" HH:MM\"** format, return _the minimum**minutes** difference between any two time-points in the list_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** timePoints = [\"23:59\",\"00:00\"]\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** timePoints = [\"00:00\",\"23:59\",\"00:00\"]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `2 <= timePoints.length <= 2 * 104`\n  * `timePoints[i]` is in the format **\" HH:MM\"**.",
+  "topics": ["Array", "Math", "String", "Sorting"],
+  "total_accepted": 344832,
+  "total_submissions": 551270,
+  "acceptance_rate": "62.6%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost to Set Cooking Time",
+      "slug": "minimum-cost-to-set-cooking-time",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-to-set-cooking-time/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "2344",
+  "title": "Minimum Deletions to Make Array Divisible",
+  "slug": "minimum-deletions-to-make-array-divisible",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two positive integer arrays <code>nums</code> and <code>numsDivide</code>. You can delete any number of elements from <code>nums</code>.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of deletions such that the <strong>smallest</strong> element in </em><code>nums</code><em> <strong>divides</strong> all the elements of </em><code>numsDivide</code>. If this is not possible, return <code>-1</code>.</p>\n\n<p>Note that an integer <code>x</code> divides <code>y</code> if <code>y % x == 0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3,2,4,3], numsDivide = [9,6,9,3,15]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> \nThe smallest element in [2,3,2,4,3] is 2, which does not divide all the elements of numsDivide.\nWe use 2 deletions to delete the elements in nums that are equal to 2 which makes nums = [3,4,3].\nThe smallest element in [3,4,3] is 3, which divides all the elements of numsDivide.\nIt can be shown that 2 is the minimum number of deletions needed.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,3,6], numsDivide = [8,2,6,10]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> \nWe want the smallest element in nums to divide all the elements of numsDivide.\nThere is no way to delete elements from nums to allow this.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length, numsDivide.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i], numsDivide[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two positive integer arrays `nums` and `numsDivide`. You can delete any number of elements from `nums`.\n\nReturn _the**minimum** number of deletions such that the **smallest** element in _`nums` _**divides** all the elements of _`numsDivide`. If this is not possible, return `-1`.\n\nNote that an integer `x` divides `y` if `y % x == 0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,3,2,4,3], numsDivide = [9,6,9,3,15]\n    **Output:** 2\n    **Explanation:** \n    The smallest element in [2,3,2,4,3] is 2, which does not divide all the elements of numsDivide.\n    We use 2 deletions to delete the elements in nums that are equal to 2 which makes nums = [3,4,3].\n    The smallest element in [3,4,3] is 3, which divides all the elements of numsDivide.\n    It can be shown that 2 is the minimum number of deletions needed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [4,3,6], numsDivide = [8,2,6,10]\n    **Output:** -1\n    **Explanation:** \n    We want the smallest element in nums to divide all the elements of numsDivide.\n    There is no way to delete elements from nums to allow this.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length, numsDivide.length <= 105`\n  * `1 <= nums[i], numsDivide[i] <= 109`",
+  "question": "You are given two positive integer arrays `nums` and `numsDivide`. You can delete any number of elements from `nums`.\n\nReturn _the**minimum** number of deletions such that the **smallest** element in _`nums` _**divides** all the elements of _`numsDivide`. If this is not possible, return `-1`.\n\nNote that an integer `x` divides `y` if `y % x == 0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,3,2,4,3], numsDivide = [9,6,9,3,15]\n    **Output:** 2\n    **Explanation:** \n    The smallest element in [2,3,2,4,3] is 2, which does not divide all the elements of numsDivide.\n    We use 2 deletions to delete the elements in nums that are equal to 2 which makes nums = [3,4,3].\n    The smallest element in [3,4,3] is 3, which divides all the elements of numsDivide.\n    It can be shown that 2 is the minimum number of deletions needed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [4,3,6], numsDivide = [8,2,6,10]\n    **Output:** -1\n    **Explanation:** \n    We want the smallest element in nums to divide all the elements of numsDivide.\n    There is no way to delete elements from nums to allow this.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length, numsDivide.length <= 105`\n  * `1 <= nums[i], numsDivide[i] <= 109`",
+  "topics": ["Array", "Math", "Sorting", "Heap (Priority Queue)", "Number Theory"],
+  "total_accepted": 43844,
+  "total_submissions": 73051,
+  "acceptance_rate": "60.0%",
+  "similar_questions": [
+    {
+      "title": "Check If Array Pairs Are Divisible by k",
+      "slug": "check-if-array-pairs-are-divisible-by-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-array-pairs-are-divisible-by-k/"
+    }
+  ],
+  "hints": [
+    "How can we find an integer x that divides all the elements of numsDivide?",
+    "Will finding GCD (Greatest Common Divisor) help here?"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "1197",
+  "title": "Minimum Knight Moves",
+  "slug": "minimum-knight-moves",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Breadth-First Search"],
+  "total_accepted": 188442,
+  "total_submissions": 451316,
+  "acceptance_rate": "41.8%",
+  "similar_questions": [
+    {
+      "title": "Check Knight Tour Configuration",
+      "slug": "check-knight-tour-configuration",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-knight-tour-configuration/"
+    }
+  ],
+  "hints": [
+    "You can simulate the movements since the limits are low.",
+    "Is there a search algorithm applicable to this problem?",
+    "Since we want the minimum number of moves, we can use Breadth First Search."
+  ]
+}

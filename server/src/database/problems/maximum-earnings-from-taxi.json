@@ -1,0 +1,40 @@
+{
+  "id": "2008",
+  "title": "Maximum Earnings From Taxi",
+  "slug": "maximum-earnings-from-taxi",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> points on a road you are driving your taxi on. The <code>n</code> points on the road are labeled from <code>1</code> to <code>n</code> in the direction you are going, and you want to drive from point <code>1</code> to point <code>n</code> to make money by picking up passengers. You cannot change the direction of the taxi.</p>\n\n<p>The passengers are represented by a <strong>0-indexed</strong> 2D integer array <code>rides</code>, where <code>rides[i] = [start<sub>i</sub>, end<sub>i</sub>, tip<sub>i</sub>]</code> denotes the <code>i<sup>th</sup></code> passenger requesting a ride from point <code>start<sub>i</sub></code> to point <code>end<sub>i</sub></code> who is willing to give a <code>tip<sub>i</sub></code> dollar tip.</p>\n\n<p>For<strong> each </strong>passenger <code>i</code> you pick up, you <strong>earn</strong> <code>end<sub>i</sub> - start<sub>i</sub> + tip<sub>i</sub></code> dollars. You may only drive <b>at most one </b>passenger at a time.</p>\n\n<p>Given <code>n</code> and <code>rides</code>, return <em>the <strong>maximum</strong> number of dollars you can earn by picking up the passengers optimally.</em></p>\n\n<p><strong>Note:</strong> You may drop off a passenger and pick up a different passenger at the same point.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5, rides = [<u>[2,5,4]</u>,[1,5,1]]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> We can pick up passenger 0 to earn 5 - 2 + 4 = 7 dollars.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 20, rides = [[1,6,1],<u>[3,10,2]</u>,<u>[10,12,3]</u>,[11,12,2],[12,15,2],<u>[13,18,1]</u>]\n<strong>Output:</strong> 20\n<strong>Explanation:</strong> We will pick up the following passengers:\n- Drive passenger 1 from point 3 to point 10 for a profit of 10 - 3 + 2 = 9 dollars.\n- Drive passenger 2 from point 10 to point 12 for a profit of 12 - 10 + 3 = 5 dollars.\n- Drive passenger 5 from point 13 to point 18 for a profit of 18 - 13 + 1 = 6 dollars.\nWe earn 9 + 5 + 6 = 20 dollars in total.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= rides.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>rides[i].length == 3</code></li>\n\t<li><code>1 &lt;= start<sub>i</sub> &lt; end<sub>i</sub> &lt;= n</code></li>\n\t<li><code>1 &lt;= tip<sub>i</sub> &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "There are `n` points on a road you are driving your taxi on. The `n` points on the road are labeled from `1` to `n` in the direction you are going, and you want to drive from point `1` to point `n` to make money by picking up passengers. You cannot change the direction of the taxi.\n\nThe passengers are represented by a **0-indexed** 2D integer array `rides`, where `rides[i] = [starti, endi, tipi]` denotes the `ith` passenger requesting a ride from point `starti` to point `endi` who is willing to give a `tipi` dollar tip.\n\nFor**each** passenger `i` you pick up, you **earn** `endi - starti + tipi` dollars. You may only drive **at most one** passenger at a time.\n\nGiven `n` and `rides`, return _the**maximum** number of dollars you can earn by picking up the passengers optimally._\n\n**Note:** You may drop off a passenger and pick up a different passenger at the same point.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5, rides = [_[2,5,4]_ ,[1,5,1]]\n    **Output:** 7\n    **Explanation:** We can pick up passenger 0 to earn 5 - 2 + 4 = 7 dollars.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 20, rides = [[1,6,1],_[3,10,2]_ ,_[10,12,3]_ ,[11,12,2],[12,15,2],_[13,18,1]_]\n    **Output:** 20\n    **Explanation:** We will pick up the following passengers:\n    - Drive passenger 1 from point 3 to point 10 for a profit of 10 - 3 + 2 = 9 dollars.\n    - Drive passenger 2 from point 10 to point 12 for a profit of 12 - 10 + 3 = 5 dollars.\n    - Drive passenger 5 from point 13 to point 18 for a profit of 18 - 13 + 1 = 6 dollars.\n    We earn 9 + 5 + 6 = 20 dollars in total.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= rides.length <= 3 * 104`\n  * `rides[i].length == 3`\n  * `1 <= starti < endi <= n`\n  * `1 <= tipi <= 105`",
+  "question": "There are `n` points on a road you are driving your taxi on. The `n` points on the road are labeled from `1` to `n` in the direction you are going, and you want to drive from point `1` to point `n` to make money by picking up passengers. You cannot change the direction of the taxi.\n\nThe passengers are represented by a **0-indexed** 2D integer array `rides`, where `rides[i] = [starti, endi, tipi]` denotes the `ith` passenger requesting a ride from point `starti` to point `endi` who is willing to give a `tipi` dollar tip.\n\nFor**each** passenger `i` you pick up, you **earn** `endi - starti + tipi` dollars. You may only drive **at most one** passenger at a time.\n\nGiven `n` and `rides`, return _the**maximum** number of dollars you can earn by picking up the passengers optimally._\n\n**Note:** You may drop off a passenger and pick up a different passenger at the same point.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5, rides = [_[2,5,4]_ ,[1,5,1]]\n    **Output:** 7\n    **Explanation:** We can pick up passenger 0 to earn 5 - 2 + 4 = 7 dollars.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 20, rides = [[1,6,1],_[3,10,2]_ ,_[10,12,3]_ ,[11,12,2],[12,15,2],_[13,18,1]_]\n    **Output:** 20\n    **Explanation:** We will pick up the following passengers:\n    - Drive passenger 1 from point 3 to point 10 for a profit of 10 - 3 + 2 = 9 dollars.\n    - Drive passenger 2 from point 10 to point 12 for a profit of 12 - 10 + 3 = 5 dollars.\n    - Drive passenger 5 from point 13 to point 18 for a profit of 18 - 13 + 1 = 6 dollars.\n    We earn 9 + 5 + 6 = 20 dollars in total.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= rides.length <= 3 * 104`\n  * `rides[i].length == 3`\n  * `1 <= starti < endi <= n`\n  * `1 <= tipi <= 105`",
+  "topics": ["Array", "Hash Table", "Binary Search", "Dynamic Programming", "Sorting"],
+  "total_accepted": 48000,
+  "total_submissions": 103808,
+  "acceptance_rate": "46.2%",
+  "similar_questions": [
+    {
+      "title": "Maximum Profit in Job Scheduling",
+      "slug": "maximum-profit-in-job-scheduling",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-profit-in-job-scheduling/"
+    },
+    {
+      "title": "Maximum Number of Events That Can Be Attended",
+      "slug": "maximum-number-of-events-that-can-be-attended",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/"
+    },
+    {
+      "title": "Maximum Number of Events That Can Be Attended II",
+      "slug": "maximum-number-of-events-that-can-be-attended-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended-ii/"
+    }
+  ],
+  "hints": [
+    "Can we sort the array to help us solve the problem?",
+    "We can use dynamic programming to keep track of the maximum at each position."
+  ]
+}

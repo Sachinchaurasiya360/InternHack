@@ -1,0 +1,43 @@
+{
+  "id": "294",
+  "title": "Flip Game II",
+  "slug": "flip-game-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming", "Backtracking", "Memoization", "Game Theory"],
+  "total_accepted": 75536,
+  "total_submissions": 144496,
+  "acceptance_rate": "52.3%",
+  "similar_questions": [
+    {
+      "title": "Nim Game",
+      "slug": "nim-game",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/nim-game/"
+    },
+    {
+      "title": "Flip Game",
+      "slug": "flip-game",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/flip-game/"
+    },
+    {
+      "title": "Guess Number Higher or Lower II",
+      "slug": "guess-number-higher-or-lower-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/guess-number-higher-or-lower-ii/"
+    },
+    {
+      "title": "Can I Win",
+      "slug": "can-i-win",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/can-i-win/"
+    }
+  ],
+  "hints": []
+}

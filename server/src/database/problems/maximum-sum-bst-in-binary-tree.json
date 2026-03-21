@@ -1,0 +1,27 @@
+{
+  "id": "1373",
+  "title": "Maximum Sum BST in Binary Tree",
+  "slug": "maximum-sum-bst-in-binary-tree",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>binary tree</strong> <code>root</code>, return <em>the maximum sum of all keys of <strong>any</strong> sub-tree which is also a Binary Search Tree (BST)</em>.</p>\n\n<p>Assume a BST is defined as follows:</p>\n\n<ul>\n\t<li>The left subtree of a node contains only nodes with keys <strong>less than</strong> the node&#39;s key.</li>\n\t<li>The right subtree of a node contains only nodes with keys <strong>greater than</strong> the node&#39;s key.</li>\n\t<li>Both the left and right subtrees must also be binary search trees.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/30/sample_1_1709.png\" style=\"width: 320px; height: 250px;\" /></p>\n\n<pre>\n<strong>Input:</strong> root = [1,4,3,2,4,2,5,null,null,null,null,null,null,4,6]\n<strong>Output:</strong> 20\n<strong>Explanation:</strong> Maximum sum in a valid Binary search tree is obtained in root node with key equal to 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/30/sample_2_1709.png\" style=\"width: 134px; height: 180px;\" /></p>\n\n<pre>\n<strong>Input:</strong> root = [4,3,null,1,2]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Maximum sum in a valid Binary search tree is obtained in a single root node with key equal to 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [-4,-2,-5]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> All values are negatives. Return an empty BST.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 4 * 10<sup>4</sup>]</code>.</li>\n\t<li><code>-4 * 10<sup>4</sup> &lt;= Node.val &lt;= 4 * 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a **binary tree** `root`, return _the maximum sum of all keys of**any** sub-tree which is also a Binary Search Tree (BST)_.\n\nAssume a BST is defined as follows:\n\n  * The left subtree of a node contains only nodes with keys **less than** the node's key.\n  * The right subtree of a node contains only nodes with keys **greater than** the node's key.\n  * Both the left and right subtrees must also be binary search trees.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/30/sample_1_1709.png)\n    \n    \n    **Input:** root = [1,4,3,2,4,2,5,null,null,null,null,null,null,4,6]\n    **Output:** 20\n    **Explanation:** Maximum sum in a valid Binary search tree is obtained in root node with key equal to 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/01/30/sample_2_1709.png)\n    \n    \n    **Input:** root = [4,3,null,1,2]\n    **Output:** 2\n    **Explanation:** Maximum sum in a valid Binary search tree is obtained in a single root node with key equal to 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [-4,-2,-5]\n    **Output:** 0\n    **Explanation:** All values are negatives. Return an empty BST.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 4 * 104]`.\n  * `-4 * 104 <= Node.val <= 4 * 104`",
+  "question": "Given a **binary tree** `root`, return _the maximum sum of all keys of**any** sub-tree which is also a Binary Search Tree (BST)_.\n\nAssume a BST is defined as follows:\n\n  * The left subtree of a node contains only nodes with keys **less than** the node's key.\n  * The right subtree of a node contains only nodes with keys **greater than** the node's key.\n  * Both the left and right subtrees must also be binary search trees.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/30/sample_1_1709.png)\n    \n    \n    **Input:** root = [1,4,3,2,4,2,5,null,null,null,null,null,null,4,6]\n    **Output:** 20\n    **Explanation:** Maximum sum in a valid Binary search tree is obtained in root node with key equal to 3.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/01/30/sample_2_1709.png)\n    \n    \n    **Input:** root = [4,3,null,1,2]\n    **Output:** 2\n    **Explanation:** Maximum sum in a valid Binary search tree is obtained in a single root node with key equal to 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** root = [-4,-2,-5]\n    **Output:** 0\n    **Explanation:** All values are negatives. Return an empty BST.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 4 * 104]`.\n  * `-4 * 104 <= Node.val <= 4 * 104`",
+  "topics": [
+    "Dynamic Programming",
+    "Tree",
+    "Depth-First Search",
+    "Binary Search Tree",
+    "Binary Tree"
+  ],
+  "total_accepted": 121521,
+  "total_submissions": 261378,
+  "acceptance_rate": "46.5%",
+  "similar_questions": [],
+  "hints": [
+    "Create a datastructure with 4 parameters:  (sum, isBST, maxLeft, minRight).",
+    "In each node compute theses parameters, following the conditions of a Binary Search Tree."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "520",
+  "title": "Detect Capital",
+  "slug": "detect-capital",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>We define the usage of capitals in a word to be right when one of the following cases holds:</p>\n\n<ul>\n\t<li>All letters in this word are capitals, like <code>&quot;USA&quot;</code>.</li>\n\t<li>All letters in this word are not capitals, like <code>&quot;leetcode&quot;</code>.</li>\n\t<li>Only the first letter in this word is capital, like <code>&quot;Google&quot;</code>.</li>\n</ul>\n\n<p>Given a string <code>word</code>, return <code>true</code> if the usage of capitals in it is right.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> word = \"USA\"\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> word = \"FlaG\"\n<strong>Output:</strong> false\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 100</code></li>\n\t<li><code>word</code> consists of lowercase and uppercase English letters.</li>\n</ul>\n",
+  "content_markdown": "We define the usage of capitals in a word to be right when one of the following cases holds:\n\n  * All letters in this word are capitals, like `\"USA\"`.\n  * All letters in this word are not capitals, like `\"leetcode\"`.\n  * Only the first letter in this word is capital, like `\"Google\"`.\n\n\n\nGiven a string `word`, return `true` if the usage of capitals in it is right.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word = \"USA\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"FlaG\"\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 100`\n  * `word` consists of lowercase and uppercase English letters.",
+  "question": "We define the usage of capitals in a word to be right when one of the following cases holds:\n\n  * All letters in this word are capitals, like `\"USA\"`.\n  * All letters in this word are not capitals, like `\"leetcode\"`.\n  * Only the first letter in this word is capital, like `\"Google\"`.\n\n\n\nGiven a string `word`, return `true` if the usage of capitals in it is right.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word = \"USA\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** word = \"FlaG\"\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 100`\n  * `word` consists of lowercase and uppercase English letters.",
+  "topics": ["String"],
+  "total_accepted": 543091,
+  "total_submissions": 961564,
+  "acceptance_rate": "56.5%",
+  "similar_questions": [
+    {
+      "title": "Capitalize the Title",
+      "slug": "capitalize-the-title",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/capitalize-the-title/"
+    },
+    {
+      "title": "Count the Number of Special Characters II",
+      "slug": "count-the-number-of-special-characters-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-special-characters-ii/"
+    },
+    {
+      "title": "Count the Number of Special Characters I",
+      "slug": "count-the-number-of-special-characters-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-the-number-of-special-characters-i/"
+    }
+  ],
+  "hints": []
+}

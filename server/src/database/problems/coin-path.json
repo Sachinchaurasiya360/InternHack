@@ -1,0 +1,31 @@
+{
+  "id": "656",
+  "title": "Coin Path",
+  "slug": "coin-path",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 17210,
+  "total_submissions": 50282,
+  "acceptance_rate": "34.2%",
+  "similar_questions": [
+    {
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber/"
+    },
+    {
+      "title": "House Robber II",
+      "slug": "house-robber-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber-ii/"
+    }
+  ],
+  "hints": []
+}

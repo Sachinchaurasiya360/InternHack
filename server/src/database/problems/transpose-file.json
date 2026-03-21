@@ -1,0 +1,18 @@
+{
+  "id": "194",
+  "title": "Transpose File",
+  "slug": "transpose-file",
+  "difficulty": "Medium",
+  "category": "Shell",
+  "content_html": "<p>Given a text file <code>file.txt</code>, transpose its content.</p>\n\n<p>You may assume that each row has the same number of columns, and each field is separated by the <code>&#39; &#39;</code> character.</p>\n\n<p><strong class=\"example\">Example:</strong></p>\n\n<p>If <code>file.txt</code> has the following content:</p>\n\n<pre>\nname age\nalice 21\nryan 30\n</pre>\n\n<p>Output the following:</p>\n\n<pre>\nname alice ryan\nage 21 30\n</pre>\n",
+  "content_markdown": "Given a text file `file.txt`, transpose its content.\n\nYou may assume that each row has the same number of columns, and each field is separated by the `' '` character.\n\n**Example:**\n\nIf `file.txt` has the following content:\n    \n    \n    name age\n    alice 21\n    ryan 30\n    \n\nOutput the following:\n    \n    \n    name alice ryan\n    age 21 30",
+  "question": "Given a text file `file.txt`, transpose its content.\n\nYou may assume that each row has the same number of columns, and each field is separated by the `' '` character.",
+  "examples": "**Example:**\n\nIf `file.txt` has the following content:\n    \n    \n    name age\n    alice 21\n    ryan 30\n    \n\nOutput the following:\n    \n    \n    name alice ryan\n    age 21 30",
+  "constraints": "",
+  "topics": ["Shell"],
+  "total_accepted": 40804,
+  "total_submissions": 132877,
+  "acceptance_rate": "30.7%",
+  "similar_questions": [],
+  "hints": []
+}

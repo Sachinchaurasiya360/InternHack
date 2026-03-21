@@ -1,0 +1,36 @@
+{
+  "id": "1217",
+  "title": "Minimum Cost to Move Chips to The Same Position",
+  "slug": "minimum-cost-to-move-chips-to-the-same-position",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>We have <code>n</code> chips, where the position of the <code>i<sup>th</sup></code> chip is <code>position[i]</code>.</p>\n\n<p>We need to move all the chips to <strong>the same position</strong>. In one step, we can change the position of the <code>i<sup>th</sup></code> chip from <code>position[i]</code> to:</p>\n\n<ul>\n\t<li><code>position[i] + 2</code> or <code>position[i] - 2</code> with <code>cost = 0</code>.</li>\n\t<li><code>position[i] + 1</code> or <code>position[i] - 1</code> with <code>cost = 1</code>.</li>\n</ul>\n\n<p>Return <em>the minimum cost</em> needed to move all the chips to the same position.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/15/chips_e1.jpg\" style=\"width: 750px; height: 217px;\" />\n<pre>\n<strong>Input:</strong> position = [1,2,3]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> First step: Move the chip at position 3 to position 1 with cost = 0.\nSecond step: Move the chip at position 2 to position 1 with cost = 1.\nTotal cost is 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/15/chip_e2.jpg\" style=\"width: 750px; height: 306px;\" />\n<pre>\n<strong>Input:</strong> position = [2,2,2,3,3]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We can move the two chips at position  3 to position 2. Each move has cost = 1. The total cost = 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> position = [1,1000000000]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= position.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= position[i] &lt;= 10^9</code></li>\n</ul>\n",
+  "content_markdown": "We have `n` chips, where the position of the `ith` chip is `position[i]`.\n\nWe need to move all the chips to **the same position**. In one step, we can change the position of the `ith` chip from `position[i]` to:\n\n  * `position[i] + 2` or `position[i] - 2` with `cost = 0`.\n  * `position[i] + 1` or `position[i] - 1` with `cost = 1`.\n\n\n\nReturn _the minimum cost_ needed to move all the chips to the same position.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/15/chips_e1.jpg)\n    \n    \n    **Input:** position = [1,2,3]\n    **Output:** 1\n    **Explanation:** First step: Move the chip at position 3 to position 1 with cost = 0.\n    Second step: Move the chip at position 2 to position 1 with cost = 1.\n    Total cost is 1.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/15/chip_e2.jpg)\n    \n    \n    **Input:** position = [2,2,2,3,3]\n    **Output:** 2\n    **Explanation:** We can move the two chips at position  3 to position 2. Each move has cost = 1. The total cost = 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** position = [1,1000000000]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= position.length <= 100`\n  * `1 <= position[i] <= 10^9`",
+  "question": "We have `n` chips, where the position of the `ith` chip is `position[i]`.\n\nWe need to move all the chips to **the same position**. In one step, we can change the position of the `ith` chip from `position[i]` to:\n\n  * `position[i] + 2` or `position[i] - 2` with `cost = 0`.\n  * `position[i] + 1` or `position[i] - 1` with `cost = 1`.\n\n\n\nReturn _the minimum cost_ needed to move all the chips to the same position.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/15/chips_e1.jpg)\n    \n    \n    **Input:** position = [1,2,3]\n    **Output:** 1\n    **Explanation:** First step: Move the chip at position 3 to position 1 with cost = 0.\n    Second step: Move the chip at position 2 to position 1 with cost = 1.\n    Total cost is 1.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/08/15/chip_e2.jpg)\n    \n    \n    **Input:** position = [2,2,2,3,3]\n    **Output:** 2\n    **Explanation:** We can move the two chips at position  3 to position 2. Each move has cost = 1. The total cost = 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** position = [1,1000000000]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= position.length <= 100`\n  * `1 <= position[i] <= 10^9`",
+  "topics": ["Array", "Math", "Greedy"],
+  "total_accepted": 167049,
+  "total_submissions": 229583,
+  "acceptance_rate": "72.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Operations to Move All Balls to Each Box",
+      "slug": "minimum-number-of-operations-to-move-all-balls-to-each-box",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-move-all-balls-to-each-box/"
+    },
+    {
+      "title": "Split With Minimum Sum",
+      "slug": "split-with-minimum-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/split-with-minimum-sum/"
+    }
+  ],
+  "hints": [
+    "The first move keeps the parity of the element as it is.",
+    "The second move changes the parity of the element.",
+    "Since the first move is free, if all the numbers have the same parity, the answer would be zero.",
+    "Find the minimum cost to make all the numbers have the same parity."
+  ]
+}

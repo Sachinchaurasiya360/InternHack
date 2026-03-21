@@ -1,0 +1,36 @@
+{
+  "id": "2251",
+  "title": "Number of Flowers in Full Bloom",
+  "slug": "number-of-flowers-in-full-bloom",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> 2D integer array <code>flowers</code>, where <code>flowers[i] = [start<sub>i</sub>, end<sub>i</sub>]</code> means the <code>i<sup>th</sup></code> flower will be in <strong>full bloom</strong> from <code>start<sub>i</sub></code> to <code>end<sub>i</sub></code> (<strong>inclusive</strong>). You are also given a <strong>0-indexed</strong> integer array <code>people</code> of size <code>n</code>, where <code>people[i]</code> is the time that the <code>i<sup>th</sup></code> person will arrive to see the flowers.</p>\n\n<p>Return <em>an integer array </em><code>answer</code><em> of size </em><code>n</code><em>, where </em><code>answer[i]</code><em> is the <strong>number</strong> of flowers that are in full bloom when the </em><code>i<sup>th</sup></code><em> person arrives.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/03/02/ex1new.jpg\" style=\"width: 550px; height: 216px;\" />\n<pre>\n<strong>Input:</strong> flowers = [[1,6],[3,7],[9,12],[4,13]], people = [2,3,7,11]\n<strong>Output:</strong> [1,2,2,2]\n<strong>Explanation: </strong>The figure above shows the times when the flowers are in full bloom and when the people arrive.\nFor each person, we return the number of flowers in full bloom during their arrival.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/03/02/ex2new.jpg\" style=\"width: 450px; height: 195px;\" />\n<pre>\n<strong>Input:</strong> flowers = [[1,10],[3,3]], people = [3,3,2]\n<strong>Output:</strong> [2,2,1]\n<strong>Explanation:</strong> The figure above shows the times when the flowers are in full bloom and when the people arrive.\nFor each person, we return the number of flowers in full bloom during their arrival.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= flowers.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>flowers[i].length == 2</code></li>\n\t<li><code>1 &lt;= start<sub>i</sub> &lt;= end<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= people.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= people[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** 2D integer array `flowers`, where `flowers[i] = [starti, endi]` means the `ith` flower will be in **full bloom** from `starti` to `endi` (**inclusive**). You are also given a **0-indexed** integer array `people` of size `n`, where `people[i]` is the time that the `ith` person will arrive to see the flowers.\n\nReturn _an integer array_`answer` _of size_`n` _, where_`answer[i]`_is the**number** of flowers that are in full bloom when the _`ith` _person arrives._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/03/02/ex1new.jpg)\n    \n    \n    **Input:** flowers = [[1,6],[3,7],[9,12],[4,13]], people = [2,3,7,11]\n    **Output:** [1,2,2,2]\n    **Explanation:** The figure above shows the times when the flowers are in full bloom and when the people arrive.\n    For each person, we return the number of flowers in full bloom during their arrival.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/03/02/ex2new.jpg)\n    \n    \n    **Input:** flowers = [[1,10],[3,3]], people = [3,3,2]\n    **Output:** [2,2,1]\n    **Explanation:** The figure above shows the times when the flowers are in full bloom and when the people arrive.\n    For each person, we return the number of flowers in full bloom during their arrival.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= flowers.length <= 5 * 104`\n  * `flowers[i].length == 2`\n  * `1 <= starti <= endi <= 109`\n  * `1 <= people.length <= 5 * 104`\n  * `1 <= people[i] <= 109`",
+  "question": "You are given a **0-indexed** 2D integer array `flowers`, where `flowers[i] = [starti, endi]` means the `ith` flower will be in **full bloom** from `starti` to `endi` (**inclusive**). You are also given a **0-indexed** integer array `people` of size `n`, where `people[i]` is the time that the `ith` person will arrive to see the flowers.\n\nReturn _an integer array_`answer` _of size_`n` _, where_`answer[i]`_is the**number** of flowers that are in full bloom when the _`ith` _person arrives._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/03/02/ex1new.jpg)\n    \n    \n    **Input:** flowers = [[1,6],[3,7],[9,12],[4,13]], people = [2,3,7,11]\n    **Output:** [1,2,2,2]\n    **Explanation:** The figure above shows the times when the flowers are in full bloom and when the people arrive.\n    For each person, we return the number of flowers in full bloom during their arrival.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/03/02/ex2new.jpg)\n    \n    \n    **Input:** flowers = [[1,10],[3,3]], people = [3,3,2]\n    **Output:** [2,2,1]\n    **Explanation:** The figure above shows the times when the flowers are in full bloom and when the people arrive.\n    For each person, we return the number of flowers in full bloom during their arrival.",
+  "constraints": "**Constraints:**\n\n  * `1 <= flowers.length <= 5 * 104`\n  * `flowers[i].length == 2`\n  * `1 <= starti <= endi <= 109`\n  * `1 <= people.length <= 5 * 104`\n  * `1 <= people[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Binary Search", "Sorting", "Prefix Sum", "Ordered Set"],
+  "total_accepted": 107138,
+  "total_submissions": 185550,
+  "acceptance_rate": "57.7%",
+  "similar_questions": [
+    {
+      "title": "Meeting Rooms II",
+      "slug": "meeting-rooms-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/meeting-rooms-ii/"
+    },
+    {
+      "title": "Minimum Interval to Include Each Query",
+      "slug": "minimum-interval-to-include-each-query",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-interval-to-include-each-query/"
+    }
+  ],
+  "hints": [
+    "Notice that for any given time t, the number of flowers blooming at time t is equal to the number of flowers that have started blooming minus the number of flowers that have already stopped blooming.",
+    "We can obtain these values efficiently using binary search.",
+    "We can store the starting times in sorted order, which then allows us to binary search to find how many flowers have started blooming for a given time t.",
+    "We do the same for the ending times to find how many flowers have stopped blooming at time t."
+  ]
+}

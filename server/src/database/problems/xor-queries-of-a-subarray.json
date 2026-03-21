@@ -1,0 +1,22 @@
+{
+  "id": "1310",
+  "title": "XOR Queries of a Subarray",
+  "slug": "xor-queries-of-a-subarray",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>arr</code> of positive integers. You are also given the array <code>queries</code> where <code>queries[i] = [left<sub>i, </sub>right<sub>i</sub>]</code>.</p>\n\n<p>For each query <code>i</code> compute the <strong>XOR</strong> of elements from <code>left<sub>i</sub></code> to <code>right<sub>i</sub></code> (that is, <code>arr[left<sub>i</sub>] XOR arr[left<sub>i</sub> + 1] XOR ... XOR arr[right<sub>i</sub>]</code> ).</p>\n\n<p>Return an array <code>answer</code> where <code>answer[i]</code> is the answer to the <code>i<sup>th</sup></code> query.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,3,4,8], queries = [[0,1],[1,2],[0,3],[3,3]]\n<strong>Output:</strong> [2,7,14,8] \n<strong>Explanation:</strong> \nThe binary representation of the elements in the array are:\n1 = 0001 \n3 = 0011 \n4 = 0100 \n8 = 1000 \nThe XOR values for queries are:\n[0,1] = 1 xor 3 = 2 \n[1,2] = 3 xor 4 = 7 \n[0,3] = 1 xor 3 xor 4 xor 8 = 14 \n[3,3] = 8\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,8,2,10], queries = [[2,3],[1,3],[0,0],[0,3]]\n<strong>Output:</strong> [8,0,4,4]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length, queries.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>queries[i].length == 2</code></li>\n\t<li><code>0 &lt;= left<sub>i</sub> &lt;= right<sub>i</sub> &lt; arr.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `arr` of positive integers. You are also given the array `queries` where `queries[i] = [lefti, righti]`.\n\nFor each query `i` compute the **XOR** of elements from `lefti` to `righti` (that is, `arr[lefti] XOR arr[lefti + 1] XOR ... XOR arr[righti]` ).\n\nReturn an array `answer` where `answer[i]` is the answer to the `ith` query.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,3,4,8], queries = [[0,1],[1,2],[0,3],[3,3]]\n    **Output:** [2,7,14,8] \n    **Explanation:** \n    The binary representation of the elements in the array are:\n    1 = 0001 \n    3 = 0011 \n    4 = 0100 \n    8 = 1000 \n    The XOR values for queries are:\n    [0,1] = 1 xor 3 = 2 \n    [1,2] = 3 xor 4 = 7 \n    [0,3] = 1 xor 3 xor 4 xor 8 = 14 \n    [3,3] = 8\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [4,8,2,10], queries = [[2,3],[1,3],[0,0],[0,3]]\n    **Output:** [8,0,4,4]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length, queries.length <= 3 * 104`\n  * `1 <= arr[i] <= 109`\n  * `queries[i].length == 2`\n  * `0 <= lefti <= righti < arr.length`",
+  "question": "You are given an array `arr` of positive integers. You are also given the array `queries` where `queries[i] = [lefti, righti]`.\n\nFor each query `i` compute the **XOR** of elements from `lefti` to `righti` (that is, `arr[lefti] XOR arr[lefti + 1] XOR ... XOR arr[righti]` ).\n\nReturn an array `answer` where `answer[i]` is the answer to the `ith` query.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,3,4,8], queries = [[0,1],[1,2],[0,3],[3,3]]\n    **Output:** [2,7,14,8] \n    **Explanation:** \n    The binary representation of the elements in the array are:\n    1 = 0001 \n    3 = 0011 \n    4 = 0100 \n    8 = 1000 \n    The XOR values for queries are:\n    [0,1] = 1 xor 3 = 2 \n    [1,2] = 3 xor 4 = 7 \n    [0,3] = 1 xor 3 xor 4 xor 8 = 14 \n    [3,3] = 8\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [4,8,2,10], queries = [[2,3],[1,3],[0,0],[0,3]]\n    **Output:** [8,0,4,4]",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length, queries.length <= 3 * 104`\n  * `1 <= arr[i] <= 109`\n  * `queries[i].length == 2`\n  * `0 <= lefti <= righti < arr.length`",
+  "topics": ["Array", "Bit Manipulation", "Prefix Sum"],
+  "total_accepted": 215585,
+  "total_submissions": 275880,
+  "acceptance_rate": "78.1%",
+  "similar_questions": [],
+  "hints": [
+    "What is the result of x ^ y ^ x ?",
+    "Compute the prefix sum for XOR.",
+    "Process the queries with the prefix sum values."
+  ]
+}

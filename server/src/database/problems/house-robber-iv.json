@@ -1,0 +1,36 @@
+{
+  "id": "2560",
+  "title": "House Robber IV",
+  "slug": "house-robber-iv",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are several consecutive houses along a street, each of which has some money inside. There is also a robber, who wants to steal money from the homes, but he <strong>refuses to steal from adjacent homes</strong>.</p>\n\n<p>The <strong>capability</strong> of the robber is the maximum amount of money he steals from one house of all the houses he robbed.</p>\n\n<p>You are given an integer array <code>nums</code> representing how much money is stashed in each house. More formally, the <code>i<sup>th</sup></code> house from the left has <code>nums[i]</code> dollars.</p>\n\n<p>You are also given an integer <code>k</code>, representing the <strong>minimum</strong> number of houses the robber will steal from. It is always possible to steal at least <code>k</code> houses.</p>\n\n<p>Return <em>the <strong>minimum</strong> capability of the robber out of all the possible ways to steal at least </em><code>k</code><em> houses</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3,5,9], k = 2\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> \nThere are three ways to rob at least 2 houses:\n- Rob the houses at indices 0 and 2. Capability is max(nums[0], nums[2]) = 5.\n- Rob the houses at indices 0 and 3. Capability is max(nums[0], nums[3]) = 9.\n- Rob the houses at indices 1 and 3. Capability is max(nums[1], nums[3]) = 9.\nTherefore, we return min(5, 9, 9) = 5.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,7,9,3,1], k = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> There are 7 ways to rob the houses. The way which leads to minimum capability is to rob the house at index 0 and 4. Return max(nums[0], nums[4]) = 2.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= (nums.length + 1)/2</code></li>\n</ul>\n",
+  "content_markdown": "There are several consecutive houses along a street, each of which has some money inside. There is also a robber, who wants to steal money from the homes, but he **refuses to steal from adjacent homes**.\n\nThe **capability** of the robber is the maximum amount of money he steals from one house of all the houses he robbed.\n\nYou are given an integer array `nums` representing how much money is stashed in each house. More formally, the `ith` house from the left has `nums[i]` dollars.\n\nYou are also given an integer `k`, representing the **minimum** number of houses the robber will steal from. It is always possible to steal at least `k` houses.\n\nReturn _the**minimum** capability of the robber out of all the possible ways to steal at least _`k` _houses_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,3,5,9], k = 2\n    **Output:** 5\n    **Explanation:** \n    There are three ways to rob at least 2 houses:\n    - Rob the houses at indices 0 and 2. Capability is max(nums[0], nums[2]) = 5.\n    - Rob the houses at indices 0 and 3. Capability is max(nums[0], nums[3]) = 9.\n    - Rob the houses at indices 1 and 3. Capability is max(nums[1], nums[3]) = 9.\n    Therefore, we return min(5, 9, 9) = 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,7,9,3,1], k = 2\n    **Output:** 2\n    **Explanation:** There are 7 ways to rob the houses. The way which leads to minimum capability is to rob the house at index 0 and 4. Return max(nums[0], nums[4]) = 2.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= (nums.length + 1)/2`",
+  "question": "There are several consecutive houses along a street, each of which has some money inside. There is also a robber, who wants to steal money from the homes, but he **refuses to steal from adjacent homes**.\n\nThe **capability** of the robber is the maximum amount of money he steals from one house of all the houses he robbed.\n\nYou are given an integer array `nums` representing how much money is stashed in each house. More formally, the `ith` house from the left has `nums[i]` dollars.\n\nYou are also given an integer `k`, representing the **minimum** number of houses the robber will steal from. It is always possible to steal at least `k` houses.\n\nReturn _the**minimum** capability of the robber out of all the possible ways to steal at least _`k` _houses_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,3,5,9], k = 2\n    **Output:** 5\n    **Explanation:** \n    There are three ways to rob at least 2 houses:\n    - Rob the houses at indices 0 and 2. Capability is max(nums[0], nums[2]) = 5.\n    - Rob the houses at indices 0 and 3. Capability is max(nums[0], nums[3]) = 9.\n    - Rob the houses at indices 1 and 3. Capability is max(nums[1], nums[3]) = 9.\n    Therefore, we return min(5, 9, 9) = 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,7,9,3,1], k = 2\n    **Output:** 2\n    **Explanation:** There are 7 ways to rob the houses. The way which leads to minimum capability is to rob the house at index 0 and 4. Return max(nums[0], nums[4]) = 2.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `1 <= k <= (nums.length + 1)/2`",
+  "topics": ["Array", "Binary Search", "Dynamic Programming", "Greedy"],
+  "total_accepted": 138503,
+  "total_submissions": 213854,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [
+    {
+      "title": "Container With Most Water",
+      "slug": "container-with-most-water",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/container-with-most-water/"
+    },
+    {
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber/"
+    }
+  ],
+  "hints": [
+    "Can we use binary search to find the minimum value of a non-contiguous subsequence of a given size k?",
+    "Initialize the search range with the minimum and maximum elements of the input array.",
+    "Use a check function to determine if it is possible to select k non-consecutive elements that are less than or equal to the current \"guess\" value.",
+    "Adjust the search range based on the outcome of the check function, until the range converges and the minimum value is found."
+  ]
+}

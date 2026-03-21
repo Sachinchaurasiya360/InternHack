@@ -1,0 +1,25 @@
+{
+  "id": "157",
+  "title": "Read N Characters Given Read4",
+  "slug": "read-n-characters-given-read4",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Simulation", "Interactive"],
+  "total_accepted": 208536,
+  "total_submissions": 490514,
+  "acceptance_rate": "42.5%",
+  "similar_questions": [
+    {
+      "title": "Read N Characters Given read4 II - Call Multiple Times",
+      "slug": "read-n-characters-given-read4-ii-call-multiple-times",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/"
+    }
+  ],
+  "hints": []
+}

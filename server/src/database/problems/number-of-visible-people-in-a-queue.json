@@ -1,0 +1,55 @@
+{
+  "id": "1944",
+  "title": "Number of Visible People in a Queue",
+  "slug": "number-of-visible-people-in-a-queue",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> people standing in a queue, and they numbered from <code>0</code> to <code>n - 1</code> in <strong>left to right</strong> order. You are given an array <code>heights</code> of <strong>distinct</strong> integers where <code>heights[i]</code> represents the height of the <code>i<sup>th</sup></code> person.</p>\n\n<p>A person can <strong>see</strong> another person to their right in the queue if everybody in between is <strong>shorter</strong> than both of them. More formally, the <code>i<sup>th</sup></code> person can see the <code>j<sup>th</sup></code> person if <code>i &lt; j</code> and <code>min(heights[i], heights[j]) &gt; max(heights[i+1], heights[i+2], ..., heights[j-1])</code>.</p>\n\n<p>Return <em>an array </em><code>answer</code><em> of length </em><code>n</code><em> where </em><code>answer[i]</code><em> is the <strong>number of people</strong> the </em><code>i<sup>th</sup></code><em> person can <strong>see</strong> to their right in the queue</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/05/29/queue-plane.jpg\" style=\"width: 600px; height: 247px;\" /></p>\n\n<pre>\n<strong>Input:</strong> heights = [10,6,8,5,11,9]\n<strong>Output:</strong> [3,1,2,1,1,0]\n<strong>Explanation:</strong>\nPerson 0 can see person 1, 2, and 4.\nPerson 1 can see person 2.\nPerson 2 can see person 3 and 4.\nPerson 3 can see person 4.\nPerson 4 can see person 5.\nPerson 5 can see no one since nobody is to the right of them.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> heights = [5,1,2,3,10]\n<strong>Output:</strong> [4,1,1,1,0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == heights.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= heights[i] &lt;= 10<sup>5</sup></code></li>\n\t<li>All the values of <code>heights</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "There are `n` people standing in a queue, and they numbered from `0` to `n - 1` in **left to right** order. You are given an array `heights` of **distinct** integers where `heights[i]` represents the height of the `ith` person.\n\nA person can **see** another person to their right in the queue if everybody in between is **shorter** than both of them. More formally, the `ith` person can see the `jth` person if `i < j` and `min(heights[i], heights[j]) > max(heights[i+1], heights[i+2], ..., heights[j-1])`.\n\nReturn _an array_`answer` _of length_`n` _where_`answer[i]`_is the**number of people** the _`ith` _person can**see** to their right in the queue_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/05/29/queue-plane.jpg)\n    \n    \n    **Input:** heights = [10,6,8,5,11,9]\n    **Output:** [3,1,2,1,1,0]\n    **Explanation:**\n    Person 0 can see person 1, 2, and 4.\n    Person 1 can see person 2.\n    Person 2 can see person 3 and 4.\n    Person 3 can see person 4.\n    Person 4 can see person 5.\n    Person 5 can see no one since nobody is to the right of them.\n    \n\n**Example 2:**\n    \n    \n    **Input:** heights = [5,1,2,3,10]\n    **Output:** [4,1,1,1,0]\n    \n\n \n\n**Constraints:**\n\n  * `n == heights.length`\n  * `1 <= n <= 105`\n  * `1 <= heights[i] <= 105`\n  * All the values of `heights` are **unique**.",
+  "question": "There are `n` people standing in a queue, and they numbered from `0` to `n - 1` in **left to right** order. You are given an array `heights` of **distinct** integers where `heights[i]` represents the height of the `ith` person.\n\nA person can **see** another person to their right in the queue if everybody in between is **shorter** than both of them. More formally, the `ith` person can see the `jth` person if `i < j` and `min(heights[i], heights[j]) > max(heights[i+1], heights[i+2], ..., heights[j-1])`.\n\nReturn _an array_`answer` _of length_`n` _where_`answer[i]`_is the**number of people** the _`ith` _person can**see** to their right in the queue_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/05/29/queue-plane.jpg)\n    \n    \n    **Input:** heights = [10,6,8,5,11,9]\n    **Output:** [3,1,2,1,1,0]\n    **Explanation:**\n    Person 0 can see person 1, 2, and 4.\n    Person 1 can see person 2.\n    Person 2 can see person 3 and 4.\n    Person 3 can see person 4.\n    Person 4 can see person 5.\n    Person 5 can see no one since nobody is to the right of them.\n    \n\n**Example 2:**\n    \n    \n    **Input:** heights = [5,1,2,3,10]\n    **Output:** [4,1,1,1,0]",
+  "constraints": "**Constraints:**\n\n  * `n == heights.length`\n  * `1 <= n <= 105`\n  * `1 <= heights[i] <= 105`\n  * All the values of `heights` are **unique**.",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 116010,
+  "total_submissions": 160323,
+  "acceptance_rate": "72.4%",
+  "similar_questions": [
+    {
+      "title": "Buildings With an Ocean View",
+      "slug": "buildings-with-an-ocean-view",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/buildings-with-an-ocean-view/"
+    },
+    {
+      "title": "Sum of Subarray Ranges",
+      "slug": "sum-of-subarray-ranges",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-subarray-ranges/"
+    },
+    {
+      "title": "Sum of Total Strength of Wizards",
+      "slug": "sum-of-total-strength-of-wizards",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sum-of-total-strength-of-wizards/"
+    },
+    {
+      "title": "Number of People That Can Be Seen in a Grid",
+      "slug": "number-of-people-that-can-be-seen-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-people-that-can-be-seen-in-a-grid/"
+    },
+    {
+      "title": "Find Building Where Alice and Bob Can Meet",
+      "slug": "find-building-where-alice-and-bob-can-meet",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-building-where-alice-and-bob-can-meet/"
+    }
+  ],
+  "hints": [
+    "How to solve this problem in quadratic complexity ?",
+    "For every subarray start at index i, keep finding new maximum values until a value larger than arr[i] is found.",
+    "Since the limits are high, you need a linear solution.",
+    "Use a stack to keep the values of the array sorted as you iterate the array from the end to the start.",
+    "Keep popping from the stack the elements in sorted order until a value larger than arr[i] is found, these are the ones that person i can see."
+  ]
+}

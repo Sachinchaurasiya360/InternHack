@@ -1,0 +1,40 @@
+{
+  "id": "2424",
+  "title": "Longest Uploaded Prefix",
+  "slug": "longest-uploaded-prefix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a stream of <code>n</code> videos, each represented by a <strong>distinct</strong> number from <code>1</code> to <code>n</code> that you need to &quot;upload&quot; to a server. You need to implement a data structure that calculates the length of the <strong>longest uploaded prefix</strong> at various points in the upload process.</p>\n\n<p>We consider <code>i</code> to be an uploaded prefix if all videos in the range <code>1</code> to <code>i</code> (<strong>inclusive</strong>) have been uploaded to the server. The longest uploaded prefix is the <strong>maximum </strong>value of <code>i</code> that satisfies this definition.<br />\n<br />\nImplement the <code>LUPrefix </code>class:</p>\n\n<ul>\n\t<li><code>LUPrefix(int n)</code> Initializes the object for a stream of <code>n</code> videos.</li>\n\t<li><code>void upload(int video)</code> Uploads <code>video</code> to the server.</li>\n\t<li><code>int longest()</code> Returns the length of the <strong>longest uploaded prefix</strong> defined above.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;LUPrefix&quot;, &quot;upload&quot;, &quot;longest&quot;, &quot;upload&quot;, &quot;longest&quot;, &quot;upload&quot;, &quot;longest&quot;]\n[[4], [3], [], [1], [], [2], []]\n<strong>Output</strong>\n[null, null, 0, null, 1, null, 3]\n\n<strong>Explanation</strong>\nLUPrefix server = new LUPrefix(4);   // Initialize a stream of 4 videos.\nserver.upload(3);                    // Upload video 3.\nserver.longest();                    // Since video 1 has not been uploaded yet, there is no prefix.\n                                     // So, we return 0.\nserver.upload(1);                    // Upload video 1.\nserver.longest();                    // The prefix [1] is the longest uploaded prefix, so we return 1.\nserver.upload(2);                    // Upload video 2.\nserver.longest();                    // The prefix [1,2,3] is the longest uploaded prefix, so we return 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= video &lt;= n</code></li>\n\t<li>All values of <code>video</code> are <strong>distinct</strong>.</li>\n\t<li>At most <code>2 * 10<sup>5</sup></code> calls <strong>in total</strong> will be made to <code>upload</code> and <code>longest</code>.</li>\n\t<li>At least one call will be made to <code>longest</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a stream of `n` videos, each represented by a **distinct** number from `1` to `n` that you need to \"upload\" to a server. You need to implement a data structure that calculates the length of the **longest uploaded prefix** at various points in the upload process.\n\nWe consider `i` to be an uploaded prefix if all videos in the range `1` to `i` (**inclusive**) have been uploaded to the server. The longest uploaded prefix is the **maximum** value of `i` that satisfies this definition.  \n  \nImplement the `LUPrefix `class:\n\n  * `LUPrefix(int n)` Initializes the object for a stream of `n` videos.\n  * `void upload(int video)` Uploads `video` to the server.\n  * `int longest()` Returns the length of the **longest uploaded prefix** defined above.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"LUPrefix\", \"upload\", \"longest\", \"upload\", \"longest\", \"upload\", \"longest\"]\n    [[4], [3], [], [1], [], [2], []]\n    **Output**\n    [null, null, 0, null, 1, null, 3]\n    \n    **Explanation**\n    LUPrefix server = new LUPrefix(4);   // Initialize a stream of 4 videos.\n    server.upload(3);                    // Upload video 3.\n    server.longest();                    // Since video 1 has not been uploaded yet, there is no prefix.\n                                         // So, we return 0.\n    server.upload(1);                    // Upload video 1.\n    server.longest();                    // The prefix [1] is the longest uploaded prefix, so we return 1.\n    server.upload(2);                    // Upload video 2.\n    server.longest();                    // The prefix [1,2,3] is the longest uploaded prefix, so we return 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= video <= n`\n  * All values of `video` are **distinct**.\n  * At most `2 * 105` calls **in total** will be made to `upload` and `longest`.\n  * At least one call will be made to `longest`.",
+  "question": "You are given a stream of `n` videos, each represented by a **distinct** number from `1` to `n` that you need to \"upload\" to a server. You need to implement a data structure that calculates the length of the **longest uploaded prefix** at various points in the upload process.\n\nWe consider `i` to be an uploaded prefix if all videos in the range `1` to `i` (**inclusive**) have been uploaded to the server. The longest uploaded prefix is the **maximum** value of `i` that satisfies this definition.  \n  \nImplement the `LUPrefix `class:\n\n  * `LUPrefix(int n)` Initializes the object for a stream of `n` videos.\n  * `void upload(int video)` Uploads `video` to the server.\n  * `int longest()` Returns the length of the **longest uploaded prefix** defined above.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"LUPrefix\", \"upload\", \"longest\", \"upload\", \"longest\", \"upload\", \"longest\"]\n    [[4], [3], [], [1], [], [2], []]\n    **Output**\n    [null, null, 0, null, 1, null, 3]\n    \n    **Explanation**\n    LUPrefix server = new LUPrefix(4);   // Initialize a stream of 4 videos.\n    server.upload(3);                    // Upload video 3.\n    server.longest();                    // Since video 1 has not been uploaded yet, there is no prefix.\n                                         // So, we return 0.\n    server.upload(1);                    // Upload video 1.\n    server.longest();                    // The prefix [1] is the longest uploaded prefix, so we return 1.\n    server.upload(2);                    // Upload video 2.\n    server.longest();                    // The prefix [1,2,3] is the longest uploaded prefix, so we return 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= video <= n`\n  * All values of `video` are **distinct**.\n  * At most `2 * 105` calls **in total** will be made to `upload` and `longest`.\n  * At least one call will be made to `longest`.",
+  "topics": [
+    "Hash Table",
+    "Binary Search",
+    "Union-Find",
+    "Design",
+    "Binary Indexed Tree",
+    "Segment Tree",
+    "Heap (Priority Queue)",
+    "Ordered Set"
+  ],
+  "total_accepted": 28189,
+  "total_submissions": 51455,
+  "acceptance_rate": "54.8%",
+  "similar_questions": [
+    {
+      "title": "Design an Ordered Stream",
+      "slug": "design-an-ordered-stream",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/design-an-ordered-stream/"
+    },
+    {
+      "title": "Find X Value of Array II",
+      "slug": "find-x-value-of-array-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-x-value-of-array-ii/"
+    }
+  ],
+  "hints": ["Maintain an array keeping track of whether video “i” has been uploaded yet."]
+}

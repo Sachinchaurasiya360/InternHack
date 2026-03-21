@@ -1,0 +1,31 @@
+{
+  "id": "1342",
+  "title": "Number of Steps to Reduce a Number to Zero",
+  "slug": "number-of-steps-to-reduce-a-number-to-zero",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>num</code>, return <em>the number of steps to reduce it to zero</em>.</p>\n\n<p>In one step, if the current number is even, you have to divide it by <code>2</code>, otherwise, you have to subtract <code>1</code> from it.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 14\n<strong>Output:</strong> 6\n<strong>Explanation:</strong>&nbsp;\nStep 1) 14 is even; divide by 2 and obtain 7.&nbsp;\nStep 2) 7 is odd; subtract 1 and obtain 6.\nStep 3) 6 is even; divide by 2 and obtain 3.&nbsp;\nStep 4) 3 is odd; subtract 1 and obtain 2.&nbsp;\nStep 5) 2 is even; divide by 2 and obtain 1.&nbsp;\nStep 6) 1 is odd; subtract 1 and obtain 0.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 8\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>&nbsp;\nStep 1) 8 is even; divide by 2 and obtain 4.&nbsp;\nStep 2) 4 is even; divide by 2 and obtain 2.&nbsp;\nStep 3) 2 is even; divide by 2 and obtain 1.&nbsp;\nStep 4) 1 is odd; subtract 1 and obtain 0.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 123\n<strong>Output:</strong> 12\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= num &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `num`, return _the number of steps to reduce it to zero_.\n\nIn one step, if the current number is even, you have to divide it by `2`, otherwise, you have to subtract `1` from it.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 14\n    **Output:** 6\n    **Explanation:**  \n    Step 1) 14 is even; divide by 2 and obtain 7. \n    Step 2) 7 is odd; subtract 1 and obtain 6.\n    Step 3) 6 is even; divide by 2 and obtain 3. \n    Step 4) 3 is odd; subtract 1 and obtain 2. \n    Step 5) 2 is even; divide by 2 and obtain 1. \n    Step 6) 1 is odd; subtract 1 and obtain 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 8\n    **Output:** 4\n    **Explanation:**  \n    Step 1) 8 is even; divide by 2 and obtain 4. \n    Step 2) 4 is even; divide by 2 and obtain 2. \n    Step 3) 2 is even; divide by 2 and obtain 1. \n    Step 4) 1 is odd; subtract 1 and obtain 0.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 123\n    **Output:** 12\n    \n\n \n\n**Constraints:**\n\n  * `0 <= num <= 106`",
+  "question": "Given an integer `num`, return _the number of steps to reduce it to zero_.\n\nIn one step, if the current number is even, you have to divide it by `2`, otherwise, you have to subtract `1` from it.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 14\n    **Output:** 6\n    **Explanation:**  \n    Step 1) 14 is even; divide by 2 and obtain 7. \n    Step 2) 7 is odd; subtract 1 and obtain 6.\n    Step 3) 6 is even; divide by 2 and obtain 3. \n    Step 4) 3 is odd; subtract 1 and obtain 2. \n    Step 5) 2 is even; divide by 2 and obtain 1. \n    Step 6) 1 is odd; subtract 1 and obtain 0.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 8\n    **Output:** 4\n    **Explanation:**  \n    Step 1) 8 is even; divide by 2 and obtain 4. \n    Step 2) 4 is even; divide by 2 and obtain 2. \n    Step 3) 2 is even; divide by 2 and obtain 1. \n    Step 4) 1 is odd; subtract 1 and obtain 0.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 123\n    **Output:** 12",
+  "constraints": "**Constraints:**\n\n  * `0 <= num <= 106`",
+  "topics": ["Math", "Bit Manipulation"],
+  "total_accepted": 902549,
+  "total_submissions": 1052559,
+  "acceptance_rate": "85.7%",
+  "similar_questions": [
+    {
+      "title": "Minimum Moves to Reach Target Score",
+      "slug": "minimum-moves-to-reach-target-score",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-reach-target-score/"
+    },
+    {
+      "title": "Count Operations to Obtain Zero",
+      "slug": "count-operations-to-obtain-zero",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-operations-to-obtain-zero/"
+    }
+  ],
+  "hints": ["Simulate the process to get the final answer."]
+}

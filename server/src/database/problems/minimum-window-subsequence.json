@@ -1,0 +1,31 @@
+{
+  "id": "727",
+  "title": "Minimum Window Subsequence",
+  "slug": "minimum-window-subsequence",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Dynamic Programming", "Sliding Window"],
+  "total_accepted": 98530,
+  "total_submissions": 225163,
+  "acceptance_rate": "43.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Window Substring",
+      "slug": "minimum-window-substring",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-window-substring/"
+    },
+    {
+      "title": "Longest Continuous Increasing Subsequence",
+      "slug": "longest-continuous-increasing-subsequence",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-continuous-increasing-subsequence/"
+    }
+  ],
+  "hints": ["Let dp[j][e] = s be the largest index for which S[s:e+1] has T[:j] as a substring."]
+}

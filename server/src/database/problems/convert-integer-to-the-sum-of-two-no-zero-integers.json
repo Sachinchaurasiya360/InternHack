@@ -1,0 +1,21 @@
+{
+  "id": "1317",
+  "title": "Convert Integer to the Sum of Two No-Zero Integers",
+  "slug": "convert-integer-to-the-sum-of-two-no-zero-integers",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p><strong>No-Zero integer</strong> is a positive integer that <strong>does not contain any <code>0</code></strong> in its decimal representation.</p>\n\n<p>Given an integer <code>n</code>, return <em>a list of two integers</em> <code>[a, b]</code> <em>where</em>:</p>\n\n<ul>\n\t<li><code>a</code> and <code>b</code> are <strong>No-Zero integers</strong>.</li>\n\t<li><code>a + b = n</code></li>\n</ul>\n\n<p>The test cases are generated so that there is at least one valid solution. If there are many valid solutions, you can return any of them.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> [1,1]\n<strong>Explanation:</strong> Let a = 1 and b = 1.\nBoth a and b are no-zero integers, and a + b = 2 = n.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 11\n<strong>Output:</strong> [2,9]\n<strong>Explanation:</strong> Let a = 2 and b = 9.\nBoth a and b are no-zero integers, and a + b = 11 = n.\nNote that there are other valid answers as [8, 3] that can be accepted.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "**No-Zero integer** is a positive integer that **does not contain any`0`** in its decimal representation.\n\nGiven an integer `n`, return _a list of two integers_ `[a, b]` _where_ :\n\n  * `a` and `b` are **No-Zero integers**.\n  * `a + b = n`\n\n\n\nThe test cases are generated so that there is at least one valid solution. If there are many valid solutions, you can return any of them.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** [1,1]\n    **Explanation:** Let a = 1 and b = 1.\n    Both a and b are no-zero integers, and a + b = 2 = n.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 11\n    **Output:** [2,9]\n    **Explanation:** Let a = 2 and b = 9.\n    Both a and b are no-zero integers, and a + b = 11 = n.\n    Note that there are other valid answers as [8, 3] that can be accepted.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= n <= 104`",
+  "question": "**No-Zero integer** is a positive integer that **does not contain any`0`** in its decimal representation.\n\nGiven an integer `n`, return _a list of two integers_ `[a, b]` _where_ :\n\n  * `a` and `b` are **No-Zero integers**.\n  * `a + b = n`\n\n\n\nThe test cases are generated so that there is at least one valid solution. If there are many valid solutions, you can return any of them.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2\n    **Output:** [1,1]\n    **Explanation:** Let a = 1 and b = 1.\n    Both a and b are no-zero integers, and a + b = 2 = n.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 11\n    **Output:** [2,9]\n    **Explanation:** Let a = 2 and b = 9.\n    Both a and b are no-zero integers, and a + b = 11 = n.\n    Note that there are other valid answers as [8, 3] that can be accepted.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n <= 104`",
+  "topics": ["Math"],
+  "total_accepted": 206931,
+  "total_submissions": 349884,
+  "acceptance_rate": "59.1%",
+  "similar_questions": [],
+  "hints": [
+    "Loop through all elements from 1 to n.",
+    "Choose A = i and B = n - i then check if A and B are both No-Zero integers."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "2036",
+  "title": "Maximum Alternating Subarray Sum",
+  "slug": "maximum-alternating-subarray-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 4352,
+  "total_submissions": 10894,
+  "acceptance_rate": "39.9%",
+  "similar_questions": [
+    {
+      "title": "Maximum Alternating Subsequence Sum",
+      "slug": "maximum-alternating-subsequence-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-alternating-subsequence-sum/"
+    }
+  ],
+  "hints": [
+    "How can Kadane's Algorithm help us?",
+    "If you convert all the numbers at odd indices to the negative version of that number, the problem simplifies to finding the maximum subarray sum.",
+    "However, this strategy needs you to start each subarray at an even index.",
+    "Do the same except converting all the numbers at even indices to the negative version of that number."
+  ]
+}

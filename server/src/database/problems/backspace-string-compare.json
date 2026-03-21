@@ -1,0 +1,31 @@
+{
+  "id": "844",
+  "title": "Backspace String Compare",
+  "slug": "backspace-string-compare",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s</code> and <code>t</code>, return <code>true</code> <em>if they are equal when both are typed into empty text editors</em>. <code>&#39;#&#39;</code> means a backspace character.</p>\n\n<p>Note that after backspacing an empty text, the text will continue empty.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ab#c&quot;, t = &quot;ad#c&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Both s and t become &quot;ac&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ab##&quot;, t = &quot;c#d#&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Both s and t become &quot;&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a#c&quot;, t = &quot;b&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> s becomes &quot;c&quot; while t becomes &quot;b&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code><span>1 &lt;= s.length, t.length &lt;= 200</span></code></li>\n\t<li><span><code>s</code> and <code>t</code> only contain lowercase letters and <code>&#39;#&#39;</code> characters.</span></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Can you solve it in <code>O(n)</code> time and <code>O(1)</code> space?</p>\n",
+  "content_markdown": "Given two strings `s` and `t`, return `true` _if they are equal when both are typed into empty text editors_. `'#'` means a backspace character.\n\nNote that after backspacing an empty text, the text will continue empty.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"ab#c\", t = \"ad#c\"\n    **Output:** true\n    **Explanation:** Both s and t become \"ac\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"ab##\", t = \"c#d#\"\n    **Output:** true\n    **Explanation:** Both s and t become \"\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"a#c\", t = \"b\"\n    **Output:** false\n    **Explanation:** s becomes \"c\" while t becomes \"b\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length, t.length <= 200`\n  * `s` and `t` only contain lowercase letters and `'#'` characters.\n\n\n\n \n\n**Follow up:** Can you solve it in `O(n)` time and `O(1)` space?",
+  "question": "Given two strings `s` and `t`, return `true` _if they are equal when both are typed into empty text editors_. `'#'` means a backspace character.\n\nNote that after backspacing an empty text, the text will continue empty.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"ab#c\", t = \"ad#c\"\n    **Output:** true\n    **Explanation:** Both s and t become \"ac\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"ab##\", t = \"c#d#\"\n    **Output:** true\n    **Explanation:** Both s and t become \"\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"a#c\", t = \"b\"\n    **Output:** false\n    **Explanation:** s becomes \"c\" while t becomes \"b\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length, t.length <= 200`\n  * `s` and `t` only contain lowercase letters and `'#'` characters.",
+  "topics": ["Two Pointers", "String", "Stack", "Simulation"],
+  "total_accepted": 1028662,
+  "total_submissions": 2067102,
+  "acceptance_rate": "49.8%",
+  "similar_questions": [
+    {
+      "title": "Crawler Log Folder",
+      "slug": "crawler-log-folder",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/crawler-log-folder/"
+    },
+    {
+      "title": "Removing Stars From a String",
+      "slug": "removing-stars-from-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/removing-stars-from-a-string/"
+    }
+  ],
+  "hints": []
+}

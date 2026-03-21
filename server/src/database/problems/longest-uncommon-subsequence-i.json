@@ -1,0 +1,29 @@
+{
+  "id": "521",
+  "title": "Longest Uncommon Subsequence I",
+  "slug": "longest-uncommon-subsequence-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>a</code> and <code>b</code>, return <em>the length of the <strong>longest uncommon subsequence</strong> between </em><code>a</code> <em>and</em> <code>b</code>. <em>If no such uncommon subsequence exists, return</em> <code>-1</code><em>.</em></p>\n\n<p>An <strong>uncommon subsequence</strong> between two strings is a string that is a <strong><span data-keyword=\"subsequence-string\">subsequence</span> of exactly one of them</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> a = &quot;aba&quot;, b = &quot;cdc&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> One longest uncommon subsequence is &quot;aba&quot; because &quot;aba&quot; is a subsequence of &quot;aba&quot; but not &quot;cdc&quot;.\nNote that &quot;cdc&quot; is also a longest uncommon subsequence.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> a = &quot;aaa&quot;, b = &quot;bbb&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>&nbsp;The longest uncommon subsequences are &quot;aaa&quot; and &quot;bbb&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> a = &quot;aaa&quot;, b = &quot;aaa&quot;\n<strong>Output:</strong> -1\n<strong>Explanation:</strong>&nbsp;Every subsequence of string a is also a subsequence of string b. Similarly, every subsequence of string b is also a subsequence of string a. So the answer would be <code>-1</code>.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= a.length, b.length &lt;= 100</code></li>\n\t<li><code>a</code> and <code>b</code> consist of lower-case English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `a` and `b`, return _the length of the**longest uncommon subsequence** between _`a` _and_ `b`. _If no such uncommon subsequence exists, return_ `-1` _._\n\nAn **uncommon subsequence** between two strings is a string that is a **subsequence of exactly one of them**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** a = \"aba\", b = \"cdc\"\n    **Output:** 3\n    **Explanation:** One longest uncommon subsequence is \"aba\" because \"aba\" is a subsequence of \"aba\" but not \"cdc\".\n    Note that \"cdc\" is also a longest uncommon subsequence.\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = \"aaa\", b = \"bbb\"\n    **Output:** 3\n    **Explanation:**  The longest uncommon subsequences are \"aaa\" and \"bbb\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** a = \"aaa\", b = \"aaa\"\n    **Output:** -1\n    **Explanation:**  Every subsequence of string a is also a subsequence of string b. Similarly, every subsequence of string b is also a subsequence of string a. So the answer would be -1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= a.length, b.length <= 100`\n  * `a` and `b` consist of lower-case English letters.",
+  "question": "Given two strings `a` and `b`, return _the length of the**longest uncommon subsequence** between _`a` _and_ `b`. _If no such uncommon subsequence exists, return_ `-1` _._\n\nAn **uncommon subsequence** between two strings is a string that is a **subsequence of exactly one of them**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** a = \"aba\", b = \"cdc\"\n    **Output:** 3\n    **Explanation:** One longest uncommon subsequence is \"aba\" because \"aba\" is a subsequence of \"aba\" but not \"cdc\".\n    Note that \"cdc\" is also a longest uncommon subsequence.\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = \"aaa\", b = \"bbb\"\n    **Output:** 3\n    **Explanation:**  The longest uncommon subsequences are \"aaa\" and \"bbb\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** a = \"aaa\", b = \"aaa\"\n    **Output:** -1\n    **Explanation:**  Every subsequence of string a is also a subsequence of string b. Similarly, every subsequence of string b is also a subsequence of string a. So the answer would be -1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= a.length, b.length <= 100`\n  * `a` and `b` consist of lower-case English letters.",
+  "topics": ["String"],
+  "total_accepted": 148865,
+  "total_submissions": 239930,
+  "acceptance_rate": "62.0%",
+  "similar_questions": [
+    {
+      "title": "Longest Uncommon Subsequence II",
+      "slug": "longest-uncommon-subsequence-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-uncommon-subsequence-ii/"
+    }
+  ],
+  "hints": [
+    "Think very simple.",
+    "If <code>a == b</code>, the answer is -1.",
+    "Otherwise, the answer is the string <code>a</code> or the string <code>b</code>."
+  ]
+}

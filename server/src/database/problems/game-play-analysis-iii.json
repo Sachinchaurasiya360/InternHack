@@ -1,0 +1,31 @@
+{
+  "id": "534",
+  "title": "Game Play Analysis III",
+  "slug": "game-play-analysis-iii",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 95213,
+  "total_submissions": 117108,
+  "acceptance_rate": "81.3%",
+  "similar_questions": [
+    {
+      "title": "Game Play Analysis II",
+      "slug": "game-play-analysis-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/game-play-analysis-ii/"
+    },
+    {
+      "title": "Game Play Analysis IV",
+      "slug": "game-play-analysis-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/game-play-analysis-iv/"
+    }
+  ],
+  "hints": []
+}

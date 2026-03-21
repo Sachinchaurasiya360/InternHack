@@ -1,0 +1,43 @@
+{
+  "id": "2503",
+  "title": "Maximum Number of Points From Grid Queries",
+  "slug": "maximum-number-of-points-from-grid-queries",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> integer matrix <code>grid</code> and an array <code>queries</code> of size <code>k</code>.</p>\n\n<p>Find an array <code>answer</code> of size <code>k</code> such that for each integer <code>queries[i]</code> you start in the <strong>top left</strong> cell of the matrix and repeat the following process:</p>\n\n<ul>\n\t<li>If <code>queries[i]</code> is <strong>strictly</strong> greater than the value of the current cell that you are in, then you get one point if it is your first time visiting this cell, and you can move to any <strong>adjacent</strong> cell in all <code>4</code> directions: up, down, left, and right.</li>\n\t<li>Otherwise, you do not get any points, and you end this process.</li>\n</ul>\n\n<p>After the process, <code>answer[i]</code> is the <strong>maximum</strong> number of points you can get. <strong>Note</strong> that for each query you are allowed to visit the same cell <strong>multiple</strong> times.</p>\n\n<p>Return <em>the resulting array</em> <code>answer</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2025/03/15/image1.png\" style=\"width: 571px; height: 152px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,2,3],[2,5,7],[3,5,1]], queries = [5,6,2]\n<strong>Output:</strong> [5,8,1]\n<strong>Explanation:</strong> The diagrams above show which cells we visit to get points for each query.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/10/20/yetgriddrawio-2.png\" />\n<pre>\n<strong>Input:</strong> grid = [[5,2,1],[1,1,2]], queries = [3]\n<strong>Output:</strong> [0]\n<strong>Explanation:</strong> We can not get any points because the value of the top left cell is already greater than or equal to 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>2 &lt;= m, n &lt;= 1000</code></li>\n\t<li><code>4 &lt;= m * n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>k == queries.length</code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= grid[i][j], queries[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` integer matrix `grid` and an array `queries` of size `k`.\n\nFind an array `answer` of size `k` such that for each integer `queries[i]` you start in the **top left** cell of the matrix and repeat the following process:\n\n  * If `queries[i]` is **strictly** greater than the value of the current cell that you are in, then you get one point if it is your first time visiting this cell, and you can move to any **adjacent** cell in all `4` directions: up, down, left, and right.\n  * Otherwise, you do not get any points, and you end this process.\n\n\n\nAfter the process, `answer[i]` is the **maximum** number of points you can get. **Note** that for each query you are allowed to visit the same cell **multiple** times.\n\nReturn _the resulting array_ `answer`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2025/03/15/image1.png)\n    \n    \n    **Input:** grid = [[1,2,3],[2,5,7],[3,5,1]], queries = [5,6,2]\n    **Output:** [5,8,1]\n    **Explanation:** The diagrams above show which cells we visit to get points for each query.\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/10/20/yetgriddrawio-2.png)\n    \n    \n    **Input:** grid = [[5,2,1],[1,1,2]], queries = [3]\n    **Output:** [0]\n    **Explanation:** We can not get any points because the value of the top left cell is already greater than or equal to 3.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `2 <= m, n <= 1000`\n  * `4 <= m * n <= 105`\n  * `k == queries.length`\n  * `1 <= k <= 104`\n  * `1 <= grid[i][j], queries[i] <= 106`",
+  "question": "You are given an `m x n` integer matrix `grid` and an array `queries` of size `k`.\n\nFind an array `answer` of size `k` such that for each integer `queries[i]` you start in the **top left** cell of the matrix and repeat the following process:\n\n  * If `queries[i]` is **strictly** greater than the value of the current cell that you are in, then you get one point if it is your first time visiting this cell, and you can move to any **adjacent** cell in all `4` directions: up, down, left, and right.\n  * Otherwise, you do not get any points, and you end this process.\n\n\n\nAfter the process, `answer[i]` is the **maximum** number of points you can get. **Note** that for each query you are allowed to visit the same cell **multiple** times.\n\nReturn _the resulting array_ `answer`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2025/03/15/image1.png)\n    \n    \n    **Input:** grid = [[1,2,3],[2,5,7],[3,5,1]], queries = [5,6,2]\n    **Output:** [5,8,1]\n    **Explanation:** The diagrams above show which cells we visit to get points for each query.\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/10/20/yetgriddrawio-2.png)\n    \n    \n    **Input:** grid = [[5,2,1],[1,1,2]], queries = [3]\n    **Output:** [0]\n    **Explanation:** We can not get any points because the value of the top left cell is already greater than or equal to 3.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `2 <= m, n <= 1000`\n  * `4 <= m * n <= 105`\n  * `k == queries.length`\n  * `1 <= k <= 104`\n  * `1 <= grid[i][j], queries[i] <= 106`",
+  "topics": [
+    "Array",
+    "Two Pointers",
+    "Breadth-First Search",
+    "Union-Find",
+    "Sorting",
+    "Heap (Priority Queue)",
+    "Matrix"
+  ],
+  "total_accepted": 97123,
+  "total_submissions": 163681,
+  "acceptance_rate": "59.3%",
+  "similar_questions": [
+    {
+      "title": "Trapping Rain Water II",
+      "slug": "trapping-rain-water-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/trapping-rain-water-ii/"
+    },
+    {
+      "title": "Escape the Spreading Fire",
+      "slug": "escape-the-spreading-fire",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/escape-the-spreading-fire/"
+    }
+  ],
+  "hints": [
+    "The queries are all given to you beforehand so you can answer them in any order you want.",
+    "Sort the queries knowing their original order to be able to build the answer array.",
+    "Run a BFS on the graph and answer the queries in increasing order."
+  ]
+}

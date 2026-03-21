@@ -1,0 +1,22 @@
+{
+  "id": "1273",
+  "title": "Delete Tree Nodes",
+  "slug": "delete-tree-nodes",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Tree", "Depth-First Search", "Breadth-First Search"],
+  "total_accepted": 11498,
+  "total_submissions": 18663,
+  "acceptance_rate": "61.6%",
+  "similar_questions": [],
+  "hints": [
+    "Traverse the tree using depth first search.",
+    "Find for every node the sum of values of its sub-tree.",
+    "Traverse the tree again from the root and return once you reach a node with zero sum of values in its sub-tree."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "439",
+  "title": "Ternary Expression Parser",
+  "slug": "ternary-expression-parser",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Stack", "Recursion"],
+  "total_accepted": 38418,
+  "total_submissions": 61459,
+  "acceptance_rate": "62.5%",
+  "similar_questions": [
+    {
+      "title": "Mini Parser",
+      "slug": "mini-parser",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/mini-parser/"
+    },
+    {
+      "title": "Remove Comments",
+      "slug": "remove-comments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-comments/"
+    },
+    {
+      "title": "Parse Lisp Expression",
+      "slug": "parse-lisp-expression",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/parse-lisp-expression/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,55 @@
+{
+  "id": "518",
+  "title": "Coin Change II",
+  "slug": "coin-change-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>coins</code> representing coins of different denominations and an integer <code>amount</code> representing a total amount of money.</p>\n\n<p>Return <em>the number of combinations that make up that amount</em>. If that amount of money cannot be made up by any combination of the coins, return <code>0</code>.</p>\n\n<p>You may assume that you have an infinite number of each kind of coin.</p>\n\n<p>The answer is <strong>guaranteed</strong> to fit into a signed <strong>32-bit</strong> integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> amount = 5, coins = [1,2,5]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> there are four ways to make up the amount:\n5=5\n5=2+2+1\n5=2+1+1+1\n5=1+1+1+1+1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> amount = 3, coins = [2]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> the amount of 3 cannot be made up just with coins of 2.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> amount = 10, coins = [10]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= coins.length &lt;= 300</code></li>\n\t<li><code>1 &lt;= coins[i] &lt;= 5000</code></li>\n\t<li>All the values of <code>coins</code> are <strong>unique</strong>.</li>\n\t<li><code>0 &lt;= amount &lt;= 5000</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.\n\nReturn _the number of combinations that make up that amount_. If that amount of money cannot be made up by any combination of the coins, return `0`.\n\nYou may assume that you have an infinite number of each kind of coin.\n\nThe answer is **guaranteed** to fit into a signed **32-bit** integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** amount = 5, coins = [1,2,5]\n    **Output:** 4\n    **Explanation:** there are four ways to make up the amount:\n    5=5\n    5=2+2+1\n    5=2+1+1+1\n    5=1+1+1+1+1\n    \n\n**Example 2:**\n    \n    \n    **Input:** amount = 3, coins = [2]\n    **Output:** 0\n    **Explanation:** the amount of 3 cannot be made up just with coins of 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** amount = 10, coins = [10]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= coins.length <= 300`\n  * `1 <= coins[i] <= 5000`\n  * All the values of `coins` are **unique**.\n  * `0 <= amount <= 5000`",
+  "question": "You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.\n\nReturn _the number of combinations that make up that amount_. If that amount of money cannot be made up by any combination of the coins, return `0`.\n\nYou may assume that you have an infinite number of each kind of coin.\n\nThe answer is **guaranteed** to fit into a signed **32-bit** integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** amount = 5, coins = [1,2,5]\n    **Output:** 4\n    **Explanation:** there are four ways to make up the amount:\n    5=5\n    5=2+2+1\n    5=2+1+1+1\n    5=1+1+1+1+1\n    \n\n**Example 2:**\n    \n    \n    **Input:** amount = 3, coins = [2]\n    **Output:** 0\n    **Explanation:** the amount of 3 cannot be made up just with coins of 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** amount = 10, coins = [10]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= coins.length <= 300`\n  * `1 <= coins[i] <= 5000`\n  * All the values of `coins` are **unique**.\n  * `0 <= amount <= 5000`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 967945,
+  "total_submissions": 1601606,
+  "acceptance_rate": "60.4%",
+  "similar_questions": [
+    {
+      "title": "Maximum Value of K Coins From Piles",
+      "slug": "maximum-value-of-k-coins-from-piles",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-value-of-k-coins-from-piles/"
+    },
+    {
+      "title": "Number of Ways to Earn Points",
+      "slug": "number-of-ways-to-earn-points",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-ways-to-earn-points/"
+    },
+    {
+      "title": "Count of Sub-Multisets With Bounded Sum",
+      "slug": "count-of-sub-multisets-with-bounded-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-of-sub-multisets-with-bounded-sum/"
+    },
+    {
+      "title": "Length of the Longest Subsequence That Sums to Target",
+      "slug": "length-of-the-longest-subsequence-that-sums-to-target",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/length-of-the-longest-subsequence-that-sums-to-target/"
+    },
+    {
+      "title": "The Number of Ways to Make the Sum",
+      "slug": "the-number-of-ways-to-make-the-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-number-of-ways-to-make-the-sum/"
+    },
+    {
+      "title": "Inverse Coin Change",
+      "slug": "inverse-coin-change",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/inverse-coin-change/"
+    }
+  ],
+  "hints": []
+}

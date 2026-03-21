@@ -1,0 +1,34 @@
+{
+  "id": "1891",
+  "title": "Cutting Ribbons",
+  "slug": "cutting-ribbons",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 87373,
+  "total_submissions": 164828,
+  "acceptance_rate": "53.0%",
+  "similar_questions": [
+    {
+      "title": "Capacity To Ship Packages Within D Days",
+      "slug": "capacity-to-ship-packages-within-d-days",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/"
+    },
+    {
+      "title": "Add Minimum Number of Rungs",
+      "slug": "add-minimum-number-of-rungs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-minimum-number-of-rungs/"
+    }
+  ],
+  "hints": [
+    "Use binary search on the answer.",
+    "You can get l/m branches of length m from a branch with length l."
+  ]
+}

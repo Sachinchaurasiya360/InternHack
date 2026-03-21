@@ -1,0 +1,31 @@
+{
+  "id": "422",
+  "title": "Valid Word Square",
+  "slug": "valid-word-square",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Matrix"],
+  "total_accepted": 70696,
+  "total_submissions": 165086,
+  "acceptance_rate": "42.8%",
+  "similar_questions": [
+    {
+      "title": "Word Squares",
+      "slug": "word-squares",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/word-squares/"
+    },
+    {
+      "title": "Toeplitz Matrix",
+      "slug": "toeplitz-matrix",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/toeplitz-matrix/"
+    }
+  ],
+  "hints": []
+}

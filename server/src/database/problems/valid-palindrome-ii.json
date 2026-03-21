@@ -1,0 +1,37 @@
+{
+  "id": "680",
+  "title": "Valid Palindrome II",
+  "slug": "valid-palindrome-ii",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return <code>true</code> <em>if the </em><code>s</code><em> can be palindrome after deleting <strong>at most one</strong> character from it</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aba&quot;\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abca&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> You could delete the character &#39;c&#39;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abc&quot;\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return `true` _if the_`s` _can be palindrome after deleting**at most one** character from it_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aba\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abca\"\n    **Output:** true\n    **Explanation:** You could delete the character 'c'.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abc\"\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "question": "Given a string `s`, return `true` _if the_`s` _can be palindrome after deleting**at most one** character from it_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aba\"\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abca\"\n    **Output:** true\n    **Explanation:** You could delete the character 'c'.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abc\"\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Two Pointers", "String", "Greedy"],
+  "total_accepted": 1113485,
+  "total_submissions": 2531423,
+  "acceptance_rate": "44.0%",
+  "similar_questions": [
+    {
+      "title": "Valid Palindrome",
+      "slug": "valid-palindrome",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-palindrome/"
+    },
+    {
+      "title": "Valid Palindrome III",
+      "slug": "valid-palindrome-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/valid-palindrome-iii/"
+    },
+    {
+      "title": "Valid Palindrome IV",
+      "slug": "valid-palindrome-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/valid-palindrome-iv/"
+    }
+  ],
+  "hints": []
+}

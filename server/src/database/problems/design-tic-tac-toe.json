@@ -1,0 +1,28 @@
+{
+  "id": "348",
+  "title": "Design Tic-Tac-Toe",
+  "slug": "design-tic-tac-toe",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Design", "Matrix", "Simulation"],
+  "total_accepted": 312403,
+  "total_submissions": 531826,
+  "acceptance_rate": "58.7%",
+  "similar_questions": [
+    {
+      "title": "Valid Tic-Tac-Toe State",
+      "slug": "valid-tic-tac-toe-state",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/valid-tic-tac-toe-state/"
+    }
+  ],
+  "hints": [
+    "Could you trade extra space such that <code>move()</code> operation can be done in O(1)?",
+    "You need two arrays: int rows[n], int cols[n], plus two variables: diagonal, anti_diagonal."
+  ]
+}

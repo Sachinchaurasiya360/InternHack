@@ -1,0 +1,43 @@
+{
+  "id": "242",
+  "title": "Valid Anagram",
+  "slug": "valid-anagram",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>s</code> and <code>t</code>, return <code>true</code> if <code>t</code> is an <span data-keyword=\"anagram\">anagram</span> of <code>s</code>, and <code>false</code> otherwise.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;anagram&quot;, t = &quot;nagaram&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">true</span></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;rat&quot;, t = &quot;car&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">false</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length, t.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>s</code> and <code>t</code> consist of lowercase English letters.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> What if the inputs contain Unicode characters? How would you adapt your solution to such a case?</p>\n",
+  "content_markdown": "Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.\n\n \n\n**Example 1:**\n\n**Input:** s = \"anagram\", t = \"nagaram\"\n\n**Output:** true\n\n**Example 2:**\n\n**Input:** s = \"rat\", t = \"car\"\n\n**Output:** false\n\n \n\n**Constraints:**\n\n  * `1 <= s.length, t.length <= 5 * 104`\n  * `s` and `t` consist of lowercase English letters.\n\n\n\n \n\n**Follow up:** What if the inputs contain Unicode characters? How would you adapt your solution to such a case?",
+  "question": "Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"anagram\", t = \"nagaram\"\n\n**Output:** true\n\n**Example 2:**\n\n**Input:** s = \"rat\", t = \"car\"\n\n**Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length, t.length <= 5 * 104`\n  * `s` and `t` consist of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Sorting"],
+  "total_accepted": 5879430,
+  "total_submissions": 8672375,
+  "acceptance_rate": "67.8%",
+  "similar_questions": [
+    {
+      "title": "Group Anagrams",
+      "slug": "group-anagrams",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-anagrams/"
+    },
+    {
+      "title": "Palindrome Permutation",
+      "slug": "palindrome-permutation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-permutation/"
+    },
+    {
+      "title": "Find All Anagrams in a String",
+      "slug": "find-all-anagrams-in-a-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-anagrams-in-a-string/"
+    },
+    {
+      "title": "Find Resultant Array After Removing Anagrams",
+      "slug": "find-resultant-array-after-removing-anagrams",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-resultant-array-after-removing-anagrams/"
+    }
+  ],
+  "hints": []
+}

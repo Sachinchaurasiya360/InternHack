@@ -1,0 +1,37 @@
+{
+  "id": "168",
+  "title": "Excel Sheet Column Title",
+  "slug": "excel-sheet-column-title",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>columnNumber</code>, return <em>its corresponding column title as it appears in an Excel sheet</em>.</p>\n\n<p>For example:</p>\n\n<pre>\nA -&gt; 1\nB -&gt; 2\nC -&gt; 3\n...\nZ -&gt; 26\nAA -&gt; 27\nAB -&gt; 28 \n...\n</pre>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> columnNumber = 1\n<strong>Output:</strong> &quot;A&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> columnNumber = 28\n<strong>Output:</strong> &quot;AB&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> columnNumber = 701\n<strong>Output:</strong> &quot;ZY&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= columnNumber &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `columnNumber`, return _its corresponding column title as it appears in an Excel sheet_.\n\nFor example:\n    \n    \n    A -> 1\n    B -> 2\n    C -> 3\n    ...\n    Z -> 26\n    AA -> 27\n    AB -> 28 \n    ...\n    \n\n \n\n**Example 1:**\n    \n    \n    **Input:** columnNumber = 1\n    **Output:** \"A\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** columnNumber = 28\n    **Output:** \"AB\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** columnNumber = 701\n    **Output:** \"ZY\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= columnNumber <= 231 - 1`",
+  "question": "Given an integer `columnNumber`, return _its corresponding column title as it appears in an Excel sheet_.\n\nFor example:\n    \n    \n    A -> 1\n    B -> 2\n    C -> 3\n    ...\n    Z -> 26\n    AA -> 27\n    AB -> 28 \n    ...",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** columnNumber = 1\n    **Output:** \"A\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** columnNumber = 28\n    **Output:** \"AB\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** columnNumber = 701\n    **Output:** \"ZY\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= columnNumber <= 231 - 1`",
+  "topics": ["Math", "String"],
+  "total_accepted": 722248,
+  "total_submissions": 1577290,
+  "acceptance_rate": "45.8%",
+  "similar_questions": [
+    {
+      "title": "Excel Sheet Column Number",
+      "slug": "excel-sheet-column-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/excel-sheet-column-number/"
+    },
+    {
+      "title": "Cells in a Range on an Excel Sheet",
+      "slug": "cells-in-a-range-on-an-excel-sheet",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/cells-in-a-range-on-an-excel-sheet/"
+    },
+    {
+      "title": "Design Spreadsheet",
+      "slug": "design-spreadsheet",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-spreadsheet/"
+    }
+  ],
+  "hints": []
+}

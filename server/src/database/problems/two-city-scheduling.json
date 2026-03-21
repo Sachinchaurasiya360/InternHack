@@ -1,0 +1,25 @@
+{
+  "id": "1029",
+  "title": "Two City Scheduling",
+  "slug": "two-city-scheduling",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A company is planning to interview <code>2n</code> people. Given the array <code>costs</code> where <code>costs[i] = [aCost<sub>i</sub>, bCost<sub>i</sub>]</code>,&nbsp;the cost of flying the <code>i<sup>th</sup></code> person to city <code>a</code> is <code>aCost<sub>i</sub></code>, and the cost of flying the <code>i<sup>th</sup></code> person to city <code>b</code> is <code>bCost<sub>i</sub></code>.</p>\n\n<p>Return <em>the minimum cost to fly every person to a city</em> such that exactly <code>n</code> people arrive in each city.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> costs = [[10,20],[30,200],[400,50],[30,20]]\n<strong>Output:</strong> 110\n<strong>Explanation: </strong>\nThe first person goes to city A for a cost of 10.\nThe second person goes to city A for a cost of 30.\nThe third person goes to city B for a cost of 50.\nThe fourth person goes to city B for a cost of 20.\n\nThe total minimum cost is 10 + 30 + 50 + 20 = 110 to have half the people interviewing in each city.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> costs = [[259,770],[448,54],[926,667],[184,139],[840,118],[577,469]]\n<strong>Output:</strong> 1859\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> costs = [[515,563],[451,713],[537,709],[343,819],[855,779],[457,60],[650,359],[631,42]]\n<strong>Output:</strong> 3086\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 * n == costs.length</code></li>\n\t<li><code>2 &lt;= costs.length &lt;= 100</code></li>\n\t<li><code>costs.length</code> is even.</li>\n\t<li><code>1 &lt;= aCost<sub>i</sub>, bCost<sub>i</sub> &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "A company is planning to interview `2n` people. Given the array `costs` where `costs[i] = [aCosti, bCosti]`, the cost of flying the `ith` person to city `a` is `aCosti`, and the cost of flying the `ith` person to city `b` is `bCosti`.\n\nReturn _the minimum cost to fly every person to a city_ such that exactly `n` people arrive in each city.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** costs = [[10,20],[30,200],[400,50],[30,20]]\n    **Output:** 110\n    **Explanation:**\n    The first person goes to city A for a cost of 10.\n    The second person goes to city A for a cost of 30.\n    The third person goes to city B for a cost of 50.\n    The fourth person goes to city B for a cost of 20.\n    \n    The total minimum cost is 10 + 30 + 50 + 20 = 110 to have half the people interviewing in each city.\n    \n\n**Example 2:**\n    \n    \n    **Input:** costs = [[259,770],[448,54],[926,667],[184,139],[840,118],[577,469]]\n    **Output:** 1859\n    \n\n**Example 3:**\n    \n    \n    **Input:** costs = [[515,563],[451,713],[537,709],[343,819],[855,779],[457,60],[650,359],[631,42]]\n    **Output:** 3086\n    \n\n \n\n**Constraints:**\n\n  * `2 * n == costs.length`\n  * `2 <= costs.length <= 100`\n  * `costs.length` is even.\n  * `1 <= aCosti, bCosti <= 1000`",
+  "question": "A company is planning to interview `2n` people. Given the array `costs` where `costs[i] = [aCosti, bCosti]`, the cost of flying the `ith` person to city `a` is `aCosti`, and the cost of flying the `ith` person to city `b` is `bCosti`.\n\nReturn _the minimum cost to fly every person to a city_ such that exactly `n` people arrive in each city.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** costs = [[10,20],[30,200],[400,50],[30,20]]\n    **Output:** 110\n    **Explanation:**\n    The first person goes to city A for a cost of 10.\n    The second person goes to city A for a cost of 30.\n    The third person goes to city B for a cost of 50.\n    The fourth person goes to city B for a cost of 20.\n    \n    The total minimum cost is 10 + 30 + 50 + 20 = 110 to have half the people interviewing in each city.\n    \n\n**Example 2:**\n    \n    \n    **Input:** costs = [[259,770],[448,54],[926,667],[184,139],[840,118],[577,469]]\n    **Output:** 1859\n    \n\n**Example 3:**\n    \n    \n    **Input:** costs = [[515,563],[451,713],[537,709],[343,819],[855,779],[457,60],[650,359],[631,42]]\n    **Output:** 3086",
+  "constraints": "**Constraints:**\n\n  * `2 * n == costs.length`\n  * `2 <= costs.length <= 100`\n  * `costs.length` is even.\n  * `1 <= aCosti, bCosti <= 1000`",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 283708,
+  "total_submissions": 415073,
+  "acceptance_rate": "68.4%",
+  "similar_questions": [
+    {
+      "title": "Rearrange Array to Maximize Prefix Score",
+      "slug": "rearrange-array-to-maximize-prefix-score",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rearrange-array-to-maximize-prefix-score/"
+    }
+  ],
+  "hints": []
+}

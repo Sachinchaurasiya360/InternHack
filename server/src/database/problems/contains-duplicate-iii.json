@@ -1,0 +1,34 @@
+{
+  "id": "220",
+  "title": "Contains Duplicate III",
+  "slug": "contains-duplicate-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and two integers <code>indexDiff</code> and <code>valueDiff</code>.</p>\n\n<p>Find a pair of indices <code>(i, j)</code> such that:</p>\n\n<ul>\n\t<li><code>i != j</code>,</li>\n\t<li><code>abs(i - j) &lt;= indexDiff</code>.</li>\n\t<li><code>abs(nums[i] - nums[j]) &lt;= valueDiff</code>, and</li>\n</ul>\n\n<p>Return <code>true</code><em> if such pair exists or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,1], indexDiff = 3, valueDiff = 0\n<strong>Output:</strong> true\n<strong>Explanation:</strong> We can choose (i, j) = (0, 3).\nWe satisfy the three conditions:\ni != j --&gt; 0 != 3\nabs(i - j) &lt;= indexDiff --&gt; abs(0 - 3) &lt;= 3\nabs(nums[i] - nums[j]) &lt;= valueDiff --&gt; abs(1 - 1) &lt;= 0\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,5,9,1,5,9], indexDiff = 2, valueDiff = 3\n<strong>Output:</strong> false\n<strong>Explanation:</strong> After trying all the possible pairs (i, j), we cannot satisfy the three conditions, so we return false.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= indexDiff &lt;= nums.length</code></li>\n\t<li><code>0 &lt;= valueDiff &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and two integers `indexDiff` and `valueDiff`.\n\nFind a pair of indices `(i, j)` such that:\n\n  * `i != j`,\n  * `abs(i - j) <= indexDiff`.\n  * `abs(nums[i] - nums[j]) <= valueDiff`, and\n\n\n\nReturn `true` _if such pair exists or_`false` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,1], indexDiff = 3, valueDiff = 0\n    **Output:** true\n    **Explanation:** We can choose (i, j) = (0, 3).\n    We satisfy the three conditions:\n    i != j --> 0 != 3\n    abs(i - j) <= indexDiff --> abs(0 - 3) <= 3\n    abs(nums[i] - nums[j]) <= valueDiff --> abs(1 - 1) <= 0\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,9,1,5,9], indexDiff = 2, valueDiff = 3\n    **Output:** false\n    **Explanation:** After trying all the possible pairs (i, j), we cannot satisfy the three conditions, so we return false.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`\n  * `1 <= indexDiff <= nums.length`\n  * `0 <= valueDiff <= 109`",
+  "question": "You are given an integer array `nums` and two integers `indexDiff` and `valueDiff`.\n\nFind a pair of indices `(i, j)` such that:\n\n  * `i != j`,\n  * `abs(i - j) <= indexDiff`.\n  * `abs(nums[i] - nums[j]) <= valueDiff`, and\n\n\n\nReturn `true` _if such pair exists or_`false` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,1], indexDiff = 3, valueDiff = 0\n    **Output:** true\n    **Explanation:** We can choose (i, j) = (0, 3).\n    We satisfy the three conditions:\n    i != j --> 0 != 3\n    abs(i - j) <= indexDiff --> abs(0 - 3) <= 3\n    abs(nums[i] - nums[j]) <= valueDiff --> abs(1 - 1) <= 0\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,9,1,5,9], indexDiff = 2, valueDiff = 3\n    **Output:** false\n    **Explanation:** After trying all the possible pairs (i, j), we cannot satisfy the three conditions, so we return false.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 105`\n  * `-109 <= nums[i] <= 109`\n  * `1 <= indexDiff <= nums.length`\n  * `0 <= valueDiff <= 109`",
+  "topics": ["Array", "Sliding Window", "Sorting", "Bucket Sort", "Ordered Set"],
+  "total_accepted": 310466,
+  "total_submissions": 1268535,
+  "acceptance_rate": "24.5%",
+  "similar_questions": [
+    {
+      "title": "Contains Duplicate",
+      "slug": "contains-duplicate",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/contains-duplicate/"
+    },
+    {
+      "title": "Contains Duplicate II",
+      "slug": "contains-duplicate-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/contains-duplicate-ii/"
+    }
+  ],
+  "hints": [
+    "Time complexity O(n logk)  - This will give an indication that sorting is involved for k elements.",
+    "Use already existing state to evaluate next state  -  Like, a set of k sorted numbers are only needed to be tracked. When we are processing the next number in array, then we can utilize the existing sorted state and it is not necessary to sort next overlapping set of k numbers again."
+  ]
+}

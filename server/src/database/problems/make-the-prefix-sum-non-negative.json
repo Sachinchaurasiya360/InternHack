@@ -1,0 +1,34 @@
+{
+  "id": "2599",
+  "title": "Make the Prefix Sum Non-negative",
+  "slug": "make-the-prefix-sum-non-negative",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Heap (Priority Queue)"],
+  "total_accepted": 8372,
+  "total_submissions": 16150,
+  "acceptance_rate": "51.8%",
+  "similar_questions": [
+    {
+      "title": "Furthest Building You Can Reach",
+      "slug": "furthest-building-you-can-reach",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/furthest-building-you-can-reach/"
+    },
+    {
+      "title": "Maximum Transactions Without Negative Balance",
+      "slug": "maximum-transactions-without-negative-balance",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-transactions-without-negative-balance/"
+    }
+  ],
+  "hints": [
+    "There will always be a way to make the prefix sum non-negative. How can we use that?",
+    "Loop over the array keeping the prefix sum. Whenever it goes negative, move the smallest number you have seen to the end."
+  ]
+}

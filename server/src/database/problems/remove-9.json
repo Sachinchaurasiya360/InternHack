@@ -1,0 +1,18 @@
+{
+  "id": "660",
+  "title": "Remove 9",
+  "slug": "remove-9",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math"],
+  "total_accepted": 11295,
+  "total_submissions": 19661,
+  "acceptance_rate": "57.4%",
+  "similar_questions": [],
+  "hints": []
+}

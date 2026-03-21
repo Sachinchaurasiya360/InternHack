@@ -1,0 +1,37 @@
+{
+  "id": "408",
+  "title": "Valid Word Abbreviation",
+  "slug": "valid-word-abbreviation",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 357393,
+  "total_submissions": 965411,
+  "acceptance_rate": "37.0%",
+  "similar_questions": [
+    {
+      "title": "Minimum Unique Word Abbreviation",
+      "slug": "minimum-unique-word-abbreviation",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-unique-word-abbreviation/"
+    },
+    {
+      "title": "Word Abbreviation",
+      "slug": "word-abbreviation",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/word-abbreviation/"
+    },
+    {
+      "title": "Check if an Original String Exists Given Two Encoded Strings",
+      "slug": "check-if-an-original-string-exists-given-two-encoded-strings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/check-if-an-original-string-exists-given-two-encoded-strings/"
+    }
+  ],
+  "hints": []
+}

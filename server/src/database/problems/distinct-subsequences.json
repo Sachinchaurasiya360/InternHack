@@ -1,0 +1,25 @@
+{
+  "id": "115",
+  "title": "Distinct Subsequences",
+  "slug": "distinct-subsequences",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings s and t, return <i>the number of distinct</i> <b><i>subsequences</i></b><i> of </i>s<i> which equals </i>t.</p>\n\n<p>The test cases are generated so that the answer fits on a 32-bit signed integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;rabbbit&quot;, t = &quot;rabbit&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nAs shown below, there are 3 ways you can generate &quot;rabbit&quot; from s.\n<code><strong><u>rabb</u></strong>b<strong><u>it</u></strong></code>\n<code><strong><u>ra</u></strong>b<strong><u>bbit</u></strong></code>\n<code><strong><u>rab</u></strong>b<strong><u>bit</u></strong></code>\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;babgbag&quot;, t = &quot;bag&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong>\nAs shown below, there are 5 ways you can generate &quot;bag&quot; from s.\n<code><strong><u>ba</u></strong>b<u><strong>g</strong></u>bag</code>\n<code><strong><u>ba</u></strong>bgba<strong><u>g</u></strong></code>\n<code><u><strong>b</strong></u>abgb<strong><u>ag</u></strong></code>\n<code>ba<u><strong>b</strong></u>gb<u><strong>ag</strong></u></code>\n<code>babg<strong><u>bag</u></strong></code></pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length, t.length &lt;= 1000</code></li>\n\t<li><code>s</code> and <code>t</code> consist of English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings s and t, return _the number of distinct_ **_subsequences_** _of_ s _which equals_ t.\n\nThe test cases are generated so that the answer fits on a 32-bit signed integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"rabbbit\", t = \"rabbit\"\n    **Output:** 3\n    **Explanation:**\n    As shown below, there are 3 ways you can generate \"rabbit\" from s.\n    **_rabb_** b** _it_**\n    **_ra_** b** _bbit_**\n    **_rab_** b** _bit_**\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"babgbag\", t = \"bag\"\n    **Output:** 5\n    **Explanation:**\n    As shown below, there are 5 ways you can generate \"bag\" from s.\n    **_ba_** b _**g**_ bag\n    **_ba_** bgba** _g_**\n    _**b**_ abgb** _ag_**\n    ba _**b**_ gb _**ag**_\n    babg** _bag_**\n\n \n\n**Constraints:**\n\n  * `1 <= s.length, t.length <= 1000`\n  * `s` and `t` consist of English letters.",
+  "question": "Given two strings s and t, return _the number of distinct_ **_subsequences_** _of_ s _which equals_ t.\n\nThe test cases are generated so that the answer fits on a 32-bit signed integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"rabbbit\", t = \"rabbit\"\n    **Output:** 3\n    **Explanation:**\n    As shown below, there are 3 ways you can generate \"rabbit\" from s.\n    **_rabb_** b** _it_**\n    **_ra_** b** _bbit_**\n    **_rab_** b** _bit_**\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"babgbag\", t = \"bag\"\n    **Output:** 5\n    **Explanation:**\n    As shown below, there are 5 ways you can generate \"bag\" from s.\n    **_ba_** b _**g**_ bag\n    **_ba_** bgba** _g_**\n    _**b**_ abgb** _ag_**\n    ba _**b**_ gb _**ag**_\n    babg** _bag_**",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length, t.length <= 1000`\n  * `s` and `t` consist of English letters.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 665642,
+  "total_submissions": 1291817,
+  "acceptance_rate": "51.5%",
+  "similar_questions": [
+    {
+      "title": "Number of Unique Good Subsequences",
+      "slug": "number-of-unique-good-subsequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-unique-good-subsequences/"
+    }
+  ],
+  "hints": []
+}

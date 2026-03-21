@@ -1,0 +1,28 @@
+{
+  "id": "2319",
+  "title": "Check if Matrix Is X-Matrix",
+  "slug": "check-if-matrix-is-x-matrix",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A square matrix is said to be an <strong>X-Matrix</strong> if <strong>both</strong> of the following conditions hold:</p>\n\n<ol>\n\t<li>All the elements in the diagonals of the matrix are <strong>non-zero</strong>.</li>\n\t<li>All other elements are 0.</li>\n</ol>\n\n<p>Given a 2D integer array <code>grid</code> of size <code>n x n</code> representing a square matrix, return <code>true</code><em> if </em><code>grid</code><em> is an X-Matrix</em>. Otherwise, return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/05/03/ex1.jpg\" style=\"width: 311px; height: 320px;\" />\n<pre>\n<strong>Input:</strong> grid = [[2,0,0,1],[0,3,1,0],[0,5,2,0],[4,0,0,2]]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Refer to the diagram above. \nAn X-Matrix should have the green elements (diagonals) be non-zero and the red elements be 0.\nThus, grid is an X-Matrix.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/05/03/ex2.jpg\" style=\"width: 238px; height: 246px;\" />\n<pre>\n<strong>Input:</strong> grid = [[5,7,0],[0,3,1],[0,5,0]]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Refer to the diagram above.\nAn X-Matrix should have the green elements (diagonals) be non-zero and the red elements be 0.\nThus, grid is not an X-Matrix.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == grid.length == grid[i].length</code></li>\n\t<li><code>3 &lt;= n &lt;= 100</code></li>\n\t<li><code>0 &lt;= grid[i][j] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "A square matrix is said to be an **X-Matrix** if **both** of the following conditions hold:\n\n  1. All the elements in the diagonals of the matrix are **non-zero**.\n  2. All other elements are 0.\n\n\n\nGiven a 2D integer array `grid` of size `n x n` representing a square matrix, return `true` _if_`grid` _is an X-Matrix_. Otherwise, return `false`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/05/03/ex1.jpg)\n    \n    \n    **Input:** grid = [[2,0,0,1],[0,3,1,0],[0,5,2,0],[4,0,0,2]]\n    **Output:** true\n    **Explanation:** Refer to the diagram above. \n    An X-Matrix should have the green elements (diagonals) be non-zero and the red elements be 0.\n    Thus, grid is an X-Matrix.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/05/03/ex2.jpg)\n    \n    \n    **Input:** grid = [[5,7,0],[0,3,1],[0,5,0]]\n    **Output:** false\n    **Explanation:** Refer to the diagram above.\n    An X-Matrix should have the green elements (diagonals) be non-zero and the red elements be 0.\n    Thus, grid is not an X-Matrix.\n    \n\n \n\n**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `3 <= n <= 100`\n  * `0 <= grid[i][j] <= 105`",
+  "question": "A square matrix is said to be an **X-Matrix** if **both** of the following conditions hold:\n\n  1. All the elements in the diagonals of the matrix are **non-zero**.\n  2. All other elements are 0.\n\n\n\nGiven a 2D integer array `grid` of size `n x n` representing a square matrix, return `true` _if_`grid` _is an X-Matrix_. Otherwise, return `false`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/05/03/ex1.jpg)\n    \n    \n    **Input:** grid = [[2,0,0,1],[0,3,1,0],[0,5,2,0],[4,0,0,2]]\n    **Output:** true\n    **Explanation:** Refer to the diagram above. \n    An X-Matrix should have the green elements (diagonals) be non-zero and the red elements be 0.\n    Thus, grid is an X-Matrix.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/05/03/ex2.jpg)\n    \n    \n    **Input:** grid = [[5,7,0],[0,3,1],[0,5,0]]\n    **Output:** false\n    **Explanation:** Refer to the diagram above.\n    An X-Matrix should have the green elements (diagonals) be non-zero and the red elements be 0.\n    Thus, grid is not an X-Matrix.",
+  "constraints": "**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `3 <= n <= 100`\n  * `0 <= grid[i][j] <= 105`",
+  "topics": ["Array", "Matrix"],
+  "total_accepted": 73022,
+  "total_submissions": 109973,
+  "acceptance_rate": "66.4%",
+  "similar_questions": [
+    {
+      "title": "Matrix Diagonal Sum",
+      "slug": "matrix-diagonal-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/matrix-diagonal-sum/"
+    }
+  ],
+  "hints": [
+    "Assuming a 0-indexed matrix, for a given cell on row i and column j, it is in a diagonal if and only if i == j or i == n - 1 - j.",
+    "We can then iterate through the elements in the matrix to check if all the elements in the diagonals are non-zero and all other elements are zero."
+  ]
+}

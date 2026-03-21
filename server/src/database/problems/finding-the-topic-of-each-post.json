@@ -1,0 +1,25 @@
+{
+  "id": "2199",
+  "title": "Finding the Topic of Each Post",
+  "slug": "finding-the-topic-of-each-post",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 5317,
+  "total_submissions": 10599,
+  "acceptance_rate": "50.2%",
+  "similar_questions": [
+    {
+      "title": "Group Sold Products By The Date",
+      "slug": "group-sold-products-by-the-date",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/group-sold-products-by-the-date/"
+    }
+  ],
+  "hints": []
+}

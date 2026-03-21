@@ -1,0 +1,31 @@
+{
+  "id": "2205",
+  "title": "The Number of Users That Are Eligible for Discount",
+  "slug": "the-number-of-users-that-are-eligible-for-discount",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 8422,
+  "total_submissions": 16608,
+  "acceptance_rate": "50.7%",
+  "similar_questions": [
+    {
+      "title": "Nth Highest Salary",
+      "slug": "nth-highest-salary",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/nth-highest-salary/"
+    },
+    {
+      "title": "The Users That Are Eligible for Discount",
+      "slug": "the-users-that-are-eligible-for-discount",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/the-users-that-are-eligible-for-discount/"
+    }
+  ],
+  "hints": []
+}

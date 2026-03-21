@@ -1,0 +1,21 @@
+{
+  "id": "1301",
+  "title": "Number of Paths with Max Score",
+  "slug": "number-of-paths-with-max-score",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a square <code>board</code>&nbsp;of characters. You can move on the board starting at the bottom right square marked with the character&nbsp;<code>&#39;S&#39;</code>.</p>\r\n\r\n<p>You need&nbsp;to reach the top left square marked with the character <code>&#39;E&#39;</code>. The rest of the squares are labeled either with a numeric character&nbsp;<code>1, 2, ..., 9</code> or with an obstacle <code>&#39;X&#39;</code>. In one move you can go up, left or up-left (diagonally) only if there is no obstacle there.</p>\r\n\r\n<p>Return a list of two integers: the first integer is the maximum sum of numeric characters you can collect, and the second is the number of such paths that you can take to get that maximum sum, <strong>taken modulo <code>10^9 + 7</code></strong>.</p>\r\n\r\n<p>In case there is no path, return&nbsp;<code>[0, 0]</code>.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n<pre><strong>Input:</strong> board = [\"E23\",\"2X2\",\"12S\"]\r\n<strong>Output:</strong> [7,1]\r\n</pre><p><strong class=\"example\">Example 2:</strong></p>\r\n<pre><strong>Input:</strong> board = [\"E12\",\"1X1\",\"21S\"]\r\n<strong>Output:</strong> [4,2]\r\n</pre><p><strong class=\"example\">Example 3:</strong></p>\r\n<pre><strong>Input:</strong> board = [\"E11\",\"XXX\",\"11S\"]\r\n<strong>Output:</strong> [0,0]\r\n</pre>\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>2 &lt;= board.length == board[i].length &lt;= 100</code></li>\r\n</ul>",
+  "content_markdown": "You are given a square `board` of characters. You can move on the board starting at the bottom right square marked with the character `'S'`.\n\nYou need to reach the top left square marked with the character `'E'`. The rest of the squares are labeled either with a numeric character `1, 2, ..., 9` or with an obstacle `'X'`. In one move you can go up, left or up-left (diagonally) only if there is no obstacle there.\n\nReturn a list of two integers: the first integer is the maximum sum of numeric characters you can collect, and the second is the number of such paths that you can take to get that maximum sum, **taken modulo`10^9 + 7`**.\n\nIn case there is no path, return `[0, 0]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** board = [\"E23\",\"2X2\",\"12S\"]\r\n    **Output:** [7,1]\r\n    \n\n**Example 2:**\n    \n    \n    **Input:** board = [\"E12\",\"1X1\",\"21S\"]\r\n    **Output:** [4,2]\r\n    \n\n**Example 3:**\n    \n    \n    **Input:** board = [\"E11\",\"XXX\",\"11S\"]\r\n    **Output:** [0,0]\r\n    \n\n \n\n**Constraints:**\n\n  * `2 <= board.length == board[i].length <= 100`",
+  "question": "You are given a square `board` of characters. You can move on the board starting at the bottom right square marked with the character `'S'`.\n\nYou need to reach the top left square marked with the character `'E'`. The rest of the squares are labeled either with a numeric character `1, 2, ..., 9` or with an obstacle `'X'`. In one move you can go up, left or up-left (diagonally) only if there is no obstacle there.\n\nReturn a list of two integers: the first integer is the maximum sum of numeric characters you can collect, and the second is the number of such paths that you can take to get that maximum sum, **taken modulo`10^9 + 7`**.\n\nIn case there is no path, return `[0, 0]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** board = [\"E23\",\"2X2\",\"12S\"]\r\n    **Output:** [7,1]\r\n    \n\n**Example 2:**\n    \n    \n    **Input:** board = [\"E12\",\"1X1\",\"21S\"]\r\n    **Output:** [4,2]\r\n    \n\n**Example 3:**\n    \n    \n    **Input:** board = [\"E11\",\"XXX\",\"11S\"]\r\n    **Output:** [0,0]",
+  "constraints": "**Constraints:**\n\n  * `2 <= board.length == board[i].length <= 100`",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 18527,
+  "total_submissions": 44006,
+  "acceptance_rate": "42.1%",
+  "similar_questions": [],
+  "hints": [
+    "Use dynamic programming to find the path with the max score.",
+    "Use another dynamic programming array to count the number of paths with max score."
+  ]
+}

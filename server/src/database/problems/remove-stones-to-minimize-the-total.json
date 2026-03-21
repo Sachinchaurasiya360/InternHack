@@ -1,0 +1,41 @@
+{
+  "id": "1962",
+  "title": "Remove Stones to Minimize the Total",
+  "slug": "remove-stones-to-minimize-the-total",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>piles</code>, where <code>piles[i]</code> represents the number of stones in the <code>i<sup>th</sup></code> pile, and an integer <code>k</code>. You should apply the following operation <strong>exactly</strong> <code>k</code> times:</p>\n\n<ul>\n\t<li>Choose any <code>piles[i]</code> and <strong>remove</strong> <code>floor(piles[i] / 2)</code> stones from it.</li>\n</ul>\n\n<p><strong>Notice</strong> that you can apply the operation on the <strong>same</strong> pile more than once.</p>\n\n<p>Return <em>the <strong>minimum</strong> possible total number of stones remaining after applying the </em><code>k</code><em> operations</em>.</p>\n\n<p><code>floor(x)</code> is the <strong>largest</strong>&nbsp;integer that is <strong>smaller</strong> than or <strong>equal</strong> to <code>x</code> (i.e., rounds <code>x</code>&nbsp;down).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> piles = [5,4,9], k = 2\n<strong>Output:</strong> 12\n<strong>Explanation:</strong>&nbsp;Steps of a possible scenario are:\n- Apply the operation on pile 2. The resulting piles are [5,4,<u>5</u>].\n- Apply the operation on pile 0. The resulting piles are [<u>3</u>,4,5].\nThe total number of stones in [3,4,5] is 12.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> piles = [4,3,6,7], k = 3\n<strong>Output:</strong> 12\n<strong>Explanation:</strong>&nbsp;Steps of a possible scenario are:\n- Apply the operation on pile 2. The resulting piles are [4,3,<u>3</u>,7].\n- Apply the operation on pile 3. The resulting piles are [4,3,3,<u>4</u>].\n- Apply the operation on pile 0. The resulting piles are [<u>2</u>,3,3,4].\nThe total number of stones in [2,3,3,4] is 12.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= piles.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= piles[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `piles`, where `piles[i]` represents the number of stones in the `ith` pile, and an integer `k`. You should apply the following operation **exactly** `k` times:\n\n  * Choose any `piles[i]` and **remove** `floor(piles[i] / 2)` stones from it.\n\n\n\n**Notice** that you can apply the operation on the **same** pile more than once.\n\nReturn _the**minimum** possible total number of stones remaining after applying the _`k` _operations_.\n\n`floor(x)` is the **largest**  integer that is **smaller** than or **equal** to `x` (i.e., rounds `x` down).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** piles = [5,4,9], k = 2\n    **Output:** 12\n    **Explanation:**  Steps of a possible scenario are:\n    - Apply the operation on pile 2. The resulting piles are [5,4,_5_].\n    - Apply the operation on pile 0. The resulting piles are [_3_ ,4,5].\n    The total number of stones in [3,4,5] is 12.\n    \n\n**Example 2:**\n    \n    \n    **Input:** piles = [4,3,6,7], k = 3\n    **Output:** 12\n    **Explanation:**  Steps of a possible scenario are:\n    - Apply the operation on pile 2. The resulting piles are [4,3,_3_ ,7].\n    - Apply the operation on pile 3. The resulting piles are [4,3,3,_4_].\n    - Apply the operation on pile 0. The resulting piles are [_2_ ,3,3,4].\n    The total number of stones in [2,3,3,4] is 12.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= piles.length <= 105`\n  * `1 <= piles[i] <= 104`\n  * `1 <= k <= 105`",
+  "question": "You are given a **0-indexed** integer array `piles`, where `piles[i]` represents the number of stones in the `ith` pile, and an integer `k`. You should apply the following operation **exactly** `k` times:\n\n  * Choose any `piles[i]` and **remove** `floor(piles[i] / 2)` stones from it.\n\n\n\n**Notice** that you can apply the operation on the **same** pile more than once.\n\nReturn _the**minimum** possible total number of stones remaining after applying the _`k` _operations_.\n\n`floor(x)` is the **largest**  integer that is **smaller** than or **equal** to `x` (i.e., rounds `x` down).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** piles = [5,4,9], k = 2\n    **Output:** 12\n    **Explanation:**  Steps of a possible scenario are:\n    - Apply the operation on pile 2. The resulting piles are [5,4,_5_].\n    - Apply the operation on pile 0. The resulting piles are [_3_ ,4,5].\n    The total number of stones in [3,4,5] is 12.\n    \n\n**Example 2:**\n    \n    \n    **Input:** piles = [4,3,6,7], k = 3\n    **Output:** 12\n    **Explanation:**  Steps of a possible scenario are:\n    - Apply the operation on pile 2. The resulting piles are [4,3,_3_ ,7].\n    - Apply the operation on pile 3. The resulting piles are [4,3,3,_4_].\n    - Apply the operation on pile 0. The resulting piles are [_2_ ,3,3,4].\n    The total number of stones in [2,3,3,4] is 12.",
+  "constraints": "**Constraints:**\n\n  * `1 <= piles.length <= 105`\n  * `1 <= piles[i] <= 104`\n  * `1 <= k <= 105`",
+  "topics": ["Array", "Greedy", "Heap (Priority Queue)"],
+  "total_accepted": 147331,
+  "total_submissions": 224931,
+  "acceptance_rate": "65.5%",
+  "similar_questions": [
+    {
+      "title": "Minimum Operations to Halve Array Sum",
+      "slug": "minimum-operations-to-halve-array-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-halve-array-sum/"
+    },
+    {
+      "title": "Maximal Score After Applying K Operations",
+      "slug": "maximal-score-after-applying-k-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximal-score-after-applying-k-operations/"
+    },
+    {
+      "title": "Take Gifts From the Richest Pile",
+      "slug": "take-gifts-from-the-richest-pile",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/take-gifts-from-the-richest-pile/"
+    }
+  ],
+  "hints": [
+    "Choose the pile with the maximum number of stones each time.",
+    "Use a data structure that helps you find the mentioned pile each time efficiently.",
+    "One such data structure is a Priority Queue."
+  ]
+}

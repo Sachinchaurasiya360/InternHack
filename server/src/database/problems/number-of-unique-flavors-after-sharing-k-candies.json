@@ -1,0 +1,35 @@
+{
+  "id": "2107",
+  "title": "Number of Unique Flavors After Sharing K Candies",
+  "slug": "number-of-unique-flavors-after-sharing-k-candies",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Sliding Window"],
+  "total_accepted": 9571,
+  "total_submissions": 15834,
+  "acceptance_rate": "60.4%",
+  "similar_questions": [
+    {
+      "title": "Remove Boxes",
+      "slug": "remove-boxes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/remove-boxes/"
+    },
+    {
+      "title": "Subarrays with K Different Integers",
+      "slug": "subarrays-with-k-different-integers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/subarrays-with-k-different-integers/"
+    }
+  ],
+  "hints": [
+    "For every group of k consecutive candies, count the number of unique flavors not inside that group. Return the largest number of unique flavors.",
+    "When calculating an adjacent group of k consecutive candies, can you use some of your previous calculations?",
+    "Use a sliding window where the window is the group of k consecutive candies you are sharing. Use a hash map to store the number of candies of each type you can keep."
+  ]
+}

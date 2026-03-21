@@ -1,0 +1,34 @@
+{
+  "id": "1574",
+  "title": "Shortest Subarray to be Removed to Make Array Sorted",
+  "slug": "shortest-subarray-to-be-removed-to-make-array-sorted",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>arr</code>, remove a subarray (can be empty) from <code>arr</code> such that the remaining elements in <code>arr</code> are <strong>non-decreasing</strong>.</p>\n\n<p>Return <em>the length of the shortest subarray to remove</em>.</p>\n\n<p>A <strong>subarray</strong> is a contiguous subsequence of the array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3,10,4,2,3,5]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The shortest subarray we can remove is [10,4,2] of length 3. The remaining elements after that will be [1,2,3,3,5] which are sorted.\nAnother correct solution is to remove the subarray [3,10,4].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [5,4,3,2,1]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Since the array is strictly decreasing, we can only keep a single element. Therefore we need to remove a subarray of length 4, either [5,4,3,2] or [4,3,2,1].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,3]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The array is already non-decreasing. We do not need to remove any elements.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr`, remove a subarray (can be empty) from `arr` such that the remaining elements in `arr` are **non-decreasing**.\n\nReturn _the length of the shortest subarray to remove_.\n\nA **subarray** is a contiguous subsequence of the array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,10,4,2,3,5]\n    **Output:** 3\n    **Explanation:** The shortest subarray we can remove is [10,4,2] of length 3. The remaining elements after that will be [1,2,3,3,5] which are sorted.\n    Another correct solution is to remove the subarray [3,10,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [5,4,3,2,1]\n    **Output:** 4\n    **Explanation:** Since the array is strictly decreasing, we can only keep a single element. Therefore we need to remove a subarray of length 4, either [5,4,3,2] or [4,3,2,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1,2,3]\n    **Output:** 0\n    **Explanation:** The array is already non-decreasing. We do not need to remove any elements.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `0 <= arr[i] <= 109`",
+  "question": "Given an integer array `arr`, remove a subarray (can be empty) from `arr` such that the remaining elements in `arr` are **non-decreasing**.\n\nReturn _the length of the shortest subarray to remove_.\n\nA **subarray** is a contiguous subsequence of the array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2,3,10,4,2,3,5]\n    **Output:** 3\n    **Explanation:** The shortest subarray we can remove is [10,4,2] of length 3. The remaining elements after that will be [1,2,3,3,5] which are sorted.\n    Another correct solution is to remove the subarray [3,10,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [5,4,3,2,1]\n    **Output:** 4\n    **Explanation:** Since the array is strictly decreasing, we can only keep a single element. Therefore we need to remove a subarray of length 4, either [5,4,3,2] or [4,3,2,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1,2,3]\n    **Output:** 0\n    **Explanation:** The array is already non-decreasing. We do not need to remove any elements.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `0 <= arr[i] <= 109`",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Stack", "Monotonic Stack"],
+  "total_accepted": 126956,
+  "total_submissions": 247510,
+  "acceptance_rate": "51.3%",
+  "similar_questions": [
+    {
+      "title": "Count the Number of Incremovable Subarrays II",
+      "slug": "count-the-number-of-incremovable-subarrays-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-the-number-of-incremovable-subarrays-ii/"
+    },
+    {
+      "title": "Count the Number of Incremovable Subarrays I",
+      "slug": "count-the-number-of-incremovable-subarrays-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-the-number-of-incremovable-subarrays-i/"
+    }
+  ],
+  "hints": [
+    "The key is to find the longest non-decreasing subarray starting with the first element or ending with the last element, respectively.",
+    "After removing some subarray, the result is the concatenation of a sorted prefix and a sorted suffix, where the last element of the prefix is smaller than the first element of the suffix."
+  ]
+}

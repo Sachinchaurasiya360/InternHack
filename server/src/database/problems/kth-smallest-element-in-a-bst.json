@@ -1,0 +1,36 @@
+{
+  "id": "230",
+  "title": "Kth Smallest Element in a BST",
+  "slug": "kth-smallest-element-in-a-bst",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary search tree, and an integer <code>k</code>, return <em>the</em> <code>k<sup>th</sup></code> <em>smallest value (<strong>1-indexed</strong>) of all the values of the nodes in the tree</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/28/kthtree1.jpg\" style=\"width: 212px; height: 301px;\" />\n<pre>\n<strong>Input:</strong> root = [3,1,4,null,2], k = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/28/kthtree2.jpg\" style=\"width: 382px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> root = [5,3,6,2,4,null,null,1], k = 3\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is <code>n</code>.</li>\n\t<li><code>1 &lt;= k &lt;= n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= Node.val &lt;= 10<sup>4</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> If the BST is modified often (i.e., we can do insert and delete operations) and you need to find the kth smallest frequently, how would you optimize?</p>\n",
+  "content_markdown": "Given the `root` of a binary search tree, and an integer `k`, return _the_ `kth` _smallest value (**1-indexed**) of all the values of the nodes in the tree_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/28/kthtree1.jpg)\n    \n    \n    **Input:** root = [3,1,4,null,2], k = 1\n    **Output:** 1\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/28/kthtree2.jpg)\n    \n    \n    **Input:** root = [5,3,6,2,4,null,null,1], k = 3\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is `n`.\n  * `1 <= k <= n <= 104`\n  * `0 <= Node.val <= 104`\n\n\n\n \n\n**Follow up:** If the BST is modified often (i.e., we can do insert and delete operations) and you need to find the kth smallest frequently, how would you optimize?",
+  "question": "Given the `root` of a binary search tree, and an integer `k`, return _the_ `kth` _smallest value (**1-indexed**) of all the values of the nodes in the tree_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/28/kthtree1.jpg)\n    \n    \n    **Input:** root = [3,1,4,null,2], k = 1\n    **Output:** 1\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/28/kthtree2.jpg)\n    \n    \n    **Input:** root = [5,3,6,2,4,null,null,1], k = 3\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is `n`.\n  * `1 <= k <= n <= 104`\n  * `0 <= Node.val <= 104`",
+  "topics": ["Tree", "Depth-First Search", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 2181602,
+  "total_submissions": 2851614,
+  "acceptance_rate": "76.5%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Inorder Traversal",
+      "slug": "binary-tree-inorder-traversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/"
+    },
+    {
+      "title": "Second Minimum Node In a Binary Tree",
+      "slug": "second-minimum-node-in-a-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/second-minimum-node-in-a-binary-tree/"
+    }
+  ],
+  "hints": [
+    "Try to utilize the property of a BST.",
+    "Try in-order traversal. (Credits to @chan13)",
+    "What if you could modify the BST node's structure?",
+    "The optimal runtime complexity is O(height of BST)."
+  ]
+}

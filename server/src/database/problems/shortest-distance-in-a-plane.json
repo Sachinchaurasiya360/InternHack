@@ -1,0 +1,18 @@
+{
+  "id": "612",
+  "title": "Shortest Distance in a Plane",
+  "slug": "shortest-distance-in-a-plane",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 48405,
+  "total_submissions": 79344,
+  "acceptance_rate": "61.0%",
+  "similar_questions": [],
+  "hints": []
+}

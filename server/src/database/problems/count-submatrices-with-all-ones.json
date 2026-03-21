@@ -1,0 +1,28 @@
+{
+  "id": "1504",
+  "title": "Count Submatrices With All Ones",
+  "slug": "count-submatrices-with-all-ones",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> binary matrix <code>mat</code>, <em>return the number of <strong>submatrices</strong> that have all ones</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/10/27/ones1-grid.jpg\" style=\"width: 244px; height: 245px;\" />\n<pre>\n<strong>Input:</strong> mat = [[1,0,1],[1,1,0],[1,1,0]]\n<strong>Output:</strong> 13\n<strong>Explanation:</strong> \nThere are 6 rectangles of side 1x1.\nThere are 2 rectangles of side 1x2.\nThere are 3 rectangles of side 2x1.\nThere is 1 rectangle of side 2x2. \nThere is 1 rectangle of side 3x1.\nTotal number of rectangles = 6 + 2 + 3 + 1 + 1 = 13.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/10/27/ones2-grid.jpg\" style=\"width: 324px; height: 245px;\" />\n<pre>\n<strong>Input:</strong> mat = [[0,1,1,0],[0,1,1,1],[1,1,1,0]]\n<strong>Output:</strong> 24\n<strong>Explanation:</strong> \nThere are 8 rectangles of side 1x1.\nThere are 5 rectangles of side 1x2.\nThere are 2 rectangles of side 1x3. \nThere are 4 rectangles of side 2x1.\nThere are 2 rectangles of side 2x2. \nThere are 2 rectangles of side 3x1. \nThere is 1 rectangle of side 3x2. \nTotal number of rectangles = 8 + 5 + 2 + 4 + 2 + 2 + 1 = 24.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= m, n &lt;= 150</code></li>\n\t<li><code>mat[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` binary matrix `mat`, _return the number of**submatrices** that have all ones_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/10/27/ones1-grid.jpg)\n    \n    \n    **Input:** mat = [[1,0,1],[1,1,0],[1,1,0]]\n    **Output:** 13\n    **Explanation:** \n    There are 6 rectangles of side 1x1.\n    There are 2 rectangles of side 1x2.\n    There are 3 rectangles of side 2x1.\n    There is 1 rectangle of side 2x2. \n    There is 1 rectangle of side 3x1.\n    Total number of rectangles = 6 + 2 + 3 + 1 + 1 = 13.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/10/27/ones2-grid.jpg)\n    \n    \n    **Input:** mat = [[0,1,1,0],[0,1,1,1],[1,1,1,0]]\n    **Output:** 24\n    **Explanation:** \n    There are 8 rectangles of side 1x1.\n    There are 5 rectangles of side 1x2.\n    There are 2 rectangles of side 1x3. \n    There are 4 rectangles of side 2x1.\n    There are 2 rectangles of side 2x2. \n    There are 2 rectangles of side 3x1. \n    There is 1 rectangle of side 3x2. \n    Total number of rectangles = 8 + 5 + 2 + 4 + 2 + 2 + 1 = 24.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= m, n <= 150`\n  * `mat[i][j]` is either `0` or `1`.",
+  "question": "Given an `m x n` binary matrix `mat`, _return the number of**submatrices** that have all ones_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/10/27/ones1-grid.jpg)\n    \n    \n    **Input:** mat = [[1,0,1],[1,1,0],[1,1,0]]\n    **Output:** 13\n    **Explanation:** \n    There are 6 rectangles of side 1x1.\n    There are 2 rectangles of side 1x2.\n    There are 3 rectangles of side 2x1.\n    There is 1 rectangle of side 2x2. \n    There is 1 rectangle of side 3x1.\n    Total number of rectangles = 6 + 2 + 3 + 1 + 1 = 13.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/10/27/ones2-grid.jpg)\n    \n    \n    **Input:** mat = [[0,1,1,0],[0,1,1,1],[1,1,1,0]]\n    **Output:** 24\n    **Explanation:** \n    There are 8 rectangles of side 1x1.\n    There are 5 rectangles of side 1x2.\n    There are 2 rectangles of side 1x3. \n    There are 4 rectangles of side 2x1.\n    There are 2 rectangles of side 2x2. \n    There are 2 rectangles of side 3x1. \n    There is 1 rectangle of side 3x2. \n    Total number of rectangles = 8 + 5 + 2 + 4 + 2 + 2 + 1 = 24.",
+  "constraints": "**Constraints:**\n\n  * `1 <= m, n <= 150`\n  * `mat[i][j]` is either `0` or `1`.",
+  "topics": ["Array", "Dynamic Programming", "Stack", "Matrix", "Monotonic Stack"],
+  "total_accepted": 147166,
+  "total_submissions": 207112,
+  "acceptance_rate": "71.1%",
+  "similar_questions": [
+    {
+      "title": "Count Submatrices With Equal Frequency of X and Y",
+      "slug": "count-submatrices-with-equal-frequency-of-x-and-y",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-submatrices-with-equal-frequency-of-x-and-y/"
+    }
+  ],
+  "hints": [
+    "For each row i, create an array nums where:  if mat[i][j] == 0 then nums[j] = 0 else nums[j] = nums[j-1] +1.",
+    "In the row i, number of rectangles between column j and k(inclusive) and ends in row i, is equal to SUM(min(nums[j, .. idx])) where idx go from j to k.  Expected solution is O(n^3)."
+  ]
+}

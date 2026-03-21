@@ -1,0 +1,29 @@
+{
+  "id": "2052",
+  "title": "Minimum Cost to Separate Sentence Into Rows",
+  "slug": "minimum-cost-to-separate-sentence-into-rows",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 2447,
+  "total_submissions": 4799,
+  "acceptance_rate": "51.0%",
+  "similar_questions": [
+    {
+      "title": "Sentence Screen Fitting",
+      "slug": "sentence-screen-fitting",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sentence-screen-fitting/"
+    }
+  ],
+  "hints": [
+    "Create an array storing all of the words in sentence separated.",
+    "Try dynamic programming.",
+    "Build a dp array where dp[i] represents the minimum total cost for the first i + 1 words."
+  ]
+}

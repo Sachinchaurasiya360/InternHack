@@ -1,0 +1,34 @@
+{
+  "id": "1987",
+  "title": "Number of Unique Good Subsequences",
+  "slug": "number-of-unique-good-subsequences",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a binary string <code>binary</code>. A <strong>subsequence</strong> of <code>binary</code> is considered <strong>good</strong> if it is <strong>not empty</strong> and has <strong>no leading zeros</strong> (with the exception of <code>&quot;0&quot;</code>).</p>\n\n<p>Find the number of <strong>unique good subsequences</strong> of <code>binary</code>.</p>\n\n<ul>\n\t<li>For example, if <code>binary = &quot;001&quot;</code>, then all the <strong>good</strong> subsequences are <code>[&quot;0&quot;, &quot;0&quot;, &quot;1&quot;]</code>, so the <strong>unique</strong> good subsequences are <code>&quot;0&quot;</code> and <code>&quot;1&quot;</code>. Note that subsequences <code>&quot;00&quot;</code>, <code>&quot;01&quot;</code>, and <code>&quot;001&quot;</code> are not good because they have leading zeros.</li>\n</ul>\n\n<p>Return <em>the number of <strong>unique good subsequences</strong> of </em><code>binary</code>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>A <strong>subsequence</strong> is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> binary = &quot;001&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The good subsequences of binary are [&quot;0&quot;, &quot;0&quot;, &quot;1&quot;].\nThe unique good subsequences are &quot;0&quot; and &quot;1&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> binary = &quot;11&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The good subsequences of binary are [&quot;1&quot;, &quot;1&quot;, &quot;11&quot;].\nThe unique good subsequences are &quot;1&quot; and &quot;11&quot;.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> binary = &quot;101&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The good subsequences of binary are [&quot;1&quot;, &quot;0&quot;, &quot;1&quot;, &quot;10&quot;, &quot;11&quot;, &quot;101&quot;]. \nThe unique good subsequences are &quot;0&quot;, &quot;1&quot;, &quot;10&quot;, &quot;11&quot;, and &quot;101&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= binary.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>binary</code> consists of only <code>&#39;0&#39;</code>s and <code>&#39;1&#39;</code>s.</li>\n</ul>\n",
+  "content_markdown": "You are given a binary string `binary`. A **subsequence** of `binary` is considered **good** if it is **not empty** and has **no leading zeros** (with the exception of `\"0\"`).\n\nFind the number of **unique good subsequences** of `binary`.\n\n  * For example, if `binary = \"001\"`, then all the **good** subsequences are `[\"0\", \"0\", \"1\"]`, so the **unique** good subsequences are `\"0\"` and `\"1\"`. Note that subsequences `\"00\"`, `\"01\"`, and `\"001\"` are not good because they have leading zeros.\n\n\n\nReturn _the number of**unique good subsequences** of _`binary`. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nA **subsequence** is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** binary = \"001\"\n    **Output:** 2\n    **Explanation:** The good subsequences of binary are [\"0\", \"0\", \"1\"].\n    The unique good subsequences are \"0\" and \"1\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** binary = \"11\"\n    **Output:** 2\n    **Explanation:** The good subsequences of binary are [\"1\", \"1\", \"11\"].\n    The unique good subsequences are \"1\" and \"11\".\n\n**Example 3:**\n    \n    \n    **Input:** binary = \"101\"\n    **Output:** 5\n    **Explanation:** The good subsequences of binary are [\"1\", \"0\", \"1\", \"10\", \"11\", \"101\"]. \n    The unique good subsequences are \"0\", \"1\", \"10\", \"11\", and \"101\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= binary.length <= 105`\n  * `binary` consists of only `'0'`s and `'1'`s.",
+  "question": "You are given a binary string `binary`. A **subsequence** of `binary` is considered **good** if it is **not empty** and has **no leading zeros** (with the exception of `\"0\"`).\n\nFind the number of **unique good subsequences** of `binary`.\n\n  * For example, if `binary = \"001\"`, then all the **good** subsequences are `[\"0\", \"0\", \"1\"]`, so the **unique** good subsequences are `\"0\"` and `\"1\"`. Note that subsequences `\"00\"`, `\"01\"`, and `\"001\"` are not good because they have leading zeros.\n\n\n\nReturn _the number of**unique good subsequences** of _`binary`. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nA **subsequence** is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** binary = \"001\"\n    **Output:** 2\n    **Explanation:** The good subsequences of binary are [\"0\", \"0\", \"1\"].\n    The unique good subsequences are \"0\" and \"1\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** binary = \"11\"\n    **Output:** 2\n    **Explanation:** The good subsequences of binary are [\"1\", \"1\", \"11\"].\n    The unique good subsequences are \"1\" and \"11\".\n\n**Example 3:**\n    \n    \n    **Input:** binary = \"101\"\n    **Output:** 5\n    **Explanation:** The good subsequences of binary are [\"1\", \"0\", \"1\", \"10\", \"11\", \"101\"]. \n    The unique good subsequences are \"0\", \"1\", \"10\", \"11\", and \"101\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= binary.length <= 105`\n  * `binary` consists of only `'0'`s and `'1'`s.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 16667,
+  "total_submissions": 31686,
+  "acceptance_rate": "52.6%",
+  "similar_questions": [
+    {
+      "title": "Distinct Subsequences",
+      "slug": "distinct-subsequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/distinct-subsequences/"
+    },
+    {
+      "title": "Distinct Subsequences II",
+      "slug": "distinct-subsequences-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/distinct-subsequences-ii/"
+    }
+  ],
+  "hints": [
+    "The number of unique good subsequences is equal to the number of unique decimal values there are for all possible subsequences.",
+    "Find the answer at each index based on the previous indexes' answers."
+  ]
+}

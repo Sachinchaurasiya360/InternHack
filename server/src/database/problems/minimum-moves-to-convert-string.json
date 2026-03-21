@@ -1,0 +1,34 @@
+{
+  "id": "2027",
+  "title": "Minimum Moves to Convert String",
+  "slug": "minimum-moves-to-convert-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting of <code>n</code> characters which are either <code>&#39;X&#39;</code> or <code>&#39;O&#39;</code>.</p>\n\n<p>A <strong>move</strong> is defined as selecting <strong>three</strong> <strong>consecutive characters</strong> of <code>s</code> and converting them to <code>&#39;O&#39;</code>. Note that if a move is applied to the character <code>&#39;O&#39;</code>, it will stay the <strong>same</strong>.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of moves required so that all the characters of </em><code>s</code><em> are converted to </em><code>&#39;O&#39;</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;XXX&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> <u>XXX</u> -&gt; OOO\nWe select all the 3 characters and convert them in one move.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;XXOX&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> <u>XXO</u>X -&gt; O<u>OOX</u> -&gt; OOOO\nWe select the first 3 characters in the first move, and convert them to <code>&#39;O&#39;</code>.\nThen we select the last 3 characters and convert them so that the final string contains all <code>&#39;O&#39;</code>s.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;OOOO&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There are no <code>&#39;X&#39;s</code> in <code>s</code> to convert.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;X&#39;</code> or <code>&#39;O&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting of `n` characters which are either `'X'` or `'O'`.\n\nA **move** is defined as selecting **three** **consecutive characters** of `s` and converting them to `'O'`. Note that if a move is applied to the character `'O'`, it will stay the **same**.\n\nReturn _the**minimum** number of moves required so that all the characters of _`s` _are converted to_`'O'`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"XXX\"\n    **Output:** 1\n    **Explanation:** _XXX_ -> OOO\n    We select all the 3 characters and convert them in one move.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"XXOX\"\n    **Output:** 2\n    **Explanation:** _XXO_ X -> O _OOX_ -> OOOO\n    We select the first 3 characters in the first move, and convert them to 'O'.\n    Then we select the last 3 characters and convert them so that the final string contains all 'O's.\n\n**Example 3:**\n    \n    \n    **Input:** s = \"OOOO\"\n    **Output:** 0\n    **Explanation:** There are no 'X's in s to convert.\n    \n\n \n\n**Constraints:**\n\n  * `3 <= s.length <= 1000`\n  * `s[i]` is either `'X'` or `'O'`.",
+  "question": "You are given a string `s` consisting of `n` characters which are either `'X'` or `'O'`.\n\nA **move** is defined as selecting **three** **consecutive characters** of `s` and converting them to `'O'`. Note that if a move is applied to the character `'O'`, it will stay the **same**.\n\nReturn _the**minimum** number of moves required so that all the characters of _`s` _are converted to_`'O'`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"XXX\"\n    **Output:** 1\n    **Explanation:** _XXX_ -> OOO\n    We select all the 3 characters and convert them in one move.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"XXOX\"\n    **Output:** 2\n    **Explanation:** _XXO_ X -> O _OOX_ -> OOOO\n    We select the first 3 characters in the first move, and convert them to 'O'.\n    Then we select the last 3 characters and convert them so that the final string contains all 'O's.\n\n**Example 3:**\n    \n    \n    **Input:** s = \"OOOO\"\n    **Output:** 0\n    **Explanation:** There are no 'X's in s to convert.",
+  "constraints": "**Constraints:**\n\n  * `3 <= s.length <= 1000`\n  * `s[i]` is either `'X'` or `'O'`.",
+  "topics": ["String", "Greedy"],
+  "total_accepted": 59153,
+  "total_submissions": 102494,
+  "acceptance_rate": "57.7%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost to Convert String I",
+      "slug": "minimum-cost-to-convert-string-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-to-convert-string-i/"
+    },
+    {
+      "title": "Minimum Cost to Convert String II",
+      "slug": "minimum-cost-to-convert-string-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-cost-to-convert-string-ii/"
+    }
+  ],
+  "hints": [
+    "Find the smallest substring you need to consider at a time.",
+    "Try delaying a move as long as possible."
+  ]
+}

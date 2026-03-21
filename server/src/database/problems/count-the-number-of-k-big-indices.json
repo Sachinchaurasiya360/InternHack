@@ -1,0 +1,43 @@
+{
+  "id": "2519",
+  "title": "Count the Number of K-Big Indices",
+  "slug": "count-the-number-of-k-big-indices",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Divide and Conquer",
+    "Binary Indexed Tree",
+    "Segment Tree",
+    "Merge Sort",
+    "Ordered Set"
+  ],
+  "total_accepted": 9679,
+  "total_submissions": 18046,
+  "acceptance_rate": "53.6%",
+  "similar_questions": [
+    {
+      "title": "Count of Smaller Numbers After Self",
+      "slug": "count-of-smaller-numbers-after-self",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/"
+    },
+    {
+      "title": "Find All Good Indices",
+      "slug": "find-all-good-indices",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-good-indices/"
+    }
+  ],
+  "hints": [
+    "The intended solution uses Fenwick Tree.",
+    "Let’s describe the solution for counting the number of elements smaller than nums[i] in the range [0, i - 1], and counting in the range [i + 1, nums.length - 1] can be done similarly by simply reversing the array.",
+    "Iterate from left to right and maintain the Fenwick Tree. Save the value of the query(nums[i]) and update nums[i] + 1 by 1."
+  ]
+}

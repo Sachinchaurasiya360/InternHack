@@ -1,0 +1,52 @@
+{
+  "id": "2180",
+  "title": "Count Integers With Even Digit Sum",
+  "slug": "count-integers-with-even-digit-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer <code>num</code>, return <em>the number of positive integers <strong>less than or equal to</strong></em> <code>num</code> <em>whose digit sums are <strong>even</strong></em>.</p>\n\n<p>The <strong>digit sum</strong> of a positive integer is the sum of all its digits.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 4\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nThe only integers less than or equal to 4 whose digit sums are even are 2 and 4.    \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 30\n<strong>Output:</strong> 14\n<strong>Explanation:</strong>\nThe 14 integers less than or equal to 30 whose digit sums are even are\n2, 4, 6, 8, 11, 13, 15, 17, 19, 20, 22, 24, 26, and 28.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer `num`, return _the number of positive integers**less than or equal to**_ `num` _whose digit sums are**even**_.\n\nThe **digit sum** of a positive integer is the sum of all its digits.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 4\n    **Output:** 2\n    **Explanation:**\n    The only integers less than or equal to 4 whose digit sums are even are 2 and 4.    \n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 30\n    **Output:** 14\n    **Explanation:**\n    The 14 integers less than or equal to 30 whose digit sums are even are\n    2, 4, 6, 8, 11, 13, 15, 17, 19, 20, 22, 24, 26, and 28.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num <= 1000`",
+  "question": "Given a positive integer `num`, return _the number of positive integers**less than or equal to**_ `num` _whose digit sums are**even**_.\n\nThe **digit sum** of a positive integer is the sum of all its digits.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 4\n    **Output:** 2\n    **Explanation:**\n    The only integers less than or equal to 4 whose digit sums are even are 2 and 4.    \n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 30\n    **Output:** 14\n    **Explanation:**\n    The 14 integers less than or equal to 30 whose digit sums are even are\n    2, 4, 6, 8, 11, 13, 15, 17, 19, 20, 22, 24, 26, and 28.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num <= 1000`",
+  "topics": ["Math", "Simulation"],
+  "total_accepted": 94215,
+  "total_submissions": 135024,
+  "acceptance_rate": "69.8%",
+  "similar_questions": [
+    {
+      "title": "Sum of Numbers With Units Digit K",
+      "slug": "sum-of-numbers-with-units-digit-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-numbers-with-units-digit-k/"
+    },
+    {
+      "title": "Sum of Digits of String After Convert",
+      "slug": "sum-of-digits-of-string-after-convert",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sum-of-digits-of-string-after-convert/"
+    },
+    {
+      "title": "Number of Ways to Buy Pens and Pencils",
+      "slug": "number-of-ways-to-buy-pens-and-pencils",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-buy-pens-and-pencils/"
+    },
+    {
+      "title": "Separate the Digits in an Array",
+      "slug": "separate-the-digits-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/separate-the-digits-in-an-array/"
+    },
+    {
+      "title": "Find if Digit Game Can Be Won",
+      "slug": "find-if-digit-game-can-be-won",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-if-digit-game-can-be-won/"
+    }
+  ],
+  "hints": [
+    "Iterate through all integers from 1 to num.",
+    "For any integer, extract the individual digits to compute their sum and check if it is even."
+  ]
+}

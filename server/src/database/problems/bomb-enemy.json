@@ -1,0 +1,43 @@
+{
+  "id": "361",
+  "title": "Bomb Enemy",
+  "slug": "bomb-enemy",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 86446,
+  "total_submissions": 163770,
+  "acceptance_rate": "52.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost Homecoming of a Robot in a Grid",
+      "slug": "minimum-cost-homecoming-of-a-robot-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/"
+    },
+    {
+      "title": "Stamping the Grid",
+      "slug": "stamping-the-grid",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stamping-the-grid/"
+    },
+    {
+      "title": "Count Unguarded Cells in the Grid",
+      "slug": "count-unguarded-cells-in-the-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-unguarded-cells-in-the-grid/"
+    },
+    {
+      "title": "Maximum Trailing Zeros in a Cornered Path",
+      "slug": "maximum-trailing-zeros-in-a-cornered-path",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-trailing-zeros-in-a-cornered-path/"
+    }
+  ],
+  "hints": []
+}

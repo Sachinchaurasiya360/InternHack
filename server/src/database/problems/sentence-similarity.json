@@ -1,0 +1,39 @@
+{
+  "id": "734",
+  "title": "Sentence Similarity",
+  "slug": "sentence-similarity",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String"],
+  "total_accepted": 75222,
+  "total_submissions": 167905,
+  "acceptance_rate": "44.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Provinces",
+      "slug": "number-of-provinces",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-provinces/"
+    },
+    {
+      "title": "Accounts Merge",
+      "slug": "accounts-merge",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/accounts-merge/"
+    },
+    {
+      "title": "Sentence Similarity II",
+      "slug": "sentence-similarity-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sentence-similarity-ii/"
+    }
+  ],
+  "hints": [
+    "Two words w1 and w2 are similar if and only if w1 == w2, (w1, w2) was a pair, or (w2, w1) was a pair."
+  ]
+}

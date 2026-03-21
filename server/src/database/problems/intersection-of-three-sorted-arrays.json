@@ -1,0 +1,34 @@
+{
+  "id": "1213",
+  "title": "Intersection of Three Sorted Arrays",
+  "slug": "intersection-of-three-sorted-arrays",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Binary Search", "Counting"],
+  "total_accepted": 102717,
+  "total_submissions": 128359,
+  "acceptance_rate": "80.0%",
+  "similar_questions": [
+    {
+      "title": "Intersection of Two Arrays",
+      "slug": "intersection-of-two-arrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-two-arrays/"
+    },
+    {
+      "title": "Intersection of Multiple Arrays",
+      "slug": "intersection-of-multiple-arrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-multiple-arrays/"
+    }
+  ],
+  "hints": [
+    "Count the frequency of all elements in the three arrays.",
+    "The elements that appeared in all the arrays would have a frequency of 3."
+  ]
+}

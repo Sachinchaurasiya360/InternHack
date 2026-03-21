@@ -1,0 +1,41 @@
+{
+  "id": "54",
+  "title": "Spiral Matrix",
+  "slug": "spiral-matrix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> <code>matrix</code>, return <em>all elements of the</em> <code>matrix</code> <em>in spiral order</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/13/spiral1.jpg\" style=\"width: 242px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,2,3],[4,5,6],[7,8,9]]\n<strong>Output:</strong> [1,2,3,6,9,8,7,4,5]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/13/spiral.jpg\" style=\"width: 322px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]\n<strong>Output:</strong> [1,2,3,4,8,12,11,10,9,5,6,7]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10</code></li>\n\t<li><code>-100 &lt;= matrix[i][j] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` `matrix`, return _all elements of the_ `matrix` _in spiral order_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/13/spiral1.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** [1,2,3,6,9,8,7,4,5]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/13/spiral.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]\n    **Output:** [1,2,3,4,8,12,11,10,9,5,6,7]\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 10`\n  * `-100 <= matrix[i][j] <= 100`",
+  "question": "Given an `m x n` `matrix`, return _all elements of the_ `matrix` _in spiral order_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/13/spiral1.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3],[4,5,6],[7,8,9]]\n    **Output:** [1,2,3,6,9,8,7,4,5]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/13/spiral.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]\n    **Output:** [1,2,3,4,8,12,11,10,9,5,6,7]",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 10`\n  * `-100 <= matrix[i][j] <= 100`",
+  "topics": ["Array", "Matrix", "Simulation"],
+  "total_accepted": 2304711,
+  "total_submissions": 4102027,
+  "acceptance_rate": "56.2%",
+  "similar_questions": [
+    {
+      "title": "Spiral Matrix II",
+      "slug": "spiral-matrix-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/spiral-matrix-ii/"
+    },
+    {
+      "title": "Spiral Matrix III",
+      "slug": "spiral-matrix-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/spiral-matrix-iii/"
+    },
+    {
+      "title": "Spiral Matrix IV",
+      "slug": "spiral-matrix-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/spiral-matrix-iv/"
+    }
+  ],
+  "hints": [
+    "Well for some problems, the best way really is to come up with some algorithms for simulation. Basically, you need to simulate what the problem asks us to do.",
+    "We go boundary by boundary and move inwards. That is the essential operation. First row, last column, last row, first column, and then we move inwards by 1 and repeat. That's all. That is all the simulation that we need.",
+    "Think about when you want to switch the progress on one of the indexes. If you progress on i out of [i, j], you'll shift in the same column. Similarly, by changing values for j, you'd be shifting in the same row.\r\nAlso, keep track of the end of a boundary so that you can move inwards and then keep repeating. It's always best to simulate edge cases like a single column or a single row to see if anything breaks or not."
+  ]
+}

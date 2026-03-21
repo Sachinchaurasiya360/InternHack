@@ -1,0 +1,27 @@
+{
+  "id": "768",
+  "title": "Max Chunks To Make Sorted II",
+  "slug": "max-chunks-to-make-sorted-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>arr</code>.</p>\n\n<p>We split <code>arr</code> into some number of <strong>chunks</strong> (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.</p>\n\n<p>Return <em>the largest number of chunks we can make to sort the array</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [5,4,3,2,1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nSplitting into two or more chunks will not return the required result.\nFor example, splitting into [5, 4], [3, 2, 1] will result in [4, 5, 1, 2, 3], which isn&#39;t sorted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,1,3,4,4]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\nWe can split into two chunks, such as [2, 1], [3, 4, 4].\nHowever, splitting into [2, 1], [3], [4], [4] is the highest number of chunks possible.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 2000</code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `arr`.\n\nWe split `arr` into some number of **chunks** (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.\n\nReturn _the largest number of chunks we can make to sort the array_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [5,4,3,2,1]\n    **Output:** 1\n    **Explanation:**\n    Splitting into two or more chunks will not return the required result.\n    For example, splitting into [5, 4], [3, 2, 1] will result in [4, 5, 1, 2, 3], which isn't sorted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,1,3,4,4]\n    **Output:** 4\n    **Explanation:**\n    We can split into two chunks, such as [2, 1], [3, 4, 4].\n    However, splitting into [2, 1], [3], [4], [4] is the highest number of chunks possible.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 2000`\n  * `0 <= arr[i] <= 108`",
+  "question": "You are given an integer array `arr`.\n\nWe split `arr` into some number of **chunks** (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.\n\nReturn _the largest number of chunks we can make to sort the array_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [5,4,3,2,1]\n    **Output:** 1\n    **Explanation:**\n    Splitting into two or more chunks will not return the required result.\n    For example, splitting into [5, 4], [3, 2, 1] will result in [4, 5, 1, 2, 3], which isn't sorted.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [2,1,3,4,4]\n    **Output:** 4\n    **Explanation:**\n    We can split into two chunks, such as [2, 1], [3, 4, 4].\n    However, splitting into [2, 1], [3], [4], [4] is the highest number of chunks possible.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 2000`\n  * `0 <= arr[i] <= 108`",
+  "topics": ["Array", "Stack", "Greedy", "Sorting", "Monotonic Stack"],
+  "total_accepted": 85546,
+  "total_submissions": 156501,
+  "acceptance_rate": "54.7%",
+  "similar_questions": [
+    {
+      "title": "Max Chunks To Make Sorted",
+      "slug": "max-chunks-to-make-sorted",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-chunks-to-make-sorted/"
+    }
+  ],
+  "hints": [
+    "Each k for which some permutation of arr[:k] is equal to sorted(arr)[:k] is where we should cut each chunk."
+  ]
+}

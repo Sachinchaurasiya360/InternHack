@@ -1,0 +1,35 @@
+{
+  "id": "2320",
+  "title": "Count Number of Ways to Place Houses",
+  "slug": "count-number-of-ways-to-place-houses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a street with <code>n * 2</code> <strong>plots</strong>, where there are <code>n</code> plots on each side of the street. The plots on each side are numbered from <code>1</code> to <code>n</code>. On each plot, a house can be placed.</p>\n\n<p>Return <em>the number of ways houses can be placed such that no two houses are adjacent to each other on the same side of the street</em>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>Note that if a house is placed on the <code>i<sup>th</sup></code> plot on one side of the street, a house can also be placed on the <code>i<sup>th</sup></code> plot on the other side of the street.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> \nPossible arrangements:\n1. All plots are empty.\n2. A house is placed on one side of the street.\n3. A house is placed on the other side of the street.\n4. Two houses are placed, one on each side of the street.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/05/12/arrangements.png\" style=\"width: 500px; height: 500px;\" />\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> The 9 possible arrangements are shown in the diagram above.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "There is a street with `n * 2` **plots** , where there are `n` plots on each side of the street. The plots on each side are numbered from `1` to `n`. On each plot, a house can be placed.\n\nReturn _the number of ways houses can be placed such that no two houses are adjacent to each other on the same side of the street_. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nNote that if a house is placed on the `ith` plot on one side of the street, a house can also be placed on the `ith` plot on the other side of the street.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 4\n    **Explanation:** \n    Possible arrangements:\n    1. All plots are empty.\n    2. A house is placed on one side of the street.\n    3. A house is placed on the other side of the street.\n    4. Two houses are placed, one on each side of the street.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/05/12/arrangements.png)\n    \n    \n    **Input:** n = 2\n    **Output:** 9\n    **Explanation:** The 9 possible arrangements are shown in the diagram above.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 104`",
+  "question": "There is a street with `n * 2` **plots** , where there are `n` plots on each side of the street. The plots on each side are numbered from `1` to `n`. On each plot, a house can be placed.\n\nReturn _the number of ways houses can be placed such that no two houses are adjacent to each other on the same side of the street_. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nNote that if a house is placed on the `ith` plot on one side of the street, a house can also be placed on the `ith` plot on the other side of the street.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 4\n    **Explanation:** \n    Possible arrangements:\n    1. All plots are empty.\n    2. A house is placed on one side of the street.\n    3. A house is placed on the other side of the street.\n    4. Two houses are placed, one on each side of the street.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/05/12/arrangements.png)\n    \n    \n    **Input:** n = 2\n    **Output:** 9\n    **Explanation:** The 9 possible arrangements are shown in the diagram above.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 104`",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 35822,
+  "total_submissions": 81809,
+  "acceptance_rate": "43.8%",
+  "similar_questions": [
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/climbing-stairs/"
+    },
+    {
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber/"
+    }
+  ],
+  "hints": [
+    "Try coming up with a DP solution for one side of the street.",
+    "The DP for one side of the street will bear resemblance to the Fibonacci sequence.",
+    "The number of different arrangements on both side of the street is the same."
+  ]
+}

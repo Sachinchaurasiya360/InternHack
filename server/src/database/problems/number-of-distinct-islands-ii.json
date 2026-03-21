@@ -1,0 +1,34 @@
+{
+  "id": "711",
+  "title": "Number of Distinct Islands II",
+  "slug": "number-of-distinct-islands-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Sorting",
+    "Matrix",
+    "Hash Function"
+  ],
+  "total_accepted": 14171,
+  "total_submissions": 25621,
+  "acceptance_rate": "55.3%",
+  "similar_questions": [
+    {
+      "title": "Number of Distinct Islands",
+      "slug": "number-of-distinct-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-distinct-islands/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "2892",
+  "title": "Minimizing Array After Replacing Pairs With Their Product",
+  "slug": "minimizing-array-after-replacing-pairs-with-their-product",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Greedy"],
+  "total_accepted": 1779,
+  "total_submissions": 4367,
+  "acceptance_rate": "40.7%",
+  "similar_questions": [],
+  "hints": [
+    "If there is a zero in the array, then the answer would be <code>1</code>.",
+    "Merge all adjacent ones (since <code>1 * 1 = 1</code> and <code>k >= 1</code>).",
+    "Let <code>dp[i]</code> be the answer to the problem for the first <code>i</code> elements.",
+    "To calculate <code>dp[i]</code>, try to brute-force all indices <code>j</code> such that elements from <code>j</code> to <code>i</code> are merged together to create a new element.",
+    "For a fixed <code>i</code>, you could go backward from <code>i<sup>th</sup></code> elements and multiply them together until the product is at most <code>k</code>. Now if you are currently on index <code>j</code> and you've merged all elements from <code>j<sup>th</sup></code> element to <code>i<sup>th</sup></code> element, <code>dp[i] = min(dp[i], dp[j - 1] + 1)</code>.",
+    "The above backward moving can be done at most <code>2 * log<sub>2</sub>(k)</code> times. Since we've merged adjacent ones, every two adjacent elements have a product of at least <code>2</code>.",
+    "So the total time complexity would be <code>n * 2 * log<sub>2</sub>(k)</code>."
+  ]
+}

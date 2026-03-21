@@ -1,0 +1,29 @@
+{
+  "id": "2604",
+  "title": "Minimum Time to Eat All Grains",
+  "slug": "minimum-time-to-eat-all-grains",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 2202,
+  "total_submissions": 5408,
+  "acceptance_rate": "40.7%",
+  "similar_questions": [
+    {
+      "title": "Kth Smallest Number in Multiplication Table",
+      "slug": "kth-smallest-number-in-multiplication-table",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/kth-smallest-number-in-multiplication-table/"
+    }
+  ],
+  "hints": [
+    "Binary search the answer.",
+    "To check if an answer is possible, for the ith hen check how far right it can go after ensuring that it eats the leftmost uneaten grain.",
+    "If the last grain is eaten in this process, the answer is possible."
+  ]
+}

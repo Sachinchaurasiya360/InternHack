@@ -1,0 +1,37 @@
+{
+  "id": "170",
+  "title": "Two Sum III - Data structure design",
+  "slug": "two-sum-iii-data-structure-design",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Two Pointers", "Design", "Data Stream"],
+  "total_accepted": 181034,
+  "total_submissions": 462933,
+  "acceptance_rate": "39.1%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "Unique Word Abbreviation",
+      "slug": "unique-word-abbreviation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-word-abbreviation/"
+    },
+    {
+      "title": "Two Sum IV - Input is a BST",
+      "slug": "two-sum-iv-input-is-a-bst",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum-iv-input-is-a-bst/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "766",
+  "title": "Toeplitz Matrix",
+  "slug": "toeplitz-matrix",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> <code>matrix</code>, return&nbsp;<em><code>true</code>&nbsp;if the matrix is Toeplitz. Otherwise, return <code>false</code>.</em></p>\n\n<p>A matrix is <strong>Toeplitz</strong> if every diagonal from top-left to bottom-right has the same elements.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/04/ex1.jpg\" style=\"width: 322px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,2,3,4],[5,1,2,3],[9,5,1,2]]\n<strong>Output:</strong> true\n<strong>Explanation:</strong>\nIn the above grid, the&nbsp;diagonals are:\n&quot;[9]&quot;, &quot;[5, 5]&quot;, &quot;[1, 1, 1]&quot;, &quot;[2, 2, 2]&quot;, &quot;[3, 3]&quot;, &quot;[4]&quot;.\nIn each diagonal all elements are the same, so the answer is True.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/04/ex2.jpg\" style=\"width: 162px; height: 162px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,2],[2,2]]\n<strong>Output:</strong> false\n<strong>Explanation:</strong>\nThe diagonal &quot;[1, 2]&quot; has different elements.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 20</code></li>\n\t<li><code>0 &lt;= matrix[i][j] &lt;= 99</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong></p>\n\n<ul>\n\t<li>What if the <code>matrix</code> is stored on disk, and the memory is limited such that you can only load at most one row of the matrix into the memory at once?</li>\n\t<li>What if the <code>matrix</code> is so large that you can only load up a partial row into the memory at once?</li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` `matrix`, return _`true` if the matrix is Toeplitz. Otherwise, return `false`._\n\nA matrix is **Toeplitz** if every diagonal from top-left to bottom-right has the same elements.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/ex1.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3,4],[5,1,2,3],[9,5,1,2]]\n    **Output:** true\n    **Explanation:**\n    In the above grid, the diagonals are:\n    \"[9]\", \"[5, 5]\", \"[1, 1, 1]\", \"[2, 2, 2]\", \"[3, 3]\", \"[4]\".\n    In each diagonal all elements are the same, so the answer is True.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/ex2.jpg)\n    \n    \n    **Input:** matrix = [[1,2],[2,2]]\n    **Output:** false\n    **Explanation:**\n    The diagonal \"[1, 2]\" has different elements.\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 20`\n  * `0 <= matrix[i][j] <= 99`\n\n\n\n \n\n**Follow up:**\n\n  * What if the `matrix` is stored on disk, and the memory is limited such that you can only load at most one row of the matrix into the memory at once?\n  * What if the `matrix` is so large that you can only load up a partial row into the memory at once?",
+  "question": "Given an `m x n` `matrix`, return _`true` if the matrix is Toeplitz. Otherwise, return `false`._\n\nA matrix is **Toeplitz** if every diagonal from top-left to bottom-right has the same elements.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/ex1.jpg)\n    \n    \n    **Input:** matrix = [[1,2,3,4],[5,1,2,3],[9,5,1,2]]\n    **Output:** true\n    **Explanation:**\n    In the above grid, the diagonals are:\n    \"[9]\", \"[5, 5]\", \"[1, 1, 1]\", \"[2, 2, 2]\", \"[3, 3]\", \"[4]\".\n    In each diagonal all elements are the same, so the answer is True.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/04/ex2.jpg)\n    \n    \n    **Input:** matrix = [[1,2],[2,2]]\n    **Output:** false\n    **Explanation:**\n    The diagonal \"[1, 2]\" has different elements.",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 20`\n  * `0 <= matrix[i][j] <= 99`",
+  "topics": ["Array", "Matrix"],
+  "total_accepted": 446946,
+  "total_submissions": 641692,
+  "acceptance_rate": "69.7%",
+  "similar_questions": [
+    {
+      "title": "Valid Word Square",
+      "slug": "valid-word-square",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-word-square/"
+    }
+  ],
+  "hints": ["Check whether each value is equal to the value of it's top-left neighbor."]
+}

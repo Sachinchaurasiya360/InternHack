@@ -1,0 +1,35 @@
+{
+  "id": "2621",
+  "title": "Sleep",
+  "slug": "sleep",
+  "difficulty": "Easy",
+  "category": "JavaScript",
+  "content_html": "<p>Given&nbsp;a positive integer <code>millis</code>, write an asynchronous function that sleeps for <code>millis</code>&nbsp;milliseconds. It can resolve any value.</p>\n\n<p><strong>Note</strong> that <em>minor</em> deviation from <code>millis</code> in the actual sleep duration is acceptable.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> millis = 100\n<strong>Output:</strong> 100\n<strong>Explanation:</strong> It should return a promise that resolves after 100ms.\nlet t = Date.now();\nsleep(100).then(() =&gt; {\n  console.log(Date.now() - t); // 100\n});\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> millis = 200\n<strong>Output:</strong> 200\n<strong>Explanation:</strong> It should return a promise that resolves after 200ms.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= millis &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer `millis`, write an asynchronous function that sleeps for `millis` milliseconds. It can resolve any value.\n\n**Note** that _minor_ deviation from `millis` in the actual sleep duration is acceptable.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** millis = 100\n    **Output:** 100\n    **Explanation:** It should return a promise that resolves after 100ms.\n    let t = Date.now();\n    sleep(100).then(() => {\n      console.log(Date.now() - t); // 100\n    });\n    \n\n**Example 2:**\n    \n    \n    **Input:** millis = 200\n    **Output:** 200\n    **Explanation:** It should return a promise that resolves after 200ms.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= millis <= 1000`",
+  "question": "Given a positive integer `millis`, write an asynchronous function that sleeps for `millis` milliseconds. It can resolve any value.\n\n**Note** that _minor_ deviation from `millis` in the actual sleep duration is acceptable.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** millis = 100\n    **Output:** 100\n    **Explanation:** It should return a promise that resolves after 100ms.\n    let t = Date.now();\n    sleep(100).then(() => {\n      console.log(Date.now() - t); // 100\n    });\n    \n\n**Example 2:**\n    \n    \n    **Input:** millis = 200\n    **Output:** 200\n    **Explanation:** It should return a promise that resolves after 200ms.",
+  "constraints": "**Constraints:**\n\n  * `1 <= millis <= 1000`",
+  "topics": [],
+  "total_accepted": 244168,
+  "total_submissions": 279341,
+  "acceptance_rate": "87.4%",
+  "similar_questions": [
+    {
+      "title": "Promise Time Limit",
+      "slug": "promise-time-limit",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/promise-time-limit/"
+    },
+    {
+      "title": "Promise Pool",
+      "slug": "promise-pool",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/promise-pool/"
+    }
+  ],
+  "hints": [
+    "In Javascript, you can execute code after some delay with the setTimeout(fn, sleepTime) function.",
+    "An async function is defined as function which returns a Promise.",
+    "To create a Promise, you can code new Promise((resolve, reject) => {}). When you want the function to return a value, code resolve(value) inside the callback."
+  ]
+}

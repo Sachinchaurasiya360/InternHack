@@ -1,0 +1,43 @@
+{
+  "id": "741",
+  "title": "Cherry Pickup",
+  "slug": "cherry-pickup",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>n x n</code> <code>grid</code> representing a field of cherries, each cell is one of three possible integers.</p>\n\n<ul>\n\t<li><code>0</code> means the cell is empty, so you can pass through,</li>\n\t<li><code>1</code> means the cell contains a cherry that you can pick up and pass through, or</li>\n\t<li><code>-1</code> means the cell contains a thorn that blocks your way.</li>\n</ul>\n\n<p>Return <em>the maximum number of cherries you can collect by following the rules below</em>:</p>\n\n<ul>\n\t<li>Starting at the position <code>(0, 0)</code> and reaching <code>(n - 1, n - 1)</code> by moving right or down through valid path cells (cells with value <code>0</code> or <code>1</code>).</li>\n\t<li>After reaching <code>(n - 1, n - 1)</code>, returning to <code>(0, 0)</code> by moving left or up through valid path cells.</li>\n\t<li>When passing through a path cell containing a cherry, you pick it up, and the cell becomes an empty cell <code>0</code>.</li>\n\t<li>If there is no valid path between <code>(0, 0)</code> and <code>(n - 1, n - 1)</code>, then no cherries can be collected.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/14/grid.jpg\" style=\"width: 242px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,1,-1],[1,0,-1],[1,1,1]]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The player started at (0, 0) and went down, down, right right to reach (2, 2).\n4 cherries were picked up during this single trip, and the matrix becomes [[0,1,-1],[0,0,-1],[0,0,0]].\nThen, the player went left, up, up, left to return home, picking up one more cherry.\nThe total number of cherries picked up is 5, and this is the maximum possible.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[1,1,-1],[1,-1,1],[-1,1,1]]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= n &lt;= 50</code></li>\n\t<li><code>grid[i][j]</code> is <code>-1</code>, <code>0</code>, or <code>1</code>.</li>\n\t<li><code>grid[0][0] != -1</code></li>\n\t<li><code>grid[n - 1][n - 1] != -1</code></li>\n</ul>\n",
+  "content_markdown": "You are given an `n x n` `grid` representing a field of cherries, each cell is one of three possible integers.\n\n  * `0` means the cell is empty, so you can pass through,\n  * `1` means the cell contains a cherry that you can pick up and pass through, or\n  * `-1` means the cell contains a thorn that blocks your way.\n\n\n\nReturn _the maximum number of cherries you can collect by following the rules below_ :\n\n  * Starting at the position `(0, 0)` and reaching `(n - 1, n - 1)` by moving right or down through valid path cells (cells with value `0` or `1`).\n  * After reaching `(n - 1, n - 1)`, returning to `(0, 0)` by moving left or up through valid path cells.\n  * When passing through a path cell containing a cherry, you pick it up, and the cell becomes an empty cell `0`.\n  * If there is no valid path between `(0, 0)` and `(n - 1, n - 1)`, then no cherries can be collected.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/14/grid.jpg)\n    \n    \n    **Input:** grid = [[0,1,-1],[1,0,-1],[1,1,1]]\n    **Output:** 5\n    **Explanation:** The player started at (0, 0) and went down, down, right right to reach (2, 2).\n    4 cherries were picked up during this single trip, and the matrix becomes [[0,1,-1],[0,0,-1],[0,0,0]].\n    Then, the player went left, up, up, left to return home, picking up one more cherry.\n    The total number of cherries picked up is 5, and this is the maximum possible.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[1,1,-1],[1,-1,1],[-1,1,1]]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `n == grid.length`\n  * `n == grid[i].length`\n  * `1 <= n <= 50`\n  * `grid[i][j]` is `-1`, `0`, or `1`.\n  * `grid[0][0] != -1`\n  * `grid[n - 1][n - 1] != -1`",
+  "question": "You are given an `n x n` `grid` representing a field of cherries, each cell is one of three possible integers.\n\n  * `0` means the cell is empty, so you can pass through,\n  * `1` means the cell contains a cherry that you can pick up and pass through, or\n  * `-1` means the cell contains a thorn that blocks your way.\n\n\n\nReturn _the maximum number of cherries you can collect by following the rules below_ :\n\n  * Starting at the position `(0, 0)` and reaching `(n - 1, n - 1)` by moving right or down through valid path cells (cells with value `0` or `1`).\n  * After reaching `(n - 1, n - 1)`, returning to `(0, 0)` by moving left or up through valid path cells.\n  * When passing through a path cell containing a cherry, you pick it up, and the cell becomes an empty cell `0`.\n  * If there is no valid path between `(0, 0)` and `(n - 1, n - 1)`, then no cherries can be collected.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/14/grid.jpg)\n    \n    \n    **Input:** grid = [[0,1,-1],[1,0,-1],[1,1,1]]\n    **Output:** 5\n    **Explanation:** The player started at (0, 0) and went down, down, right right to reach (2, 2).\n    4 cherries were picked up during this single trip, and the matrix becomes [[0,1,-1],[0,0,-1],[0,0,0]].\n    Then, the player went left, up, up, left to return home, picking up one more cherry.\n    The total number of cherries picked up is 5, and this is the maximum possible.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[1,1,-1],[1,-1,1],[-1,1,1]]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `n == grid.length`\n  * `n == grid[i].length`\n  * `1 <= n <= 50`\n  * `grid[i][j]` is `-1`, `0`, or `1`.\n  * `grid[0][0] != -1`\n  * `grid[n - 1][n - 1] != -1`",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 109252,
+  "total_submissions": 279450,
+  "acceptance_rate": "39.1%",
+  "similar_questions": [
+    {
+      "title": "Minimum Path Sum",
+      "slug": "minimum-path-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-sum/"
+    },
+    {
+      "title": "Dungeon Game",
+      "slug": "dungeon-game",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/dungeon-game/"
+    },
+    {
+      "title": "Maximum Path Quality of a Graph",
+      "slug": "maximum-path-quality-of-a-graph",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-path-quality-of-a-graph/"
+    },
+    {
+      "title": "Paths in Matrix Whose Sum Is Divisible by K",
+      "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paths-in-matrix-whose-sum-is-divisible-by-k/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,65 @@
+{
+  "id": "992",
+  "title": "Subarrays with K Different Integers",
+  "slug": "subarrays-with-k-different-integers",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the number of <strong>good subarrays</strong> of </em><code>nums</code>.</p>\n\n<p>A <strong>good array</strong> is an array where the number of different integers in that array is exactly <code>k</code>.</p>\n\n<ul>\n\t<li>For example, <code>[1,2,3,1,2]</code> has <code>3</code> different integers: <code>1</code>, <code>2</code>, and <code>3</code>.</li>\n</ul>\n\n<p>A <strong>subarray</strong> is a <strong>contiguous</strong> part of an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,2,3], k = 2\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> Subarrays formed with exactly 2 different integers: [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,3,4], k = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> Subarrays formed with exactly 3 different integers: [1,2,1,3], [2,1,3], [1,3,4].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i], k &lt;= nums.length</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return _the number of**good subarrays** of _`nums`.\n\nA **good array** is an array where the number of different integers in that array is exactly `k`.\n\n  * For example, `[1,2,3,1,2]` has `3` different integers: `1`, `2`, and `3`.\n\n\n\nA **subarray** is a **contiguous** part of an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1,2,3], k = 2\n    **Output:** 7\n    **Explanation:** Subarrays formed with exactly 2 different integers: [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,3,4], k = 3\n    **Output:** 3\n    **Explanation:** Subarrays formed with exactly 3 different integers: [1,2,1,3], [2,1,3], [1,3,4].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `1 <= nums[i], k <= nums.length`",
+  "question": "Given an integer array `nums` and an integer `k`, return _the number of**good subarrays** of _`nums`.\n\nA **good array** is an array where the number of different integers in that array is exactly `k`.\n\n  * For example, `[1,2,3,1,2]` has `3` different integers: `1`, `2`, and `3`.\n\n\n\nA **subarray** is a **contiguous** part of an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1,2,3], k = 2\n    **Output:** 7\n    **Explanation:** Subarrays formed with exactly 2 different integers: [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,3,4], k = 3\n    **Output:** 3\n    **Explanation:** Subarrays formed with exactly 3 different integers: [1,2,1,3], [2,1,3], [1,3,4].",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `1 <= nums[i], k <= nums.length`",
+  "topics": ["Array", "Hash Table", "Sliding Window", "Counting"],
+  "total_accepted": 377957,
+  "total_submissions": 559152,
+  "acceptance_rate": "67.6%",
+  "similar_questions": [
+    {
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+    },
+    {
+      "title": "Longest Substring with At Most Two Distinct Characters",
+      "slug": "longest-substring-with-at-most-two-distinct-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/"
+    },
+    {
+      "title": "Longest Substring with At Most K Distinct Characters",
+      "slug": "longest-substring-with-at-most-k-distinct-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/"
+    },
+    {
+      "title": "Count Vowel Substrings of a String",
+      "slug": "count-vowel-substrings-of-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-vowel-substrings-of-a-string/"
+    },
+    {
+      "title": "Number of Unique Flavors After Sharing K Candies",
+      "slug": "number-of-unique-flavors-after-sharing-k-candies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-unique-flavors-after-sharing-k-candies/"
+    },
+    {
+      "title": "K Divisible Elements Subarrays",
+      "slug": "k-divisible-elements-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/k-divisible-elements-subarrays/"
+    },
+    {
+      "title": "Count Complete Subarrays in an Array",
+      "slug": "count-complete-subarrays-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-complete-subarrays-in-an-array/"
+    }
+  ],
+  "hints": [
+    "Try generating all possible subarrays and check for the number of unique integers. Increment the count accordingly.",
+    "How about using a map to store the count of integers?",
+    "Think about the Sliding Window and 2-pointer approach."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "414",
+  "title": "Third Maximum Number",
+  "slug": "third-maximum-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>the <strong>third distinct maximum</strong> number in this array. If the third maximum does not exist, return the <strong>maximum</strong> number</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nThe first distinct maximum is 3.\nThe second distinct maximum is 2.\nThe third distinct maximum is 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nThe first distinct maximum is 2.\nThe second distinct maximum is 1.\nThe third distinct maximum does not exist, so the maximum (2) is returned instead.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,2,3,1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nThe first distinct maximum is 3.\nThe second distinct maximum is 2 (both 2&#39;s are counted together since they have the same value).\nThe third distinct maximum is 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Can you find an <code>O(n)</code> solution?",
+  "content_markdown": "Given an integer array `nums`, return _the**third distinct maximum** number in this array. If the third maximum does not exist, return the **maximum** number_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,2,1]\n    **Output:** 1\n    **Explanation:**\n    The first distinct maximum is 3.\n    The second distinct maximum is 2.\n    The third distinct maximum is 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2]\n    **Output:** 2\n    **Explanation:**\n    The first distinct maximum is 2.\n    The second distinct maximum is 1.\n    The third distinct maximum does not exist, so the maximum (2) is returned instead.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,2,3,1]\n    **Output:** 1\n    **Explanation:**\n    The first distinct maximum is 3.\n    The second distinct maximum is 2 (both 2's are counted together since they have the same value).\n    The third distinct maximum is 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-231 <= nums[i] <= 231 - 1`\n\n\n\n \n\n**Follow up:** Can you find an `O(n)` solution?",
+  "question": "Given an integer array `nums`, return _the**third distinct maximum** number in this array. If the third maximum does not exist, return the **maximum** number_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,2,1]\n    **Output:** 1\n    **Explanation:**\n    The first distinct maximum is 3.\n    The second distinct maximum is 2.\n    The third distinct maximum is 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2]\n    **Output:** 2\n    **Explanation:**\n    The first distinct maximum is 2.\n    The second distinct maximum is 1.\n    The third distinct maximum does not exist, so the maximum (2) is returned instead.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,2,3,1]\n    **Output:** 1\n    **Explanation:**\n    The first distinct maximum is 3.\n    The second distinct maximum is 2 (both 2's are counted together since they have the same value).\n    The third distinct maximum is 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-231 <= nums[i] <= 231 - 1`",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 810096,
+  "total_submissions": 2083938,
+  "acceptance_rate": "38.9%",
+  "similar_questions": [
+    {
+      "title": "Kth Largest Element in an Array",
+      "slug": "kth-largest-element-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/"
+    },
+    {
+      "title": "Neither Minimum nor Maximum",
+      "slug": "neither-minimum-nor-maximum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/neither-minimum-nor-maximum/"
+    }
+  ],
+  "hints": []
+}

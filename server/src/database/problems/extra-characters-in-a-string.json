@@ -1,0 +1,28 @@
+{
+  "id": "2707",
+  "title": "Extra Characters in a String",
+  "slug": "extra-characters-in-a-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> string <code>s</code> and a dictionary of words <code>dictionary</code>. You have to break <code>s</code> into one or more <strong>non-overlapping</strong> substrings such that each substring is present in <code>dictionary</code>. There may be some <strong>extra characters</strong> in <code>s</code> which are not present in any of the substrings.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of extra characters left over if you break up </em><code>s</code><em> optimally.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;leetscode&quot;, dictionary = [&quot;leet&quot;,&quot;code&quot;,&quot;leetcode&quot;]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> We can break s in two substrings: &quot;leet&quot; from index 0 to 3 and &quot;code&quot; from index 5 to 8. There is only 1 unused character (at index 4), so we return 1.\n\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;sayhelloworld&quot;, dictionary = [&quot;hello&quot;,&quot;world&quot;]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can break s in two substrings: &quot;hello&quot; from index 3 to 7 and &quot;world&quot; from index 8 to 12. The characters at indices 0, 1, 2 are not used in any substring and thus are considered as extra characters. Hence, we return 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= dictionary.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= dictionary[i].length &lt;= 50</code></li>\n\t<li><code>dictionary[i]</code>&nbsp;and <code>s</code> consists of only lowercase English letters</li>\n\t<li><code>dictionary</code> contains distinct words</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** string `s` and a dictionary of words `dictionary`. You have to break `s` into one or more **non-overlapping** substrings such that each substring is present in `dictionary`. There may be some **extra characters** in `s` which are not present in any of the substrings.\n\nReturn _the**minimum** number of extra characters left over if you break up _`s` _optimally._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"leetscode\", dictionary = [\"leet\",\"code\",\"leetcode\"]\n    **Output:** 1\n    **Explanation:** We can break s in two substrings: \"leet\" from index 0 to 3 and \"code\" from index 5 to 8. There is only 1 unused character (at index 4), so we return 1.\n    \n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"sayhelloworld\", dictionary = [\"hello\",\"world\"]\n    **Output:** 3\n    **Explanation:** We can break s in two substrings: \"hello\" from index 3 to 7 and \"world\" from index 8 to 12. The characters at indices 0, 1, 2 are not used in any substring and thus are considered as extra characters. Hence, we return 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 50`\n  * `1 <= dictionary.length <= 50`\n  * `1 <= dictionary[i].length <= 50`\n  * `dictionary[i]` and `s` consists of only lowercase English letters\n  * `dictionary` contains distinct words",
+  "question": "You are given a **0-indexed** string `s` and a dictionary of words `dictionary`. You have to break `s` into one or more **non-overlapping** substrings such that each substring is present in `dictionary`. There may be some **extra characters** in `s` which are not present in any of the substrings.\n\nReturn _the**minimum** number of extra characters left over if you break up _`s` _optimally._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"leetscode\", dictionary = [\"leet\",\"code\",\"leetcode\"]\n    **Output:** 1\n    **Explanation:** We can break s in two substrings: \"leet\" from index 0 to 3 and \"code\" from index 5 to 8. There is only 1 unused character (at index 4), so we return 1.\n    \n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"sayhelloworld\", dictionary = [\"hello\",\"world\"]\n    **Output:** 3\n    **Explanation:** We can break s in two substrings: \"hello\" from index 3 to 7 and \"world\" from index 8 to 12. The characters at indices 0, 1, 2 are not used in any substring and thus are considered as extra characters. Hence, we return 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 50`\n  * `1 <= dictionary.length <= 50`\n  * `1 <= dictionary[i].length <= 50`\n  * `dictionary[i]` and `s` consists of only lowercase English letters\n  * `dictionary` contains distinct words",
+  "topics": ["Array", "Hash Table", "String", "Dynamic Programming", "Trie"],
+  "total_accepted": 197244,
+  "total_submissions": 344403,
+  "acceptance_rate": "57.3%",
+  "similar_questions": [
+    {
+      "title": "Word Break",
+      "slug": "word-break",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/word-break/"
+    }
+  ],
+  "hints": [
+    "Can we use Dynamic Programming here?",
+    "Define DP[i] as the min extra character if breaking up s[0:i] optimally."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "1740",
+  "title": "Find Distance in a Binary Tree",
+  "slug": "find-distance-in-a-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 35438,
+  "total_submissions": 47693,
+  "acceptance_rate": "74.3%",
+  "similar_questions": [
+    {
+      "title": "Step-By-Step Directions From a Binary Tree Node to Another",
+      "slug": "step-by-step-directions-from-a-binary-tree-node-to-another",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/"
+    }
+  ],
+  "hints": ["Get the LCA of p and q.", "The answer is the sum of distances between p-LCA and q-LCA"]
+}

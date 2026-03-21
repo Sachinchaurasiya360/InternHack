@@ -1,0 +1,25 @@
+{
+  "id": "2427",
+  "title": "Number of Common Factors",
+  "slug": "number-of-common-factors",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two positive integers <code>a</code> and <code>b</code>, return <em>the number of <strong>common</strong> factors of </em><code>a</code><em> and </em><code>b</code>.</p>\n\n<p>An integer <code>x</code> is a <strong>common factor</strong> of <code>a</code> and <code>b</code> if <code>x</code> divides both <code>a</code> and <code>b</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> a = 12, b = 6\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The common factors of 12 and 6 are 1, 2, 3, 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> a = 25, b = 30\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The common factors of 25 and 30 are 1, 5.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= a, b &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given two positive integers `a` and `b`, return _the number of**common** factors of _`a` _and_`b`.\n\nAn integer `x` is a **common factor** of `a` and `b` if `x` divides both `a` and `b`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** a = 12, b = 6\n    **Output:** 4\n    **Explanation:** The common factors of 12 and 6 are 1, 2, 3, 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = 25, b = 30\n    **Output:** 2\n    **Explanation:** The common factors of 25 and 30 are 1, 5.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= a, b <= 1000`",
+  "question": "Given two positive integers `a` and `b`, return _the number of**common** factors of _`a` _and_`b`.\n\nAn integer `x` is a **common factor** of `a` and `b` if `x` divides both `a` and `b`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** a = 12, b = 6\n    **Output:** 4\n    **Explanation:** The common factors of 12 and 6 are 1, 2, 3, 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = 25, b = 30\n    **Output:** 2\n    **Explanation:** The common factors of 25 and 30 are 1, 5.",
+  "constraints": "**Constraints:**\n\n  * `1 <= a, b <= 1000`",
+  "topics": ["Math", "Enumeration", "Number Theory"],
+  "total_accepted": 154750,
+  "total_submissions": 193692,
+  "acceptance_rate": "79.9%",
+  "similar_questions": [
+    {
+      "title": "Count Primes",
+      "slug": "count-primes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-primes/"
+    }
+  ],
+  "hints": ["For each integer in range [1,1000], check if it’s divisible by both A and B."]
+}

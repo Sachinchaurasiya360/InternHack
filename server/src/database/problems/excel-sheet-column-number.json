@@ -1,0 +1,31 @@
+{
+  "id": "171",
+  "title": "Excel Sheet Column Number",
+  "slug": "excel-sheet-column-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>columnTitle</code> that represents the column title as appears in an Excel sheet, return <em>its corresponding column number</em>.</p>\n\n<p>For example:</p>\n\n<pre>\nA -&gt; 1\nB -&gt; 2\nC -&gt; 3\n...\nZ -&gt; 26\nAA -&gt; 27\nAB -&gt; 28 \n...\n</pre>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> columnTitle = &quot;A&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> columnTitle = &quot;AB&quot;\n<strong>Output:</strong> 28\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> columnTitle = &quot;ZY&quot;\n<strong>Output:</strong> 701\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= columnTitle.length &lt;= 7</code></li>\n\t<li><code>columnTitle</code> consists only of uppercase English letters.</li>\n\t<li><code>columnTitle</code> is in the range <code>[&quot;A&quot;, &quot;FXSHRXW&quot;]</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `columnTitle` that represents the column title as appears in an Excel sheet, return _its corresponding column number_.\n\nFor example:\n    \n    \n    A -> 1\n    B -> 2\n    C -> 3\n    ...\n    Z -> 26\n    AA -> 27\n    AB -> 28 \n    ...\n    \n\n \n\n**Example 1:**\n    \n    \n    **Input:** columnTitle = \"A\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** columnTitle = \"AB\"\n    **Output:** 28\n    \n\n**Example 3:**\n    \n    \n    **Input:** columnTitle = \"ZY\"\n    **Output:** 701\n    \n\n \n\n**Constraints:**\n\n  * `1 <= columnTitle.length <= 7`\n  * `columnTitle` consists only of uppercase English letters.\n  * `columnTitle` is in the range `[\"A\", \"FXSHRXW\"]`.",
+  "question": "Given a string `columnTitle` that represents the column title as appears in an Excel sheet, return _its corresponding column number_.\n\nFor example:\n    \n    \n    A -> 1\n    B -> 2\n    C -> 3\n    ...\n    Z -> 26\n    AA -> 27\n    AB -> 28 \n    ...",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** columnTitle = \"A\"\n    **Output:** 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** columnTitle = \"AB\"\n    **Output:** 28\n    \n\n**Example 3:**\n    \n    \n    **Input:** columnTitle = \"ZY\"\n    **Output:** 701",
+  "constraints": "**Constraints:**\n\n  * `1 <= columnTitle.length <= 7`\n  * `columnTitle` consists only of uppercase English letters.\n  * `columnTitle` is in the range `[\"A\", \"FXSHRXW\"]`.",
+  "topics": ["Math", "String"],
+  "total_accepted": 884350,
+  "total_submissions": 1314307,
+  "acceptance_rate": "67.3%",
+  "similar_questions": [
+    {
+      "title": "Excel Sheet Column Title",
+      "slug": "excel-sheet-column-title",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/excel-sheet-column-title/"
+    },
+    {
+      "title": "Cells in a Range on an Excel Sheet",
+      "slug": "cells-in-a-range-on-an-excel-sheet",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/cells-in-a-range-on-an-excel-sheet/"
+    }
+  ],
+  "hints": []
+}

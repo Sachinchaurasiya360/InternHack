@@ -1,0 +1,21 @@
+{
+  "id": "1291",
+  "title": "Sequential Digits",
+  "slug": "sequential-digits",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>An&nbsp;integer has <em>sequential digits</em> if and only if each digit in the number is one more than the previous digit.</p>\n\n<p>Return a <strong>sorted</strong> list of all the integers&nbsp;in the range <code>[low, high]</code>&nbsp;inclusive that have sequential digits.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> low = 100, high = 300\n<strong>Output:</strong> [123,234]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> low = 1000, high = 13000\n<strong>Output:</strong> [1234,2345,3456,4567,5678,6789,12345]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>10 &lt;= low &lt;= high &lt;= 10^9</code></li>\n</ul>\n",
+  "content_markdown": "An integer has _sequential digits_ if and only if each digit in the number is one more than the previous digit.\n\nReturn a **sorted** list of all the integers in the range `[low, high]` inclusive that have sequential digits.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** low = 100, high = 300\n    **Output:** [123,234]\n    \n\n**Example 2:**\n    \n    \n    **Input:** low = 1000, high = 13000\n    **Output:** [1234,2345,3456,4567,5678,6789,12345]\n    \n\n \n\n**Constraints:**\n\n  * `10 <= low <= high <= 10^9`",
+  "question": "An integer has _sequential digits_ if and only if each digit in the number is one more than the previous digit.\n\nReturn a **sorted** list of all the integers in the range `[low, high]` inclusive that have sequential digits.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** low = 100, high = 300\n    **Output:** [123,234]\n    \n\n**Example 2:**\n    \n    \n    **Input:** low = 1000, high = 13000\n    **Output:** [1234,2345,3456,4567,5678,6789,12345]",
+  "constraints": "**Constraints:**\n\n  * `10 <= low <= high <= 10^9`",
+  "topics": ["Enumeration"],
+  "total_accepted": 234389,
+  "total_submissions": 358697,
+  "acceptance_rate": "65.3%",
+  "similar_questions": [],
+  "hints": [
+    "Generate all numbers with sequential digits and check if they are in the given range.",
+    "Fix the starting digit then do a recursion that tries to append all valid digits."
+  ]
+}

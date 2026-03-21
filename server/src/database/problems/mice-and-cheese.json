@@ -1,0 +1,28 @@
+{
+  "id": "2611",
+  "title": "Mice and Cheese",
+  "slug": "mice-and-cheese",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are two mice and <code>n</code> different types of cheese, each type of cheese should be eaten by exactly one mouse.</p>\n\n<p>A point of the cheese with index <code>i</code> (<strong>0-indexed</strong>) is:</p>\n\n<ul>\n\t<li><code>reward1[i]</code> if the first mouse eats it.</li>\n\t<li><code>reward2[i]</code> if the second mouse eats it.</li>\n</ul>\n\n<p>You are given a positive integer array <code>reward1</code>, a positive integer array <code>reward2</code>, and a non-negative integer <code>k</code>.</p>\n\n<p>Return <em><strong>the maximum</strong> points the mice can achieve if the first mouse eats exactly </em><code>k</code><em> types of cheese.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> reward1 = [1,1,3,4], reward2 = [4,4,1,1], k = 2\n<strong>Output:</strong> 15\n<strong>Explanation:</strong> In this example, the first mouse eats the 2<sup>nd</sup>&nbsp;(0-indexed) and the 3<sup>rd</sup>&nbsp;types of cheese, and the second mouse eats the 0<sup>th</sup>&nbsp;and the 1<sup>st</sup> types of cheese.\nThe total points are 4 + 4 + 3 + 4 = 15.\nIt can be proven that 15 is the maximum total points that the mice can achieve.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> reward1 = [1,1], reward2 = [1,1], k = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> In this example, the first mouse eats the 0<sup>th</sup>&nbsp;(0-indexed) and 1<sup>st</sup>&nbsp;types of cheese, and the second mouse does not eat any cheese.\nThe total points are 1 + 1 = 2.\nIt can be proven that 2 is the maximum total points that the mice can achieve.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n == reward1.length == reward2.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= reward1[i],&nbsp;reward2[i] &lt;= 1000</code></li>\n\t<li><code>0 &lt;= k &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "There are two mice and `n` different types of cheese, each type of cheese should be eaten by exactly one mouse.\n\nA point of the cheese with index `i` (**0-indexed**) is:\n\n  * `reward1[i]` if the first mouse eats it.\n  * `reward2[i]` if the second mouse eats it.\n\n\n\nYou are given a positive integer array `reward1`, a positive integer array `reward2`, and a non-negative integer `k`.\n\nReturn _**the maximum** points the mice can achieve if the first mouse eats exactly _`k` _types of cheese._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** reward1 = [1,1,3,4], reward2 = [4,4,1,1], k = 2\n    **Output:** 15\n    **Explanation:** In this example, the first mouse eats the 2nd (0-indexed) and the 3rd types of cheese, and the second mouse eats the 0th and the 1st types of cheese.\n    The total points are 4 + 4 + 3 + 4 = 15.\n    It can be proven that 15 is the maximum total points that the mice can achieve.\n    \n\n**Example 2:**\n    \n    \n    **Input:** reward1 = [1,1], reward2 = [1,1], k = 2\n    **Output:** 2\n    **Explanation:** In this example, the first mouse eats the 0th (0-indexed) and 1st types of cheese, and the second mouse does not eat any cheese.\n    The total points are 1 + 1 = 2.\n    It can be proven that 2 is the maximum total points that the mice can achieve.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n == reward1.length == reward2.length <= 105`\n  * `1 <= reward1[i], reward2[i] <= 1000`\n  * `0 <= k <= n`",
+  "question": "There are two mice and `n` different types of cheese, each type of cheese should be eaten by exactly one mouse.\n\nA point of the cheese with index `i` (**0-indexed**) is:\n\n  * `reward1[i]` if the first mouse eats it.\n  * `reward2[i]` if the second mouse eats it.\n\n\n\nYou are given a positive integer array `reward1`, a positive integer array `reward2`, and a non-negative integer `k`.\n\nReturn _**the maximum** points the mice can achieve if the first mouse eats exactly _`k` _types of cheese._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** reward1 = [1,1,3,4], reward2 = [4,4,1,1], k = 2\n    **Output:** 15\n    **Explanation:** In this example, the first mouse eats the 2nd (0-indexed) and the 3rd types of cheese, and the second mouse eats the 0th and the 1st types of cheese.\n    The total points are 4 + 4 + 3 + 4 = 15.\n    It can be proven that 15 is the maximum total points that the mice can achieve.\n    \n\n**Example 2:**\n    \n    \n    **Input:** reward1 = [1,1], reward2 = [1,1], k = 2\n    **Output:** 2\n    **Explanation:** In this example, the first mouse eats the 0th (0-indexed) and 1st types of cheese, and the second mouse does not eat any cheese.\n    The total points are 1 + 1 = 2.\n    It can be proven that 2 is the maximum total points that the mice can achieve.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n == reward1.length == reward2.length <= 105`\n  * `1 <= reward1[i], reward2[i] <= 1000`\n  * `0 <= k <= n`",
+  "topics": ["Array", "Greedy", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 37647,
+  "total_submissions": 77939,
+  "acceptance_rate": "48.3%",
+  "similar_questions": [
+    {
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/house-robber/"
+    }
+  ],
+  "hints": [
+    "The intended solution uses greedy approach.",
+    "Imagine at first that the second mouse eats all the cheese, then we should choose k types of cheese with the maximum sum of - reward2[i] + reward1[i]."
+  ]
+}

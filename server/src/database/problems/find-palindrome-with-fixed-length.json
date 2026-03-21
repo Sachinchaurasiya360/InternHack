@@ -1,0 +1,40 @@
+{
+  "id": "2217",
+  "title": "Find Palindrome With Fixed Length",
+  "slug": "find-palindrome-with-fixed-length",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>queries</code> and a <strong>positive</strong> integer <code>intLength</code>, return <em>an array</em> <code>answer</code> <em>where</em> <code>answer[i]</code> <em>is either the </em><code>queries[i]<sup>th</sup></code> <em>smallest <strong>positive palindrome</strong> of length</em> <code>intLength</code> <em>or</em> <code>-1</code><em> if no such palindrome exists</em>.</p>\n\n<p>A <strong>palindrome</strong> is a number that reads the same backwards and forwards. Palindromes cannot have leading zeros.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> queries = [1,2,3,4,5,90], intLength = 3\n<strong>Output:</strong> [101,111,121,131,141,999]\n<strong>Explanation:</strong>\nThe first few palindromes of length 3 are:\n101, 111, 121, 131, 141, 151, 161, 171, 181, 191, 202, ...\nThe 90<sup>th</sup> palindrome of length 3 is 999.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> queries = [2,4,6], intLength = 4\n<strong>Output:</strong> [1111,1331,1551]\n<strong>Explanation:</strong>\nThe first six palindromes of length 4 are:\n1001, 1111, 1221, 1331, 1441, and 1551.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= queries.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= queries[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= intLength&nbsp;&lt;= 15</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `queries` and a **positive** integer `intLength`, return _an array_ `answer` _where_ `answer[i]` _is either the_`queries[i]th` _smallest**positive palindrome** of length_ `intLength` _or_ `-1` _if no such palindrome exists_.\n\nA **palindrome** is a number that reads the same backwards and forwards. Palindromes cannot have leading zeros.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** queries = [1,2,3,4,5,90], intLength = 3\n    **Output:** [101,111,121,131,141,999]\n    **Explanation:**\n    The first few palindromes of length 3 are:\n    101, 111, 121, 131, 141, 151, 161, 171, 181, 191, 202, ...\n    The 90th palindrome of length 3 is 999.\n    \n\n**Example 2:**\n    \n    \n    **Input:** queries = [2,4,6], intLength = 4\n    **Output:** [1111,1331,1551]\n    **Explanation:**\n    The first six palindromes of length 4 are:\n    1001, 1111, 1221, 1331, 1441, and 1551.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= queries.length <= 5 * 104`\n  * `1 <= queries[i] <= 109`\n  * `1 <= intLength <= 15`",
+  "question": "Given an integer array `queries` and a **positive** integer `intLength`, return _an array_ `answer` _where_ `answer[i]` _is either the_`queries[i]th` _smallest**positive palindrome** of length_ `intLength` _or_ `-1` _if no such palindrome exists_.\n\nA **palindrome** is a number that reads the same backwards and forwards. Palindromes cannot have leading zeros.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** queries = [1,2,3,4,5,90], intLength = 3\n    **Output:** [101,111,121,131,141,999]\n    **Explanation:**\n    The first few palindromes of length 3 are:\n    101, 111, 121, 131, 141, 151, 161, 171, 181, 191, 202, ...\n    The 90th palindrome of length 3 is 999.\n    \n\n**Example 2:**\n    \n    \n    **Input:** queries = [2,4,6], intLength = 4\n    **Output:** [1111,1331,1551]\n    **Explanation:**\n    The first six palindromes of length 4 are:\n    1001, 1111, 1221, 1331, 1441, and 1551.",
+  "constraints": "**Constraints:**\n\n  * `1 <= queries.length <= 5 * 104`\n  * `1 <= queries[i] <= 109`\n  * `1 <= intLength <= 15`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 27384,
+  "total_submissions": 72173,
+  "acceptance_rate": "37.9%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Number",
+      "slug": "palindrome-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-number/"
+    },
+    {
+      "title": "Find the Closest Palindrome",
+      "slug": "find-the-closest-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-closest-palindrome/"
+    },
+    {
+      "title": "Lexicographically Smallest Beautiful String",
+      "slug": "lexicographically-smallest-beautiful-string",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/lexicographically-smallest-beautiful-string/"
+    }
+  ],
+  "hints": [
+    "For any value of queries[i] and intLength, how can you check if there exists at least queries[i] palindromes of length intLength?",
+    "Since a palindrome reads the same forwards and backwards, consider how you can efficiently find the first half (ceil(intLength/2) digits) of the palindrome."
+  ]
+}

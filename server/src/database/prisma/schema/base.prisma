@@ -492,48 +492,44 @@ model ycCompany {
 }
 
 model dsaTopic {
-  id          Int           @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
-  slug        String        @unique
+  slug        String   @unique
   description String?
-  orderIndex  Int           @unique
-  createdAt   DateTime      @default(now())
-  subTopics   dsaSubTopic[]
-}
-
-model dsaSubTopic {
-  id         Int          @id @default(autoincrement())
-  name       String
-  orderIndex Int
-  topicId    Int
-  problems   dsaProblem[]
-  topic      dsaTopic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
-
-  @@unique([topicId, orderIndex])
+  orderIndex  Int      @unique
+  createdAt   DateTime @default(now())
 }
 
 model dsaProblem {
-  id            Int                  @id @default(autoincrement())
-  title         String
-  difficulty    String
-  leetcodeUrl   String?
-  gfgUrl        String?
-  articleUrl    String?
-  videoUrl      String?
-  hackerrankUrl String?
-  codechefUrl   String?
-  tags          String[]             @default([])
-  companies     String[]             @default([])
-  hints         String?
-  sheets        String[]             @default([])
-  orderIndex    Int
-  subTopicId    Int
-  bookmarks     dsaBookmark[]
-  subTopic      dsaSubTopic          @relation(fields: [subTopicId], references: [id], onDelete: Cascade)
-  progress      studentDsaProgress[]
+  id               Int                  @id @default(autoincrement())
+  title            String
+  slug             String               @unique
+  difficulty       String
+  leetcodeId       Int?
+  leetcodeUrl      String?
+  gfgUrl           String?
+  articleUrl       String?
+  videoUrl         String?
+  hackerrankUrl    String?
+  codechefUrl      String?
+  tags             String[]             @default([])
+  companies        String[]             @default([])
+  hints            String[]             @default([])
+  sheets           String[]             @default([])
+  description      String?
+  examples         String?
+  constraints      String?
+  acceptanceRate   String?
+  totalAccepted    Int?
+  totalSubmissions Int?
+  similarQuestions Json?                @default("[]")
+  category         String?
+  isPremium        Boolean              @default(false)
+  bookmarks        dsaBookmark[]
+  progress         studentDsaProgress[]
 
-  @@unique([subTopicId, orderIndex])
   @@index([difficulty])
+  @@index([leetcodeId])
 }
 
 model studentDsaProgress {
@@ -1161,4 +1157,20 @@ enum EmailLogStatus {
   PENDING
   SENT
   FAILED
+}
+
+model errorLog {
+  id          Int      @id @default(autoincrement())
+  method      String
+  path        String
+  statusCode  Int
+  message     String
+  userId      Int?
+  ipAddress   String?
+  userAgent   String?
+  requestBody Json?
+  createdAt   DateTime @default(now())
+
+  @@index([statusCode])
+  @@index([createdAt])
 }

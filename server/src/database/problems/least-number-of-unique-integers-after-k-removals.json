@@ -1,0 +1,28 @@
+{
+  "id": "1481",
+  "title": "Least Number of Unique Integers after K Removals",
+  "slug": "least-number-of-unique-integers-after-k-removals",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers&nbsp;<code>arr</code>&nbsp;and an integer <code>k</code>.&nbsp;Find the <em>least number of unique integers</em>&nbsp;after removing <strong>exactly</strong> <code>k</code> elements<b>.</b></p>\r\n\r\n<ol>\r\n</ol>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input: </strong>arr = [5,5,4], k = 1\r\n<strong>Output: </strong>1\r\n<strong>Explanation</strong>: Remove the single 4, only 5 is left.\r\n</pre>\r\n<strong class=\"example\">Example 2:</strong>\r\n\r\n<pre>\r\n<strong>Input: </strong>arr = [4,3,1,1,3,3,2], k = 3\r\n<strong>Output: </strong>2\r\n<strong>Explanation</strong>: Remove 4, 2 and either one of the two 1s or three 3s. 1 and 3 will be left.</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>1 &lt;= arr.length&nbsp;&lt;= 10^5</code></li>\r\n\t<li><code>1 &lt;= arr[i] &lt;= 10^9</code></li>\r\n\t<li><code>0 &lt;= k&nbsp;&lt;= arr.length</code></li>\r\n</ul>",
+  "content_markdown": "Given an array of integers `arr` and an integer `k`. Find the _least number of unique integers_  after removing **exactly** `k` elements**.**\n\n\n\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** arr = [5,5,4], k = 1\r\n    **Output:** 1\r\n    **Explanation** : Remove the single 4, only 5 is left.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** arr = [4,3,1,1,3,3,2], k = 3\r\n    **Output:** 2\r\n    **Explanation** : Remove 4, 2 and either one of the two 1s or three 3s. 1 and 3 will be left.\n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 10^5`\n  * `1 <= arr[i] <= 10^9`\n  * `0 <= k <= arr.length`",
+  "question": "Given an array of integers `arr` and an integer `k`. Find the _least number of unique integers_  after removing **exactly** `k` elements**.**",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** arr = [5,5,4], k = 1\r\n    **Output:** 1\r\n    **Explanation** : Remove the single 4, only 5 is left.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** arr = [4,3,1,1,3,3,2], k = 3\r\n    **Output:** 2\r\n    **Explanation** : Remove 4, 2 and either one of the two 1s or three 3s. 1 and 3 will be left.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 10^5`\n  * `1 <= arr[i] <= 10^9`\n  * `0 <= k <= arr.length`",
+  "topics": ["Array", "Hash Table", "Greedy", "Sorting", "Counting"],
+  "total_accepted": 280081,
+  "total_submissions": 439378,
+  "acceptance_rate": "63.7%",
+  "similar_questions": [
+    {
+      "title": "Maximum Number of Distinct Elements After Operations",
+      "slug": "maximum-number-of-distinct-elements-after-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-distinct-elements-after-operations/"
+    }
+  ],
+  "hints": [
+    "Use a map to count the frequencies of the numbers in the array.",
+    "An optimal strategy is to remove the numbers with the smallest count first."
+  ]
+}

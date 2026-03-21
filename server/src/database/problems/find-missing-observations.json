@@ -1,0 +1,34 @@
+{
+  "id": "2028",
+  "title": "Find Missing Observations",
+  "slug": "find-missing-observations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You have observations of <code>n + m</code> <strong>6-sided</strong> dice rolls with each face numbered from <code>1</code> to <code>6</code>. <code>n</code> of the observations went missing, and you only have the observations of <code>m</code> rolls. Fortunately, you have also calculated the <strong>average value</strong> of the <code>n + m</code> rolls.</p>\n\n<p>You are given an integer array <code>rolls</code> of length <code>m</code> where <code>rolls[i]</code> is the value of the <code>i<sup>th</sup></code> observation. You are also given the two integers <code>mean</code> and <code>n</code>.</p>\n\n<p>Return <em>an array of length </em><code>n</code><em> containing the missing observations such that the <strong>average value </strong>of the </em><code>n + m</code><em> rolls is <strong>exactly</strong> </em><code>mean</code>. If there are multiple valid answers, return <em>any of them</em>. If no such array exists, return <em>an empty array</em>.</p>\n\n<p>The <strong>average value</strong> of a set of <code>k</code> numbers is the sum of the numbers divided by <code>k</code>.</p>\n\n<p>Note that <code>mean</code> is an integer, so the sum of the <code>n + m</code> rolls should be divisible by <code>n + m</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> rolls = [3,2,4,3], mean = 4, n = 2\n<strong>Output:</strong> [6,6]\n<strong>Explanation:</strong> The mean of all n + m rolls is (3 + 2 + 4 + 3 + 6 + 6) / 6 = 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> rolls = [1,5,6], mean = 3, n = 4\n<strong>Output:</strong> [2,3,2,2]\n<strong>Explanation:</strong> The mean of all n + m rolls is (1 + 5 + 6 + 2 + 3 + 2 + 2) / 7 = 3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> rolls = [1,2,3,4], mean = 6, n = 4\n<strong>Output:</strong> []\n<strong>Explanation:</strong> It is impossible for the mean to be 6 no matter what the 4 missing rolls are.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == rolls.length</code></li>\n\t<li><code>1 &lt;= n, m &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= rolls[i], mean &lt;= 6</code></li>\n</ul>\n",
+  "content_markdown": "You have observations of `n + m` **6-sided** dice rolls with each face numbered from `1` to `6`. `n` of the observations went missing, and you only have the observations of `m` rolls. Fortunately, you have also calculated the **average value** of the `n + m` rolls.\n\nYou are given an integer array `rolls` of length `m` where `rolls[i]` is the value of the `ith` observation. You are also given the two integers `mean` and `n`.\n\nReturn _an array of length_`n` _containing the missing observations such that the**average value** of the _`n + m` _rolls is**exactly** _`mean`. If there are multiple valid answers, return _any of them_. If no such array exists, return _an empty array_.\n\nThe **average value** of a set of `k` numbers is the sum of the numbers divided by `k`.\n\nNote that `mean` is an integer, so the sum of the `n + m` rolls should be divisible by `n + m`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** rolls = [3,2,4,3], mean = 4, n = 2\n    **Output:** [6,6]\n    **Explanation:** The mean of all n + m rolls is (3 + 2 + 4 + 3 + 6 + 6) / 6 = 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** rolls = [1,5,6], mean = 3, n = 4\n    **Output:** [2,3,2,2]\n    **Explanation:** The mean of all n + m rolls is (1 + 5 + 6 + 2 + 3 + 2 + 2) / 7 = 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** rolls = [1,2,3,4], mean = 6, n = 4\n    **Output:** []\n    **Explanation:** It is impossible for the mean to be 6 no matter what the 4 missing rolls are.\n    \n\n \n\n**Constraints:**\n\n  * `m == rolls.length`\n  * `1 <= n, m <= 105`\n  * `1 <= rolls[i], mean <= 6`",
+  "question": "You have observations of `n + m` **6-sided** dice rolls with each face numbered from `1` to `6`. `n` of the observations went missing, and you only have the observations of `m` rolls. Fortunately, you have also calculated the **average value** of the `n + m` rolls.\n\nYou are given an integer array `rolls` of length `m` where `rolls[i]` is the value of the `ith` observation. You are also given the two integers `mean` and `n`.\n\nReturn _an array of length_`n` _containing the missing observations such that the**average value** of the _`n + m` _rolls is**exactly** _`mean`. If there are multiple valid answers, return _any of them_. If no such array exists, return _an empty array_.\n\nThe **average value** of a set of `k` numbers is the sum of the numbers divided by `k`.\n\nNote that `mean` is an integer, so the sum of the `n + m` rolls should be divisible by `n + m`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** rolls = [3,2,4,3], mean = 4, n = 2\n    **Output:** [6,6]\n    **Explanation:** The mean of all n + m rolls is (3 + 2 + 4 + 3 + 6 + 6) / 6 = 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** rolls = [1,5,6], mean = 3, n = 4\n    **Output:** [2,3,2,2]\n    **Explanation:** The mean of all n + m rolls is (1 + 5 + 6 + 2 + 3 + 2 + 2) / 7 = 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** rolls = [1,2,3,4], mean = 6, n = 4\n    **Output:** []\n    **Explanation:** It is impossible for the mean to be 6 no matter what the 4 missing rolls are.",
+  "constraints": "**Constraints:**\n\n  * `m == rolls.length`\n  * `1 <= n, m <= 105`\n  * `1 <= rolls[i], mean <= 6`",
+  "topics": ["Array", "Math", "Simulation"],
+  "total_accepted": 174159,
+  "total_submissions": 303462,
+  "acceptance_rate": "57.4%",
+  "similar_questions": [
+    {
+      "title": "Number of Dice Rolls With Target Sum",
+      "slug": "number-of-dice-rolls-with-target-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/"
+    },
+    {
+      "title": "Dice Roll Simulation",
+      "slug": "dice-roll-simulation",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/dice-roll-simulation/"
+    }
+  ],
+  "hints": [
+    "What should the sum of the n rolls be?",
+    "Could you generate an array of size n such that each element is between 1 and 6?"
+  ]
+}

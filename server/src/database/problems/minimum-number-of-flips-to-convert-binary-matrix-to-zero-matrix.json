@@ -1,0 +1,39 @@
+{
+  "id": "1284",
+  "title": "Minimum Number of Flips to Convert Binary Matrix to Zero Matrix",
+  "slug": "minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>m x n</code> binary matrix <code>mat</code>. In one step, you can choose one cell and flip it and all the four neighbors of it if they exist (Flip is changing <code>1</code> to <code>0</code> and <code>0</code> to <code>1</code>). A pair of cells are called neighbors if they share one edge.</p>\n\n<p>Return the <em>minimum number of steps</em> required to convert <code>mat</code> to a zero matrix or <code>-1</code> if you cannot.</p>\n\n<p>A <strong>binary matrix</strong> is a matrix with all cells equal to <code>0</code> or <code>1</code> only.</p>\n\n<p>A <strong>zero matrix</strong> is a matrix with all cells equal to <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/11/28/matrix.png\" style=\"width: 409px; height: 86px;\" />\n<pre>\n<strong>Input:</strong> mat = [[0,0],[0,1]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> One possible solution is to flip (1, 0) then (0, 1) and finally (1, 1) as shown.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> mat = [[0]]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> Given matrix is a zero matrix. We do not need to change it.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> mat = [[1,0,0],[1,0,0]]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> Given matrix cannot be a zero matrix.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == mat.length</code></li>\n\t<li><code>n == mat[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 3</code></li>\n\t<li><code>mat[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a `m x n` binary matrix `mat`. In one step, you can choose one cell and flip it and all the four neighbors of it if they exist (Flip is changing `1` to `0` and `0` to `1`). A pair of cells are called neighbors if they share one edge.\n\nReturn the _minimum number of steps_ required to convert `mat` to a zero matrix or `-1` if you cannot.\n\nA **binary matrix** is a matrix with all cells equal to `0` or `1` only.\n\nA **zero matrix** is a matrix with all cells equal to `0`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/11/28/matrix.png)\n    \n    \n    **Input:** mat = [[0,0],[0,1]]\n    **Output:** 3\n    **Explanation:** One possible solution is to flip (1, 0) then (0, 1) and finally (1, 1) as shown.\n    \n\n**Example 2:**\n    \n    \n    **Input:** mat = [[0]]\n    **Output:** 0\n    **Explanation:** Given matrix is a zero matrix. We do not need to change it.\n    \n\n**Example 3:**\n    \n    \n    **Input:** mat = [[1,0,0],[1,0,0]]\n    **Output:** -1\n    **Explanation:** Given matrix cannot be a zero matrix.\n    \n\n \n\n**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 3`\n  * `mat[i][j]` is either `0` or `1`.",
+  "question": "Given a `m x n` binary matrix `mat`. In one step, you can choose one cell and flip it and all the four neighbors of it if they exist (Flip is changing `1` to `0` and `0` to `1`). A pair of cells are called neighbors if they share one edge.\n\nReturn the _minimum number of steps_ required to convert `mat` to a zero matrix or `-1` if you cannot.\n\nA **binary matrix** is a matrix with all cells equal to `0` or `1` only.\n\nA **zero matrix** is a matrix with all cells equal to `0`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/11/28/matrix.png)\n    \n    \n    **Input:** mat = [[0,0],[0,1]]\n    **Output:** 3\n    **Explanation:** One possible solution is to flip (1, 0) then (0, 1) and finally (1, 1) as shown.\n    \n\n**Example 2:**\n    \n    \n    **Input:** mat = [[0]]\n    **Output:** 0\n    **Explanation:** Given matrix is a zero matrix. We do not need to change it.\n    \n\n**Example 3:**\n    \n    \n    **Input:** mat = [[1,0,0],[1,0,0]]\n    **Output:** -1\n    **Explanation:** Given matrix cannot be a zero matrix.",
+  "constraints": "**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 3`\n  * `mat[i][j]` is either `0` or `1`.",
+  "topics": ["Array", "Hash Table", "Bit Manipulation", "Breadth-First Search", "Matrix"],
+  "total_accepted": 38937,
+  "total_submissions": 53756,
+  "acceptance_rate": "72.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Operations to Remove Adjacent Ones in Matrix",
+      "slug": "minimum-operations-to-remove-adjacent-ones-in-matrix",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-operations-to-remove-adjacent-ones-in-matrix/"
+    },
+    {
+      "title": "Remove All Ones With Row and Column Flips",
+      "slug": "remove-all-ones-with-row-and-column-flips",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-all-ones-with-row-and-column-flips/"
+    },
+    {
+      "title": "Remove All Ones With Row and Column Flips II",
+      "slug": "remove-all-ones-with-row-and-column-flips-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-all-ones-with-row-and-column-flips-ii/"
+    }
+  ],
+  "hints": [
+    "Flipping same index two times is like not flipping it at all. Each index can be flipped one time. Try all possible combinations. O(2^(n*m))."
+  ]
+}

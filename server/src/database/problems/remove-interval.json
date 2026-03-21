@@ -1,0 +1,21 @@
+{
+  "id": "1272",
+  "title": "Remove Interval",
+  "slug": "remove-interval",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array"],
+  "total_accepted": 42079,
+  "total_submissions": 62663,
+  "acceptance_rate": "67.2%",
+  "similar_questions": [],
+  "hints": [
+    "Solve the problem for every interval alone.",
+    "Divide the problem into cases according to the position of the two intervals."
+  ]
+}

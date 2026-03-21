@@ -1,0 +1,35 @@
+{
+  "id": "38",
+  "title": "Count and Say",
+  "slug": "count-and-say",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>The <strong>count-and-say</strong> sequence is a sequence of digit strings defined by the recursive formula:</p>\n\n<ul>\n\t<li><code>countAndSay(1) = &quot;1&quot;</code></li>\n\t<li><code>countAndSay(n)</code> is the run-length encoding of <code>countAndSay(n - 1)</code>.</li>\n</ul>\n\n<p><a href=\"http://en.wikipedia.org/wiki/Run-length_encoding\" target=\"_blank\">Run-length encoding</a> (RLE) is a string compression method that works by replacing consecutive identical characters (repeated 2 or more times) with the concatenation of the character and the number marking the count of the characters (length of the run). For example, to compress the string <code>&quot;3322251&quot;</code> we replace <code>&quot;33&quot;</code> with <code>&quot;23&quot;</code>, replace <code>&quot;222&quot;</code> with <code>&quot;32&quot;</code>, replace <code>&quot;5&quot;</code> with <code>&quot;15&quot;</code> and replace <code>&quot;1&quot;</code> with <code>&quot;11&quot;</code>. Thus the compressed string becomes <code>&quot;23321511&quot;</code>.</p>\n\n<p>Given a positive integer <code>n</code>, return <em>the </em><code>n<sup>th</sup></code><em> element of the <strong>count-and-say</strong> sequence</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;1211&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<pre>\ncountAndSay(1) = &quot;1&quot;\ncountAndSay(2) = RLE of &quot;1&quot; = &quot;11&quot;\ncountAndSay(3) = RLE of &quot;11&quot; = &quot;21&quot;\ncountAndSay(4) = RLE of &quot;21&quot; = &quot;1211&quot;\n</pre>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;1&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>This is the base case.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 30</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Could you solve it iteratively?",
+  "content_markdown": "The **count-and-say** sequence is a sequence of digit strings defined by the recursive formula:\n\n  * `countAndSay(1) = \"1\"`\n  * `countAndSay(n)` is the run-length encoding of `countAndSay(n - 1)`.\n\n\n\n[Run-length encoding](<http://en.wikipedia.org/wiki/Run-length_encoding>) (RLE) is a string compression method that works by replacing consecutive identical characters (repeated 2 or more times) with the concatenation of the character and the number marking the count of the characters (length of the run). For example, to compress the string `\"3322251\"` we replace `\"33\"` with `\"23\"`, replace `\"222\"` with `\"32\"`, replace `\"5\"` with `\"15\"` and replace `\"1\"` with `\"11\"`. Thus the compressed string becomes `\"23321511\"`.\n\nGiven a positive integer `n`, return _the_`nth` _element of the**count-and-say** sequence_.\n\n \n\n**Example 1:**\n\n**Input:** n = 4\n\n**Output:** \"1211\"\n\n**Explanation:**\n    \n    \n    countAndSay(1) = \"1\"\n    countAndSay(2) = RLE of \"1\" = \"11\"\n    countAndSay(3) = RLE of \"11\" = \"21\"\n    countAndSay(4) = RLE of \"21\" = \"1211\"\n    \n\n**Example 2:**\n\n**Input:** n = 1\n\n**Output:** \"1\"\n\n**Explanation:**\n\nThis is the base case.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 30`\n\n\n\n \n\n**Follow up:** Could you solve it iteratively?",
+  "question": "The **count-and-say** sequence is a sequence of digit strings defined by the recursive formula:\n\n  * `countAndSay(1) = \"1\"`\n  * `countAndSay(n)` is the run-length encoding of `countAndSay(n - 1)`.\n\n\n\n[Run-length encoding](<http://en.wikipedia.org/wiki/Run-length_encoding>) (RLE) is a string compression method that works by replacing consecutive identical characters (repeated 2 or more times) with the concatenation of the character and the number marking the count of the characters (length of the run). For example, to compress the string `\"3322251\"` we replace `\"33\"` with `\"23\"`, replace `\"222\"` with `\"32\"`, replace `\"5\"` with `\"15\"` and replace `\"1\"` with `\"11\"`. Thus the compressed string becomes `\"23321511\"`.\n\nGiven a positive integer `n`, return _the_`nth` _element of the**count-and-say** sequence_.",
+  "examples": "**Example 1:**\n\n**Input:** n = 4\n\n**Output:** \"1211\"\n\n**Explanation:**\n    \n    \n    countAndSay(1) = \"1\"\n    countAndSay(2) = RLE of \"1\" = \"11\"\n    countAndSay(3) = RLE of \"11\" = \"21\"\n    countAndSay(4) = RLE of \"21\" = \"1211\"\n    \n\n**Example 2:**\n\n**Input:** n = 1\n\n**Output:** \"1\"\n\n**Explanation:**\n\nThis is the base case.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 30`",
+  "topics": ["String"],
+  "total_accepted": 1378503,
+  "total_submissions": 2210917,
+  "acceptance_rate": "62.3%",
+  "similar_questions": [
+    {
+      "title": "Encode and Decode Strings",
+      "slug": "encode-and-decode-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/encode-and-decode-strings/"
+    },
+    {
+      "title": "String Compression",
+      "slug": "string-compression",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/string-compression/"
+    }
+  ],
+  "hints": [
+    "Create a helper function that maps an integer to pairs of its digits and their frequencies. For example, if you call this function with \"223314444411\", then it maps it to an array of pairs [[2,2], [3,2], [1,1], [4,5], [1, 2]].",
+    "Create another helper function that takes the array of pairs and creates a new integer. For example, if you call this function with [[2,2], [3,2], [1,1], [4,5], [1, 2]], it should create \"22\"+\"23\"+\"11\"+\"54\"+\"21\" = \"2223115421\".",
+    "Now, with the two helper functions, you can start with \"1\" and call the two functions alternatively n-1 times. The answer is the last integer you will obtain."
+  ]
+}

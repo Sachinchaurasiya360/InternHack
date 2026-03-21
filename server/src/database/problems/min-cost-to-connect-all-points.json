@@ -1,0 +1,28 @@
+{
+  "id": "1584",
+  "title": "Min Cost to Connect All Points",
+  "slug": "min-cost-to-connect-all-points",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>points</code> representing integer coordinates of some points on a 2D-plane, where <code>points[i] = [x<sub>i</sub>, y<sub>i</sub>]</code>.</p>\n\n<p>The cost of connecting two points <code>[x<sub>i</sub>, y<sub>i</sub>]</code> and <code>[x<sub>j</sub>, y<sub>j</sub>]</code> is the <strong>manhattan distance</strong> between them: <code>|x<sub>i</sub> - x<sub>j</sub>| + |y<sub>i</sub> - y<sub>j</sub>|</code>, where <code>|val|</code> denotes the absolute value of <code>val</code>.</p>\n\n<p>Return <em>the minimum cost to make all points connected.</em> All points are connected if there is <strong>exactly one</strong> simple path between any two points.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/26/d.png\" style=\"width: 214px; height: 268px;\" />\n<pre>\n<strong>Input:</strong> points = [[0,0],[2,2],[3,10],[5,2],[7,0]]\n<strong>Output:</strong> 20\n<strong>Explanation:</strong> \n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/08/26/c.png\" style=\"width: 214px; height: 268px;\" />\nWe can connect the points as shown above to get the minimum cost of 20.\nNotice that there is a unique path between every pair of points.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> points = [[3,12],[-2,5],[-4,1]]\n<strong>Output:</strong> 18\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= points.length &lt;= 1000</code></li>\n\t<li><code>-10<sup>6</sup> &lt;= x<sub>i</sub>, y<sub>i</sub> &lt;= 10<sup>6</sup></code></li>\n\t<li>All pairs <code>(x<sub>i</sub>, y<sub>i</sub>)</code> are distinct.</li>\n</ul>\n",
+  "content_markdown": "You are given an array `points` representing integer coordinates of some points on a 2D-plane, where `points[i] = [xi, yi]`.\n\nThe cost of connecting two points `[xi, yi]` and `[xj, yj]` is the **manhattan distance** between them: `|xi - xj| + |yi - yj|`, where `|val|` denotes the absolute value of `val`.\n\nReturn _the minimum cost to make all points connected._ All points are connected if there is **exactly one** simple path between any two points.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/26/d.png)\n    \n    \n    **Input:** points = [[0,0],[2,2],[3,10],[5,2],[7,0]]\n    **Output:** 20\n    **Explanation:** \n    ![](https://assets.leetcode.com/uploads/2020/08/26/c.png)\n    We can connect the points as shown above to get the minimum cost of 20.\n    Notice that there is a unique path between every pair of points.\n    \n\n**Example 2:**\n    \n    \n    **Input:** points = [[3,12],[-2,5],[-4,1]]\n    **Output:** 18\n    \n\n \n\n**Constraints:**\n\n  * `1 <= points.length <= 1000`\n  * `-106 <= xi, yi <= 106`\n  * All pairs `(xi, yi)` are distinct.",
+  "question": "You are given an array `points` representing integer coordinates of some points on a 2D-plane, where `points[i] = [xi, yi]`.\n\nThe cost of connecting two points `[xi, yi]` and `[xj, yj]` is the **manhattan distance** between them: `|xi - xj| + |yi - yj|`, where `|val|` denotes the absolute value of `val`.\n\nReturn _the minimum cost to make all points connected._ All points are connected if there is **exactly one** simple path between any two points.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/08/26/d.png)\n    \n    \n    **Input:** points = [[0,0],[2,2],[3,10],[5,2],[7,0]]\n    **Output:** 20\n    **Explanation:** \n    ![](https://assets.leetcode.com/uploads/2020/08/26/c.png)\n    We can connect the points as shown above to get the minimum cost of 20.\n    Notice that there is a unique path between every pair of points.\n    \n\n**Example 2:**\n    \n    \n    **Input:** points = [[3,12],[-2,5],[-4,1]]\n    **Output:** 18",
+  "constraints": "**Constraints:**\n\n  * `1 <= points.length <= 1000`\n  * `-106 <= xi, yi <= 106`\n  * All pairs `(xi, yi)` are distinct.",
+  "topics": ["Array", "Union-Find", "Graph Theory", "Minimum Spanning Tree"],
+  "total_accepted": 450923,
+  "total_submissions": 640687,
+  "acceptance_rate": "70.4%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Lines to Cover Points",
+      "slug": "minimum-number-of-lines-to-cover-points",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-lines-to-cover-points/"
+    }
+  ],
+  "hints": [
+    "Connect each pair of points with a weighted edge, the weight being the manhattan distance between those points.",
+    "The problem is now the cost of minimum spanning tree in graph with above edges."
+  ]
+}

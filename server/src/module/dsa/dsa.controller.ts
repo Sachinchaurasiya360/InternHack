@@ -20,8 +20,23 @@ export class DsaController {
     try {
       const { slug } = req.params;
       const studentId = req.user?.id;
-      const topic = await this.dsaService.getTopicBySlug(slug, studentId);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const difficulty = req.query.difficulty as string | undefined;
+      const search = req.query.search as string | undefined;
+      const topic = await this.dsaService.getTopicBySlug(slug, studentId, page, limit, difficulty, search);
       res.json(topic);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getProblemBySlug(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { slug } = req.params;
+      const studentId = req.user?.id;
+      const problem = await this.dsaService.getProblemBySlug(slug, studentId);
+      res.json(problem);
     } catch (err) {
       next(err);
     }
@@ -88,8 +103,10 @@ export class DsaController {
     try {
       const { company } = req.params;
       const studentId = req.user?.id;
-      const problems = await this.dsaService.getCompanyProblems(company, studentId);
-      res.json(problems);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const result = await this.dsaService.getCompanyProblems(company, studentId, page, limit);
+      res.json(result);
     } catch (err) {
       next(err);
     }
@@ -108,8 +125,10 @@ export class DsaController {
     try {
       const { pattern } = req.params;
       const studentId = req.user?.id;
-      const problems = await this.dsaService.getPatternProblems(pattern, studentId);
-      res.json(problems);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const result = await this.dsaService.getPatternProblems(pattern, studentId, page, limit);
+      res.json(result);
     } catch (err) {
       next(err);
     }

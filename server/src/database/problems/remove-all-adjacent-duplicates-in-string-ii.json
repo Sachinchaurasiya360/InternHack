@@ -1,0 +1,40 @@
+{
+  "id": "1209",
+  "title": "Remove All Adjacent Duplicates in String II",
+  "slug": "remove-all-adjacent-duplicates-in-string-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> and an integer <code>k</code>, a <code>k</code> <strong>duplicate removal</strong> consists of choosing <code>k</code> adjacent and equal letters from <code>s</code> and removing them, causing the left and the right side of the deleted substring to concatenate together.</p>\n\n<p>We repeatedly make <code>k</code> <strong>duplicate removals</strong> on <code>s</code> until we no longer can.</p>\n\n<p>Return <em>the final string after all such duplicate removals have been made</em>. It is guaranteed that the answer is <strong>unique</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcd&quot;, k = 2\n<strong>Output:</strong> &quot;abcd&quot;\n<strong>Explanation: </strong>There&#39;s nothing to delete.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;deeedbbcccbdaa&quot;, k = 3\n<strong>Output:</strong> &quot;aa&quot;\n<strong>Explanation: \n</strong>First delete &quot;eee&quot; and &quot;ccc&quot;, get &quot;ddbbbdaa&quot;\nThen delete &quot;bbb&quot;, get &quot;dddaa&quot;\nFinally delete &quot;ddd&quot;, get &quot;aa&quot;</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;pbbcggttciiippooaais&quot;, k = 2\n<strong>Output:</strong> &quot;ps&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>2 &lt;= k &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> only contains lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` and an integer `k`, a `k` **duplicate removal** consists of choosing `k` adjacent and equal letters from `s` and removing them, causing the left and the right side of the deleted substring to concatenate together.\n\nWe repeatedly make `k` **duplicate removals** on `s` until we no longer can.\n\nReturn _the final string after all such duplicate removals have been made_. It is guaranteed that the answer is **unique**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abcd\", k = 2\n    **Output:** \"abcd\"\n    **Explanation:** There's nothing to delete.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"deeedbbcccbdaa\", k = 3\n    **Output:** \"aa\"\n    **Explanation:** First delete \"eee\" and \"ccc\", get \"ddbbbdaa\"\n    Then delete \"bbb\", get \"dddaa\"\n    Finally delete \"ddd\", get \"aa\"\n\n**Example 3:**\n    \n    \n    **Input:** s = \"pbbcggttciiippooaais\", k = 2\n    **Output:** \"ps\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `2 <= k <= 104`\n  * `s` only contains lowercase English letters.",
+  "question": "You are given a string `s` and an integer `k`, a `k` **duplicate removal** consists of choosing `k` adjacent and equal letters from `s` and removing them, causing the left and the right side of the deleted substring to concatenate together.\n\nWe repeatedly make `k` **duplicate removals** on `s` until we no longer can.\n\nReturn _the final string after all such duplicate removals have been made_. It is guaranteed that the answer is **unique**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abcd\", k = 2\n    **Output:** \"abcd\"\n    **Explanation:** There's nothing to delete.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"deeedbbcccbdaa\", k = 3\n    **Output:** \"aa\"\n    **Explanation:** First delete \"eee\" and \"ccc\", get \"ddbbbdaa\"\n    Then delete \"bbb\", get \"dddaa\"\n    Finally delete \"ddd\", get \"aa\"\n\n**Example 3:**\n    \n    \n    **Input:** s = \"pbbcggttciiippooaais\", k = 2\n    **Output:** \"ps\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `2 <= k <= 104`\n  * `s` only contains lowercase English letters.",
+  "topics": ["String", "Stack"],
+  "total_accepted": 413574,
+  "total_submissions": 678845,
+  "acceptance_rate": "60.9%",
+  "similar_questions": [
+    {
+      "title": "Remove All Adjacent Duplicates In String",
+      "slug": "remove-all-adjacent-duplicates-in-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/"
+    },
+    {
+      "title": "Replace Non-Coprime Numbers in Array",
+      "slug": "replace-non-coprime-numbers-in-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/replace-non-coprime-numbers-in-array/"
+    },
+    {
+      "title": "Minimize String Length",
+      "slug": "minimize-string-length",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimize-string-length/"
+    }
+  ],
+  "hints": [
+    "Use a stack to store the characters, when there are k same characters, delete them.",
+    "To make it more efficient, use a pair to store the value and the count of each character."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "1542",
+  "title": "Find Longest Awesome Substring",
+  "slug": "find-longest-awesome-substring",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code>. An <strong>awesome</strong> substring is a non-empty substring of <code>s</code> such that we can make any number of swaps in order to make it a palindrome.</p>\n\n<p>Return <em>the length of the maximum length <strong>awesome substring</strong> of</em> <code>s</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;3242415&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> &quot;24241&quot; is the longest awesome substring, we can form the palindrome &quot;24142&quot; with some swaps.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;12345678&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;213123&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> &quot;213123&quot; is the longest awesome substring, we can form the palindrome &quot;231132&quot; with some swaps.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists only of digits.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s`. An **awesome** substring is a non-empty substring of `s` such that we can make any number of swaps in order to make it a palindrome.\n\nReturn _the length of the maximum length**awesome substring** of_ `s`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"3242415\"\n    **Output:** 5\n    **Explanation:** \"24241\" is the longest awesome substring, we can form the palindrome \"24142\" with some swaps.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"12345678\"\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"213123\"\n    **Output:** 6\n    **Explanation:** \"213123\" is the longest awesome substring, we can form the palindrome \"231132\" with some swaps.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists only of digits.",
+  "question": "You are given a string `s`. An **awesome** substring is a non-empty substring of `s` such that we can make any number of swaps in order to make it a palindrome.\n\nReturn _the length of the maximum length**awesome substring** of_ `s`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"3242415\"\n    **Output:** 5\n    **Explanation:** \"24241\" is the longest awesome substring, we can form the palindrome \"24142\" with some swaps.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"12345678\"\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"213123\"\n    **Output:** 6\n    **Explanation:** \"213123\" is the longest awesome substring, we can form the palindrome \"231132\" with some swaps.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists only of digits.",
+  "topics": ["Hash Table", "String", "Bit Manipulation"],
+  "total_accepted": 19960,
+  "total_submissions": 42839,
+  "acceptance_rate": "46.6%",
+  "similar_questions": [],
+  "hints": [
+    "Given the character counts, under what conditions can a palindrome be formed ?",
+    "From left to right, use bitwise xor-operation to compute for any prefix the number of times modulo 2 of each digit.  (mask ^= (1<<(s[i]-'0')).",
+    "Expected complexity is O(n*A) where A is the alphabet (10)."
+  ]
+}

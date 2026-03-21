@@ -1,0 +1,28 @@
+{
+  "id": "3265",
+  "title": "Count Almost Equal Pairs I",
+  "slug": "count-almost-equal-pairs-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> consisting of positive integers.</p>\n\n<p>We call two integers <code>x</code> and <code>y</code> in this problem <strong>almost equal</strong> if both integers can become equal after performing the following operation <strong>at most once</strong>:</p>\n\n<ul>\n\t<li>Choose <strong>either</strong> <code>x</code> or <code>y</code> and swap any two digits within the chosen number.</li>\n</ul>\n\n<p>Return the number of indices <code>i</code> and <code>j</code> in <code>nums</code> where <code>i &lt; j</code> such that <code>nums[i]</code> and <code>nums[j]</code> are <strong>almost equal</strong>.</p>\n\n<p><strong>Note</strong> that it is allowed for an integer to have leading zeros after performing an operation.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [3,12,30,17,21]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The almost equal pairs of elements are:</p>\n\n<ul>\n\t<li>3 and 30. By swapping 3 and 0 in 30, you get 3.</li>\n\t<li>12 and 21. By swapping 1 and 2 in 12, you get 21.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,1,1,1,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">10</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Every two elements in the array are almost equal.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [123,231]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We cannot swap any two digits of 123 or 231 to reach the other.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` consisting of positive integers.\n\nWe call two integers `x` and `y` in this problem **almost equal** if both integers can become equal after performing the following operation **at most once** :\n\n  * Choose **either** `x` or `y` and swap any two digits within the chosen number.\n\n\n\nReturn the number of indices `i` and `j` in `nums` where `i < j` such that `nums[i]` and `nums[j]` are **almost equal**.\n\n**Note** that it is allowed for an integer to have leading zeros after performing an operation.\n\n \n\n**Example 1:**\n\n**Input:** nums = [3,12,30,17,21]\n\n**Output:** 2\n\n**Explanation:**\n\nThe almost equal pairs of elements are:\n\n  * 3 and 30. By swapping 3 and 0 in 30, you get 3.\n  * 12 and 21. By swapping 1 and 2 in 12, you get 21.\n\n\n\n**Example 2:**\n\n**Input:** nums = [1,1,1,1,1]\n\n**Output:** 10\n\n**Explanation:**\n\nEvery two elements in the array are almost equal.\n\n**Example 3:**\n\n**Input:** nums = [123,231]\n\n**Output:** 0\n\n**Explanation:**\n\nWe cannot swap any two digits of 123 or 231 to reach the other.\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `1 <= nums[i] <= 106`",
+  "question": "You are given an array `nums` consisting of positive integers.\n\nWe call two integers `x` and `y` in this problem **almost equal** if both integers can become equal after performing the following operation **at most once** :\n\n  * Choose **either** `x` or `y` and swap any two digits within the chosen number.\n\n\n\nReturn the number of indices `i` and `j` in `nums` where `i < j` such that `nums[i]` and `nums[j]` are **almost equal**.\n\n**Note** that it is allowed for an integer to have leading zeros after performing an operation.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [3,12,30,17,21]\n\n**Output:** 2\n\n**Explanation:**\n\nThe almost equal pairs of elements are:\n\n  * 3 and 30. By swapping 3 and 0 in 30, you get 3.\n  * 12 and 21. By swapping 1 and 2 in 12, you get 21.\n\n\n\n**Example 2:**\n\n**Input:** nums = [1,1,1,1,1]\n\n**Output:** 10\n\n**Explanation:**\n\nEvery two elements in the array are almost equal.\n\n**Example 3:**\n\n**Input:** nums = [123,231]\n\n**Output:** 0\n\n**Explanation:**\n\nWe cannot swap any two digits of 123 or 231 to reach the other.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `1 <= nums[i] <= 106`",
+  "topics": ["Array", "Hash Table", "Sorting", "Counting", "Enumeration"],
+  "total_accepted": 29052,
+  "total_submissions": 76041,
+  "acceptance_rate": "38.2%",
+  "similar_questions": [
+    {
+      "title": "Check if One String Swap Can Make Strings Equal",
+      "slug": "check-if-one-string-swap-can-make-strings-equal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-one-string-swap-can-make-strings-equal/"
+    }
+  ],
+  "hints": [
+    "Since the constraint on the number of elements is small, you can check all pairs in the array.",
+    "For each pair, perform an operation on one of the elements and check if it becomes equal to the other."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "3383",
+  "title": "Minimum Runes to Add to Cast Spell",
+  "slug": "minimum-runes-to-add-to-cast-spell",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Graph Theory",
+    "Topological Sort"
+  ],
+  "total_accepted": 752,
+  "total_submissions": 1679,
+  "acceptance_rate": "44.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Days to Disconnect Island",
+      "slug": "minimum-number-of-days-to-disconnect-island",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-days-to-disconnect-island/"
+    },
+    {
+      "title": "Minimum Edge Weight Equilibrium Queries in a Tree",
+      "slug": "minimum-edge-weight-equilibrium-queries-in-a-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-edge-weight-equilibrium-queries-in-a-tree/"
+    }
+  ],
+  "hints": []
+}

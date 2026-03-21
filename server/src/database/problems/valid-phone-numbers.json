@@ -1,0 +1,18 @@
+{
+  "id": "193",
+  "title": "Valid Phone Numbers",
+  "slug": "valid-phone-numbers",
+  "difficulty": "Easy",
+  "category": "Shell",
+  "content_html": "<p>Given a text file <code>file.txt</code> that contains a list of phone numbers (one per line), write a one-liner bash script to print all valid phone numbers.</p>\n\n<p>You may assume that a valid phone number must appear in one of the following two formats: (xxx) xxx-xxxx or xxx-xxx-xxxx. (x means a digit)</p>\n\n<p>You may also assume each line in the text file must not contain leading or trailing white spaces.</p>\n\n<p><strong class=\"example\">Example:</strong></p>\n\n<p>Assume that <code>file.txt</code> has the following content:</p>\n\n<pre>\n987-123-4567\n123 456 7890\n(123) 456-7890\n</pre>\n\n<p>Your script should output the following valid phone numbers:</p>\n\n<pre>\n987-123-4567\n(123) 456-7890\n</pre>\n",
+  "content_markdown": "Given a text file `file.txt` that contains a list of phone numbers (one per line), write a one-liner bash script to print all valid phone numbers.\n\nYou may assume that a valid phone number must appear in one of the following two formats: (xxx) xxx-xxxx or xxx-xxx-xxxx. (x means a digit)\n\nYou may also assume each line in the text file must not contain leading or trailing white spaces.\n\n**Example:**\n\nAssume that `file.txt` has the following content:\n    \n    \n    987-123-4567\n    123 456 7890\n    (123) 456-7890\n    \n\nYour script should output the following valid phone numbers:\n    \n    \n    987-123-4567\n    (123) 456-7890",
+  "question": "Given a text file `file.txt` that contains a list of phone numbers (one per line), write a one-liner bash script to print all valid phone numbers.\n\nYou may assume that a valid phone number must appear in one of the following two formats: (xxx) xxx-xxxx or xxx-xxx-xxxx. (x means a digit)\n\nYou may also assume each line in the text file must not contain leading or trailing white spaces.",
+  "examples": "**Example:**\n\nAssume that `file.txt` has the following content:\n    \n    \n    987-123-4567\n    123 456 7890\n    (123) 456-7890\n    \n\nYour script should output the following valid phone numbers:\n    \n    \n    987-123-4567\n    (123) 456-7890",
+  "constraints": "",
+  "topics": ["Shell"],
+  "total_accepted": 124685,
+  "total_submissions": 429838,
+  "acceptance_rate": "29.0%",
+  "similar_questions": [],
+  "hints": []
+}

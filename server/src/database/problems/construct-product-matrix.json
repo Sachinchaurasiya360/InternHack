@@ -1,0 +1,28 @@
+{
+  "id": "2906",
+  "title": "Construct Product Matrix",
+  "slug": "construct-product-matrix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>0-indexed</strong> 2D integer matrix <code><font face=\"monospace\">grid</font></code><font face=\"monospace\"> </font>of size <code>n * m</code>, we define a <strong>0-indexed</strong> 2D matrix <code>p</code> of size <code>n * m</code> as the <strong>product</strong> matrix of <code>grid</code> if the following condition is met:</p>\n\n<ul>\n\t<li>Each element <code>p[i][j]</code> is calculated as the product of all elements in <code>grid</code> except for the element <code>grid[i][j]</code>. This product is then taken modulo <code><font face=\"monospace\">12345</font></code>.</li>\n</ul>\n\n<p>Return <em>the product matrix of</em> <code><font face=\"monospace\">grid</font></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[1,2],[3,4]]\n<strong>Output:</strong> [[24,12],[8,6]]\n<strong>Explanation:</strong> p[0][0] = grid[0][1] * grid[1][0] * grid[1][1] = 2 * 3 * 4 = 24\np[0][1] = grid[0][0] * grid[1][0] * grid[1][1] = 1 * 3 * 4 = 12\np[1][0] = grid[0][0] * grid[0][1] * grid[1][1] = 1 * 2 * 4 = 8\np[1][1] = grid[0][0] * grid[0][1] * grid[1][0] = 1 * 2 * 3 = 6\nSo the answer is [[24,12],[8,6]].</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[12345],[2],[1]]\n<strong>Output:</strong> [[2],[0],[0]]\n<strong>Explanation:</strong> p[0][0] = grid[0][1] * grid[0][2] = 2 * 1 = 2.\np[0][1] = grid[0][0] * grid[0][2] = 12345 * 1 = 12345. 12345 % 12345 = 0. So p[0][1] = 0.\np[0][2] = grid[0][0] * grid[0][1] = 12345 * 2 = 24690. 24690 % 12345 = 0. So p[0][2] = 0.\nSo the answer is [[2],[0],[0]].</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n == grid.length&nbsp;&lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= m == grid[i].length&nbsp;&lt;= 10<sup>5</sup></code></li>\n\t<li><code>2 &lt;= n * m &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= grid[i][j] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a **0-indexed** 2D integer matrix `grid` of size `n * m`, we define a **0-indexed** 2D matrix `p` of size `n * m` as the **product** matrix of `grid` if the following condition is met:\n\n  * Each element `p[i][j]` is calculated as the product of all elements in `grid` except for the element `grid[i][j]`. This product is then taken modulo `12345`.\n\n\n\nReturn _the product matrix of_ `grid`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** grid = [[1,2],[3,4]]\n    **Output:** [[24,12],[8,6]]\n    **Explanation:** p[0][0] = grid[0][1] * grid[1][0] * grid[1][1] = 2 * 3 * 4 = 24\n    p[0][1] = grid[0][0] * grid[1][0] * grid[1][1] = 1 * 3 * 4 = 12\n    p[1][0] = grid[0][0] * grid[0][1] * grid[1][1] = 1 * 2 * 4 = 8\n    p[1][1] = grid[0][0] * grid[0][1] * grid[1][0] = 1 * 2 * 3 = 6\n    So the answer is [[24,12],[8,6]].\n\n**Example 2:**\n    \n    \n    **Input:** grid = [[12345],[2],[1]]\n    **Output:** [[2],[0],[0]]\n    **Explanation:** p[0][0] = grid[0][1] * grid[0][2] = 2 * 1 = 2.\n    p[0][1] = grid[0][0] * grid[0][2] = 12345 * 1 = 12345. 12345 % 12345 = 0. So p[0][1] = 0.\n    p[0][2] = grid[0][0] * grid[0][1] = 12345 * 2 = 24690. 24690 % 12345 = 0. So p[0][2] = 0.\n    So the answer is [[2],[0],[0]].\n\n \n\n**Constraints:**\n\n  * `1 <= n == grid.length <= 105`\n  * `1 <= m == grid[i].length <= 105`\n  * `2 <= n * m <= 105`\n  * `1 <= grid[i][j] <= 109`",
+  "question": "Given a **0-indexed** 2D integer matrix `grid` of size `n * m`, we define a **0-indexed** 2D matrix `p` of size `n * m` as the **product** matrix of `grid` if the following condition is met:\n\n  * Each element `p[i][j]` is calculated as the product of all elements in `grid` except for the element `grid[i][j]`. This product is then taken modulo `12345`.\n\n\n\nReturn _the product matrix of_ `grid`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** grid = [[1,2],[3,4]]\n    **Output:** [[24,12],[8,6]]\n    **Explanation:** p[0][0] = grid[0][1] * grid[1][0] * grid[1][1] = 2 * 3 * 4 = 24\n    p[0][1] = grid[0][0] * grid[1][0] * grid[1][1] = 1 * 3 * 4 = 12\n    p[1][0] = grid[0][0] * grid[0][1] * grid[1][1] = 1 * 2 * 4 = 8\n    p[1][1] = grid[0][0] * grid[0][1] * grid[1][0] = 1 * 2 * 3 = 6\n    So the answer is [[24,12],[8,6]].\n\n**Example 2:**\n    \n    \n    **Input:** grid = [[12345],[2],[1]]\n    **Output:** [[2],[0],[0]]\n    **Explanation:** p[0][0] = grid[0][1] * grid[0][2] = 2 * 1 = 2.\n    p[0][1] = grid[0][0] * grid[0][2] = 12345 * 1 = 12345. 12345 % 12345 = 0. So p[0][1] = 0.\n    p[0][2] = grid[0][0] * grid[0][1] = 12345 * 2 = 24690. 24690 % 12345 = 0. So p[0][2] = 0.\n    So the answer is [[2],[0],[0]].",
+  "constraints": "**Constraints:**\n\n  * `1 <= n == grid.length <= 105`\n  * `1 <= m == grid[i].length <= 105`\n  * `2 <= n * m <= 105`\n  * `1 <= grid[i][j] <= 109`",
+  "topics": ["Array", "Matrix", "Prefix Sum"],
+  "total_accepted": 17043,
+  "total_submissions": 53158,
+  "acceptance_rate": "32.1%",
+  "similar_questions": [
+    {
+      "title": "Product of Array Except Self",
+      "slug": "product-of-array-except-self",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/product-of-array-except-self/"
+    }
+  ],
+  "hints": [
+    "Try to solve this without using the <code>'/'</code> (division operation).",
+    "Create two 2D arrays for <b>suffix</b> and <b>prefix</b> product, and use them to find the product for each position."
+  ]
+}

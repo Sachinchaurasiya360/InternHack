@@ -1,0 +1,18 @@
+{
+  "id": "353",
+  "title": "Design Snake Game",
+  "slug": "design-snake-game",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Design", "Queue", "Simulation"],
+  "total_accepted": 105318,
+  "total_submissions": 263363,
+  "acceptance_rate": "40.0%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,27 @@
+{
+  "id": "1339",
+  "title": "Maximum Product of Splitted Binary Tree",
+  "slug": "maximum-product-of-splitted-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.</p>\n\n<p>Return <em>the maximum product of the sums of the two subtrees</em>. Since the answer may be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p><strong>Note</strong> that you need to maximize the answer before taking the mod and not after taking it.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/21/sample_1_1699.png\" style=\"width: 500px; height: 167px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3,4,5,6]\n<strong>Output:</strong> 110\n<strong>Explanation:</strong> Remove the red edge and get 2 binary trees with sum 11 and 10. Their product is 110 (11*10)\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/21/sample_2_1699.png\" style=\"width: 500px; height: 211px;\" />\n<pre>\n<strong>Input:</strong> root = [1,null,2,3,4,null,null,5,6]\n<strong>Output:</strong> 90\n<strong>Explanation:</strong> Remove the red edge and get 2 binary trees with sum 15 and 6.Their product is 90 (15*6)\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[2, 5 * 10<sup>4</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.\n\nReturn _the maximum product of the sums of the two subtrees_. Since the answer may be too large, return it **modulo** `109 + 7`.\n\n**Note** that you need to maximize the answer before taking the mod and not after taking it.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/21/sample_1_1699.png)\n    \n    \n    **Input:** root = [1,2,3,4,5,6]\n    **Output:** 110\n    **Explanation:** Remove the red edge and get 2 binary trees with sum 11 and 10. Their product is 110 (11*10)\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/01/21/sample_2_1699.png)\n    \n    \n    **Input:** root = [1,null,2,3,4,null,null,5,6]\n    **Output:** 90\n    **Explanation:** Remove the red edge and get 2 binary trees with sum 15 and 6.Their product is 90 (15*6)\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 5 * 104]`.\n  * `1 <= Node.val <= 104`",
+  "question": "Given the `root` of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.\n\nReturn _the maximum product of the sums of the two subtrees_. Since the answer may be too large, return it **modulo** `109 + 7`.\n\n**Note** that you need to maximize the answer before taking the mod and not after taking it.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/21/sample_1_1699.png)\n    \n    \n    **Input:** root = [1,2,3,4,5,6]\n    **Output:** 110\n    **Explanation:** Remove the red edge and get 2 binary trees with sum 11 and 10. Their product is 110 (11*10)\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/01/21/sample_2_1699.png)\n    \n    \n    **Input:** root = [1,null,2,3,4,null,null,5,6]\n    **Output:** 90\n    **Explanation:** Remove the red edge and get 2 binary trees with sum 15 and 6.Their product is 90 (15*6)",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[2, 5 * 104]`.\n  * `1 <= Node.val <= 104`",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 253958,
+  "total_submissions": 457185,
+  "acceptance_rate": "55.5%",
+  "similar_questions": [
+    {
+      "title": "Count Nodes With the Highest Score",
+      "slug": "count-nodes-with-the-highest-score",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-nodes-with-the-highest-score/"
+    }
+  ],
+  "hints": [
+    "If we know the sum of a subtree, the answer is max( (total_sum - subtree_sum) * subtree_sum) in each node."
+  ]
+}

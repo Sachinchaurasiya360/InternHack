@@ -1,0 +1,40 @@
+{
+  "id": "1800",
+  "title": "Maximum Ascending Subarray Sum",
+  "slug": "maximum-ascending-subarray-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of positive integers <code>nums</code>, return the <strong>maximum</strong> possible sum of an <span data-keyword=\"strictly-increasing-array\">strictly increasing subarray</span> in<em> </em><code>nums</code>.</p>\n\n<p>A subarray is defined as a contiguous sequence of numbers in an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,20,30,5,10,50]\n<strong>Output:</strong> 65\n<strong>Explanation: </strong>[5,10,50] is the ascending subarray with the maximum sum of 65.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,20,30,40,50]\n<strong>Output:</strong> 150\n<strong>Explanation: </strong>[10,20,30,40,50] is the ascending subarray with the maximum sum of 150.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [12,17,15,13,10,11,12]\n<strong>Output:</strong> 33\n<strong>Explanation: </strong>[10,11,12] is the ascending subarray with the maximum sum of 33.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given an array of positive integers `nums`, return the **maximum** possible sum of an strictly increasing subarray in __`nums`.\n\nA subarray is defined as a contiguous sequence of numbers in an array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [10,20,30,5,10,50]\n    **Output:** 65\n    **Explanation:**[5,10,50] is the ascending subarray with the maximum sum of 65.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [10,20,30,40,50]\n    **Output:** 150\n    **Explanation:**[10,20,30,40,50] is the ascending subarray with the maximum sum of 150.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [12,17,15,13,10,11,12]\n    **Output:** 33\n    **Explanation:**[10,11,12] is the ascending subarray with the maximum sum of 33.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 100`",
+  "question": "Given an array of positive integers `nums`, return the **maximum** possible sum of an strictly increasing subarray in __`nums`.\n\nA subarray is defined as a contiguous sequence of numbers in an array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [10,20,30,5,10,50]\n    **Output:** 65\n    **Explanation:**[5,10,50] is the ascending subarray with the maximum sum of 65.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [10,20,30,40,50]\n    **Output:** 150\n    **Explanation:**[10,20,30,40,50] is the ascending subarray with the maximum sum of 150.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [12,17,15,13,10,11,12]\n    **Output:** 33\n    **Explanation:**[10,11,12] is the ascending subarray with the maximum sum of 33.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 100`",
+  "topics": ["Array"],
+  "total_accepted": 246885,
+  "total_submissions": 372402,
+  "acceptance_rate": "66.3%",
+  "similar_questions": [
+    {
+      "title": "Find Good Days to Rob the Bank",
+      "slug": "find-good-days-to-rob-the-bank",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-good-days-to-rob-the-bank/"
+    },
+    {
+      "title": "Maximum Number of Books You Can Take",
+      "slug": "maximum-number-of-books-you-can-take",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-books-you-can-take/"
+    },
+    {
+      "title": "Count Strictly Increasing Subarrays",
+      "slug": "count-strictly-increasing-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-strictly-increasing-subarrays/"
+    }
+  ],
+  "hints": [
+    "It is fast enough to check all possible subarrays",
+    "The end of each ascending subarray will be the start of the next"
+  ]
+}

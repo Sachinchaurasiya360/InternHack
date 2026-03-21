@@ -1,0 +1,18 @@
+{
+  "id": "1454",
+  "title": "Active Users",
+  "slug": "active-users",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 46851,
+  "total_submissions": 128043,
+  "acceptance_rate": "36.6%",
+  "similar_questions": [],
+  "hints": []
+}

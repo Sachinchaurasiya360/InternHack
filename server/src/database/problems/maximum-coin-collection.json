@@ -1,0 +1,21 @@
+{
+  "id": "3466",
+  "title": "Maximum Coin Collection ",
+  "slug": "maximum-coin-collection",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 2611,
+  "total_submissions": 4958,
+  "acceptance_rate": "52.7%",
+  "similar_questions": [],
+  "hints": [
+    "Can we use dynamic programming?",
+    "Use dynamic programming with states: <code>dp[i][lane][rem]</code> = the maximum number of coins you can obtain when you are at mile <code>i</code> in the given <code>lane</code> with <code>rem</code> switches remaining."
+  ]
+}

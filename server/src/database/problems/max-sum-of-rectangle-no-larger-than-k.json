@@ -1,0 +1,18 @@
+{
+  "id": "363",
+  "title": "Max Sum of Rectangle No Larger Than K",
+  "slug": "max-sum-of-rectangle-no-larger-than-k",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> matrix <code>matrix</code> and an integer <code>k</code>, return <em>the max sum of a rectangle in the matrix such that its sum is no larger than</em> <code>k</code>.</p>\n\n<p>It is <strong>guaranteed</strong> that there will be a rectangle with a sum no larger than <code>k</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/18/sum-grid.jpg\" style=\"width: 255px; height: 176px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,0,1],[0,-2,3]], k = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Because the sum of the blue rectangle [[0, 1], [-2, 3]] is 2, and 2 is the max number no larger than k (k = 2).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[2,2,-1]], k = 3\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 100</code></li>\n\t<li><code>-100 &lt;= matrix[i][j] &lt;= 100</code></li>\n\t<li><code>-10<sup>5</sup> &lt;= k &lt;= 10<sup>5</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> What if the number of rows is much larger than the number of columns?</p>\n",
+  "content_markdown": "Given an `m x n` matrix `matrix` and an integer `k`, return _the max sum of a rectangle in the matrix such that its sum is no larger than_ `k`.\n\nIt is **guaranteed** that there will be a rectangle with a sum no larger than `k`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/18/sum-grid.jpg)\n    \n    \n    **Input:** matrix = [[1,0,1],[0,-2,3]], k = 2\n    **Output:** 2\n    **Explanation:** Because the sum of the blue rectangle [[0, 1], [-2, 3]] is 2, and 2 is the max number no larger than k (k = 2).\n    \n\n**Example 2:**\n    \n    \n    **Input:** matrix = [[2,2,-1]], k = 3\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 100`\n  * `-100 <= matrix[i][j] <= 100`\n  * `-105 <= k <= 105`\n\n\n\n \n\n**Follow up:** What if the number of rows is much larger than the number of columns?",
+  "question": "Given an `m x n` matrix `matrix` and an integer `k`, return _the max sum of a rectangle in the matrix such that its sum is no larger than_ `k`.\n\nIt is **guaranteed** that there will be a rectangle with a sum no larger than `k`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/18/sum-grid.jpg)\n    \n    \n    **Input:** matrix = [[1,0,1],[0,-2,3]], k = 2\n    **Output:** 2\n    **Explanation:** Because the sum of the blue rectangle [[0, 1], [-2, 3]] is 2, and 2 is the max number no larger than k (k = 2).\n    \n\n**Example 2:**\n    \n    \n    **Input:** matrix = [[2,2,-1]], k = 3\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 100`\n  * `-100 <= matrix[i][j] <= 100`\n  * `-105 <= k <= 105`",
+  "topics": ["Array", "Binary Search", "Matrix", "Prefix Sum", "Ordered Set"],
+  "total_accepted": 141862,
+  "total_submissions": 313087,
+  "acceptance_rate": "45.3%",
+  "similar_questions": [],
+  "hints": []
+}

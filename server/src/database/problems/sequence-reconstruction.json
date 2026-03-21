@@ -1,0 +1,25 @@
+{
+  "id": "444",
+  "title": "Sequence Reconstruction",
+  "slug": "sequence-reconstruction",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Graph Theory", "Topological Sort"],
+  "total_accepted": 64410,
+  "total_submissions": 211219,
+  "acceptance_rate": "30.5%",
+  "similar_questions": [
+    {
+      "title": "Course Schedule II",
+      "slug": "course-schedule-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/course-schedule-ii/"
+    }
+  ],
+  "hints": []
+}

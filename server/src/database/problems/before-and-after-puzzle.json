@@ -1,0 +1,21 @@
+{
+  "id": "1181",
+  "title": "Before and After Puzzle",
+  "slug": "before-and-after-puzzle",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Sorting"],
+  "total_accepted": 13061,
+  "total_submissions": 25204,
+  "acceptance_rate": "51.8%",
+  "similar_questions": [],
+  "hints": [
+    "What if you check every pair of strings (bruteforce)?",
+    "For every two strings, check if they can form a puzzle by comparing their last and first words."
+  ]
+}

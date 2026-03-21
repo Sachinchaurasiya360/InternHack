@@ -1,0 +1,30 @@
+{
+  "id": "2559",
+  "title": "Count Vowel Strings in Ranges",
+  "slug": "count-vowel-strings-in-ranges",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array of strings <code>words</code> and a 2D array of integers <code>queries</code>.</p>\n\n<p>Each query <code>queries[i] = [l<sub>i</sub>, r<sub>i</sub>]</code> asks us to find the number of strings present at the indices ranging from <code>l<sub>i</sub></code> to <code>r<sub>i</sub></code> (both <strong>inclusive</strong>) of <code>words</code> that start and end with a vowel.</p>\n\n<p>Return <em>an array </em><code>ans</code><em> of size </em><code>queries.length</code><em>, where </em><code>ans[i]</code><em> is the answer to the </em><code>i</code><sup>th</sup><em> query</em>.</p>\n\n<p><strong>Note</strong> that the vowel letters are <code>&#39;a&#39;</code>, <code>&#39;e&#39;</code>, <code>&#39;i&#39;</code>, <code>&#39;o&#39;</code>, and <code>&#39;u&#39;</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;aba&quot;,&quot;bcb&quot;,&quot;ece&quot;,&quot;aa&quot;,&quot;e&quot;], queries = [[0,2],[1,4],[1,1]]\n<strong>Output:</strong> [2,3,0]\n<strong>Explanation:</strong> The strings starting and ending with a vowel are &quot;aba&quot;, &quot;ece&quot;, &quot;aa&quot; and &quot;e&quot;.\nThe answer to the query [0,2] is 2 (strings &quot;aba&quot; and &quot;ece&quot;).\nto query [1,4] is 3 (strings &quot;ece&quot;, &quot;aa&quot;, &quot;e&quot;).\nto query [1,1] is 0.\nWe return [2,3,0].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> words = [&quot;a&quot;,&quot;e&quot;,&quot;i&quot;], queries = [[0,2],[0,1],[2,2]]\n<strong>Output:</strong> [3,2,1]\n<strong>Explanation:</strong> Every string satisfies the conditions, so we return [3,2,1].</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 40</code></li>\n\t<li><code>words[i]</code> consists only of lowercase English letters.</li>\n\t<li><code>sum(words[i].length) &lt;= 3 * 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= queries.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= l<sub>i</sub> &lt;= r<sub>i</sub> &lt;&nbsp;words.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array of strings `words` and a 2D array of integers `queries`.\n\nEach query `queries[i] = [li, ri]` asks us to find the number of strings present at the indices ranging from `li` to `ri` (both **inclusive**) of `words` that start and end with a vowel.\n\nReturn _an array_`ans` _of size_`queries.length` _, where_`ans[i]`_is the answer to the_`i`th _query_.\n\n**Note** that the vowel letters are `'a'`, `'e'`, `'i'`, `'o'`, and `'u'`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** words = [\"aba\",\"bcb\",\"ece\",\"aa\",\"e\"], queries = [[0,2],[1,4],[1,1]]\n    **Output:** [2,3,0]\n    **Explanation:** The strings starting and ending with a vowel are \"aba\", \"ece\", \"aa\" and \"e\".\n    The answer to the query [0,2] is 2 (strings \"aba\" and \"ece\").\n    to query [1,4] is 3 (strings \"ece\", \"aa\", \"e\").\n    to query [1,1] is 0.\n    We return [2,3,0].\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"a\",\"e\",\"i\"], queries = [[0,2],[0,1],[2,2]]\n    **Output:** [3,2,1]\n    **Explanation:** Every string satisfies the conditions, so we return [3,2,1].\n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 105`\n  * `1 <= words[i].length <= 40`\n  * `words[i]` consists only of lowercase English letters.\n  * `sum(words[i].length) <= 3 * 105`\n  * `1 <= queries.length <= 105`\n  * `0 <= li <= ri < words.length`",
+  "question": "You are given a **0-indexed** array of strings `words` and a 2D array of integers `queries`.\n\nEach query `queries[i] = [li, ri]` asks us to find the number of strings present at the indices ranging from `li` to `ri` (both **inclusive**) of `words` that start and end with a vowel.\n\nReturn _an array_`ans` _of size_`queries.length` _, where_`ans[i]`_is the answer to the_`i`th _query_.\n\n**Note** that the vowel letters are `'a'`, `'e'`, `'i'`, `'o'`, and `'u'`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** words = [\"aba\",\"bcb\",\"ece\",\"aa\",\"e\"], queries = [[0,2],[1,4],[1,1]]\n    **Output:** [2,3,0]\n    **Explanation:** The strings starting and ending with a vowel are \"aba\", \"ece\", \"aa\" and \"e\".\n    The answer to the query [0,2] is 2 (strings \"aba\" and \"ece\").\n    to query [1,4] is 3 (strings \"ece\", \"aa\", \"e\").\n    to query [1,1] is 0.\n    We return [2,3,0].\n    \n\n**Example 2:**\n    \n    \n    **Input:** words = [\"a\",\"e\",\"i\"], queries = [[0,2],[0,1],[2,2]]\n    **Output:** [3,2,1]\n    **Explanation:** Every string satisfies the conditions, so we return [3,2,1].",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 105`\n  * `1 <= words[i].length <= 40`\n  * `words[i]` consists only of lowercase English letters.\n  * `sum(words[i].length) <= 3 * 105`\n  * `1 <= queries.length <= 105`\n  * `0 <= li <= ri < words.length`",
+  "topics": ["Array", "String", "Prefix Sum"],
+  "total_accepted": 201134,
+  "total_submissions": 296645,
+  "acceptance_rate": "67.8%",
+  "similar_questions": [
+    {
+      "title": "Jump Game VII",
+      "slug": "jump-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vii/"
+    }
+  ],
+  "hints": [
+    "Precompute the prefix sum of strings that start and end with vowels.",
+    "Use unordered_set to store vowels.",
+    "Check if the first and last characters of the string are present in the vowels set.",
+    "Subtract prefix sum for range [l-1, r] to find the number of strings starting and ending with vowels."
+  ]
+}

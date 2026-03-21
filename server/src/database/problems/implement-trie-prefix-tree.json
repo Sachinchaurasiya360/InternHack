@@ -1,0 +1,67 @@
+{
+  "id": "208",
+  "title": "Implement Trie (Prefix Tree)",
+  "slug": "implement-trie-prefix-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A <a href=\"https://en.wikipedia.org/wiki/Trie\" target=\"_blank\"><strong>trie</strong></a> (pronounced as &quot;try&quot;) or <strong>prefix tree</strong> is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.</p>\n\n<p>Implement the Trie class:</p>\n\n<ul>\n\t<li><code>Trie()</code> Initializes the trie object.</li>\n\t<li><code>void insert(String word)</code> Inserts the string <code>word</code> into the trie.</li>\n\t<li><code>boolean search(String word)</code> Returns <code>true</code> if the string <code>word</code> is in the trie (i.e., was inserted before), and <code>false</code> otherwise.</li>\n\t<li><code>boolean startsWith(String prefix)</code> Returns <code>true</code> if there is a previously inserted string <code>word</code> that has the prefix <code>prefix</code>, and <code>false</code> otherwise.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;Trie&quot;, &quot;insert&quot;, &quot;search&quot;, &quot;search&quot;, &quot;startsWith&quot;, &quot;insert&quot;, &quot;search&quot;]\n[[], [&quot;apple&quot;], [&quot;apple&quot;], [&quot;app&quot;], [&quot;app&quot;], [&quot;app&quot;], [&quot;app&quot;]]\n<strong>Output</strong>\n[null, null, true, false, true, null, true]\n\n<strong>Explanation</strong>\nTrie trie = new Trie();\ntrie.insert(&quot;apple&quot;);\ntrie.search(&quot;apple&quot;);   // return True\ntrie.search(&quot;app&quot;);     // return False\ntrie.startsWith(&quot;app&quot;); // return True\ntrie.insert(&quot;app&quot;);\ntrie.search(&quot;app&quot;);     // return True\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length, prefix.length &lt;= 2000</code></li>\n\t<li><code>word</code> and <code>prefix</code> consist only of lowercase English letters.</li>\n\t<li>At most <code>3 * 10<sup>4</sup></code> calls <strong>in total</strong> will be made to <code>insert</code>, <code>search</code>, and <code>startsWith</code>.</li>\n</ul>\n",
+  "content_markdown": "A [**trie**](<https://en.wikipedia.org/wiki/Trie>) (pronounced as \"try\") or **prefix tree** is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.\n\nImplement the Trie class:\n\n  * `Trie()` Initializes the trie object.\n  * `void insert(String word)` Inserts the string `word` into the trie.\n  * `boolean search(String word)` Returns `true` if the string `word` is in the trie (i.e., was inserted before), and `false` otherwise.\n  * `boolean startsWith(String prefix)` Returns `true` if there is a previously inserted string `word` that has the prefix `prefix`, and `false` otherwise.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"Trie\", \"insert\", \"search\", \"search\", \"startsWith\", \"insert\", \"search\"]\n    [[], [\"apple\"], [\"apple\"], [\"app\"], [\"app\"], [\"app\"], [\"app\"]]\n    **Output**\n    [null, null, true, false, true, null, true]\n    \n    **Explanation**\n    Trie trie = new Trie();\n    trie.insert(\"apple\");\n    trie.search(\"apple\");   // return True\n    trie.search(\"app\");     // return False\n    trie.startsWith(\"app\"); // return True\n    trie.insert(\"app\");\n    trie.search(\"app\");     // return True\n    \n\n \n\n**Constraints:**\n\n  * `1 <= word.length, prefix.length <= 2000`\n  * `word` and `prefix` consist only of lowercase English letters.\n  * At most `3 * 104` calls **in total** will be made to `insert`, `search`, and `startsWith`.",
+  "question": "A [**trie**](<https://en.wikipedia.org/wiki/Trie>) (pronounced as \"try\") or **prefix tree** is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.\n\nImplement the Trie class:\n\n  * `Trie()` Initializes the trie object.\n  * `void insert(String word)` Inserts the string `word` into the trie.\n  * `boolean search(String word)` Returns `true` if the string `word` is in the trie (i.e., was inserted before), and `false` otherwise.\n  * `boolean startsWith(String prefix)` Returns `true` if there is a previously inserted string `word` that has the prefix `prefix`, and `false` otherwise.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"Trie\", \"insert\", \"search\", \"search\", \"startsWith\", \"insert\", \"search\"]\n    [[], [\"apple\"], [\"apple\"], [\"app\"], [\"app\"], [\"app\"], [\"app\"]]\n    **Output**\n    [null, null, true, false, true, null, true]\n    \n    **Explanation**\n    Trie trie = new Trie();\n    trie.insert(\"apple\");\n    trie.search(\"apple\");   // return True\n    trie.search(\"app\");     // return False\n    trie.startsWith(\"app\"); // return True\n    trie.insert(\"app\");\n    trie.search(\"app\");     // return True",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length, prefix.length <= 2000`\n  * `word` and `prefix` consist only of lowercase English letters.\n  * At most `3 * 104` calls **in total** will be made to `insert`, `search`, and `startsWith`.",
+  "topics": ["Hash Table", "String", "Design", "Trie"],
+  "total_accepted": 1501768,
+  "total_submissions": 2170439,
+  "acceptance_rate": "69.2%",
+  "similar_questions": [
+    {
+      "title": "Design Add and Search Words Data Structure",
+      "slug": "design-add-and-search-words-data-structure",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/"
+    },
+    {
+      "title": "Design Search Autocomplete System",
+      "slug": "design-search-autocomplete-system",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/design-search-autocomplete-system/"
+    },
+    {
+      "title": "Replace Words",
+      "slug": "replace-words",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/replace-words/"
+    },
+    {
+      "title": "Implement Magic Dictionary",
+      "slug": "implement-magic-dictionary",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/implement-magic-dictionary/"
+    },
+    {
+      "title": "Encrypt and Decrypt Strings",
+      "slug": "encrypt-and-decrypt-strings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/encrypt-and-decrypt-strings/"
+    },
+    {
+      "title": "Implement Trie II (Prefix Tree)",
+      "slug": "implement-trie-ii-prefix-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/implement-trie-ii-prefix-tree/"
+    },
+    {
+      "title": "Count Prefix and Suffix Pairs II",
+      "slug": "count-prefix-and-suffix-pairs-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-prefix-and-suffix-pairs-ii/"
+    },
+    {
+      "title": "Count Prefix and Suffix Pairs I",
+      "slug": "count-prefix-and-suffix-pairs-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-prefix-and-suffix-pairs-i/"
+    }
+  ],
+  "hints": []
+}

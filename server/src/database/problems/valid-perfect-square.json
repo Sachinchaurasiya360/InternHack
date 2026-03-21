@@ -1,0 +1,31 @@
+{
+  "id": "367",
+  "title": "Valid Perfect Square",
+  "slug": "valid-perfect-square",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer num, return <code>true</code> <em>if</em> <code>num</code> <em>is a perfect square or</em> <code>false</code> <em>otherwise</em>.</p>\n\n<p>A <strong>perfect square</strong> is an integer that is the square of an integer. In other words, it is the product of some integer with itself.</p>\n\n<p>You must not use any built-in library function, such as <code>sqrt</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 16\n<strong>Output:</strong> true\n<strong>Explanation:</strong> We return true because 4 * 4 = 16 and 4 is an integer.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 14\n<strong>Output:</strong> false\n<strong>Explanation:</strong> We return false because 3.742 * 3.742 = 14 and 3.742 is not an integer.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer num, return `true` _if_ `num` _is a perfect square or_ `false` _otherwise_.\n\nA **perfect square** is an integer that is the square of an integer. In other words, it is the product of some integer with itself.\n\nYou must not use any built-in library function, such as `sqrt`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 16\n    **Output:** true\n    **Explanation:** We return true because 4 * 4 = 16 and 4 is an integer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 14\n    **Output:** false\n    **Explanation:** We return false because 3.742 * 3.742 = 14 and 3.742 is not an integer.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num <= 231 - 1`",
+  "question": "Given a positive integer num, return `true` _if_ `num` _is a perfect square or_ `false` _otherwise_.\n\nA **perfect square** is an integer that is the square of an integer. In other words, it is the product of some integer with itself.\n\nYou must not use any built-in library function, such as `sqrt`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 16\n    **Output:** true\n    **Explanation:** We return true because 4 * 4 = 16 and 4 is an integer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 14\n    **Output:** false\n    **Explanation:** We return false because 3.742 * 3.742 = 14 and 3.742 is not an integer.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num <= 231 - 1`",
+  "topics": ["Math", "Binary Search"],
+  "total_accepted": 895871,
+  "total_submissions": 2003817,
+  "acceptance_rate": "44.7%",
+  "similar_questions": [
+    {
+      "title": "Sqrt(x)",
+      "slug": "sqrtx",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sqrtx/"
+    },
+    {
+      "title": "Sum of Square Numbers",
+      "slug": "sum-of-square-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-square-numbers/"
+    }
+  ],
+  "hints": []
+}

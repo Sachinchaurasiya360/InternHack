@@ -1,0 +1,37 @@
+{
+  "id": "131",
+  "title": "Palindrome Partitioning",
+  "slug": "palindrome-partitioning",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, partition <code>s</code> such that every <span data-keyword=\"substring-nonempty\">substring</span> of the partition is a <span data-keyword=\"palindrome-string\"><strong>palindrome</strong></span>. Return <em>all possible palindrome partitioning of </em><code>s</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> s = \"aab\"\n<strong>Output:</strong> [[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> s = \"a\"\n<strong>Output:</strong> [[\"a\"]]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 16</code></li>\n\t<li><code>s</code> contains only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, partition `s` such that every substring of the partition is a **palindrome**. Return _all possible palindrome partitioning of_`s`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** [[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\"\n    **Output:** [[\"a\"]]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 16`\n  * `s` contains only lowercase English letters.",
+  "question": "Given a string `s`, partition `s` such that every substring of the partition is a **palindrome**. Return _all possible palindrome partitioning of_`s`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aab\"\n    **Output:** [[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\"\n    **Output:** [[\"a\"]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 16`\n  * `s` contains only lowercase English letters.",
+  "topics": ["String", "Dynamic Programming", "Backtracking"],
+  "total_accepted": 1305260,
+  "total_submissions": 1770778,
+  "acceptance_rate": "73.7%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Partitioning II",
+      "slug": "palindrome-partitioning-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-partitioning-ii/"
+    },
+    {
+      "title": "Palindrome Partitioning IV",
+      "slug": "palindrome-partitioning-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-partitioning-iv/"
+    },
+    {
+      "title": "Maximum Number of Non-overlapping Palindrome Substrings",
+      "slug": "maximum-number-of-non-overlapping-palindrome-substrings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-non-overlapping-palindrome-substrings/"
+    }
+  ],
+  "hints": []
+}

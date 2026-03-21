@@ -1,0 +1,31 @@
+{
+  "id": "412",
+  "title": "Fizz Buzz",
+  "slug": "fizz-buzz",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <em>a string array </em><code>answer</code><em> (<strong>1-indexed</strong>) where</em>:</p>\n\n<ul>\n\t<li><code>answer[i] == &quot;FizzBuzz&quot;</code> if <code>i</code> is divisible by <code>3</code> and <code>5</code>.</li>\n\t<li><code>answer[i] == &quot;Fizz&quot;</code> if <code>i</code> is divisible by <code>3</code>.</li>\n\t<li><code>answer[i] == &quot;Buzz&quot;</code> if <code>i</code> is divisible by <code>5</code>.</li>\n\t<li><code>answer[i] == i</code> (as a string) if none of the above conditions are true.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> n = 3\n<strong>Output:</strong> [\"1\",\"2\",\"Fizz\"]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> n = 5\n<strong>Output:</strong> [\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\"]\n</pre><p><strong class=\"example\">Example 3:</strong></p>\n<pre><strong>Input:</strong> n = 15\n<strong>Output:</strong> [\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\",\"Fizz\",\"7\",\"8\",\"Fizz\",\"Buzz\",\"11\",\"Fizz\",\"13\",\"14\",\"FizzBuzz\"]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, return _a string array_`answer` _(**1-indexed**) where_:\n\n  * `answer[i] == \"FizzBuzz\"` if `i` is divisible by `3` and `5`.\n  * `answer[i] == \"Fizz\"` if `i` is divisible by `3`.\n  * `answer[i] == \"Buzz\"` if `i` is divisible by `5`.\n  * `answer[i] == i` (as a string) if none of the above conditions are true.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** [\"1\",\"2\",\"Fizz\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** [\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\"]\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 15\n    **Output:** [\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\",\"Fizz\",\"7\",\"8\",\"Fizz\",\"Buzz\",\"11\",\"Fizz\",\"13\",\"14\",\"FizzBuzz\"]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 104`",
+  "question": "Given an integer `n`, return _a string array_`answer` _(**1-indexed**) where_:\n\n  * `answer[i] == \"FizzBuzz\"` if `i` is divisible by `3` and `5`.\n  * `answer[i] == \"Fizz\"` if `i` is divisible by `3`.\n  * `answer[i] == \"Buzz\"` if `i` is divisible by `5`.\n  * `answer[i] == i` (as a string) if none of the above conditions are true.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** [\"1\",\"2\",\"Fizz\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** [\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\"]\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 15\n    **Output:** [\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\",\"Fizz\",\"7\",\"8\",\"Fizz\",\"Buzz\",\"11\",\"Fizz\",\"13\",\"14\",\"FizzBuzz\"]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 104`",
+  "topics": ["Math", "String", "Simulation"],
+  "total_accepted": 1736535,
+  "total_submissions": 2307051,
+  "acceptance_rate": "75.3%",
+  "similar_questions": [
+    {
+      "title": "Fizz Buzz Multithreaded",
+      "slug": "fizz-buzz-multithreaded",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fizz-buzz-multithreaded/"
+    },
+    {
+      "title": "Categorize Box According to Criteria",
+      "slug": "categorize-box-according-to-criteria",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/categorize-box-according-to-criteria/"
+    }
+  ],
+  "hints": []
+}

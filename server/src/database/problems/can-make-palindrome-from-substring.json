@@ -1,0 +1,37 @@
+{
+  "id": "1177",
+  "title": "Can Make Palindrome from Substring",
+  "slug": "can-make-palindrome-from-substring",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> and array <code>queries</code> where <code>queries[i] = [left<sub>i</sub>, right<sub>i</sub>, k<sub>i</sub>]</code>. We may rearrange the substring <code>s[left<sub>i</sub>...right<sub>i</sub>]</code> for each query and then choose up to <code>k<sub>i</sub></code> of them to replace with any lowercase English letter.</p>\n\n<p>If the substring is possible to be a palindrome string after the operations above, the result of the query is <code>true</code>. Otherwise, the result is <code>false</code>.</p>\n\n<p>Return a boolean array <code>answer</code> where <code>answer[i]</code> is the result of the <code>i<sup>th</sup></code> query <code>queries[i]</code>.</p>\n\n<p>Note that each letter is counted individually for replacement, so if, for example <code>s[left<sub>i</sub>...right<sub>i</sub>] = &quot;aaa&quot;</code>, and <code>k<sub>i</sub> = 2</code>, we can only replace two of the letters. Also, note that no query modifies the initial string <code>s</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example :</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcda&quot;, queries = [[3,3,0],[1,2,0],[0,3,1],[0,3,2],[0,4,1]]\n<strong>Output:</strong> [true,false,false,true,true]\n<strong>Explanation:</strong>\nqueries[0]: substring = &quot;d&quot;, is palidrome.\nqueries[1]: substring = &quot;bc&quot;, is not palidrome.\nqueries[2]: substring = &quot;abcd&quot;, is not palidrome after replacing only 1 character.\nqueries[3]: substring = &quot;abcd&quot;, could be changed to &quot;abba&quot; which is palidrome. Also this can be changed to &quot;baab&quot; first rearrange it &quot;bacd&quot; then replace &quot;cd&quot; with &quot;ab&quot;.\nqueries[4]: substring = &quot;abcda&quot;, could be changed to &quot;abcba&quot; which is palidrome.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;lyb&quot;, queries = [[0,1,0],[2,2,1]]\n<strong>Output:</strong> [false,true]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length, queries.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= left<sub>i</sub> &lt;= right<sub>i</sub> &lt; s.length</code></li>\n\t<li><code>0 &lt;= k<sub>i</sub> &lt;= s.length</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` and array `queries` where `queries[i] = [lefti, righti, ki]`. We may rearrange the substring `s[lefti...righti]` for each query and then choose up to `ki` of them to replace with any lowercase English letter.\n\nIf the substring is possible to be a palindrome string after the operations above, the result of the query is `true`. Otherwise, the result is `false`.\n\nReturn a boolean array `answer` where `answer[i]` is the result of the `ith` query `queries[i]`.\n\nNote that each letter is counted individually for replacement, so if, for example `s[lefti...righti] = \"aaa\"`, and `ki = 2`, we can only replace two of the letters. Also, note that no query modifies the initial string `s`.\n\n \n\n**Example :**\n    \n    \n    **Input:** s = \"abcda\", queries = [[3,3,0],[1,2,0],[0,3,1],[0,3,2],[0,4,1]]\n    **Output:** [true,false,false,true,true]\n    **Explanation:**\n    queries[0]: substring = \"d\", is palidrome.\n    queries[1]: substring = \"bc\", is not palidrome.\n    queries[2]: substring = \"abcd\", is not palidrome after replacing only 1 character.\n    queries[3]: substring = \"abcd\", could be changed to \"abba\" which is palidrome. Also this can be changed to \"baab\" first rearrange it \"bacd\" then replace \"cd\" with \"ab\".\n    queries[4]: substring = \"abcda\", could be changed to \"abcba\" which is palidrome.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"lyb\", queries = [[0,1,0],[2,2,1]]\n    **Output:** [false,true]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length, queries.length <= 105`\n  * `0 <= lefti <= righti < s.length`\n  * `0 <= ki <= s.length`\n  * `s` consists of lowercase English letters.",
+  "question": "You are given a string `s` and array `queries` where `queries[i] = [lefti, righti, ki]`. We may rearrange the substring `s[lefti...righti]` for each query and then choose up to `ki` of them to replace with any lowercase English letter.\n\nIf the substring is possible to be a palindrome string after the operations above, the result of the query is `true`. Otherwise, the result is `false`.\n\nReturn a boolean array `answer` where `answer[i]` is the result of the `ith` query `queries[i]`.\n\nNote that each letter is counted individually for replacement, so if, for example `s[lefti...righti] = \"aaa\"`, and `ki = 2`, we can only replace two of the letters. Also, note that no query modifies the initial string `s`.",
+  "examples": "**Example :**\n    \n    \n    **Input:** s = \"abcda\", queries = [[3,3,0],[1,2,0],[0,3,1],[0,3,2],[0,4,1]]\n    **Output:** [true,false,false,true,true]\n    **Explanation:**\n    queries[0]: substring = \"d\", is palidrome.\n    queries[1]: substring = \"bc\", is not palidrome.\n    queries[2]: substring = \"abcd\", is not palidrome after replacing only 1 character.\n    queries[3]: substring = \"abcd\", could be changed to \"abba\" which is palidrome. Also this can be changed to \"baab\" first rearrange it \"bacd\" then replace \"cd\" with \"ab\".\n    queries[4]: substring = \"abcda\", could be changed to \"abcba\" which is palidrome.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"lyb\", queries = [[0,1,0],[2,2,1]]\n    **Output:** [false,true]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length, queries.length <= 105`\n  * `0 <= lefti <= righti < s.length`\n  * `0 <= ki <= s.length`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String", "Bit Manipulation", "Prefix Sum"],
+  "total_accepted": 35530,
+  "total_submissions": 86018,
+  "acceptance_rate": "41.3%",
+  "similar_questions": [
+    {
+      "title": "Plates Between Candles",
+      "slug": "plates-between-candles",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/plates-between-candles/"
+    },
+    {
+      "title": "Maximize the Number of Partitions After Operations",
+      "slug": "maximize-the-number-of-partitions-after-operations",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximize-the-number-of-partitions-after-operations/"
+    }
+  ],
+  "hints": [
+    "Since we can rearrange the substring, all we care about is the frequency of each character in that substring.",
+    "How to find the character frequencies efficiently ?",
+    "As a preprocess, calculate the accumulate frequency of all characters for all prefixes of the string.",
+    "How to check if a substring can be changed to a palindrome given its characters frequency ?",
+    "Count the number of odd frequencies, there can be at most one odd frequency in a palindrome."
+  ]
+}

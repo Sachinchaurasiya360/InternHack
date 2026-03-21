@@ -1,0 +1,20 @@
+{
+  "id": "1079",
+  "title": "Letter Tile Possibilities",
+  "slug": "letter-tile-possibilities",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You have <code>n</code>&nbsp;&nbsp;<code>tiles</code>, where each tile has one letter <code>tiles[i]</code> printed on it.</p>\n\n<p>Return <em>the number of possible non-empty sequences of letters</em> you can make using the letters printed on those <code>tiles</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> tiles = &quot;AAB&quot;\n<strong>Output:</strong> 8\n<strong>Explanation: </strong>The possible sequences are &quot;A&quot;, &quot;B&quot;, &quot;AA&quot;, &quot;AB&quot;, &quot;BA&quot;, &quot;AAB&quot;, &quot;ABA&quot;, &quot;BAA&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> tiles = &quot;AAABBC&quot;\n<strong>Output:</strong> 188\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> tiles = &quot;V&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= tiles.length &lt;= 7</code></li>\n\t<li><code>tiles</code> consists of uppercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You have `n`  `tiles`, where each tile has one letter `tiles[i]` printed on it.\n\nReturn _the number of possible non-empty sequences of letters_ you can make using the letters printed on those `tiles`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** tiles = \"AAB\"\n    **Output:** 8\n    **Explanation:** The possible sequences are \"A\", \"B\", \"AA\", \"AB\", \"BA\", \"AAB\", \"ABA\", \"BAA\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** tiles = \"AAABBC\"\n    **Output:** 188\n    \n\n**Example 3:**\n    \n    \n    **Input:** tiles = \"V\"\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= tiles.length <= 7`\n  * `tiles` consists of uppercase English letters.",
+  "question": "You have `n`  `tiles`, where each tile has one letter `tiles[i]` printed on it.\n\nReturn _the number of possible non-empty sequences of letters_ you can make using the letters printed on those `tiles`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** tiles = \"AAB\"\n    **Output:** 8\n    **Explanation:** The possible sequences are \"A\", \"B\", \"AA\", \"AB\", \"BA\", \"AAB\", \"ABA\", \"BAA\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** tiles = \"AAABBC\"\n    **Output:** 188\n    \n\n**Example 3:**\n    \n    \n    **Input:** tiles = \"V\"\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= tiles.length <= 7`\n  * `tiles` consists of uppercase English letters.",
+  "topics": ["Hash Table", "String", "Backtracking", "Counting"],
+  "total_accepted": 253931,
+  "total_submissions": 304030,
+  "acceptance_rate": "83.5%",
+  "similar_questions": [],
+  "hints": [
+    "Try to build the string with a backtracking DFS by considering what you can put in every position."
+  ]
+}

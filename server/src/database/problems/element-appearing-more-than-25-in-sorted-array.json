@@ -1,0 +1,22 @@
+{
+  "id": "1287",
+  "title": "Element Appearing More Than 25% In Sorted Array",
+  "slug": "element-appearing-more-than-25-in-sorted-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <strong>sorted</strong> in non-decreasing order, there is exactly one integer in the array that occurs more than 25% of the time, return that integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,2,6,6,6,6,7,10]\n<strong>Output:</strong> 6\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,1]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array **sorted** in non-decreasing order, there is exactly one integer in the array that occurs more than 25% of the time, return that integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2,2,6,6,6,6,7,10]\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,1]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `0 <= arr[i] <= 105`",
+  "question": "Given an integer array **sorted** in non-decreasing order, there is exactly one integer in the array that occurs more than 25% of the time, return that integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2,2,6,6,6,6,7,10]\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,1]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 104`\n  * `0 <= arr[i] <= 105`",
+  "topics": ["Array"],
+  "total_accepted": 254309,
+  "total_submissions": 415952,
+  "acceptance_rate": "61.1%",
+  "similar_questions": [],
+  "hints": [
+    "Divide the array in four parts [1 - 25%] [25 - 50 %] [50 - 75 %] [75% - 100%]",
+    "The answer should be in one of the ends of the intervals.",
+    "In order to check which is element is the answer we can count the frequency with binarySearch."
+  ]
+}

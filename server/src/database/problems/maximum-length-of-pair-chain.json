@@ -1,0 +1,37 @@
+{
+  "id": "646",
+  "title": "Maximum Length of Pair Chain",
+  "slug": "maximum-length-of-pair-chain",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of <code>n</code> pairs <code>pairs</code> where <code>pairs[i] = [left<sub>i</sub>, right<sub>i</sub>]</code> and <code>left<sub>i</sub> &lt; right<sub>i</sub></code>.</p>\n\n<p>A pair <code>p2 = [c, d]</code> <strong>follows</strong> a pair <code>p1 = [a, b]</code> if <code>b &lt; c</code>. A <strong>chain</strong> of pairs can be formed in this fashion.</p>\n\n<p>Return <em>the length longest chain which can be formed</em>.</p>\n\n<p>You do not need to use up all the given intervals. You can select pairs in any order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> pairs = [[1,2],[2,3],[3,4]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The longest chain is [1,2] -&gt; [3,4].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> pairs = [[1,2],[7,8],[4,5]]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The longest chain is [1,2] -&gt; [4,5] -&gt; [7,8].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == pairs.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n\t<li><code>-1000 &lt;= left<sub>i</sub> &lt; right<sub>i</sub> &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of `n` pairs `pairs` where `pairs[i] = [lefti, righti]` and `lefti < righti`.\n\nA pair `p2 = [c, d]` **follows** a pair `p1 = [a, b]` if `b < c`. A **chain** of pairs can be formed in this fashion.\n\nReturn _the length longest chain which can be formed_.\n\nYou do not need to use up all the given intervals. You can select pairs in any order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** pairs = [[1,2],[2,3],[3,4]]\n    **Output:** 2\n    **Explanation:** The longest chain is [1,2] -> [3,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** pairs = [[1,2],[7,8],[4,5]]\n    **Output:** 3\n    **Explanation:** The longest chain is [1,2] -> [4,5] -> [7,8].\n    \n\n \n\n**Constraints:**\n\n  * `n == pairs.length`\n  * `1 <= n <= 1000`\n  * `-1000 <= lefti < righti <= 1000`",
+  "question": "You are given an array of `n` pairs `pairs` where `pairs[i] = [lefti, righti]` and `lefti < righti`.\n\nA pair `p2 = [c, d]` **follows** a pair `p1 = [a, b]` if `b < c`. A **chain** of pairs can be formed in this fashion.\n\nReturn _the length longest chain which can be formed_.\n\nYou do not need to use up all the given intervals. You can select pairs in any order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** pairs = [[1,2],[2,3],[3,4]]\n    **Output:** 2\n    **Explanation:** The longest chain is [1,2] -> [3,4].\n    \n\n**Example 2:**\n    \n    \n    **Input:** pairs = [[1,2],[7,8],[4,5]]\n    **Output:** 3\n    **Explanation:** The longest chain is [1,2] -> [4,5] -> [7,8].",
+  "constraints": "**Constraints:**\n\n  * `n == pairs.length`\n  * `1 <= n <= 1000`\n  * `-1000 <= lefti < righti <= 1000`",
+  "topics": ["Array", "Dynamic Programming", "Greedy", "Sorting"],
+  "total_accepted": 307621,
+  "total_submissions": 499682,
+  "acceptance_rate": "61.6%",
+  "similar_questions": [
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    },
+    {
+      "title": "Non-decreasing Subsequences",
+      "slug": "non-decreasing-subsequences",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/non-decreasing-subsequences/"
+    },
+    {
+      "title": "Longest Non-decreasing Subarray From Two Arrays",
+      "slug": "longest-non-decreasing-subarray-from-two-arrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-non-decreasing-subarray-from-two-arrays/"
+    }
+  ],
+  "hints": []
+}

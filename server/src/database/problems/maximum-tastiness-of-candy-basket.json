@@ -1,0 +1,36 @@
+{
+  "id": "2517",
+  "title": "Maximum Tastiness of Candy Basket",
+  "slug": "maximum-tastiness-of-candy-basket",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of positive integers <code>price</code> where <code>price[i]</code> denotes the price of the <code>i<sup>th</sup></code> candy and a positive integer <code>k</code>.</p>\n\n<p>The store sells baskets of <code>k</code> <strong>distinct</strong> candies. The <strong>tastiness</strong> of a candy basket is the smallest absolute difference of the <strong>prices</strong> of any two candies in the basket.</p>\n\n<p>Return <em>the <strong>maximum</strong> tastiness of a candy basket.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> price = [13,5,1,8,21,2], k = 3\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> Choose the candies with the prices [13,5,21].\nThe tastiness of the candy basket is: min(|13 - 5|, |13 - 21|, |5 - 21|) = min(8, 8, 16) = 8.\nIt can be proven that 8 is the maximum tastiness that can be achieved.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> price = [1,3,1], k = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Choose the candies with the prices [1,3].\nThe tastiness of the candy basket is: min(|1 - 3|) = min(2) = 2.\nIt can be proven that 2 is the maximum tastiness that can be achieved.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> price = [7,7,7,7], k = 2\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> Choosing any two distinct candies from the candies we have will result in a tastiness of 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= k &lt;= price.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= price[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of positive integers `price` where `price[i]` denotes the price of the `ith` candy and a positive integer `k`.\n\nThe store sells baskets of `k` **distinct** candies. The **tastiness** of a candy basket is the smallest absolute difference of the **prices** of any two candies in the basket.\n\nReturn _the**maximum** tastiness of a candy basket._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** price = [13,5,1,8,21,2], k = 3\n    **Output:** 8\n    **Explanation:** Choose the candies with the prices [13,5,21].\n    The tastiness of the candy basket is: min(|13 - 5|, |13 - 21|, |5 - 21|) = min(8, 8, 16) = 8.\n    It can be proven that 8 is the maximum tastiness that can be achieved.\n    \n\n**Example 2:**\n    \n    \n    **Input:** price = [1,3,1], k = 2\n    **Output:** 2\n    **Explanation:** Choose the candies with the prices [1,3].\n    The tastiness of the candy basket is: min(|1 - 3|) = min(2) = 2.\n    It can be proven that 2 is the maximum tastiness that can be achieved.\n    \n\n**Example 3:**\n    \n    \n    **Input:** price = [7,7,7,7], k = 2\n    **Output:** 0\n    **Explanation:** Choosing any two distinct candies from the candies we have will result in a tastiness of 0.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= k <= price.length <= 105`\n  * `1 <= price[i] <= 109`",
+  "question": "You are given an array of positive integers `price` where `price[i]` denotes the price of the `ith` candy and a positive integer `k`.\n\nThe store sells baskets of `k` **distinct** candies. The **tastiness** of a candy basket is the smallest absolute difference of the **prices** of any two candies in the basket.\n\nReturn _the**maximum** tastiness of a candy basket._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** price = [13,5,1,8,21,2], k = 3\n    **Output:** 8\n    **Explanation:** Choose the candies with the prices [13,5,21].\n    The tastiness of the candy basket is: min(|13 - 5|, |13 - 21|, |5 - 21|) = min(8, 8, 16) = 8.\n    It can be proven that 8 is the maximum tastiness that can be achieved.\n    \n\n**Example 2:**\n    \n    \n    **Input:** price = [1,3,1], k = 2\n    **Output:** 2\n    **Explanation:** Choose the candies with the prices [1,3].\n    The tastiness of the candy basket is: min(|1 - 3|) = min(2) = 2.\n    It can be proven that 2 is the maximum tastiness that can be achieved.\n    \n\n**Example 3:**\n    \n    \n    **Input:** price = [7,7,7,7], k = 2\n    **Output:** 0\n    **Explanation:** Choosing any two distinct candies from the candies we have will result in a tastiness of 0.",
+  "constraints": "**Constraints:**\n\n  * `2 <= k <= price.length <= 105`\n  * `1 <= price[i] <= 109`",
+  "topics": ["Array", "Binary Search", "Greedy", "Sorting"],
+  "total_accepted": 38676,
+  "total_submissions": 56957,
+  "acceptance_rate": "67.9%",
+  "similar_questions": [
+    {
+      "title": "Container With Most Water",
+      "slug": "container-with-most-water",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/container-with-most-water/"
+    },
+    {
+      "title": "Sliding Window Maximum",
+      "slug": "sliding-window-maximum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sliding-window-maximum/"
+    }
+  ],
+  "hints": [
+    "The answer is binary searchable.",
+    "For some x, we can use a greedy strategy to check if it is possible to pick k distinct candies with tastiness being at least x.",
+    "Sort prices and iterate from left to right. For some price[i] check if the price difference between the last taken candy and price[i] is at least x. If so, add the candy i to the basket.",
+    "So, a candy basket with tastiness x can be achieved if the basket size is bigger than or equal to k."
+  ]
+}

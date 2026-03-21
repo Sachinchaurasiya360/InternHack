@@ -1,0 +1,18 @@
+{
+  "id": "2984",
+  "title": "Find Peak Calling Hours for Each City",
+  "slug": "find-peak-calling-hours-for-each-city",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 3838,
+  "total_submissions": 6249,
+  "acceptance_rate": "61.4%",
+  "similar_questions": [],
+  "hints": []
+}

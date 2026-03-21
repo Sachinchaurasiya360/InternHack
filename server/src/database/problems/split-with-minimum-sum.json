@@ -1,0 +1,46 @@
+{
+  "id": "2578",
+  "title": "Split With Minimum Sum",
+  "slug": "split-with-minimum-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer <code>num</code>, split it into two non-negative integers <code>num1</code> and <code>num2</code> such that:</p>\n\n<ul>\n\t<li>The concatenation of <code>num1</code> and <code>num2</code> is a permutation of <code>num</code>.\n\n\t<ul>\n\t\t<li>In other words, the sum of the number of occurrences of each digit in <code>num1</code> and <code>num2</code> is equal to the number of occurrences of that digit in <code>num</code>.</li>\n\t</ul>\n\t</li>\n\t<li><code>num1</code> and <code>num2</code> can contain leading zeros.</li>\n</ul>\n\n<p>Return <em>the <strong>minimum</strong> possible sum of</em> <code>num1</code> <em>and</em> <code>num2</code>.</p>\n\n<p><strong>Notes:</strong></p>\n\n<ul>\n\t<li>It is guaranteed that <code>num</code> does not contain any leading zeros.</li>\n\t<li>The order of occurrence of the digits in <code>num1</code> and <code>num2</code> may differ from the order of occurrence of <code>num</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 4325\n<strong>Output:</strong> 59\n<strong>Explanation:</strong> We can split 4325 so that <code>num1</code> is 24 and <code>num2</code> is 35, giving a sum of 59. We can prove that 59 is indeed the minimal possible sum.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 687\n<strong>Output:</strong> 75\n<strong>Explanation:</strong> We can split 687 so that <code>num1</code> is 68 and <code>num2</code> is 7, which would give an optimal sum of 75.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>10 &lt;= num &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a positive integer `num`, split it into two non-negative integers `num1` and `num2` such that:\n\n  * The concatenation of `num1` and `num2` is a permutation of `num`. \n    * In other words, the sum of the number of occurrences of each digit in `num1` and `num2` is equal to the number of occurrences of that digit in `num`.\n  * `num1` and `num2` can contain leading zeros.\n\n\n\nReturn _the**minimum** possible sum of_ `num1` _and_ `num2`.\n\n**Notes:**\n\n  * It is guaranteed that `num` does not contain any leading zeros.\n  * The order of occurrence of the digits in `num1` and `num2` may differ from the order of occurrence of `num`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 4325\n    **Output:** 59\n    **Explanation:** We can split 4325 so that num1 is 24 and num2 is 35, giving a sum of 59. We can prove that 59 is indeed the minimal possible sum.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 687\n    **Output:** 75\n    **Explanation:** We can split 687 so that num1 is 68 and num2 is 7, which would give an optimal sum of 75.\n    \n\n \n\n**Constraints:**\n\n  * `10 <= num <= 109`",
+  "question": "Given a positive integer `num`, split it into two non-negative integers `num1` and `num2` such that:\n\n  * The concatenation of `num1` and `num2` is a permutation of `num`. \n    * In other words, the sum of the number of occurrences of each digit in `num1` and `num2` is equal to the number of occurrences of that digit in `num`.\n  * `num1` and `num2` can contain leading zeros.\n\n\n\nReturn _the**minimum** possible sum of_ `num1` _and_ `num2`.\n\n**Notes:**\n\n  * It is guaranteed that `num` does not contain any leading zeros.\n  * The order of occurrence of the digits in `num1` and `num2` may differ from the order of occurrence of `num`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 4325\n    **Output:** 59\n    **Explanation:** We can split 4325 so that num1 is 24 and num2 is 35, giving a sum of 59. We can prove that 59 is indeed the minimal possible sum.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 687\n    **Output:** 75\n    **Explanation:** We can split 687 so that num1 is 68 and num2 is 7, which would give an optimal sum of 75.",
+  "constraints": "**Constraints:**\n\n  * `10 <= num <= 109`",
+  "topics": ["Math", "Greedy", "Sorting"],
+  "total_accepted": 51044,
+  "total_submissions": 69643,
+  "acceptance_rate": "73.3%",
+  "similar_questions": [
+    {
+      "title": "Partition Equal Subset Sum",
+      "slug": "partition-equal-subset-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-equal-subset-sum/"
+    },
+    {
+      "title": "Minimum Cost to Move Chips to The Same Position",
+      "slug": "minimum-cost-to-move-chips-to-the-same-position",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-cost-to-move-chips-to-the-same-position/"
+    },
+    {
+      "title": "Partition Array Into Two Arrays to Minimize Sum Difference",
+      "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/"
+    },
+    {
+      "title": "Minimum Sum of Values by Dividing Array",
+      "slug": "minimum-sum-of-values-by-dividing-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-sum-of-values-by-dividing-array/"
+    }
+  ],
+  "hints": [
+    "Sort the digits of num in non decreasing order.",
+    "Assign digits to num1 and num2 alternatively."
+  ]
+}

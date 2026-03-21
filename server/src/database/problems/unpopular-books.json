@@ -1,0 +1,18 @@
+{
+  "id": "1098",
+  "title": "Unpopular Books",
+  "slug": "unpopular-books",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 47939,
+  "total_submissions": 110450,
+  "acceptance_rate": "43.4%",
+  "similar_questions": [],
+  "hints": []
+}

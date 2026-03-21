@@ -1,0 +1,25 @@
+{
+  "id": "716",
+  "title": "Max Stack",
+  "slug": "max-stack",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Linked List", "Stack", "Design", "Doubly-Linked List", "Ordered Set"],
+  "total_accepted": 182709,
+  "total_submissions": 398293,
+  "acceptance_rate": "45.9%",
+  "similar_questions": [
+    {
+      "title": "Min Stack",
+      "slug": "min-stack",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/min-stack/"
+    }
+  ],
+  "hints": []
+}

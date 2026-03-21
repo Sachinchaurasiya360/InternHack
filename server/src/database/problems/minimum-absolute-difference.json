@@ -1,0 +1,34 @@
+{
+  "id": "1200",
+  "title": "Minimum Absolute Difference",
+  "slug": "minimum-absolute-difference",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of <strong>distinct</strong> integers <code>arr</code>, find all pairs of elements with the minimum absolute difference of any two elements.</p>\n\n<p>Return a list of pairs in ascending order(with respect to pairs), each pair <code>[a, b]</code> follows</p>\n\n<ul>\n\t<li><code>a, b</code> are from <code>arr</code></li>\n\t<li><code>a &lt; b</code></li>\n\t<li><code>b - a</code> equals to the minimum absolute difference of any two elements in <code>arr</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [4,2,1,3]\n<strong>Output:</strong> [[1,2],[2,3],[3,4]]\n<strong>Explanation: </strong>The minimum absolute difference is 1. List all pairs with difference equal to 1 in ascending order.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,3,6,10,15]\n<strong>Output:</strong> [[1,3]]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [3,8,-10,23,19,-4,-14,27]\n<strong>Output:</strong> [[-14,-10],[19,23],[23,27]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>6</sup> &lt;= arr[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of **distinct** integers `arr`, find all pairs of elements with the minimum absolute difference of any two elements.\n\nReturn a list of pairs in ascending order(with respect to pairs), each pair `[a, b]` follows\n\n  * `a, b` are from `arr`\n  * `a < b`\n  * `b - a` equals to the minimum absolute difference of any two elements in `arr`\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [4,2,1,3]\n    **Output:** [[1,2],[2,3],[3,4]]\n    **Explanation:** The minimum absolute difference is 1. List all pairs with difference equal to 1 in ascending order.\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,3,6,10,15]\n    **Output:** [[1,3]]\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [3,8,-10,23,19,-4,-14,27]\n    **Output:** [[-14,-10],[19,23],[23,27]]\n    \n\n \n\n**Constraints:**\n\n  * `2 <= arr.length <= 105`\n  * `-106 <= arr[i] <= 106`",
+  "question": "Given an array of **distinct** integers `arr`, find all pairs of elements with the minimum absolute difference of any two elements.\n\nReturn a list of pairs in ascending order(with respect to pairs), each pair `[a, b]` follows\n\n  * `a, b` are from `arr`\n  * `a < b`\n  * `b - a` equals to the minimum absolute difference of any two elements in `arr`",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [4,2,1,3]\n    **Output:** [[1,2],[2,3],[3,4]]\n    **Explanation:** The minimum absolute difference is 1. List all pairs with difference equal to 1 in ascending order.\n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,3,6,10,15]\n    **Output:** [[1,3]]\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [3,8,-10,23,19,-4,-14,27]\n    **Output:** [[-14,-10],[19,23],[23,27]]",
+  "constraints": "**Constraints:**\n\n  * `2 <= arr.length <= 105`\n  * `-106 <= arr[i] <= 106`",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 425785,
+  "total_submissions": 567413,
+  "acceptance_rate": "75.0%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost of Buying Candies With Discount",
+      "slug": "minimum-cost-of-buying-candies-with-discount",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-cost-of-buying-candies-with-discount/"
+    },
+    {
+      "title": "Minimize the Maximum Difference of Pairs",
+      "slug": "minimize-the-maximum-difference-of-pairs",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimize-the-maximum-difference-of-pairs/"
+    }
+  ],
+  "hints": [
+    "Find the minimum absolute difference between two elements in the array.",
+    "The minimum absolute difference must be a difference between two consecutive elements in the sorted array."
+  ]
+}

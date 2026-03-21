@@ -1,0 +1,21 @@
+{
+  "id": "1189",
+  "title": "Maximum Number of Balloons",
+  "slug": "maximum-number-of-balloons",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>text</code>, you want to use the characters of <code>text</code> to form as many instances of the word <strong>&quot;balloon&quot;</strong> as possible.</p>\n\n<p>You can use each character in <code>text</code> <strong>at most once</strong>. Return the maximum number of instances that can be formed.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/09/05/1536_ex1_upd.JPG\" style=\"width: 132px; height: 35px;\" /></strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;nlaebolko&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/09/05/1536_ex2_upd.JPG\" style=\"width: 267px; height: 35px;\" /></strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;loonbalxballpoon&quot;\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;leetcode&quot;\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= text.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>text</code> consists of lower case English letters only.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as <a href=\"https://leetcode.com/problems/rearrange-characters-to-make-target-string/description/\" target=\"_blank\"> 2287: Rearrange Characters to Make Target String.</a></p>\n",
+  "content_markdown": "Given a string `text`, you want to use the characters of `text` to form as many instances of the word **\" balloon\"** as possible.\n\nYou can use each character in `text` **at most once**. Return the maximum number of instances that can be formed.\n\n \n\n**Example 1:**\n\n**![](https://assets.leetcode.com/uploads/2019/09/05/1536_ex1_upd.JPG)**\n    \n    \n    **Input:** text = \"nlaebolko\"\n    **Output:** 1\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2019/09/05/1536_ex2_upd.JPG)**\n    \n    \n    **Input:** text = \"loonbalxballpoon\"\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** text = \"leetcode\"\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= text.length <= 104`\n  * `text` consists of lower case English letters only.\n\n\n\n \n\n**Note:** This question is the same as [ 2287: Rearrange Characters to Make Target String.](<https://leetcode.com/problems/rearrange-characters-to-make-target-string/description/>)",
+  "question": "Given a string `text`, you want to use the characters of `text` to form as many instances of the word **\" balloon\"** as possible.\n\nYou can use each character in `text` **at most once**. Return the maximum number of instances that can be formed.",
+  "examples": "**Example 1:**\n\n**![](https://assets.leetcode.com/uploads/2019/09/05/1536_ex1_upd.JPG)**\n    \n    \n    **Input:** text = \"nlaebolko\"\n    **Output:** 1\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2019/09/05/1536_ex2_upd.JPG)**\n    \n    \n    **Input:** text = \"loonbalxballpoon\"\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** text = \"leetcode\"\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= text.length <= 104`\n  * `text` consists of lower case English letters only.\n\n\n\n \n\n**Note:** This question is the same as [ 2287: Rearrange Characters to Make Target String.](<https://leetcode.com/problems/rearrange-characters-to-make-target-string/description/>)",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 321745,
+  "total_submissions": 535831,
+  "acceptance_rate": "60.0%",
+  "similar_questions": [],
+  "hints": [
+    "Count the frequency of letters in the given string.",
+    "Find the letter than can make the minimum number of instances of the word \"balloon\"."
+  ]
+}

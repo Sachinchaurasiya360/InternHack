@@ -1,0 +1,27 @@
+{
+  "id": "683",
+  "title": "K Empty Slots",
+  "slug": "k-empty-slots",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Binary Indexed Tree",
+    "Segment Tree",
+    "Queue",
+    "Sliding Window",
+    "Heap (Priority Queue)",
+    "Ordered Set",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 67101,
+  "total_submissions": 176824,
+  "acceptance_rate": "37.9%",
+  "similar_questions": [],
+  "hints": []
+}

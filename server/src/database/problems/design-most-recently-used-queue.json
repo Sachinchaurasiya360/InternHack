@@ -1,0 +1,36 @@
+{
+  "id": "1756",
+  "title": "Design Most Recently Used Queue",
+  "slug": "design-most-recently-used-queue",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Linked List",
+    "Divide and Conquer",
+    "Design",
+    "Simulation",
+    "Doubly-Linked List"
+  ],
+  "total_accepted": 25441,
+  "total_submissions": 32715,
+  "acceptance_rate": "77.8%",
+  "similar_questions": [
+    {
+      "title": "LRU Cache",
+      "slug": "lru-cache",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lru-cache/"
+    }
+  ],
+  "hints": [
+    "You can store the data in an array and apply each fetch by moving the ith element to the end of the array (i.e, O(n) per operation).",
+    "A better way is to use the square root decomposition technique.",
+    "You can build chunks of size sqrt(n). For each fetch operation, You can search for the chunk which has the ith element and update it (i.e., O(sqrt(n)) per operation), and move this element to an empty chunk at the end."
+  ]
+}

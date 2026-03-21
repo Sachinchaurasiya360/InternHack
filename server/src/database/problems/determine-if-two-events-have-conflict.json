@@ -1,0 +1,40 @@
+{
+  "id": "2446",
+  "title": "Determine if Two Events Have Conflict",
+  "slug": "determine-if-two-events-have-conflict",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two arrays of strings that represent two inclusive events that happened <strong>on the same day</strong>, <code>event1</code> and <code>event2</code>, where:</p>\n\n<ul>\n\t<li><code>event1 = [startTime<sub>1</sub>, endTime<sub>1</sub>]</code> and</li>\n\t<li><code>event2 = [startTime<sub>2</sub>, endTime<sub>2</sub>]</code>.</li>\n</ul>\n\n<p>Event times are valid 24 hours format in the form of <code>HH:MM</code>.</p>\n\n<p>A <strong>conflict</strong> happens when two events have some non-empty intersection (i.e., some moment is common to both events).</p>\n\n<p>Return <code>true</code><em> if there is a conflict between two events. Otherwise, return </em><code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> event1 = [&quot;01:15&quot;,&quot;02:00&quot;], event2 = [&quot;02:00&quot;,&quot;03:00&quot;]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The two events intersect at time 2:00.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> event1 = [&quot;01:00&quot;,&quot;02:00&quot;], event2 = [&quot;01:20&quot;,&quot;03:00&quot;]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The two events intersect starting from 01:20 to 02:00.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> event1 = [&quot;10:00&quot;,&quot;11:00&quot;], event2 = [&quot;14:00&quot;,&quot;15:00&quot;]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The two events do not intersect.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>event1.length == event2.length == 2</code></li>\n\t<li><code>event1[i].length == event2[i].length == 5</code></li>\n\t<li><code>startTime<sub>1</sub> &lt;= endTime<sub>1</sub></code></li>\n\t<li><code>startTime<sub>2</sub> &lt;= endTime<sub>2</sub></code></li>\n\t<li>All the event times follow the <code>HH:MM</code> format.</li>\n</ul>\n",
+  "content_markdown": "You are given two arrays of strings that represent two inclusive events that happened **on the same day** , `event1` and `event2`, where:\n\n  * `event1 = [startTime1, endTime1]` and\n  * `event2 = [startTime2, endTime2]`.\n\n\n\nEvent times are valid 24 hours format in the form of `HH:MM`.\n\nA **conflict** happens when two events have some non-empty intersection (i.e., some moment is common to both events).\n\nReturn `true` _if there is a conflict between two events. Otherwise, return_`false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** event1 = [\"01:15\",\"02:00\"], event2 = [\"02:00\",\"03:00\"]\n    **Output:** true\n    **Explanation:** The two events intersect at time 2:00.\n    \n\n**Example 2:**\n    \n    \n    **Input:** event1 = [\"01:00\",\"02:00\"], event2 = [\"01:20\",\"03:00\"]\n    **Output:** true\n    **Explanation:** The two events intersect starting from 01:20 to 02:00.\n    \n\n**Example 3:**\n    \n    \n    **Input:** event1 = [\"10:00\",\"11:00\"], event2 = [\"14:00\",\"15:00\"]\n    **Output:** false\n    **Explanation:** The two events do not intersect.\n    \n\n \n\n**Constraints:**\n\n  * `event1.length == event2.length == 2`\n  * `event1[i].length == event2[i].length == 5`\n  * `startTime1 <= endTime1`\n  * `startTime2 <= endTime2`\n  * All the event times follow the `HH:MM` format.",
+  "question": "You are given two arrays of strings that represent two inclusive events that happened **on the same day** , `event1` and `event2`, where:\n\n  * `event1 = [startTime1, endTime1]` and\n  * `event2 = [startTime2, endTime2]`.\n\n\n\nEvent times are valid 24 hours format in the form of `HH:MM`.\n\nA **conflict** happens when two events have some non-empty intersection (i.e., some moment is common to both events).\n\nReturn `true` _if there is a conflict between two events. Otherwise, return_`false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** event1 = [\"01:15\",\"02:00\"], event2 = [\"02:00\",\"03:00\"]\n    **Output:** true\n    **Explanation:** The two events intersect at time 2:00.\n    \n\n**Example 2:**\n    \n    \n    **Input:** event1 = [\"01:00\",\"02:00\"], event2 = [\"01:20\",\"03:00\"]\n    **Output:** true\n    **Explanation:** The two events intersect starting from 01:20 to 02:00.\n    \n\n**Example 3:**\n    \n    \n    **Input:** event1 = [\"10:00\",\"11:00\"], event2 = [\"14:00\",\"15:00\"]\n    **Output:** false\n    **Explanation:** The two events do not intersect.",
+  "constraints": "**Constraints:**\n\n  * `event1.length == event2.length == 2`\n  * `event1[i].length == event2[i].length == 5`\n  * `startTime1 <= endTime1`\n  * `startTime2 <= endTime2`\n  * All the event times follow the `HH:MM` format.",
+  "topics": ["Array", "String"],
+  "total_accepted": 63354,
+  "total_submissions": 119378,
+  "acceptance_rate": "53.1%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Non-overlapping Intervals",
+      "slug": "non-overlapping-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/non-overlapping-intervals/"
+    },
+    {
+      "title": "My Calendar I",
+      "slug": "my-calendar-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/my-calendar-i/"
+    }
+  ],
+  "hints": [
+    "Parse time format to some integer interval first",
+    "How would you determine if two intervals overlap?"
+  ]
+}

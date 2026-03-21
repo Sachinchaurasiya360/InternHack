@@ -1,0 +1,28 @@
+{
+  "id": "1684",
+  "title": "Count the Number of Consistent Strings",
+  "slug": "count-the-number-of-consistent-strings",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>allowed</code> consisting of <strong>distinct</strong> characters and an array of strings <code>words</code>. A string is <strong>consistent </strong>if all characters in the string appear in the string <code>allowed</code>.</p>\n\n<p>Return<em> the number of <strong>consistent</strong> strings in the array </em><code>words</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> allowed = &quot;ab&quot;, words = [&quot;ad&quot;,&quot;bd&quot;,&quot;aaab&quot;,&quot;baa&quot;,&quot;badab&quot;]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Strings &quot;aaab&quot; and &quot;baa&quot; are consistent since they only contain characters &#39;a&#39; and &#39;b&#39;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> allowed = &quot;abc&quot;, words = [&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;ab&quot;,&quot;ac&quot;,&quot;bc&quot;,&quot;abc&quot;]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> All strings are consistent.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> allowed = &quot;cad&quot;, words = [&quot;cc&quot;,&quot;acd&quot;,&quot;b&quot;,&quot;ba&quot;,&quot;bac&quot;,&quot;bad&quot;,&quot;ac&quot;,&quot;d&quot;]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Strings &quot;cc&quot;, &quot;acd&quot;, &quot;ac&quot;, and &quot;d&quot; are consistent.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= words.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= allowed.length &lt;=<sup> </sup>26</code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 10</code></li>\n\t<li>The characters in <code>allowed</code> are <strong>distinct</strong>.</li>\n\t<li><code>words[i]</code> and <code>allowed</code> contain only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `allowed` consisting of **distinct** characters and an array of strings `words`. A string is **consistent** if all characters in the string appear in the string `allowed`.\n\nReturn _the number of**consistent** strings in the array _`words`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** allowed = \"ab\", words = [\"ad\",\"bd\",\"aaab\",\"baa\",\"badab\"]\n    **Output:** 2\n    **Explanation:** Strings \"aaab\" and \"baa\" are consistent since they only contain characters 'a' and 'b'.\n    \n\n**Example 2:**\n    \n    \n    **Input:** allowed = \"abc\", words = [\"a\",\"b\",\"c\",\"ab\",\"ac\",\"bc\",\"abc\"]\n    **Output:** 7\n    **Explanation:** All strings are consistent.\n    \n\n**Example 3:**\n    \n    \n    **Input:** allowed = \"cad\", words = [\"cc\",\"acd\",\"b\",\"ba\",\"bac\",\"bad\",\"ac\",\"d\"]\n    **Output:** 4\n    **Explanation:** Strings \"cc\", \"acd\", \"ac\", and \"d\" are consistent.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= words.length <= 104`\n  * `1 <= allowed.length <= 26`\n  * `1 <= words[i].length <= 10`\n  * The characters in `allowed` are **distinct**.\n  * `words[i]` and `allowed` contain only lowercase English letters.",
+  "question": "You are given a string `allowed` consisting of **distinct** characters and an array of strings `words`. A string is **consistent** if all characters in the string appear in the string `allowed`.\n\nReturn _the number of**consistent** strings in the array _`words`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** allowed = \"ab\", words = [\"ad\",\"bd\",\"aaab\",\"baa\",\"badab\"]\n    **Output:** 2\n    **Explanation:** Strings \"aaab\" and \"baa\" are consistent since they only contain characters 'a' and 'b'.\n    \n\n**Example 2:**\n    \n    \n    **Input:** allowed = \"abc\", words = [\"a\",\"b\",\"c\",\"ab\",\"ac\",\"bc\",\"abc\"]\n    **Output:** 7\n    **Explanation:** All strings are consistent.\n    \n\n**Example 3:**\n    \n    \n    **Input:** allowed = \"cad\", words = [\"cc\",\"acd\",\"b\",\"ba\",\"bac\",\"bad\",\"ac\",\"d\"]\n    **Output:** 4\n    **Explanation:** Strings \"cc\", \"acd\", \"ac\", and \"d\" are consistent.",
+  "constraints": "**Constraints:**\n\n  * `1 <= words.length <= 104`\n  * `1 <= allowed.length <= 26`\n  * `1 <= words[i].length <= 10`\n  * The characters in `allowed` are **distinct**.\n  * `words[i]` and `allowed` contain only lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String", "Bit Manipulation", "Counting"],
+  "total_accepted": 436475,
+  "total_submissions": 493318,
+  "acceptance_rate": "88.5%",
+  "similar_questions": [
+    {
+      "title": "Count Pairs Of Similar Strings",
+      "slug": "count-pairs-of-similar-strings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-pairs-of-similar-strings/"
+    }
+  ],
+  "hints": [
+    "A string is incorrect if it contains a character that is not allowed",
+    "Constraints are small enough for brute force"
+  ]
+}

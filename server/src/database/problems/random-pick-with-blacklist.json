@@ -1,0 +1,37 @@
+{
+  "id": "710",
+  "title": "Random Pick with Blacklist",
+  "slug": "random-pick-with-blacklist",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code> and an array of <strong>unique</strong> integers <code>blacklist</code>. Design an algorithm to pick a random integer in the range <code>[0, n - 1]</code> that is <strong>not</strong> in <code>blacklist</code>. Any integer that is in the mentioned range and not in <code>blacklist</code> should be <strong>equally likely</strong> to be returned.</p>\n\n<p>Optimize your algorithm such that it minimizes the number of calls to the <strong>built-in</strong> random function of your language.</p>\n\n<p>Implement the <code>Solution</code> class:</p>\n\n<ul>\n\t<li><code>Solution(int n, int[] blacklist)</code> Initializes the object with the integer <code>n</code> and the blacklisted integers <code>blacklist</code>.</li>\n\t<li><code>int pick()</code> Returns a random integer in the range <code>[0, n - 1]</code> and not in <code>blacklist</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;Solution&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;, &quot;pick&quot;]\n[[7, [2, 3, 5]], [], [], [], [], [], [], []]\n<strong>Output</strong>\n[null, 0, 4, 1, 6, 1, 0, 4]\n\n<strong>Explanation</strong>\nSolution solution = new Solution(7, [2, 3, 5]);\nsolution.pick(); // return 0, any integer from [0,1,4,6] should be ok. Note that for every call of pick,\n                 // 0, 1, 4, and 6 must be equally likely to be returned (i.e., with probability 1/4).\nsolution.pick(); // return 4\nsolution.pick(); // return 1\nsolution.pick(); // return 6\nsolution.pick(); // return 1\nsolution.pick(); // return 0\nsolution.pick(); // return 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>9</sup></code></li>\n\t<li><code>0 &lt;= blacklist.length &lt;= min(10<sup>5</sup>, n - 1)</code></li>\n\t<li><code>0 &lt;= blacklist[i] &lt; n</code></li>\n\t<li>All the values of <code>blacklist</code> are <strong>unique</strong>.</li>\n\t<li>At most <code>2 * 10<sup>4</sup></code> calls will be made to <code>pick</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n` and an array of **unique** integers `blacklist`. Design an algorithm to pick a random integer in the range `[0, n - 1]` that is **not** in `blacklist`. Any integer that is in the mentioned range and not in `blacklist` should be **equally likely** to be returned.\n\nOptimize your algorithm such that it minimizes the number of calls to the **built-in** random function of your language.\n\nImplement the `Solution` class:\n\n  * `Solution(int n, int[] blacklist)` Initializes the object with the integer `n` and the blacklisted integers `blacklist`.\n  * `int pick()` Returns a random integer in the range `[0, n - 1]` and not in `blacklist`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"Solution\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\"]\n    [[7, [2, 3, 5]], [], [], [], [], [], [], []]\n    **Output**\n    [null, 0, 4, 1, 6, 1, 0, 4]\n    \n    **Explanation**\n    Solution solution = new Solution(7, [2, 3, 5]);\n    solution.pick(); // return 0, any integer from [0,1,4,6] should be ok. Note that for every call of pick,\n                     // 0, 1, 4, and 6 must be equally likely to be returned (i.e., with probability 1/4).\n    solution.pick(); // return 4\n    solution.pick(); // return 1\n    solution.pick(); // return 6\n    solution.pick(); // return 1\n    solution.pick(); // return 0\n    solution.pick(); // return 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 109`\n  * `0 <= blacklist.length <= min(105, n - 1)`\n  * `0 <= blacklist[i] < n`\n  * All the values of `blacklist` are **unique**.\n  * At most `2 * 104` calls will be made to `pick`.",
+  "question": "You are given an integer `n` and an array of **unique** integers `blacklist`. Design an algorithm to pick a random integer in the range `[0, n - 1]` that is **not** in `blacklist`. Any integer that is in the mentioned range and not in `blacklist` should be **equally likely** to be returned.\n\nOptimize your algorithm such that it minimizes the number of calls to the **built-in** random function of your language.\n\nImplement the `Solution` class:\n\n  * `Solution(int n, int[] blacklist)` Initializes the object with the integer `n` and the blacklisted integers `blacklist`.\n  * `int pick()` Returns a random integer in the range `[0, n - 1]` and not in `blacklist`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"Solution\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\", \"pick\"]\n    [[7, [2, 3, 5]], [], [], [], [], [], [], []]\n    **Output**\n    [null, 0, 4, 1, 6, 1, 0, 4]\n    \n    **Explanation**\n    Solution solution = new Solution(7, [2, 3, 5]);\n    solution.pick(); // return 0, any integer from [0,1,4,6] should be ok. Note that for every call of pick,\n                     // 0, 1, 4, and 6 must be equally likely to be returned (i.e., with probability 1/4).\n    solution.pick(); // return 4\n    solution.pick(); // return 1\n    solution.pick(); // return 6\n    solution.pick(); // return 1\n    solution.pick(); // return 0\n    solution.pick(); // return 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 109`\n  * `0 <= blacklist.length <= min(105, n - 1)`\n  * `0 <= blacklist[i] < n`\n  * All the values of `blacklist` are **unique**.\n  * At most `2 * 104` calls will be made to `pick`.",
+  "topics": ["Array", "Hash Table", "Math", "Binary Search", "Sorting", "Randomized"],
+  "total_accepted": 51667,
+  "total_submissions": 149194,
+  "acceptance_rate": "34.6%",
+  "similar_questions": [
+    {
+      "title": "Random Pick Index",
+      "slug": "random-pick-index",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/random-pick-index/"
+    },
+    {
+      "title": "Random Pick with Weight",
+      "slug": "random-pick-with-weight",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/random-pick-with-weight/"
+    },
+    {
+      "title": "Find Unique Binary String",
+      "slug": "find-unique-binary-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-unique-binary-string/"
+    }
+  ],
+  "hints": []
+}

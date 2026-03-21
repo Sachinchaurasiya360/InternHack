@@ -1,0 +1,31 @@
+{
+  "id": "605",
+  "title": "Can Place Flowers",
+  "slug": "can-place-flowers",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You have a long flowerbed in which some of the plots are planted, and some are not. However, flowers cannot be planted in <strong>adjacent</strong> plots.</p>\n\n<p>Given an integer array <code>flowerbed</code> containing <code>0</code>&#39;s and <code>1</code>&#39;s, where <code>0</code> means empty and <code>1</code> means not empty, and an integer <code>n</code>, return <code>true</code>&nbsp;<em>if</em> <code>n</code> <em>new flowers can be planted in the</em> <code>flowerbed</code> <em>without violating the no-adjacent-flowers rule and</em> <code>false</code> <em>otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> flowerbed = [1,0,0,0,1], n = 1\n<strong>Output:</strong> true\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> flowerbed = [1,0,0,0,1], n = 2\n<strong>Output:</strong> false\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= flowerbed.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>flowerbed[i]</code> is <code>0</code> or <code>1</code>.</li>\n\t<li>There are no two adjacent flowers in <code>flowerbed</code>.</li>\n\t<li><code>0 &lt;= n &lt;= flowerbed.length</code></li>\n</ul>\n",
+  "content_markdown": "You have a long flowerbed in which some of the plots are planted, and some are not. However, flowers cannot be planted in **adjacent** plots.\n\nGiven an integer array `flowerbed` containing `0`'s and `1`'s, where `0` means empty and `1` means not empty, and an integer `n`, return `true` _if_ `n` _new flowers can be planted in the_ `flowerbed` _without violating the no-adjacent-flowers rule and_ `false` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** flowerbed = [1,0,0,0,1], n = 1\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** flowerbed = [1,0,0,0,1], n = 2\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `1 <= flowerbed.length <= 2 * 104`\n  * `flowerbed[i]` is `0` or `1`.\n  * There are no two adjacent flowers in `flowerbed`.\n  * `0 <= n <= flowerbed.length`",
+  "question": "You have a long flowerbed in which some of the plots are planted, and some are not. However, flowers cannot be planted in **adjacent** plots.\n\nGiven an integer array `flowerbed` containing `0`'s and `1`'s, where `0` means empty and `1` means not empty, and an integer `n`, return `true` _if_ `n` _new flowers can be planted in the_ `flowerbed` _without violating the no-adjacent-flowers rule and_ `false` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** flowerbed = [1,0,0,0,1], n = 1\n    **Output:** true\n    \n\n**Example 2:**\n    \n    \n    **Input:** flowerbed = [1,0,0,0,1], n = 2\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `1 <= flowerbed.length <= 2 * 104`\n  * `flowerbed[i]` is `0` or `1`.\n  * There are no two adjacent flowers in `flowerbed`.\n  * `0 <= n <= flowerbed.length`",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 1358548,
+  "total_submissions": 4676558,
+  "acceptance_rate": "29.1%",
+  "similar_questions": [
+    {
+      "title": "Teemo Attacking",
+      "slug": "teemo-attacking",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/teemo-attacking/"
+    },
+    {
+      "title": "Asteroid Collision",
+      "slug": "asteroid-collision",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/asteroid-collision/"
+    }
+  ],
+  "hints": []
+}

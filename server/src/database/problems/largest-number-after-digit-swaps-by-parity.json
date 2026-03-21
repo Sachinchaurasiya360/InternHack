@@ -1,0 +1,53 @@
+{
+  "id": "2231",
+  "title": "Largest Number After Digit Swaps by Parity",
+  "slug": "largest-number-after-digit-swaps-by-parity",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>num</code>. You may swap any two digits of <code>num</code> that have the same <strong>parity</strong> (i.e. both odd digits or both even digits).</p>\n\n<p>Return<em> the <strong>largest</strong> possible value of </em><code>num</code><em> after <strong>any</strong> number of swaps.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 1234\n<strong>Output:</strong> 3412\n<strong>Explanation:</strong> Swap the digit 3 with the digit 1, this results in the number 3214.\nSwap the digit 2 with the digit 4, this results in the number 3412.\nNote that there may be other sequences of swaps but it can be shown that 3412 is the largest possible number.\nAlso note that we may not swap the digit 4 with the digit 1 since they are of different parities.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 65875\n<strong>Output:</strong> 87655\n<strong>Explanation:</strong> Swap the digit 8 with the digit 6, this results in the number 85675.\nSwap the first digit 5 with the digit 7, this results in the number 87655.\nNote that there may be other sequences of swaps but it can be shown that 87655 is the largest possible number.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `num`. You may swap any two digits of `num` that have the same **parity** (i.e. both odd digits or both even digits).\n\nReturn _the**largest** possible value of _`num` _after**any** number of swaps._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 1234\n    **Output:** 3412\n    **Explanation:** Swap the digit 3 with the digit 1, this results in the number 3214.\n    Swap the digit 2 with the digit 4, this results in the number 3412.\n    Note that there may be other sequences of swaps but it can be shown that 3412 is the largest possible number.\n    Also note that we may not swap the digit 4 with the digit 1 since they are of different parities.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 65875\n    **Output:** 87655\n    **Explanation:** Swap the digit 8 with the digit 6, this results in the number 85675.\n    Swap the first digit 5 with the digit 7, this results in the number 87655.\n    Note that there may be other sequences of swaps but it can be shown that 87655 is the largest possible number.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num <= 109`",
+  "question": "You are given a positive integer `num`. You may swap any two digits of `num` that have the same **parity** (i.e. both odd digits or both even digits).\n\nReturn _the**largest** possible value of _`num` _after**any** number of swaps._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 1234\n    **Output:** 3412\n    **Explanation:** Swap the digit 3 with the digit 1, this results in the number 3214.\n    Swap the digit 2 with the digit 4, this results in the number 3412.\n    Note that there may be other sequences of swaps but it can be shown that 3412 is the largest possible number.\n    Also note that we may not swap the digit 4 with the digit 1 since they are of different parities.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 65875\n    **Output:** 87655\n    **Explanation:** Swap the digit 8 with the digit 6, this results in the number 85675.\n    Swap the first digit 5 with the digit 7, this results in the number 87655.\n    Note that there may be other sequences of swaps but it can be shown that 87655 is the largest possible number.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num <= 109`",
+  "topics": ["Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 65209,
+  "total_submissions": 100273,
+  "acceptance_rate": "65.0%",
+  "similar_questions": [
+    {
+      "title": "Largest Number At Least Twice of Others",
+      "slug": "largest-number-at-least-twice-of-others",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/largest-number-at-least-twice-of-others/"
+    },
+    {
+      "title": "Sort Array By Parity",
+      "slug": "sort-array-by-parity",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-parity/"
+    },
+    {
+      "title": "Sort Array By Parity II",
+      "slug": "sort-array-by-parity-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-parity-ii/"
+    },
+    {
+      "title": "Smallest String With Swaps",
+      "slug": "smallest-string-with-swaps",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-string-with-swaps/"
+    },
+    {
+      "title": "Rearrange Array Elements by Sign",
+      "slug": "rearrange-array-elements-by-sign",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rearrange-array-elements-by-sign/"
+    }
+  ],
+  "hints": [
+    "The bigger digit should appear first (more to the left) because it contributes more to the value of the number.",
+    "Get all the even digits, as well as odd digits. Sort them separately.",
+    "Reconstruct the number by giving the earlier digits the highest available digit of the same parity."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "293",
+  "title": "Flip Game",
+  "slug": "flip-game",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String"],
+  "total_accepted": 79055,
+  "total_submissions": 121583,
+  "acceptance_rate": "65.0%",
+  "similar_questions": [
+    {
+      "title": "Flip Game II",
+      "slug": "flip-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flip-game-ii/"
+    }
+  ],
+  "hints": []
+}

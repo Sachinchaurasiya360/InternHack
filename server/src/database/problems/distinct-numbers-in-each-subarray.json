@@ -1,0 +1,22 @@
+{
+  "id": "1852",
+  "title": "Distinct Numbers in Each Subarray",
+  "slug": "distinct-numbers-in-each-subarray",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Sliding Window"],
+  "total_accepted": 16721,
+  "total_submissions": 21632,
+  "acceptance_rate": "77.3%",
+  "similar_questions": [],
+  "hints": [
+    "Keep a frequency map of the elements in each window.",
+    "When the frequency of the element is 0, remove it from the map.",
+    "The answer to each window is the size of the map."
+  ]
+}

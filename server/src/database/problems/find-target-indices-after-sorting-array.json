@@ -1,0 +1,40 @@
+{
+  "id": "2089",
+  "title": "Find Target Indices After Sorting Array",
+  "slug": "find-target-indices-after-sorting-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code> and a target element <code>target</code>.</p>\n\n<p>A <strong>target index</strong> is an index <code>i</code> such that <code>nums[i] == target</code>.</p>\n\n<p>Return <em>a list of the target indices of</em> <code>nums</code> after<em> sorting </em><code>nums</code><em> in <strong>non-decreasing</strong> order</em>. If there are no target indices, return <em>an <strong>empty</strong> list</em>. The returned list must be sorted in <strong>increasing</strong> order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,5,2,3], target = 2\n<strong>Output:</strong> [1,2]\n<strong>Explanation:</strong> After sorting, nums is [1,<u><strong>2</strong></u>,<u><strong>2</strong></u>,3,5].\nThe indices where nums[i] == 2 are 1 and 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,5,2,3], target = 3\n<strong>Output:</strong> [3]\n<strong>Explanation:</strong> After sorting, nums is [1,2,2,<u><strong>3</strong></u>,5].\nThe index where nums[i] == 3 is 3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,5,2,3], target = 5\n<strong>Output:</strong> [4]\n<strong>Explanation:</strong> After sorting, nums is [1,2,2,3,<u><strong>5</strong></u>].\nThe index where nums[i] == 5 is 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i], target &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums` and a target element `target`.\n\nA **target index** is an index `i` such that `nums[i] == target`.\n\nReturn _a list of the target indices of_ `nums` after _sorting_`nums` _in**non-decreasing** order_. If there are no target indices, return _an**empty** list_. The returned list must be sorted in **increasing** order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,5,2,3], target = 2\n    **Output:** [1,2]\n    **Explanation:** After sorting, nums is [1,_**2**_ ,_**2**_ ,3,5].\n    The indices where nums[i] == 2 are 1 and 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,5,2,3], target = 3\n    **Output:** [3]\n    **Explanation:** After sorting, nums is [1,2,2,_**3**_ ,5].\n    The index where nums[i] == 3 is 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,5,2,3], target = 5\n    **Output:** [4]\n    **Explanation:** After sorting, nums is [1,2,2,3,_**5**_].\n    The index where nums[i] == 5 is 4.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i], target <= 100`",
+  "question": "You are given a **0-indexed** integer array `nums` and a target element `target`.\n\nA **target index** is an index `i` such that `nums[i] == target`.\n\nReturn _a list of the target indices of_ `nums` after _sorting_`nums` _in**non-decreasing** order_. If there are no target indices, return _an**empty** list_. The returned list must be sorted in **increasing** order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,5,2,3], target = 2\n    **Output:** [1,2]\n    **Explanation:** After sorting, nums is [1,_**2**_ ,_**2**_ ,3,5].\n    The indices where nums[i] == 2 are 1 and 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,5,2,3], target = 3\n    **Output:** [3]\n    **Explanation:** After sorting, nums is [1,2,2,_**3**_ ,5].\n    The index where nums[i] == 3 is 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,5,2,3], target = 5\n    **Output:** [4]\n    **Explanation:** After sorting, nums is [1,2,2,3,_**5**_].\n    The index where nums[i] == 5 is 4.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i], target <= 100`",
+  "topics": ["Array", "Binary Search", "Sorting"],
+  "total_accepted": 269508,
+  "total_submissions": 346230,
+  "acceptance_rate": "77.8%",
+  "similar_questions": [
+    {
+      "title": "Find First and Last Position of Element in Sorted Array",
+      "slug": "find-first-and-last-position-of-element-in-sorted-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/"
+    },
+    {
+      "title": "Rank Transform of an Array",
+      "slug": "rank-transform-of-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/rank-transform-of-an-array/"
+    },
+    {
+      "title": "Find Words Containing Character",
+      "slug": "find-words-containing-character",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-words-containing-character/"
+    }
+  ],
+  "hints": [
+    "Try \"sorting\" the array first.",
+    "Now find all indices in the array whose values are equal to target."
+  ]
+}

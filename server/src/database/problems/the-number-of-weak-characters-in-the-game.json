@@ -1,0 +1,34 @@
+{
+  "id": "1996",
+  "title": "The Number of Weak Characters in the Game",
+  "slug": "the-number-of-weak-characters-in-the-game",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are playing a game that contains multiple characters, and each of the characters has <strong>two</strong> main properties: <strong>attack</strong> and <strong>defense</strong>. You are given a 2D integer array <code>properties</code> where <code>properties[i] = [attack<sub>i</sub>, defense<sub>i</sub>]</code> represents the properties of the <code>i<sup>th</sup></code> character in the game.</p>\n\n<p>A character is said to be <strong>weak</strong> if any other character has <strong>both</strong> attack and defense levels <strong>strictly greater</strong> than this character&#39;s attack and defense levels. More formally, a character <code>i</code> is said to be <strong>weak</strong> if there exists another character <code>j</code> where <code>attack<sub>j</sub> &gt; attack<sub>i</sub></code> and <code>defense<sub>j</sub> &gt; defense<sub>i</sub></code>.</p>\n\n<p>Return <em>the number of <strong>weak</strong> characters</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> properties = [[5,5],[6,3],[3,6]]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> No character has strictly greater attack and defense than the other.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> properties = [[2,2],[3,3]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The first character is weak because the second character has a strictly greater attack and defense.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> properties = [[1,5],[10,4],[4,3]]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The third character is weak because the second character has a strictly greater attack and defense.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= properties.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>properties[i].length == 2</code></li>\n\t<li><code>1 &lt;= attack<sub>i</sub>, defense<sub>i</sub> &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are playing a game that contains multiple characters, and each of the characters has **two** main properties: **attack** and **defense**. You are given a 2D integer array `properties` where `properties[i] = [attacki, defensei]` represents the properties of the `ith` character in the game.\n\nA character is said to be **weak** if any other character has **both** attack and defense levels **strictly greater** than this character's attack and defense levels. More formally, a character `i` is said to be **weak** if there exists another character `j` where `attackj > attacki` and `defensej > defensei`.\n\nReturn _the number of**weak** characters_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** properties = [[5,5],[6,3],[3,6]]\n    **Output:** 0\n    **Explanation:** No character has strictly greater attack and defense than the other.\n    \n\n**Example 2:**\n    \n    \n    **Input:** properties = [[2,2],[3,3]]\n    **Output:** 1\n    **Explanation:** The first character is weak because the second character has a strictly greater attack and defense.\n    \n\n**Example 3:**\n    \n    \n    **Input:** properties = [[1,5],[10,4],[4,3]]\n    **Output:** 1\n    **Explanation:** The third character is weak because the second character has a strictly greater attack and defense.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= properties.length <= 105`\n  * `properties[i].length == 2`\n  * `1 <= attacki, defensei <= 105`",
+  "question": "You are playing a game that contains multiple characters, and each of the characters has **two** main properties: **attack** and **defense**. You are given a 2D integer array `properties` where `properties[i] = [attacki, defensei]` represents the properties of the `ith` character in the game.\n\nA character is said to be **weak** if any other character has **both** attack and defense levels **strictly greater** than this character's attack and defense levels. More formally, a character `i` is said to be **weak** if there exists another character `j` where `attackj > attacki` and `defensej > defensei`.\n\nReturn _the number of**weak** characters_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** properties = [[5,5],[6,3],[3,6]]\n    **Output:** 0\n    **Explanation:** No character has strictly greater attack and defense than the other.\n    \n\n**Example 2:**\n    \n    \n    **Input:** properties = [[2,2],[3,3]]\n    **Output:** 1\n    **Explanation:** The first character is weak because the second character has a strictly greater attack and defense.\n    \n\n**Example 3:**\n    \n    \n    **Input:** properties = [[1,5],[10,4],[4,3]]\n    **Output:** 1\n    **Explanation:** The third character is weak because the second character has a strictly greater attack and defense.",
+  "constraints": "**Constraints:**\n\n  * `2 <= properties.length <= 105`\n  * `properties[i].length == 2`\n  * `1 <= attacki, defensei <= 105`",
+  "topics": ["Array", "Stack", "Greedy", "Sorting", "Monotonic Stack"],
+  "total_accepted": 117416,
+  "total_submissions": 263930,
+  "acceptance_rate": "44.5%",
+  "similar_questions": [
+    {
+      "title": "Russian Doll Envelopes",
+      "slug": "russian-doll-envelopes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/russian-doll-envelopes/"
+    },
+    {
+      "title": "Maximum Height by Stacking Cuboids ",
+      "slug": "maximum-height-by-stacking-cuboids",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-height-by-stacking-cuboids/"
+    }
+  ],
+  "hints": [
+    "Sort the array on the basis of the attack values and group characters with the same attack together. How can you use these groups?",
+    "Characters in one group will always have a lesser attack value than the characters of the next group. Hence, we will only need to check if there is a higher defense value present in the next groups."
+  ]
+}

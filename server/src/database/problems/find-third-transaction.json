@@ -1,0 +1,18 @@
+{
+  "id": "2986",
+  "title": "Find Third Transaction",
+  "slug": "find-third-transaction",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 4276,
+  "total_submissions": 7966,
+  "acceptance_rate": "53.7%",
+  "similar_questions": [],
+  "hints": []
+}

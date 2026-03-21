@@ -1,0 +1,30 @@
+{
+  "id": "2558",
+  "title": "Take Gifts From the Richest Pile",
+  "slug": "take-gifts-from-the-richest-pile",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>gifts</code> denoting the number of gifts in various piles. Every second, you do the following:</p>\n\n<ul>\n\t<li>Choose the pile with the maximum number of gifts.</li>\n\t<li>If there is more than one pile with the maximum number of gifts, choose any.</li>\n\t<li>Reduce the number of gifts in the pile to the floor of the square root of the original number of gifts in the pile.</li>\n</ul>\n\n<p>Return <em>the number of gifts remaining after </em><code>k</code><em> seconds.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> gifts = [25,64,9,4,100], k = 4\n<strong>Output:</strong> 29\n<strong>Explanation:</strong> \nThe gifts are taken in the following way:\n- In the first second, the last pile is chosen and 10 gifts are left behind.\n- Then the second pile is chosen and 8 gifts are left behind.\n- After that the first pile is chosen and 5 gifts are left behind.\n- Finally, the last pile is chosen again and 3 gifts are left behind.\nThe final remaining gifts are [5,8,9,4,3], so the total number of gifts remaining is 29.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> gifts = [1,1,1,1], k = 4\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> \nIn this case, regardless which pile you choose, you have to leave behind 1 gift in each pile. \nThat is, you can&#39;t take any pile with you. \nSo, the total gifts remaining are 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= gifts.length &lt;= 10<sup>3</sup></code></li>\n\t<li><code>1 &lt;= gifts[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>3</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `gifts` denoting the number of gifts in various piles. Every second, you do the following:\n\n  * Choose the pile with the maximum number of gifts.\n  * If there is more than one pile with the maximum number of gifts, choose any.\n  * Reduce the number of gifts in the pile to the floor of the square root of the original number of gifts in the pile.\n\n\n\nReturn _the number of gifts remaining after_`k` _seconds._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** gifts = [25,64,9,4,100], k = 4\n    **Output:** 29\n    **Explanation:** \n    The gifts are taken in the following way:\n    - In the first second, the last pile is chosen and 10 gifts are left behind.\n    - Then the second pile is chosen and 8 gifts are left behind.\n    - After that the first pile is chosen and 5 gifts are left behind.\n    - Finally, the last pile is chosen again and 3 gifts are left behind.\n    The final remaining gifts are [5,8,9,4,3], so the total number of gifts remaining is 29.\n    \n\n**Example 2:**\n    \n    \n    **Input:** gifts = [1,1,1,1], k = 4\n    **Output:** 4\n    **Explanation:** \n    In this case, regardless which pile you choose, you have to leave behind 1 gift in each pile. \n    That is, you can't take any pile with you. \n    So, the total gifts remaining are 4.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= gifts.length <= 103`\n  * `1 <= gifts[i] <= 109`\n  * `1 <= k <= 103`",
+  "question": "You are given an integer array `gifts` denoting the number of gifts in various piles. Every second, you do the following:\n\n  * Choose the pile with the maximum number of gifts.\n  * If there is more than one pile with the maximum number of gifts, choose any.\n  * Reduce the number of gifts in the pile to the floor of the square root of the original number of gifts in the pile.\n\n\n\nReturn _the number of gifts remaining after_`k` _seconds._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** gifts = [25,64,9,4,100], k = 4\n    **Output:** 29\n    **Explanation:** \n    The gifts are taken in the following way:\n    - In the first second, the last pile is chosen and 10 gifts are left behind.\n    - Then the second pile is chosen and 8 gifts are left behind.\n    - After that the first pile is chosen and 5 gifts are left behind.\n    - Finally, the last pile is chosen again and 3 gifts are left behind.\n    The final remaining gifts are [5,8,9,4,3], so the total number of gifts remaining is 29.\n    \n\n**Example 2:**\n    \n    \n    **Input:** gifts = [1,1,1,1], k = 4\n    **Output:** 4\n    **Explanation:** \n    In this case, regardless which pile you choose, you have to leave behind 1 gift in each pile. \n    That is, you can't take any pile with you. \n    So, the total gifts remaining are 4.",
+  "constraints": "**Constraints:**\n\n  * `1 <= gifts.length <= 103`\n  * `1 <= gifts[i] <= 109`\n  * `1 <= k <= 103`",
+  "topics": ["Array", "Heap (Priority Queue)", "Simulation"],
+  "total_accepted": 196608,
+  "total_submissions": 260364,
+  "acceptance_rate": "75.5%",
+  "similar_questions": [
+    {
+      "title": "Remove Stones to Minimize the Total",
+      "slug": "remove-stones-to-minimize-the-total",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-stones-to-minimize-the-total/"
+    }
+  ],
+  "hints": [
+    "How can you keep track of the largest gifts in the array",
+    "What is an efficient way to find the square root of a number?",
+    "Can you keep adding up the values of the gifts while ensuring they are in a certain order?",
+    "Can we use a priority queue or heap here?"
+  ]
+}

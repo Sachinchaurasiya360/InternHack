@@ -1,0 +1,25 @@
+{
+  "id": "1919",
+  "title": "Leetcodify Similar Friends",
+  "slug": "leetcodify-similar-friends",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 7698,
+  "total_submissions": 17841,
+  "acceptance_rate": "43.1%",
+  "similar_questions": [
+    {
+      "title": "Leetcodify Friends Recommendations",
+      "slug": "leetcodify-friends-recommendations",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/leetcodify-friends-recommendations/"
+    }
+  ],
+  "hints": []
+}

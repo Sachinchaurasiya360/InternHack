@@ -1,0 +1,35 @@
+{
+  "id": "2862",
+  "title": "Maximum Element-Sum of a Complete Subset of Indices",
+  "slug": "maximum-element-sum-of-a-complete-subset-of-indices",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>1</strong><strong>-indexed</strong> array <code>nums</code>. Your task is to select a <strong>complete subset</strong> from <code>nums</code> where every pair of selected indices multiplied is a <span data-keyword=\"perfect-square\">perfect square,</span>. i. e. if you select <code>a<sub>i</sub></code> and <code>a<sub>j</sub></code>, <code>i * j</code> must be a perfect square.</p>\n\n<p>Return the <em>sum</em> of the complete subset with the <em>maximum sum</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [8,7,3,5,7,2,4,9]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">16</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We select elements at indices 2 and 8 and <code>2 * 8</code> is a perfect square.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [8,10,3,8,1,13,7,9,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">20</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>We select elements at indices 1, 4, and 9. <code>1 * 4</code>, <code>1 * 9</code>, <code>4 * 9</code> are perfect squares.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n == nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **1****-indexed** array `nums`. Your task is to select a **complete subset** from `nums` where every pair of selected indices multiplied is a perfect square,. i. e. if you select `ai` and `aj`, `i * j` must be a perfect square.\n\nReturn the _sum_ of the complete subset with the _maximum sum_.\n\n \n\n**Example 1:**\n\n**Input:** nums = [8,7,3,5,7,2,4,9]\n\n**Output:** 16\n\n**Explanation:**\n\nWe select elements at indices 2 and 8 and `2 * 8` is a perfect square.\n\n**Example 2:**\n\n**Input:** nums = [8,10,3,8,1,13,7,9,4]\n\n**Output:** 20\n\n**Explanation:**\n\nWe select elements at indices 1, 4, and 9. `1 * 4`, `1 * 9`, `4 * 9` are perfect squares.\n\n \n\n**Constraints:**\n\n  * `1 <= n == nums.length <= 104`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given a **1****-indexed** array `nums`. Your task is to select a **complete subset** from `nums` where every pair of selected indices multiplied is a perfect square,. i. e. if you select `ai` and `aj`, `i * j` must be a perfect square.\n\nReturn the _sum_ of the complete subset with the _maximum sum_.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [8,7,3,5,7,2,4,9]\n\n**Output:** 16\n\n**Explanation:**\n\nWe select elements at indices 2 and 8 and `2 * 8` is a perfect square.\n\n**Example 2:**\n\n**Input:** nums = [8,10,3,8,1,13,7,9,4]\n\n**Output:** 20\n\n**Explanation:**\n\nWe select elements at indices 1, 4, and 9. `1 * 4`, `1 * 9`, `4 * 9` are perfect squares.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n == nums.length <= 104`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array", "Math", "Number Theory"],
+  "total_accepted": 9450,
+  "total_submissions": 22110,
+  "acceptance_rate": "42.7%",
+  "similar_questions": [
+    {
+      "title": "Constrained Subsequence Sum",
+      "slug": "constrained-subsequence-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/constrained-subsequence-sum/"
+    },
+    {
+      "title": "Maximum Alternating Subsequence Sum",
+      "slug": "maximum-alternating-subsequence-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-alternating-subsequence-sum/"
+    }
+  ],
+  "hints": [
+    "Define <strong>P(x)</strong> as the product of primes <strong>p</strong> with odd exponents in <strong>x</strong>'s factorization. Examples: For <code>x = 18</code>, factorization <code>2<sup>1</sup> × 3<sup>2</sup></code>, <strong>P(18) = 2</strong>; for <code>x = 45</code>, factorization <code>3<sup>2</sup> × 5<sup>1</sup></code>, <strong>P(45) = 5</strong>; for <code>x = 50</code>, factorization <code>2<sup>1</sup> × 5<sup>2</sup></code>, <strong>P(50) = 2</strong>; for <code>x = 210</code>, factorization <code>2<sup>1</sup> × 3<sup>1</sup> × 5<sup>1</sup> × 7<sup>1</sup></code>, <strong>P(210) = 210</strong>.",
+    "If <code>P(i) = P(j)</code>, <code>nums[i]</code> and <code>nums[j]</code> can be grouped together.",
+    "Pick the group with the largest sum."
+  ]
+}

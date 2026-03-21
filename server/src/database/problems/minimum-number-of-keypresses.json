@@ -1,0 +1,21 @@
+{
+  "id": "2268",
+  "title": "Minimum Number of Keypresses",
+  "slug": "minimum-number-of-keypresses",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Greedy", "Sorting", "Counting"],
+  "total_accepted": 37026,
+  "total_submissions": 51831,
+  "acceptance_rate": "71.4%",
+  "similar_questions": [],
+  "hints": [
+    "Map the most frequent letters so that you can type them with only 1 keypress.",
+    "Use an array to keep track of the frequency of every character, then sort it in non-increasing order."
+  ]
+}

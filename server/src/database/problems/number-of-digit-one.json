@@ -1,0 +1,31 @@
+{
+  "id": "233",
+  "title": "Number of Digit One",
+  "slug": "number-of-digit-one",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, count <em>the total number of digit </em><code>1</code><em> appearing in all non-negative integers less than or equal to</em> <code>n</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 13\n<strong>Output:</strong> 6\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 0\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, count _the total number of digit_`1` _appearing in all non-negative integers less than or equal to_ `n`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 13\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 0\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `0 <= n <= 109`",
+  "question": "Given an integer `n`, count _the total number of digit_`1` _appearing in all non-negative integers less than or equal to_ `n`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 13\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 0\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 109`",
+  "topics": ["Math", "Dynamic Programming", "Recursion"],
+  "total_accepted": 137217,
+  "total_submissions": 363616,
+  "acceptance_rate": "37.7%",
+  "similar_questions": [
+    {
+      "title": "Factorial Trailing Zeroes",
+      "slug": "factorial-trailing-zeroes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/factorial-trailing-zeroes/"
+    },
+    {
+      "title": "Digit Count in Range",
+      "slug": "digit-count-in-range",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/digit-count-in-range/"
+    }
+  ],
+  "hints": ["Beware of overflow."]
+}

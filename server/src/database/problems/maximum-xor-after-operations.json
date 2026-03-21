@@ -1,0 +1,42 @@
+{
+  "id": "2317",
+  "title": "Maximum XOR After Operations ",
+  "slug": "maximum-xor-after-operations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>. In one operation, select <strong>any</strong> non-negative integer <code>x</code> and an index <code>i</code>, then <strong>update</strong> <code>nums[i]</code> to be equal to <code>nums[i] AND (nums[i] XOR x)</code>.</p>\n\n<p>Note that <code>AND</code> is the bitwise AND operation and <code>XOR</code> is the bitwise XOR operation.</p>\n\n<p>Return <em>the <strong>maximum</strong> possible bitwise XOR of all elements of </em><code>nums</code><em> after applying the operation <strong>any number</strong> of times</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,4,6]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> Apply the operation with x = 4 and i = 3, num[3] = 6 AND (6 XOR 4) = 6 AND 2 = 2.\nNow, nums = [3, 2, 4, 2] and the bitwise XOR of all the elements = 3 XOR 2 XOR 4 XOR 2 = 7.\nIt can be shown that 7 is the maximum possible bitwise XOR.\nNote that other operations may be used to achieve a bitwise XOR of 7.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,9,2]\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> Apply the operation zero times.\nThe bitwise XOR of all the elements = 1 XOR 2 XOR 3 XOR 9 XOR 2 = 11.\nIt can be shown that 11 is the maximum possible bitwise XOR.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`. In one operation, select **any** non-negative integer `x` and an index `i`, then **update** `nums[i]` to be equal to `nums[i] AND (nums[i] XOR x)`.\n\nNote that `AND` is the bitwise AND operation and `XOR` is the bitwise XOR operation.\n\nReturn _the**maximum** possible bitwise XOR of all elements of _`nums` _after applying the operation**any number** of times_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,2,4,6]\n    **Output:** 7\n    **Explanation:** Apply the operation with x = 4 and i = 3, num[3] = 6 AND (6 XOR 4) = 6 AND 2 = 2.\n    Now, nums = [3, 2, 4, 2] and the bitwise XOR of all the elements = 3 XOR 2 XOR 4 XOR 2 = 7.\n    It can be shown that 7 is the maximum possible bitwise XOR.\n    Note that other operations may be used to achieve a bitwise XOR of 7.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,9,2]\n    **Output:** 11\n    **Explanation:** Apply the operation zero times.\n    The bitwise XOR of all the elements = 1 XOR 2 XOR 3 XOR 9 XOR 2 = 11.\n    It can be shown that 11 is the maximum possible bitwise XOR.\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 108`",
+  "question": "You are given a **0-indexed** integer array `nums`. In one operation, select **any** non-negative integer `x` and an index `i`, then **update** `nums[i]` to be equal to `nums[i] AND (nums[i] XOR x)`.\n\nNote that `AND` is the bitwise AND operation and `XOR` is the bitwise XOR operation.\n\nReturn _the**maximum** possible bitwise XOR of all elements of _`nums` _after applying the operation**any number** of times_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,2,4,6]\n    **Output:** 7\n    **Explanation:** Apply the operation with x = 4 and i = 3, num[3] = 6 AND (6 XOR 4) = 6 AND 2 = 2.\n    Now, nums = [3, 2, 4, 2] and the bitwise XOR of all the elements = 3 XOR 2 XOR 4 XOR 2 = 7.\n    It can be shown that 7 is the maximum possible bitwise XOR.\n    Note that other operations may be used to achieve a bitwise XOR of 7.\n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,9,2]\n    **Output:** 11\n    **Explanation:** Apply the operation zero times.\n    The bitwise XOR of all the elements = 1 XOR 2 XOR 3 XOR 9 XOR 2 = 11.\n    It can be shown that 11 is the maximum possible bitwise XOR.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i] <= 108`",
+  "topics": ["Array", "Math", "Bit Manipulation"],
+  "total_accepted": 31329,
+  "total_submissions": 39211,
+  "acceptance_rate": "79.9%",
+  "similar_questions": [
+    {
+      "title": "Maximum XOR of Two Numbers in an Array",
+      "slug": "maximum-xor-of-two-numbers-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/"
+    },
+    {
+      "title": "Maximum Xor Product",
+      "slug": "maximum-xor-product",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-xor-product/"
+    },
+    {
+      "title": "Minimize OR of Remaining Elements Using Operations",
+      "slug": "minimize-or-of-remaining-elements-using-operations",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimize-or-of-remaining-elements-using-operations/"
+    }
+  ],
+  "hints": [
+    "Consider what it means to be able to choose any x for the operation and which integers could be obtained from a given nums[i].",
+    "The given operation can unset any bit in nums[i].",
+    "The nth bit of the XOR of all the elements is 1 if the nth bit is 1 for an odd number of elements. When can we ensure it is odd?",
+    "Try to set every bit of the result to 1 if possible."
+  ]
+}

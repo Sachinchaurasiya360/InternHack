@@ -1,0 +1,37 @@
+{
+  "id": "91",
+  "title": "Decode Ways",
+  "slug": "decode-ways",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You have intercepted a secret message encoded as a string of numbers. The message is <strong>decoded</strong> via the following mapping:</p>\n\n<p><code>&quot;1&quot; -&gt; &#39;A&#39;<br />\n&quot;2&quot; -&gt; &#39;B&#39;<br />\n...<br />\n&quot;25&quot; -&gt; &#39;Y&#39;<br />\n&quot;26&quot; -&gt; &#39;Z&#39;</code></p>\n\n<p>However, while decoding the message, you realize that there are many different ways you can decode the message because some codes are contained in other codes (<code>&quot;2&quot;</code> and <code>&quot;5&quot;</code> vs <code>&quot;25&quot;</code>).</p>\n\n<p>For example, <code>&quot;11106&quot;</code> can be decoded into:</p>\n\n<ul>\n\t<li><code>&quot;AAJF&quot;</code> with the grouping <code>(1, 1, 10, 6)</code></li>\n\t<li><code>&quot;KJF&quot;</code> with the grouping <code>(11, 10, 6)</code></li>\n\t<li>The grouping <code>(1, 11, 06)</code> is invalid because <code>&quot;06&quot;</code> is not a valid code (only <code>&quot;6&quot;</code> is valid).</li>\n</ul>\n\n<p>Note: there may be strings that are impossible to decode.<br />\n<br />\nGiven a string s containing only digits, return the <strong>number of ways</strong> to <strong>decode</strong> it. If the entire string cannot be decoded in any valid way, return <code>0</code>.</p>\n\n<p>The test cases are generated so that the answer fits in a <strong>32-bit</strong> integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;12&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>&quot;12&quot; could be decoded as &quot;AB&quot; (1 2) or &quot;L&quot; (12).</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;226&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>&quot;226&quot; could be decoded as &quot;BZ&quot; (2 26), &quot;VF&quot; (22 6), or &quot;BBF&quot; (2 2 6).</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;06&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>&quot;06&quot; cannot be mapped to &quot;F&quot; because of the leading zero (&quot;6&quot; is different from &quot;06&quot;). In this case, the string is not a valid encoding, so return 0.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> contains only digits and may contain leading zero(s).</li>\n</ul>\n",
+  "content_markdown": "You have intercepted a secret message encoded as a string of numbers. The message is **decoded** via the following mapping:\n\n`\"1\" -> 'A'  \n\"2\" -> 'B'  \n...  \n\"25\" -> 'Y'  \n\"26\" -> 'Z'`\n\nHowever, while decoding the message, you realize that there are many different ways you can decode the message because some codes are contained in other codes (`\"2\"` and `\"5\"` vs `\"25\"`).\n\nFor example, `\"11106\"` can be decoded into:\n\n  * `\"AAJF\"` with the grouping `(1, 1, 10, 6)`\n  * `\"KJF\"` with the grouping `(11, 10, 6)`\n  * The grouping `(1, 11, 06)` is invalid because `\"06\"` is not a valid code (only `\"6\"` is valid).\n\n\n\nNote: there may be strings that are impossible to decode.  \n  \nGiven a string s containing only digits, return the **number of ways** to **decode** it. If the entire string cannot be decoded in any valid way, return `0`.\n\nThe test cases are generated so that the answer fits in a **32-bit** integer.\n\n \n\n**Example 1:**\n\n**Input:** s = \"12\"\n\n**Output:** 2\n\n**Explanation:**\n\n\"12\" could be decoded as \"AB\" (1 2) or \"L\" (12).\n\n**Example 2:**\n\n**Input:** s = \"226\"\n\n**Output:** 3\n\n**Explanation:**\n\n\"226\" could be decoded as \"BZ\" (2 26), \"VF\" (22 6), or \"BBF\" (2 2 6).\n\n**Example 3:**\n\n**Input:** s = \"06\"\n\n**Output:** 0\n\n**Explanation:**\n\n\"06\" cannot be mapped to \"F\" because of the leading zero (\"6\" is different from \"06\"). In this case, the string is not a valid encoding, so return 0.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` contains only digits and may contain leading zero(s).",
+  "question": "You have intercepted a secret message encoded as a string of numbers. The message is **decoded** via the following mapping:\n\n`\"1\" -> 'A'  \n\"2\" -> 'B'  \n...  \n\"25\" -> 'Y'  \n\"26\" -> 'Z'`\n\nHowever, while decoding the message, you realize that there are many different ways you can decode the message because some codes are contained in other codes (`\"2\"` and `\"5\"` vs `\"25\"`).\n\nFor example, `\"11106\"` can be decoded into:\n\n  * `\"AAJF\"` with the grouping `(1, 1, 10, 6)`\n  * `\"KJF\"` with the grouping `(11, 10, 6)`\n  * The grouping `(1, 11, 06)` is invalid because `\"06\"` is not a valid code (only `\"6\"` is valid).\n\n\n\nNote: there may be strings that are impossible to decode.  \n  \nGiven a string s containing only digits, return the **number of ways** to **decode** it. If the entire string cannot be decoded in any valid way, return `0`.\n\nThe test cases are generated so that the answer fits in a **32-bit** integer.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"12\"\n\n**Output:** 2\n\n**Explanation:**\n\n\"12\" could be decoded as \"AB\" (1 2) or \"L\" (12).\n\n**Example 2:**\n\n**Input:** s = \"226\"\n\n**Output:** 3\n\n**Explanation:**\n\n\"226\" could be decoded as \"BZ\" (2 26), \"VF\" (22 6), or \"BBF\" (2 2 6).\n\n**Example 3:**\n\n**Input:** s = \"06\"\n\n**Output:** 0\n\n**Explanation:**\n\n\"06\" cannot be mapped to \"F\" because of the leading zero (\"6\" is different from \"06\"). In this case, the string is not a valid encoding, so return 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` contains only digits and may contain leading zero(s).",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 1620873,
+  "total_submissions": 4305894,
+  "acceptance_rate": "37.6%",
+  "similar_questions": [
+    {
+      "title": "Decode Ways II",
+      "slug": "decode-ways-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/decode-ways-ii/"
+    },
+    {
+      "title": "Number of Ways to Separate Numbers",
+      "slug": "number-of-ways-to-separate-numbers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-ways-to-separate-numbers/"
+    },
+    {
+      "title": "Count Number of Texts",
+      "slug": "count-number-of-texts",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-number-of-texts/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,35 @@
+{
+  "id": "2700",
+  "title": "Differences Between Two Objects",
+  "slug": "differences-between-two-objects",
+  "difficulty": "Medium",
+  "category": "JavaScript",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [],
+  "total_accepted": 7840,
+  "total_submissions": 10506,
+  "acceptance_rate": "74.6%",
+  "similar_questions": [
+    {
+      "title": "JSON Deep Equal",
+      "slug": "json-deep-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/json-deep-equal/"
+    },
+    {
+      "title": "Convert Object to JSON String",
+      "slug": "convert-object-to-json-string",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/convert-object-to-json-string/"
+    }
+  ],
+  "hints": [
+    "Find the intersection of the keys/indices on the two arrays/objects.",
+    "Analyze the data structure recursively.",
+    "For each key in the intersection, omit if there are no differences in the leaves. Otherwise return the difference."
+  ]
+}

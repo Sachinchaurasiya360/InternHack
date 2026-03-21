@@ -1,0 +1,46 @@
+{
+  "id": "2518",
+  "title": "Number of Great Partitions",
+  "slug": "number-of-great-partitions",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> consisting of <strong>positive</strong> integers and an integer <code>k</code>.</p>\n\n<p><strong>Partition</strong> the array into two ordered <strong>groups</strong> such that each element is in exactly <strong>one</strong> group. A partition is called great if the <strong>sum</strong> of elements of each group is greater than or equal to <code>k</code>.</p>\n\n<p>Return <em>the number of <strong>distinct</strong> great partitions</em>. Since the answer may be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>Two partitions are considered distinct if some element <code>nums[i]</code> is in different groups in the two partitions.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4], k = 4\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The great partitions are: ([1,2,3], [4]), ([1,3], [2,4]), ([1,4], [2,3]), ([2,3], [1,4]), ([2,4], [1,3]) and ([4], [1,2,3]).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,3,3], k = 4\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There are no great partitions for this array.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [6,6], k = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We can either put nums[0] in the first partition or in the second partition.\nThe great partitions will be ([6], [6]) and ([6], [6]).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length, k &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` consisting of **positive** integers and an integer `k`.\n\n**Partition** the array into two ordered **groups** such that each element is in exactly **one** group. A partition is called great if the **sum** of elements of each group is greater than or equal to `k`.\n\nReturn _the number of**distinct** great partitions_. Since the answer may be too large, return it **modulo** `109 + 7`.\n\nTwo partitions are considered distinct if some element `nums[i]` is in different groups in the two partitions.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 4\n    **Output:** 6\n    **Explanation:** The great partitions are: ([1,2,3], [4]), ([1,3], [2,4]), ([1,4], [2,3]), ([2,3], [1,4]), ([2,4], [1,3]) and ([4], [1,2,3]).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,3,3], k = 4\n    **Output:** 0\n    **Explanation:** There are no great partitions for this array.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [6,6], k = 2\n    **Output:** 2\n    **Explanation:** We can either put nums[0] in the first partition or in the second partition.\n    The great partitions will be ([6], [6]) and ([6], [6]).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length, k <= 1000`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given an array `nums` consisting of **positive** integers and an integer `k`.\n\n**Partition** the array into two ordered **groups** such that each element is in exactly **one** group. A partition is called great if the **sum** of elements of each group is greater than or equal to `k`.\n\nReturn _the number of**distinct** great partitions_. Since the answer may be too large, return it **modulo** `109 + 7`.\n\nTwo partitions are considered distinct if some element `nums[i]` is in different groups in the two partitions.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 4\n    **Output:** 6\n    **Explanation:** The great partitions are: ([1,2,3], [4]), ([1,3], [2,4]), ([1,4], [2,3]), ([2,3], [1,4]), ([2,4], [1,3]) and ([4], [1,2,3]).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,3,3], k = 4\n    **Output:** 0\n    **Explanation:** There are no great partitions for this array.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [6,6], k = 2\n    **Output:** 2\n    **Explanation:** We can either put nums[0] in the first partition or in the second partition.\n    The great partitions will be ([6], [6]) and ([6], [6]).",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length, k <= 1000`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 13495,
+  "total_submissions": 40452,
+  "acceptance_rate": "33.4%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Partitioning II",
+      "slug": "palindrome-partitioning-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-partitioning-ii/"
+    },
+    {
+      "title": "Partition Equal Subset Sum",
+      "slug": "partition-equal-subset-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-equal-subset-sum/"
+    },
+    {
+      "title": "Find the Punishment Number of an Integer",
+      "slug": "find-the-punishment-number-of-an-integer",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-punishment-number-of-an-integer/"
+    },
+    {
+      "title": "Count Partitions With Max-Min Difference at Most K",
+      "slug": "count-partitions-with-max-min-difference-at-most-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-partitions-with-max-min-difference-at-most-k/"
+    }
+  ],
+  "hints": [
+    "If the sum of the array is smaller than 2*k, then it is impossible to find a great partition.",
+    "Solve the reverse problem, that is, find the number of partitions where the sum of elements of at least one of the two groups is smaller than k."
+  ]
+}

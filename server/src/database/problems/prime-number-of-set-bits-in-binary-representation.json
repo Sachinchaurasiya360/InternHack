@@ -1,0 +1,27 @@
+{
+  "id": "762",
+  "title": "Prime Number of Set Bits in Binary Representation",
+  "slug": "prime-number-of-set-bits-in-binary-representation",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integers <code>left</code> and <code>right</code>, return <em>the <strong>count</strong> of numbers in the <strong>inclusive</strong> range </em><code>[left, right]</code><em> having a <strong>prime number of set bits</strong> in their binary representation</em>.</p>\n\n<p>Recall that the <strong>number of set bits</strong> an integer has is the number of <code>1</code>&#39;s present when written in binary.</p>\n\n<ul>\n\t<li>For example, <code>21</code> written in binary is <code>10101</code>, which has <code>3</code> set bits.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = 6, right = 10\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\n6  -&gt; 110 (2 set bits, 2 is prime)\n7  -&gt; 111 (3 set bits, 3 is prime)\n8  -&gt; 1000 (1 set bit, 1 is not prime)\n9  -&gt; 1001 (2 set bits, 2 is prime)\n10 -&gt; 1010 (2 set bits, 2 is prime)\n4 numbers have a prime number of set bits.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = 10, right = 15\n<strong>Output:</strong> 5\n<strong>Explanation:</strong>\n10 -&gt; 1010 (2 set bits, 2 is prime)\n11 -&gt; 1011 (3 set bits, 3 is prime)\n12 -&gt; 1100 (2 set bits, 2 is prime)\n13 -&gt; 1101 (3 set bits, 3 is prime)\n14 -&gt; 1110 (3 set bits, 3 is prime)\n15 -&gt; 1111 (4 set bits, 4 is not prime)\n5 numbers have a prime number of set bits.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= left &lt;= right &lt;= 10<sup>6</sup></code></li>\n\t<li><code>0 &lt;= right - left &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given two integers `left` and `right`, return _the**count** of numbers in the **inclusive** range _`[left, right]`_having a**prime number of set bits** in their binary representation_.\n\nRecall that the **number of set bits** an integer has is the number of `1`'s present when written in binary.\n\n  * For example, `21` written in binary is `10101`, which has `3` set bits.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** left = 6, right = 10\n    **Output:** 4\n    **Explanation:**\n    6  -> 110 (2 set bits, 2 is prime)\n    7  -> 111 (3 set bits, 3 is prime)\n    8  -> 1000 (1 set bit, 1 is not prime)\n    9  -> 1001 (2 set bits, 2 is prime)\n    10 -> 1010 (2 set bits, 2 is prime)\n    4 numbers have a prime number of set bits.\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = 10, right = 15\n    **Output:** 5\n    **Explanation:**\n    10 -> 1010 (2 set bits, 2 is prime)\n    11 -> 1011 (3 set bits, 3 is prime)\n    12 -> 1100 (2 set bits, 2 is prime)\n    13 -> 1101 (3 set bits, 3 is prime)\n    14 -> 1110 (3 set bits, 3 is prime)\n    15 -> 1111 (4 set bits, 4 is not prime)\n    5 numbers have a prime number of set bits.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= left <= right <= 106`\n  * `0 <= right - left <= 104`",
+  "question": "Given two integers `left` and `right`, return _the**count** of numbers in the **inclusive** range _`[left, right]`_having a**prime number of set bits** in their binary representation_.\n\nRecall that the **number of set bits** an integer has is the number of `1`'s present when written in binary.\n\n  * For example, `21` written in binary is `10101`, which has `3` set bits.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** left = 6, right = 10\n    **Output:** 4\n    **Explanation:**\n    6  -> 110 (2 set bits, 2 is prime)\n    7  -> 111 (3 set bits, 3 is prime)\n    8  -> 1000 (1 set bit, 1 is not prime)\n    9  -> 1001 (2 set bits, 2 is prime)\n    10 -> 1010 (2 set bits, 2 is prime)\n    4 numbers have a prime number of set bits.\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = 10, right = 15\n    **Output:** 5\n    **Explanation:**\n    10 -> 1010 (2 set bits, 2 is prime)\n    11 -> 1011 (3 set bits, 3 is prime)\n    12 -> 1100 (2 set bits, 2 is prime)\n    13 -> 1101 (3 set bits, 3 is prime)\n    14 -> 1110 (3 set bits, 3 is prime)\n    15 -> 1111 (4 set bits, 4 is not prime)\n    5 numbers have a prime number of set bits.",
+  "constraints": "**Constraints:**\n\n  * `1 <= left <= right <= 106`\n  * `0 <= right - left <= 104`",
+  "topics": ["Math", "Bit Manipulation"],
+  "total_accepted": 251638,
+  "total_submissions": 320029,
+  "acceptance_rate": "78.6%",
+  "similar_questions": [
+    {
+      "title": "Number of 1 Bits",
+      "slug": "number-of-1-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-1-bits/"
+    }
+  ],
+  "hints": [
+    "Write a helper function to count the number of set bits in a number, then check whether the number of set bits is 2, 3, 5, 7, 11, 13, 17 or 19."
+  ]
+}

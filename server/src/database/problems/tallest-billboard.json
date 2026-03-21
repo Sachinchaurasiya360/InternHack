@@ -1,0 +1,25 @@
+{
+  "id": "956",
+  "title": "Tallest Billboard",
+  "slug": "tallest-billboard",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are installing a billboard and want it to have the largest height. The billboard will have two steel supports, one on each side. Each steel support must be an equal height.</p>\n\n<p>You are given a collection of <code>rods</code> that can be welded together. For example, if you have rods of lengths <code>1</code>, <code>2</code>, and <code>3</code>, you can weld them together to make a support of length <code>6</code>.</p>\n\n<p>Return <em>the largest possible height of your billboard installation</em>. If you cannot support the billboard, return <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> rods = [1,2,3,6]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> We have two disjoint subsets {1,2,3} and {6}, which have the same sum = 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> rods = [1,2,3,4,5,6]\n<strong>Output:</strong> 10\n<strong>Explanation:</strong> We have two disjoint subsets {2,3,5} and {4,6}, which have the same sum = 10.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> rods = [1,2]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The billboard cannot be supported, so we return 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= rods.length &lt;= 20</code></li>\n\t<li><code>1 &lt;= rods[i] &lt;= 1000</code></li>\n\t<li><code>sum(rods[i]) &lt;= 5000</code></li>\n</ul>\n",
+  "content_markdown": "You are installing a billboard and want it to have the largest height. The billboard will have two steel supports, one on each side. Each steel support must be an equal height.\n\nYou are given a collection of `rods` that can be welded together. For example, if you have rods of lengths `1`, `2`, and `3`, you can weld them together to make a support of length `6`.\n\nReturn _the largest possible height of your billboard installation_. If you cannot support the billboard, return `0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** rods = [1,2,3,6]\n    **Output:** 6\n    **Explanation:** We have two disjoint subsets {1,2,3} and {6}, which have the same sum = 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** rods = [1,2,3,4,5,6]\n    **Output:** 10\n    **Explanation:** We have two disjoint subsets {2,3,5} and {4,6}, which have the same sum = 10.\n    \n\n**Example 3:**\n    \n    \n    **Input:** rods = [1,2]\n    **Output:** 0\n    **Explanation:** The billboard cannot be supported, so we return 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= rods.length <= 20`\n  * `1 <= rods[i] <= 1000`\n  * `sum(rods[i]) <= 5000`",
+  "question": "You are installing a billboard and want it to have the largest height. The billboard will have two steel supports, one on each side. Each steel support must be an equal height.\n\nYou are given a collection of `rods` that can be welded together. For example, if you have rods of lengths `1`, `2`, and `3`, you can weld them together to make a support of length `6`.\n\nReturn _the largest possible height of your billboard installation_. If you cannot support the billboard, return `0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** rods = [1,2,3,6]\n    **Output:** 6\n    **Explanation:** We have two disjoint subsets {1,2,3} and {6}, which have the same sum = 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** rods = [1,2,3,4,5,6]\n    **Output:** 10\n    **Explanation:** We have two disjoint subsets {2,3,5} and {4,6}, which have the same sum = 10.\n    \n\n**Example 3:**\n    \n    \n    **Input:** rods = [1,2]\n    **Output:** 0\n    **Explanation:** The billboard cannot be supported, so we return 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= rods.length <= 20`\n  * `1 <= rods[i] <= 1000`\n  * `sum(rods[i]) <= 5000`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 69677,
+  "total_submissions": 134480,
+  "acceptance_rate": "51.8%",
+  "similar_questions": [
+    {
+      "title": "Partition Array Into Two Arrays to Minimize Sum Difference",
+      "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "2388",
+  "title": "Change Null Values in a Table to the Previous Value",
+  "slug": "change-null-values-in-a-table-to-the-previous-value",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 6651,
+  "total_submissions": 13035,
+  "acceptance_rate": "51.0%",
+  "similar_questions": [],
+  "hints": []
+}

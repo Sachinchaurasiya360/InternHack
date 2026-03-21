@@ -1,0 +1,53 @@
+{
+  "id": "1991",
+  "title": "Find the Middle Index in Array",
+  "slug": "find-the-middle-index-in-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>0-indexed</strong> integer array <code>nums</code>, find the <strong>leftmost</strong> <code>middleIndex</code> (i.e., the smallest amongst all the possible ones).</p>\n\n<p>A <code>middleIndex</code> is an index where <code>nums[0] + nums[1] + ... + nums[middleIndex-1] == nums[middleIndex+1] + nums[middleIndex+2] + ... + nums[nums.length-1]</code>.</p>\n\n<p>If <code>middleIndex == 0</code>, the left side sum is considered to be <code>0</code>. Similarly, if <code>middleIndex == nums.length - 1</code>, the right side sum is considered to be <code>0</code>.</p>\n\n<p>Return <em>the <strong>leftmost</strong> </em><code>middleIndex</code><em> that satisfies the condition, or </em><code>-1</code><em> if there is no such index</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3,-1,<u>8</u>,4]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The sum of the numbers before index 3 is: 2 + 3 + -1 = 4\nThe sum of the numbers after index 3 is: 4 = 4\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,-1,<u>4</u>]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The sum of the numbers before index 2 is: 1 + -1 = 0\nThe sum of the numbers after index 2 is: 0\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,5]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There is no valid middleIndex.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>-1000 &lt;= nums[i] &lt;= 1000</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Note:</strong> This question is the same as&nbsp;724:&nbsp;<a href=\"https://leetcode.com/problems/find-pivot-index/\" target=\"_blank\">https://leetcode.com/problems/find-pivot-index/</a></p>\n",
+  "content_markdown": "Given a **0-indexed** integer array `nums`, find the **leftmost** `middleIndex` (i.e., the smallest amongst all the possible ones).\n\nA `middleIndex` is an index where `nums[0] + nums[1] + ... + nums[middleIndex-1] == nums[middleIndex+1] + nums[middleIndex+2] + ... + nums[nums.length-1]`.\n\nIf `middleIndex == 0`, the left side sum is considered to be `0`. Similarly, if `middleIndex == nums.length - 1`, the right side sum is considered to be `0`.\n\nReturn _the**leftmost** _`middleIndex` _that satisfies the condition, or_`-1` _if there is no such index_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,3,-1,_8_ ,4]\n    **Output:** 3\n    **Explanation:** The sum of the numbers before index 3 is: 2 + 3 + -1 = 4\n    The sum of the numbers after index 3 is: 4 = 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,-1,_4_]\n    **Output:** 2\n    **Explanation:** The sum of the numbers before index 2 is: 1 + -1 = 0\n    The sum of the numbers after index 2 is: 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,5]\n    **Output:** -1\n    **Explanation:** There is no valid middleIndex.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `-1000 <= nums[i] <= 1000`\n\n\n\n \n\n**Note:** This question is the same as 724: <https://leetcode.com/problems/find-pivot-index/>",
+  "question": "Given a **0-indexed** integer array `nums`, find the **leftmost** `middleIndex` (i.e., the smallest amongst all the possible ones).\n\nA `middleIndex` is an index where `nums[0] + nums[1] + ... + nums[middleIndex-1] == nums[middleIndex+1] + nums[middleIndex+2] + ... + nums[nums.length-1]`.\n\nIf `middleIndex == 0`, the left side sum is considered to be `0`. Similarly, if `middleIndex == nums.length - 1`, the right side sum is considered to be `0`.\n\nReturn _the**leftmost** _`middleIndex` _that satisfies the condition, or_`-1` _if there is no such index_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,3,-1,_8_ ,4]\n    **Output:** 3\n    **Explanation:** The sum of the numbers before index 3 is: 2 + 3 + -1 = 4\n    The sum of the numbers after index 3 is: 4 = 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,-1,_4_]\n    **Output:** 2\n    **Explanation:** The sum of the numbers before index 2 is: 1 + -1 = 0\n    The sum of the numbers after index 2 is: 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [2,5]\n    **Output:** -1\n    **Explanation:** There is no valid middleIndex.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `-1000 <= nums[i] <= 1000`\n\n\n\n \n\n**Note:** This question is the same as 724: <https://leetcode.com/problems/find-pivot-index/>",
+  "topics": ["Array", "Prefix Sum"],
+  "total_accepted": 159648,
+  "total_submissions": 230835,
+  "acceptance_rate": "69.2%",
+  "similar_questions": [
+    {
+      "title": "Find Pivot Index",
+      "slug": "find-pivot-index",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-pivot-index/"
+    },
+    {
+      "title": "Partition Array Into Three Parts With Equal Sum",
+      "slug": "partition-array-into-three-parts-with-equal-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/partition-array-into-three-parts-with-equal-sum/"
+    },
+    {
+      "title": "Number of Ways to Split Array",
+      "slug": "number-of-ways-to-split-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-split-array/"
+    },
+    {
+      "title": "Maximum Sum Score of Array",
+      "slug": "maximum-sum-score-of-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-sum-score-of-array/"
+    },
+    {
+      "title": "Left and Right Sum Differences",
+      "slug": "left-and-right-sum-differences",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/left-and-right-sum-differences/"
+    }
+  ],
+  "hints": [
+    "Could we go from left to right and check to see if an index is a middle index?",
+    "Do we need to sum every number to the left and right of an index each time?",
+    "Use a prefix sum array where prefix[i] = nums[0] + nums[1] + ... + nums[i]."
+  ]
+}

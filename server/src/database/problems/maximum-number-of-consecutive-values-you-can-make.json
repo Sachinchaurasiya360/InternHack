@@ -1,0 +1,29 @@
+{
+  "id": "1798",
+  "title": "Maximum Number of Consecutive Values You Can Make",
+  "slug": "maximum-number-of-consecutive-values-you-can-make",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>coins</code> of length <code>n</code> which represents the <code>n</code> coins that you own. The value of the <code>i<sup>th</sup></code> coin is <code>coins[i]</code>. You can <strong>make</strong> some value <code>x</code> if you can choose some of your <code>n</code> coins such that their values sum up to <code>x</code>.</p>\n\n<p>Return the <em>maximum number of consecutive integer values that you <strong>can</strong> <strong>make</strong> with your coins <strong>starting</strong> from and <strong>including</strong> </em><code>0</code>.</p>\n\n<p>Note that you may have multiple coins of the same value.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> coins = [1,3]\n<strong>Output:</strong> 2\n<strong>Explanation: </strong>You can make the following values:\n- 0: take []\n- 1: take [1]\nYou can make 2 consecutive integer values starting from 0.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> coins = [1,1,1,4]\n<strong>Output:</strong> 8\n<strong>Explanation: </strong>You can make the following values:\n- 0: take []\n- 1: take [1]\n- 2: take [1,1]\n- 3: take [1,1,1]\n- 4: take [4]\n- 5: take [4,1]\n- 6: take [4,1,1]\n- 7: take [4,1,1,1]\nYou can make 8 consecutive integer values starting from 0.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> coins = [1,4,10,3,1]\n<strong>Output:</strong> 20</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>coins.length == n</code></li>\n\t<li><code>1 &lt;= n &lt;= 4 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= coins[i] &lt;= 4 * 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `coins` of length `n` which represents the `n` coins that you own. The value of the `ith` coin is `coins[i]`. You can **make** some value `x` if you can choose some of your `n` coins such that their values sum up to `x`.\n\nReturn the _maximum number of consecutive integer values that you**can** **make** with your coins **starting** from and **including** _`0`.\n\nNote that you may have multiple coins of the same value.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** coins = [1,3]\n    **Output:** 2\n    **Explanation:** You can make the following values:\n    - 0: take []\n    - 1: take [1]\n    You can make 2 consecutive integer values starting from 0.\n\n**Example 2:**\n    \n    \n    **Input:** coins = [1,1,1,4]\n    **Output:** 8\n    **Explanation:** You can make the following values:\n    - 0: take []\n    - 1: take [1]\n    - 2: take [1,1]\n    - 3: take [1,1,1]\n    - 4: take [4]\n    - 5: take [4,1]\n    - 6: take [4,1,1]\n    - 7: take [4,1,1,1]\n    You can make 8 consecutive integer values starting from 0.\n\n**Example 3:**\n    \n    \n    **Input:** coins = [1,4,10,3,1]\n    **Output:** 20\n\n \n\n**Constraints:**\n\n  * `coins.length == n`\n  * `1 <= n <= 4 * 104`\n  * `1 <= coins[i] <= 4 * 104`",
+  "question": "You are given an integer array `coins` of length `n` which represents the `n` coins that you own. The value of the `ith` coin is `coins[i]`. You can **make** some value `x` if you can choose some of your `n` coins such that their values sum up to `x`.\n\nReturn the _maximum number of consecutive integer values that you**can** **make** with your coins **starting** from and **including** _`0`.\n\nNote that you may have multiple coins of the same value.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** coins = [1,3]\n    **Output:** 2\n    **Explanation:** You can make the following values:\n    - 0: take []\n    - 1: take [1]\n    You can make 2 consecutive integer values starting from 0.\n\n**Example 2:**\n    \n    \n    **Input:** coins = [1,1,1,4]\n    **Output:** 8\n    **Explanation:** You can make the following values:\n    - 0: take []\n    - 1: take [1]\n    - 2: take [1,1]\n    - 3: take [1,1,1]\n    - 4: take [4]\n    - 5: take [4,1]\n    - 6: take [4,1,1]\n    - 7: take [4,1,1,1]\n    You can make 8 consecutive integer values starting from 0.\n\n**Example 3:**\n    \n    \n    **Input:** coins = [1,4,10,3,1]\n    **Output:** 20",
+  "constraints": "**Constraints:**\n\n  * `coins.length == n`\n  * `1 <= n <= 4 * 104`\n  * `1 <= coins[i] <= 4 * 104`",
+  "topics": ["Array", "Greedy", "Sorting"],
+  "total_accepted": 25707,
+  "total_submissions": 40476,
+  "acceptance_rate": "63.5%",
+  "similar_questions": [
+    {
+      "title": "Patching Array",
+      "slug": "patching-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/patching-array/"
+    }
+  ],
+  "hints": [
+    "If you can make the first x values and you have a value v, then you can make all the values <var>≤ v + x</var>",
+    "Sort the array of coins. You can always make the value 0 so you can start with x = 0.",
+    "Process the values starting from the smallest and stop when there is a value that cannot be achieved with the current x."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "1808",
+  "title": "Maximize Number of Nice Divisors",
+  "slug": "maximize-number-of-nice-divisors",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>primeFactors</code>. You are asked to construct a positive integer <code>n</code> that satisfies the following conditions:</p>\r\n\r\n<ul>\r\n  <li>The number of prime factors of <code>n</code> (not necessarily distinct) is <strong>at most</strong> <code>primeFactors</code>.</li>\r\n  <li>The number of nice divisors of <code>n</code> is maximized. Note that a divisor of <code>n</code> is <strong>nice</strong> if it is divisible by every prime factor of <code>n</code>. For example, if <code>n = 12</code>, then its prime factors are <code>[2,2,3]</code>, then <code>6</code> and <code>12</code> are nice divisors, while <code>3</code> and <code>4</code> are not.</li>\r\n</ul>\r\n\r\n<p>Return <em>the number of nice divisors of</em> <code>n</code>. Since that number can be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\r\n\r\n<p>Note that a prime number is a natural number greater than <code>1</code> that is not a product of two smaller natural numbers. The prime factors of a number <code>n</code> is a list of prime numbers such that their product equals <code>n</code>.</p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> primeFactors = 5\r\n<strong>Output:</strong> 6\r\n<strong>Explanation:</strong> 200 is a valid value of n.\r\nIt has 5 prime factors: [2,2,2,5,5], and it has 6 nice divisors: [10,20,40,50,100,200].\r\nThere is not other value of n that has at most 5 prime factors and more nice divisors.\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> primeFactors = 8\r\n<strong>Output:</strong> 18\r\n</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>1 &lt;= primeFactors &lt;= 10<sup>9</sup></code></li>\r\n</ul>",
+  "content_markdown": "You are given a positive integer `primeFactors`. You are asked to construct a positive integer `n` that satisfies the following conditions:\n\n  * The number of prime factors of `n` (not necessarily distinct) is **at most** `primeFactors`.\n  * The number of nice divisors of `n` is maximized. Note that a divisor of `n` is **nice** if it is divisible by every prime factor of `n`. For example, if `n = 12`, then its prime factors are `[2,2,3]`, then `6` and `12` are nice divisors, while `3` and `4` are not.\n\n\n\nReturn _the number of nice divisors of_ `n`. Since that number can be too large, return it **modulo** `109 + 7`.\n\nNote that a prime number is a natural number greater than `1` that is not a product of two smaller natural numbers. The prime factors of a number `n` is a list of prime numbers such that their product equals `n`.\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** primeFactors = 5\r\n    **Output:** 6\r\n    **Explanation:** 200 is a valid value of n.\r\n    It has 5 prime factors: [2,2,2,5,5], and it has 6 nice divisors: [10,20,40,50,100,200].\r\n    There is not other value of n that has at most 5 prime factors and more nice divisors.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** primeFactors = 8\r\n    **Output:** 18\r\n    \n\n \n\n**Constraints:**\n\n  * `1 <= primeFactors <= 109`",
+  "question": "You are given a positive integer `primeFactors`. You are asked to construct a positive integer `n` that satisfies the following conditions:\n\n  * The number of prime factors of `n` (not necessarily distinct) is **at most** `primeFactors`.\n  * The number of nice divisors of `n` is maximized. Note that a divisor of `n` is **nice** if it is divisible by every prime factor of `n`. For example, if `n = 12`, then its prime factors are `[2,2,3]`, then `6` and `12` are nice divisors, while `3` and `4` are not.\n\n\n\nReturn _the number of nice divisors of_ `n`. Since that number can be too large, return it **modulo** `109 + 7`.\n\nNote that a prime number is a natural number greater than `1` that is not a product of two smaller natural numbers. The prime factors of a number `n` is a list of prime numbers such that their product equals `n`.",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** primeFactors = 5\r\n    **Output:** 6\r\n    **Explanation:** 200 is a valid value of n.\r\n    It has 5 prime factors: [2,2,2,5,5], and it has 6 nice divisors: [10,20,40,50,100,200].\r\n    There is not other value of n that has at most 5 prime factors and more nice divisors.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** primeFactors = 8\r\n    **Output:** 18",
+  "constraints": "**Constraints:**\n\n  * `1 <= primeFactors <= 109`",
+  "topics": ["Math", "Recursion", "Number Theory"],
+  "total_accepted": 10019,
+  "total_submissions": 28320,
+  "acceptance_rate": "35.4%",
+  "similar_questions": [
+    {
+      "title": "Integer Break",
+      "slug": "integer-break",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/integer-break/"
+    }
+  ],
+  "hints": [
+    "The number of nice divisors is equal to the product of the count of each prime factor. Then the problem is reduced to: given n, find a sequence of numbers whose sum equals n and whose product is maximized.",
+    "This sequence can have no numbers that are larger than 4. Proof: if it contains a number x that is larger than 4, then you can replace x with floor(x/2) and ceil(x/2), and floor(x/2) * ceil(x/2) > x. You can also replace 4s with two 2s. Hence, there will always be optimal solutions with only 2s and 3s.",
+    "If there are three 2s, you can replace them with two 3s to get a better product. Hence, you'll never have more than two 2s.",
+    "Keep adding 3s as long as n ≥ 5."
+  ]
+}

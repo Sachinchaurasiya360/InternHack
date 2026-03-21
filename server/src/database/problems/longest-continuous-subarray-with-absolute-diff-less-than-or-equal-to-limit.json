@@ -1,0 +1,41 @@
+{
+  "id": "1438",
+  "title": "Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit",
+  "slug": "longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>nums</code> and an integer <code>limit</code>, return the size of the longest <strong>non-empty</strong> subarray such that the absolute difference between any two elements of this subarray is less than or equal to <code>limit</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [8,2,4,7], limit = 4\n<strong>Output:</strong> 2 \n<strong>Explanation:</strong> All subarrays are: \n[8] with maximum absolute diff |8-8| = 0 &lt;= 4.\n[8,2] with maximum absolute diff |8-2| = 6 &gt; 4. \n[8,2,4] with maximum absolute diff |8-2| = 6 &gt; 4.\n[8,2,4,7] with maximum absolute diff |8-2| = 6 &gt; 4.\n[2] with maximum absolute diff |2-2| = 0 &lt;= 4.\n[2,4] with maximum absolute diff |2-4| = 2 &lt;= 4.\n[2,4,7] with maximum absolute diff |2-7| = 5 &gt; 4.\n[4] with maximum absolute diff |4-4| = 0 &lt;= 4.\n[4,7] with maximum absolute diff |4-7| = 3 &lt;= 4.\n[7] with maximum absolute diff |7-7| = 0 &lt;= 4. \nTherefore, the size of the longest subarray is 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,1,2,4,7,2], limit = 5\n<strong>Output:</strong> 4 \n<strong>Explanation:</strong> The subarray [2,4,7,2] is the longest since the maximum absolute diff is |2-7| = 5 &lt;= 5.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,2,2,2,4,4,2,2], limit = 0\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>0 &lt;= limit &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `nums` and an integer `limit`, return the size of the longest **non-empty** subarray such that the absolute difference between any two elements of this subarray is less than or equal to `limit` _._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [8,2,4,7], limit = 4\n    **Output:** 2 \n    **Explanation:** All subarrays are: \n    [8] with maximum absolute diff |8-8| = 0 <= 4.\n    [8,2] with maximum absolute diff |8-2| = 6 > 4. \n    [8,2,4] with maximum absolute diff |8-2| = 6 > 4.\n    [8,2,4,7] with maximum absolute diff |8-2| = 6 > 4.\n    [2] with maximum absolute diff |2-2| = 0 <= 4.\n    [2,4] with maximum absolute diff |2-4| = 2 <= 4.\n    [2,4,7] with maximum absolute diff |2-7| = 5 > 4.\n    [4] with maximum absolute diff |4-4| = 0 <= 4.\n    [4,7] with maximum absolute diff |4-7| = 3 <= 4.\n    [7] with maximum absolute diff |7-7| = 0 <= 4. \n    Therefore, the size of the longest subarray is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [10,1,2,4,7,2], limit = 5\n    **Output:** 4 \n    **Explanation:** The subarray [2,4,7,2] is the longest since the maximum absolute diff is |2-7| = 5 <= 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [4,2,2,2,4,4,2,2], limit = 0\n    **Output:** 3\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `0 <= limit <= 109`",
+  "question": "Given an array of integers `nums` and an integer `limit`, return the size of the longest **non-empty** subarray such that the absolute difference between any two elements of this subarray is less than or equal to `limit` _._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [8,2,4,7], limit = 4\n    **Output:** 2 \n    **Explanation:** All subarrays are: \n    [8] with maximum absolute diff |8-8| = 0 <= 4.\n    [8,2] with maximum absolute diff |8-2| = 6 > 4. \n    [8,2,4] with maximum absolute diff |8-2| = 6 > 4.\n    [8,2,4,7] with maximum absolute diff |8-2| = 6 > 4.\n    [2] with maximum absolute diff |2-2| = 0 <= 4.\n    [2,4] with maximum absolute diff |2-4| = 2 <= 4.\n    [2,4,7] with maximum absolute diff |2-7| = 5 > 4.\n    [4] with maximum absolute diff |4-4| = 0 <= 4.\n    [4,7] with maximum absolute diff |4-7| = 3 <= 4.\n    [7] with maximum absolute diff |7-7| = 0 <= 4. \n    Therefore, the size of the longest subarray is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [10,1,2,4,7,2], limit = 5\n    **Output:** 4 \n    **Explanation:** The subarray [2,4,7,2] is the longest since the maximum absolute diff is |2-7| = 5 <= 5.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [4,2,2,2,4,4,2,2], limit = 0\n    **Output:** 3",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n  * `0 <= limit <= 109`",
+  "topics": [
+    "Array",
+    "Queue",
+    "Sliding Window",
+    "Heap (Priority Queue)",
+    "Ordered Set",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 305633,
+  "total_submissions": 532745,
+  "acceptance_rate": "57.4%",
+  "similar_questions": [
+    {
+      "title": "Partition Array Such That Maximum Difference Is K",
+      "slug": "partition-array-such-that-maximum-difference-is-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-array-such-that-maximum-difference-is-k/"
+    },
+    {
+      "title": "Count Subarrays With Fixed Bounds",
+      "slug": "count-subarrays-with-fixed-bounds",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-subarrays-with-fixed-bounds/"
+    }
+  ],
+  "hints": [
+    "Use a sliding window approach keeping the maximum and minimum value using a data structure like a multiset from STL in C++.",
+    "More specifically, use the two pointer technique, moving the right pointer as far as possible to the right until the subarray is not valid (maxValue - minValue > limit), then moving the left pointer until the subarray is valid again (maxValue - minValue <= limit). Keep repeating this process."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "137",
+  "title": "Single Number II",
+  "slug": "single-number-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> where&nbsp;every element appears <strong>three times</strong> except for one, which appears <strong>exactly once</strong>. <em>Find the single element and return it</em>.</p>\n\n<p>You must&nbsp;implement a solution with a linear runtime complexity and use&nbsp;only constant&nbsp;extra space.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [2,2,3,2]\n<strong>Output:</strong> 3\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [0,1,0,1,0,1,99]\n<strong>Output:</strong> 99\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li>Each element in <code>nums</code> appears exactly <strong>three times</strong> except for one element which appears <strong>once</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` where every element appears **three times** except for one, which appears **exactly once**. _Find the single element and return it_.\n\nYou must implement a solution with a linear runtime complexity and use only constant extra space.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,2,3,2]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1,0,1,0,1,99]\n    **Output:** 99\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-231 <= nums[i] <= 231 - 1`\n  * Each element in `nums` appears exactly **three times** except for one element which appears **once**.",
+  "question": "Given an integer array `nums` where every element appears **three times** except for one, which appears **exactly once**. _Find the single element and return it_.\n\nYou must implement a solution with a linear runtime complexity and use only constant extra space.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,2,3,2]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1,0,1,0,1,99]\n    **Output:** 99",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-231 <= nums[i] <= 231 - 1`\n  * Each element in `nums` appears exactly **three times** except for one element which appears **once**.",
+  "topics": ["Array", "Bit Manipulation"],
+  "total_accepted": 860402,
+  "total_submissions": 1289646,
+  "acceptance_rate": "66.7%",
+  "similar_questions": [
+    {
+      "title": "Single Number",
+      "slug": "single-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/single-number/"
+    },
+    {
+      "title": "Single Number III",
+      "slug": "single-number-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/single-number-iii/"
+    },
+    {
+      "title": "Find the XOR of Numbers Which Appear Twice",
+      "slug": "find-the-xor-of-numbers-which-appear-twice",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-xor-of-numbers-which-appear-twice/"
+    }
+  ],
+  "hints": []
+}

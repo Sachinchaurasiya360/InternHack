@@ -1,0 +1,25 @@
+{
+  "id": "2928",
+  "title": "Distribute Candies Among Children I",
+  "slug": "distribute-candies-among-children-i",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two positive integers <code>n</code> and <code>limit</code>.</p>\n\n<p>Return <em>the <strong>total number</strong> of ways to distribute </em><code>n</code> <em>candies among </em><code>3</code><em> children such that no child gets more than </em><code>limit</code><em> candies.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5, limit = 2\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> There are 3 ways to distribute 5 candies such that no child gets more than 2 candies: (1, 2, 2), (2, 1, 2) and (2, 2, 1).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3, limit = 3\n<strong>Output:</strong> 10\n<strong>Explanation:</strong> There are 10 ways to distribute 3 candies such that no child gets more than 3 candies: (0, 0, 3), (0, 1, 2), (0, 2, 1), (0, 3, 0), (1, 0, 2), (1, 1, 1), (1, 2, 0), (2, 0, 1), (2, 1, 0) and (3, 0, 0).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 50</code></li>\n\t<li><code>1 &lt;= limit &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "You are given two positive integers `n` and `limit`.\n\nReturn _the**total number** of ways to distribute _`n` _candies among_`3` _children such that no child gets more than_`limit` _candies._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5, limit = 2\n    **Output:** 3\n    **Explanation:** There are 3 ways to distribute 5 candies such that no child gets more than 2 candies: (1, 2, 2), (2, 1, 2) and (2, 2, 1).\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, limit = 3\n    **Output:** 10\n    **Explanation:** There are 10 ways to distribute 3 candies such that no child gets more than 3 candies: (0, 0, 3), (0, 1, 2), (0, 2, 1), (0, 3, 0), (1, 0, 2), (1, 1, 1), (1, 2, 0), (2, 0, 1), (2, 1, 0) and (3, 0, 0).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 50`\n  * `1 <= limit <= 50`",
+  "question": "You are given two positive integers `n` and `limit`.\n\nReturn _the**total number** of ways to distribute _`n` _candies among_`3` _children such that no child gets more than_`limit` _candies._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5, limit = 2\n    **Output:** 3\n    **Explanation:** There are 3 ways to distribute 5 candies such that no child gets more than 2 candies: (1, 2, 2), (2, 1, 2) and (2, 2, 1).\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3, limit = 3\n    **Output:** 10\n    **Explanation:** There are 10 ways to distribute 3 candies such that no child gets more than 3 candies: (0, 0, 3), (0, 1, 2), (0, 2, 1), (0, 3, 0), (1, 0, 2), (1, 1, 1), (1, 2, 0), (2, 0, 1), (2, 1, 0) and (3, 0, 0).",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 50`\n  * `1 <= limit <= 50`",
+  "topics": ["Math", "Combinatorics", "Enumeration"],
+  "total_accepted": 41633,
+  "total_submissions": 54636,
+  "acceptance_rate": "76.2%",
+  "similar_questions": [
+    {
+      "title": "Count Ways to Distribute Candies",
+      "slug": "count-ways-to-distribute-candies",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-ways-to-distribute-candies/"
+    }
+  ],
+  "hints": ["Use three nested for loops to check all the triplets."]
+}

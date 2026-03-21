@@ -1,0 +1,34 @@
+{
+  "id": "69",
+  "title": "Sqrt(x)",
+  "slug": "sqrtx",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a non-negative integer <code>x</code>, return <em>the square root of </em><code>x</code><em> rounded down to the nearest integer</em>. The returned integer should be <strong>non-negative</strong> as well.</p>\n\n<p>You <strong>must not use</strong> any built-in exponent function or operator.</p>\n\n<ul>\n\t<li>For example, do not use <code>pow(x, 0.5)</code> in c++ or <code>x ** 0.5</code> in python.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 4\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The square root of 4 is 2, so we return 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> x = 8\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The square root of 8 is 2.82842..., and since we round it down to the nearest integer, 2 is returned.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= x &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given a non-negative integer `x`, return _the square root of_`x` _rounded down to the nearest integer_. The returned integer should be **non-negative** as well.\n\nYou **must not use** any built-in exponent function or operator.\n\n  * For example, do not use `pow(x, 0.5)` in c++ or `x ** 0.5` in python.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** x = 4\n    **Output:** 2\n    **Explanation:** The square root of 4 is 2, so we return 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 8\n    **Output:** 2\n    **Explanation:** The square root of 8 is 2.82842..., and since we round it down to the nearest integer, 2 is returned.\n    \n\n \n\n**Constraints:**\n\n  * `0 <= x <= 231 - 1`",
+  "question": "Given a non-negative integer `x`, return _the square root of_`x` _rounded down to the nearest integer_. The returned integer should be **non-negative** as well.\n\nYou **must not use** any built-in exponent function or operator.\n\n  * For example, do not use `pow(x, 0.5)` in c++ or `x ** 0.5` in python.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** x = 4\n    **Output:** 2\n    **Explanation:** The square root of 4 is 2, so we return 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** x = 8\n    **Output:** 2\n    **Explanation:** The square root of 8 is 2.82842..., and since we round it down to the nearest integer, 2 is returned.",
+  "constraints": "**Constraints:**\n\n  * `0 <= x <= 231 - 1`",
+  "topics": ["Math", "Binary Search"],
+  "total_accepted": 3070620,
+  "total_submissions": 7409495,
+  "acceptance_rate": "41.4%",
+  "similar_questions": [
+    {
+      "title": "Pow(x, n)",
+      "slug": "powx-n",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/powx-n/"
+    },
+    {
+      "title": "Valid Perfect Square",
+      "slug": "valid-perfect-square",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-perfect-square/"
+    }
+  ],
+  "hints": [
+    "Try exploring all integers. (Credits: @annujoshi)",
+    "Use the sorted property of integers to reduced the search space. (Credits: @annujoshi)"
+  ]
+}

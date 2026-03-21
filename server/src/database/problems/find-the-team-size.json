@@ -1,0 +1,18 @@
+{
+  "id": "1303",
+  "title": "Find the Team Size",
+  "slug": "find-the-team-size",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 81073,
+  "total_submissions": 90519,
+  "acceptance_rate": "89.6%",
+  "similar_questions": [],
+  "hints": []
+}

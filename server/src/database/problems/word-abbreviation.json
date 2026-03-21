@@ -1,0 +1,37 @@
+{
+  "id": "527",
+  "title": "Word Abbreviation",
+  "slug": "word-abbreviation",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "String", "Greedy", "Trie", "Sorting"],
+  "total_accepted": 33595,
+  "total_submissions": 53576,
+  "acceptance_rate": "62.7%",
+  "similar_questions": [
+    {
+      "title": "Valid Word Abbreviation",
+      "slug": "valid-word-abbreviation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-word-abbreviation/"
+    },
+    {
+      "title": "Minimum Unique Word Abbreviation",
+      "slug": "minimum-unique-word-abbreviation",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-unique-word-abbreviation/"
+    },
+    {
+      "title": "Check if a String Is an Acronym of Words",
+      "slug": "check-if-a-string-is-an-acronym-of-words",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-a-string-is-an-acronym-of-words/"
+    }
+  ],
+  "hints": []
+}

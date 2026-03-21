@@ -1,0 +1,41 @@
+{
+  "id": "2160",
+  "title": "Minimum Sum of Four Digit Number After Splitting Digits",
+  "slug": "minimum-sum-of-four-digit-number-after-splitting-digits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>positive</strong> integer <code>num</code> consisting of exactly four digits. Split <code>num</code> into two new integers <code>new1</code> and <code>new2</code> by using the <strong>digits</strong> found in <code>num</code>. <strong>Leading zeros</strong> are allowed in <code>new1</code> and <code>new2</code>, and <strong>all</strong> the digits found in <code>num</code> must be used.</p>\n\n<ul>\n\t<li>For example, given <code>num = 2932</code>, you have the following digits: two <code>2</code>&#39;s, one <code>9</code> and one <code>3</code>. Some of the possible pairs <code>[new1, new2]</code> are <code>[22, 93]</code>, <code>[23, 92]</code>, <code>[223, 9]</code> and <code>[2, 329]</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>minimum</strong> possible sum of </em><code>new1</code><em> and </em><code>new2</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 2932\n<strong>Output:</strong> 52\n<strong>Explanation:</strong> Some possible pairs [new1, new2] are [29, 23], [223, 9], etc.\nThe minimum sum can be obtained by the pair [29, 23]: 29 + 23 = 52.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 4009\n<strong>Output:</strong> 13\n<strong>Explanation:</strong> Some possible pairs [new1, new2] are [0, 49], [490, 0], etc. \nThe minimum sum can be obtained by the pair [4, 9]: 4 + 9 = 13.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1000 &lt;= num &lt;= 9999</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **positive** integer `num` consisting of exactly four digits. Split `num` into two new integers `new1` and `new2` by using the **digits** found in `num`. **Leading zeros** are allowed in `new1` and `new2`, and **all** the digits found in `num` must be used.\n\n  * For example, given `num = 2932`, you have the following digits: two `2`'s, one `9` and one `3`. Some of the possible pairs `[new1, new2]` are `[22, 93]`, `[23, 92]`, `[223, 9]` and `[2, 329]`.\n\n\n\nReturn _the**minimum** possible sum of _`new1` _and_`new2`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 2932\n    **Output:** 52\n    **Explanation:** Some possible pairs [new1, new2] are [29, 23], [223, 9], etc.\n    The minimum sum can be obtained by the pair [29, 23]: 29 + 23 = 52.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 4009\n    **Output:** 13\n    **Explanation:** Some possible pairs [new1, new2] are [0, 49], [490, 0], etc. \n    The minimum sum can be obtained by the pair [4, 9]: 4 + 9 = 13.\n    \n\n \n\n**Constraints:**\n\n  * `1000 <= num <= 9999`",
+  "question": "You are given a **positive** integer `num` consisting of exactly four digits. Split `num` into two new integers `new1` and `new2` by using the **digits** found in `num`. **Leading zeros** are allowed in `new1` and `new2`, and **all** the digits found in `num` must be used.\n\n  * For example, given `num = 2932`, you have the following digits: two `2`'s, one `9` and one `3`. Some of the possible pairs `[new1, new2]` are `[22, 93]`, `[23, 92]`, `[223, 9]` and `[2, 329]`.\n\n\n\nReturn _the**minimum** possible sum of _`new1` _and_`new2`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 2932\n    **Output:** 52\n    **Explanation:** Some possible pairs [new1, new2] are [29, 23], [223, 9], etc.\n    The minimum sum can be obtained by the pair [29, 23]: 29 + 23 = 52.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 4009\n    **Output:** 13\n    **Explanation:** Some possible pairs [new1, new2] are [0, 49], [490, 0], etc. \n    The minimum sum can be obtained by the pair [4, 9]: 4 + 9 = 13.",
+  "constraints": "**Constraints:**\n\n  * `1000 <= num <= 9999`",
+  "topics": ["Math", "Greedy", "Sorting"],
+  "total_accepted": 167419,
+  "total_submissions": 194125,
+  "acceptance_rate": "86.2%",
+  "similar_questions": [
+    {
+      "title": "Add Digits",
+      "slug": "add-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-digits/"
+    },
+    {
+      "title": "Difference Between Element Sum and Digit Sum of an Array",
+      "slug": "difference-between-element-sum-and-digit-sum-of-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/difference-between-element-sum-and-digit-sum-of-an-array/"
+    },
+    {
+      "title": "Alternating Digit Sum",
+      "slug": "alternating-digit-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/alternating-digit-sum/"
+    }
+  ],
+  "hints": [
+    "Notice that the most optimal way to obtain the minimum possible sum using 4 digits is by summing up two 2-digit numbers.",
+    "We can use the two smallest digits out of the four as the digits found in the tens place respectively.",
+    "Similarly, we use the final 2 larger digits as the digits found in the ones place."
+  ]
+}

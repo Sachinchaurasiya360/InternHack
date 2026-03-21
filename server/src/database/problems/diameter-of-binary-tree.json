@@ -1,0 +1,31 @@
+{
+  "id": "543",
+  "title": "Diameter of Binary Tree",
+  "slug": "diameter-of-binary-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a binary tree, return <em>the length of the <strong>diameter</strong> of the tree</em>.</p>\n\n<p>The <strong>diameter</strong> of a binary tree is the <strong>length</strong> of the longest path between any two nodes in a tree. This path may or may not pass through the <code>root</code>.</p>\n\n<p>The <strong>length</strong> of a path between two nodes is represented by the number of edges between them.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/06/diamtree.jpg\" style=\"width: 292px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3,4,5]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> 3 is the length of the path [4,2,1,3] or [5,2,1,3].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [1,2]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-100 &lt;= Node.val &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given the `root` of a binary tree, return _the length of the**diameter** of the tree_.\n\nThe **diameter** of a binary tree is the **length** of the longest path between any two nodes in a tree. This path may or may not pass through the `root`.\n\nThe **length** of a path between two nodes is represented by the number of edges between them.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/06/diamtree.jpg)\n    \n    \n    **Input:** root = [1,2,3,4,5]\n    **Output:** 3\n    **Explanation:** 3 is the length of the path [4,2,1,3] or [5,2,1,3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [1,2]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-100 <= Node.val <= 100`",
+  "question": "Given the `root` of a binary tree, return _the length of the**diameter** of the tree_.\n\nThe **diameter** of a binary tree is the **length** of the longest path between any two nodes in a tree. This path may or may not pass through the `root`.\n\nThe **length** of a path between two nodes is represented by the number of edges between them.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/06/diamtree.jpg)\n    \n    \n    **Input:** root = [1,2,3,4,5]\n    **Output:** 3\n    **Explanation:** 3 is the length of the path [4,2,1,3] or [5,2,1,3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [1,2]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 104]`.\n  * `-100 <= Node.val <= 100`",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 2413793,
+  "total_submissions": 3708306,
+  "acceptance_rate": "65.1%",
+  "similar_questions": [
+    {
+      "title": "Diameter of N-Ary Tree",
+      "slug": "diameter-of-n-ary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/diameter-of-n-ary-tree/"
+    },
+    {
+      "title": "Longest Path With Different Adjacent Characters",
+      "slug": "longest-path-with-different-adjacent-characters",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-path-with-different-adjacent-characters/"
+    }
+  ],
+  "hints": []
+}

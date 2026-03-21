@@ -1,0 +1,21 @@
+{
+  "id": "1507",
+  "title": "Reformat Date",
+  "slug": "reformat-date",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>date</code> string in the form&nbsp;<code>Day Month Year</code>, where:</p>\n\n<ul>\n\t<li><code>Day</code>&nbsp;is in the set <code>{&quot;1st&quot;, &quot;2nd&quot;, &quot;3rd&quot;, &quot;4th&quot;, ..., &quot;30th&quot;, &quot;31st&quot;}</code>.</li>\n\t<li><code>Month</code>&nbsp;is in the set <code>{&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;}</code>.</li>\n\t<li><code>Year</code>&nbsp;is in the range <code>[1900, 2100]</code>.</li>\n</ul>\n\n<p>Convert the date string to the format <code>YYYY-MM-DD</code>, where:</p>\n\n<ul>\n\t<li><code>YYYY</code> denotes the 4 digit year.</li>\n\t<li><code>MM</code> denotes the 2 digit month.</li>\n\t<li><code>DD</code> denotes the 2 digit day.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> date = &quot;20th Oct 2052&quot;\n<strong>Output:</strong> &quot;2052-10-20&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> date = &quot;6th Jun 1933&quot;\n<strong>Output:</strong> &quot;1933-06-06&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> date = &quot;26th May 1960&quot;\n<strong>Output:</strong> &quot;1960-05-26&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The given dates are guaranteed to be valid, so no error handling is necessary.</li>\n</ul>\n",
+  "content_markdown": "Given a `date` string in the form `Day Month Year`, where:\n\n  * `Day` is in the set `{\"1st\", \"2nd\", \"3rd\", \"4th\", ..., \"30th\", \"31st\"}`.\n  * `Month` is in the set `{\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\", \"Nov\", \"Dec\"}`.\n  * `Year` is in the range `[1900, 2100]`.\n\n\n\nConvert the date string to the format `YYYY-MM-DD`, where:\n\n  * `YYYY` denotes the 4 digit year.\n  * `MM` denotes the 2 digit month.\n  * `DD` denotes the 2 digit day.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** date = \"20th Oct 2052\"\n    **Output:** \"2052-10-20\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** date = \"6th Jun 1933\"\n    **Output:** \"1933-06-06\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** date = \"26th May 1960\"\n    **Output:** \"1960-05-26\"\n    \n\n \n\n**Constraints:**\n\n  * The given dates are guaranteed to be valid, so no error handling is necessary.",
+  "question": "Given a `date` string in the form `Day Month Year`, where:\n\n  * `Day` is in the set `{\"1st\", \"2nd\", \"3rd\", \"4th\", ..., \"30th\", \"31st\"}`.\n  * `Month` is in the set `{\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\", \"Nov\", \"Dec\"}`.\n  * `Year` is in the range `[1900, 2100]`.\n\n\n\nConvert the date string to the format `YYYY-MM-DD`, where:\n\n  * `YYYY` denotes the 4 digit year.\n  * `MM` denotes the 2 digit month.\n  * `DD` denotes the 2 digit day.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** date = \"20th Oct 2052\"\n    **Output:** \"2052-10-20\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** date = \"6th Jun 1933\"\n    **Output:** \"1933-06-06\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** date = \"26th May 1960\"\n    **Output:** \"1960-05-26\"",
+  "constraints": "**Constraints:**\n\n  * The given dates are guaranteed to be valid, so no error handling is necessary.",
+  "topics": ["String"],
+  "total_accepted": 95318,
+  "total_submissions": 139571,
+  "acceptance_rate": "68.3%",
+  "similar_questions": [],
+  "hints": [
+    "Handle the conversions of day, month and year separately.",
+    "Notice that days always have a two-word ending, so if you erase the last two characters of this days you'll get the number."
+  ]
+}

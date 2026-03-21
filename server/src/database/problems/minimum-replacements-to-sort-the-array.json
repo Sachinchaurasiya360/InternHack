@@ -1,0 +1,28 @@
+{
+  "id": "2366",
+  "title": "Minimum Replacements to Sort the Array",
+  "slug": "minimum-replacements-to-sort-the-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code>. In one operation you can replace any element of the array with <strong>any two</strong> elements that <strong>sum</strong> to it.</p>\n\n<ul>\n\t<li>For example, consider <code>nums = [5,6,7]</code>. In one operation, we can replace <code>nums[1]</code> with <code>2</code> and <code>4</code> and convert <code>nums</code> to <code>[5,2,4,7]</code>.</li>\n</ul>\n\n<p>Return <em>the minimum number of operations to make an array that is sorted in <strong>non-decreasing</strong> order</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,9,3]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Here are the steps to sort the array in non-decreasing order:\n- From [3,9,3], replace the 9 with 3 and 6 so the array becomes [3,3,6,3]\n- From [3,3,6,3], replace the 6 with 3 and 3 so the array becomes [3,3,3,3,3]\nThere are 2 steps to sort the array in non-decreasing order. Therefore, we return 2.\n\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The array is already in non-decreasing order. Therefore, we return 0. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums`. In one operation you can replace any element of the array with **any two** elements that **sum** to it.\n\n  * For example, consider `nums = [5,6,7]`. In one operation, we can replace `nums[1]` with `2` and `4` and convert `nums` to `[5,2,4,7]`.\n\n\n\nReturn _the minimum number of operations to make an array that is sorted in**non-decreasing** order_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [3,9,3]\n    **Output:** 2\n    **Explanation:** Here are the steps to sort the array in non-decreasing order:\n    - From [3,9,3], replace the 9 with 3 and 6 so the array becomes [3,3,6,3]\n    - From [3,3,6,3], replace the 6 with 3 and 3 so the array becomes [3,3,3,3,3]\n    There are 2 steps to sort the array in non-decreasing order. Therefore, we return 2.\n    \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** 0\n    **Explanation:** The array is already in non-decreasing order. Therefore, we return 0. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given a **0-indexed** integer array `nums`. In one operation you can replace any element of the array with **any two** elements that **sum** to it.\n\n  * For example, consider `nums = [5,6,7]`. In one operation, we can replace `nums[1]` with `2` and `4` and convert `nums` to `[5,2,4,7]`.\n\n\n\nReturn _the minimum number of operations to make an array that is sorted in**non-decreasing** order_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [3,9,3]\n    **Output:** 2\n    **Explanation:** Here are the steps to sort the array in non-decreasing order:\n    - From [3,9,3], replace the 9 with 3 and 6 so the array becomes [3,3,6,3]\n    - From [3,3,6,3], replace the 6 with 3 and 3 so the array becomes [3,3,3,3,3]\n    There are 2 steps to sort the array in non-decreasing order. Therefore, we return 2.\n    \n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** 0\n    **Explanation:** The array is already in non-decreasing order. Therefore, we return 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array", "Math", "Greedy"],
+  "total_accepted": 74182,
+  "total_submissions": 139420,
+  "acceptance_rate": "53.2%",
+  "similar_questions": [
+    {
+      "title": "Minimum Operations to Make the Array Increasing",
+      "slug": "minimum-operations-to-make-the-array-increasing",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-the-array-increasing/"
+    }
+  ],
+  "hints": [
+    "It is optimal to never make an operation to the last element of the array.",
+    "You can iterate from the second last element to the first. If the current value is greater than the previous bound, we want to break it into pieces so that the smaller one is as large as possible but not larger than the previous one."
+  ]
+}

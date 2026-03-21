@@ -1,0 +1,35 @@
+{
+  "id": "3212",
+  "title": "Count Submatrices With Equal Frequency of X and Y",
+  "slug": "count-submatrices-with-equal-frequency-of-x-and-y",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a 2D character matrix <code>grid</code>, where <code>grid[i][j]</code> is either <code>&#39;X&#39;</code>, <code>&#39;Y&#39;</code>, or <code>&#39;.&#39;</code>, return the number of <span data-keyword=\"submatrix\">submatrices</span> that contain:</p>\n\n<ul>\n\t<li><code>grid[0][0]</code></li>\n\t<li>an <strong>equal</strong> frequency of <code>&#39;X&#39;</code> and <code>&#39;Y&#39;</code>.</li>\n\t<li><strong>at least</strong> one <code>&#39;X&#39;</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">grid = [[&quot;X&quot;,&quot;Y&quot;,&quot;.&quot;],[&quot;Y&quot;,&quot;.&quot;,&quot;.&quot;]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/06/07/examplems.png\" style=\"padding: 10px; background: rgb(255, 255, 255); border-radius: 0.5rem; width: 175px; height: 350px;\" /></strong></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">grid = [[&quot;X&quot;,&quot;X&quot;],[&quot;X&quot;,&quot;Y&quot;]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>No submatrix has an equal frequency of <code>&#39;X&#39;</code> and <code>&#39;Y&#39;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">grid = [[&quot;.&quot;,&quot;.&quot;],[&quot;.&quot;,&quot;.&quot;]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>No submatrix has at least one <code>&#39;X&#39;</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= grid.length, grid[i].length &lt;= 1000</code></li>\n\t<li><code>grid[i][j]</code> is either <code>&#39;X&#39;</code>, <code>&#39;Y&#39;</code>, or <code>&#39;.&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a 2D character matrix `grid`, where `grid[i][j]` is either `'X'`, `'Y'`, or `'.'`, return the number of submatrices that contain:\n\n  * `grid[0][0]`\n  * an **equal** frequency of `'X'` and `'Y'`.\n  * **at least** one `'X'`.\n\n\n\n \n\n**Example 1:**\n\n**Input:** grid = [[\"X\",\"Y\",\".\"],[\"Y\",\".\",\".\"]]\n\n**Output:** 3\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/06/07/examplems.png)**\n\n**Example 2:**\n\n**Input:** grid = [[\"X\",\"X\"],[\"X\",\"Y\"]]\n\n**Output:** 0\n\n**Explanation:**\n\nNo submatrix has an equal frequency of `'X'` and `'Y'`.\n\n**Example 3:**\n\n**Input:** grid = [[\".\",\".\"],[\".\",\".\"]]\n\n**Output:** 0\n\n**Explanation:**\n\nNo submatrix has at least one `'X'`.\n\n \n\n**Constraints:**\n\n  * `1 <= grid.length, grid[i].length <= 1000`\n  * `grid[i][j]` is either `'X'`, `'Y'`, or `'.'`.",
+  "question": "Given a 2D character matrix `grid`, where `grid[i][j]` is either `'X'`, `'Y'`, or `'.'`, return the number of submatrices that contain:\n\n  * `grid[0][0]`\n  * an **equal** frequency of `'X'` and `'Y'`.\n  * **at least** one `'X'`.",
+  "examples": "**Example 1:**\n\n**Input:** grid = [[\"X\",\"Y\",\".\"],[\"Y\",\".\",\".\"]]\n\n**Output:** 3\n\n**Explanation:**\n\n**![](https://assets.leetcode.com/uploads/2024/06/07/examplems.png)**\n\n**Example 2:**\n\n**Input:** grid = [[\"X\",\"X\"],[\"X\",\"Y\"]]\n\n**Output:** 0\n\n**Explanation:**\n\nNo submatrix has an equal frequency of `'X'` and `'Y'`.\n\n**Example 3:**\n\n**Input:** grid = [[\".\",\".\"],[\".\",\".\"]]\n\n**Output:** 0\n\n**Explanation:**\n\nNo submatrix has at least one `'X'`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= grid.length, grid[i].length <= 1000`\n  * `grid[i][j]` is either `'X'`, `'Y'`, or `'.'`.",
+  "topics": ["Array", "Matrix", "Prefix Sum"],
+  "total_accepted": 26770,
+  "total_submissions": 51995,
+  "acceptance_rate": "51.5%",
+  "similar_questions": [
+    {
+      "title": "Maximum Equal Frequency",
+      "slug": "maximum-equal-frequency",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-equal-frequency/"
+    },
+    {
+      "title": "Count Submatrices With All Ones",
+      "slug": "count-submatrices-with-all-ones",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-submatrices-with-all-ones/"
+    }
+  ],
+  "hints": [
+    "Replace <code>’X’</code> with 1, <code>’Y’</code> with -1 and <code>’.’</code> with 0.",
+    "You need to find how many submatrices <code>grid[0..x][0..y]</code> have a sum of 0 and at least one <code>’X’</code>.",
+    "Use prefix sum to calculate submatrices sum."
+  ]
+}

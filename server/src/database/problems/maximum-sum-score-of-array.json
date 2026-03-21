@@ -1,0 +1,40 @@
+{
+  "id": "2219",
+  "title": "Maximum Sum Score of Array",
+  "slug": "maximum-sum-score-of-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Prefix Sum"],
+  "total_accepted": 5753,
+  "total_submissions": 9182,
+  "acceptance_rate": "62.7%",
+  "similar_questions": [
+    {
+      "title": "Subarray Sum Equals K",
+      "slug": "subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-sum-equals-k/"
+    },
+    {
+      "title": "Find Pivot Index",
+      "slug": "find-pivot-index",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-pivot-index/"
+    },
+    {
+      "title": "Find the Middle Index in Array",
+      "slug": "find-the-middle-index-in-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-middle-index-in-array/"
+    }
+  ],
+  "hints": [
+    "How can we use precalculation to efficiently calculate the average difference at an index?",
+    "Create a prefix and/or suffix sum array."
+  ]
+}

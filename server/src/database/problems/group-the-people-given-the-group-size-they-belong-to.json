@@ -1,0 +1,34 @@
+{
+  "id": "1282",
+  "title": "Group the People Given the Group Size They Belong To",
+  "slug": "group-the-people-given-the-group-size-they-belong-to",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> people&nbsp;that are split into some unknown number of groups. Each person is labeled with a&nbsp;<strong>unique ID</strong>&nbsp;from&nbsp;<code>0</code>&nbsp;to&nbsp;<code>n - 1</code>.</p>\n\n<p>You are given an integer array&nbsp;<code>groupSizes</code>, where <code>groupSizes[i]</code>&nbsp;is the size of the group that person&nbsp;<code>i</code>&nbsp;is in. For example, if&nbsp;<code>groupSizes[1] = 3</code>, then&nbsp;person&nbsp;<code>1</code>&nbsp;must be in a&nbsp;group of size&nbsp;<code>3</code>.</p>\n\n<p>Return&nbsp;<em>a list of groups&nbsp;such that&nbsp;each person&nbsp;<code>i</code>&nbsp;is in a group of size&nbsp;<code>groupSizes[i]</code></em>.</p>\n\n<p>Each person should&nbsp;appear in&nbsp;<strong>exactly one group</strong>,&nbsp;and every person must be in a group. If there are&nbsp;multiple answers, <strong>return any of them</strong>. It is <strong>guaranteed</strong> that there will be <strong>at least one</strong> valid solution for the given input.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> groupSizes = [3,3,3,3,3,1,3]\n<strong>Output:</strong> [[5],[0,1,2],[3,4,6]]\n<b>Explanation:</b> \nThe first group is [5]. The size is 1, and groupSizes[5] = 1.\nThe second group is [0,1,2]. The size is 3, and groupSizes[0] = groupSizes[1] = groupSizes[2] = 3.\nThe third group is [3,4,6]. The size is 3, and groupSizes[3] = groupSizes[4] = groupSizes[6] = 3.\nOther possible solutions are [[2,1,6],[5],[0,4,3]] and [[5],[0,6,2],[4,3,1]].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> groupSizes = [2,1,3,3,3,2]\n<strong>Output:</strong> [[1],[0,5],[2,3,4]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>groupSizes.length == n</code></li>\n\t<li><code>1 &lt;= n&nbsp;&lt;= 500</code></li>\n\t<li><code>1 &lt;=&nbsp;groupSizes[i] &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "There are `n` people that are split into some unknown number of groups. Each person is labeled with a **unique ID**  from `0` to `n - 1`.\n\nYou are given an integer array `groupSizes`, where `groupSizes[i]` is the size of the group that person `i` is in. For example, if `groupSizes[1] = 3`, then person `1` must be in a group of size `3`.\n\nReturn _a list of groups  such that each person `i` is in a group of size `groupSizes[i]`_.\n\nEach person should appear in **exactly one group** , and every person must be in a group. If there are multiple answers, **return any of them**. It is **guaranteed** that there will be **at least one** valid solution for the given input.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** groupSizes = [3,3,3,3,3,1,3]\n    **Output:** [[5],[0,1,2],[3,4,6]]\n    **Explanation:** \n    The first group is [5]. The size is 1, and groupSizes[5] = 1.\n    The second group is [0,1,2]. The size is 3, and groupSizes[0] = groupSizes[1] = groupSizes[2] = 3.\n    The third group is [3,4,6]. The size is 3, and groupSizes[3] = groupSizes[4] = groupSizes[6] = 3.\n    Other possible solutions are [[2,1,6],[5],[0,4,3]] and [[5],[0,6,2],[4,3,1]].\n    \n\n**Example 2:**\n    \n    \n    **Input:** groupSizes = [2,1,3,3,3,2]\n    **Output:** [[1],[0,5],[2,3,4]]\n    \n\n \n\n**Constraints:**\n\n  * `groupSizes.length == n`\n  * `1 <= n <= 500`\n  * `1 <= groupSizes[i] <= n`",
+  "question": "There are `n` people that are split into some unknown number of groups. Each person is labeled with a **unique ID**  from `0` to `n - 1`.\n\nYou are given an integer array `groupSizes`, where `groupSizes[i]` is the size of the group that person `i` is in. For example, if `groupSizes[1] = 3`, then person `1` must be in a group of size `3`.\n\nReturn _a list of groups  such that each person `i` is in a group of size `groupSizes[i]`_.\n\nEach person should appear in **exactly one group** , and every person must be in a group. If there are multiple answers, **return any of them**. It is **guaranteed** that there will be **at least one** valid solution for the given input.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** groupSizes = [3,3,3,3,3,1,3]\n    **Output:** [[5],[0,1,2],[3,4,6]]\n    **Explanation:** \n    The first group is [5]. The size is 1, and groupSizes[5] = 1.\n    The second group is [0,1,2]. The size is 3, and groupSizes[0] = groupSizes[1] = groupSizes[2] = 3.\n    The third group is [3,4,6]. The size is 3, and groupSizes[3] = groupSizes[4] = groupSizes[6] = 3.\n    Other possible solutions are [[2,1,6],[5],[0,4,3]] and [[5],[0,6,2],[4,3,1]].\n    \n\n**Example 2:**\n    \n    \n    **Input:** groupSizes = [2,1,3,3,3,2]\n    **Output:** [[1],[0,5],[2,3,4]]",
+  "constraints": "**Constraints:**\n\n  * `groupSizes.length == n`\n  * `1 <= n <= 500`\n  * `1 <= groupSizes[i] <= n`",
+  "topics": ["Array", "Hash Table", "Greedy"],
+  "total_accepted": 248099,
+  "total_submissions": 283491,
+  "acceptance_rate": "87.5%",
+  "similar_questions": [
+    {
+      "title": "Rabbits in Forest",
+      "slug": "rabbits-in-forest",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rabbits-in-forest/"
+    },
+    {
+      "title": "Maximum Number of Groups With Increasing Length",
+      "slug": "maximum-number-of-groups-with-increasing-length",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-groups-with-increasing-length/"
+    }
+  ],
+  "hints": [
+    "Put people's IDs with same groupSize into buckets, then split each bucket into groups.",
+    "Greedy fill until you need a new group."
+  ]
+}

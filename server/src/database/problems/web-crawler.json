@@ -1,0 +1,25 @@
+{
+  "id": "1236",
+  "title": "Web Crawler",
+  "slug": "web-crawler",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Depth-First Search", "Breadth-First Search", "Interactive"],
+  "total_accepted": 53483,
+  "total_submissions": 77698,
+  "acceptance_rate": "68.8%",
+  "similar_questions": [
+    {
+      "title": "Web Crawler Multithreaded",
+      "slug": "web-crawler-multithreaded",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/web-crawler-multithreaded/"
+    }
+  ],
+  "hints": ["Use DFS/BFS to search start from the startURL. Remember to get rid of duplicate URLs."]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "49",
+  "title": "Group Anagrams",
+  "slug": "group-anagrams",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>strs</code>, group the <span data-keyword=\"anagram\">anagrams</span> together. You can return the answer in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">strs = [&quot;eat&quot;,&quot;tea&quot;,&quot;tan&quot;,&quot;ate&quot;,&quot;nat&quot;,&quot;bat&quot;]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[[&quot;bat&quot;],[&quot;nat&quot;,&quot;tan&quot;],[&quot;ate&quot;,&quot;eat&quot;,&quot;tea&quot;]]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>There is no string in strs that can be rearranged to form <code>&quot;bat&quot;</code>.</li>\n\t<li>The strings <code>&quot;nat&quot;</code> and <code>&quot;tan&quot;</code> are anagrams as they can be rearranged to form each other.</li>\n\t<li>The strings <code>&quot;ate&quot;</code>, <code>&quot;eat&quot;</code>, and <code>&quot;tea&quot;</code> are anagrams as they can be rearranged to form each other.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">strs = [&quot;&quot;]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[[&quot;&quot;]]</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">strs = [&quot;a&quot;]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[[&quot;a&quot;]]</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= strs.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= strs[i].length &lt;= 100</code></li>\n\t<li><code>strs[i]</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given an array of strings `strs`, group the anagrams together. You can return the answer in **any order**.\n\n \n\n**Example 1:**\n\n**Input:** strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]\n\n**Output:** [[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]\n\n**Explanation:**\n\n  * There is no string in strs that can be rearranged to form `\"bat\"`.\n  * The strings `\"nat\"` and `\"tan\"` are anagrams as they can be rearranged to form each other.\n  * The strings `\"ate\"`, `\"eat\"`, and `\"tea\"` are anagrams as they can be rearranged to form each other.\n\n\n\n**Example 2:**\n\n**Input:** strs = [\"\"]\n\n**Output:** [[\"\"]]\n\n**Example 3:**\n\n**Input:** strs = [\"a\"]\n\n**Output:** [[\"a\"]]\n\n \n\n**Constraints:**\n\n  * `1 <= strs.length <= 104`\n  * `0 <= strs[i].length <= 100`\n  * `strs[i]` consists of lowercase English letters.",
+  "question": "Given an array of strings `strs`, group the anagrams together. You can return the answer in **any order**.",
+  "examples": "**Example 1:**\n\n**Input:** strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]\n\n**Output:** [[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]\n\n**Explanation:**\n\n  * There is no string in strs that can be rearranged to form `\"bat\"`.\n  * The strings `\"nat\"` and `\"tan\"` are anagrams as they can be rearranged to form each other.\n  * The strings `\"ate\"`, `\"eat\"`, and `\"tea\"` are anagrams as they can be rearranged to form each other.\n\n\n\n**Example 2:**\n\n**Input:** strs = [\"\"]\n\n**Output:** [[\"\"]]\n\n**Example 3:**\n\n**Input:** strs = [\"a\"]\n\n**Output:** [[\"a\"]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= strs.length <= 104`\n  * `0 <= strs[i].length <= 100`\n  * `strs[i]` consists of lowercase English letters.",
+  "topics": ["Array", "Hash Table", "String", "Sorting"],
+  "total_accepted": 4549947,
+  "total_submissions": 6301454,
+  "acceptance_rate": "72.2%",
+  "similar_questions": [
+    {
+      "title": "Valid Anagram",
+      "slug": "valid-anagram",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-anagram/"
+    },
+    {
+      "title": "Group Shifted Strings",
+      "slug": "group-shifted-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-shifted-strings/"
+    },
+    {
+      "title": "Find Resultant Array After Removing Anagrams",
+      "slug": "find-resultant-array-after-removing-anagrams",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-resultant-array-after-removing-anagrams/"
+    },
+    {
+      "title": "Count Anagrams",
+      "slug": "count-anagrams",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-anagrams/"
+    }
+  ],
+  "hints": []
+}

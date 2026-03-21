@@ -1,0 +1,34 @@
+{
+  "id": "3043",
+  "title": "Find the Length of the Longest Common Prefix",
+  "slug": "find-the-length-of-the-longest-common-prefix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two arrays with <strong>positive</strong> integers <code>arr1</code> and <code>arr2</code>.</p>\n\n<p>A <strong>prefix</strong> of a positive integer is an integer formed by one or more of its digits, starting from its <strong>leftmost</strong> digit. For example, <code>123</code> is a prefix of the integer <code>12345</code>, while <code>234</code> is <strong>not</strong>.</p>\n\n<p>A <strong>common prefix</strong> of two integers <code>a</code> and <code>b</code> is an integer <code>c</code>, such that <code>c</code> is a prefix of both <code>a</code> and <code>b</code>. For example, <code>5655359</code> and <code>56554</code> have common prefixes <code>565</code> and <code>5655</code> while <code>1223</code> and <code>43456</code> <strong>do not</strong> have a common prefix.</p>\n\n<p>You need to find the length of the <strong>longest common prefix</strong> between all pairs of integers <code>(x, y)</code> such that <code>x</code> belongs to <code>arr1</code> and <code>y</code> belongs to <code>arr2</code>.</p>\n\n<p>Return <em>the length of the <strong>longest</strong> common prefix among all pairs</em>.<em> If no common prefix exists among them</em>, <em>return</em> <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr1 = [1,10,100], arr2 = [1000]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> There are 3 pairs (arr1[i], arr2[j]):\n- The longest common prefix of (1, 1000) is 1.\n- The longest common prefix of (10, 1000) is 10.\n- The longest common prefix of (100, 1000) is 100.\nThe longest common prefix is 100 with a length of 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr1 = [1,2,3], arr2 = [4,4,4]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There exists no common prefix for any pair (arr1[i], arr2[j]), hence we return 0.\nNote that common prefixes between elements of the same array do not count.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr1.length, arr2.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= arr1[i], arr2[i] &lt;= 10<sup>8</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two arrays with **positive** integers `arr1` and `arr2`.\n\nA **prefix** of a positive integer is an integer formed by one or more of its digits, starting from its **leftmost** digit. For example, `123` is a prefix of the integer `12345`, while `234` is **not**.\n\nA **common prefix** of two integers `a` and `b` is an integer `c`, such that `c` is a prefix of both `a` and `b`. For example, `5655359` and `56554` have common prefixes `565` and `5655` while `1223` and `43456` **do not** have a common prefix.\n\nYou need to find the length of the **longest common prefix** between all pairs of integers `(x, y)` such that `x` belongs to `arr1` and `y` belongs to `arr2`.\n\nReturn _the length of the**longest** common prefix among all pairs_._If no common prefix exists among them_ , _return_ `0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr1 = [1,10,100], arr2 = [1000]\n    **Output:** 3\n    **Explanation:** There are 3 pairs (arr1[i], arr2[j]):\n    - The longest common prefix of (1, 1000) is 1.\n    - The longest common prefix of (10, 1000) is 10.\n    - The longest common prefix of (100, 1000) is 100.\n    The longest common prefix is 100 with a length of 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr1 = [1,2,3], arr2 = [4,4,4]\n    **Output:** 0\n    **Explanation:** There exists no common prefix for any pair (arr1[i], arr2[j]), hence we return 0.\n    Note that common prefixes between elements of the same array do not count.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr1.length, arr2.length <= 5 * 104`\n  * `1 <= arr1[i], arr2[i] <= 108`",
+  "question": "You are given two arrays with **positive** integers `arr1` and `arr2`.\n\nA **prefix** of a positive integer is an integer formed by one or more of its digits, starting from its **leftmost** digit. For example, `123` is a prefix of the integer `12345`, while `234` is **not**.\n\nA **common prefix** of two integers `a` and `b` is an integer `c`, such that `c` is a prefix of both `a` and `b`. For example, `5655359` and `56554` have common prefixes `565` and `5655` while `1223` and `43456` **do not** have a common prefix.\n\nYou need to find the length of the **longest common prefix** between all pairs of integers `(x, y)` such that `x` belongs to `arr1` and `y` belongs to `arr2`.\n\nReturn _the length of the**longest** common prefix among all pairs_._If no common prefix exists among them_ , _return_ `0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr1 = [1,10,100], arr2 = [1000]\n    **Output:** 3\n    **Explanation:** There are 3 pairs (arr1[i], arr2[j]):\n    - The longest common prefix of (1, 1000) is 1.\n    - The longest common prefix of (10, 1000) is 10.\n    - The longest common prefix of (100, 1000) is 100.\n    The longest common prefix is 100 with a length of 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr1 = [1,2,3], arr2 = [4,4,4]\n    **Output:** 0\n    **Explanation:** There exists no common prefix for any pair (arr1[i], arr2[j]), hence we return 0.\n    Note that common prefixes between elements of the same array do not count.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr1.length, arr2.length <= 5 * 104`\n  * `1 <= arr1[i], arr2[i] <= 108`",
+  "topics": ["Array", "Hash Table", "String", "Trie"],
+  "total_accepted": 174654,
+  "total_submissions": 306326,
+  "acceptance_rate": "57.0%",
+  "similar_questions": [
+    {
+      "title": "Longest Common Prefix",
+      "slug": "longest-common-prefix",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-common-prefix/"
+    },
+    {
+      "title": "Longest Common Suffix Queries",
+      "slug": "longest-common-suffix-queries",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-common-suffix-queries/"
+    }
+  ],
+  "hints": [
+    "Put all the possible prefixes of each element in <code>arr1</code> into a HashSet.",
+    "For all the possible prefixes of each element in <code>arr2</code>, check if it exists in the HashSet."
+  ]
+}

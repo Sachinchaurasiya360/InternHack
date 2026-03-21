@@ -1,0 +1,49 @@
+{
+  "id": "875",
+  "title": "Koko Eating Bananas",
+  "slug": "koko-eating-bananas",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Koko loves to eat bananas. There are <code>n</code> piles of bananas, the <code>i<sup>th</sup></code> pile has <code>piles[i]</code> bananas. The guards have gone and will come back in <code>h</code> hours.</p>\n\n<p>Koko can decide her bananas-per-hour eating speed of <code>k</code>. Each hour, she chooses some pile of bananas and eats <code>k</code> bananas from that pile. If the pile has less than <code>k</code> bananas, she eats all of them instead and will not eat any more bananas during this hour.</p>\n\n<p>Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.</p>\n\n<p>Return <em>the minimum integer</em> <code>k</code> <em>such that she can eat all the bananas within</em> <code>h</code> <em>hours</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> piles = [3,6,7,11], h = 8\n<strong>Output:</strong> 4\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> piles = [30,11,23,4,20], h = 5\n<strong>Output:</strong> 30\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> piles = [30,11,23,4,20], h = 6\n<strong>Output:</strong> 23\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= piles.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>piles.length &lt;= h &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= piles[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Koko loves to eat bananas. There are `n` piles of bananas, the `ith` pile has `piles[i]` bananas. The guards have gone and will come back in `h` hours.\n\nKoko can decide her bananas-per-hour eating speed of `k`. Each hour, she chooses some pile of bananas and eats `k` bananas from that pile. If the pile has less than `k` bananas, she eats all of them instead and will not eat any more bananas during this hour.\n\nKoko likes to eat slowly but still wants to finish eating all the bananas before the guards return.\n\nReturn _the minimum integer_ `k` _such that she can eat all the bananas within_ `h` _hours_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** piles = [3,6,7,11], h = 8\n    **Output:** 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** piles = [30,11,23,4,20], h = 5\n    **Output:** 30\n    \n\n**Example 3:**\n    \n    \n    **Input:** piles = [30,11,23,4,20], h = 6\n    **Output:** 23\n    \n\n \n\n**Constraints:**\n\n  * `1 <= piles.length <= 104`\n  * `piles.length <= h <= 109`\n  * `1 <= piles[i] <= 109`",
+  "question": "Koko loves to eat bananas. There are `n` piles of bananas, the `ith` pile has `piles[i]` bananas. The guards have gone and will come back in `h` hours.\n\nKoko can decide her bananas-per-hour eating speed of `k`. Each hour, she chooses some pile of bananas and eats `k` bananas from that pile. If the pile has less than `k` bananas, she eats all of them instead and will not eat any more bananas during this hour.\n\nKoko likes to eat slowly but still wants to finish eating all the bananas before the guards return.\n\nReturn _the minimum integer_ `k` _such that she can eat all the bananas within_ `h` _hours_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** piles = [3,6,7,11], h = 8\n    **Output:** 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** piles = [30,11,23,4,20], h = 5\n    **Output:** 30\n    \n\n**Example 3:**\n    \n    \n    **Input:** piles = [30,11,23,4,20], h = 6\n    **Output:** 23",
+  "constraints": "**Constraints:**\n\n  * `1 <= piles.length <= 104`\n  * `piles.length <= h <= 109`\n  * `1 <= piles[i] <= 109`",
+  "topics": ["Array", "Binary Search"],
+  "total_accepted": 1490245,
+  "total_submissions": 2997160,
+  "acceptance_rate": "49.7%",
+  "similar_questions": [
+    {
+      "title": "Minimize Max Distance to Gas Station",
+      "slug": "minimize-max-distance-to-gas-station",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimize-max-distance-to-gas-station/"
+    },
+    {
+      "title": "Maximum Candies Allocated to K Children",
+      "slug": "maximum-candies-allocated-to-k-children",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-candies-allocated-to-k-children/"
+    },
+    {
+      "title": "Minimized Maximum of Products Distributed to Any Store",
+      "slug": "minimized-maximum-of-products-distributed-to-any-store",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/"
+    },
+    {
+      "title": "Frog Jump II",
+      "slug": "frog-jump-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/frog-jump-ii/"
+    },
+    {
+      "title": "Minimum Time to Repair Cars",
+      "slug": "minimum-time-to-repair-cars",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-time-to-repair-cars/"
+    }
+  ],
+  "hints": []
+}

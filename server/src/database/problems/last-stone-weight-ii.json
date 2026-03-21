@@ -1,0 +1,28 @@
+{
+  "id": "1049",
+  "title": "Last Stone Weight II",
+  "slug": "last-stone-weight-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers <code>stones</code> where <code>stones[i]</code> is the weight of the <code>i<sup>th</sup></code> stone.</p>\n\n<p>We are playing a game with the stones. On each turn, we choose any two stones and smash them together. Suppose the stones have weights <code>x</code> and <code>y</code> with <code>x &lt;= y</code>. The result of this smash is:</p>\n\n<ul>\n\t<li>If <code>x == y</code>, both stones are destroyed, and</li>\n\t<li>If <code>x != y</code>, the stone of weight <code>x</code> is destroyed, and the stone of weight <code>y</code> has new weight <code>y - x</code>.</li>\n</ul>\n\n<p>At the end of the game, there is <strong>at most one</strong> stone left.</p>\n\n<p>Return <em>the smallest possible weight of the left stone</em>. If there are no stones left, return <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [2,7,4,1,8,1]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nWe can combine 2 and 4 to get 2, so the array converts to [2,7,1,8,1] then,\nwe can combine 7 and 8 to get 1, so the array converts to [2,1,1,1] then,\nwe can combine 2 and 1 to get 1, so the array converts to [1,1,1] then,\nwe can combine 1 and 1 to get 0, so the array converts to [1], then that&#39;s the optimal value.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [31,26,33,21,40]\n<strong>Output:</strong> 5\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= stones.length &lt;= 30</code></li>\n\t<li><code>1 &lt;= stones[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `stones` where `stones[i]` is the weight of the `ith` stone.\n\nWe are playing a game with the stones. On each turn, we choose any two stones and smash them together. Suppose the stones have weights `x` and `y` with `x <= y`. The result of this smash is:\n\n  * If `x == y`, both stones are destroyed, and\n  * If `x != y`, the stone of weight `x` is destroyed, and the stone of weight `y` has new weight `y - x`.\n\n\n\nAt the end of the game, there is **at most one** stone left.\n\nReturn _the smallest possible weight of the left stone_. If there are no stones left, return `0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** stones = [2,7,4,1,8,1]\n    **Output:** 1\n    **Explanation:**\n    We can combine 2 and 4 to get 2, so the array converts to [2,7,1,8,1] then,\n    we can combine 7 and 8 to get 1, so the array converts to [2,1,1,1] then,\n    we can combine 2 and 1 to get 1, so the array converts to [1,1,1] then,\n    we can combine 1 and 1 to get 0, so the array converts to [1], then that's the optimal value.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stones = [31,26,33,21,40]\n    **Output:** 5\n    \n\n \n\n**Constraints:**\n\n  * `1 <= stones.length <= 30`\n  * `1 <= stones[i] <= 100`",
+  "question": "You are given an array of integers `stones` where `stones[i]` is the weight of the `ith` stone.\n\nWe are playing a game with the stones. On each turn, we choose any two stones and smash them together. Suppose the stones have weights `x` and `y` with `x <= y`. The result of this smash is:\n\n  * If `x == y`, both stones are destroyed, and\n  * If `x != y`, the stone of weight `x` is destroyed, and the stone of weight `y` has new weight `y - x`.\n\n\n\nAt the end of the game, there is **at most one** stone left.\n\nReturn _the smallest possible weight of the left stone_. If there are no stones left, return `0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** stones = [2,7,4,1,8,1]\n    **Output:** 1\n    **Explanation:**\n    We can combine 2 and 4 to get 2, so the array converts to [2,7,1,8,1] then,\n    we can combine 7 and 8 to get 1, so the array converts to [2,1,1,1] then,\n    we can combine 2 and 1 to get 1, so the array converts to [1,1,1] then,\n    we can combine 1 and 1 to get 0, so the array converts to [1], then that's the optimal value.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stones = [31,26,33,21,40]\n    **Output:** 5",
+  "constraints": "**Constraints:**\n\n  * `1 <= stones.length <= 30`\n  * `1 <= stones[i] <= 100`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 130753,
+  "total_submissions": 220466,
+  "acceptance_rate": "59.3%",
+  "similar_questions": [
+    {
+      "title": "Partition Array Into Two Arrays to Minimize Sum Difference",
+      "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/"
+    }
+  ],
+  "hints": [
+    "Think of the final answer as a sum of weights with + or - sign symbols infront of each weight.  Actually, all sums with 1 of each sign symbol are possible.",
+    "Use dynamic programming: for every possible sum with N stones, those sums +x or -x is possible with N+1 stones, where x is the value of the newest stone.  (This overcounts sums that are all positive or all negative, but those don't matter.)"
+  ]
+}

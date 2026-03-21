@@ -1,0 +1,28 @@
+{
+  "id": "277",
+  "title": "Find the Celebrity",
+  "slug": "find-the-celebrity",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Two Pointers", "Graph Theory", "Interactive"],
+  "total_accepted": 322191,
+  "total_submissions": 658997,
+  "acceptance_rate": "48.9%",
+  "similar_questions": [
+    {
+      "title": "Find the Town Judge",
+      "slug": "find-the-town-judge",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-town-judge/"
+    }
+  ],
+  "hints": [
+    "The best hint for this problem can be provided by the following figure:\r\n\r\n<br>\r\n<img src=\"https://assets.leetcode.com/uploads/2019/10/20/hint_find_celebrity.png\" width=\"700\"/>",
+    "Well, if you understood the gist of the above idea, you can extend it to find a candidate that can possibly be a celebrity. Why do we say a \"candidate\"? That is for you to think. This is clearly a greedy approach to find the answer. However, there is some information that would still remain to be verified without which we can't obtain an answer with certainty. To get that stake in the ground, we would need some more calls to the knows API."
+  ]
+}

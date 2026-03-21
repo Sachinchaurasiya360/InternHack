@@ -1,0 +1,34 @@
+{
+  "id": "2529",
+  "title": "Maximum Count of Positive Integer and Negative Integer",
+  "slug": "maximum-count-of-positive-integer-and-negative-integer",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>nums</code> sorted in <strong>non-decreasing</strong> order, return <em>the maximum between the number of positive integers and the number of negative integers.</em></p>\n\n<ul>\n\t<li>In other words, if the number of positive integers in <code>nums</code> is <code>pos</code> and the number of negative integers is <code>neg</code>, then return the maximum of <code>pos</code> and <code>neg</code>.</li>\n</ul>\n\n<p><strong>Note</strong> that <code>0</code> is neither positive nor negative.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-2,-1,-1,1,2,3]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> There are 3 positive integers and 3 negative integers. The maximum count among them is 3.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-3,-2,-1,0,0,1,2]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> There are 2 positive integers and 3 negative integers. The maximum count among them is 3.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [5,20,66,1314]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> There are 4 positive integers and 0 negative integers. The maximum count among them is 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2000</code></li>\n\t<li><code>-2000 &lt;= nums[i] &lt;= 2000</code></li>\n\t<li><code>nums</code> is sorted in a <strong>non-decreasing order</strong>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Can you solve the problem in <code>O(log(n))</code> time complexity?</p>\n",
+  "content_markdown": "Given an array `nums` sorted in **non-decreasing** order, return _the maximum between the number of positive integers and the number of negative integers._\n\n  * In other words, if the number of positive integers in `nums` is `pos` and the number of negative integers is `neg`, then return the maximum of `pos` and `neg`.\n\n\n\n**Note** that `0` is neither positive nor negative.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [-2,-1,-1,1,2,3]\n    **Output:** 3\n    **Explanation:** There are 3 positive integers and 3 negative integers. The maximum count among them is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-3,-2,-1,0,0,1,2]\n    **Output:** 3\n    **Explanation:** There are 2 positive integers and 3 negative integers. The maximum count among them is 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [5,20,66,1314]\n    **Output:** 4\n    **Explanation:** There are 4 positive integers and 0 negative integers. The maximum count among them is 4.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 2000`\n  * `-2000 <= nums[i] <= 2000`\n  * `nums` is sorted in a **non-decreasing order**.\n\n\n\n \n\n**Follow up:** Can you solve the problem in `O(log(n))` time complexity?",
+  "question": "Given an array `nums` sorted in **non-decreasing** order, return _the maximum between the number of positive integers and the number of negative integers._\n\n  * In other words, if the number of positive integers in `nums` is `pos` and the number of negative integers is `neg`, then return the maximum of `pos` and `neg`.\n\n\n\n**Note** that `0` is neither positive nor negative.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [-2,-1,-1,1,2,3]\n    **Output:** 3\n    **Explanation:** There are 3 positive integers and 3 negative integers. The maximum count among them is 3.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-3,-2,-1,0,0,1,2]\n    **Output:** 3\n    **Explanation:** There are 2 positive integers and 3 negative integers. The maximum count among them is 3.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [5,20,66,1314]\n    **Output:** 4\n    **Explanation:** There are 4 positive integers and 0 negative integers. The maximum count among them is 4.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 2000`\n  * `-2000 <= nums[i] <= 2000`\n  * `nums` is sorted in a **non-decreasing order**.",
+  "topics": ["Array", "Binary Search", "Counting"],
+  "total_accepted": 355714,
+  "total_submissions": 478592,
+  "acceptance_rate": "74.3%",
+  "similar_questions": [
+    {
+      "title": "Binary Search",
+      "slug": "binary-search",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-search/"
+    },
+    {
+      "title": "Count Negative Numbers in a Sorted Matrix",
+      "slug": "count-negative-numbers-in-a-sorted-matrix",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-negative-numbers-in-a-sorted-matrix/"
+    }
+  ],
+  "hints": [
+    "Count how many positive integers and negative integers are in the array.",
+    "Since the array is sorted, can we use the binary search?"
+  ]
+}

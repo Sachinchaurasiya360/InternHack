@@ -1,0 +1,82 @@
+{
+  "id": "1871",
+  "title": "Jump Game VII",
+  "slug": "jump-game-vii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> binary string <code>s</code> and two integers <code>minJump</code> and <code>maxJump</code>. In the beginning, you are standing at index <code>0</code>, which is equal to <code>&#39;0&#39;</code>. You can move from index <code>i</code> to index <code>j</code> if the following conditions are fulfilled:</p>\n\n<ul>\n\t<li><code>i + minJump &lt;= j &lt;= min(i + maxJump, s.length - 1)</code>, and</li>\n\t<li><code>s[j] == &#39;0&#39;</code>.</li>\n</ul>\n\n<p>Return <code>true</code><i> if you can reach index </i><code>s.length - 1</code><i> in </i><code>s</code><em>, or </em><code>false</code><em> otherwise.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;<u>0</u>11<u>0</u>1<u>0</u>&quot;, minJump = 2, maxJump = 3\n<strong>Output:</strong> true\n<strong>Explanation:</strong>\nIn the first step, move from index 0 to index 3. \nIn the second step, move from index 3 to index 5.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;01101110&quot;, minJump = 2, maxJump = 3\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n\t<li><code>s[0] == &#39;0&#39;</code></li>\n\t<li><code>1 &lt;= minJump &lt;= maxJump &lt; s.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** binary string `s` and two integers `minJump` and `maxJump`. In the beginning, you are standing at index `0`, which is equal to `'0'`. You can move from index `i` to index `j` if the following conditions are fulfilled:\n\n  * `i + minJump <= j <= min(i + maxJump, s.length - 1)`, and\n  * `s[j] == '0'`.\n\n\n\nReturn `true` _if you can reach index_`s.length - 1` _in_`s` _, or_`false` _otherwise._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"_0_ 11 _0_ 1 _0_ \", minJump = 2, maxJump = 3\n    **Output:** true\n    **Explanation:**\n    In the first step, move from index 0 to index 3. \n    In the second step, move from index 3 to index 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"01101110\", minJump = 2, maxJump = 3\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.\n  * `s[0] == '0'`\n  * `1 <= minJump <= maxJump < s.length`",
+  "question": "You are given a **0-indexed** binary string `s` and two integers `minJump` and `maxJump`. In the beginning, you are standing at index `0`, which is equal to `'0'`. You can move from index `i` to index `j` if the following conditions are fulfilled:\n\n  * `i + minJump <= j <= min(i + maxJump, s.length - 1)`, and\n  * `s[j] == '0'`.\n\n\n\nReturn `true` _if you can reach index_`s.length - 1` _in_`s` _, or_`false` _otherwise._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"_0_ 11 _0_ 1 _0_ \", minJump = 2, maxJump = 3\n    **Output:** true\n    **Explanation:**\n    In the first step, move from index 0 to index 3. \n    In the second step, move from index 3 to index 5.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"01101110\", minJump = 2, maxJump = 3\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.\n  * `s[0] == '0'`\n  * `1 <= minJump <= maxJump < s.length`",
+  "topics": ["String", "Dynamic Programming", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 65646,
+  "total_submissions": 249096,
+  "acceptance_rate": "26.4%",
+  "similar_questions": [
+    {
+      "title": "Jump Game II",
+      "slug": "jump-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-ii/"
+    },
+    {
+      "title": "Jump Game",
+      "slug": "jump-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game/"
+    },
+    {
+      "title": "Jump Game III",
+      "slug": "jump-game-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-iii/"
+    },
+    {
+      "title": "Jump Game IV",
+      "slug": "jump-game-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/jump-game-iv/"
+    },
+    {
+      "title": "Jump Game V",
+      "slug": "jump-game-v",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/jump-game-v/"
+    },
+    {
+      "title": "Jump Game VI",
+      "slug": "jump-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vi/"
+    },
+    {
+      "title": "Jump Game VII",
+      "slug": "jump-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vii/"
+    },
+    {
+      "title": "Jump Game VIII",
+      "slug": "jump-game-viii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-viii/"
+    },
+    {
+      "title": "Count Vowel Strings in Ranges",
+      "slug": "count-vowel-strings-in-ranges",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-vowel-strings-in-ranges/"
+    },
+    {
+      "title": "Maximum Number of Jumps to Reach the Last Index",
+      "slug": "maximum-number-of-jumps-to-reach-the-last-index",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-jumps-to-reach-the-last-index/"
+    }
+  ],
+  "hints": [
+    "Consider for each reachable index i the interval [i + a, i + b].",
+    "Use partial sums to mark the intervals as reachable."
+  ]
+}

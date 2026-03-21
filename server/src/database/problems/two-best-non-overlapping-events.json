@@ -1,0 +1,46 @@
+{
+  "id": "2054",
+  "title": "Two Best Non-Overlapping Events",
+  "slug": "two-best-non-overlapping-events",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> 2D integer array of <code>events</code> where <code>events[i] = [startTime<sub>i</sub>, endTime<sub>i</sub>, value<sub>i</sub>]</code>. The <code>i<sup>th</sup></code> event starts at <code>startTime<sub>i</sub></code><sub> </sub>and ends at <code>endTime<sub>i</sub></code>, and if you attend this event, you will receive a value of <code>value<sub>i</sub></code>. You can choose <strong>at most</strong> <strong>two</strong> <strong>non-overlapping</strong> events to attend such that the sum of their values is <strong>maximized</strong>.</p>\n\n<p>Return <em>this <strong>maximum</strong> sum.</em></p>\n\n<p>Note that the start time and end time is <strong>inclusive</strong>: that is, you cannot attend two events where one of them starts and the other ends at the same time. More specifically, if you attend an event with end time <code>t</code>, the next event must start at or after <code>t + 1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2026/01/03/untitled-diagramdrawio.png\" style=\"width: 400px; height: 86px;\" />\n<pre>\n<strong>Input:</strong> events = [[1,3,2],[4,5,2],[2,4,3]]\n<strong>Output:</strong> 4\n<strong>Explanation: </strong>Choose the green events, 0 and 1 for a sum of 2 + 2 = 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"Example 1 Diagram\" src=\"https://assets.leetcode.com/uploads/2026/01/03/2054b.png\" style=\"width: 400px; height: 86px;\" />\n<pre>\n<strong>Input:</strong> events = [[1,3,2],[4,5,2],[1,5,5]]\n<strong>Output:</strong> 5\n<strong>Explanation: </strong>Choose event 2 for a sum of 5.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2026/01/03/2054c.png\" style=\"width: 400px; height: 74px;\" />\n<pre>\n<strong>Input:</strong> events = [[1,5,3],[1,5,1],[6,6,5]]\n<strong>Output:</strong> 8\n<strong>Explanation: </strong>Choose events 0 and 2 for a sum of 3 + 5 = 8.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= events.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>events[i].length == 3</code></li>\n\t<li><code>1 &lt;= startTime<sub>i</sub> &lt;= endTime<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= value<sub>i</sub> &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** 2D integer array of `events` where `events[i] = [startTimei, endTimei, valuei]`. The `ith` event starts at `startTimei` and ends at `endTimei`, and if you attend this event, you will receive a value of `valuei`. You can choose **at most** **two** **non-overlapping** events to attend such that the sum of their values is **maximized**.\n\nReturn _this**maximum** sum._\n\nNote that the start time and end time is **inclusive** : that is, you cannot attend two events where one of them starts and the other ends at the same time. More specifically, if you attend an event with end time `t`, the next event must start at or after `t + 1`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2026/01/03/untitled-diagramdrawio.png)\n    \n    \n    **Input:** events = [[1,3,2],[4,5,2],[2,4,3]]\n    **Output:** 4\n    **Explanation:** Choose the green events, 0 and 1 for a sum of 2 + 2 = 4.\n    \n\n**Example 2:**\n\n![Example 1 Diagram](https://assets.leetcode.com/uploads/2026/01/03/2054b.png)\n    \n    \n    **Input:** events = [[1,3,2],[4,5,2],[1,5,5]]\n    **Output:** 5\n    **Explanation:** Choose event 2 for a sum of 5.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2026/01/03/2054c.png)\n    \n    \n    **Input:** events = [[1,5,3],[1,5,1],[6,6,5]]\n    **Output:** 8\n    **Explanation:** Choose events 0 and 2 for a sum of 3 + 5 = 8.\n\n \n\n**Constraints:**\n\n  * `2 <= events.length <= 105`\n  * `events[i].length == 3`\n  * `1 <= startTimei <= endTimei <= 109`\n  * `1 <= valuei <= 106`",
+  "question": "You are given a **0-indexed** 2D integer array of `events` where `events[i] = [startTimei, endTimei, valuei]`. The `ith` event starts at `startTimei` and ends at `endTimei`, and if you attend this event, you will receive a value of `valuei`. You can choose **at most** **two** **non-overlapping** events to attend such that the sum of their values is **maximized**.\n\nReturn _this**maximum** sum._\n\nNote that the start time and end time is **inclusive** : that is, you cannot attend two events where one of them starts and the other ends at the same time. More specifically, if you attend an event with end time `t`, the next event must start at or after `t + 1`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2026/01/03/untitled-diagramdrawio.png)\n    \n    \n    **Input:** events = [[1,3,2],[4,5,2],[2,4,3]]\n    **Output:** 4\n    **Explanation:** Choose the green events, 0 and 1 for a sum of 2 + 2 = 4.\n    \n\n**Example 2:**\n\n![Example 1 Diagram](https://assets.leetcode.com/uploads/2026/01/03/2054b.png)\n    \n    \n    **Input:** events = [[1,3,2],[4,5,2],[1,5,5]]\n    **Output:** 5\n    **Explanation:** Choose event 2 for a sum of 5.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2026/01/03/2054c.png)\n    \n    \n    **Input:** events = [[1,5,3],[1,5,1],[6,6,5]]\n    **Output:** 8\n    **Explanation:** Choose events 0 and 2 for a sum of 3 + 5 = 8.",
+  "constraints": "**Constraints:**\n\n  * `2 <= events.length <= 105`\n  * `events[i].length == 3`\n  * `1 <= startTimei <= endTimei <= 109`\n  * `1 <= valuei <= 106`",
+  "topics": ["Array", "Binary Search", "Dynamic Programming", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 176827,
+  "total_submissions": 276185,
+  "acceptance_rate": "64.0%",
+  "similar_questions": [
+    {
+      "title": "Maximum Profit in Job Scheduling",
+      "slug": "maximum-profit-in-job-scheduling",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-profit-in-job-scheduling/"
+    },
+    {
+      "title": "Maximum Number of Events That Can Be Attended II",
+      "slug": "maximum-number-of-events-that-can-be-attended-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended-ii/"
+    },
+    {
+      "title": "Maximize Win From Two Segments",
+      "slug": "maximize-win-from-two-segments",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-win-from-two-segments/"
+    },
+    {
+      "title": "Maximum Score of Non-overlapping Intervals",
+      "slug": "maximum-score-of-non-overlapping-intervals",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-score-of-non-overlapping-intervals/"
+    }
+  ],
+  "hints": [
+    "How can sorting the events on the basis of their start times help? How about end times?",
+    "How can we quickly get the maximum score of an interval not intersecting with the interval we chose?"
+  ]
+}

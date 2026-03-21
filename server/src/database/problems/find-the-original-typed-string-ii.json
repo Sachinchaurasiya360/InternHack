@@ -1,0 +1,33 @@
+{
+  "id": "3333",
+  "title": "Find the Original Typed String II",
+  "slug": "find-the-original-typed-string-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Alice is attempting to type a specific string on her computer. However, she tends to be clumsy and <strong>may</strong> press a key for too long, resulting in a character being typed <strong>multiple</strong> times.</p>\n\n<p>You are given a string <code>word</code>, which represents the <strong>final</strong> output displayed on Alice&#39;s screen. You are also given a <strong>positive</strong> integer <code>k</code>.</p>\n\n<p>Return the total number of <em>possible</em> original strings that Alice <em>might</em> have intended to type, if she was trying to type a string of size <strong>at least</strong> <code>k</code>.</p>\n\n<p>Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;aabbccdd&quot;, k = 7</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The possible strings are: <code>&quot;aabbccdd&quot;</code>, <code>&quot;aabbccd&quot;</code>, <code>&quot;aabbcdd&quot;</code>, <code>&quot;aabccdd&quot;</code>, and <code>&quot;abbccdd&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;aabbccdd&quot;, k = 8</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The only possible string is <code>&quot;aabbccdd&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;aaabbb&quot;, k = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">8</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 5 * 10<sup>5</sup></code></li>\n\t<li><code>word</code> consists only of lowercase English letters.</li>\n\t<li><code>1 &lt;= k &lt;= 2000</code></li>\n</ul>\n",
+  "content_markdown": "Alice is attempting to type a specific string on her computer. However, she tends to be clumsy and **may** press a key for too long, resulting in a character being typed **multiple** times.\n\nYou are given a string `word`, which represents the **final** output displayed on Alice's screen. You are also given a **positive** integer `k`.\n\nReturn the total number of _possible_ original strings that Alice _might_ have intended to type, if she was trying to type a string of size **at least** `k`.\n\nSince the answer may be very large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n**Input:** word = \"aabbccdd\", k = 7\n\n**Output:** 5\n\n**Explanation:**\n\nThe possible strings are: `\"aabbccdd\"`, `\"aabbccd\"`, `\"aabbcdd\"`, `\"aabccdd\"`, and `\"abbccdd\"`.\n\n**Example 2:**\n\n**Input:** word = \"aabbccdd\", k = 8\n\n**Output:** 1\n\n**Explanation:**\n\nThe only possible string is `\"aabbccdd\"`.\n\n**Example 3:**\n\n**Input:** word = \"aaabbb\", k = 3\n\n**Output:** 8\n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 5 * 105`\n  * `word` consists only of lowercase English letters.\n  * `1 <= k <= 2000`",
+  "question": "Alice is attempting to type a specific string on her computer. However, she tends to be clumsy and **may** press a key for too long, resulting in a character being typed **multiple** times.\n\nYou are given a string `word`, which represents the **final** output displayed on Alice's screen. You are also given a **positive** integer `k`.\n\nReturn the total number of _possible_ original strings that Alice _might_ have intended to type, if she was trying to type a string of size **at least** `k`.\n\nSince the answer may be very large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n**Input:** word = \"aabbccdd\", k = 7\n\n**Output:** 5\n\n**Explanation:**\n\nThe possible strings are: `\"aabbccdd\"`, `\"aabbccd\"`, `\"aabbcdd\"`, `\"aabccdd\"`, and `\"abbccdd\"`.\n\n**Example 2:**\n\n**Input:** word = \"aabbccdd\", k = 8\n\n**Output:** 1\n\n**Explanation:**\n\nThe only possible string is `\"aabbccdd\"`.\n\n**Example 3:**\n\n**Input:** word = \"aaabbb\", k = 3\n\n**Output:** 8",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 5 * 105`\n  * `word` consists only of lowercase English letters.\n  * `1 <= k <= 2000`",
+  "topics": ["String", "Dynamic Programming", "Prefix Sum"],
+  "total_accepted": 69989,
+  "total_submissions": 153573,
+  "acceptance_rate": "45.6%",
+  "similar_questions": [
+    {
+      "title": "Keyboard Row",
+      "slug": "keyboard-row",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/keyboard-row/"
+    },
+    {
+      "title": "Faulty Keyboard",
+      "slug": "faulty-keyboard",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/faulty-keyboard/"
+    }
+  ],
+  "hints": [
+    "Instead of solving for at least <code>k</code>, can we solve for at most <code>k - 1</code> length?"
+  ]
+}

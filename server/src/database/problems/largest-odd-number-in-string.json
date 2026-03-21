@@ -1,0 +1,28 @@
+{
+  "id": "1903",
+  "title": "Largest Odd Number in String",
+  "slug": "largest-odd-number-in-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>num</code>, representing a large integer. Return <em>the <strong>largest-valued odd</strong> integer (as a string) that is a <strong>non-empty substring</strong> of </em><code>num</code><em>, or an empty string </em><code>&quot;&quot;</code><em> if no odd integer exists</em>.</p>\n\n<p>A <strong>substring</strong> is a contiguous sequence of characters within a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;52&quot;\n<strong>Output:</strong> &quot;5&quot;\n<strong>Explanation:</strong> The only non-empty substrings are &quot;5&quot;, &quot;2&quot;, and &quot;52&quot;. &quot;5&quot; is the only odd number.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;4206&quot;\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> There are no odd numbers in &quot;4206&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = &quot;35427&quot;\n<strong>Output:</strong> &quot;35427&quot;\n<strong>Explanation:</strong> &quot;35427&quot; is already an odd number.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>num</code> only consists of digits and does not contain any leading zeros.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `num`, representing a large integer. Return _the**largest-valued odd** integer (as a string) that is a **non-empty substring** of _`num` _, or an empty string_`\"\"`_if no odd integer exists_.\n\nA **substring** is a contiguous sequence of characters within a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = \"52\"\n    **Output:** \"5\"\n    **Explanation:** The only non-empty substrings are \"5\", \"2\", and \"52\". \"5\" is the only odd number.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"4206\"\n    **Output:** \"\"\n    **Explanation:** There are no odd numbers in \"4206\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = \"35427\"\n    **Output:** \"35427\"\n    **Explanation:** \"35427\" is already an odd number.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num.length <= 105`\n  * `num` only consists of digits and does not contain any leading zeros.",
+  "question": "You are given a string `num`, representing a large integer. Return _the**largest-valued odd** integer (as a string) that is a **non-empty substring** of _`num` _, or an empty string_`\"\"`_if no odd integer exists_.\n\nA **substring** is a contiguous sequence of characters within a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = \"52\"\n    **Output:** \"5\"\n    **Explanation:** The only non-empty substrings are \"5\", \"2\", and \"52\". \"5\" is the only odd number.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = \"4206\"\n    **Output:** \"\"\n    **Explanation:** There are no odd numbers in \"4206\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = \"35427\"\n    **Output:** \"35427\"\n    **Explanation:** \"35427\" is already an odd number.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num.length <= 105`\n  * `num` only consists of digits and does not contain any leading zeros.",
+  "topics": ["Math", "String", "Greedy"],
+  "total_accepted": 544675,
+  "total_submissions": 812933,
+  "acceptance_rate": "67.0%",
+  "similar_questions": [
+    {
+      "title": "Largest 3-Same-Digit Number in String",
+      "slug": "largest-3-same-digit-number-in-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/largest-3-same-digit-number-in-string/"
+    }
+  ],
+  "hints": [
+    "In what order should you iterate through the digits?",
+    "If an odd number exists, where must the number start from?"
+  ]
+}

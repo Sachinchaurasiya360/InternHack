@@ -1,0 +1,35 @@
+{
+  "id": "1804",
+  "title": "Implement Trie II (Prefix Tree)",
+  "slug": "implement-trie-ii-prefix-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Design", "Trie"],
+  "total_accepted": 26721,
+  "total_submissions": 42214,
+  "acceptance_rate": "63.3%",
+  "similar_questions": [
+    {
+      "title": "Implement Trie (Prefix Tree)",
+      "slug": "implement-trie-prefix-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/implement-trie-prefix-tree/"
+    },
+    {
+      "title": "Encrypt and Decrypt Strings",
+      "slug": "encrypt-and-decrypt-strings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/encrypt-and-decrypt-strings/"
+    }
+  ],
+  "hints": [
+    "Try to solve the first version first and reuse your code.",
+    "To implement the delete function, you should delete the trie nodes of the word if they are not shared with other words.",
+    "You should keep for each trie node a counter of how many words share this node."
+  ]
+}

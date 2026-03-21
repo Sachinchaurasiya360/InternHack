@@ -1,0 +1,21 @@
+{
+  "id": "1323",
+  "title": "Maximum 69 Number",
+  "slug": "maximum-69-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a positive integer <code>num</code> consisting only of digits <code>6</code> and <code>9</code>.</p>\n\n<p>Return <em>the maximum number you can get by changing <strong>at most</strong> one digit (</em><code>6</code><em> becomes </em><code>9</code><em>, and </em><code>9</code><em> becomes </em><code>6</code><em>)</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 9669\n<strong>Output:</strong> 9969\n<strong>Explanation:</strong> \nChanging the first digit results in 6669.\nChanging the second digit results in 9969.\nChanging the third digit results in 9699.\nChanging the fourth digit results in 9666.\nThe maximum number is 9969.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 9996\n<strong>Output:</strong> 9999\n<strong>Explanation:</strong> Changing the last digit 6 to 9 results in the maximum number.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 9999\n<strong>Output:</strong> 9999\n<strong>Explanation:</strong> It is better not to apply any change.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num &lt;= 10<sup>4</sup></code></li>\n\t<li><code>num</code>&nbsp;consists of only <code>6</code> and <code>9</code> digits.</li>\n</ul>\n",
+  "content_markdown": "You are given a positive integer `num` consisting only of digits `6` and `9`.\n\nReturn _the maximum number you can get by changing**at most** one digit (_`6` _becomes_`9` _, and_`9` _becomes_`6` _)_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 9669\n    **Output:** 9969\n    **Explanation:** \n    Changing the first digit results in 6669.\n    Changing the second digit results in 9969.\n    Changing the third digit results in 9699.\n    Changing the fourth digit results in 9666.\n    The maximum number is 9969.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 9996\n    **Output:** 9999\n    **Explanation:** Changing the last digit 6 to 9 results in the maximum number.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 9999\n    **Output:** 9999\n    **Explanation:** It is better not to apply any change.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num <= 104`\n  * `num` consists of only `6` and `9` digits.",
+  "question": "You are given a positive integer `num` consisting only of digits `6` and `9`.\n\nReturn _the maximum number you can get by changing**at most** one digit (_`6` _becomes_`9` _, and_`9` _becomes_`6` _)_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 9669\n    **Output:** 9969\n    **Explanation:** \n    Changing the first digit results in 6669.\n    Changing the second digit results in 9969.\n    Changing the third digit results in 9699.\n    Changing the fourth digit results in 9666.\n    The maximum number is 9969.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 9996\n    **Output:** 9999\n    **Explanation:** Changing the last digit 6 to 9 results in the maximum number.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 9999\n    **Output:** 9999\n    **Explanation:** It is better not to apply any change.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num <= 104`\n  * `num` consists of only `6` and `9` digits.",
+  "topics": ["Math", "Greedy"],
+  "total_accepted": 482966,
+  "total_submissions": 571456,
+  "acceptance_rate": "84.5%",
+  "similar_questions": [],
+  "hints": [
+    "Convert the number in an array of its digits.",
+    "Brute force on every digit to get the maximum number."
+  ]
+}

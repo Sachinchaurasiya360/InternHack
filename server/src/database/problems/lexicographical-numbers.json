@@ -1,0 +1,18 @@
+{
+  "id": "386",
+  "title": "Lexicographical Numbers",
+  "slug": "lexicographical-numbers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return all the numbers in the range <code>[1, n]</code> sorted in lexicographical order.</p>\n\n<p>You must write an algorithm that runs in&nbsp;<code>O(n)</code>&nbsp;time and uses <code>O(1)</code> extra space.&nbsp;</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> n = 13\n<strong>Output:</strong> [1,10,11,12,13,2,3,4,5,6,7,8,9]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> n = 2\n<strong>Output:</strong> [1,2]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 5 * 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, return all the numbers in the range `[1, n]` sorted in lexicographical order.\n\nYou must write an algorithm that runs in `O(n)` time and uses `O(1)` extra space. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 13\n    **Output:** [1,10,11,12,13,2,3,4,5,6,7,8,9]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** [1,2]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 5 * 104`",
+  "question": "Given an integer `n`, return all the numbers in the range `[1, n]` sorted in lexicographical order.\n\nYou must write an algorithm that runs in `O(n)` time and uses `O(1)` extra space.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 13\n    **Output:** [1,10,11,12,13,2,3,4,5,6,7,8,9]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** [1,2]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 5 * 104`",
+  "topics": ["Depth-First Search", "Trie"],
+  "total_accepted": 381746,
+  "total_submissions": 501088,
+  "acceptance_rate": "76.2%",
+  "similar_questions": [],
+  "hints": []
+}

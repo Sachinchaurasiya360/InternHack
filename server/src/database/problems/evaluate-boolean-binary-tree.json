@@ -1,0 +1,40 @@
+{
+  "id": "2331",
+  "title": "Evaluate Boolean Binary Tree",
+  "slug": "evaluate-boolean-binary-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> of a <strong>full binary tree</strong> with the following properties:</p>\n\n<ul>\n\t<li><strong>Leaf nodes</strong> have either the value <code>0</code> or <code>1</code>, where <code>0</code> represents <code>False</code> and <code>1</code> represents <code>True</code>.</li>\n\t<li><strong>Non-leaf nodes</strong> have either the value <code>2</code> or <code>3</code>, where <code>2</code> represents the boolean <code>OR</code> and <code>3</code> represents the boolean <code>AND</code>.</li>\n</ul>\n\n<p>The <strong>evaluation</strong> of a node is as follows:</p>\n\n<ul>\n\t<li>If the node is a leaf node, the evaluation is the <strong>value</strong> of the node, i.e. <code>True</code> or <code>False</code>.</li>\n\t<li>Otherwise, <strong>evaluate</strong> the node&#39;s two children and <strong>apply</strong> the boolean operation of its value with the children&#39;s evaluations.</li>\n</ul>\n\n<p>Return<em> the boolean result of <strong>evaluating</strong> the </em><code>root</code><em> node.</em></p>\n\n<p>A <strong>full binary tree</strong> is a binary tree where each node has either <code>0</code> or <code>2</code> children.</p>\n\n<p>A <strong>leaf node</strong> is a node that has zero children.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/05/16/example1drawio1.png\" style=\"width: 700px; height: 252px;\" />\n<pre>\n<strong>Input:</strong> root = [2,1,3,null,null,0,1]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The above diagram illustrates the evaluation process.\nThe AND node evaluates to False AND True = False.\nThe OR node evaluates to True OR False = True.\nThe root node evaluates to True, so we return true.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [0]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The root node is a leaf node and it evaluates to false, so we return false.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 1000]</code>.</li>\n\t<li><code>0 &lt;= Node.val &lt;= 3</code></li>\n\t<li>Every node has either <code>0</code> or <code>2</code> children.</li>\n\t<li>Leaf nodes have a value of <code>0</code> or <code>1</code>.</li>\n\t<li>Non-leaf nodes have a value of <code>2</code> or <code>3</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given the `root` of a **full binary tree** with the following properties:\n\n  * **Leaf nodes** have either the value `0` or `1`, where `0` represents `False` and `1` represents `True`.\n  * **Non-leaf nodes** have either the value `2` or `3`, where `2` represents the boolean `OR` and `3` represents the boolean `AND`.\n\n\n\nThe **evaluation** of a node is as follows:\n\n  * If the node is a leaf node, the evaluation is the **value** of the node, i.e. `True` or `False`.\n  * Otherwise, **evaluate** the node's two children and **apply** the boolean operation of its value with the children's evaluations.\n\n\n\nReturn _the boolean result of**evaluating** the _`root` _node._\n\nA **full binary tree** is a binary tree where each node has either `0` or `2` children.\n\nA **leaf node** is a node that has zero children.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/05/16/example1drawio1.png)\n    \n    \n    **Input:** root = [2,1,3,null,null,0,1]\n    **Output:** true\n    **Explanation:** The above diagram illustrates the evaluation process.\n    The AND node evaluates to False AND True = False.\n    The OR node evaluates to True OR False = True.\n    The root node evaluates to True, so we return true.\n\n**Example 2:**\n    \n    \n    **Input:** root = [0]\n    **Output:** false\n    **Explanation:** The root node is a leaf node and it evaluates to false, so we return false.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 1000]`.\n  * `0 <= Node.val <= 3`\n  * Every node has either `0` or `2` children.\n  * Leaf nodes have a value of `0` or `1`.\n  * Non-leaf nodes have a value of `2` or `3`.",
+  "question": "You are given the `root` of a **full binary tree** with the following properties:\n\n  * **Leaf nodes** have either the value `0` or `1`, where `0` represents `False` and `1` represents `True`.\n  * **Non-leaf nodes** have either the value `2` or `3`, where `2` represents the boolean `OR` and `3` represents the boolean `AND`.\n\n\n\nThe **evaluation** of a node is as follows:\n\n  * If the node is a leaf node, the evaluation is the **value** of the node, i.e. `True` or `False`.\n  * Otherwise, **evaluate** the node's two children and **apply** the boolean operation of its value with the children's evaluations.\n\n\n\nReturn _the boolean result of**evaluating** the _`root` _node._\n\nA **full binary tree** is a binary tree where each node has either `0` or `2` children.\n\nA **leaf node** is a node that has zero children.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/05/16/example1drawio1.png)\n    \n    \n    **Input:** root = [2,1,3,null,null,0,1]\n    **Output:** true\n    **Explanation:** The above diagram illustrates the evaluation process.\n    The AND node evaluates to False AND True = False.\n    The OR node evaluates to True OR False = True.\n    The root node evaluates to True, so we return true.\n\n**Example 2:**\n    \n    \n    **Input:** root = [0]\n    **Output:** false\n    **Explanation:** The root node is a leaf node and it evaluates to false, so we return false.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[1, 1000]`.\n  * `0 <= Node.val <= 3`\n  * Every node has either `0` or `2` children.\n  * Leaf nodes have a value of `0` or `1`.\n  * Non-leaf nodes have a value of `2` or `3`.",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 223542,
+  "total_submissions": 271190,
+  "acceptance_rate": "82.4%",
+  "similar_questions": [
+    {
+      "title": "Check If Two Expression Trees are Equivalent",
+      "slug": "check-if-two-expression-trees-are-equivalent",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-two-expression-trees-are-equivalent/"
+    },
+    {
+      "title": "Design an Expression Tree With Evaluate Function",
+      "slug": "design-an-expression-tree-with-evaluate-function",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-an-expression-tree-with-evaluate-function/"
+    },
+    {
+      "title": "Minimum Flips in Binary Tree to Get Result",
+      "slug": "minimum-flips-in-binary-tree-to-get-result",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-flips-in-binary-tree-to-get-result/"
+    }
+  ],
+  "hints": [
+    "Traverse the tree using depth-first search in post-order.",
+    "Can you use recursion to solve this easily?"
+  ]
+}

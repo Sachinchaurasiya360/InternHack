@@ -1,0 +1,21 @@
+{
+  "id": "3205",
+  "title": "Maximum Array Hopping Score I",
+  "slug": "maximum-array-hopping-score-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Stack", "Greedy", "Monotonic Stack"],
+  "total_accepted": 2587,
+  "total_submissions": 3359,
+  "acceptance_rate": "77.0%",
+  "similar_questions": [],
+  "hints": [
+    "Define <code>dp[i]</code> as the maximum score if we start from index <code>i</code>.",
+    "We can calculate <code>dp[i]</code> as the maximum score from hopping to all indices <code>j > i</code>."
+  ]
+}

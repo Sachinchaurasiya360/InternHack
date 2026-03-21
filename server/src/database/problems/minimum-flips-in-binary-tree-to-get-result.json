@@ -1,0 +1,41 @@
+{
+  "id": "2313",
+  "title": "Minimum Flips in Binary Tree to Get Result",
+  "slug": "minimum-flips-in-binary-tree-to-get-result",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Dynamic Programming", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 5027,
+  "total_submissions": 8851,
+  "acceptance_rate": "56.8%",
+  "similar_questions": [
+    {
+      "title": "Check If Two Expression Trees are Equivalent",
+      "slug": "check-if-two-expression-trees-are-equivalent",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-two-expression-trees-are-equivalent/"
+    },
+    {
+      "title": "Design an Expression Tree With Evaluate Function",
+      "slug": "design-an-expression-tree-with-evaluate-function",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-an-expression-tree-with-evaluate-function/"
+    },
+    {
+      "title": "Evaluate Boolean Binary Tree",
+      "slug": "evaluate-boolean-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/evaluate-boolean-binary-tree/"
+    }
+  ],
+  "hints": [
+    "Try using tree DP to solve this problem.",
+    "Find the minimum operations to change each subtree to true and to false separately.",
+    "For nodes representing boolean operations, find the minimum operations by trying all combinations of values to which the child nodes can evaluate."
+  ]
+}

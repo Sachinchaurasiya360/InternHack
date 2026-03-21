@@ -1,0 +1,40 @@
+{
+  "id": "2295",
+  "title": "Replace Elements in an Array",
+  "slug": "replace-elements-in-an-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>nums</code> that consists of <code>n</code> <strong>distinct</strong> positive integers. Apply <code>m</code> operations to this array, where in the <code>i<sup>th</sup></code> operation you replace the number <code>operations[i][0]</code> with <code>operations[i][1]</code>.</p>\n\n<p>It is guaranteed that in the <code>i<sup>th</sup></code> operation:</p>\n\n<ul>\n\t<li><code>operations[i][0]</code> <strong>exists</strong> in <code>nums</code>.</li>\n\t<li><code>operations[i][1]</code> does <strong>not</strong> exist in <code>nums</code>.</li>\n</ul>\n\n<p>Return <em>the array obtained after applying all the operations</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,4,6], operations = [[1,3],[4,7],[6,1]]\n<strong>Output:</strong> [3,2,7,1]\n<strong>Explanation:</strong> We perform the following operations on nums:\n- Replace the number 1 with 3. nums becomes [<u><strong>3</strong></u>,2,4,6].\n- Replace the number 4 with 7. nums becomes [3,2,<u><strong>7</strong></u>,6].\n- Replace the number 6 with 1. nums becomes [3,2,7,<u><strong>1</strong></u>].\nWe return the final array [3,2,7,1].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2], operations = [[1,3],[2,1],[3,2]]\n<strong>Output:</strong> [2,1]\n<strong>Explanation:</strong> We perform the following operations to nums:\n- Replace the number 1 with 3. nums becomes [<u><strong>3</strong></u>,2].\n- Replace the number 2 with 1. nums becomes [3,<u><strong>1</strong></u>].\n- Replace the number 3 with 2. nums becomes [<u><strong>2</strong></u>,1].\nWe return the array [2,1].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums.length</code></li>\n\t<li><code>m == operations.length</code></li>\n\t<li><code>1 &lt;= n, m &lt;= 10<sup>5</sup></code></li>\n\t<li>All the values of <code>nums</code> are <strong>distinct</strong>.</li>\n\t<li><code>operations[i].length == 2</code></li>\n\t<li><code>1 &lt;= nums[i], operations[i][0], operations[i][1] &lt;= 10<sup>6</sup></code></li>\n\t<li><code>operations[i][0]</code> will exist in <code>nums</code> when applying the <code>i<sup>th</sup></code> operation.</li>\n\t<li><code>operations[i][1]</code> will not exist in <code>nums</code> when applying the <code>i<sup>th</sup></code> operation.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `nums` that consists of `n` **distinct** positive integers. Apply `m` operations to this array, where in the `ith` operation you replace the number `operations[i][0]` with `operations[i][1]`.\n\nIt is guaranteed that in the `ith` operation:\n\n  * `operations[i][0]` **exists** in `nums`.\n  * `operations[i][1]` does **not** exist in `nums`.\n\n\n\nReturn _the array obtained after applying all the operations_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,4,6], operations = [[1,3],[4,7],[6,1]]\n    **Output:** [3,2,7,1]\n    **Explanation:** We perform the following operations on nums:\n    - Replace the number 1 with 3. nums becomes [_**3**_ ,2,4,6].\n    - Replace the number 4 with 7. nums becomes [3,2,_**7**_ ,6].\n    - Replace the number 6 with 1. nums becomes [3,2,7,_**1**_].\n    We return the final array [3,2,7,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2], operations = [[1,3],[2,1],[3,2]]\n    **Output:** [2,1]\n    **Explanation:** We perform the following operations to nums:\n    - Replace the number 1 with 3. nums becomes [_**3**_ ,2].\n    - Replace the number 2 with 1. nums becomes [3,_**1**_].\n    - Replace the number 3 with 2. nums becomes [_**2**_ ,1].\n    We return the array [2,1].\n    \n\n \n\n**Constraints:**\n\n  * `n == nums.length`\n  * `m == operations.length`\n  * `1 <= n, m <= 105`\n  * All the values of `nums` are **distinct**.\n  * `operations[i].length == 2`\n  * `1 <= nums[i], operations[i][0], operations[i][1] <= 106`\n  * `operations[i][0]` will exist in `nums` when applying the `ith` operation.\n  * `operations[i][1]` will not exist in `nums` when applying the `ith` operation.",
+  "question": "You are given a **0-indexed** array `nums` that consists of `n` **distinct** positive integers. Apply `m` operations to this array, where in the `ith` operation you replace the number `operations[i][0]` with `operations[i][1]`.\n\nIt is guaranteed that in the `ith` operation:\n\n  * `operations[i][0]` **exists** in `nums`.\n  * `operations[i][1]` does **not** exist in `nums`.\n\n\n\nReturn _the array obtained after applying all the operations_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,4,6], operations = [[1,3],[4,7],[6,1]]\n    **Output:** [3,2,7,1]\n    **Explanation:** We perform the following operations on nums:\n    - Replace the number 1 with 3. nums becomes [_**3**_ ,2,4,6].\n    - Replace the number 4 with 7. nums becomes [3,2,_**7**_ ,6].\n    - Replace the number 6 with 1. nums becomes [3,2,7,_**1**_].\n    We return the final array [3,2,7,1].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2], operations = [[1,3],[2,1],[3,2]]\n    **Output:** [2,1]\n    **Explanation:** We perform the following operations to nums:\n    - Replace the number 1 with 3. nums becomes [_**3**_ ,2].\n    - Replace the number 2 with 1. nums becomes [3,_**1**_].\n    - Replace the number 3 with 2. nums becomes [_**2**_ ,1].\n    We return the array [2,1].",
+  "constraints": "**Constraints:**\n\n  * `n == nums.length`\n  * `m == operations.length`\n  * `1 <= n, m <= 105`\n  * All the values of `nums` are **distinct**.\n  * `operations[i].length == 2`\n  * `1 <= nums[i], operations[i][0], operations[i][1] <= 106`\n  * `operations[i][0]` will exist in `nums` when applying the `ith` operation.\n  * `operations[i][1]` will not exist in `nums` when applying the `ith` operation.",
+  "topics": ["Array", "Hash Table", "Simulation"],
+  "total_accepted": 46902,
+  "total_submissions": 78676,
+  "acceptance_rate": "59.6%",
+  "similar_questions": [
+    {
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range I",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-i/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range II",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-ii/"
+    }
+  ],
+  "hints": [
+    "Can you think of a data structure that will allow you to store the position of each number?",
+    "Use that data structure to instantly replace a number with its new value."
+  ]
+}

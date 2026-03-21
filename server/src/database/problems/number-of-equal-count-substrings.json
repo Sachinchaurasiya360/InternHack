@@ -1,0 +1,42 @@
+{
+  "id": "2067",
+  "title": "Number of Equal Count Substrings",
+  "slug": "number-of-equal-count-substrings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Sliding Window", "Counting"],
+  "total_accepted": 3978,
+  "total_submissions": 8776,
+  "acceptance_rate": "45.3%",
+  "similar_questions": [
+    {
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+    },
+    {
+      "title": "Longest Substring with At Least K Repeating Characters",
+      "slug": "longest-substring-with-at-least-k-repeating-characters",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/"
+    },
+    {
+      "title": "Unique Substrings With Equal Digit Frequency",
+      "slug": "unique-substrings-with-equal-digit-frequency",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-substrings-with-equal-digit-frequency/"
+    }
+  ],
+  "hints": [
+    "The brute force solution is to check every substring, which would TLE. How can we improve this solution?",
+    "In an equal count substring, the first character appears count times, the second character appears count times, and so on.",
+    "The length of an equal count substring is the number of unique characters multiplied by count.",
+    "The length of all equal count substrings are multiples of count."
+  ]
+}

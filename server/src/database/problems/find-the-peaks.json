@@ -1,0 +1,33 @@
+{
+  "id": "2951",
+  "title": "Find the Peaks",
+  "slug": "find-the-peaks",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>mountain</code>. Your task is to find all the <strong>peaks</strong> in the <code>mountain</code> array.</p>\n\n<p>Return <em>an array that consists of </em>indices<!-- notionvc: c9879de8-88bd-43b0-8224-40c4bee71cd6 --><em> of <strong>peaks</strong> in the given array in <strong>any order</strong>.</em></p>\n\n<p><strong>Notes:</strong></p>\n\n<ul>\n\t<li>A <strong>peak</strong> is defined as an element that is <strong>strictly greater</strong> than its neighboring elements.</li>\n\t<li>The first and last elements of the array are <strong>not</strong> a peak.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> mountain = [2,4,4]\n<strong>Output:</strong> []\n<strong>Explanation:</strong> mountain[0] and mountain[2] can not be a peak because they are first and last elements of the array.\nmountain[1] also can not be a peak because it is not strictly greater than mountain[2].\nSo the answer is [].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> mountain = [1,4,3,8,5]\n<strong>Output:</strong> [1,3]\n<strong>Explanation:</strong> mountain[0] and mountain[4] can not be a peak because they are first and last elements of the array.\nmountain[2] also can not be a peak because it is not strictly greater than mountain[3] and mountain[1].\nBut mountain [1] and mountain[3] are strictly greater than their neighboring elements.\nSo the answer is [1,3].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= mountain.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= mountain[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `mountain`. Your task is to find all the **peaks** in the `mountain` array.\n\nReturn _an array that consists of_ indices _of**peaks** in the given array in **any order**._\n\n**Notes:**\n\n  * A **peak** is defined as an element that is **strictly greater** than its neighboring elements.\n  * The first and last elements of the array are **not** a peak.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** mountain = [2,4,4]\n    **Output:** []\n    **Explanation:** mountain[0] and mountain[2] can not be a peak because they are first and last elements of the array.\n    mountain[1] also can not be a peak because it is not strictly greater than mountain[2].\n    So the answer is [].\n    \n\n**Example 2:**\n    \n    \n    **Input:** mountain = [1,4,3,8,5]\n    **Output:** [1,3]\n    **Explanation:** mountain[0] and mountain[4] can not be a peak because they are first and last elements of the array.\n    mountain[2] also can not be a peak because it is not strictly greater than mountain[3] and mountain[1].\n    But mountain [1] and mountain[3] are strictly greater than their neighboring elements.\n    So the answer is [1,3].\n    \n\n \n\n**Constraints:**\n\n  * `3 <= mountain.length <= 100`\n  * `1 <= mountain[i] <= 100`",
+  "question": "You are given a **0-indexed** array `mountain`. Your task is to find all the **peaks** in the `mountain` array.\n\nReturn _an array that consists of_ indices _of**peaks** in the given array in **any order**._\n\n**Notes:**\n\n  * A **peak** is defined as an element that is **strictly greater** than its neighboring elements.\n  * The first and last elements of the array are **not** a peak.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** mountain = [2,4,4]\n    **Output:** []\n    **Explanation:** mountain[0] and mountain[2] can not be a peak because they are first and last elements of the array.\n    mountain[1] also can not be a peak because it is not strictly greater than mountain[2].\n    So the answer is [].\n    \n\n**Example 2:**\n    \n    \n    **Input:** mountain = [1,4,3,8,5]\n    **Output:** [1,3]\n    **Explanation:** mountain[0] and mountain[4] can not be a peak because they are first and last elements of the array.\n    mountain[2] also can not be a peak because it is not strictly greater than mountain[3] and mountain[1].\n    But mountain [1] and mountain[3] are strictly greater than their neighboring elements.\n    So the answer is [1,3].",
+  "constraints": "**Constraints:**\n\n  * `3 <= mountain.length <= 100`\n  * `1 <= mountain[i] <= 100`",
+  "topics": ["Array", "Enumeration"],
+  "total_accepted": 78257,
+  "total_submissions": 104317,
+  "acceptance_rate": "75.0%",
+  "similar_questions": [
+    {
+      "title": "Find Peak Element",
+      "slug": "find-peak-element",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-peak-element/"
+    },
+    {
+      "title": "Find a Peak Element II",
+      "slug": "find-a-peak-element-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-a-peak-element-ii/"
+    }
+  ],
+  "hints": [
+    "If <code>nums[i] > num[i - 1]</code> and <code>nums[i] > nums[i + 1]</code> <code>nums[i]</code> is a peak."
+  ]
+}

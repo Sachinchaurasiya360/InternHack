@@ -1,0 +1,43 @@
+{
+  "id": "486",
+  "title": "Predict the Winner",
+  "slug": "predict-the-winner",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. Two players are playing a game with this array: player 1 and player 2.</p>\n\n<p>Player 1 and player 2 take turns, with player 1 starting first. Both players start the game with a score of <code>0</code>. At each turn, the player takes one of the numbers from either end of the array (i.e., <code>nums[0]</code> or <code>nums[nums.length - 1]</code>) which reduces the size of the array by <code>1</code>. The player adds the chosen number to their score. The game ends when there are no more elements in the array.</p>\n\n<p>Return <code>true</code> if Player 1 can win the game. If the scores of both players are equal, then player 1 is still the winner, and you should also return <code>true</code>. You may assume that both players are playing optimally.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,5,2]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Initially, player 1 can choose between 1 and 2. \nIf he chooses 2 (or 1), then player 2 can choose from 1 (or 2) and 5. If player 2 chooses 5, then player 1 will be left with 1 (or 2). \nSo, final score of player 1 is 1 + 2 = 3, and player 2 is 5. \nHence, player 1 will never be the winner and you need to return false.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,5,233,7]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Player 1 first chooses 1. Then player 2 has to choose between 5 and 7. No matter which number player 2 choose, player 1 can choose 233.\nFinally, player 1 has more score (234) than player 2 (12), so you need to return True representing player1 can win.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 20</code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`. Two players are playing a game with this array: player 1 and player 2.\n\nPlayer 1 and player 2 take turns, with player 1 starting first. Both players start the game with a score of `0`. At each turn, the player takes one of the numbers from either end of the array (i.e., `nums[0]` or `nums[nums.length - 1]`) which reduces the size of the array by `1`. The player adds the chosen number to their score. The game ends when there are no more elements in the array.\n\nReturn `true` if Player 1 can win the game. If the scores of both players are equal, then player 1 is still the winner, and you should also return `true`. You may assume that both players are playing optimally.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,5,2]\n    **Output:** false\n    **Explanation:** Initially, player 1 can choose between 1 and 2. \n    If he chooses 2 (or 1), then player 2 can choose from 1 (or 2) and 5. If player 2 chooses 5, then player 1 will be left with 1 (or 2). \n    So, final score of player 1 is 1 + 2 = 3, and player 2 is 5. \n    Hence, player 1 will never be the winner and you need to return false.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,233,7]\n    **Output:** true\n    **Explanation:** Player 1 first chooses 1. Then player 2 has to choose between 5 and 7. No matter which number player 2 choose, player 1 can choose 233.\n    Finally, player 1 has more score (234) than player 2 (12), so you need to return True representing player1 can win.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 20`\n  * `0 <= nums[i] <= 107`",
+  "question": "You are given an integer array `nums`. Two players are playing a game with this array: player 1 and player 2.\n\nPlayer 1 and player 2 take turns, with player 1 starting first. Both players start the game with a score of `0`. At each turn, the player takes one of the numbers from either end of the array (i.e., `nums[0]` or `nums[nums.length - 1]`) which reduces the size of the array by `1`. The player adds the chosen number to their score. The game ends when there are no more elements in the array.\n\nReturn `true` if Player 1 can win the game. If the scores of both players are equal, then player 1 is still the winner, and you should also return `true`. You may assume that both players are playing optimally.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,5,2]\n    **Output:** false\n    **Explanation:** Initially, player 1 can choose between 1 and 2. \n    If he chooses 2 (or 1), then player 2 can choose from 1 (or 2) and 5. If player 2 chooses 5, then player 1 will be left with 1 (or 2). \n    So, final score of player 1 is 1 + 2 = 3, and player 2 is 5. \n    Hence, player 1 will never be the winner and you need to return false.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,233,7]\n    **Output:** true\n    **Explanation:** Player 1 first chooses 1. Then player 2 has to choose between 5 and 7. No matter which number player 2 choose, player 1 can choose 233.\n    Finally, player 1 has more score (234) than player 2 (12), so you need to return True representing player1 can win.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 20`\n  * `0 <= nums[i] <= 107`",
+  "topics": ["Array", "Math", "Dynamic Programming", "Recursion", "Game Theory"],
+  "total_accepted": 286429,
+  "total_submissions": 510626,
+  "acceptance_rate": "56.1%",
+  "similar_questions": [
+    {
+      "title": "Can I Win",
+      "slug": "can-i-win",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/can-i-win/"
+    },
+    {
+      "title": "Find the Winning Player in Coin Game",
+      "slug": "find-the-winning-player-in-coin-game",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-winning-player-in-coin-game/"
+    },
+    {
+      "title": "Find the Number of Winning Players",
+      "slug": "find-the-number-of-winning-players",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-number-of-winning-players/"
+    },
+    {
+      "title": "Count The Number of Winning Sequences",
+      "slug": "count-the-number-of-winning-sequences",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-the-number-of-winning-sequences/"
+    }
+  ],
+  "hints": []
+}

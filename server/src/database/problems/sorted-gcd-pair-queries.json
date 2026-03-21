@@ -1,0 +1,30 @@
+{
+  "id": "3312",
+  "title": "Sorted GCD Pair Queries",
+  "slug": "sorted-gcd-pair-queries",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> of length <code>n</code> and an integer array <code>queries</code>.</p>\n\n<p>Let <code>gcdPairs</code> denote an array obtained by calculating the <span data-keyword=\"gcd-function\">GCD</span> of all possible pairs <code>(nums[i], nums[j])</code>, where <code>0 &lt;= i &lt; j &lt; n</code>, and then sorting these values in <strong>ascending</strong> order.</p>\n\n<p>For each query <code>queries[i]</code>, you need to find the element at index <code>queries[i]</code> in <code>gcdPairs</code>.</p>\n\n<p>Return an integer array <code>answer</code>, where <code>answer[i]</code> is the value at <code>gcdPairs[queries[i]]</code> for each query.</p>\n\n<p>The term <code>gcd(a, b)</code> denotes the <strong>greatest common divisor</strong> of <code>a</code> and <code>b</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,3,4], queries = [0,2,2]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1,2,2]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>gcdPairs = [gcd(nums[0], nums[1]), gcd(nums[0], nums[2]), gcd(nums[1], nums[2])] = [1, 2, 1]</code>.</p>\n\n<p>After sorting in ascending order, <code>gcdPairs = [1, 1, 2]</code>.</p>\n\n<p>So, the answer is <code>[gcdPairs[queries[0]], gcdPairs[queries[1]], gcdPairs[queries[2]]] = [1, 2, 2]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [4,4,2,1], queries = [5,3,1,0]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[4,2,1,1]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>gcdPairs</code> sorted in ascending order is <code>[1, 1, 1, 2, 2, 4]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,2], queries = [0,0]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[2,2]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><code>gcdPairs = [2]</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n == nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= queries.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= queries[i] &lt; n * (n - 1) / 2</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` of length `n` and an integer array `queries`.\n\nLet `gcdPairs` denote an array obtained by calculating the GCD of all possible pairs `(nums[i], nums[j])`, where `0 <= i < j < n`, and then sorting these values in **ascending** order.\n\nFor each query `queries[i]`, you need to find the element at index `queries[i]` in `gcdPairs`.\n\nReturn an integer array `answer`, where `answer[i]` is the value at `gcdPairs[queries[i]]` for each query.\n\nThe term `gcd(a, b)` denotes the **greatest common divisor** of `a` and `b`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [2,3,4], queries = [0,2,2]\n\n**Output:** [1,2,2]\n\n**Explanation:**\n\n`gcdPairs = [gcd(nums[0], nums[1]), gcd(nums[0], nums[2]), gcd(nums[1], nums[2])] = [1, 2, 1]`.\n\nAfter sorting in ascending order, `gcdPairs = [1, 1, 2]`.\n\nSo, the answer is `[gcdPairs[queries[0]], gcdPairs[queries[1]], gcdPairs[queries[2]]] = [1, 2, 2]`.\n\n**Example 2:**\n\n**Input:** nums = [4,4,2,1], queries = [5,3,1,0]\n\n**Output:** [4,2,1,1]\n\n**Explanation:**\n\n`gcdPairs` sorted in ascending order is `[1, 1, 1, 2, 2, 4]`.\n\n**Example 3:**\n\n**Input:** nums = [2,2], queries = [0,0]\n\n**Output:** [2,2]\n\n**Explanation:**\n\n`gcdPairs = [2]`.\n\n \n\n**Constraints:**\n\n  * `2 <= n == nums.length <= 105`\n  * `1 <= nums[i] <= 5 * 104`\n  * `1 <= queries.length <= 105`\n  * `0 <= queries[i] < n * (n - 1) / 2`",
+  "question": "You are given an integer array `nums` of length `n` and an integer array `queries`.\n\nLet `gcdPairs` denote an array obtained by calculating the GCD of all possible pairs `(nums[i], nums[j])`, where `0 <= i < j < n`, and then sorting these values in **ascending** order.\n\nFor each query `queries[i]`, you need to find the element at index `queries[i]` in `gcdPairs`.\n\nReturn an integer array `answer`, where `answer[i]` is the value at `gcdPairs[queries[i]]` for each query.\n\nThe term `gcd(a, b)` denotes the **greatest common divisor** of `a` and `b`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [2,3,4], queries = [0,2,2]\n\n**Output:** [1,2,2]\n\n**Explanation:**\n\n`gcdPairs = [gcd(nums[0], nums[1]), gcd(nums[0], nums[2]), gcd(nums[1], nums[2])] = [1, 2, 1]`.\n\nAfter sorting in ascending order, `gcdPairs = [1, 1, 2]`.\n\nSo, the answer is `[gcdPairs[queries[0]], gcdPairs[queries[1]], gcdPairs[queries[2]]] = [1, 2, 2]`.\n\n**Example 2:**\n\n**Input:** nums = [4,4,2,1], queries = [5,3,1,0]\n\n**Output:** [4,2,1,1]\n\n**Explanation:**\n\n`gcdPairs` sorted in ascending order is `[1, 1, 1, 2, 2, 4]`.\n\n**Example 3:**\n\n**Input:** nums = [2,2], queries = [0,0]\n\n**Output:** [2,2]\n\n**Explanation:**\n\n`gcdPairs = [2]`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n == nums.length <= 105`\n  * `1 <= nums[i] <= 5 * 104`\n  * `1 <= queries.length <= 105`\n  * `0 <= queries[i] < n * (n - 1) / 2`",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Math",
+    "Binary Search",
+    "Combinatorics",
+    "Counting",
+    "Number Theory",
+    "Prefix Sum"
+  ],
+  "total_accepted": 5801,
+  "total_submissions": 25977,
+  "acceptance_rate": "22.3%",
+  "similar_questions": [],
+  "hints": [
+    "Try counting the number of pairs that have a GCD of <code>g</code.",
+    "Use inclusion-exclusion."
+  ]
+}

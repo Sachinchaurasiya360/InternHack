@@ -1,0 +1,25 @@
+{
+  "id": "105",
+  "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+  "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integer arrays <code>preorder</code> and <code>inorder</code> where <code>preorder</code> is the preorder traversal of a binary tree and <code>inorder</code> is the inorder traversal of the same tree, construct and return <em>the binary tree</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/19/tree.jpg\" style=\"width: 277px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]\n<strong>Output:</strong> [3,9,20,null,null,15,7]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> preorder = [-1], inorder = [-1]\n<strong>Output:</strong> [-1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= preorder.length &lt;= 3000</code></li>\n\t<li><code>inorder.length == preorder.length</code></li>\n\t<li><code>-3000 &lt;= preorder[i], inorder[i] &lt;= 3000</code></li>\n\t<li><code>preorder</code> and <code>inorder</code> consist of <strong>unique</strong> values.</li>\n\t<li>Each value of <code>inorder</code> also appears in <code>preorder</code>.</li>\n\t<li><code>preorder</code> is <strong>guaranteed</strong> to be the preorder traversal of the tree.</li>\n\t<li><code>inorder</code> is <strong>guaranteed</strong> to be the inorder traversal of the tree.</li>\n</ul>\n",
+  "content_markdown": "Given two integer arrays `preorder` and `inorder` where `preorder` is the preorder traversal of a binary tree and `inorder` is the inorder traversal of the same tree, construct and return _the binary tree_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/tree.jpg)\n    \n    \n    **Input:** preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]\n    **Output:** [3,9,20,null,null,15,7]\n    \n\n**Example 2:**\n    \n    \n    **Input:** preorder = [-1], inorder = [-1]\n    **Output:** [-1]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= preorder.length <= 3000`\n  * `inorder.length == preorder.length`\n  * `-3000 <= preorder[i], inorder[i] <= 3000`\n  * `preorder` and `inorder` consist of **unique** values.\n  * Each value of `inorder` also appears in `preorder`.\n  * `preorder` is **guaranteed** to be the preorder traversal of the tree.\n  * `inorder` is **guaranteed** to be the inorder traversal of the tree.",
+  "question": "Given two integer arrays `preorder` and `inorder` where `preorder` is the preorder traversal of a binary tree and `inorder` is the inorder traversal of the same tree, construct and return _the binary tree_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/tree.jpg)\n    \n    \n    **Input:** preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]\n    **Output:** [3,9,20,null,null,15,7]\n    \n\n**Example 2:**\n    \n    \n    **Input:** preorder = [-1], inorder = [-1]\n    **Output:** [-1]",
+  "constraints": "**Constraints:**\n\n  * `1 <= preorder.length <= 3000`\n  * `inorder.length == preorder.length`\n  * `-3000 <= preorder[i], inorder[i] <= 3000`\n  * `preorder` and `inorder` consist of **unique** values.\n  * Each value of `inorder` also appears in `preorder`.\n  * `preorder` is **guaranteed** to be the preorder traversal of the tree.\n  * `inorder` is **guaranteed** to be the inorder traversal of the tree.",
+  "topics": ["Array", "Hash Table", "Divide and Conquer", "Tree", "Binary Tree"],
+  "total_accepted": 1813031,
+  "total_submissions": 2651232,
+  "acceptance_rate": "68.4%",
+  "similar_questions": [
+    {
+      "title": "Construct Binary Tree from Inorder and Postorder Traversal",
+      "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/"
+    }
+  ],
+  "hints": []
+}

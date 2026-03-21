@@ -1,0 +1,25 @@
+{
+  "id": "3285",
+  "title": "Find Indices of Stable Mountains",
+  "slug": "find-indices-of-stable-mountains",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> mountains in a row, and each mountain has a height. You are given an integer array <code>height</code> where <code>height[i]</code> represents the height of mountain <code>i</code>, and an integer <code>threshold</code>.</p>\n\n<p>A mountain is called <strong>stable</strong> if the mountain just before it (<strong>if it exists</strong>) has a height <strong>strictly greater</strong> than <code>threshold</code>. <strong>Note</strong> that mountain 0 is <strong>not</strong> stable.</p>\n\n<p>Return an array containing the indices of <em>all</em> <strong>stable</strong> mountains in <strong>any</strong> order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">height = [1,2,3,4,5], threshold = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[3,4]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>Mountain 3 is stable because <code>height[2] == 3</code> is greater than <code>threshold == 2</code>.</li>\n\t<li>Mountain 4 is stable because <code>height[3] == 4</code> is greater than <code>threshold == 2</code>.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">height = [10,1,10,1,10], threshold = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1,3]</span></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">height = [10,1,10,1,10], threshold = 10</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[]</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n == height.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= height[i] &lt;= 100</code></li>\n\t<li><code>1 &lt;= threshold &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "There are `n` mountains in a row, and each mountain has a height. You are given an integer array `height` where `height[i]` represents the height of mountain `i`, and an integer `threshold`.\n\nA mountain is called **stable** if the mountain just before it (**if it exists**) has a height **strictly greater** than `threshold`. **Note** that mountain 0 is **not** stable.\n\nReturn an array containing the indices of _all_ **stable** mountains in **any** order.\n\n \n\n**Example 1:**\n\n**Input:** height = [1,2,3,4,5], threshold = 2\n\n**Output:** [3,4]\n\n**Explanation:**\n\n  * Mountain 3 is stable because `height[2] == 3` is greater than `threshold == 2`.\n  * Mountain 4 is stable because `height[3] == 4` is greater than `threshold == 2`.\n\n\n\n**Example 2:**\n\n**Input:** height = [10,1,10,1,10], threshold = 3\n\n**Output:** [1,3]\n\n**Example 3:**\n\n**Input:** height = [10,1,10,1,10], threshold = 10\n\n**Output:** []\n\n \n\n**Constraints:**\n\n  * `2 <= n == height.length <= 100`\n  * `1 <= height[i] <= 100`\n  * `1 <= threshold <= 100`",
+  "question": "There are `n` mountains in a row, and each mountain has a height. You are given an integer array `height` where `height[i]` represents the height of mountain `i`, and an integer `threshold`.\n\nA mountain is called **stable** if the mountain just before it (**if it exists**) has a height **strictly greater** than `threshold`. **Note** that mountain 0 is **not** stable.\n\nReturn an array containing the indices of _all_ **stable** mountains in **any** order.",
+  "examples": "**Example 1:**\n\n**Input:** height = [1,2,3,4,5], threshold = 2\n\n**Output:** [3,4]\n\n**Explanation:**\n\n  * Mountain 3 is stable because `height[2] == 3` is greater than `threshold == 2`.\n  * Mountain 4 is stable because `height[3] == 4` is greater than `threshold == 2`.\n\n\n\n**Example 2:**\n\n**Input:** height = [10,1,10,1,10], threshold = 3\n\n**Output:** [1,3]\n\n**Example 3:**\n\n**Input:** height = [10,1,10,1,10], threshold = 10\n\n**Output:** []",
+  "constraints": "**Constraints:**\n\n  * `2 <= n == height.length <= 100`\n  * `1 <= height[i] <= 100`\n  * `1 <= threshold <= 100`",
+  "topics": ["Array"],
+  "total_accepted": 67425,
+  "total_submissions": 77676,
+  "acceptance_rate": "86.8%",
+  "similar_questions": [
+    {
+      "title": "Find in Mountain Array",
+      "slug": "find-in-mountain-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-in-mountain-array/"
+    }
+  ],
+  "hints": []
+}

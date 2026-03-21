@@ -1,0 +1,39 @@
+{
+  "id": "2996",
+  "title": "Smallest Missing Integer Greater Than Sequential Prefix Sum",
+  "slug": "smallest-missing-integer-greater-than-sequential-prefix-sum",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array of integers <code>nums</code>.</p>\n\n<p>A prefix <code>nums[0..i]</code> is <strong>sequential</strong> if, for all <code>1 &lt;= j &lt;= i</code>, <code>nums[j] = nums[j - 1] + 1</code>. In particular, the prefix consisting only of <code>nums[0]</code> is <strong>sequential</strong>.</p>\n\n<p>Return <em>the <strong>smallest</strong> integer</em> <code>x</code> <em>missing from</em> <code>nums</code> <em>such that</em> <code>x</code> <em>is greater than or equal to the sum of the <strong>longest</strong> sequential prefix.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,2,5]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The longest sequential prefix of nums is [1,2,3] with a sum of 6. 6 is not in the array, therefore 6 is the smallest missing integer greater than or equal to the sum of the longest sequential prefix.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,4,5,1,12,14,13]\n<strong>Output:</strong> 15\n<strong>Explanation:</strong> The longest sequential prefix of nums is [3,4,5] with a sum of 12. 12, 13, and 14 belong to the array while 15 does not. Therefore 15 is the smallest missing integer greater than or equal to the sum of the longest sequential prefix.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array of integers `nums`.\n\nA prefix `nums[0..i]` is **sequential** if, for all `1 <= j <= i`, `nums[j] = nums[j - 1] + 1`. In particular, the prefix consisting only of `nums[0]` is **sequential**.\n\nReturn _the**smallest** integer_ `x` _missing from_ `nums` _such that_ `x` _is greater than or equal to the sum of the**longest** sequential prefix._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,2,5]\n    **Output:** 6\n    **Explanation:** The longest sequential prefix of nums is [1,2,3] with a sum of 6. 6 is not in the array, therefore 6 is the smallest missing integer greater than or equal to the sum of the longest sequential prefix.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,4,5,1,12,14,13]\n    **Output:** 15\n    **Explanation:** The longest sequential prefix of nums is [3,4,5] with a sum of 12. 12, 13, and 14 belong to the array while 15 does not. Therefore 15 is the smallest missing integer greater than or equal to the sum of the longest sequential prefix.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 50`",
+  "question": "You are given a **0-indexed** array of integers `nums`.\n\nA prefix `nums[0..i]` is **sequential** if, for all `1 <= j <= i`, `nums[j] = nums[j - 1] + 1`. In particular, the prefix consisting only of `nums[0]` is **sequential**.\n\nReturn _the**smallest** integer_ `x` _missing from_ `nums` _such that_ `x` _is greater than or equal to the sum of the**longest** sequential prefix._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,2,5]\n    **Output:** 6\n    **Explanation:** The longest sequential prefix of nums is [1,2,3] with a sum of 6. 6 is not in the array, therefore 6 is the smallest missing integer greater than or equal to the sum of the longest sequential prefix.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,4,5,1,12,14,13]\n    **Output:** 15\n    **Explanation:** The longest sequential prefix of nums is [3,4,5] with a sum of 12. 12, 13, and 14 belong to the array while 15 does not. Therefore 15 is the smallest missing integer greater than or equal to the sum of the longest sequential prefix.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 50`",
+  "topics": ["Array", "Hash Table", "Sorting"],
+  "total_accepted": 49546,
+  "total_submissions": 141036,
+  "acceptance_rate": "35.1%",
+  "similar_questions": [
+    {
+      "title": "Longest Common Prefix",
+      "slug": "longest-common-prefix",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-common-prefix/"
+    },
+    {
+      "title": "First Missing Positive",
+      "slug": "first-missing-positive",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/first-missing-positive/"
+    },
+    {
+      "title": "Next Greater Element I",
+      "slug": "next-greater-element-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/next-greater-element-i/"
+    }
+  ],
+  "hints": [
+    "To find the longest sequential prefix, iterate from left to right. For a fixed <code>i</code>, if <code>nums[i] != nums[i - 1] + 1</code> then the longest sequential prefix ends at <code>i - 1</code>."
+  ]
+}

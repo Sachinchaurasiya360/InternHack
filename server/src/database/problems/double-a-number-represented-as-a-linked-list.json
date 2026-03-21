@@ -1,0 +1,35 @@
+{
+  "id": "2816",
+  "title": "Double a Number Represented as a Linked List",
+  "slug": "double-a-number-represented-as-a-linked-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>head</code> of a <strong>non-empty</strong> linked list representing a non-negative integer without leading zeroes.</p>\n\n<p>Return <em>the </em><code>head</code><em> of the linked list after <strong>doubling</strong> it</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/05/28/example.png\" style=\"width: 401px; height: 81px;\" />\n<pre>\n<strong>Input:</strong> head = [1,8,9]\n<strong>Output:</strong> [3,7,8]\n<strong>Explanation:</strong> The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/05/28/example2.png\" style=\"width: 401px; height: 81px;\" />\n<pre>\n<strong>Input:</strong> head = [9,9,9]\n<strong>Output:</strong> [1,9,9,8]\n<strong>Explanation:</strong> The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is in the range <code>[1, 10<sup>4</sup>]</code></li>\n\t<li><font face=\"monospace\"><code>0 &lt;= Node.val &lt;= 9</code></font></li>\n\t<li>The input is generated such that the list represents a number that does not have leading zeros, except the number <code>0</code> itself.</li>\n</ul>\n",
+  "content_markdown": "You are given the `head` of a **non-empty** linked list representing a non-negative integer without leading zeroes.\n\nReturn _the_`head` _of the linked list after**doubling** it_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/05/28/example.png)\n    \n    \n    **Input:** head = [1,8,9]\n    **Output:** [3,7,8]\n    **Explanation:** The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/05/28/example2.png)\n    \n    \n    **Input:** head = [9,9,9]\n    **Output:** [1,9,9,8]\n    **Explanation:** The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. \n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is in the range `[1, 104]`\n  * `0 <= Node.val <= 9`\n  * The input is generated such that the list represents a number that does not have leading zeros, except the number `0` itself.",
+  "question": "You are given the `head` of a **non-empty** linked list representing a non-negative integer without leading zeroes.\n\nReturn _the_`head` _of the linked list after**doubling** it_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/05/28/example.png)\n    \n    \n    **Input:** head = [1,8,9]\n    **Output:** [3,7,8]\n    **Explanation:** The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/05/28/example2.png)\n    \n    \n    **Input:** head = [9,9,9]\n    **Output:** [1,9,9,8]\n    **Explanation:** The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is in the range `[1, 104]`\n  * `0 <= Node.val <= 9`\n  * The input is generated such that the list represents a number that does not have leading zeros, except the number `0` itself.",
+  "topics": ["Linked List", "Math", "Stack"],
+  "total_accepted": 199641,
+  "total_submissions": 325887,
+  "acceptance_rate": "61.3%",
+  "similar_questions": [
+    {
+      "title": "Add Two Numbers",
+      "slug": "add-two-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-numbers/"
+    },
+    {
+      "title": "Plus One Linked List",
+      "slug": "plus-one-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/plus-one-linked-list/"
+    }
+  ],
+  "hints": [
+    "Traverse the linked list from the least significant digit to the most significant digit and multiply each node's value by 2",
+    "Handle any carry-over digits that may arise during the doubling process.",
+    "If there is a carry-over digit on the most significant digit, create a new node with that value and point it to the start of the given linked list and return it."
+  ]
+}

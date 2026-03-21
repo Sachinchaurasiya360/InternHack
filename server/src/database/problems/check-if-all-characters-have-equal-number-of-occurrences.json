@@ -1,0 +1,34 @@
+{
+  "id": "1941",
+  "title": "Check if All Characters Have Equal Number of Occurrences",
+  "slug": "check-if-all-characters-have-equal-number-of-occurrences",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return <code>true</code><em> if </em><code>s</code><em> is a <strong>good</strong> string, or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>A string <code>s</code> is <strong>good</strong> if <strong>all</strong> the characters that appear in <code>s</code> have the <strong>same</strong> number of occurrences (i.e., the same frequency).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abacbc&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The characters that appear in s are &#39;a&#39;, &#39;b&#39;, and &#39;c&#39;. All characters occur 2 times in s.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aaabb&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The characters that appear in s are &#39;a&#39; and &#39;b&#39;.\n&#39;a&#39; occurs 3 times while &#39;b&#39; occurs 2 times, which is not the same number of times.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return `true` _if_`s` _is a**good** string, or _`false` _otherwise_.\n\nA string `s` is **good** if **all** the characters that appear in `s` have the **same** number of occurrences (i.e., the same frequency).\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abacbc\"\n    **Output:** true\n    **Explanation:** The characters that appear in s are 'a', 'b', and 'c'. All characters occur 2 times in s.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaabb\"\n    **Output:** false\n    **Explanation:** The characters that appear in s are 'a' and 'b'.\n    'a' occurs 3 times while 'b' occurs 2 times, which is not the same number of times.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of lowercase English letters.",
+  "question": "Given a string `s`, return `true` _if_`s` _is a**good** string, or _`false` _otherwise_.\n\nA string `s` is **good** if **all** the characters that appear in `s` have the **same** number of occurrences (i.e., the same frequency).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abacbc\"\n    **Output:** true\n    **Explanation:** The characters that appear in s are 'a', 'b', and 'c'. All characters occur 2 times in s.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"aaabb\"\n    **Output:** false\n    **Explanation:** The characters that appear in s are 'a' and 'b'.\n    'a' occurs 3 times while 'b' occurs 2 times, which is not the same number of times.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 1000`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 174056,
+  "total_submissions": 219281,
+  "acceptance_rate": "79.4%",
+  "similar_questions": [
+    {
+      "title": "Rings and Rods",
+      "slug": "rings-and-rods",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/rings-and-rods/"
+    },
+    {
+      "title": "Make Number of Distinct Characters Equal",
+      "slug": "make-number-of-distinct-characters-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/make-number-of-distinct-characters-equal/"
+    }
+  ],
+  "hints": [
+    "Build a dictionary containing the frequency of each character appearing in s",
+    "Check if all values in the dictionary are the same."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "2550",
+  "title": "Count Collisions of Monkeys on a Polygon",
+  "slug": "count-collisions-of-monkeys-on-a-polygon",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a regular convex polygon with <code>n</code> vertices. The vertices are labeled from <code>0</code> to <code>n - 1</code> in a clockwise direction, and each vertex has <strong>exactly one monkey</strong>. The following figure shows a convex polygon of <code>6</code> vertices.</p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/01/22/hexagon.jpg\" style=\"width: 300px; height: 293px;\" />\n<p>Simultaneously, each monkey moves to a neighboring vertex. A <strong>collision</strong> happens if at least two monkeys reside on the same vertex after the movement or intersect on an edge.</p>\n\n<p>Return the number of ways the monkeys can move so that at least <strong>one collision</strong> happens. Since the answer may be very large, return it modulo <code>10<sup>9 </sup>+ 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>There are 8 total possible movements.<br />\nTwo ways such that they collide at some point are:</p>\n\n<ul>\n\t<li>Monkey 1 moves in a clockwise direction; monkey 2 moves in an anticlockwise direction; monkey 3 moves in a clockwise direction. Monkeys 1 and 2 collide.</li>\n\t<li>Monkey 1 moves in an anticlockwise direction; monkey 2 moves in an anticlockwise direction; monkey 3 moves in a clockwise direction. Monkeys 1 and 3 collide.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">14</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= n &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "There is a regular convex polygon with `n` vertices. The vertices are labeled from `0` to `n - 1` in a clockwise direction, and each vertex has **exactly one monkey**. The following figure shows a convex polygon of `6` vertices.\n\n![](https://assets.leetcode.com/uploads/2023/01/22/hexagon.jpg)\n\nSimultaneously, each monkey moves to a neighboring vertex. A **collision** happens if at least two monkeys reside on the same vertex after the movement or intersect on an edge.\n\nReturn the number of ways the monkeys can move so that at least **one collision** happens. Since the answer may be very large, return it modulo `109 + 7`.\n\n \n\n**Example 1:**\n\n**Input:** n = 3\n\n**Output:** 6\n\n**Explanation:**\n\nThere are 8 total possible movements.  \nTwo ways such that they collide at some point are:\n\n  * Monkey 1 moves in a clockwise direction; monkey 2 moves in an anticlockwise direction; monkey 3 moves in a clockwise direction. Monkeys 1 and 2 collide.\n  * Monkey 1 moves in an anticlockwise direction; monkey 2 moves in an anticlockwise direction; monkey 3 moves in a clockwise direction. Monkeys 1 and 3 collide.\n\n\n\n**Example 2:**\n\n**Input:** n = 4\n\n**Output:** 14\n\n \n\n**Constraints:**\n\n  * `3 <= n <= 109`",
+  "question": "There is a regular convex polygon with `n` vertices. The vertices are labeled from `0` to `n - 1` in a clockwise direction, and each vertex has **exactly one monkey**. The following figure shows a convex polygon of `6` vertices.\n\n![](https://assets.leetcode.com/uploads/2023/01/22/hexagon.jpg)\n\nSimultaneously, each monkey moves to a neighboring vertex. A **collision** happens if at least two monkeys reside on the same vertex after the movement or intersect on an edge.\n\nReturn the number of ways the monkeys can move so that at least **one collision** happens. Since the answer may be very large, return it modulo `109 + 7`.",
+  "examples": "**Example 1:**\n\n**Input:** n = 3\n\n**Output:** 6\n\n**Explanation:**\n\nThere are 8 total possible movements.  \nTwo ways such that they collide at some point are:\n\n  * Monkey 1 moves in a clockwise direction; monkey 2 moves in an anticlockwise direction; monkey 3 moves in a clockwise direction. Monkeys 1 and 2 collide.\n  * Monkey 1 moves in an anticlockwise direction; monkey 2 moves in an anticlockwise direction; monkey 3 moves in a clockwise direction. Monkeys 1 and 3 collide.\n\n\n\n**Example 2:**\n\n**Input:** n = 4\n\n**Output:** 14",
+  "constraints": "**Constraints:**\n\n  * `3 <= n <= 109`",
+  "topics": ["Math", "Recursion"],
+  "total_accepted": 26843,
+  "total_submissions": 89598,
+  "acceptance_rate": "30.0%",
+  "similar_questions": [
+    {
+      "title": "Pow(x, n)",
+      "slug": "powx-n",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/powx-n/"
+    }
+  ],
+  "hints": ["Try counting the number of ways in which the monkeys will not collide."]
+}

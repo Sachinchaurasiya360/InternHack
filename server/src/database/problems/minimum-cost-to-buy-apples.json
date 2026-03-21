@@ -1,0 +1,21 @@
+{
+  "id": "2473",
+  "title": "Minimum Cost to Buy Apples",
+  "slug": "minimum-cost-to-buy-apples",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Graph Theory", "Heap (Priority Queue)", "Shortest Path"],
+  "total_accepted": 7284,
+  "total_submissions": 10830,
+  "acceptance_rate": "67.3%",
+  "similar_questions": [],
+  "hints": [
+    "Notice that the path you take to buy an apple will be the same path to return to the starting city.",
+    "Starting from each city, use Dijkstra’s algorithm to find the best city to travel to."
+  ]
+}

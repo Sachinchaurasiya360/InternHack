@@ -1,0 +1,31 @@
+{
+  "id": "3414",
+  "title": "Maximum Score of Non-overlapping Intervals",
+  "slug": "maximum-score-of-non-overlapping-intervals",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D integer array <code>intervals</code>, where <code>intervals[i] = [l<sub>i</sub>, r<sub>i</sub>, weight<sub>i</sub>]</code>. Interval <code>i</code> starts at position <code>l<sub>i</sub></code> and ends at <code>r<sub>i</sub></code>, and has a weight of <code>weight<sub>i</sub></code>. You can choose <em>up to</em> 4 <strong>non-overlapping</strong> intervals. The <strong>score</strong> of the chosen intervals is defined as the total sum of their weights.</p>\n\n<p>Return the <span data-keyword=\"lexicographically-smaller-array\">lexicographically smallest</span> array of at most 4 indices from <code>intervals</code> with <strong>maximum</strong> score, representing your choice of non-overlapping intervals.</p>\n\n<p>Two intervals are said to be <strong>non-overlapping</strong> if they do not share any points. In particular, intervals sharing a left or right boundary are considered overlapping.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">intervals = [[1,3,2],[4,5,2],[1,5,5],[6,9,3],[6,7,1],[8,9,1]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[2,3]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>You can choose the intervals with indices 2, and 3 with respective weights of 5, and 3.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">intervals = [[5,8,1],[6,7,7],[4,7,3],[9,10,6],[7,8,2],[11,14,3],[3,5,5]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1,3,5,6]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>You can choose the intervals with indices 1, 3, 5, and 6 with respective weights of 7, 6, 3, and 5.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= intevals.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>intervals[i].length == 3</code></li>\n\t<li><code>intervals[i] = [l<sub>i</sub>, r<sub>i</sub>, weight<sub>i</sub>]</code></li>\n\t<li><code>1 &lt;= l<sub>i</sub> &lt;= r<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= weight<sub>i</sub> &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a 2D integer array `intervals`, where `intervals[i] = [li, ri, weighti]`. Interval `i` starts at position `li` and ends at `ri`, and has a weight of `weighti`. You can choose _up to_ 4 **non-overlapping** intervals. The **score** of the chosen intervals is defined as the total sum of their weights.\n\nReturn the lexicographically smallest array of at most 4 indices from `intervals` with **maximum** score, representing your choice of non-overlapping intervals.\n\nTwo intervals are said to be **non-overlapping** if they do not share any points. In particular, intervals sharing a left or right boundary are considered overlapping.\n\n \n\n**Example 1:**\n\n**Input:** intervals = [[1,3,2],[4,5,2],[1,5,5],[6,9,3],[6,7,1],[8,9,1]]\n\n**Output:** [2,3]\n\n**Explanation:**\n\nYou can choose the intervals with indices 2, and 3 with respective weights of 5, and 3.\n\n**Example 2:**\n\n**Input:** intervals = [[5,8,1],[6,7,7],[4,7,3],[9,10,6],[7,8,2],[11,14,3],[3,5,5]]\n\n**Output:** [1,3,5,6]\n\n**Explanation:**\n\nYou can choose the intervals with indices 1, 3, 5, and 6 with respective weights of 7, 6, 3, and 5.\n\n \n\n**Constraints:**\n\n  * `1 <= intevals.length <= 5 * 104`\n  * `intervals[i].length == 3`\n  * `intervals[i] = [li, ri, weighti]`\n  * `1 <= li <= ri <= 109`\n  * `1 <= weighti <= 109`",
+  "question": "You are given a 2D integer array `intervals`, where `intervals[i] = [li, ri, weighti]`. Interval `i` starts at position `li` and ends at `ri`, and has a weight of `weighti`. You can choose _up to_ 4 **non-overlapping** intervals. The **score** of the chosen intervals is defined as the total sum of their weights.\n\nReturn the lexicographically smallest array of at most 4 indices from `intervals` with **maximum** score, representing your choice of non-overlapping intervals.\n\nTwo intervals are said to be **non-overlapping** if they do not share any points. In particular, intervals sharing a left or right boundary are considered overlapping.",
+  "examples": "**Example 1:**\n\n**Input:** intervals = [[1,3,2],[4,5,2],[1,5,5],[6,9,3],[6,7,1],[8,9,1]]\n\n**Output:** [2,3]\n\n**Explanation:**\n\nYou can choose the intervals with indices 2, and 3 with respective weights of 5, and 3.\n\n**Example 2:**\n\n**Input:** intervals = [[5,8,1],[6,7,7],[4,7,3],[9,10,6],[7,8,2],[11,14,3],[3,5,5]]\n\n**Output:** [1,3,5,6]\n\n**Explanation:**\n\nYou can choose the intervals with indices 1, 3, 5, and 6 with respective weights of 7, 6, 3, and 5.",
+  "constraints": "**Constraints:**\n\n  * `1 <= intevals.length <= 5 * 104`\n  * `intervals[i].length == 3`\n  * `intervals[i] = [li, ri, weighti]`\n  * `1 <= li <= ri <= 109`\n  * `1 <= weighti <= 109`",
+  "topics": ["Array", "Binary Search", "Dynamic Programming", "Sorting"],
+  "total_accepted": 4172,
+  "total_submissions": 13444,
+  "acceptance_rate": "31.0%",
+  "similar_questions": [
+    {
+      "title": "Two Best Non-Overlapping Events",
+      "slug": "two-best-non-overlapping-events",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/two-best-non-overlapping-events/"
+    }
+  ],
+  "hints": [
+    "Use Dynamic Programming.",
+    "Sort <code>intervals</code> by right boundary.",
+    "Let <code>dp[r][i]</code> denote the maximum score having picked <code>r</code> intervals from the prefix of <code>intervals</code> ending at index <code>i</code>.",
+    "<code>dp[r][i] = max(dp[r][i - 1], intervals[i][2] + dp[r][j])</code> where <code>j</code> is the largest index such that <code>intervals[j][1] < intervals[i][0]</code>.",
+    "Since <code>intervals</code> is sorted by right boundary, we can find index <code>j</code> using binary search."
+  ]
+}

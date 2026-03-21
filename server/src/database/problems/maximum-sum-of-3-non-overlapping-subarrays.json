@@ -1,0 +1,37 @@
+{
+  "id": "689",
+  "title": "Maximum Sum of 3 Non-Overlapping Subarrays",
+  "slug": "maximum-sum-of-3-non-overlapping-subarrays",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, find three non-overlapping subarrays of length <code>k</code> with maximum sum and return them.</p>\n\n<p>Return the result as a list of indices representing the starting position of each interval (<strong>0-indexed</strong>). If there are multiple answers, return the lexicographically smallest one.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,2,6,7,5,1], k = 2\n<strong>Output:</strong> [0,3,5]\n<strong>Explanation:</strong> Subarrays [1, 2], [2, 6], [7, 5] correspond to the starting indices [0, 3, 5].\nWe could have also taken [2, 1], but an answer of [1, 3, 5] would be lexicographically larger.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,1,2,1,2,1,2,1], k = 2\n<strong>Output:</strong> [0,2,4]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;&nbsp;2<sup>16</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= floor(nums.length / 3)</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, find three non-overlapping subarrays of length `k` with maximum sum and return them.\n\nReturn the result as a list of indices representing the starting position of each interval (**0-indexed**). If there are multiple answers, return the lexicographically smallest one.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1,2,6,7,5,1], k = 2\n    **Output:** [0,3,5]\n    **Explanation:** Subarrays [1, 2], [2, 6], [7, 5] correspond to the starting indices [0, 3, 5].\n    We could have also taken [2, 1], but an answer of [1, 3, 5] would be lexicographically larger.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,2,1,2,1,2,1], k = 2\n    **Output:** [0,2,4]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `1 <= nums[i] < 216`\n  * `1 <= k <= floor(nums.length / 3)`",
+  "question": "Given an integer array `nums` and an integer `k`, find three non-overlapping subarrays of length `k` with maximum sum and return them.\n\nReturn the result as a list of indices representing the starting position of each interval (**0-indexed**). If there are multiple answers, return the lexicographically smallest one.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,1,2,6,7,5,1], k = 2\n    **Output:** [0,3,5]\n    **Explanation:** Subarrays [1, 2], [2, 6], [7, 5] correspond to the starting indices [0, 3, 5].\n    We could have also taken [2, 1], but an answer of [1, 3, 5] would be lexicographically larger.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,1,2,1,2,1,2,1], k = 2\n    **Output:** [0,2,4]",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 2 * 104`\n  * `1 <= nums[i] < 216`\n  * `1 <= k <= floor(nums.length / 3)`",
+  "topics": ["Array", "Dynamic Programming", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 154832,
+  "total_submissions": 259345,
+  "acceptance_rate": "59.7%",
+  "similar_questions": [
+    {
+      "title": "Best Time to Buy and Sell Stock III",
+      "slug": "best-time-to-buy-and-sell-stock-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/"
+    },
+    {
+      "title": "Sum of Variable Length Subarrays",
+      "slug": "sum-of-variable-length-subarrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sum-of-variable-length-subarrays/"
+    },
+    {
+      "title": "Maximize Y‑Sum by Picking a Triplet of Distinct X‑Values",
+      "slug": "maximize-ysum-by-picking-a-triplet-of-distinct-xvalues",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-ysum-by-picking-a-triplet-of-distinct-xvalues/"
+    }
+  ],
+  "hints": []
+}

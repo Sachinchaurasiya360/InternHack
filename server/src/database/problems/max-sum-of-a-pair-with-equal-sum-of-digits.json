@@ -1,0 +1,21 @@
+{
+  "id": "2342",
+  "title": "Max Sum of a Pair With Equal Sum of Digits",
+  "slug": "max-sum-of-a-pair-with-equal-sum-of-digits",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>nums</code> consisting of <strong>positive</strong> integers. You can choose two indices <code>i</code> and <code>j</code>, such that <code>i != j</code>, and the sum of digits of the number <code>nums[i]</code> is equal to that of <code>nums[j]</code>.</p>\n\n<p>Return the <strong>maximum</strong> value of<em> </em><code>nums[i] + nums[j]</code><em> </em>that you can obtain over all possible indices <code>i</code> and <code>j</code> that satisfy the conditions. If no such pair of indices exists, return -1.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [18,43,36,13,7]\n<strong>Output:</strong> 54\n<strong>Explanation:</strong> The pairs (i, j) that satisfy the conditions are:\n- (0, 2), both numbers have a sum of digits equal to 9, and their sum is 18 + 36 = 54.\n- (1, 4), both numbers have a sum of digits equal to 7, and their sum is 43 + 7 = 50.\nSo the maximum sum that we can obtain is 54.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,12,19,14]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There are no two numbers that satisfy the conditions, so we return -1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `nums` consisting of **positive** integers. You can choose two indices `i` and `j`, such that `i != j`, and the sum of digits of the number `nums[i]` is equal to that of `nums[j]`.\n\nReturn the **maximum** value of __`nums[i] + nums[j]`__ that you can obtain over all possible indices `i` and `j` that satisfy the conditions. If no such pair of indices exists, return -1.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [18,43,36,13,7]\n    **Output:** 54\n    **Explanation:** The pairs (i, j) that satisfy the conditions are:\n    - (0, 2), both numbers have a sum of digits equal to 9, and their sum is 18 + 36 = 54.\n    - (1, 4), both numbers have a sum of digits equal to 7, and their sum is 43 + 7 = 50.\n    So the maximum sum that we can obtain is 54.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [10,12,19,14]\n    **Output:** -1\n    **Explanation:** There are no two numbers that satisfy the conditions, so we return -1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given a **0-indexed** array `nums` consisting of **positive** integers. You can choose two indices `i` and `j`, such that `i != j`, and the sum of digits of the number `nums[i]` is equal to that of `nums[j]`.\n\nReturn the **maximum** value of __`nums[i] + nums[j]`__ that you can obtain over all possible indices `i` and `j` that satisfy the conditions. If no such pair of indices exists, return -1.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [18,43,36,13,7]\n    **Output:** 54\n    **Explanation:** The pairs (i, j) that satisfy the conditions are:\n    - (0, 2), both numbers have a sum of digits equal to 9, and their sum is 18 + 36 = 54.\n    - (1, 4), both numbers have a sum of digits equal to 7, and their sum is 43 + 7 = 50.\n    So the maximum sum that we can obtain is 54.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [10,12,19,14]\n    **Output:** -1\n    **Explanation:** There are no two numbers that satisfy the conditions, so we return -1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Sorting", "Heap (Priority Queue)"],
+  "total_accepted": 248478,
+  "total_submissions": 376734,
+  "acceptance_rate": "66.0%",
+  "similar_questions": [],
+  "hints": [
+    "What is the largest possible sum of digits a number can have?",
+    "Group the array elements by the sum of their digits, and find the largest two elements of each group."
+  ]
+}

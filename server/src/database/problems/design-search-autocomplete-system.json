@@ -1,0 +1,33 @@
+{
+  "id": "642",
+  "title": "Design Search Autocomplete System",
+  "slug": "design-search-autocomplete-system",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "String",
+    "Depth-First Search",
+    "Design",
+    "Trie",
+    "Sorting",
+    "Heap (Priority Queue)",
+    "Data Stream"
+  ],
+  "total_accepted": 164935,
+  "total_submissions": 331938,
+  "acceptance_rate": "49.7%",
+  "similar_questions": [
+    {
+      "title": "Implement Trie (Prefix Tree)",
+      "slug": "implement-trie-prefix-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/implement-trie-prefix-tree/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,67 @@
+{
+  "id": "191",
+  "title": "Number of 1 Bits",
+  "slug": "number-of-1-bits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a positive integer <code>n</code>, write a function that returns the number of <span data-keyword=\"set-bit\">set bits</span> in its binary representation (also known as the <a href=\"http://en.wikipedia.org/wiki/Hamming_weight\" target=\"_blank\">Hamming weight</a>).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 11</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The input binary string <strong>1011</strong> has a total of three set bits.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 128</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The input binary string <strong>10000000</strong> has a total of one set bit.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 2147483645</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">30</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The input binary string <strong>1111111111111111111111111111101</strong> has a total of thirty set bits.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> If this function is called many times, how would you optimize it?",
+  "content_markdown": "Given a positive integer `n`, write a function that returns the number of set bits in its binary representation (also known as the [Hamming weight](<http://en.wikipedia.org/wiki/Hamming_weight>)).\n\n \n\n**Example 1:**\n\n**Input:** n = 11\n\n**Output:** 3\n\n**Explanation:**\n\nThe input binary string **1011** has a total of three set bits.\n\n**Example 2:**\n\n**Input:** n = 128\n\n**Output:** 1\n\n**Explanation:**\n\nThe input binary string **10000000** has a total of one set bit.\n\n**Example 3:**\n\n**Input:** n = 2147483645\n\n**Output:** 30\n\n**Explanation:**\n\nThe input binary string **1111111111111111111111111111101** has a total of thirty set bits.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 231 - 1`\n\n\n\n \n\n**Follow up:** If this function is called many times, how would you optimize it?",
+  "question": "Given a positive integer `n`, write a function that returns the number of set bits in its binary representation (also known as the [Hamming weight](<http://en.wikipedia.org/wiki/Hamming_weight>)).",
+  "examples": "**Example 1:**\n\n**Input:** n = 11\n\n**Output:** 3\n\n**Explanation:**\n\nThe input binary string **1011** has a total of three set bits.\n\n**Example 2:**\n\n**Input:** n = 128\n\n**Output:** 1\n\n**Explanation:**\n\nThe input binary string **10000000** has a total of one set bit.\n\n**Example 3:**\n\n**Input:** n = 2147483645\n\n**Output:** 30\n\n**Explanation:**\n\nThe input binary string **1111111111111111111111111111101** has a total of thirty set bits.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 231 - 1`",
+  "topics": ["Divide and Conquer", "Bit Manipulation"],
+  "total_accepted": 2065860,
+  "total_submissions": 2704800,
+  "acceptance_rate": "76.4%",
+  "similar_questions": [
+    {
+      "title": "Reverse Bits",
+      "slug": "reverse-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-bits/"
+    },
+    {
+      "title": "Power of Two",
+      "slug": "power-of-two",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/power-of-two/"
+    },
+    {
+      "title": "Counting Bits",
+      "slug": "counting-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/counting-bits/"
+    },
+    {
+      "title": "Binary Watch",
+      "slug": "binary-watch",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-watch/"
+    },
+    {
+      "title": "Hamming Distance",
+      "slug": "hamming-distance",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/hamming-distance/"
+    },
+    {
+      "title": "Binary Number with Alternating Bits",
+      "slug": "binary-number-with-alternating-bits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-number-with-alternating-bits/"
+    },
+    {
+      "title": "Prime Number of Set Bits in Binary Representation",
+      "slug": "prime-number-of-set-bits-in-binary-representation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/prime-number-of-set-bits-in-binary-representation/"
+    },
+    {
+      "title": "Convert Date to Binary",
+      "slug": "convert-date-to-binary",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/convert-date-to-binary/"
+    }
+  ],
+  "hints": []
+}

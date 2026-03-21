@@ -1,0 +1,31 @@
+{
+  "id": "288",
+  "title": "Unique Word Abbreviation",
+  "slug": "unique-word-abbreviation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Design"],
+  "total_accepted": 79974,
+  "total_submissions": 291594,
+  "acceptance_rate": "27.4%",
+  "similar_questions": [
+    {
+      "title": "Two Sum III - Data structure design",
+      "slug": "two-sum-iii-data-structure-design",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum-iii-data-structure-design/"
+    },
+    {
+      "title": "Generalized Abbreviation",
+      "slug": "generalized-abbreviation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/generalized-abbreviation/"
+    }
+  ],
+  "hints": []
+}

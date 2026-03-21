@@ -1,0 +1,53 @@
+{
+  "id": "2521",
+  "title": "Distinct Prime Factors of Product of Array",
+  "slug": "distinct-prime-factors-of-product-of-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of positive integers <code>nums</code>, return <em>the number of <strong>distinct prime factors</strong> in the product of the elements of</em> <code>nums</code>.</p>\n\n<p><strong>Note</strong> that:</p>\n\n<ul>\n\t<li>A number greater than <code>1</code> is called <strong>prime</strong> if it is divisible by only <code>1</code> and itself.</li>\n\t<li>An integer <code>val1</code> is a factor of another integer <code>val2</code> if <code>val2 / val1</code> is an integer.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,4,3,7,10,6]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\nThe product of all the elements in nums is: 2 * 4 * 3 * 7 * 10 * 6 = 10080 = 2<sup>5</sup> * 3<sup>2</sup> * 5 * 7.\nThere are 4 distinct prime factors so we return 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,4,8,16]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong>\nThe product of all the elements in nums is: 2 * 4 * 8 * 16 = 1024 = 2<sup>10</sup>.\nThere is 1 distinct prime factor so we return 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>2 &lt;= nums[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given an array of positive integers `nums`, return _the number of**distinct prime factors** in the product of the elements of_ `nums`.\n\n**Note** that:\n\n  * A number greater than `1` is called **prime** if it is divisible by only `1` and itself.\n  * An integer `val1` is a factor of another integer `val2` if `val2 / val1` is an integer.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,4,3,7,10,6]\n    **Output:** 4\n    **Explanation:**\n    The product of all the elements in nums is: 2 * 4 * 3 * 7 * 10 * 6 = 10080 = 25 * 32 * 5 * 7.\n    There are 4 distinct prime factors so we return 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,4,8,16]\n    **Output:** 1\n    **Explanation:**\n    The product of all the elements in nums is: 2 * 4 * 8 * 16 = 1024 = 210.\n    There is 1 distinct prime factor so we return 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `2 <= nums[i] <= 1000`",
+  "question": "Given an array of positive integers `nums`, return _the number of**distinct prime factors** in the product of the elements of_ `nums`.\n\n**Note** that:\n\n  * A number greater than `1` is called **prime** if it is divisible by only `1` and itself.\n  * An integer `val1` is a factor of another integer `val2` if `val2 / val1` is an integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,4,3,7,10,6]\n    **Output:** 4\n    **Explanation:**\n    The product of all the elements in nums is: 2 * 4 * 3 * 7 * 10 * 6 = 10080 = 25 * 32 * 5 * 7.\n    There are 4 distinct prime factors so we return 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,4,8,16]\n    **Output:** 1\n    **Explanation:**\n    The product of all the elements in nums is: 2 * 4 * 8 * 16 = 1024 = 210.\n    There is 1 distinct prime factor so we return 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `2 <= nums[i] <= 1000`",
+  "topics": ["Array", "Hash Table", "Math", "Number Theory"],
+  "total_accepted": 46464,
+  "total_submissions": 85750,
+  "acceptance_rate": "54.2%",
+  "similar_questions": [
+    {
+      "title": "2 Keys Keyboard",
+      "slug": "2-keys-keyboard",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/2-keys-keyboard/"
+    },
+    {
+      "title": "Largest Component Size by Common Factor",
+      "slug": "largest-component-size-by-common-factor",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/largest-component-size-by-common-factor/"
+    },
+    {
+      "title": "Closest Divisors",
+      "slug": "closest-divisors",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/closest-divisors/"
+    },
+    {
+      "title": "Smallest Value After Replacing With Sum of Prime Factors",
+      "slug": "smallest-value-after-replacing-with-sum-of-prime-factors",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-value-after-replacing-with-sum-of-prime-factors/"
+    },
+    {
+      "title": "Count the Number of Square-Free Subsets",
+      "slug": "count-the-number-of-square-free-subsets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-square-free-subsets/"
+    }
+  ],
+  "hints": [
+    "Do not multiply all the numbers together, as the product is too big to store.",
+    "Think about how each individual number's prime factors contribute to the prime factors of the product of the entire array.",
+    "Find the prime factors of each element in nums, and store all of them in a set to avoid duplicates."
+  ]
+}

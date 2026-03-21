@@ -1,0 +1,25 @@
+{
+  "id": "651",
+  "title": "4 Keys Keyboard",
+  "slug": "4-keys-keyboard",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming"],
+  "total_accepted": 35723,
+  "total_submissions": 63228,
+  "acceptance_rate": "56.5%",
+  "similar_questions": [
+    {
+      "title": "2 Keys Keyboard",
+      "slug": "2-keys-keyboard",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/2-keys-keyboard/"
+    }
+  ],
+  "hints": []
+}

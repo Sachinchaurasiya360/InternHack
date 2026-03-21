@@ -1,0 +1,37 @@
+{
+  "id": "588",
+  "title": "Design In-Memory File System",
+  "slug": "design-in-memory-file-system",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Design", "Trie", "Sorting"],
+  "total_accepted": 138109,
+  "total_submissions": 285543,
+  "acceptance_rate": "48.4%",
+  "similar_questions": [
+    {
+      "title": "LRU Cache",
+      "slug": "lru-cache",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/lru-cache/"
+    },
+    {
+      "title": "LFU Cache",
+      "slug": "lfu-cache",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/lfu-cache/"
+    },
+    {
+      "title": "Design Log Storage System",
+      "slug": "design-log-storage-system",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/design-log-storage-system/"
+    }
+  ],
+  "hints": []
+}

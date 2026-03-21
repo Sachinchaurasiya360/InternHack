@@ -1,0 +1,25 @@
+{
+  "id": "1607",
+  "title": "Sellers With No Sales",
+  "slug": "sellers-with-no-sales",
+  "difficulty": "Easy",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 45152,
+  "total_submissions": 83156,
+  "acceptance_rate": "54.3%",
+  "similar_questions": [
+    {
+      "title": "Customer Who Visited but Did Not Make Any Transactions",
+      "slug": "customer-who-visited-but-did-not-make-any-transactions",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/customer-who-visited-but-did-not-make-any-transactions/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "2992",
+  "title": "Number of Self-Divisible Permutations",
+  "slug": "number-of-self-divisible-permutations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Math",
+    "Dynamic Programming",
+    "Backtracking",
+    "Bit Manipulation",
+    "Number Theory",
+    "Bitmask"
+  ],
+  "total_accepted": 2204,
+  "total_submissions": 3073,
+  "acceptance_rate": "71.7%",
+  "similar_questions": [],
+  "hints": ["Think of Backtracking."]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "330",
+  "title": "Patching Array",
+  "slug": "patching-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a sorted integer array <code>nums</code> and an integer <code>n</code>, add/patch elements to the array such that any number in the range <code>[1, n]</code> inclusive can be formed by the sum of some elements in the array.</p>\n\n<p>Return <em>the minimum number of patches required</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3], n = 6\n<strong>Output:</strong> 1\nExplanation:\nCombinations of nums are [1], [3], [1,3], which form possible sums of: 1, 3, 4.\nNow if we add/patch 2 to nums, the combinations are: [1], [2], [3], [1,3], [2,3], [1,2,3].\nPossible sums are 1, 2, 3, 4, 5, 6, which now covers the range [1, 6].\nSo we only need 1 patch.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,5,10], n = 20\n<strong>Output:</strong> 2\nExplanation: The two patches can be [2, 4].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,2], n = 5\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>nums</code> is sorted in <strong>ascending order</strong>.</li>\n\t<li><code>1 &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given a sorted integer array `nums` and an integer `n`, add/patch elements to the array such that any number in the range `[1, n]` inclusive can be formed by the sum of some elements in the array.\n\nReturn _the minimum number of patches required_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3], n = 6\n    **Output:** 1\n    Explanation:\n    Combinations of nums are [1], [3], [1,3], which form possible sums of: 1, 3, 4.\n    Now if we add/patch 2 to nums, the combinations are: [1], [2], [3], [1,3], [2,3], [1,2,3].\n    Possible sums are 1, 2, 3, 4, 5, 6, which now covers the range [1, 6].\n    So we only need 1 patch.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,10], n = 20\n    **Output:** 2\n    Explanation: The two patches can be [2, 4].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,2], n = 5\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 104`\n  * `nums` is sorted in **ascending order**.\n  * `1 <= n <= 231 - 1`",
+  "question": "Given a sorted integer array `nums` and an integer `n`, add/patch elements to the array such that any number in the range `[1, n]` inclusive can be formed by the sum of some elements in the array.\n\nReturn _the minimum number of patches required_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3], n = 6\n    **Output:** 1\n    Explanation:\n    Combinations of nums are [1], [3], [1,3], which form possible sums of: 1, 3, 4.\n    Now if we add/patch 2 to nums, the combinations are: [1], [2], [3], [1,3], [2,3], [1,2,3].\n    Possible sums are 1, 2, 3, 4, 5, 6, which now covers the range [1, 6].\n    So we only need 1 patch.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,5,10], n = 20\n    **Output:** 2\n    Explanation: The two patches can be [2, 4].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,2], n = 5\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1000`\n  * `1 <= nums[i] <= 104`\n  * `nums` is sorted in **ascending order**.\n  * `1 <= n <= 231 - 1`",
+  "topics": ["Array", "Greedy"],
+  "total_accepted": 180809,
+  "total_submissions": 334317,
+  "acceptance_rate": "54.1%",
+  "similar_questions": [
+    {
+      "title": "Maximum Number of Consecutive Values You Can Make",
+      "slug": "maximum-number-of-consecutive-values-you-can-make",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-consecutive-values-you-can-make/"
+    }
+  ],
+  "hints": []
+}

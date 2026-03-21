@@ -1,0 +1,40 @@
+{
+  "id": "1485",
+  "title": "Clone Binary Tree With Random Pointer",
+  "slug": "clone-binary-tree-with-random-pointer",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 35804,
+  "total_submissions": 44280,
+  "acceptance_rate": "80.9%",
+  "similar_questions": [
+    {
+      "title": "Clone Graph",
+      "slug": "clone-graph",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/clone-graph/"
+    },
+    {
+      "title": "Copy List with Random Pointer",
+      "slug": "copy-list-with-random-pointer",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/copy-list-with-random-pointer/"
+    },
+    {
+      "title": "Clone N-ary Tree",
+      "slug": "clone-n-ary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/clone-n-ary-tree/"
+    }
+  ],
+  "hints": [
+    "Traverse the tree, keep a hashtable with you and create a nodecopy for each node in the tree.",
+    "Start traversing the original tree again and connect the left, right and random pointers in the cloned tree the same way as the original tree with the help of the hashtable."
+  ]
+}

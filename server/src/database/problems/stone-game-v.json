@@ -1,0 +1,70 @@
+{
+  "id": "1563",
+  "title": "Stone Game V",
+  "slug": "stone-game-v",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There are several stones <strong>arranged in a row</strong>, and each stone has an associated value which is an integer given in the array <code>stoneValue</code>.</p>\n\n<p>In each round of the game, Alice divides the row into <strong>two non-empty rows</strong> (i.e. left row and right row), then Bob calculates the value of each row which is the sum of the values of all the stones in this row. Bob throws away the row which has the maximum value, and Alice&#39;s score increases by the value of the remaining row. If the value of the two rows are equal, Bob lets Alice decide which row will be thrown away. The next round starts with the remaining row.</p>\n\n<p>The game ends when there is only <strong>one stone remaining</strong>. Alice&#39;s score is initially <strong>zero</strong>.</p>\n\n<p>Return <i>the maximum score that Alice can obtain</i>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> stoneValue = [6,2,3,4,5,5]\n<strong>Output:</strong> 18\n<strong>Explanation:</strong> In the first round, Alice divides the row to [6,2,3], [4,5,5]. The left row has the value 11 and the right row has value 14. Bob throws away the right row and Alice&#39;s score is now 11.\nIn the second round Alice divides the row to [6], [2,3]. This time Bob throws away the left row and Alice&#39;s score becomes 16 (11 + 5).\nThe last round Alice has only one choice to divide the row which is [2], [3]. Bob throws away the right row and Alice&#39;s score is now 18 (16 + 2). The game ends because only one stone is remaining in the row.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> stoneValue = [7,7,7,7,7,7,7]\n<strong>Output:</strong> 28\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> stoneValue = [4]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= stoneValue.length &lt;= 500</code></li>\n\t<li><code>1 &lt;= stoneValue[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+  "content_markdown": "There are several stones **arranged in a row** , and each stone has an associated value which is an integer given in the array `stoneValue`.\n\nIn each round of the game, Alice divides the row into **two non-empty rows** (i.e. left row and right row), then Bob calculates the value of each row which is the sum of the values of all the stones in this row. Bob throws away the row which has the maximum value, and Alice's score increases by the value of the remaining row. If the value of the two rows are equal, Bob lets Alice decide which row will be thrown away. The next round starts with the remaining row.\n\nThe game ends when there is only **one stone remaining**. Alice's score is initially **zero**.\n\nReturn _the maximum score that Alice can obtain_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** stoneValue = [6,2,3,4,5,5]\n    **Output:** 18\n    **Explanation:** In the first round, Alice divides the row to [6,2,3], [4,5,5]. The left row has the value 11 and the right row has value 14. Bob throws away the right row and Alice's score is now 11.\n    In the second round Alice divides the row to [6], [2,3]. This time Bob throws away the left row and Alice's score becomes 16 (11 + 5).\n    The last round Alice has only one choice to divide the row which is [2], [3]. Bob throws away the right row and Alice's score is now 18 (16 + 2). The game ends because only one stone is remaining in the row.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stoneValue = [7,7,7,7,7,7,7]\n    **Output:** 28\n    \n\n**Example 3:**\n    \n    \n    **Input:** stoneValue = [4]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= stoneValue.length <= 500`\n  * `1 <= stoneValue[i] <= 106`",
+  "question": "There are several stones **arranged in a row** , and each stone has an associated value which is an integer given in the array `stoneValue`.\n\nIn each round of the game, Alice divides the row into **two non-empty rows** (i.e. left row and right row), then Bob calculates the value of each row which is the sum of the values of all the stones in this row. Bob throws away the row which has the maximum value, and Alice's score increases by the value of the remaining row. If the value of the two rows are equal, Bob lets Alice decide which row will be thrown away. The next round starts with the remaining row.\n\nThe game ends when there is only **one stone remaining**. Alice's score is initially **zero**.\n\nReturn _the maximum score that Alice can obtain_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** stoneValue = [6,2,3,4,5,5]\n    **Output:** 18\n    **Explanation:** In the first round, Alice divides the row to [6,2,3], [4,5,5]. The left row has the value 11 and the right row has value 14. Bob throws away the right row and Alice's score is now 11.\n    In the second round Alice divides the row to [6], [2,3]. This time Bob throws away the left row and Alice's score becomes 16 (11 + 5).\n    The last round Alice has only one choice to divide the row which is [2], [3]. Bob throws away the right row and Alice's score is now 18 (16 + 2). The game ends because only one stone is remaining in the row.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stoneValue = [7,7,7,7,7,7,7]\n    **Output:** 28\n    \n\n**Example 3:**\n    \n    \n    **Input:** stoneValue = [4]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= stoneValue.length <= 500`\n  * `1 <= stoneValue[i] <= 106`",
+  "topics": ["Array", "Math", "Dynamic Programming", "Game Theory"],
+  "total_accepted": 25855,
+  "total_submissions": 62109,
+  "acceptance_rate": "41.6%",
+  "similar_questions": [
+    {
+      "title": "Stone Game",
+      "slug": "stone-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game/"
+    },
+    {
+      "title": "Stone Game II",
+      "slug": "stone-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ii/"
+    },
+    {
+      "title": "Stone Game III",
+      "slug": "stone-game-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-iii/"
+    },
+    {
+      "title": "Stone Game IV",
+      "slug": "stone-game-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-iv/"
+    },
+    {
+      "title": "Stone Game VI",
+      "slug": "stone-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vi/"
+    },
+    {
+      "title": "Stone Game VII",
+      "slug": "stone-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vii/"
+    },
+    {
+      "title": "Stone Game VIII",
+      "slug": "stone-game-viii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-viii/"
+    },
+    {
+      "title": "Stone Game IX",
+      "slug": "stone-game-ix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ix/"
+    }
+  ],
+  "hints": [
+    "We need to try all possible divisions for the current row to get the max score.",
+    "As calculating all possible divisions will lead us to calculate some sub-problems more than once, we need to think of dynamic programming."
+  ]
+}

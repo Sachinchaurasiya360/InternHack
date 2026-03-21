@@ -1,0 +1,35 @@
+{
+  "id": "2338",
+  "title": "Count the Number of Ideal Arrays",
+  "slug": "count-the-number-of-ideal-arrays",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integers <code>n</code> and <code>maxValue</code>, which are used to describe an <strong>ideal</strong> array.</p>\n\n<p>A <strong>0-indexed</strong> integer array <code>arr</code> of length <code>n</code> is considered <strong>ideal</strong> if the following conditions hold:</p>\n\n<ul>\n\t<li>Every <code>arr[i]</code> is a value from <code>1</code> to <code>maxValue</code>, for <code>0 &lt;= i &lt; n</code>.</li>\n\t<li>Every <code>arr[i]</code> is divisible by <code>arr[i - 1]</code>, for <code>0 &lt; i &lt; n</code>.</li>\n</ul>\n\n<p>Return <em>the number of <strong>distinct</strong> ideal arrays of length </em><code>n</code>. Since the answer may be very large, return it modulo <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, maxValue = 5\n<strong>Output:</strong> 10\n<strong>Explanation:</strong> The following are the possible ideal arrays:\n- Arrays starting with the value 1 (5 arrays): [1,1], [1,2], [1,3], [1,4], [1,5]\n- Arrays starting with the value 2 (2 arrays): [2,2], [2,4]\n- Arrays starting with the value 3 (1 array): [3,3]\n- Arrays starting with the value 4 (1 array): [4,4]\n- Arrays starting with the value 5 (1 array): [5,5]\nThere are a total of 5 + 2 + 1 + 1 + 1 = 10 distinct ideal arrays.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5, maxValue = 3\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> The following are the possible ideal arrays:\n- Arrays starting with the value 1 (9 arrays): \n   - With no other distinct values (1 array): [1,1,1,1,1] \n   - With 2<sup>nd</sup> distinct value 2 (4 arrays): [1,1,1,1,2], [1,1,1,2,2], [1,1,2,2,2], [1,2,2,2,2]\n   - With 2<sup>nd</sup> distinct value 3 (4 arrays): [1,1,1,1,3], [1,1,1,3,3], [1,1,3,3,3], [1,3,3,3,3]\n- Arrays starting with the value 2 (1 array): [2,2,2,2,2]\n- Arrays starting with the value 3 (1 array): [3,3,3,3,3]\nThere are a total of 9 + 1 + 1 = 11 distinct ideal arrays.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= maxValue &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two integers `n` and `maxValue`, which are used to describe an **ideal** array.\n\nA **0-indexed** integer array `arr` of length `n` is considered **ideal** if the following conditions hold:\n\n  * Every `arr[i]` is a value from `1` to `maxValue`, for `0 <= i < n`.\n  * Every `arr[i]` is divisible by `arr[i - 1]`, for `0 < i < n`.\n\n\n\nReturn _the number of**distinct** ideal arrays of length _`n`. Since the answer may be very large, return it modulo `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 2, maxValue = 5\n    **Output:** 10\n    **Explanation:** The following are the possible ideal arrays:\n    - Arrays starting with the value 1 (5 arrays): [1,1], [1,2], [1,3], [1,4], [1,5]\n    - Arrays starting with the value 2 (2 arrays): [2,2], [2,4]\n    - Arrays starting with the value 3 (1 array): [3,3]\n    - Arrays starting with the value 4 (1 array): [4,4]\n    - Arrays starting with the value 5 (1 array): [5,5]\n    There are a total of 5 + 2 + 1 + 1 + 1 = 10 distinct ideal arrays.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5, maxValue = 3\n    **Output:** 11\n    **Explanation:** The following are the possible ideal arrays:\n    - Arrays starting with the value 1 (9 arrays): \n       - With no other distinct values (1 array): [1,1,1,1,1] \n       - With 2nd distinct value 2 (4 arrays): [1,1,1,1,2], [1,1,1,2,2], [1,1,2,2,2], [1,2,2,2,2]\n       - With 2nd distinct value 3 (4 arrays): [1,1,1,1,3], [1,1,1,3,3], [1,1,3,3,3], [1,3,3,3,3]\n    - Arrays starting with the value 2 (1 array): [2,2,2,2,2]\n    - Arrays starting with the value 3 (1 array): [3,3,3,3,3]\n    There are a total of 9 + 1 + 1 = 11 distinct ideal arrays.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= n <= 104`\n  * `1 <= maxValue <= 104`",
+  "question": "You are given two integers `n` and `maxValue`, which are used to describe an **ideal** array.\n\nA **0-indexed** integer array `arr` of length `n` is considered **ideal** if the following conditions hold:\n\n  * Every `arr[i]` is a value from `1` to `maxValue`, for `0 <= i < n`.\n  * Every `arr[i]` is divisible by `arr[i - 1]`, for `0 < i < n`.\n\n\n\nReturn _the number of**distinct** ideal arrays of length _`n`. Since the answer may be very large, return it modulo `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 2, maxValue = 5\n    **Output:** 10\n    **Explanation:** The following are the possible ideal arrays:\n    - Arrays starting with the value 1 (5 arrays): [1,1], [1,2], [1,3], [1,4], [1,5]\n    - Arrays starting with the value 2 (2 arrays): [2,2], [2,4]\n    - Arrays starting with the value 3 (1 array): [3,3]\n    - Arrays starting with the value 4 (1 array): [4,4]\n    - Arrays starting with the value 5 (1 array): [5,5]\n    There are a total of 5 + 2 + 1 + 1 + 1 = 10 distinct ideal arrays.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5, maxValue = 3\n    **Output:** 11\n    **Explanation:** The following are the possible ideal arrays:\n    - Arrays starting with the value 1 (9 arrays): \n       - With no other distinct values (1 array): [1,1,1,1,1] \n       - With 2nd distinct value 2 (4 arrays): [1,1,1,1,2], [1,1,1,2,2], [1,1,2,2,2], [1,2,2,2,2]\n       - With 2nd distinct value 3 (4 arrays): [1,1,1,1,3], [1,1,1,3,3], [1,1,3,3,3], [1,3,3,3,3]\n    - Arrays starting with the value 2 (1 array): [2,2,2,2,2]\n    - Arrays starting with the value 3 (1 array): [3,3,3,3,3]\n    There are a total of 9 + 1 + 1 = 11 distinct ideal arrays.",
+  "constraints": "**Constraints:**\n\n  * `2 <= n <= 104`\n  * `1 <= maxValue <= 104`",
+  "topics": ["Math", "Dynamic Programming", "Combinatorics", "Number Theory"],
+  "total_accepted": 69383,
+  "total_submissions": 121912,
+  "acceptance_rate": "56.9%",
+  "similar_questions": [
+    {
+      "title": "Count Ways to Make Array With Product",
+      "slug": "count-ways-to-make-array-with-product",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-ways-to-make-array-with-product/"
+    },
+    {
+      "title": "Count the Number of Beautiful Subarrays",
+      "slug": "count-the-number-of-beautiful-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-beautiful-subarrays/"
+    }
+  ],
+  "hints": [
+    "Notice that an ideal array is non-decreasing.",
+    "Consider an alternative problem: where an ideal array must also be strictly increasing. Can you use DP to solve it?",
+    "Will combinatorics help to get an answer from the alternative problem to the actual problem?"
+  ]
+}

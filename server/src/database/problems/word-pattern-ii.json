@@ -1,0 +1,25 @@
+{
+  "id": "291",
+  "title": "Word Pattern II",
+  "slug": "word-pattern-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Backtracking"],
+  "total_accepted": 83346,
+  "total_submissions": 170826,
+  "acceptance_rate": "48.8%",
+  "similar_questions": [
+    {
+      "title": "Word Pattern",
+      "slug": "word-pattern",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/word-pattern/"
+    }
+  ],
+  "hints": []
+}

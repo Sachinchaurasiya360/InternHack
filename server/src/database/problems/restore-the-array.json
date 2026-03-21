@@ -1,0 +1,34 @@
+{
+  "id": "1416",
+  "title": "Restore The Array",
+  "slug": "restore-the-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>A program was supposed to print an array of integers. The program forgot to print whitespaces and the array is printed as a string of digits <code>s</code> and all we know is that all integers in the array were in the range <code>[1, k]</code> and there are no leading zeros in the array.</p>\n\n<p>Given the string <code>s</code> and the integer <code>k</code>, return <em>the number of the possible arrays that can be printed as </em><code>s</code><em> using the mentioned program</em>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1000&quot;, k = 10000\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The only possible array is [1000]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1000&quot;, k = 10\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There cannot be an array that was printed this way and has all integer &gt;= 1 and &lt;= 10.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1317&quot;, k = 2000\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> Possible arrays are [1317],[131,7],[13,17],[1,317],[13,1,7],[1,31,7],[1,3,17],[1,3,1,7]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of only digits and does not contain leading zeros.</li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "A program was supposed to print an array of integers. The program forgot to print whitespaces and the array is printed as a string of digits `s` and all we know is that all integers in the array were in the range `[1, k]` and there are no leading zeros in the array.\n\nGiven the string `s` and the integer `k`, return _the number of the possible arrays that can be printed as_`s` _using the mentioned program_. Since the answer may be very large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"1000\", k = 10000\n    **Output:** 1\n    **Explanation:** The only possible array is [1000]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"1000\", k = 10\n    **Output:** 0\n    **Explanation:** There cannot be an array that was printed this way and has all integer >= 1 and <= 10.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1317\", k = 2000\n    **Output:** 8\n    **Explanation:** Possible arrays are [1317],[131,7],[13,17],[1,317],[13,1,7],[1,31,7],[1,3,17],[1,3,1,7]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of only digits and does not contain leading zeros.\n  * `1 <= k <= 109`",
+  "question": "A program was supposed to print an array of integers. The program forgot to print whitespaces and the array is printed as a string of digits `s` and all we know is that all integers in the array were in the range `[1, k]` and there are no leading zeros in the array.\n\nGiven the string `s` and the integer `k`, return _the number of the possible arrays that can be printed as_`s` _using the mentioned program_. Since the answer may be very large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"1000\", k = 10000\n    **Output:** 1\n    **Explanation:** The only possible array is [1000]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"1000\", k = 10\n    **Output:** 0\n    **Explanation:** There cannot be an array that was printed this way and has all integer >= 1 and <= 10.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"1317\", k = 2000\n    **Output:** 8\n    **Explanation:** Possible arrays are [1317],[131,7],[13,17],[1,317],[13,1,7],[1,31,7],[1,3,17],[1,3,1,7]",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of only digits and does not contain leading zeros.\n  * `1 <= k <= 109`",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 67223,
+  "total_submissions": 143782,
+  "acceptance_rate": "46.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Ways to Separate Numbers",
+      "slug": "number-of-ways-to-separate-numbers",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-ways-to-separate-numbers/"
+    },
+    {
+      "title": "Number of Beautiful Partitions",
+      "slug": "number-of-beautiful-partitions",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/number-of-beautiful-partitions/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming. Build an array dp where dp[i] is the number of ways you can divide the string starting from index i to the end.",
+    "Keep in mind that the answer is modulo 10^9 + 7 and take the mod for each operation."
+  ]
+}

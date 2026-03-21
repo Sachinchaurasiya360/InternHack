@@ -1,0 +1,53 @@
+{
+  "id": "2554",
+  "title": "Maximum Number of Integers to Choose From a Range I",
+  "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>banned</code> and two integers <code>n</code> and <code>maxSum</code>. You are choosing some number of integers following the below rules:</p>\n\n<ul>\n\t<li>The chosen integers have to be in the range <code>[1, n]</code>.</li>\n\t<li>Each integer can be chosen <strong>at most once</strong>.</li>\n\t<li>The chosen integers should not be in the array <code>banned</code>.</li>\n\t<li>The sum of the chosen integers should not exceed <code>maxSum</code>.</li>\n</ul>\n\n<p>Return <em>the <strong>maximum</strong> number of integers you can choose following the mentioned rules</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> banned = [1,6,5], n = 5, maxSum = 6\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> You can choose the integers 2 and 4.\n2 and 4 are from the range [1, 5], both did not appear in banned, and their sum is 6, which did not exceed maxSum.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> banned = [1,2,3,4,5,6,7], n = 8, maxSum = 1\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> You cannot choose any integer while following the mentioned conditions.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> banned = [11], n = 7, maxSum = 50\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> You can choose the integers 1, 2, 3, 4, 5, 6, and 7.\nThey are from the range [1, 7], all did not appear in banned, and their sum is 28, which did not exceed maxSum.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= banned.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= banned[i], n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= maxSum &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `banned` and two integers `n` and `maxSum`. You are choosing some number of integers following the below rules:\n\n  * The chosen integers have to be in the range `[1, n]`.\n  * Each integer can be chosen **at most once**.\n  * The chosen integers should not be in the array `banned`.\n  * The sum of the chosen integers should not exceed `maxSum`.\n\n\n\nReturn _the**maximum** number of integers you can choose following the mentioned rules_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** banned = [1,6,5], n = 5, maxSum = 6\n    **Output:** 2\n    **Explanation:** You can choose the integers 2 and 4.\n    2 and 4 are from the range [1, 5], both did not appear in banned, and their sum is 6, which did not exceed maxSum.\n    \n\n**Example 2:**\n    \n    \n    **Input:** banned = [1,2,3,4,5,6,7], n = 8, maxSum = 1\n    **Output:** 0\n    **Explanation:** You cannot choose any integer while following the mentioned conditions.\n    \n\n**Example 3:**\n    \n    \n    **Input:** banned = [11], n = 7, maxSum = 50\n    **Output:** 7\n    **Explanation:** You can choose the integers 1, 2, 3, 4, 5, 6, and 7.\n    They are from the range [1, 7], all did not appear in banned, and their sum is 28, which did not exceed maxSum.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= banned.length <= 104`\n  * `1 <= banned[i], n <= 104`\n  * `1 <= maxSum <= 109`",
+  "question": "You are given an integer array `banned` and two integers `n` and `maxSum`. You are choosing some number of integers following the below rules:\n\n  * The chosen integers have to be in the range `[1, n]`.\n  * Each integer can be chosen **at most once**.\n  * The chosen integers should not be in the array `banned`.\n  * The sum of the chosen integers should not exceed `maxSum`.\n\n\n\nReturn _the**maximum** number of integers you can choose following the mentioned rules_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** banned = [1,6,5], n = 5, maxSum = 6\n    **Output:** 2\n    **Explanation:** You can choose the integers 2 and 4.\n    2 and 4 are from the range [1, 5], both did not appear in banned, and their sum is 6, which did not exceed maxSum.\n    \n\n**Example 2:**\n    \n    \n    **Input:** banned = [1,2,3,4,5,6,7], n = 8, maxSum = 1\n    **Output:** 0\n    **Explanation:** You cannot choose any integer while following the mentioned conditions.\n    \n\n**Example 3:**\n    \n    \n    **Input:** banned = [11], n = 7, maxSum = 50\n    **Output:** 7\n    **Explanation:** You can choose the integers 1, 2, 3, 4, 5, 6, and 7.\n    They are from the range [1, 7], all did not appear in banned, and their sum is 28, which did not exceed maxSum.",
+  "constraints": "**Constraints:**\n\n  * `1 <= banned.length <= 104`\n  * `1 <= banned[i], n <= 104`\n  * `1 <= maxSum <= 109`",
+  "topics": ["Array", "Hash Table", "Binary Search", "Greedy", "Sorting"],
+  "total_accepted": 168632,
+  "total_submissions": 248084,
+  "acceptance_rate": "68.0%",
+  "similar_questions": [
+    {
+      "title": "First Missing Positive",
+      "slug": "first-missing-positive",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/first-missing-positive/"
+    },
+    {
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+    },
+    {
+      "title": "Append K Integers With Minimal Sum",
+      "slug": "append-k-integers-with-minimal-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/append-k-integers-with-minimal-sum/"
+    },
+    {
+      "title": "Replace Elements in an Array",
+      "slug": "replace-elements-in-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/replace-elements-in-an-array/"
+    },
+    {
+      "title": "Maximum Number of Integers to Choose From a Range II",
+      "slug": "maximum-number-of-integers-to-choose-from-a-range-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-ii/"
+    }
+  ],
+  "hints": [
+    "Keep the banned numbers that are less than or equal to n in a set.",
+    "Loop over the numbers from 1 to n and if the number is not banned, use it.",
+    "Keep adding numbers while they are not banned, and their sum is less than or equal to k."
+  ]
+}

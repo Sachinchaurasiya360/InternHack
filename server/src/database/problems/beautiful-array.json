@@ -1,0 +1,18 @@
+{
+  "id": "932",
+  "title": "Beautiful Array",
+  "slug": "beautiful-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>An array <code>nums</code> of length <code>n</code> is <strong>beautiful</strong> if:</p>\n\n<ul>\n\t<li><code>nums</code> is a permutation of the integers in the range <code>[1, n]</code>.</li>\n\t<li>For every <code>0 &lt;= i &lt; j &lt; n</code>, there is no index <code>k</code> with <code>i &lt; k &lt; j</code> where <code>2 * nums[k] == nums[i] + nums[j]</code>.</li>\n</ul>\n\n<p>Given the integer <code>n</code>, return <em>any <strong>beautiful</strong> array </em><code>nums</code><em> of length </em><code>n</code>. There will be at least one valid answer for the given <code>n</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> n = 4\n<strong>Output:</strong> [2,1,4,3]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> n = 5\n<strong>Output:</strong> [3,1,2,5,4]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "An array `nums` of length `n` is **beautiful** if:\n\n  * `nums` is a permutation of the integers in the range `[1, n]`.\n  * For every `0 <= i < j < n`, there is no index `k` with `i < k < j` where `2 * nums[k] == nums[i] + nums[j]`.\n\n\n\nGiven the integer `n`, return _any**beautiful** array _`nums` _of length_`n`. There will be at least one valid answer for the given `n`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** [2,1,4,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** [3,1,2,5,4]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "question": "An array `nums` of length `n` is **beautiful** if:\n\n  * `nums` is a permutation of the integers in the range `[1, n]`.\n  * For every `0 <= i < j < n`, there is no index `k` with `i < k < j` where `2 * nums[k] == nums[i] + nums[j]`.\n\n\n\nGiven the integer `n`, return _any**beautiful** array _`nums` _of length_`n`. There will be at least one valid answer for the given `n`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** [2,1,4,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 5\n    **Output:** [3,1,2,5,4]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1000`",
+  "topics": ["Array", "Math", "Divide and Conquer"],
+  "total_accepted": 58610,
+  "total_submissions": 85334,
+  "acceptance_rate": "68.7%",
+  "similar_questions": [],
+  "hints": []
+}

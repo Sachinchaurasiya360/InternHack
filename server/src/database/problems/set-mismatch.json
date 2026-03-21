@@ -1,0 +1,25 @@
+{
+  "id": "645",
+  "title": "Set Mismatch",
+  "slug": "set-mismatch",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You have a set of integers <code>s</code>, which originally contains all the numbers from <code>1</code> to <code>n</code>. Unfortunately, due to some error, one of the numbers in <code>s</code> got duplicated to another number in the set, which results in <strong>repetition of one</strong> number and <strong>loss of another</strong> number.</p>\n\n<p>You are given an integer array <code>nums</code> representing the data status of this set after the error.</p>\n\n<p>Find the number that occurs twice and the number that is missing and return <em>them in the form of an array</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,2,4]\n<strong>Output:</strong> [2,3]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [1,1]\n<strong>Output:</strong> [1,2]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You have a set of integers `s`, which originally contains all the numbers from `1` to `n`. Unfortunately, due to some error, one of the numbers in `s` got duplicated to another number in the set, which results in **repetition of one** number and **loss of another** number.\n\nYou are given an integer array `nums` representing the data status of this set after the error.\n\nFind the number that occurs twice and the number that is missing and return _them in the form of an array_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2,4]\n    **Output:** [2,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1]\n    **Output:** [1,2]\n    \n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 104`\n  * `1 <= nums[i] <= 104`",
+  "question": "You have a set of integers `s`, which originally contains all the numbers from `1` to `n`. Unfortunately, due to some error, one of the numbers in `s` got duplicated to another number in the set, which results in **repetition of one** number and **loss of another** number.\n\nYou are given an integer array `nums` representing the data status of this set after the error.\n\nFind the number that occurs twice and the number that is missing and return _them in the form of an array_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2,4]\n    **Output:** [2,3]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1]\n    **Output:** [1,2]",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 104`\n  * `1 <= nums[i] <= 104`",
+  "topics": ["Array", "Hash Table", "Bit Manipulation", "Sorting"],
+  "total_accepted": 696351,
+  "total_submissions": 1576544,
+  "acceptance_rate": "44.2%",
+  "similar_questions": [
+    {
+      "title": "Find the Duplicate Number",
+      "slug": "find-the-duplicate-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-duplicate-number/"
+    }
+  ],
+  "hints": []
+}

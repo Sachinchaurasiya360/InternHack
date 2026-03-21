@@ -1,0 +1,24 @@
+{
+  "id": "2941",
+  "title": "Maximum GCD-Sum of a Subarray",
+  "slug": "maximum-gcd-sum-of-a-subarray",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "Binary Search", "Number Theory"],
+  "total_accepted": 674,
+  "total_submissions": 1744,
+  "acceptance_rate": "38.6%",
+  "similar_questions": [],
+  "hints": [
+    "Try to answer the query of asking GCD of a subarray in <code>O(1)</code> using sparse tables and preprocessing.",
+    "For every index <code>L</code>, let’s find the subarray starting at the index <code>L</code> and maximizing gcd-sum.",
+    "Use the fact that if <code>L</code> is fixed, then by adding one more element to the end of a subarray, two things can happen: the gcd remains the same as the last gcd or becomes at least half of the last one.",
+    "Now we can use binary search to find the last index <code>R</code> such that gcd of the elements of <code>nums[L..R]</code> would be equal to <code>nums[L]</code>.",
+    "Now add <code>nums[R + 1]</code> to the current subarray and continue the process to find the last index that has the same gcd as the current gcd of elements."
+  ]
+}

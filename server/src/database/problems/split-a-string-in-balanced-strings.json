@@ -1,0 +1,28 @@
+{
+  "id": "1221",
+  "title": "Split a String in Balanced Strings",
+  "slug": "split-a-string-in-balanced-strings",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p><strong>Balanced</strong> strings are those that have an equal quantity of <code>&#39;L&#39;</code> and <code>&#39;R&#39;</code> characters.</p>\n\n<p>Given a <strong>balanced</strong> string <code>s</code>, split it into some number of substrings such that:</p>\n\n<ul>\n\t<li>Each substring is balanced.</li>\n</ul>\n\n<p>Return <em>the <strong>maximum</strong> number of balanced strings you can obtain.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;RLRRLLRLRL&quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> s can be split into &quot;RL&quot;, &quot;RRLL&quot;, &quot;RL&quot;, &quot;RL&quot;, each substring contains same number of &#39;L&#39; and &#39;R&#39;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;RLRRRLLRLL&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> s can be split into &quot;RL&quot;, &quot;RRRLLRLL&quot;, each substring contains same number of &#39;L&#39; and &#39;R&#39;.\nNote that s cannot be split into &quot;RL&quot;, &quot;RR&quot;, &quot;RL&quot;, &quot;LR&quot;, &quot;LL&quot;, because the 2<sup>nd</sup> and 5<sup>th</sup> substrings are not balanced.</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;LLLLRRRR&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> s can be split into &quot;LLLLRRRR&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 1000</code></li>\n\t<li><code>s[i]</code> is either <code>&#39;L&#39;</code> or <code>&#39;R&#39;</code>.</li>\n\t<li><code>s</code> is a <strong>balanced</strong> string.</li>\n</ul>\n",
+  "content_markdown": "**Balanced** strings are those that have an equal quantity of `'L'` and `'R'` characters.\n\nGiven a **balanced** string `s`, split it into some number of substrings such that:\n\n  * Each substring is balanced.\n\n\n\nReturn _the**maximum** number of balanced strings you can obtain._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"RLRRLLRLRL\"\n    **Output:** 4\n    **Explanation:** s can be split into \"RL\", \"RRLL\", \"RL\", \"RL\", each substring contains same number of 'L' and 'R'.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"RLRRRLLRLL\"\n    **Output:** 2\n    **Explanation:** s can be split into \"RL\", \"RRRLLRLL\", each substring contains same number of 'L' and 'R'.\n    Note that s cannot be split into \"RL\", \"RR\", \"RL\", \"LR\", \"LL\", because the 2nd and 5th substrings are not balanced.\n\n**Example 3:**\n    \n    \n    **Input:** s = \"LLLLRRRR\"\n    **Output:** 1\n    **Explanation:** s can be split into \"LLLLRRRR\".\n    \n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 1000`\n  * `s[i]` is either `'L'` or `'R'`.\n  * `s` is a **balanced** string.",
+  "question": "**Balanced** strings are those that have an equal quantity of `'L'` and `'R'` characters.\n\nGiven a **balanced** string `s`, split it into some number of substrings such that:\n\n  * Each substring is balanced.\n\n\n\nReturn _the**maximum** number of balanced strings you can obtain._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"RLRRLLRLRL\"\n    **Output:** 4\n    **Explanation:** s can be split into \"RL\", \"RRLL\", \"RL\", \"RL\", each substring contains same number of 'L' and 'R'.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"RLRRRLLRLL\"\n    **Output:** 2\n    **Explanation:** s can be split into \"RL\", \"RRRLLRLL\", each substring contains same number of 'L' and 'R'.\n    Note that s cannot be split into \"RL\", \"RR\", \"RL\", \"LR\", \"LL\", because the 2nd and 5th substrings are not balanced.\n\n**Example 3:**\n    \n    \n    **Input:** s = \"LLLLRRRR\"\n    **Output:** 1\n    **Explanation:** s can be split into \"LLLLRRRR\".",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 1000`\n  * `s[i]` is either `'L'` or `'R'`.\n  * `s` is a **balanced** string.",
+  "topics": ["String", "Greedy", "Counting"],
+  "total_accepted": 381439,
+  "total_submissions": 436987,
+  "acceptance_rate": "87.3%",
+  "similar_questions": [
+    {
+      "title": "Split Strings by Separator",
+      "slug": "split-strings-by-separator",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/split-strings-by-separator/"
+    }
+  ],
+  "hints": [
+    "Loop from left to right maintaining a balance variable when it gets an L increase it by one otherwise decrease it by one.",
+    "Whenever the balance variable reaches zero then we increase the answer by one."
+  ]
+}

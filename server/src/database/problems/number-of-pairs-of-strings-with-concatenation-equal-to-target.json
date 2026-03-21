@@ -1,0 +1,28 @@
+{
+  "id": "2023",
+  "title": "Number of Pairs of Strings With Concatenation Equal to Target",
+  "slug": "number-of-pairs-of-strings-with-concatenation-equal-to-target",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of <strong>digit</strong> strings <code>nums</code> and a <strong>digit</strong> string <code>target</code>, return <em>the number of pairs of indices </em><code>(i, j)</code><em> (where </em><code>i != j</code><em>) such that the <strong>concatenation</strong> of </em><code>nums[i] + nums[j]</code><em> equals </em><code>target</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;777&quot;,&quot;7&quot;,&quot;77&quot;,&quot;77&quot;], target = &quot;7777&quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> Valid pairs are:\n- (0, 1): &quot;777&quot; + &quot;7&quot;\n- (1, 0): &quot;7&quot; + &quot;777&quot;\n- (2, 3): &quot;77&quot; + &quot;77&quot;\n- (3, 2): &quot;77&quot; + &quot;77&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;123&quot;,&quot;4&quot;,&quot;12&quot;,&quot;34&quot;], target = &quot;1234&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Valid pairs are:\n- (0, 1): &quot;123&quot; + &quot;4&quot;\n- (2, 3): &quot;12&quot; + &quot;34&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [&quot;1&quot;,&quot;1&quot;,&quot;1&quot;], target = &quot;11&quot;\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> Valid pairs are:\n- (0, 1): &quot;1&quot; + &quot;1&quot;\n- (1, 0): &quot;1&quot; + &quot;1&quot;\n- (0, 2): &quot;1&quot; + &quot;1&quot;\n- (2, 0): &quot;1&quot; + &quot;1&quot;\n- (1, 2): &quot;1&quot; + &quot;1&quot;\n- (2, 1): &quot;1&quot; + &quot;1&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i].length &lt;= 100</code></li>\n\t<li><code>2 &lt;= target.length &lt;= 100</code></li>\n\t<li><code>nums[i]</code> and <code>target</code> consist of digits.</li>\n\t<li><code>nums[i]</code> and <code>target</code> do not have leading zeros.</li>\n</ul>\n",
+  "content_markdown": "Given an array of **digit** strings `nums` and a **digit** string `target`, return _the number of pairs of indices_`(i, j)`_(where_`i != j` _) such that the**concatenation** of _`nums[i] + nums[j]`_equals_`target`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [\"777\",\"7\",\"77\",\"77\"], target = \"7777\"\n    **Output:** 4\n    **Explanation:** Valid pairs are:\n    - (0, 1): \"777\" + \"7\"\n    - (1, 0): \"7\" + \"777\"\n    - (2, 3): \"77\" + \"77\"\n    - (3, 2): \"77\" + \"77\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [\"123\",\"4\",\"12\",\"34\"], target = \"1234\"\n    **Output:** 2\n    **Explanation:** Valid pairs are:\n    - (0, 1): \"123\" + \"4\"\n    - (2, 3): \"12\" + \"34\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [\"1\",\"1\",\"1\"], target = \"11\"\n    **Output:** 6\n    **Explanation:** Valid pairs are:\n    - (0, 1): \"1\" + \"1\"\n    - (1, 0): \"1\" + \"1\"\n    - (0, 2): \"1\" + \"1\"\n    - (2, 0): \"1\" + \"1\"\n    - (1, 2): \"1\" + \"1\"\n    - (2, 1): \"1\" + \"1\"\n    \n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `1 <= nums[i].length <= 100`\n  * `2 <= target.length <= 100`\n  * `nums[i]` and `target` consist of digits.\n  * `nums[i]` and `target` do not have leading zeros.",
+  "question": "Given an array of **digit** strings `nums` and a **digit** string `target`, return _the number of pairs of indices_`(i, j)`_(where_`i != j` _) such that the**concatenation** of _`nums[i] + nums[j]`_equals_`target`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [\"777\",\"7\",\"77\",\"77\"], target = \"7777\"\n    **Output:** 4\n    **Explanation:** Valid pairs are:\n    - (0, 1): \"777\" + \"7\"\n    - (1, 0): \"7\" + \"777\"\n    - (2, 3): \"77\" + \"77\"\n    - (3, 2): \"77\" + \"77\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [\"123\",\"4\",\"12\",\"34\"], target = \"1234\"\n    **Output:** 2\n    **Explanation:** Valid pairs are:\n    - (0, 1): \"123\" + \"4\"\n    - (2, 3): \"12\" + \"34\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [\"1\",\"1\",\"1\"], target = \"11\"\n    **Output:** 6\n    **Explanation:** Valid pairs are:\n    - (0, 1): \"1\" + \"1\"\n    - (1, 0): \"1\" + \"1\"\n    - (0, 2): \"1\" + \"1\"\n    - (2, 0): \"1\" + \"1\"\n    - (1, 2): \"1\" + \"1\"\n    - (2, 1): \"1\" + \"1\"",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `1 <= nums[i].length <= 100`\n  * `2 <= target.length <= 100`\n  * `nums[i]` and `target` consist of digits.\n  * `nums[i]` and `target` do not have leading zeros.",
+  "topics": ["Array", "Hash Table", "String", "Counting"],
+  "total_accepted": 61863,
+  "total_submissions": 82084,
+  "acceptance_rate": "75.4%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    }
+  ],
+  "hints": [
+    "Try to concatenate every two different strings from the list.",
+    "Count the number of pairs with concatenation equals to target."
+  ]
+}

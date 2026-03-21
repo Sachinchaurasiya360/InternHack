@@ -1,0 +1,39 @@
+{
+  "id": "332",
+  "title": "Reconstruct Itinerary",
+  "slug": "reconstruct-itinerary",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a list of airline <code>tickets</code> where <code>tickets[i] = [from<sub>i</sub>, to<sub>i</sub>]</code> represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it.</p>\n\n<p>All of the tickets belong to a man who departs from <code>&quot;JFK&quot;</code>, thus, the itinerary must begin with <code>&quot;JFK&quot;</code>. If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string.</p>\n\n<ul>\n\t<li>For example, the itinerary <code>[&quot;JFK&quot;, &quot;LGA&quot;]</code> has a smaller lexical order than <code>[&quot;JFK&quot;, &quot;LGB&quot;]</code>.</li>\n</ul>\n\n<p>You may assume all tickets form at least one valid itinerary. You must use all the tickets once and only once.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/14/itinerary1-graph.jpg\" style=\"width: 382px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> tickets = [[&quot;MUC&quot;,&quot;LHR&quot;],[&quot;JFK&quot;,&quot;MUC&quot;],[&quot;SFO&quot;,&quot;SJC&quot;],[&quot;LHR&quot;,&quot;SFO&quot;]]\n<strong>Output:</strong> [&quot;JFK&quot;,&quot;MUC&quot;,&quot;LHR&quot;,&quot;SFO&quot;,&quot;SJC&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/14/itinerary2-graph.jpg\" style=\"width: 222px; height: 230px;\" />\n<pre>\n<strong>Input:</strong> tickets = [[&quot;JFK&quot;,&quot;SFO&quot;],[&quot;JFK&quot;,&quot;ATL&quot;],[&quot;SFO&quot;,&quot;ATL&quot;],[&quot;ATL&quot;,&quot;JFK&quot;],[&quot;ATL&quot;,&quot;SFO&quot;]]\n<strong>Output:</strong> [&quot;JFK&quot;,&quot;ATL&quot;,&quot;JFK&quot;,&quot;SFO&quot;,&quot;ATL&quot;,&quot;SFO&quot;]\n<strong>Explanation:</strong> Another possible reconstruction is [&quot;JFK&quot;,&quot;SFO&quot;,&quot;ATL&quot;,&quot;JFK&quot;,&quot;ATL&quot;,&quot;SFO&quot;] but it is larger in lexical order.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= tickets.length &lt;= 300</code></li>\n\t<li><code>tickets[i].length == 2</code></li>\n\t<li><code>from<sub>i</sub>.length == 3</code></li>\n\t<li><code>to<sub>i</sub>.length == 3</code></li>\n\t<li><code>from<sub>i</sub></code> and <code>to<sub>i</sub></code> consist of uppercase English letters.</li>\n\t<li><code>from<sub>i</sub> != to<sub>i</sub></code></li>\n</ul>\n",
+  "content_markdown": "You are given a list of airline `tickets` where `tickets[i] = [fromi, toi]` represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it.\n\nAll of the tickets belong to a man who departs from `\"JFK\"`, thus, the itinerary must begin with `\"JFK\"`. If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string.\n\n  * For example, the itinerary `[\"JFK\", \"LGA\"]` has a smaller lexical order than `[\"JFK\", \"LGB\"]`.\n\n\n\nYou may assume all tickets form at least one valid itinerary. You must use all the tickets once and only once.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/14/itinerary1-graph.jpg)\n    \n    \n    **Input:** tickets = [[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]\n    **Output:** [\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/14/itinerary2-graph.jpg)\n    \n    \n    **Input:** tickets = [[\"JFK\",\"SFO\"],[\"JFK\",\"ATL\"],[\"SFO\",\"ATL\"],[\"ATL\",\"JFK\"],[\"ATL\",\"SFO\"]]\n    **Output:** [\"JFK\",\"ATL\",\"JFK\",\"SFO\",\"ATL\",\"SFO\"]\n    **Explanation:** Another possible reconstruction is [\"JFK\",\"SFO\",\"ATL\",\"JFK\",\"ATL\",\"SFO\"] but it is larger in lexical order.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= tickets.length <= 300`\n  * `tickets[i].length == 2`\n  * `fromi.length == 3`\n  * `toi.length == 3`\n  * `fromi` and `toi` consist of uppercase English letters.\n  * `fromi != toi`",
+  "question": "You are given a list of airline `tickets` where `tickets[i] = [fromi, toi]` represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it.\n\nAll of the tickets belong to a man who departs from `\"JFK\"`, thus, the itinerary must begin with `\"JFK\"`. If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string.\n\n  * For example, the itinerary `[\"JFK\", \"LGA\"]` has a smaller lexical order than `[\"JFK\", \"LGB\"]`.\n\n\n\nYou may assume all tickets form at least one valid itinerary. You must use all the tickets once and only once.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/14/itinerary1-graph.jpg)\n    \n    \n    **Input:** tickets = [[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]\n    **Output:** [\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/03/14/itinerary2-graph.jpg)\n    \n    \n    **Input:** tickets = [[\"JFK\",\"SFO\"],[\"JFK\",\"ATL\"],[\"SFO\",\"ATL\"],[\"ATL\",\"JFK\"],[\"ATL\",\"SFO\"]]\n    **Output:** [\"JFK\",\"ATL\",\"JFK\",\"SFO\",\"ATL\",\"SFO\"]\n    **Explanation:** Another possible reconstruction is [\"JFK\",\"SFO\",\"ATL\",\"JFK\",\"ATL\",\"SFO\"] but it is larger in lexical order.",
+  "constraints": "**Constraints:**\n\n  * `1 <= tickets.length <= 300`\n  * `tickets[i].length == 2`\n  * `fromi.length == 3`\n  * `toi.length == 3`\n  * `fromi` and `toi` consist of uppercase English letters.\n  * `fromi != toi`",
+  "topics": [
+    "Array",
+    "String",
+    "Depth-First Search",
+    "Graph Theory",
+    "Sorting",
+    "Heap (Priority Queue)",
+    "Eulerian Circuit"
+  ],
+  "total_accepted": 541564,
+  "total_submissions": 1222955,
+  "acceptance_rate": "44.3%",
+  "similar_questions": [
+    {
+      "title": "Longest Common Subpath",
+      "slug": "longest-common-subpath",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-common-subpath/"
+    },
+    {
+      "title": "Valid Arrangement of Pairs",
+      "slug": "valid-arrangement-of-pairs",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/valid-arrangement-of-pairs/"
+    }
+  ],
+  "hints": []
+}

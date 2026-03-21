@@ -1,0 +1,25 @@
+{
+  "id": "32",
+  "title": "Longest Valid Parentheses",
+  "slug": "longest-valid-parentheses",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string containing just the characters <code>&#39;(&#39;</code> and <code>&#39;)&#39;</code>, return <em>the length of the longest valid (well-formed) parentheses </em><span data-keyword=\"substring-nonempty\"><em>substring</em></span>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(()&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The longest valid parentheses substring is &quot;()&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;)()())&quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The longest valid parentheses substring is &quot;()()&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;&quot;\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= s.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>s[i]</code> is <code>&#39;(&#39;</code>, or <code>&#39;)&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string containing just the characters `'('` and `')'`, return _the length of the longest valid (well-formed) parentheses_ _substring_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"(()\"\n    **Output:** 2\n    **Explanation:** The longest valid parentheses substring is \"()\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \")()())\"\n    **Output:** 4\n    **Explanation:** The longest valid parentheses substring is \"()()\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"\"\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `0 <= s.length <= 3 * 104`\n  * `s[i]` is `'('`, or `')'`.",
+  "question": "Given a string containing just the characters `'('` and `')'`, return _the length of the longest valid (well-formed) parentheses_ _substring_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"(()\"\n    **Output:** 2\n    **Explanation:** The longest valid parentheses substring is \"()\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \")()())\"\n    **Output:** 4\n    **Explanation:** The longest valid parentheses substring is \"()()\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"\"\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `0 <= s.length <= 3 * 104`\n  * `s[i]` is `'('`, or `')'`.",
+  "topics": ["String", "Dynamic Programming", "Stack"],
+  "total_accepted": 1061208,
+  "total_submissions": 2785010,
+  "acceptance_rate": "38.1%",
+  "similar_questions": [
+    {
+      "title": "Valid Parentheses",
+      "slug": "valid-parentheses",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-parentheses/"
+    }
+  ],
+  "hints": []
+}

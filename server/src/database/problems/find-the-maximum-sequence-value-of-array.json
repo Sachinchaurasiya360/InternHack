@@ -1,0 +1,27 @@
+{
+  "id": "3287",
+  "title": "Find the Maximum Sequence Value of Array",
+  "slug": "find-the-maximum-sequence-value-of-array",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> and a <strong>positive</strong> integer <code>k</code>.</p>\n\n<p>The <strong>value</strong> of a sequence <code>seq</code> of size <code>2 * x</code> is defined as:</p>\n\n<ul>\n\t<li><code>(seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1])</code>.</li>\n</ul>\n\n<p>Return the <strong>maximum</strong> <strong>value</strong> of any <span data-keyword=\"subsequence-array\">subsequence</span> of <code>nums</code> having size <code>2 * k</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,6,7], k = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The subsequence <code>[2, 7]</code> has the maximum value of <code>2 XOR 7 = 5</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [4,2,5,6,7], k = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The subsequence <code>[4, 5, 6, 7]</code> has the maximum value of <code>(4 OR 5) XOR (6 OR 7) = 2</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 400</code></li>\n\t<li><code>1 &lt;= nums[i] &lt; 2<sup>7</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length / 2</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` and a **positive** integer `k`.\n\nThe **value** of a sequence `seq` of size `2 * x` is defined as:\n\n  * `(seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1])`.\n\n\n\nReturn the **maximum** **value** of any subsequence of `nums` having size `2 * k`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [2,6,7], k = 1\n\n**Output:** 5\n\n**Explanation:**\n\nThe subsequence `[2, 7]` has the maximum value of `2 XOR 7 = 5`.\n\n**Example 2:**\n\n**Input:** nums = [4,2,5,6,7], k = 2\n\n**Output:** 2\n\n**Explanation:**\n\nThe subsequence `[4, 5, 6, 7]` has the maximum value of `(4 OR 5) XOR (6 OR 7) = 2`.\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 400`\n  * `1 <= nums[i] < 27`\n  * `1 <= k <= nums.length / 2`",
+  "question": "You are given an integer array `nums` and a **positive** integer `k`.\n\nThe **value** of a sequence `seq` of size `2 * x` is defined as:\n\n  * `(seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1])`.\n\n\n\nReturn the **maximum** **value** of any subsequence of `nums` having size `2 * k`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [2,6,7], k = 1\n\n**Output:** 5\n\n**Explanation:**\n\nThe subsequence `[2, 7]` has the maximum value of `2 XOR 7 = 5`.\n\n**Example 2:**\n\n**Input:** nums = [4,2,5,6,7], k = 2\n\n**Output:** 2\n\n**Explanation:**\n\nThe subsequence `[4, 5, 6, 7]` has the maximum value of `(4 OR 5) XOR (6 OR 7) = 2`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 400`\n  * `1 <= nums[i] < 27`\n  * `1 <= k <= nums.length / 2`",
+  "topics": ["Array", "Dynamic Programming", "Bit Manipulation"],
+  "total_accepted": 5764,
+  "total_submissions": 27227,
+  "acceptance_rate": "21.2%",
+  "similar_questions": [
+    {
+      "title": "Bitwise ORs of Subarrays",
+      "slug": "bitwise-ors-of-subarrays",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/bitwise-ors-of-subarrays/"
+    }
+  ],
+  "hints": [
+    "Find all the possible <code>OR</code> till each <code>i</code> with <code>k</code> elements backward and forward."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "1394",
+  "title": "Find Lucky Integer in an Array",
+  "slug": "find-lucky-integer-in-an-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>arr</code>, a <strong>lucky integer</strong> is an integer that has a frequency in the array equal to its value.</p>\n\n<p>Return <em>the largest <strong>lucky integer</strong> in the array</em>. If there is no <strong>lucky integer</strong> return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,2,3,4]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The only lucky number in the array is 2 because frequency[2] == 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2,2,3,3,3]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> 1, 2 and 3 are all lucky numbers, return the largest of them.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [2,2,2,3,3]\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> There are no lucky numbers in the array.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 500</code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 500</code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `arr`, a **lucky integer** is an integer that has a frequency in the array equal to its value.\n\nReturn _the largest**lucky integer** in the array_. If there is no **lucky integer** return `-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [2,2,3,4]\n    **Output:** 2\n    **Explanation:** The only lucky number in the array is 2 because frequency[2] == 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,2,3,3,3]\n    **Output:** 3\n    **Explanation:** 1, 2 and 3 are all lucky numbers, return the largest of them.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [2,2,2,3,3]\n    **Output:** -1\n    **Explanation:** There are no lucky numbers in the array.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 500`\n  * `1 <= arr[i] <= 500`",
+  "question": "Given an array of integers `arr`, a **lucky integer** is an integer that has a frequency in the array equal to its value.\n\nReturn _the largest**lucky integer** in the array_. If there is no **lucky integer** return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [2,2,3,4]\n    **Output:** 2\n    **Explanation:** The only lucky number in the array is 2 because frequency[2] == 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,2,2,3,3,3]\n    **Output:** 3\n    **Explanation:** 1, 2 and 3 are all lucky numbers, return the largest of them.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [2,2,2,3,3]\n    **Output:** -1\n    **Explanation:** There are no lucky numbers in the array.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 500`\n  * `1 <= arr[i] <= 500`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 332657,
+  "total_submissions": 440605,
+  "acceptance_rate": "75.5%",
+  "similar_questions": [],
+  "hints": [
+    "Count the frequency of each integer in the array.",
+    "Get all lucky numbers and return the largest of them."
+  ]
+}

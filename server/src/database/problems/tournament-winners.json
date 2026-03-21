@@ -1,0 +1,18 @@
+{
+  "id": "1194",
+  "title": "Tournament Winners",
+  "slug": "tournament-winners",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 24834,
+  "total_submissions": 49629,
+  "acceptance_rate": "50.0%",
+  "similar_questions": [],
+  "hints": []
+}

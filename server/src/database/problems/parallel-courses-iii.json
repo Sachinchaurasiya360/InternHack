@@ -1,0 +1,53 @@
+{
+  "id": "2050",
+  "title": "Parallel Courses III",
+  "slug": "parallel-courses-iii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code>, which indicates that there are <code>n</code> courses labeled from <code>1</code> to <code>n</code>. You are also given a 2D integer array <code>relations</code> where <code>relations[j] = [prevCourse<sub>j</sub>, nextCourse<sub>j</sub>]</code> denotes that course <code>prevCourse<sub>j</sub></code> has to be completed <strong>before</strong> course <code>nextCourse<sub>j</sub></code> (prerequisite relationship). Furthermore, you are given a <strong>0-indexed</strong> integer array <code>time</code> where <code>time[i]</code> denotes how many <strong>months</strong> it takes to complete the <code>(i+1)<sup>th</sup></code> course.</p>\n\n<p>You must find the <strong>minimum</strong> number of months needed to complete all the courses following these rules:</p>\n\n<ul>\n\t<li>You may start taking a course at <strong>any time</strong> if the prerequisites are met.</li>\n\t<li><strong>Any number of courses</strong> can be taken at the <strong>same time</strong>.</li>\n</ul>\n\n<p>Return <em>the <strong>minimum</strong> number of months needed to complete all the courses</em>.</p>\n\n<p><strong>Note:</strong> The test cases are generated such that it is possible to complete every course (i.e., the graph is a directed acyclic graph).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/10/07/ex1.png\" style=\"width: 392px; height: 232px;\" /></strong>\n\n<pre>\n<strong>Input:</strong> n = 3, relations = [[1,3],[2,3]], time = [3,2,5]\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> The figure above represents the given graph and the time required to complete each course. \nWe start course 1 and course 2 simultaneously at month 0.\nCourse 1 takes 3 months and course 2 takes 2 months to complete respectively.\nThus, the earliest time we can start course 3 is at month 3, and the total time required is 3 + 5 = 8 months.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/10/07/ex2.png\" style=\"width: 500px; height: 365px;\" /></strong>\n\n<pre>\n<strong>Input:</strong> n = 5, relations = [[1,5],[2,5],[3,5],[3,4],[4,5]], time = [1,2,3,4,5]\n<strong>Output:</strong> 12\n<strong>Explanation:</strong> The figure above represents the given graph and the time required to complete each course.\nYou can start courses 1, 2, and 3 at month 0.\nYou can complete them after 1, 2, and 3 months respectively.\nCourse 4 can be taken only after course 3 is completed, i.e., after 3 months. It is completed after 3 + 4 = 7 months.\nCourse 5 can be taken only after courses 1, 2, 3, and 4 have been completed, i.e., after max(1,2,3,7) = 7 months.\nThus, the minimum time needed to complete all the courses is 7 + 5 = 12 months.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= relations.length &lt;= min(n * (n - 1) / 2, 5 * 10<sup>4</sup>)</code></li>\n\t<li><code>relations[j].length == 2</code></li>\n\t<li><code>1 &lt;= prevCourse<sub>j</sub>, nextCourse<sub>j</sub> &lt;= n</code></li>\n\t<li><code>prevCourse<sub>j</sub> != nextCourse<sub>j</sub></code></li>\n\t<li>All the pairs <code>[prevCourse<sub>j</sub>, nextCourse<sub>j</sub>]</code> are <strong>unique</strong>.</li>\n\t<li><code>time.length == n</code></li>\n\t<li><code>1 &lt;= time[i] &lt;= 10<sup>4</sup></code></li>\n\t<li>The given graph is a directed acyclic graph.</li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n`, which indicates that there are `n` courses labeled from `1` to `n`. You are also given a 2D integer array `relations` where `relations[j] = [prevCoursej, nextCoursej]` denotes that course `prevCoursej` has to be completed **before** course `nextCoursej` (prerequisite relationship). Furthermore, you are given a **0-indexed** integer array `time` where `time[i]` denotes how many **months** it takes to complete the `(i+1)th` course.\n\nYou must find the **minimum** number of months needed to complete all the courses following these rules:\n\n  * You may start taking a course at **any time** if the prerequisites are met.\n  * **Any number of courses** can be taken at the **same time**.\n\n\n\nReturn _the**minimum** number of months needed to complete all the courses_.\n\n**Note:** The test cases are generated such that it is possible to complete every course (i.e., the graph is a directed acyclic graph).\n\n \n\n**Example 1:**\n\n**![](https://assets.leetcode.com/uploads/2021/10/07/ex1.png)**\n    \n    \n    **Input:** n = 3, relations = [[1,3],[2,3]], time = [3,2,5]\n    **Output:** 8\n    **Explanation:** The figure above represents the given graph and the time required to complete each course. \n    We start course 1 and course 2 simultaneously at month 0.\n    Course 1 takes 3 months and course 2 takes 2 months to complete respectively.\n    Thus, the earliest time we can start course 3 is at month 3, and the total time required is 3 + 5 = 8 months.\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2021/10/07/ex2.png)**\n    \n    \n    **Input:** n = 5, relations = [[1,5],[2,5],[3,5],[3,4],[4,5]], time = [1,2,3,4,5]\n    **Output:** 12\n    **Explanation:** The figure above represents the given graph and the time required to complete each course.\n    You can start courses 1, 2, and 3 at month 0.\n    You can complete them after 1, 2, and 3 months respectively.\n    Course 4 can be taken only after course 3 is completed, i.e., after 3 months. It is completed after 3 + 4 = 7 months.\n    Course 5 can be taken only after courses 1, 2, 3, and 4 have been completed, i.e., after max(1,2,3,7) = 7 months.\n    Thus, the minimum time needed to complete all the courses is 7 + 5 = 12 months.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 5 * 104`\n  * `0 <= relations.length <= min(n * (n - 1) / 2, 5 * 104)`\n  * `relations[j].length == 2`\n  * `1 <= prevCoursej, nextCoursej <= n`\n  * `prevCoursej != nextCoursej`\n  * All the pairs `[prevCoursej, nextCoursej]` are **unique**.\n  * `time.length == n`\n  * `1 <= time[i] <= 104`\n  * The given graph is a directed acyclic graph.",
+  "question": "You are given an integer `n`, which indicates that there are `n` courses labeled from `1` to `n`. You are also given a 2D integer array `relations` where `relations[j] = [prevCoursej, nextCoursej]` denotes that course `prevCoursej` has to be completed **before** course `nextCoursej` (prerequisite relationship). Furthermore, you are given a **0-indexed** integer array `time` where `time[i]` denotes how many **months** it takes to complete the `(i+1)th` course.\n\nYou must find the **minimum** number of months needed to complete all the courses following these rules:\n\n  * You may start taking a course at **any time** if the prerequisites are met.\n  * **Any number of courses** can be taken at the **same time**.\n\n\n\nReturn _the**minimum** number of months needed to complete all the courses_.\n\n**Note:** The test cases are generated such that it is possible to complete every course (i.e., the graph is a directed acyclic graph).",
+  "examples": "**Example 1:**\n\n**![](https://assets.leetcode.com/uploads/2021/10/07/ex1.png)**\n    \n    \n    **Input:** n = 3, relations = [[1,3],[2,3]], time = [3,2,5]\n    **Output:** 8\n    **Explanation:** The figure above represents the given graph and the time required to complete each course. \n    We start course 1 and course 2 simultaneously at month 0.\n    Course 1 takes 3 months and course 2 takes 2 months to complete respectively.\n    Thus, the earliest time we can start course 3 is at month 3, and the total time required is 3 + 5 = 8 months.\n    \n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2021/10/07/ex2.png)**\n    \n    \n    **Input:** n = 5, relations = [[1,5],[2,5],[3,5],[3,4],[4,5]], time = [1,2,3,4,5]\n    **Output:** 12\n    **Explanation:** The figure above represents the given graph and the time required to complete each course.\n    You can start courses 1, 2, and 3 at month 0.\n    You can complete them after 1, 2, and 3 months respectively.\n    Course 4 can be taken only after course 3 is completed, i.e., after 3 months. It is completed after 3 + 4 = 7 months.\n    Course 5 can be taken only after courses 1, 2, 3, and 4 have been completed, i.e., after max(1,2,3,7) = 7 months.\n    Thus, the minimum time needed to complete all the courses is 7 + 5 = 12 months.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 5 * 104`\n  * `0 <= relations.length <= min(n * (n - 1) / 2, 5 * 104)`\n  * `relations[j].length == 2`\n  * `1 <= prevCoursej, nextCoursej <= n`\n  * `prevCoursej != nextCoursej`\n  * All the pairs `[prevCoursej, nextCoursej]` are **unique**.\n  * `time.length == n`\n  * `1 <= time[i] <= 104`\n  * The given graph is a directed acyclic graph.",
+  "topics": ["Array", "Dynamic Programming", "Graph Theory", "Topological Sort"],
+  "total_accepted": 111224,
+  "total_submissions": 166444,
+  "acceptance_rate": "66.8%",
+  "similar_questions": [
+    {
+      "title": "Course Schedule III",
+      "slug": "course-schedule-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/course-schedule-iii/"
+    },
+    {
+      "title": "Parallel Courses",
+      "slug": "parallel-courses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/parallel-courses/"
+    },
+    {
+      "title": "Single-Threaded CPU",
+      "slug": "single-threaded-cpu",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/single-threaded-cpu/"
+    },
+    {
+      "title": "Process Tasks Using Servers",
+      "slug": "process-tasks-using-servers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/process-tasks-using-servers/"
+    },
+    {
+      "title": "Maximum Employees to Be Invited to a Meeting",
+      "slug": "maximum-employees-to-be-invited-to-a-meeting",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-employees-to-be-invited-to-a-meeting/"
+    }
+  ],
+  "hints": [
+    "What is the earliest time a course can be taken?",
+    "How would you solve the problem if all courses take equal time?",
+    "How would you generalize this approach?"
+  ]
+}

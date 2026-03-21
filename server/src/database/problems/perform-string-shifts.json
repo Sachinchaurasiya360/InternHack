@@ -1,0 +1,21 @@
+{
+  "id": "1427",
+  "title": "Perform String Shifts",
+  "slug": "perform-string-shifts",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Math", "String"],
+  "total_accepted": 93618,
+  "total_submissions": 167289,
+  "acceptance_rate": "56.0%",
+  "similar_questions": [],
+  "hints": [
+    "Intuitively performing all shift operations is acceptable due to the constraints.",
+    "You may notice that left shift cancels the right shift, so count the total left shift times (may be negative if the final result is right shift), and perform it once."
+  ]
+}

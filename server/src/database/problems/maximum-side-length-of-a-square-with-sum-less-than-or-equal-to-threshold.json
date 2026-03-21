@@ -1,0 +1,22 @@
+{
+  "id": "1292",
+  "title": "Maximum Side Length of a Square with Sum Less than or Equal to Threshold",
+  "slug": "maximum-side-length-of-a-square-with-sum-less-than-or-equal-to-threshold",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>m x n</code> matrix <code>mat</code> and an integer <code>threshold</code>, return <em>the maximum side-length of a square with a sum less than or equal to </em><code>threshold</code><em> or return </em><code>0</code><em> if there is no such square</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/12/05/e1.png\" style=\"width: 335px; height: 186px;\" />\n<pre>\n<strong>Input:</strong> mat = [[1,1,3,2,4,3,2],[1,1,3,2,4,3,2],[1,1,3,2,4,3,2]], threshold = 4\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The maximum side length of square with sum less than or equal to 4 is 2 as shown.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> mat = [[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2]], threshold = 1\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == mat.length</code></li>\n\t<li><code>n == mat[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 300</code></li>\n\t<li><code>0 &lt;= mat[i][j] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= threshold &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a `m x n` matrix `mat` and an integer `threshold`, return _the maximum side-length of a square with a sum less than or equal to_`threshold` _or return_`0` _if there is no such square_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/12/05/e1.png)\n    \n    \n    **Input:** mat = [[1,1,3,2,4,3,2],[1,1,3,2,4,3,2],[1,1,3,2,4,3,2]], threshold = 4\n    **Output:** 2\n    **Explanation:** The maximum side length of square with sum less than or equal to 4 is 2 as shown.\n    \n\n**Example 2:**\n    \n    \n    **Input:** mat = [[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2]], threshold = 1\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 300`\n  * `0 <= mat[i][j] <= 104`\n  * `0 <= threshold <= 105`",
+  "question": "Given a `m x n` matrix `mat` and an integer `threshold`, return _the maximum side-length of a square with a sum less than or equal to_`threshold` _or return_`0` _if there is no such square_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/12/05/e1.png)\n    \n    \n    **Input:** mat = [[1,1,3,2,4,3,2],[1,1,3,2,4,3,2],[1,1,3,2,4,3,2]], threshold = 4\n    **Output:** 2\n    **Explanation:** The maximum side length of square with sum less than or equal to 4 is 2 as shown.\n    \n\n**Example 2:**\n    \n    \n    **Input:** mat = [[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2]], threshold = 1\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `m == mat.length`\n  * `n == mat[i].length`\n  * `1 <= m, n <= 300`\n  * `0 <= mat[i][j] <= 104`\n  * `0 <= threshold <= 105`",
+  "topics": ["Array", "Binary Search", "Matrix", "Prefix Sum"],
+  "total_accepted": 123473,
+  "total_submissions": 188657,
+  "acceptance_rate": "65.4%",
+  "similar_questions": [],
+  "hints": [
+    "Store prefix sum of all grids in another 2D array.",
+    "Try all possible solutions and if you cannot find one return 0.",
+    "If x is a valid answer then any y < x is also valid answer. Use binary search to find answer."
+  ]
+}

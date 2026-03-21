@@ -1,0 +1,37 @@
+{
+  "id": "525",
+  "title": "Contiguous Array",
+  "slug": "contiguous-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary array <code>nums</code>, return <em>the maximum length of a contiguous subarray with an equal number of </em><code>0</code><em> and </em><code>1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> [0, 1] is the longest contiguous subarray with an equal number of 0 and 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,1,0]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,1,1,1,1,1,0,0,0]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> [1,1,1,0,0,0] is the longest contiguous subarray with equal number of 0 and 1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>nums[i]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a binary array `nums`, return _the maximum length of a contiguous subarray with an equal number of_`0` _and_`1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [0,1]\n    **Output:** 2\n    **Explanation:** [0, 1] is the longest contiguous subarray with an equal number of 0 and 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1,0]\n    **Output:** 2\n    **Explanation:** [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [0,1,1,1,1,1,0,0,0]\n    **Output:** 6\n    **Explanation:** [1,1,1,0,0,0] is the longest contiguous subarray with equal number of 0 and 1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is either `0` or `1`.",
+  "question": "Given a binary array `nums`, return _the maximum length of a contiguous subarray with an equal number of_`0` _and_`1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [0,1]\n    **Output:** 2\n    **Explanation:** [0, 1] is the longest contiguous subarray with an equal number of 0 and 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,1,0]\n    **Output:** 2\n    **Explanation:** [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [0,1,1,1,1,1,0,0,0]\n    **Output:** 6\n    **Explanation:** [1,1,1,0,0,0] is the longest contiguous subarray with equal number of 0 and 1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is either `0` or `1`.",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 650820,
+  "total_submissions": 1280423,
+  "acceptance_rate": "50.8%",
+  "similar_questions": [
+    {
+      "title": "Maximum Size Subarray Sum Equals k",
+      "slug": "maximum-size-subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/"
+    },
+    {
+      "title": "Find All Possible Stable Binary Arrays I",
+      "slug": "find-all-possible-stable-binary-arrays-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-possible-stable-binary-arrays-i/"
+    },
+    {
+      "title": "Find All Possible Stable Binary Arrays II",
+      "slug": "find-all-possible-stable-binary-arrays-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-all-possible-stable-binary-arrays-ii/"
+    }
+  ],
+  "hints": []
+}

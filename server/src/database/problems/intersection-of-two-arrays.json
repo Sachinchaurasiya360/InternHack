@@ -1,0 +1,67 @@
+{
+  "id": "349",
+  "title": "Intersection of Two Arrays",
+  "slug": "intersection-of-two-arrays",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integer arrays <code>nums1</code> and <code>nums2</code>, return <em>an array of their <span data-keyword=\"array-intersection\">intersection</span></em>. Each element in the result must be <strong>unique</strong> and you may return the result in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2,2,1], nums2 = [2,2]\n<strong>Output:</strong> [2]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [4,9,5], nums2 = [9,4,9,8,4]\n<strong>Output:</strong> [9,4]\n<strong>Explanation:</strong> [4,9] is also accepted.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length, nums2.length &lt;= 1000</code></li>\n\t<li><code>0 &lt;= nums1[i], nums2[i] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given two integer arrays `nums1` and `nums2`, return _an array of their intersection_. Each element in the result must be **unique** and you may return the result in **any order**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2,2,1], nums2 = [2,2]\n    **Output:** [2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [4,9,5], nums2 = [9,4,9,8,4]\n    **Output:** [9,4]\n    **Explanation:** [4,9] is also accepted.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 1000`\n  * `0 <= nums1[i], nums2[i] <= 1000`",
+  "question": "Given two integer arrays `nums1` and `nums2`, return _an array of their intersection_. Each element in the result must be **unique** and you may return the result in **any order**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2,2,1], nums2 = [2,2]\n    **Output:** [2]\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [4,9,5], nums2 = [9,4,9,8,4]\n    **Output:** [9,4]\n    **Explanation:** [4,9] is also accepted.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 1000`\n  * `0 <= nums1[i], nums2[i] <= 1000`",
+  "topics": ["Array", "Hash Table", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 1798752,
+  "total_submissions": 2320870,
+  "acceptance_rate": "77.5%",
+  "similar_questions": [
+    {
+      "title": "Intersection of Two Arrays II",
+      "slug": "intersection-of-two-arrays-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-two-arrays-ii/"
+    },
+    {
+      "title": "Intersection of Three Sorted Arrays",
+      "slug": "intersection-of-three-sorted-arrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-three-sorted-arrays/"
+    },
+    {
+      "title": "Find the Difference of Two Arrays",
+      "slug": "find-the-difference-of-two-arrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-the-difference-of-two-arrays/"
+    },
+    {
+      "title": "Count Common Words With One Occurrence",
+      "slug": "count-common-words-with-one-occurrence",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-common-words-with-one-occurrence/"
+    },
+    {
+      "title": "Choose Numbers From Two Arrays in Range",
+      "slug": "choose-numbers-from-two-arrays-in-range",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/choose-numbers-from-two-arrays-in-range/"
+    },
+    {
+      "title": "Intersection of Multiple Arrays",
+      "slug": "intersection-of-multiple-arrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-multiple-arrays/"
+    },
+    {
+      "title": "Minimum Common Value",
+      "slug": "minimum-common-value",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-common-value/"
+    },
+    {
+      "title": "Maximum Size of a Set After Removals",
+      "slug": "maximum-size-of-a-set-after-removals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-size-of-a-set-after-removals/"
+    }
+  ],
+  "hints": []
+}

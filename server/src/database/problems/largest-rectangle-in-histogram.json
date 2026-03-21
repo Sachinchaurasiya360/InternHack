@@ -1,0 +1,31 @@
+{
+  "id": "84",
+  "title": "Largest Rectangle in Histogram",
+  "slug": "largest-rectangle-in-histogram",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>heights</code> representing the histogram&#39;s bar height where the width of each bar is <code>1</code>, return <em>the area of the largest rectangle in the histogram</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/04/histogram.jpg\" style=\"width: 522px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> heights = [2,1,5,6,2,3]\n<strong>Output:</strong> 10\n<strong>Explanation:</strong> The above is a histogram where width of each bar is 1.\nThe largest rectangle is shown in the red area, which has an area = 10 units.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/04/histogram-1.jpg\" style=\"width: 202px; height: 362px;\" />\n<pre>\n<strong>Input:</strong> heights = [2,4]\n<strong>Output:</strong> 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= heights.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= heights[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is `1`, return _the area of the largest rectangle in the histogram_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/histogram.jpg)\n    \n    \n    **Input:** heights = [2,1,5,6,2,3]\n    **Output:** 10\n    **Explanation:** The above is a histogram where width of each bar is 1.\n    The largest rectangle is shown in the red area, which has an area = 10 units.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/histogram-1.jpg)\n    \n    \n    **Input:** heights = [2,4]\n    **Output:** 4\n    \n\n \n\n**Constraints:**\n\n  * `1 <= heights.length <= 105`\n  * `0 <= heights[i] <= 104`",
+  "question": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is `1`, return _the area of the largest rectangle in the histogram_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/histogram.jpg)\n    \n    \n    **Input:** heights = [2,1,5,6,2,3]\n    **Output:** 10\n    **Explanation:** The above is a histogram where width of each bar is 1.\n    The largest rectangle is shown in the red area, which has an area = 10 units.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/01/04/histogram-1.jpg)\n    \n    \n    **Input:** heights = [2,4]\n    **Output:** 4",
+  "constraints": "**Constraints:**\n\n  * `1 <= heights.length <= 105`\n  * `0 <= heights[i] <= 104`",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 1489142,
+  "total_submissions": 3016535,
+  "acceptance_rate": "49.4%",
+  "similar_questions": [
+    {
+      "title": "Maximal Rectangle",
+      "slug": "maximal-rectangle",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximal-rectangle/"
+    },
+    {
+      "title": "Maximum Score of a Good Subarray",
+      "slug": "maximum-score-of-a-good-subarray",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-score-of-a-good-subarray/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "1182",
+  "title": "Shortest Distance to Target Color",
+  "slug": "shortest-distance-to-target-color",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Dynamic Programming"],
+  "total_accepted": 40963,
+  "total_submissions": 72507,
+  "acceptance_rate": "56.5%",
+  "similar_questions": [],
+  "hints": [
+    "Greedy solution is too slow because of the limits.",
+    "Can you solve this problem offline by doing some pre-processing?",
+    "Calculate the answers for all indexes moving to their left and to their right."
+  ]
+}

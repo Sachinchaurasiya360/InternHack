@@ -1,0 +1,22 @@
+{
+  "id": "1244",
+  "title": "Design A Leaderboard",
+  "slug": "design-a-leaderboard",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Design", "Sorting"],
+  "total_accepted": 96107,
+  "total_submissions": 141158,
+  "acceptance_rate": "68.1%",
+  "similar_questions": [],
+  "hints": [
+    "What data structure can we use to keep the players' data?",
+    "Keep a map (dictionary) of player scores.",
+    "For each top(K) function call, find the maximum K scores and add them."
+  ]
+}

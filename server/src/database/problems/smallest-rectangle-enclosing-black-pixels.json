@@ -1,0 +1,31 @@
+{
+  "id": "302",
+  "title": "Smallest Rectangle Enclosing Black Pixels",
+  "slug": "smallest-rectangle-enclosing-black-pixels",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Search", "Depth-First Search", "Breadth-First Search", "Matrix"],
+  "total_accepted": 57067,
+  "total_submissions": 93799,
+  "acceptance_rate": "60.8%",
+  "similar_questions": [
+    {
+      "title": "Find the Minimum Area to Cover All Ones II",
+      "slug": "find-the-minimum-area-to-cover-all-ones-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-minimum-area-to-cover-all-ones-ii/"
+    },
+    {
+      "title": "Find the Minimum Area to Cover All Ones I",
+      "slug": "find-the-minimum-area-to-cover-all-ones-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-the-minimum-area-to-cover-all-ones-i/"
+    }
+  ],
+  "hints": []
+}

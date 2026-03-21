@@ -1,0 +1,23 @@
+{
+  "id": "3686",
+  "title": "Number of Stable Subsequences",
+  "slug": "number-of-stable-subsequences",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>.</p>\n\n<p>A <strong><span data-keyword=\"subsequence-array-nonempty\">subsequence</span></strong> is <strong>stable</strong> if it does not contain <strong>three consecutive</strong> elements with the <strong>same</strong> parity when the subsequence is read <strong>in order</strong> (i.e., consecutive <strong>inside the subsequence</strong>).</p>\n\n<p>Return the number of stable subsequences.</p>\n\n<p>Since the answer may be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,3,5]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>Stable subsequences are <code>[1]</code>, <code>[3]</code>, <code>[5]</code>, <code>[1, 3]</code>, <code>[1, 5]</code>, and <code>[3, 5]</code>.</li>\n\t<li>Subsequence <code>[1, 3, 5]</code> is not stable because it contains three consecutive odd numbers. Thus, the answer is 6.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = </span>[2,3,4,2]</p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">14</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>The only subsequence that is not stable is <code>[2, 4, 2]</code>, which contains three consecutive even numbers.</li>\n\t<li>All other subsequences are stable. Thus, the answer is 14.</li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>​​​​​​​5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`.\n\nA **subsequence** is **stable** if it does not contain **three consecutive** elements with the **same** parity when the subsequence is read **in order** (i.e., consecutive **inside the subsequence**).\n\nReturn the number of stable subsequences.\n\nSince the answer may be too large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,3,5]\n\n**Output:** 6\n\n**Explanation:**\n\n  * Stable subsequences are `[1]`, `[3]`, `[5]`, `[1, 3]`, `[1, 5]`, and `[3, 5]`.\n  * Subsequence `[1, 3, 5]` is not stable because it contains three consecutive odd numbers. Thus, the answer is 6.\n\n\n\n**Example 2:**\n\n**Input:** nums = [2,3,4,2]\n\n**Output:** 14\n\n**Explanation:**\n\n  * The only subsequence that is not stable is `[2, 4, 2]`, which contains three consecutive even numbers.\n  * All other subsequences are stable. Thus, the answer is 14.\n\n\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 10​​​​​​​5`",
+  "question": "You are given an integer array `nums`.\n\nA **subsequence** is **stable** if it does not contain **three consecutive** elements with the **same** parity when the subsequence is read **in order** (i.e., consecutive **inside the subsequence**).\n\nReturn the number of stable subsequences.\n\nSince the answer may be too large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,3,5]\n\n**Output:** 6\n\n**Explanation:**\n\n  * Stable subsequences are `[1]`, `[3]`, `[5]`, `[1, 3]`, `[1, 5]`, and `[3, 5]`.\n  * Subsequence `[1, 3, 5]` is not stable because it contains three consecutive odd numbers. Thus, the answer is 6.\n\n\n\n**Example 2:**\n\n**Input:** nums = [2,3,4,2]\n\n**Output:** 14\n\n**Explanation:**\n\n  * The only subsequence that is not stable is `[2, 4, 2]`, which contains three consecutive even numbers.\n  * All other subsequences are stable. Thus, the answer is 14.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `1 <= nums[i] <= 10​​​​​​​5`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 24131,
+  "total_submissions": 40135,
+  "acceptance_rate": "60.1%",
+  "similar_questions": [],
+  "hints": [
+    "Any subsequence of length 1 or 2 is always stable.",
+    "A subsequence becomes invalid only if you add a third consecutive element of the same parity.",
+    "Use DP tracking the last element’s parity and how many consecutive of that parity you have (1 or 2).",
+    "For each new number, either start a new subsequence, extend with same parity (if <code>count < 2</code>), or extend with different parity (reset count = 1)."
+  ]
+}

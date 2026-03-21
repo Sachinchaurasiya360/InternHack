@@ -1,0 +1,40 @@
+{
+  "id": "1879",
+  "title": "Minimum XOR Sum of Two Arrays",
+  "slug": "minimum-xor-sum-of-two-arrays",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two integer arrays <code>nums1</code> and <code>nums2</code> of length <code>n</code>.</p>\n\n<p>The <strong>XOR sum</strong> of the two integer arrays is <code>(nums1[0] XOR nums2[0]) + (nums1[1] XOR nums2[1]) + ... + (nums1[n - 1] XOR nums2[n - 1])</code> (<strong>0-indexed</strong>).</p>\n\n<ul>\n\t<li>For example, the <strong>XOR sum</strong> of <code>[1,2,3]</code> and <code>[3,2,1]</code> is equal to <code>(1 XOR 3) + (2 XOR 2) + (3 XOR 1) = 2 + 0 + 2 = 4</code>.</li>\n</ul>\n\n<p>Rearrange the elements of <code>nums2</code> such that the resulting <strong>XOR sum</strong> is <b>minimized</b>.</p>\n\n<p>Return <em>the <strong>XOR sum</strong> after the rearrangement</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2], nums2 = [2,3]\n<strong>Output:</strong> 2\n<b>Explanation:</b> Rearrange <code>nums2</code> so that it becomes <code>[3,2]</code>.\nThe XOR sum is (1 XOR 3) + (2 XOR 2) = 2 + 0 = 2.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,0,3], nums2 = [5,3,4]\n<strong>Output:</strong> 8\n<b>Explanation:</b> Rearrange <code>nums2</code> so that it becomes <code>[5,4,3]</code>. \nThe XOR sum is (1 XOR 5) + (0 XOR 4) + (3 XOR 3) = 4 + 4 + 0 = 8.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == nums1.length</code></li>\n\t<li><code>n == nums2.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 14</code></li>\n\t<li><code>0 &lt;= nums1[i], nums2[i] &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two integer arrays `nums1` and `nums2` of length `n`.\n\nThe **XOR sum** of the two integer arrays is `(nums1[0] XOR nums2[0]) + (nums1[1] XOR nums2[1]) + ... + (nums1[n - 1] XOR nums2[n - 1])` (**0-indexed**).\n\n  * For example, the **XOR sum** of `[1,2,3]` and `[3,2,1]` is equal to `(1 XOR 3) + (2 XOR 2) + (3 XOR 1) = 2 + 0 + 2 = 4`.\n\n\n\nRearrange the elements of `nums2` such that the resulting **XOR sum** is **minimized**.\n\nReturn _the**XOR sum** after the rearrangement_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2], nums2 = [2,3]\n    **Output:** 2\n    **Explanation:** Rearrange nums2 so that it becomes [3,2].\n    The XOR sum is (1 XOR 3) + (2 XOR 2) = 2 + 0 = 2.\n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,0,3], nums2 = [5,3,4]\n    **Output:** 8\n    **Explanation:** Rearrange nums2 so that it becomes [5,4,3]. \n    The XOR sum is (1 XOR 5) + (0 XOR 4) + (3 XOR 3) = 4 + 4 + 0 = 8.\n    \n\n \n\n**Constraints:**\n\n  * `n == nums1.length`\n  * `n == nums2.length`\n  * `1 <= n <= 14`\n  * `0 <= nums1[i], nums2[i] <= 107`",
+  "question": "You are given two integer arrays `nums1` and `nums2` of length `n`.\n\nThe **XOR sum** of the two integer arrays is `(nums1[0] XOR nums2[0]) + (nums1[1] XOR nums2[1]) + ... + (nums1[n - 1] XOR nums2[n - 1])` (**0-indexed**).\n\n  * For example, the **XOR sum** of `[1,2,3]` and `[3,2,1]` is equal to `(1 XOR 3) + (2 XOR 2) + (3 XOR 1) = 2 + 0 + 2 = 4`.\n\n\n\nRearrange the elements of `nums2` such that the resulting **XOR sum** is **minimized**.\n\nReturn _the**XOR sum** after the rearrangement_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2], nums2 = [2,3]\n    **Output:** 2\n    **Explanation:** Rearrange nums2 so that it becomes [3,2].\n    The XOR sum is (1 XOR 3) + (2 XOR 2) = 2 + 0 = 2.\n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,0,3], nums2 = [5,3,4]\n    **Output:** 8\n    **Explanation:** Rearrange nums2 so that it becomes [5,4,3]. \n    The XOR sum is (1 XOR 5) + (0 XOR 4) + (3 XOR 3) = 4 + 4 + 0 = 8.",
+  "constraints": "**Constraints:**\n\n  * `n == nums1.length`\n  * `n == nums2.length`\n  * `1 <= n <= 14`\n  * `0 <= nums1[i], nums2[i] <= 107`",
+  "topics": ["Array", "Dynamic Programming", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 19844,
+  "total_submissions": 39255,
+  "acceptance_rate": "50.6%",
+  "similar_questions": [
+    {
+      "title": "Fair Distribution of Cookies",
+      "slug": "fair-distribution-of-cookies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fair-distribution-of-cookies/"
+    },
+    {
+      "title": "Choose Numbers From Two Arrays in Range",
+      "slug": "choose-numbers-from-two-arrays-in-range",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/choose-numbers-from-two-arrays-in-range/"
+    },
+    {
+      "title": "Maximum AND Sum of Array",
+      "slug": "maximum-and-sum-of-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-and-sum-of-array/"
+    }
+  ],
+  "hints": [
+    "Since n <= 14, we can consider every subset of nums2.",
+    "We can represent every subset of nums2 using bitmasks."
+  ]
+}

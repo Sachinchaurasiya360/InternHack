@@ -1,0 +1,42 @@
+{
+  "id": "2130",
+  "title": "Maximum Twin Sum of a Linked List",
+  "slug": "maximum-twin-sum-of-a-linked-list",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>In a linked list of size <code>n</code>, where <code>n</code> is <strong>even</strong>, the <code>i<sup>th</sup></code> node (<strong>0-indexed</strong>) of the linked list is known as the <strong>twin</strong> of the <code>(n-1-i)<sup>th</sup></code> node, if <code>0 &lt;= i &lt;= (n / 2) - 1</code>.</p>\n\n<ul>\n\t<li>For example, if <code>n = 4</code>, then node <code>0</code> is the twin of node <code>3</code>, and node <code>1</code> is the twin of node <code>2</code>. These are the only nodes with twins for <code>n = 4</code>.</li>\n</ul>\n\n<p>The <strong>twin sum </strong>is defined as the sum of a node and its twin.</p>\n\n<p>Given the <code>head</code> of a linked list with even length, return <em>the <strong>maximum twin sum</strong> of the linked list</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/03/eg1drawio.png\" style=\"width: 250px; height: 70px;\" />\n<pre>\n<strong>Input:</strong> head = [5,4,2,1]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong>\nNodes 0 and 1 are the twins of nodes 3 and 2, respectively. All have twin sum = 6.\nThere are no other nodes with twins in the linked list.\nThus, the maximum twin sum of the linked list is 6. \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/03/eg2drawio.png\" style=\"width: 250px; height: 70px;\" />\n<pre>\n<strong>Input:</strong> head = [4,2,2,3]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong>\nThe nodes with twins present in this linked list are:\n- Node 0 is the twin of node 3 having a twin sum of 4 + 3 = 7.\n- Node 1 is the twin of node 2 having a twin sum of 2 + 2 = 4.\nThus, the maximum twin sum of the linked list is max(7, 4) = 7. \n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/03/eg3drawio.png\" style=\"width: 200px; height: 88px;\" />\n<pre>\n<strong>Input:</strong> head = [1,100000]\n<strong>Output:</strong> 100001\n<strong>Explanation:</strong>\nThere is only one node with a twin in the linked list having twin sum of 1 + 100000 = 100001.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is an <strong>even</strong> integer in the range <code>[2, 10<sup>5</sup>]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "In a linked list of size `n`, where `n` is **even** , the `ith` node (**0-indexed**) of the linked list is known as the **twin** of the `(n-1-i)th` node, if `0 <= i <= (n / 2) - 1`.\n\n  * For example, if `n = 4`, then node `0` is the twin of node `3`, and node `1` is the twin of node `2`. These are the only nodes with twins for `n = 4`.\n\n\n\nThe **twin sum** is defined as the sum of a node and its twin.\n\nGiven the `head` of a linked list with even length, return _the**maximum twin sum** of the linked list_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/03/eg1drawio.png)\n    \n    \n    **Input:** head = [5,4,2,1]\n    **Output:** 6\n    **Explanation:**\n    Nodes 0 and 1 are the twins of nodes 3 and 2, respectively. All have twin sum = 6.\n    There are no other nodes with twins in the linked list.\n    Thus, the maximum twin sum of the linked list is 6. \n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/03/eg2drawio.png)\n    \n    \n    **Input:** head = [4,2,2,3]\n    **Output:** 7\n    **Explanation:**\n    The nodes with twins present in this linked list are:\n    - Node 0 is the twin of node 3 having a twin sum of 4 + 3 = 7.\n    - Node 1 is the twin of node 2 having a twin sum of 2 + 2 = 4.\n    Thus, the maximum twin sum of the linked list is max(7, 4) = 7. \n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2021/12/03/eg3drawio.png)\n    \n    \n    **Input:** head = [1,100000]\n    **Output:** 100001\n    **Explanation:**\n    There is only one node with a twin in the linked list having twin sum of 1 + 100000 = 100001.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is an **even** integer in the range `[2, 105]`.\n  * `1 <= Node.val <= 105`",
+  "question": "In a linked list of size `n`, where `n` is **even** , the `ith` node (**0-indexed**) of the linked list is known as the **twin** of the `(n-1-i)th` node, if `0 <= i <= (n / 2) - 1`.\n\n  * For example, if `n = 4`, then node `0` is the twin of node `3`, and node `1` is the twin of node `2`. These are the only nodes with twins for `n = 4`.\n\n\n\nThe **twin sum** is defined as the sum of a node and its twin.\n\nGiven the `head` of a linked list with even length, return _the**maximum twin sum** of the linked list_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/03/eg1drawio.png)\n    \n    \n    **Input:** head = [5,4,2,1]\n    **Output:** 6\n    **Explanation:**\n    Nodes 0 and 1 are the twins of nodes 3 and 2, respectively. All have twin sum = 6.\n    There are no other nodes with twins in the linked list.\n    Thus, the maximum twin sum of the linked list is 6. \n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/03/eg2drawio.png)\n    \n    \n    **Input:** head = [4,2,2,3]\n    **Output:** 7\n    **Explanation:**\n    The nodes with twins present in this linked list are:\n    - Node 0 is the twin of node 3 having a twin sum of 4 + 3 = 7.\n    - Node 1 is the twin of node 2 having a twin sum of 2 + 2 = 4.\n    Thus, the maximum twin sum of the linked list is max(7, 4) = 7. \n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2021/12/03/eg3drawio.png)\n    \n    \n    **Input:** head = [1,100000]\n    **Output:** 100001\n    **Explanation:**\n    There is only one node with a twin in the linked list having twin sum of 1 + 100000 = 100001.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is an **even** integer in the range `[2, 105]`.\n  * `1 <= Node.val <= 105`",
+  "topics": ["Linked List", "Two Pointers", "Stack"],
+  "total_accepted": 488682,
+  "total_submissions": 598530,
+  "acceptance_rate": "81.6%",
+  "similar_questions": [
+    {
+      "title": "Reverse Linked List",
+      "slug": "reverse-linked-list",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/reverse-linked-list/"
+    },
+    {
+      "title": "Palindrome Linked List",
+      "slug": "palindrome-linked-list",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-linked-list/"
+    },
+    {
+      "title": "Middle of the Linked List",
+      "slug": "middle-of-the-linked-list",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/middle-of-the-linked-list/"
+    }
+  ],
+  "hints": [
+    "How can \"reversing\" a part of the linked list help find the answer?",
+    "We know that the nodes of the first half are twins of nodes in the second half, so try dividing the linked list in half and reverse the second half.",
+    "How can two pointers be used to find every twin sum optimally?",
+    "Use two different pointers pointing to the first nodes of the two halves of the linked list. The second pointer will point to the first node of the reversed half, which is the (n-1-i)th node in the original linked list. By moving both pointers forward at the same time, we find all twin sums."
+  ]
+}

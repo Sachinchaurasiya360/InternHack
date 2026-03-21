@@ -1,0 +1,61 @@
+{
+  "id": "62",
+  "title": "Unique Paths",
+  "slug": "unique-paths",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a robot on an <code>m x n</code> grid. The robot is initially located at the <strong>top-left corner</strong> (i.e., <code>grid[0][0]</code>). The robot tries to move to the <strong>bottom-right corner</strong> (i.e., <code>grid[m - 1][n - 1]</code>). The robot can only move either down or right at any point in time.</p>\n\n<p>Given the two integers <code>m</code> and <code>n</code>, return <em>the number of possible unique paths that the robot can take to reach the bottom-right corner</em>.</p>\n\n<p>The test cases are generated so that the answer will be less than or equal to <code>2 * 10<sup>9</sup></code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img src=\"https://assets.leetcode.com/uploads/2018/10/22/robot_maze.png\" style=\"width: 400px; height: 183px;\" />\n<pre>\n<strong>Input:</strong> m = 3, n = 7\n<strong>Output:</strong> 28\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> m = 3, n = 2\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:\n1. Right -&gt; Down -&gt; Down\n2. Down -&gt; Down -&gt; Right\n3. Down -&gt; Right -&gt; Down\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= m, n &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "There is a robot on an `m x n` grid. The robot is initially located at the **top-left corner** (i.e., `grid[0][0]`). The robot tries to move to the **bottom-right corner** (i.e., `grid[m - 1][n - 1]`). The robot can only move either down or right at any point in time.\n\nGiven the two integers `m` and `n`, return _the number of possible unique paths that the robot can take to reach the bottom-right corner_.\n\nThe test cases are generated so that the answer will be less than or equal to `2 * 109`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/10/22/robot_maze.png)\n    \n    \n    **Input:** m = 3, n = 7\n    **Output:** 28\n    \n\n**Example 2:**\n    \n    \n    **Input:** m = 3, n = 2\n    **Output:** 3\n    **Explanation:** From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:\n    1. Right -> Down -> Down\n    2. Down -> Down -> Right\n    3. Down -> Right -> Down\n    \n\n \n\n**Constraints:**\n\n  * `1 <= m, n <= 100`",
+  "question": "There is a robot on an `m x n` grid. The robot is initially located at the **top-left corner** (i.e., `grid[0][0]`). The robot tries to move to the **bottom-right corner** (i.e., `grid[m - 1][n - 1]`). The robot can only move either down or right at any point in time.\n\nGiven the two integers `m` and `n`, return _the number of possible unique paths that the robot can take to reach the bottom-right corner_.\n\nThe test cases are generated so that the answer will be less than or equal to `2 * 109`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2018/10/22/robot_maze.png)\n    \n    \n    **Input:** m = 3, n = 7\n    **Output:** 28\n    \n\n**Example 2:**\n    \n    \n    **Input:** m = 3, n = 2\n    **Output:** 3\n    **Explanation:** From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:\n    1. Right -> Down -> Down\n    2. Down -> Down -> Right\n    3. Down -> Right -> Down",
+  "constraints": "**Constraints:**\n\n  * `1 <= m, n <= 100`",
+  "topics": ["Math", "Dynamic Programming", "Combinatorics"],
+  "total_accepted": 2733786,
+  "total_submissions": 4106269,
+  "acceptance_rate": "66.6%",
+  "similar_questions": [
+    {
+      "title": "Unique Paths II",
+      "slug": "unique-paths-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-paths-ii/"
+    },
+    {
+      "title": "Minimum Path Sum",
+      "slug": "minimum-path-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-sum/"
+    },
+    {
+      "title": "Dungeon Game",
+      "slug": "dungeon-game",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/dungeon-game/"
+    },
+    {
+      "title": "Minimum Path Cost in a Grid",
+      "slug": "minimum-path-cost-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-cost-in-a-grid/"
+    },
+    {
+      "title": "Minimum Cost Homecoming of a Robot in a Grid",
+      "slug": "minimum-cost-homecoming-of-a-robot-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/"
+    },
+    {
+      "title": "Number of Ways to Reach a Position After Exactly k Steps",
+      "slug": "number-of-ways-to-reach-a-position-after-exactly-k-steps",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-reach-a-position-after-exactly-k-steps/"
+    },
+    {
+      "title": "Paths in Matrix Whose Sum Is Divisible by K",
+      "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paths-in-matrix-whose-sum-is-divisible-by-k/"
+    }
+  ],
+  "hints": []
+}

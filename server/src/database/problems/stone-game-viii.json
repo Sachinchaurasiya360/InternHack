@@ -1,0 +1,76 @@
+{
+  "id": "1872",
+  "title": "Stone Game VIII",
+  "slug": "stone-game-viii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Alice and Bob take turns playing a game, with <strong>Alice starting first</strong>.</p>\r\n\r\n<p>There are <code>n</code> stones arranged in a row. On each player&#39;s turn, while the number of stones is <strong>more than one</strong>, they will do the following:</p>\r\n\r\n<ol>\r\n\t<li>Choose an integer <code>x &gt; 1</code>, and <strong>remove</strong> the leftmost <code>x</code> stones from the row.</li>\r\n\t<li>Add the <strong>sum</strong> of the <strong>removed</strong> stones&#39; values to the player&#39;s score.</li>\r\n\t<li>Place a <strong>new stone</strong>, whose value is equal to that sum, on the left side of the row.</li>\r\n</ol>\r\n\r\n<p>The game stops when <strong>only</strong> <strong>one</strong> stone is left in the row.</p>\r\n\r\n<p>The <strong>score difference</strong> between Alice and Bob is <code>(Alice&#39;s score - Bob&#39;s score)</code>. Alice&#39;s goal is to <strong>maximize</strong> the score difference, and Bob&#39;s goal is the <strong>minimize</strong> the score difference.</p>\r\n\r\n<p>Given an integer array <code>stones</code> of length <code>n</code> where <code>stones[i]</code> represents the value of the <code>i<sup>th</sup></code> stone <strong>from the left</strong>, return <em>the <strong>score difference</strong> between Alice and Bob if they both play <strong>optimally</strong>.</em></p>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong class=\"example\">Example 1:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> stones = [-1,2,-3,4,-5]\r\n<strong>Output:</strong> 5\r\n<strong>Explanation:</strong>\r\n- Alice removes the first 4 stones, adds (-1) + 2 + (-3) + 4 = 2 to her score, and places a stone of\r\n  value 2 on the left. stones = [2,-5].\r\n- Bob removes the first 2 stones, adds 2 + (-5) = -3 to his score, and places a stone of value -3 on\r\n  the left. stones = [-3].\r\nThe difference between their scores is 2 - (-3) = 5.\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 2:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> stones = [7,-6,5,10,5,-2,-6]\r\n<strong>Output:</strong> 13\r\n<strong>Explanation:</strong>\r\n- Alice removes all stones, adds 7 + (-6) + 5 + 10 + 5 + (-2) + (-6) = 13 to her score, and places a\r\n  stone of value 13 on the left. stones = [13].\r\nThe difference between their scores is 13 - 0 = 13.\r\n</pre>\r\n\r\n<p><strong class=\"example\">Example 3:</strong></p>\r\n\r\n<pre>\r\n<strong>Input:</strong> stones = [-10,-12]\r\n<strong>Output:</strong> -22\r\n<strong>Explanation:</strong>\r\n- Alice can only make one move, which is to remove both stones. She adds (-10) + (-12) = -22 to her\r\n  score and places a stone of value -22 on the left. stones = [-22].\r\nThe difference between their scores is (-22) - 0 = -22.\r\n</pre>\r\n\r\n<p>&nbsp;</p>\r\n<p><strong>Constraints:</strong></p>\r\n\r\n<ul>\r\n\t<li><code>n == stones.length</code></li>\r\n\t<li><code>2 &lt;= n &lt;= 10<sup>5</sup></code></li>\r\n\t<li><code>-10<sup>4</sup> &lt;= stones[i] &lt;= 10<sup>4</sup></code></li>\r\n</ul>",
+  "content_markdown": "Alice and Bob take turns playing a game, with **Alice starting first**.\n\nThere are `n` stones arranged in a row. On each player's turn, while the number of stones is **more than one** , they will do the following:\n\n  1. Choose an integer `x > 1`, and **remove** the leftmost `x` stones from the row.\n  2. Add the **sum** of the **removed** stones' values to the player's score.\n  3. Place a **new stone** , whose value is equal to that sum, on the left side of the row.\n\n\n\nThe game stops when **only** **one** stone is left in the row.\n\nThe **score difference** between Alice and Bob is `(Alice's score - Bob's score)`. Alice's goal is to **maximize** the score difference, and Bob's goal is the **minimize** the score difference.\n\nGiven an integer array `stones` of length `n` where `stones[i]` represents the value of the `ith` stone **from the left** , return _the**score difference** between Alice and Bob if they both play **optimally**._\n\n \n\n**Example 1:**\n    \n    \r\n    **Input:** stones = [-1,2,-3,4,-5]\r\n    **Output:** 5\r\n    **Explanation:**\r\n    - Alice removes the first 4 stones, adds (-1) + 2 + (-3) + 4 = 2 to her score, and places a stone of\r\n      value 2 on the left. stones = [2,-5].\r\n    - Bob removes the first 2 stones, adds 2 + (-5) = -3 to his score, and places a stone of value -3 on\r\n      the left. stones = [-3].\r\n    The difference between their scores is 2 - (-3) = 5.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** stones = [7,-6,5,10,5,-2,-6]\r\n    **Output:** 13\r\n    **Explanation:**\r\n    - Alice removes all stones, adds 7 + (-6) + 5 + 10 + 5 + (-2) + (-6) = 13 to her score, and places a\r\n      stone of value 13 on the left. stones = [13].\r\n    The difference between their scores is 13 - 0 = 13.\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** stones = [-10,-12]\r\n    **Output:** -22\r\n    **Explanation:**\r\n    - Alice can only make one move, which is to remove both stones. She adds (-10) + (-12) = -22 to her\r\n      score and places a stone of value -22 on the left. stones = [-22].\r\n    The difference between their scores is (-22) - 0 = -22.\r\n    \n\n \n\n**Constraints:**\n\n  * `n == stones.length`\n  * `2 <= n <= 105`\n  * `-104 <= stones[i] <= 104`",
+  "question": "Alice and Bob take turns playing a game, with **Alice starting first**.\n\nThere are `n` stones arranged in a row. On each player's turn, while the number of stones is **more than one** , they will do the following:\n\n  1. Choose an integer `x > 1`, and **remove** the leftmost `x` stones from the row.\n  2. Add the **sum** of the **removed** stones' values to the player's score.\n  3. Place a **new stone** , whose value is equal to that sum, on the left side of the row.\n\n\n\nThe game stops when **only** **one** stone is left in the row.\n\nThe **score difference** between Alice and Bob is `(Alice's score - Bob's score)`. Alice's goal is to **maximize** the score difference, and Bob's goal is the **minimize** the score difference.\n\nGiven an integer array `stones` of length `n` where `stones[i]` represents the value of the `ith` stone **from the left** , return _the**score difference** between Alice and Bob if they both play **optimally**._",
+  "examples": "**Example 1:**\n    \n    \r\n    **Input:** stones = [-1,2,-3,4,-5]\r\n    **Output:** 5\r\n    **Explanation:**\r\n    - Alice removes the first 4 stones, adds (-1) + 2 + (-3) + 4 = 2 to her score, and places a stone of\r\n      value 2 on the left. stones = [2,-5].\r\n    - Bob removes the first 2 stones, adds 2 + (-5) = -3 to his score, and places a stone of value -3 on\r\n      the left. stones = [-3].\r\n    The difference between their scores is 2 - (-3) = 5.\r\n    \n\n**Example 2:**\n    \n    \r\n    **Input:** stones = [7,-6,5,10,5,-2,-6]\r\n    **Output:** 13\r\n    **Explanation:**\r\n    - Alice removes all stones, adds 7 + (-6) + 5 + 10 + 5 + (-2) + (-6) = 13 to her score, and places a\r\n      stone of value 13 on the left. stones = [13].\r\n    The difference between their scores is 13 - 0 = 13.\r\n    \n\n**Example 3:**\n    \n    \r\n    **Input:** stones = [-10,-12]\r\n    **Output:** -22\r\n    **Explanation:**\r\n    - Alice can only make one move, which is to remove both stones. She adds (-10) + (-12) = -22 to her\r\n      score and places a stone of value -22 on the left. stones = [-22].\r\n    The difference between their scores is (-22) - 0 = -22.",
+  "constraints": "**Constraints:**\n\n  * `n == stones.length`\n  * `2 <= n <= 105`\n  * `-104 <= stones[i] <= 104`",
+  "topics": ["Array", "Math", "Dynamic Programming", "Prefix Sum", "Game Theory"],
+  "total_accepted": 12741,
+  "total_submissions": 23622,
+  "acceptance_rate": "53.9%",
+  "similar_questions": [
+    {
+      "title": "Stone Game",
+      "slug": "stone-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game/"
+    },
+    {
+      "title": "Stone Game II",
+      "slug": "stone-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ii/"
+    },
+    {
+      "title": "Stone Game III",
+      "slug": "stone-game-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-iii/"
+    },
+    {
+      "title": "Stone Game IV",
+      "slug": "stone-game-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-iv/"
+    },
+    {
+      "title": "Stone Game V",
+      "slug": "stone-game-v",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-v/"
+    },
+    {
+      "title": "Stone Game VI",
+      "slug": "stone-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vi/"
+    },
+    {
+      "title": "Stone Game VII",
+      "slug": "stone-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vii/"
+    },
+    {
+      "title": "Stone Game VIII",
+      "slug": "stone-game-viii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-viii/"
+    },
+    {
+      "title": "Stone Game IX",
+      "slug": "stone-game-ix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ix/"
+    }
+  ],
+  "hints": [
+    "Let's note that the only thing that matters is how many stones were removed so we can maintain dp[numberOfRemovedStones]",
+    "dp[x] = max(sum of all elements up to y - dp[y]) for all y > x"
+  ]
+}

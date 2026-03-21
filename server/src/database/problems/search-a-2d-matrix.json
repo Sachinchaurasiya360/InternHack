@@ -1,0 +1,31 @@
+{
+  "id": "74",
+  "title": "Search a 2D Matrix",
+  "slug": "search-a-2d-matrix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> integer matrix <code>matrix</code> with the following two properties:</p>\n\n<ul>\n\t<li>Each row is sorted in non-decreasing order.</li>\n\t<li>The first integer of each row is greater than the last integer of the previous row.</li>\n</ul>\n\n<p>Given an integer <code>target</code>, return <code>true</code> <em>if</em> <code>target</code> <em>is in</em> <code>matrix</code> <em>or</em> <code>false</code> <em>otherwise</em>.</p>\n\n<p>You must write a solution in <code>O(log(m * n))</code> time complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/05/mat.jpg\" style=\"width: 322px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/05/mat2.jpg\" style=\"width: 322px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 100</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= matrix[i][j], target &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` integer matrix `matrix` with the following two properties:\n\n  * Each row is sorted in non-decreasing order.\n  * The first integer of each row is greater than the last integer of the previous row.\n\n\n\nGiven an integer `target`, return `true` _if_ `target` _is in_ `matrix` _or_ `false` _otherwise_.\n\nYou must write a solution in `O(log(m * n))` time complexity.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/05/mat.jpg)\n    \n    \n    **Input:** matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/10/05/mat2.jpg)\n    \n    \n    **Input:** matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 100`\n  * `-104 <= matrix[i][j], target <= 104`",
+  "question": "You are given an `m x n` integer matrix `matrix` with the following two properties:\n\n  * Each row is sorted in non-decreasing order.\n  * The first integer of each row is greater than the last integer of the previous row.\n\n\n\nGiven an integer `target`, return `true` _if_ `target` _is in_ `matrix` _or_ `false` _otherwise_.\n\nYou must write a solution in `O(log(m * n))` time complexity.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/05/mat.jpg)\n    \n    \n    **Input:** matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/10/05/mat2.jpg)\n    \n    \n    **Input:** matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 100`\n  * `-104 <= matrix[i][j], target <= 104`",
+  "topics": ["Array", "Binary Search", "Matrix"],
+  "total_accepted": 2791435,
+  "total_submissions": 5211883,
+  "acceptance_rate": "53.6%",
+  "similar_questions": [
+    {
+      "title": "Search a 2D Matrix II",
+      "slug": "search-a-2d-matrix-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/search-a-2d-matrix-ii/"
+    },
+    {
+      "title": "Split Message Based on Limit",
+      "slug": "split-message-based-on-limit",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-message-based-on-limit/"
+    }
+  ],
+  "hints": []
+}

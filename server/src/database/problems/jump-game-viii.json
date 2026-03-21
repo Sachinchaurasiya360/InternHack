@@ -1,0 +1,78 @@
+{
+  "id": "2297",
+  "title": "Jump Game VIII",
+  "slug": "jump-game-viii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Dynamic Programming",
+    "Stack",
+    "Graph Theory",
+    "Monotonic Stack",
+    "Shortest Path"
+  ],
+  "total_accepted": 7888,
+  "total_submissions": 17352,
+  "acceptance_rate": "45.5%",
+  "similar_questions": [
+    {
+      "title": "Jump Game II",
+      "slug": "jump-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-ii/"
+    },
+    {
+      "title": "Jump Game",
+      "slug": "jump-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game/"
+    },
+    {
+      "title": "Jump Game III",
+      "slug": "jump-game-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-iii/"
+    },
+    {
+      "title": "Jump Game IV",
+      "slug": "jump-game-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/jump-game-iv/"
+    },
+    {
+      "title": "Jump Game V",
+      "slug": "jump-game-v",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/jump-game-v/"
+    },
+    {
+      "title": "Jump Game VI",
+      "slug": "jump-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vi/"
+    },
+    {
+      "title": "Jump Game VII",
+      "slug": "jump-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vii/"
+    },
+    {
+      "title": "Jump Game VIII",
+      "slug": "jump-game-viii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-viii/"
+    }
+  ],
+  "hints": [
+    "For each index, find the indexes that you can jump to.",
+    "We can do this by using a monotonic stack and iterating through the array backwards.",
+    "Create another integer array of length n called dp where dp[i] is the minimum cost of getting to index i."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "434",
+  "title": "Number of Segments in a String",
+  "slug": "number-of-segments-in-a-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return <em>the number of segments in the string</em>.</p>\n\n<p>A <strong>segment</strong> is defined to be a contiguous sequence of <strong>non-space characters</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Hello, my name is John&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The five segments are [&quot;Hello,&quot;, &quot;my&quot;, &quot;name&quot;, &quot;is&quot;, &quot;John&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Hello&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= s.length &lt;= 300</code></li>\n\t<li><code>s</code> consists of lowercase and uppercase English letters, digits, or one of the following characters <code>&quot;!@#$%^&amp;*()_+-=&#39;,.:&quot;</code>.</li>\n\t<li>The only space character in <code>s</code> is <code>&#39; &#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return _the number of segments in the string_.\n\nA **segment** is defined to be a contiguous sequence of **non-space characters**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"Hello, my name is John\"\n    **Output:** 5\n    **Explanation:** The five segments are [\"Hello,\", \"my\", \"name\", \"is\", \"John\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Hello\"\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `0 <= s.length <= 300`\n  * `s` consists of lowercase and uppercase English letters, digits, or one of the following characters `\"!@#$%^&*()_+-=',.:\"`.\n  * The only space character in `s` is `' '`.",
+  "question": "Given a string `s`, return _the number of segments in the string_.\n\nA **segment** is defined to be a contiguous sequence of **non-space characters**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"Hello, my name is John\"\n    **Output:** 5\n    **Explanation:** The five segments are [\"Hello,\", \"my\", \"name\", \"is\", \"John\"]\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Hello\"\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `0 <= s.length <= 300`\n  * `s` consists of lowercase and uppercase English letters, digits, or one of the following characters `\"!@#$%^&*()_+-=',.:\"`.\n  * The only space character in `s` is `' '`.",
+  "topics": ["String"],
+  "total_accepted": 268432,
+  "total_submissions": 726319,
+  "acceptance_rate": "37.0%",
+  "similar_questions": [],
+  "hints": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "2907",
+  "title": "Maximum Profitable Triplets With Increasing Prices I",
+  "slug": "maximum-profitable-triplets-with-increasing-prices-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Binary Indexed Tree", "Segment Tree"],
+  "total_accepted": 1855,
+  "total_submissions": 3333,
+  "acceptance_rate": "55.7%",
+  "similar_questions": [],
+  "hints": [
+    "Let's fix the middle chosen item.",
+    "For a fixed item with an index <code>j</code>, iterate over items with an index <code>k > j</code> such that <code>prices[k] > prices[j]</code>.",
+    "Find the maximum <code>profit[k]</code> with the above condition. Let's call this maximum value <code>max_right</code>.",
+    "Do the same for items with an index <code>i < j</code> such that <code>prices[i] < prices[j]</code> and find the maximum <code>profit[i]</code> among them. Let's call this maximum value <code>max_left</code>.",
+    "Now the profit when an item with the index <code>j</code> is the middle one would be <code>profit[j] + max_right + max_left</code>.",
+    "Finally, do the above procedure for all <code>j</code>'s and find the maximum profit among them. That would be the final answer."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1812",
+  "title": "Determine Color of a Chessboard Square",
+  "slug": "determine-color-of-a-chessboard-square",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given <code>coordinates</code>, a string that represents the coordinates of a square of the chessboard. Below is a chessboard for your reference.</p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/19/screenshot-2021-02-20-at-22159-pm.png\" style=\"width: 400px; height: 396px;\" /></p>\n\n<p>Return <code>true</code><em> if the square is white, and </em><code>false</code><em> if the square is black</em>.</p>\n\n<p>The coordinate will always represent a valid chessboard square. The coordinate will always have the letter first, and the number second.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> coordinates = &quot;a1&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> From the chessboard above, the square with coordinates &quot;a1&quot; is black, so return false.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> coordinates = &quot;h3&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> From the chessboard above, the square with coordinates &quot;h3&quot; is white, so return true.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> coordinates = &quot;c7&quot;\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>coordinates.length == 2</code></li>\n\t<li><code>&#39;a&#39; &lt;= coordinates[0] &lt;= &#39;h&#39;</code></li>\n\t<li><code>&#39;1&#39; &lt;= coordinates[1] &lt;= &#39;8&#39;</code></li>\n</ul>\n",
+  "content_markdown": "You are given `coordinates`, a string that represents the coordinates of a square of the chessboard. Below is a chessboard for your reference.\n\n![](https://assets.leetcode.com/uploads/2021/02/19/screenshot-2021-02-20-at-22159-pm.png)\n\nReturn `true` _if the square is white, and_`false` _if the square is black_.\n\nThe coordinate will always represent a valid chessboard square. The coordinate will always have the letter first, and the number second.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** coordinates = \"a1\"\n    **Output:** false\n    **Explanation:** From the chessboard above, the square with coordinates \"a1\" is black, so return false.\n    \n\n**Example 2:**\n    \n    \n    **Input:** coordinates = \"h3\"\n    **Output:** true\n    **Explanation:** From the chessboard above, the square with coordinates \"h3\" is white, so return true.\n    \n\n**Example 3:**\n    \n    \n    **Input:** coordinates = \"c7\"\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * `coordinates.length == 2`\n  * `'a' <= coordinates[0] <= 'h'`\n  * `'1' <= coordinates[1] <= '8'`",
+  "question": "You are given `coordinates`, a string that represents the coordinates of a square of the chessboard. Below is a chessboard for your reference.\n\n![](https://assets.leetcode.com/uploads/2021/02/19/screenshot-2021-02-20-at-22159-pm.png)\n\nReturn `true` _if the square is white, and_`false` _if the square is black_.\n\nThe coordinate will always represent a valid chessboard square. The coordinate will always have the letter first, and the number second.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** coordinates = \"a1\"\n    **Output:** false\n    **Explanation:** From the chessboard above, the square with coordinates \"a1\" is black, so return false.\n    \n\n**Example 2:**\n    \n    \n    **Input:** coordinates = \"h3\"\n    **Output:** true\n    **Explanation:** From the chessboard above, the square with coordinates \"h3\" is white, so return true.\n    \n\n**Example 3:**\n    \n    \n    **Input:** coordinates = \"c7\"\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * `coordinates.length == 2`\n  * `'a' <= coordinates[0] <= 'h'`\n  * `'1' <= coordinates[1] <= '8'`",
+  "topics": ["Math", "String"],
+  "total_accepted": 116699,
+  "total_submissions": 146242,
+  "acceptance_rate": "79.8%",
+  "similar_questions": [
+    {
+      "title": "Check if Two Chessboard Squares Have the Same Color",
+      "slug": "check-if-two-chessboard-squares-have-the-same-color",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-two-chessboard-squares-have-the-same-color/"
+    }
+  ],
+  "hints": [
+    "Convert the coordinates to (x, y) - that is, \"a1\" is (1, 1), \"d7\" is (4, 7).",
+    "Try add the numbers together and look for a pattern."
+  ]
+}

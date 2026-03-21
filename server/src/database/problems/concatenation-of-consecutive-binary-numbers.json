@@ -1,0 +1,27 @@
+{
+  "id": "1680",
+  "title": "Concatenation of Consecutive Binary Numbers",
+  "slug": "concatenation-of-consecutive-binary-numbers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <em>the <strong>decimal value</strong> of the binary string formed by concatenating the binary representations of </em><code>1</code><em> to </em><code>n</code><em> in order, <strong>modulo </strong></em><code>10<sup>9 </sup>+ 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> 1\n<strong>Explanation: </strong>&quot;1&quot; in binary corresponds to the decimal value 1. \n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> 27\n<strong>Explanation: </strong>In binary, 1, 2, and 3 corresponds to &quot;1&quot;, &quot;10&quot;, and &quot;11&quot;.\nAfter concatenating them, we have &quot;11011&quot;, which corresponds to the decimal value 27.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 12\n<strong>Output:</strong> 505379714\n<strong>Explanation</strong>: The concatenation results in &quot;1101110010111011110001001101010111100&quot;.\nThe decimal value of that is 118505380540.\nAfter modulo 10<sup>9</sup> + 7, the result is 505379714.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, return _the**decimal value** of the binary string formed by concatenating the binary representations of _`1` _to_`n` _in order,**modulo**_`109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1\n    **Explanation:** \"1\" in binary corresponds to the decimal value 1. \n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** 27\n    **Explanation:** In binary, 1, 2, and 3 corresponds to \"1\", \"10\", and \"11\".\n    After concatenating them, we have \"11011\", which corresponds to the decimal value 27.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 12\n    **Output:** 505379714\n    **Explanation** : The concatenation results in \"1101110010111011110001001101010111100\".\n    The decimal value of that is 118505380540.\n    After modulo 109 + 7, the result is 505379714.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`",
+  "question": "Given an integer `n`, return _the**decimal value** of the binary string formed by concatenating the binary representations of _`1` _to_`n` _in order,**modulo**_`109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1\n    **Explanation:** \"1\" in binary corresponds to the decimal value 1. \n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 3\n    **Output:** 27\n    **Explanation:** In binary, 1, 2, and 3 corresponds to \"1\", \"10\", and \"11\".\n    After concatenating them, we have \"11011\", which corresponds to the decimal value 27.\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 12\n    **Output:** 505379714\n    **Explanation** : The concatenation results in \"1101110010111011110001001101010111100\".\n    The decimal value of that is 118505380540.\n    After modulo 109 + 7, the result is 505379714.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`",
+  "topics": ["Math", "Bit Manipulation", "Simulation"],
+  "total_accepted": 179246,
+  "total_submissions": 271390,
+  "acceptance_rate": "66.0%",
+  "similar_questions": [
+    {
+      "title": "Maximum Possible Number by Binary Concatenation",
+      "slug": "maximum-possible-number-by-binary-concatenation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-possible-number-by-binary-concatenation/"
+    }
+  ],
+  "hints": [
+    "Express the nth number value in a recursion formula and think about how we can do a fast evaluation."
+  ]
+}

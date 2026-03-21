@@ -1,0 +1,37 @@
+{
+  "id": "307",
+  "title": "Range Sum Query - Mutable",
+  "slug": "range-sum-query-mutable",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, handle multiple queries of the following types:</p>\n\n<ol>\n\t<li><strong>Update</strong> the value of an element in <code>nums</code>.</li>\n\t<li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\n<p>Implement the <code>NumArray</code> class:</p>\n\n<ul>\n\t<li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n\t<li><code>void update(int index, int val)</code> <strong>Updates</strong> the value of <code>nums[index]</code> to be <code>val</code>.</li>\n\t<li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;NumArray&quot;, &quot;sumRange&quot;, &quot;update&quot;, &quot;sumRange&quot;]\n[[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]\n<strong>Output</strong>\n[null, 9, null, 8]\n\n<strong>Explanation</strong>\nNumArray numArray = new NumArray([1, 3, 5]);\nnumArray.sumRange(0, 2); // return 1 + 3 + 5 = 9\nnumArray.update(1, 2);   // nums = [1, 2, 5]\nnumArray.sumRange(0, 2); // return 1 + 2 + 5 = 8\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>-100 &lt;= nums[i] &lt;= 100</code></li>\n\t<li><code>0 &lt;= index &lt; nums.length</code></li>\n\t<li><code>-100 &lt;= val &lt;= 100</code></li>\n\t<li><code>0 &lt;= left &lt;= right &lt; nums.length</code></li>\n\t<li>At most <code>3 * 10<sup>4</sup></code> calls will be made to <code>update</code> and <code>sumRange</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, handle multiple queries of the following types:\n\n  1. **Update** the value of an element in `nums`.\n  2. Calculate the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** where `left <= right`.\n\n\n\nImplement the `NumArray` class:\n\n  * `NumArray(int[] nums)` Initializes the object with the integer array `nums`.\n  * `void update(int index, int val)` **Updates** the value of `nums[index]` to be `val`.\n  * `int sumRange(int left, int right)` Returns the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"NumArray\", \"sumRange\", \"update\", \"sumRange\"]\n    [[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]\n    **Output**\n    [null, 9, null, 8]\n    \n    **Explanation**\n    NumArray numArray = new NumArray([1, 3, 5]);\n    numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9\n    numArray.update(1, 2);   // nums = [1, 2, 5]\n    numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-100 <= nums[i] <= 100`\n  * `0 <= index < nums.length`\n  * `-100 <= val <= 100`\n  * `0 <= left <= right < nums.length`\n  * At most `3 * 104` calls will be made to `update` and `sumRange`.",
+  "question": "Given an integer array `nums`, handle multiple queries of the following types:\n\n  1. **Update** the value of an element in `nums`.\n  2. Calculate the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** where `left <= right`.\n\n\n\nImplement the `NumArray` class:\n\n  * `NumArray(int[] nums)` Initializes the object with the integer array `nums`.\n  * `void update(int index, int val)` **Updates** the value of `nums[index]` to be `val`.\n  * `int sumRange(int left, int right)` Returns the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"NumArray\", \"sumRange\", \"update\", \"sumRange\"]\n    [[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]\n    **Output**\n    [null, 9, null, 8]\n    \n    **Explanation**\n    NumArray numArray = new NumArray([1, 3, 5]);\n    numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9\n    numArray.update(1, 2);   // nums = [1, 2, 5]\n    numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 3 * 104`\n  * `-100 <= nums[i] <= 100`\n  * `0 <= index < nums.length`\n  * `-100 <= val <= 100`\n  * `0 <= left <= right < nums.length`\n  * At most `3 * 104` calls will be made to `update` and `sumRange`.",
+  "topics": ["Array", "Divide and Conquer", "Design", "Binary Indexed Tree", "Segment Tree"],
+  "total_accepted": 338016,
+  "total_submissions": 793366,
+  "acceptance_rate": "42.6%",
+  "similar_questions": [
+    {
+      "title": "Range Sum Query - Immutable",
+      "slug": "range-sum-query-immutable",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/range-sum-query-immutable/"
+    },
+    {
+      "title": "Range Sum Query 2D - Mutable",
+      "slug": "range-sum-query-2d-mutable",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-sum-query-2d-mutable/"
+    },
+    {
+      "title": "Shifting Letters II",
+      "slug": "shifting-letters-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shifting-letters-ii/"
+    }
+  ],
+  "hints": []
+}

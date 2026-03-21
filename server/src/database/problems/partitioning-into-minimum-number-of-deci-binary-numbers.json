@@ -1,0 +1,22 @@
+{
+  "id": "1689",
+  "title": "Partitioning Into Minimum Number Of Deci-Binary Numbers",
+  "slug": "partitioning-into-minimum-number-of-deci-binary-numbers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>A decimal number is called <strong>deci-binary</strong> if each of its digits is either <code>0</code> or <code>1</code> without any leading zeros. For example, <code>101</code> and <code>1100</code> are <strong>deci-binary</strong>, while <code>112</code> and <code>3001</code> are not.</p>\n\n<p>Given a string <code>n</code> that represents a positive decimal integer, return <em>the <strong>minimum</strong> number of positive <strong>deci-binary</strong> numbers needed so that they sum up to </em><code>n</code><em>.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;32&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> 10 + 11 + 11 = 32\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;82734&quot;\n<strong>Output:</strong> 8\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = &quot;27346209830709182346&quot;\n<strong>Output:</strong> 9\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>n</code> consists of only digits.</li>\n\t<li><code>n</code> does not contain any leading zeros and represents a positive integer.</li>\n</ul>\n",
+  "content_markdown": "A decimal number is called **deci-binary** if each of its digits is either `0` or `1` without any leading zeros. For example, `101` and `1100` are **deci-binary** , while `112` and `3001` are not.\n\nGiven a string `n` that represents a positive decimal integer, return _the**minimum** number of positive **deci-binary** numbers needed so that they sum up to _`n` _._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = \"32\"\n    **Output:** 3\n    **Explanation:** 10 + 11 + 11 = 32\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = \"82734\"\n    **Output:** 8\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = \"27346209830709182346\"\n    **Output:** 9\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n.length <= 105`\n  * `n` consists of only digits.\n  * `n` does not contain any leading zeros and represents a positive integer.",
+  "question": "A decimal number is called **deci-binary** if each of its digits is either `0` or `1` without any leading zeros. For example, `101` and `1100` are **deci-binary** , while `112` and `3001` are not.\n\nGiven a string `n` that represents a positive decimal integer, return _the**minimum** number of positive **deci-binary** numbers needed so that they sum up to _`n` _._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = \"32\"\n    **Output:** 3\n    **Explanation:** 10 + 11 + 11 = 32\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = \"82734\"\n    **Output:** 8\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = \"27346209830709182346\"\n    **Output:** 9",
+  "constraints": "**Constraints:**\n\n  * `1 <= n.length <= 105`\n  * `n` consists of only digits.\n  * `n` does not contain any leading zeros and represents a positive integer.",
+  "topics": ["String", "Greedy"],
+  "total_accepted": 254857,
+  "total_submissions": 287120,
+  "acceptance_rate": "88.8%",
+  "similar_questions": [],
+  "hints": [
+    "Think about if the input was only one digit. Then you need to add up as many ones as the value of this digit.",
+    "If the input has multiple digits, then you can solve for each digit independently, and merge the answers to form numbers that add up to that input.",
+    "Thus the answer is equal to the max digit."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "2193",
+  "title": "Minimum Number of Moves to Make Palindrome",
+  "slug": "minimum-number-of-moves-to-make-palindrome",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting only of lowercase English letters.</p>\n\n<p>In one <strong>move</strong>, you can select any two <strong>adjacent</strong> characters of <code>s</code> and swap them.</p>\n\n<p>Return <em>the <strong>minimum number of moves</strong> needed to make</em> <code>s</code> <em>a palindrome</em>.</p>\n\n<p><strong>Note</strong> that the input will be generated such that <code>s</code> can always be converted to a palindrome.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aabb&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nWe can obtain two palindromes from s, &quot;abba&quot; and &quot;baab&quot;. \n- We can obtain &quot;abba&quot; from s in 2 moves: &quot;a<u><strong>ab</strong></u>b&quot; -&gt; &quot;ab<u><strong>ab</strong></u>&quot; -&gt; &quot;abba&quot;.\n- We can obtain &quot;baab&quot; from s in 2 moves: &quot;a<u><strong>ab</strong></u>b&quot; -&gt; &quot;<u><strong>ab</strong></u>ab&quot; -&gt; &quot;baab&quot;.\nThus, the minimum number of moves needed to make s a palindrome is 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;letelt&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nOne of the palindromes we can obtain from s in 2 moves is &quot;lettel&quot;.\nOne of the ways we can obtain it is &quot;lete<u><strong>lt</strong></u>&quot; -&gt; &quot;let<u><strong>et</strong></u>l&quot; -&gt; &quot;lettel&quot;.\nOther palindromes such as &quot;tleelt&quot; can also be obtained in 2 moves.\nIt can be shown that it is not possible to obtain a palindrome in less than 2 moves.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 2000</code></li>\n\t<li><code>s</code> consists only of lowercase English letters.</li>\n\t<li><code>s</code> can be converted to a palindrome using a finite number of moves.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting only of lowercase English letters.\n\nIn one **move** , you can select any two **adjacent** characters of `s` and swap them.\n\nReturn _the**minimum number of moves** needed to make_ `s` _a palindrome_.\n\n**Note** that the input will be generated such that `s` can always be converted to a palindrome.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aabb\"\n    **Output:** 2\n    **Explanation:**\n    We can obtain two palindromes from s, \"abba\" and \"baab\". \n    - We can obtain \"abba\" from s in 2 moves: \"a _**ab**_ b\" -> \"ab _**ab**_ \" -> \"abba\".\n    - We can obtain \"baab\" from s in 2 moves: \"a _**ab**_ b\" -> \"_**ab**_ ab\" -> \"baab\".\n    Thus, the minimum number of moves needed to make s a palindrome is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"letelt\"\n    **Output:** 2\n    **Explanation:**\n    One of the palindromes we can obtain from s in 2 moves is \"lettel\".\n    One of the ways we can obtain it is \"lete _**lt**_ \" -> \"let _**et**_ l\" -> \"lettel\".\n    Other palindromes such as \"tleelt\" can also be obtained in 2 moves.\n    It can be shown that it is not possible to obtain a palindrome in less than 2 moves.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` consists only of lowercase English letters.\n  * `s` can be converted to a palindrome using a finite number of moves.",
+  "question": "You are given a string `s` consisting only of lowercase English letters.\n\nIn one **move** , you can select any two **adjacent** characters of `s` and swap them.\n\nReturn _the**minimum number of moves** needed to make_ `s` _a palindrome_.\n\n**Note** that the input will be generated such that `s` can always be converted to a palindrome.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aabb\"\n    **Output:** 2\n    **Explanation:**\n    We can obtain two palindromes from s, \"abba\" and \"baab\". \n    - We can obtain \"abba\" from s in 2 moves: \"a _**ab**_ b\" -> \"ab _**ab**_ \" -> \"abba\".\n    - We can obtain \"baab\" from s in 2 moves: \"a _**ab**_ b\" -> \"_**ab**_ ab\" -> \"baab\".\n    Thus, the minimum number of moves needed to make s a palindrome is 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"letelt\"\n    **Output:** 2\n    **Explanation:**\n    One of the palindromes we can obtain from s in 2 moves is \"lettel\".\n    One of the ways we can obtain it is \"lete _**lt**_ \" -> \"let _**et**_ l\" -> \"lettel\".\n    Other palindromes such as \"tleelt\" can also be obtained in 2 moves.\n    It can be shown that it is not possible to obtain a palindrome in less than 2 moves.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 2000`\n  * `s` consists only of lowercase English letters.\n  * `s` can be converted to a palindrome using a finite number of moves.",
+  "topics": ["Two Pointers", "String", "Greedy", "Binary Indexed Tree"],
+  "total_accepted": 34485,
+  "total_submissions": 65527,
+  "acceptance_rate": "52.6%",
+  "similar_questions": [
+    {
+      "title": "Minimum Insertion Steps to Make a String Palindrome",
+      "slug": "minimum-insertion-steps-to-make-a-string-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/"
+    },
+    {
+      "title": "Minimum Number of Flips to Make Binary Grid Palindromic I",
+      "slug": "minimum-number-of-flips-to-make-binary-grid-palindromic-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-flips-to-make-binary-grid-palindromic-i/"
+    }
+  ],
+  "hints": [
+    "Consider a greedy strategy.",
+    "Let’s start by making the leftmost and rightmost characters match with some number of swaps.",
+    "If we figure out how to do that using the minimum number of swaps, then we can delete the leftmost and rightmost characters and solve the problem recursively."
+  ]
+}

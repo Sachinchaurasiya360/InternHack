@@ -1,0 +1,25 @@
+{
+  "id": "2863",
+  "title": "Maximum Length of Semi-Decreasing Subarrays",
+  "slug": "maximum-length-of-semi-decreasing-subarrays",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Stack", "Sorting", "Monotonic Stack"],
+  "total_accepted": 14368,
+  "total_submissions": 20506,
+  "acceptance_rate": "70.1%",
+  "similar_questions": [],
+  "hints": [
+    "First, solve the problem assuming <code>nums</code> contains distinct values.",
+    "Make a new array with each element being the pair <code>(nums[i], i)</code> for every <code>i</code> and call it <code>num_ind</code>.",
+    "Sort <code>num_ind</code> in decreasing order.",
+    "Iterate over <code>num_ind</code> and store a variable that represents the minimum index (i.e. min of <code>num_ind[i].second</code>) that has been iterated until now. Call it <code>min_index</code>",
+    "Now if you are currently on pair <code>(nums[x], x)</code>, then <code>ans = max(ans, min_index - x)</code>.",
+    "Now try to remove the first assumption."
+  ]
+}

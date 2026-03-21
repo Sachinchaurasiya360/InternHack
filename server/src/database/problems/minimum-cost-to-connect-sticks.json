@@ -1,0 +1,30 @@
+{
+  "id": "1167",
+  "title": "Minimum Cost to Connect Sticks",
+  "slug": "minimum-cost-to-connect-sticks",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Heap (Priority Queue)"],
+  "total_accepted": 148122,
+  "total_submissions": 206376,
+  "acceptance_rate": "71.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Cost to Merge Stones",
+      "slug": "minimum-cost-to-merge-stones",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-cost-to-merge-stones/"
+    }
+  ],
+  "hints": [
+    "How many times does every stick contribute to the answer?",
+    "Some of the sticks will be used more than the others. Which sticks should be used the most/least?",
+    "The sticks with long lengths cost a lot so we should use these the least.",
+    "What if we keep merging the two shortest sticks?"
+  ]
+}

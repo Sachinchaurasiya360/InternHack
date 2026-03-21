@@ -1,0 +1,18 @@
+{
+  "id": "504",
+  "title": "Base 7",
+  "slug": "base-7",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>num</code>, return <em>a string of its <strong>base 7</strong> representation</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> num = 100\n<strong>Output:</strong> \"202\"\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> num = -7\n<strong>Output:</strong> \"-10\"\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-10<sup>7</sup> &lt;= num &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `num`, return _a string of its**base 7** representation_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 100\n    **Output:** \"202\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = -7\n    **Output:** \"-10\"\n    \n\n \n\n**Constraints:**\n\n  * `-107 <= num <= 107`",
+  "question": "Given an integer `num`, return _a string of its**base 7** representation_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 100\n    **Output:** \"202\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = -7\n    **Output:** \"-10\"",
+  "constraints": "**Constraints:**\n\n  * `-107 <= num <= 107`",
+  "topics": ["Math", "String"],
+  "total_accepted": 198477,
+  "total_submissions": 368673,
+  "acceptance_rate": "53.8%",
+  "similar_questions": [],
+  "hints": []
+}

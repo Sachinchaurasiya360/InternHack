@@ -1,0 +1,18 @@
+{
+  "id": "2173",
+  "title": "Longest Winning Streak",
+  "slug": "longest-winning-streak",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 7552,
+  "total_submissions": 13939,
+  "acceptance_rate": "54.2%",
+  "similar_questions": [],
+  "hints": []
+}

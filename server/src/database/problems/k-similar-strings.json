@@ -1,0 +1,25 @@
+{
+  "id": "854",
+  "title": "K-Similar Strings",
+  "slug": "k-similar-strings",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Strings <code>s1</code> and <code>s2</code> are <code>k</code><strong>-similar</strong> (for some non-negative integer <code>k</code>) if we can swap the positions of two letters in <code>s1</code> exactly <code>k</code> times so that the resulting string equals <code>s2</code>.</p>\n\n<p>Given two anagrams <code>s1</code> and <code>s2</code>, return the smallest <code>k</code> for which <code>s1</code> and <code>s2</code> are <code>k</code><strong>-similar</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;ab&quot;, s2 = &quot;ba&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The two string are 1-similar because we can use one swap to change s1 to s2: &quot;ab&quot; --&gt; &quot;ba&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;abc&quot;, s2 = &quot;bca&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The two strings are 2-similar because we can use two swaps to change s1 to s2: &quot;abc&quot; --&gt; &quot;bac&quot; --&gt; &quot;bca&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s1.length &lt;= 20</code></li>\n\t<li><code>s2.length == s1.length</code></li>\n\t<li><code>s1</code> and <code>s2</code> contain only lowercase letters from the set <code>{&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;}</code>.</li>\n\t<li><code>s2</code> is an anagram of <code>s1</code>.</li>\n</ul>\n",
+  "content_markdown": "Strings `s1` and `s2` are `k`**-similar** (for some non-negative integer `k`) if we can swap the positions of two letters in `s1` exactly `k` times so that the resulting string equals `s2`.\n\nGiven two anagrams `s1` and `s2`, return the smallest `k` for which `s1` and `s2` are `k`**-similar**.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s1 = \"ab\", s2 = \"ba\"\n    **Output:** 1\n    **Explanation:** The two string are 1-similar because we can use one swap to change s1 to s2: \"ab\" --> \"ba\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"abc\", s2 = \"bca\"\n    **Output:** 2\n    **Explanation:** The two strings are 2-similar because we can use two swaps to change s1 to s2: \"abc\" --> \"bac\" --> \"bca\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s1.length <= 20`\n  * `s2.length == s1.length`\n  * `s1` and `s2` contain only lowercase letters from the set `{'a', 'b', 'c', 'd', 'e', 'f'}`.\n  * `s2` is an anagram of `s1`.",
+  "question": "Strings `s1` and `s2` are `k`**-similar** (for some non-negative integer `k`) if we can swap the positions of two letters in `s1` exactly `k` times so that the resulting string equals `s2`.\n\nGiven two anagrams `s1` and `s2`, return the smallest `k` for which `s1` and `s2` are `k`**-similar**.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s1 = \"ab\", s2 = \"ba\"\n    **Output:** 1\n    **Explanation:** The two string are 1-similar because we can use one swap to change s1 to s2: \"ab\" --> \"ba\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"abc\", s2 = \"bca\"\n    **Output:** 2\n    **Explanation:** The two strings are 2-similar because we can use two swaps to change s1 to s2: \"abc\" --> \"bac\" --> \"bca\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= s1.length <= 20`\n  * `s2.length == s1.length`\n  * `s1` and `s2` contain only lowercase letters from the set `{'a', 'b', 'c', 'd', 'e', 'f'}`.\n  * `s2` is an anagram of `s1`.",
+  "topics": ["Hash Table", "String", "Breadth-First Search"],
+  "total_accepted": 53585,
+  "total_submissions": 132053,
+  "acceptance_rate": "40.6%",
+  "similar_questions": [
+    {
+      "title": "Couples Holding Hands",
+      "slug": "couples-holding-hands",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/couples-holding-hands/"
+    }
+  ],
+  "hints": []
+}

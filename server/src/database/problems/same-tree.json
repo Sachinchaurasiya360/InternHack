@@ -1,0 +1,18 @@
+{
+  "id": "100",
+  "title": "Same Tree",
+  "slug": "same-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the roots of two binary trees <code>p</code> and <code>q</code>, write a function to check if they are the same or not.</p>\n\n<p>Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/20/ex1.jpg\" style=\"width: 622px; height: 182px;\" />\n<pre>\n<strong>Input:</strong> p = [1,2,3], q = [1,2,3]\n<strong>Output:</strong> true\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/20/ex2.jpg\" style=\"width: 382px; height: 182px;\" />\n<pre>\n<strong>Input:</strong> p = [1,2], q = [1,null,2]\n<strong>Output:</strong> false\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/20/ex3.jpg\" style=\"width: 622px; height: 182px;\" />\n<pre>\n<strong>Input:</strong> p = [1,2,1], q = [1,1,2]\n<strong>Output:</strong> false\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in both trees is in the range <code>[0, 100]</code>.</li>\n\t<li><code>-10<sup>4</sup> &lt;= Node.val &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given the roots of two binary trees `p` and `q`, write a function to check if they are the same or not.\n\nTwo binary trees are considered the same if they are structurally identical, and the nodes have the same value.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/20/ex1.jpg)\n    \n    \n    **Input:** p = [1,2,3], q = [1,2,3]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/20/ex2.jpg)\n    \n    \n    **Input:** p = [1,2], q = [1,null,2]\n    **Output:** false\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2020/12/20/ex3.jpg)\n    \n    \n    **Input:** p = [1,2,1], q = [1,1,2]\n    **Output:** false\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in both trees is in the range `[0, 100]`.\n  * `-104 <= Node.val <= 104`",
+  "question": "Given the roots of two binary trees `p` and `q`, write a function to check if they are the same or not.\n\nTwo binary trees are considered the same if they are structurally identical, and the nodes have the same value.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/12/20/ex1.jpg)\n    \n    \n    **Input:** p = [1,2,3], q = [1,2,3]\n    **Output:** true\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/12/20/ex2.jpg)\n    \n    \n    **Input:** p = [1,2], q = [1,null,2]\n    **Output:** false\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2020/12/20/ex3.jpg)\n    \n    \n    **Input:** p = [1,2,1], q = [1,1,2]\n    **Output:** false",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in both trees is in the range `[0, 100]`.\n  * `-104 <= Node.val <= 104`",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 3298482,
+  "total_submissions": 4947363,
+  "acceptance_rate": "66.7%",
+  "similar_questions": [],
+  "hints": []
+}

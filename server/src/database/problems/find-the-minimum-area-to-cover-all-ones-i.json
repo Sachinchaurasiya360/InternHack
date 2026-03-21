@@ -1,0 +1,27 @@
+{
+  "id": "3195",
+  "title": "Find the Minimum Area to Cover All Ones I",
+  "slug": "find-the-minimum-area-to-cover-all-ones-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a 2D <strong>binary</strong> array <code>grid</code>. Find a rectangle with horizontal and vertical sides with the<strong> smallest</strong> area, such that all the 1&#39;s in <code>grid</code> lie inside this rectangle.</p>\n\n<p>Return the <strong>minimum</strong> possible area of the rectangle.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">grid = [[0,1,0],[1,0,1]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/05/08/examplerect0.png\" style=\"padding: 10px; background: rgb(255, 255, 255); border-radius: 0.5rem; width: 279px; height: 198px;\" /></p>\n\n<p>The smallest rectangle has a height of 2 and a width of 3, so it has an area of <code>2 * 3 = 6</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">grid = [[1,0],[0,0]]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/05/08/examplerect1.png\" style=\"padding: 10px; background: rgb(255, 255, 255); border-radius: 0.5rem; width: 204px; height: 201px;\" /></p>\n\n<p>The smallest rectangle has both height and width 1, so its area is <code>1 * 1 = 1</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= grid.length, grid[i].length &lt;= 1000</code></li>\n\t<li><code>grid[i][j]</code> is either 0 or 1.</li>\n\t<li>The input is generated such that there is at least one 1 in <code>grid</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a 2D **binary** array `grid`. Find a rectangle with horizontal and vertical sides with the**smallest** area, such that all the 1's in `grid` lie inside this rectangle.\n\nReturn the **minimum** possible area of the rectangle.\n\n \n\n**Example 1:**\n\n**Input:** grid = [[0,1,0],[1,0,1]]\n\n**Output:** 6\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/08/examplerect0.png)\n\nThe smallest rectangle has a height of 2 and a width of 3, so it has an area of `2 * 3 = 6`.\n\n**Example 2:**\n\n**Input:** grid = [[1,0],[0,0]]\n\n**Output:** 1\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/08/examplerect1.png)\n\nThe smallest rectangle has both height and width 1, so its area is `1 * 1 = 1`.\n\n \n\n**Constraints:**\n\n  * `1 <= grid.length, grid[i].length <= 1000`\n  * `grid[i][j]` is either 0 or 1.\n  * The input is generated such that there is at least one 1 in `grid`.",
+  "question": "You are given a 2D **binary** array `grid`. Find a rectangle with horizontal and vertical sides with the**smallest** area, such that all the 1's in `grid` lie inside this rectangle.\n\nReturn the **minimum** possible area of the rectangle.",
+  "examples": "**Example 1:**\n\n**Input:** grid = [[0,1,0],[1,0,1]]\n\n**Output:** 6\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/08/examplerect0.png)\n\nThe smallest rectangle has a height of 2 and a width of 3, so it has an area of `2 * 3 = 6`.\n\n**Example 2:**\n\n**Input:** grid = [[1,0],[0,0]]\n\n**Output:** 1\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/05/08/examplerect1.png)\n\nThe smallest rectangle has both height and width 1, so its area is `1 * 1 = 1`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= grid.length, grid[i].length <= 1000`\n  * `grid[i][j]` is either 0 or 1.\n  * The input is generated such that there is at least one 1 in `grid`.",
+  "topics": ["Array", "Matrix"],
+  "total_accepted": 166527,
+  "total_submissions": 213076,
+  "acceptance_rate": "78.2%",
+  "similar_questions": [
+    {
+      "title": "Smallest Rectangle Enclosing Black Pixels",
+      "slug": "smallest-rectangle-enclosing-black-pixels",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/smallest-rectangle-enclosing-black-pixels/"
+    }
+  ],
+  "hints": [
+    "Find the minimum and maximum coordinates of a cell with a value of 1 in both directions."
+  ]
+}

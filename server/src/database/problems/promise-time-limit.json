@@ -1,0 +1,56 @@
+{
+  "id": "2637",
+  "title": "Promise Time Limit",
+  "slug": "promise-time-limit",
+  "difficulty": "Medium",
+  "category": "JavaScript",
+  "content_html": "<p>Given an&nbsp;asynchronous function&nbsp;<code>fn</code>&nbsp;and a time <code>t</code>&nbsp;in milliseconds, return&nbsp;a new&nbsp;<strong>time limited</strong>&nbsp;version of the input function. <code>fn</code> takes arguments provided to the&nbsp;<strong>time limited&nbsp;</strong>function.</p>\n\n<p>The <strong>time limited</strong> function should follow these rules:</p>\n\n<ul>\n\t<li>If the <code>fn</code> completes within the time limit of <code>t</code> milliseconds, the <strong>time limited</strong> function should&nbsp;resolve with the result.</li>\n\t<li>If the execution of the <code>fn</code> exceeds the time limit, the <strong>time limited</strong> function should reject with the string <code>&quot;Time Limit Exceeded&quot;</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nfn = async (n) =&gt; { \n&nbsp; await new Promise(res =&gt; setTimeout(res, 100)); \n&nbsp; return n * n; \n}\ninputs = [5]\nt = 50\n<strong>Output:</strong> {&quot;rejected&quot;:&quot;Time Limit Exceeded&quot;,&quot;time&quot;:50}\n<strong>Explanation:</strong>\nconst limited = timeLimit(fn, t)\nconst start = performance.now()\nlet result;\ntry {\n&nbsp; &nbsp;const res = await limited(...inputs)\n&nbsp; &nbsp;result = {&quot;resolved&quot;: res, &quot;time&quot;: Math.floor(performance.now() - start)};\n} catch (err) {\n&nbsp;  result = {&quot;rejected&quot;: err, &quot;time&quot;: Math.floor(performance.now() - start)};\n}\nconsole.log(result) // Output\n\nThe provided function is set to resolve after 100ms. However, the time limit is set to 50ms. It rejects at t=50ms because the time limit was reached.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nfn = async (n) =&gt; { \n&nbsp; await new Promise(res =&gt; setTimeout(res, 100)); \n&nbsp; return n * n; \n}\ninputs = [5]\nt = 150\n<strong>Output:</strong> {&quot;resolved&quot;:25,&quot;time&quot;:100}\n<strong>Explanation:</strong>\nThe function resolved 5 * 5 = 25 at t=100ms. The time limit is never reached.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nfn = async (a, b) =&gt; { \n&nbsp; await new Promise(res =&gt; setTimeout(res, 120)); \n&nbsp; return a + b; \n}\ninputs = [5,10]\nt = 150\n<strong>Output:</strong> {&quot;resolved&quot;:15,&quot;time&quot;:120}\n<strong>Explanation:</strong>\n​​​​The function resolved 5 + 10 = 15 at t=120ms. The time limit is never reached.\n</pre>\n\n<p><strong class=\"example\">Example 4:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nfn = async () =&gt; { \n&nbsp; throw &quot;Error&quot;;\n}\ninputs = []\nt = 1000\n<strong>Output:</strong> {&quot;rejected&quot;:&quot;Error&quot;,&quot;time&quot;:0}\n<strong>Explanation:</strong>\nThe function immediately throws an error.</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= inputs.length &lt;= 10</code></li>\n\t<li><code>0 &lt;= t &lt;= 1000</code></li>\n\t<li><code>fn</code> returns a promise</li>\n</ul>\n",
+  "content_markdown": "Given an asynchronous function `fn` and a time `t` in milliseconds, return a new **time limited**  version of the input function. `fn` takes arguments provided to the **time limited  **function.\n\nThe **time limited** function should follow these rules:\n\n  * If the `fn` completes within the time limit of `t` milliseconds, the **time limited** function should resolve with the result.\n  * If the execution of the `fn` exceeds the time limit, the **time limited** function should reject with the string `\"Time Limit Exceeded\"`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \n    fn = async (n) => { \n      await new Promise(res => setTimeout(res, 100)); \n      return n * n; \n    }\n    inputs = [5]\n    t = 50\n    **Output:** {\"rejected\":\"Time Limit Exceeded\",\"time\":50}\n    **Explanation:**\n    const limited = timeLimit(fn, t)\n    const start = performance.now()\n    let result;\n    try {\n       const res = await limited(...inputs)\n       result = {\"resolved\": res, \"time\": Math.floor(performance.now() - start)};\n    } catch (err) {\n       result = {\"rejected\": err, \"time\": Math.floor(performance.now() - start)};\n    }\n    console.log(result) // Output\n    \n    The provided function is set to resolve after 100ms. However, the time limit is set to 50ms. It rejects at t=50ms because the time limit was reached.\n    \n\n**Example 2:**\n    \n    \n    **Input:** \n    fn = async (n) => { \n      await new Promise(res => setTimeout(res, 100)); \n      return n * n; \n    }\n    inputs = [5]\n    t = 150\n    **Output:** {\"resolved\":25,\"time\":100}\n    **Explanation:**\n    The function resolved 5 * 5 = 25 at t=100ms. The time limit is never reached.\n    \n\n**Example 3:**\n    \n    \n    **Input:** \n    fn = async (a, b) => { \n      await new Promise(res => setTimeout(res, 120)); \n      return a + b; \n    }\n    inputs = [5,10]\n    t = 150\n    **Output:** {\"resolved\":15,\"time\":120}\n    **Explanation:**\n    ​​​​The function resolved 5 + 10 = 15 at t=120ms. The time limit is never reached.\n    \n\n**Example 4:**\n    \n    \n    **Input:** \n    fn = async () => { \n      throw \"Error\";\n    }\n    inputs = []\n    t = 1000\n    **Output:** {\"rejected\":\"Error\",\"time\":0}\n    **Explanation:**\n    The function immediately throws an error.\n\n \n\n**Constraints:**\n\n  * `0 <= inputs.length <= 10`\n  * `0 <= t <= 1000`\n  * `fn` returns a promise",
+  "question": "Given an asynchronous function `fn` and a time `t` in milliseconds, return a new **time limited**  version of the input function. `fn` takes arguments provided to the **time limited  **function.\n\nThe **time limited** function should follow these rules:\n\n  * If the `fn` completes within the time limit of `t` milliseconds, the **time limited** function should resolve with the result.\n  * If the execution of the `fn` exceeds the time limit, the **time limited** function should reject with the string `\"Time Limit Exceeded\"`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \n    fn = async (n) => { \n      await new Promise(res => setTimeout(res, 100)); \n      return n * n; \n    }\n    inputs = [5]\n    t = 50\n    **Output:** {\"rejected\":\"Time Limit Exceeded\",\"time\":50}\n    **Explanation:**\n    const limited = timeLimit(fn, t)\n    const start = performance.now()\n    let result;\n    try {\n       const res = await limited(...inputs)\n       result = {\"resolved\": res, \"time\": Math.floor(performance.now() - start)};\n    } catch (err) {\n       result = {\"rejected\": err, \"time\": Math.floor(performance.now() - start)};\n    }\n    console.log(result) // Output\n    \n    The provided function is set to resolve after 100ms. However, the time limit is set to 50ms. It rejects at t=50ms because the time limit was reached.\n    \n\n**Example 2:**\n    \n    \n    **Input:** \n    fn = async (n) => { \n      await new Promise(res => setTimeout(res, 100)); \n      return n * n; \n    }\n    inputs = [5]\n    t = 150\n    **Output:** {\"resolved\":25,\"time\":100}\n    **Explanation:**\n    The function resolved 5 * 5 = 25 at t=100ms. The time limit is never reached.\n    \n\n**Example 3:**\n    \n    \n    **Input:** \n    fn = async (a, b) => { \n      await new Promise(res => setTimeout(res, 120)); \n      return a + b; \n    }\n    inputs = [5,10]\n    t = 150\n    **Output:** {\"resolved\":15,\"time\":120}\n    **Explanation:**\n    ​​​​The function resolved 5 + 10 = 15 at t=120ms. The time limit is never reached.\n    \n\n**Example 4:**\n    \n    \n    **Input:** \n    fn = async () => { \n      throw \"Error\";\n    }\n    inputs = []\n    t = 1000\n    **Output:** {\"rejected\":\"Error\",\"time\":0}\n    **Explanation:**\n    The function immediately throws an error.",
+  "constraints": "**Constraints:**\n\n  * `0 <= inputs.length <= 10`\n  * `0 <= t <= 1000`\n  * `fn` returns a promise",
+  "topics": [],
+  "total_accepted": 95437,
+  "total_submissions": 114758,
+  "acceptance_rate": "83.2%",
+  "similar_questions": [
+    {
+      "title": "Sleep",
+      "slug": "sleep",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sleep/"
+    },
+    {
+      "title": "Debounce",
+      "slug": "debounce",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/debounce/"
+    },
+    {
+      "title": "Promise Pool",
+      "slug": "promise-pool",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/promise-pool/"
+    },
+    {
+      "title": "Cache With Time Limit",
+      "slug": "cache-with-time-limit",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/cache-with-time-limit/"
+    },
+    {
+      "title": "Throttle",
+      "slug": "throttle",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/throttle/"
+    }
+  ],
+  "hints": [
+    "You can return a copy of a function with: \r\n\r\nfunction outerFunction(fn) { \r\n  return function innerFunction(...params) {\r\n    return fn(...params);\r\n  };\r\n}",
+    "Inside the inner function, you will need to return a new Promise.",
+    "You can create a new promise like: new Promise((resolve, reject) => {}).",
+    "You can execute code with a delay with \"setTimeout(fn, delay)\"",
+    "To reject a promise after a delay, \"setTimeout(() => reject('err'), delay)\"",
+    "You can resolve and reject when the passed promise resolves or rejects with: \"fn(...params).then(resolve).catch(reject)\""
+  ]
+}

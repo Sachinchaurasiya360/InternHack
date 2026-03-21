@@ -1,0 +1,43 @@
+{
+  "id": "419",
+  "title": "Battleships in a Board",
+  "slug": "battleships-in-a-board",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> matrix <code>board</code> where each cell is a battleship <code>&#39;X&#39;</code> or empty <code>&#39;.&#39;</code>, return <em>the number of the <strong>battleships</strong> on</em> <code>board</code>.</p>\n\n<p><strong>Battleships</strong> can only be placed horizontally or vertically on <code>board</code>. In other words, they can only be made of the shape <code>1 x k</code> (<code>1</code> row, <code>k</code> columns) or <code>k x 1</code> (<code>k</code> rows, <code>1</code> column), where <code>k</code> can be of any size. At least one horizontal or vertical cell separates between two battleships (i.e., there are no adjacent battleships).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img height=\"333\" src=\"https://assets.leetcode.com/uploads/2024/06/21/image.png\" width=\"333\" />\n<pre>\n<strong>Input:</strong> board = [[&quot;X&quot;,&quot;.&quot;,&quot;.&quot;,&quot;X&quot;],[&quot;.&quot;,&quot;.&quot;,&quot;.&quot;,&quot;X&quot;],[&quot;.&quot;,&quot;.&quot;,&quot;.&quot;,&quot;X&quot;]]\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> board = [[&quot;.&quot;]]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == board.length</code></li>\n\t<li><code>n == board[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>board[i][j]</code> is either <code>&#39;.&#39;</code> or <code>&#39;X&#39;</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Could you do it in one-pass, using only <code>O(1)</code> extra memory and without modifying the values <code>board</code>?</p>\n",
+  "content_markdown": "Given an `m x n` matrix `board` where each cell is a battleship `'X'` or empty `'.'`, return _the number of the**battleships** on_ `board`.\n\n**Battleships** can only be placed horizontally or vertically on `board`. In other words, they can only be made of the shape `1 x k` (`1` row, `k` columns) or `k x 1` (`k` rows, `1` column), where `k` can be of any size. At least one horizontal or vertical cell separates between two battleships (i.e., there are no adjacent battleships).\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2024/06/21/image.png)\n    \n    \n    **Input:** board = [[\"X\",\".\",\".\",\"X\"],[\".\",\".\",\".\",\"X\"],[\".\",\".\",\".\",\"X\"]]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** board = [[\".\"]]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `m == board.length`\n  * `n == board[i].length`\n  * `1 <= m, n <= 200`\n  * `board[i][j]` is either `'.'` or `'X'`.\n\n\n\n \n\n**Follow up:** Could you do it in one-pass, using only `O(1)` extra memory and without modifying the values `board`?",
+  "question": "Given an `m x n` matrix `board` where each cell is a battleship `'X'` or empty `'.'`, return _the number of the**battleships** on_ `board`.\n\n**Battleships** can only be placed horizontally or vertically on `board`. In other words, they can only be made of the shape `1 x k` (`1` row, `k` columns) or `k x 1` (`k` rows, `1` column), where `k` can be of any size. At least one horizontal or vertical cell separates between two battleships (i.e., there are no adjacent battleships).",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2024/06/21/image.png)\n    \n    \n    **Input:** board = [[\"X\",\".\",\".\",\"X\"],[\".\",\".\",\".\",\"X\"],[\".\",\".\",\".\",\"X\"]]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** board = [[\".\"]]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `m == board.length`\n  * `n == board[i].length`\n  * `1 <= m, n <= 200`\n  * `board[i][j]` is either `'.'` or `'X'`.",
+  "topics": ["Array", "Depth-First Search", "Matrix"],
+  "total_accepted": 277332,
+  "total_submissions": 358444,
+  "acceptance_rate": "77.4%",
+  "similar_questions": [
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-islands/"
+    },
+    {
+      "title": "Walls and Gates",
+      "slug": "walls-and-gates",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/walls-and-gates/"
+    },
+    {
+      "title": "Max Area of Island",
+      "slug": "max-area-of-island",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-area-of-island/"
+    },
+    {
+      "title": "Rotting Oranges",
+      "slug": "rotting-oranges",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rotting-oranges/"
+    }
+  ],
+  "hints": []
+}

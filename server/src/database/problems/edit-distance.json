@@ -1,0 +1,61 @@
+{
+  "id": "72",
+  "title": "Edit Distance",
+  "slug": "edit-distance",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two strings <code>word1</code> and <code>word2</code>, return <em>the minimum number of operations required to convert <code>word1</code> to <code>word2</code></em>.</p>\n\n<p>You have the following three operations permitted on a word:</p>\n\n<ul>\n\t<li>Insert a character</li>\n\t<li>Delete a character</li>\n\t<li>Replace a character</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = &quot;horse&quot;, word2 = &quot;ros&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> \nhorse -&gt; rorse (replace &#39;h&#39; with &#39;r&#39;)\nrorse -&gt; rose (remove &#39;r&#39;)\nrose -&gt; ros (remove &#39;e&#39;)\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = &quot;intention&quot;, word2 = &quot;execution&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> \nintention -&gt; inention (remove &#39;t&#39;)\ninention -&gt; enention (replace &#39;i&#39; with &#39;e&#39;)\nenention -&gt; exention (replace &#39;n&#39; with &#39;x&#39;)\nexention -&gt; exection (replace &#39;n&#39; with &#39;c&#39;)\nexection -&gt; execution (insert &#39;u&#39;)\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= word1.length, word2.length &lt;= 500</code></li>\n\t<li><code>word1</code> and <code>word2</code> consist of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given two strings `word1` and `word2`, return _the minimum number of operations required to convert`word1` to `word2`_.\n\nYou have the following three operations permitted on a word:\n\n  * Insert a character\n  * Delete a character\n  * Replace a character\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word1 = \"horse\", word2 = \"ros\"\n    **Output:** 3\n    **Explanation:** \n    horse -> rorse (replace 'h' with 'r')\n    rorse -> rose (remove 'r')\n    rose -> ros (remove 'e')\n    \n\n**Example 2:**\n    \n    \n    **Input:** word1 = \"intention\", word2 = \"execution\"\n    **Output:** 5\n    **Explanation:** \n    intention -> inention (remove 't')\n    inention -> enention (replace 'i' with 'e')\n    enention -> exention (replace 'n' with 'x')\n    exention -> exection (replace 'n' with 'c')\n    exection -> execution (insert 'u')\n    \n\n \n\n**Constraints:**\n\n  * `0 <= word1.length, word2.length <= 500`\n  * `word1` and `word2` consist of lowercase English letters.",
+  "question": "Given two strings `word1` and `word2`, return _the minimum number of operations required to convert`word1` to `word2`_.\n\nYou have the following three operations permitted on a word:\n\n  * Insert a character\n  * Delete a character\n  * Replace a character",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word1 = \"horse\", word2 = \"ros\"\n    **Output:** 3\n    **Explanation:** \n    horse -> rorse (replace 'h' with 'r')\n    rorse -> rose (remove 'r')\n    rose -> ros (remove 'e')\n    \n\n**Example 2:**\n    \n    \n    **Input:** word1 = \"intention\", word2 = \"execution\"\n    **Output:** 5\n    **Explanation:** \n    intention -> inention (remove 't')\n    inention -> enention (replace 'i' with 'e')\n    enention -> exention (replace 'n' with 'x')\n    exention -> exection (replace 'n' with 'c')\n    exection -> execution (insert 'u')",
+  "constraints": "**Constraints:**\n\n  * `0 <= word1.length, word2.length <= 500`\n  * `word1` and `word2` consist of lowercase English letters.",
+  "topics": ["String", "Dynamic Programming"],
+  "total_accepted": 1397071,
+  "total_submissions": 2322456,
+  "acceptance_rate": "60.2%",
+  "similar_questions": [
+    {
+      "title": "One Edit Distance",
+      "slug": "one-edit-distance",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/one-edit-distance/"
+    },
+    {
+      "title": "Delete Operation for Two Strings",
+      "slug": "delete-operation-for-two-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/delete-operation-for-two-strings/"
+    },
+    {
+      "title": "Minimum ASCII Delete Sum for Two Strings",
+      "slug": "minimum-ascii-delete-sum-for-two-strings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-ascii-delete-sum-for-two-strings/"
+    },
+    {
+      "title": "Uncrossed Lines",
+      "slug": "uncrossed-lines",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/uncrossed-lines/"
+    },
+    {
+      "title": "Minimum White Tiles After Covering With Carpets",
+      "slug": "minimum-white-tiles-after-covering-with-carpets",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-white-tiles-after-covering-with-carpets/"
+    },
+    {
+      "title": "Longest Palindrome After Substring Concatenation II",
+      "slug": "longest-palindrome-after-substring-concatenation-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-palindrome-after-substring-concatenation-ii/"
+    },
+    {
+      "title": "Minimum Steps to Convert String with Operations",
+      "slug": "minimum-steps-to-convert-string-with-operations",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-steps-to-convert-string-with-operations/"
+    }
+  ],
+  "hints": []
+}

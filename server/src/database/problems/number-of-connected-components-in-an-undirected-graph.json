@@ -1,0 +1,49 @@
+{
+  "id": "323",
+  "title": "Number of Connected Components in an Undirected Graph",
+  "slug": "number-of-connected-components-in-an-undirected-graph",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Depth-First Search", "Breadth-First Search", "Union-Find", "Graph Theory"],
+  "total_accepted": 529915,
+  "total_submissions": 817739,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-islands/"
+    },
+    {
+      "title": "Graph Valid Tree",
+      "slug": "graph-valid-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/graph-valid-tree/"
+    },
+    {
+      "title": "Number of Provinces",
+      "slug": "number-of-provinces",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-provinces/"
+    },
+    {
+      "title": "Paths in Maze That Lead to Same Room",
+      "slug": "paths-in-maze-that-lead-to-same-room",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/paths-in-maze-that-lead-to-same-room/"
+    },
+    {
+      "title": "Count the Number of Complete Components",
+      "slug": "count-the-number-of-complete-components",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-complete-components/"
+    }
+  ],
+  "hints": []
+}

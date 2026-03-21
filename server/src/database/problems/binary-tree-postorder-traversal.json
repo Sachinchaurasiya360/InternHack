@@ -1,0 +1,37 @@
+{
+  "id": "145",
+  "title": "Binary Tree Postorder Traversal",
+  "slug": "binary-tree-postorder-traversal",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>root</code> of a&nbsp;binary tree, return <em>the postorder traversal of its nodes&#39; values</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">root = [1,null,2,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[3,2,1]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/08/29/screenshot-2024-08-29-202743.png\" style=\"width: 200px; height: 264px;\" /></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">root = [1,2,3,4,5,null,8,null,null,6,7,9]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[4,6,7,5,2,9,8,3,1]</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2024/08/29/tree_2.png\" style=\"width: 350px; height: 286px;\" /></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">root = []</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[]</span></p>\n</div>\n\n<p><strong class=\"example\">Example 4:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">root = [1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1]</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of the nodes in the tree is in the range <code>[0, 100]</code>.</li>\n\t<li><code>-100 &lt;= Node.val &lt;= 100</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Recursive solution is trivial, could you do it iteratively?",
+  "content_markdown": "Given the `root` of a binary tree, return _the postorder traversal of its nodes ' values_.\n\n \n\n**Example 1:**\n\n**Input:** root = [1,null,2,3]\n\n**Output:** [3,2,1]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/08/29/screenshot-2024-08-29-202743.png)\n\n**Example 2:**\n\n**Input:** root = [1,2,3,4,5,null,8,null,null,6,7,9]\n\n**Output:** [4,6,7,5,2,9,8,3,1]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/08/29/tree_2.png)\n\n**Example 3:**\n\n**Input:** root = []\n\n**Output:** []\n\n**Example 4:**\n\n**Input:** root = [1]\n\n**Output:** [1]\n\n \n\n**Constraints:**\n\n  * The number of the nodes in the tree is in the range `[0, 100]`.\n  * `-100 <= Node.val <= 100`\n\n\n\n \n\n**Follow up:** Recursive solution is trivial, could you do it iteratively?",
+  "question": "Given the `root` of a binary tree, return _the postorder traversal of its nodes ' values_.",
+  "examples": "**Example 1:**\n\n**Input:** root = [1,null,2,3]\n\n**Output:** [3,2,1]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/08/29/screenshot-2024-08-29-202743.png)\n\n**Example 2:**\n\n**Input:** root = [1,2,3,4,5,null,8,null,null,6,7,9]\n\n**Output:** [4,6,7,5,2,9,8,3,1]\n\n**Explanation:**\n\n![](https://assets.leetcode.com/uploads/2024/08/29/tree_2.png)\n\n**Example 3:**\n\n**Input:** root = []\n\n**Output:** []\n\n**Example 4:**\n\n**Input:** root = [1]\n\n**Output:** [1]",
+  "constraints": "**Constraints:**\n\n  * The number of the nodes in the tree is in the range `[0, 100]`.\n  * `-100 <= Node.val <= 100`",
+  "topics": ["Stack", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 1904897,
+  "total_submissions": 2453368,
+  "acceptance_rate": "77.6%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Inorder Traversal",
+      "slug": "binary-tree-inorder-traversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/"
+    },
+    {
+      "title": "N-ary Tree Postorder Traversal",
+      "slug": "n-ary-tree-postorder-traversal",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/n-ary-tree-postorder-traversal/"
+    },
+    {
+      "title": "Minimum Fuel Cost to Report to the Capital",
+      "slug": "minimum-fuel-cost-to-report-to-the-capital",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-fuel-cost-to-report-to-the-capital/"
+    }
+  ],
+  "hints": []
+}

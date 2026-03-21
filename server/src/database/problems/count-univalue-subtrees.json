@@ -1,0 +1,31 @@
+{
+  "id": "250",
+  "title": "Count Univalue Subtrees",
+  "slug": "count-univalue-subtrees",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 169821,
+  "total_submissions": 295528,
+  "acceptance_rate": "57.5%",
+  "similar_questions": [
+    {
+      "title": "Subtree of Another Tree",
+      "slug": "subtree-of-another-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/subtree-of-another-tree/"
+    },
+    {
+      "title": "Longest Univalue Path",
+      "slug": "longest-univalue-path",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-univalue-path/"
+    }
+  ],
+  "hints": []
+}

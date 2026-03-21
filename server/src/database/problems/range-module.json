@@ -1,0 +1,39 @@
+{
+  "id": "715",
+  "title": "Range Module",
+  "slug": "range-module",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>A Range Module is a module that tracks ranges of numbers. Design a data structure to track the ranges represented as <strong>half-open intervals</strong> and query about them.</p>\n\n<p>A <strong>half-open interval</strong> <code>[left, right)</code> denotes all the real numbers <code>x</code> where <code>left &lt;= x &lt; right</code>.</p>\n\n<p>Implement the <code>RangeModule</code> class:</p>\n\n<ul>\n\t<li><code>RangeModule()</code> Initializes the object of the data structure.</li>\n\t<li><code>void addRange(int left, int right)</code> Adds the <strong>half-open interval</strong> <code>[left, right)</code>, tracking every real number in that interval. Adding an interval that partially overlaps with currently tracked numbers should add any numbers in the interval <code>[left, right)</code> that are not already tracked.</li>\n\t<li><code>boolean queryRange(int left, int right)</code> Returns <code>true</code> if every real number in the interval <code>[left, right)</code> is currently being tracked, and <code>false</code> otherwise.</li>\n\t<li><code>void removeRange(int left, int right)</code> Stops tracking every real number currently being tracked in the <strong>half-open interval</strong> <code>[left, right)</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;RangeModule&quot;, &quot;addRange&quot;, &quot;removeRange&quot;, &quot;queryRange&quot;, &quot;queryRange&quot;, &quot;queryRange&quot;]\n[[], [10, 20], [14, 16], [10, 14], [13, 15], [16, 17]]\n<strong>Output</strong>\n[null, null, null, true, false, true]\n\n<strong>Explanation</strong>\nRangeModule rangeModule = new RangeModule();\nrangeModule.addRange(10, 20);\nrangeModule.removeRange(14, 16);\nrangeModule.queryRange(10, 14); // return True,(Every number in [10, 14) is being tracked)\nrangeModule.queryRange(13, 15); // return False,(Numbers like 14, 14.03, 14.17 in [13, 15) are not being tracked)\nrangeModule.queryRange(16, 17); // return True, (The number 16 in [16, 17) is still being tracked, despite the remove operation)\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= left &lt; right &lt;= 10<sup>9</sup></code></li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>addRange</code>, <code>queryRange</code>, and <code>removeRange</code>.</li>\n</ul>\n",
+  "content_markdown": "A Range Module is a module that tracks ranges of numbers. Design a data structure to track the ranges represented as **half-open intervals** and query about them.\n\nA **half-open interval** `[left, right)` denotes all the real numbers `x` where `left <= x < right`.\n\nImplement the `RangeModule` class:\n\n  * `RangeModule()` Initializes the object of the data structure.\n  * `void addRange(int left, int right)` Adds the **half-open interval** `[left, right)`, tracking every real number in that interval. Adding an interval that partially overlaps with currently tracked numbers should add any numbers in the interval `[left, right)` that are not already tracked.\n  * `boolean queryRange(int left, int right)` Returns `true` if every real number in the interval `[left, right)` is currently being tracked, and `false` otherwise.\n  * `void removeRange(int left, int right)` Stops tracking every real number currently being tracked in the **half-open interval** `[left, right)`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"RangeModule\", \"addRange\", \"removeRange\", \"queryRange\", \"queryRange\", \"queryRange\"]\n    [[], [10, 20], [14, 16], [10, 14], [13, 15], [16, 17]]\n    **Output**\n    [null, null, null, true, false, true]\n    \n    **Explanation**\n    RangeModule rangeModule = new RangeModule();\n    rangeModule.addRange(10, 20);\n    rangeModule.removeRange(14, 16);\n    rangeModule.queryRange(10, 14); // return True,(Every number in [10, 14) is being tracked)\n    rangeModule.queryRange(13, 15); // return False,(Numbers like 14, 14.03, 14.17 in [13, 15) are not being tracked)\n    rangeModule.queryRange(16, 17); // return True, (The number 16 in [16, 17) is still being tracked, despite the remove operation)\n    \n\n \n\n**Constraints:**\n\n  * `1 <= left < right <= 109`\n  * At most `104` calls will be made to `addRange`, `queryRange`, and `removeRange`.",
+  "question": "A Range Module is a module that tracks ranges of numbers. Design a data structure to track the ranges represented as **half-open intervals** and query about them.\n\nA **half-open interval** `[left, right)` denotes all the real numbers `x` where `left <= x < right`.\n\nImplement the `RangeModule` class:\n\n  * `RangeModule()` Initializes the object of the data structure.\n  * `void addRange(int left, int right)` Adds the **half-open interval** `[left, right)`, tracking every real number in that interval. Adding an interval that partially overlaps with currently tracked numbers should add any numbers in the interval `[left, right)` that are not already tracked.\n  * `boolean queryRange(int left, int right)` Returns `true` if every real number in the interval `[left, right)` is currently being tracked, and `false` otherwise.\n  * `void removeRange(int left, int right)` Stops tracking every real number currently being tracked in the **half-open interval** `[left, right)`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"RangeModule\", \"addRange\", \"removeRange\", \"queryRange\", \"queryRange\", \"queryRange\"]\n    [[], [10, 20], [14, 16], [10, 14], [13, 15], [16, 17]]\n    **Output**\n    [null, null, null, true, false, true]\n    \n    **Explanation**\n    RangeModule rangeModule = new RangeModule();\n    rangeModule.addRange(10, 20);\n    rangeModule.removeRange(14, 16);\n    rangeModule.queryRange(10, 14); // return True,(Every number in [10, 14) is being tracked)\n    rangeModule.queryRange(13, 15); // return False,(Numbers like 14, 14.03, 14.17 in [13, 15) are not being tracked)\n    rangeModule.queryRange(16, 17); // return True, (The number 16 in [16, 17) is still being tracked, despite the remove operation)",
+  "constraints": "**Constraints:**\n\n  * `1 <= left < right <= 109`\n  * At most `104` calls will be made to `addRange`, `queryRange`, and `removeRange`.",
+  "topics": ["Design", "Segment Tree", "Ordered Set"],
+  "total_accepted": 92301,
+  "total_submissions": 206366,
+  "acceptance_rate": "44.7%",
+  "similar_questions": [
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/merge-intervals/"
+    },
+    {
+      "title": "Insert Interval",
+      "slug": "insert-interval",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/insert-interval/"
+    },
+    {
+      "title": "Data Stream as Disjoint Intervals",
+      "slug": "data-stream-as-disjoint-intervals",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/data-stream-as-disjoint-intervals/"
+    }
+  ],
+  "hints": [
+    "Maintain a sorted set of disjoint intervals.  addRange and removeRange can be performed with time complexity linear to the size of this set; queryRange can be performed with time complexity logarithmic to the size of this set."
+  ]
+}

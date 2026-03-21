@@ -1,0 +1,46 @@
+{
+  "id": "2636",
+  "title": "Promise Pool",
+  "slug": "promise-pool",
+  "difficulty": "Medium",
+  "category": "JavaScript",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [],
+  "total_accepted": 14902,
+  "total_submissions": 18751,
+  "acceptance_rate": "79.5%",
+  "similar_questions": [
+    {
+      "title": "Sleep",
+      "slug": "sleep",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sleep/"
+    },
+    {
+      "title": "Promise Time Limit",
+      "slug": "promise-time-limit",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/promise-time-limit/"
+    },
+    {
+      "title": "Cache With Time Limit",
+      "slug": "cache-with-time-limit",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/cache-with-time-limit/"
+    },
+    {
+      "title": "Throttle",
+      "slug": "throttle",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/throttle/"
+    }
+  ],
+  "hints": [
+    "Initially execute all the functions until the queue fills up.",
+    "Every time a function resolves, add a new promise to the queue if possible."
+  ]
+}

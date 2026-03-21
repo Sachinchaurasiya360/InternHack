@@ -1,0 +1,22 @@
+{
+  "id": "1826",
+  "title": "Faulty Sensor",
+  "slug": "faulty-sensor",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers"],
+  "total_accepted": 7005,
+  "total_submissions": 13877,
+  "acceptance_rate": "50.5%",
+  "similar_questions": [],
+  "hints": [
+    "Check for a common prefix of the two arrays.",
+    "After this common prefix, there should be one array similar to the other but shifted by one.",
+    "If both arrays can be shifted, return -1."
+  ]
+}

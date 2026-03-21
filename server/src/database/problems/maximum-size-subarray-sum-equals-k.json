@@ -1,0 +1,59 @@
+{
+  "id": "325",
+  "title": "Maximum Size Subarray Sum Equals k",
+  "slug": "maximum-size-subarray-sum-equals-k",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "Prefix Sum"],
+  "total_accepted": 219719,
+  "total_submissions": 432562,
+  "acceptance_rate": "50.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Size Subarray Sum",
+      "slug": "minimum-size-subarray-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-size-subarray-sum/"
+    },
+    {
+      "title": "Range Sum Query - Immutable",
+      "slug": "range-sum-query-immutable",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/range-sum-query-immutable/"
+    },
+    {
+      "title": "Contiguous Array",
+      "slug": "contiguous-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/contiguous-array/"
+    },
+    {
+      "title": "Subarray Product Less Than K",
+      "slug": "subarray-product-less-than-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-product-less-than-k/"
+    },
+    {
+      "title": "Maximum Beauty of an Array After Applying Operation",
+      "slug": "maximum-beauty-of-an-array-after-applying-operation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-beauty-of-an-array-after-applying-operation/"
+    },
+    {
+      "title": "Shortest Subarray With OR at Least K II",
+      "slug": "shortest-subarray-with-or-at-least-k-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-subarray-with-or-at-least-k-ii/"
+    }
+  ],
+  "hints": [
+    "Compute the prefix sum array where psum[i] is the sum of all the elements from <i>0</i> to <i>i</i>.",
+    "At each index <i>i</i>, the sum of the prefix is psum[i], so we are searching for the index x where psum[x] = psum[i] - k.\r\nThe subarray [x + 1, i] will be of sum k.",
+    "Use a hashmap to get the index x efficiently or to determine that it does not exist."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3325",
+  "title": "Count Substrings With K-Frequency Characters I",
+  "slug": "count-substrings-with-k-frequency-characters-i",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code> and an integer <code>k</code>, return the total number of <span data-keyword=\"substring-nonempty\">substrings</span> of <code>s</code> where <strong>at least one</strong> character appears <strong>at least</strong> <code>k</code> times.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;abacb&quot;, k = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The valid substrings are:</p>\n\n<ul>\n\t<li><code>&quot;aba&quot;</code> (character <code>&#39;a&#39;</code> appears 2 times).</li>\n\t<li><code>&quot;abac&quot;</code> (character <code>&#39;a&#39;</code> appears 2 times).</li>\n\t<li><code>&quot;abacb&quot;</code> (character <code>&#39;a&#39;</code> appears 2 times).</li>\n\t<li><code>&quot;bacb&quot;</code> (character <code>&#39;b&#39;</code> appears 2 times).</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;abcde&quot;, k = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">15</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>All substrings are valid because every character appears at least once.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 3000</code></li>\n\t<li><code>1 &lt;= k &lt;= s.length</code></li>\n\t<li><code>s</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s` and an integer `k`, return the total number of substrings of `s` where **at least one** character appears **at least** `k` times.\n\n \n\n**Example 1:**\n\n**Input:** s = \"abacb\", k = 2\n\n**Output:** 4\n\n**Explanation:**\n\nThe valid substrings are:\n\n  * `\"aba\"` (character `'a'` appears 2 times).\n  * `\"abac\"` (character `'a'` appears 2 times).\n  * `\"abacb\"` (character `'a'` appears 2 times).\n  * `\"bacb\"` (character `'b'` appears 2 times).\n\n\n\n**Example 2:**\n\n**Input:** s = \"abcde\", k = 1\n\n**Output:** 15\n\n**Explanation:**\n\nAll substrings are valid because every character appears at least once.\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 3000`\n  * `1 <= k <= s.length`\n  * `s` consists only of lowercase English letters.",
+  "question": "Given a string `s` and an integer `k`, return the total number of substrings of `s` where **at least one** character appears **at least** `k` times.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"abacb\", k = 2\n\n**Output:** 4\n\n**Explanation:**\n\nThe valid substrings are:\n\n  * `\"aba\"` (character `'a'` appears 2 times).\n  * `\"abac\"` (character `'a'` appears 2 times).\n  * `\"abacb\"` (character `'a'` appears 2 times).\n  * `\"bacb\"` (character `'b'` appears 2 times).\n\n\n\n**Example 2:**\n\n**Input:** s = \"abcde\", k = 1\n\n**Output:** 15\n\n**Explanation:**\n\nAll substrings are valid because every character appears at least once.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 3000`\n  * `1 <= k <= s.length`\n  * `s` consists only of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 36620,
+  "total_submissions": 65805,
+  "acceptance_rate": "55.6%",
+  "similar_questions": [],
+  "hints": [
+    "Fix the <code>left</code> index of the substring.",
+    "For the fixed <code>left</code> index, find the first <code>right</code> index for which substring <code>s[left..right]</code> satisfies the condition.",
+    "Every substring that starts at <code>left</code> and ends after <code>right</code> satisfies the condition."
+  ]
+}

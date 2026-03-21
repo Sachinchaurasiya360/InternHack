@@ -1,0 +1,20 @@
+{
+  "id": "3662",
+  "title": "Filter Characters by Frequency",
+  "slug": "filter-characters-by-frequency",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 1308,
+  "total_submissions": 1505,
+  "acceptance_rate": "86.9%",
+  "similar_questions": [],
+  "hints": [
+    "Count the frequency of each character using a 26-entry array or a frequency map, then iterate through the string and append each character whose frequency is less than <code>k</code> to the result."
+  ]
+}

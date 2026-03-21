@@ -1,0 +1,31 @@
+{
+  "id": "979",
+  "title": "Distribute Coins in Binary Tree",
+  "slug": "distribute-coins-in-binary-tree",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given the <code>root</code> of a binary tree with <code>n</code> nodes where each <code>node</code> in the tree has <code>node.val</code> coins. There are <code>n</code> coins in total throughout the whole tree.</p>\n\n<p>In one move, we may choose two adjacent nodes and move one coin from one node to another. A move may be from parent to child, or from child to parent.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of moves required to make every node have <strong>exactly</strong> one coin</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/01/18/tree1.png\" style=\"width: 250px; height: 236px;\" />\n<pre>\n<strong>Input:</strong> root = [3,0,0]\n<strong>Output:</strong> 2\n<strong>Explanation: </strong>From the root of the tree, we move one coin to its left child, and one coin to its right child.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/01/18/tree2.png\" style=\"width: 250px; height: 236px;\" />\n<pre>\n<strong>Input:</strong> root = [0,3,0]\n<strong>Output:</strong> 3\n<strong>Explanation: </strong>From the left child of the root, we move two coins to the root [taking two moves]. Then, we move one coin from the root of the tree to the right child.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is <code>n</code>.</li>\n\t<li><code>1 &lt;= n &lt;= 100</code></li>\n\t<li><code>0 &lt;= Node.val &lt;= n</code></li>\n\t<li>The sum of all <code>Node.val</code> is <code>n</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given the `root` of a binary tree with `n` nodes where each `node` in the tree has `node.val` coins. There are `n` coins in total throughout the whole tree.\n\nIn one move, we may choose two adjacent nodes and move one coin from one node to another. A move may be from parent to child, or from child to parent.\n\nReturn _the**minimum** number of moves required to make every node have **exactly** one coin_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/01/18/tree1.png)\n    \n    \n    **Input:** root = [3,0,0]\n    **Output:** 2\n    **Explanation:** From the root of the tree, we move one coin to its left child, and one coin to its right child.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/01/18/tree2.png)\n    \n    \n    **Input:** root = [0,3,0]\n    **Output:** 3\n    **Explanation:** From the left child of the root, we move two coins to the root [taking two moves]. Then, we move one coin from the root of the tree to the right child.\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is `n`.\n  * `1 <= n <= 100`\n  * `0 <= Node.val <= n`\n  * The sum of all `Node.val` is `n`.",
+  "question": "You are given the `root` of a binary tree with `n` nodes where each `node` in the tree has `node.val` coins. There are `n` coins in total throughout the whole tree.\n\nIn one move, we may choose two adjacent nodes and move one coin from one node to another. A move may be from parent to child, or from child to parent.\n\nReturn _the**minimum** number of moves required to make every node have **exactly** one coin_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/01/18/tree1.png)\n    \n    \n    **Input:** root = [3,0,0]\n    **Output:** 2\n    **Explanation:** From the root of the tree, we move one coin to its left child, and one coin to its right child.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/01/18/tree2.png)\n    \n    \n    **Input:** root = [0,3,0]\n    **Output:** 3\n    **Explanation:** From the left child of the root, we move two coins to the root [taking two moves]. Then, we move one coin from the root of the tree to the right child.",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is `n`.\n  * `1 <= n <= 100`\n  * `0 <= Node.val <= n`\n  * The sum of all `Node.val` is `n`.",
+  "topics": ["Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 223768,
+  "total_submissions": 289658,
+  "acceptance_rate": "77.3%",
+  "similar_questions": [
+    {
+      "title": "Sum of Distances in Tree",
+      "slug": "sum-of-distances-in-tree",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sum-of-distances-in-tree/"
+    },
+    {
+      "title": "Binary Tree Cameras",
+      "slug": "binary-tree-cameras",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/binary-tree-cameras/"
+    }
+  ],
+  "hints": []
+}

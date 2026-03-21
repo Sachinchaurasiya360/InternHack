@@ -1,0 +1,40 @@
+{
+  "id": "1657",
+  "title": "Determine if Two Strings Are Close",
+  "slug": "determine-if-two-strings-are-close",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Two strings are considered <strong>close</strong> if you can attain one from the other using the following operations:</p>\n\n<ul>\n\t<li>Operation 1: Swap any two <strong>existing</strong> characters.\n\n\t<ul>\n\t\t<li>For example, <code>a<u>b</u>cd<u>e</u> -&gt; a<u>e</u>cd<u>b</u></code></li>\n\t</ul>\n\t</li>\n\t<li>Operation 2: Transform <strong>every</strong> occurrence of one <strong>existing</strong> character into another <strong>existing</strong> character, and do the same with the other character.\n\t<ul>\n\t\t<li>For example, <code><u>aa</u>c<u>abb</u> -&gt; <u>bb</u>c<u>baa</u></code> (all <code>a</code>&#39;s turn into <code>b</code>&#39;s, and all <code>b</code>&#39;s turn into <code>a</code>&#39;s)</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p>You can use the operations on either string as many times as necessary.</p>\n\n<p>Given two strings, <code>word1</code> and <code>word2</code>, return <code>true</code><em> if </em><code>word1</code><em> and </em><code>word2</code><em> are <strong>close</strong>, and </em><code>false</code><em> otherwise.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = &quot;abc&quot;, word2 = &quot;bca&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> You can attain word2 from word1 in 2 operations.\nApply Operation 1: &quot;a<u>bc</u>&quot; -&gt; &quot;a<u>cb</u>&quot;\nApply Operation 1: &quot;<u>a</u>c<u>b</u>&quot; -&gt; &quot;<u>b</u>c<u>a</u>&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = &quot;a&quot;, word2 = &quot;aa&quot;\n<strong>Output:</strong> false\n<strong>Explanation: </strong>It is impossible to attain word2 from word1, or vice versa, in any number of operations.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> word1 = &quot;cabbba&quot;, word2 = &quot;abbccc&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> You can attain word2 from word1 in 3 operations.\nApply Operation 1: &quot;ca<u>b</u>bb<u>a</u>&quot; -&gt; &quot;ca<u>a</u>bb<u>b</u>&quot;\nApply Operation 2: &quot;<u>c</u>aa<u>bbb</u>&quot; -&gt; &quot;<u>b</u>aa<u>ccc</u>&quot;\nApply Operation 2: &quot;<u>baa</u>ccc&quot; -&gt; &quot;<u>abb</u>ccc&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word1.length, word2.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>word1</code> and <code>word2</code> contain only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Two strings are considered **close** if you can attain one from the other using the following operations:\n\n  * Operation 1: Swap any two **existing** characters. \n    * For example, `a _b_ cd _e_ -> a _e_ cd _b_`\n  * Operation 2: Transform **every** occurrence of one **existing** character into another **existing** character, and do the same with the other character. \n    * For example, `_aa_ c _abb_ -> _bb_ c _baa_` (all `a`'s turn into `b`'s, and all `b`'s turn into `a`'s)\n\n\n\nYou can use the operations on either string as many times as necessary.\n\nGiven two strings, `word1` and `word2`, return `true` _if_`word1` _and_`word2` _are**close** , and _`false` _otherwise._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** word1 = \"abc\", word2 = \"bca\"\n    **Output:** true\n    **Explanation:** You can attain word2 from word1 in 2 operations.\n    Apply Operation 1: \"a _bc_ \" -> \"a _cb_ \"\n    Apply Operation 1: \"_a_ c _b_ \" -> \"_b_ c _a_ \"\n    \n\n**Example 2:**\n    \n    \n    **Input:** word1 = \"a\", word2 = \"aa\"\n    **Output:** false\n    **Explanation:** It is impossible to attain word2 from word1, or vice versa, in any number of operations.\n    \n\n**Example 3:**\n    \n    \n    **Input:** word1 = \"cabbba\", word2 = \"abbccc\"\n    **Output:** true\n    **Explanation:** You can attain word2 from word1 in 3 operations.\n    Apply Operation 1: \"ca _b_ bb _a_ \" -> \"ca _a_ bb _b_ \"\n    Apply Operation 2: \"_c_ aa _bbb_ \" -> \"_b_ aa _ccc_ \"\n    Apply Operation 2: \"_baa_ ccc\" -> \"_abb_ ccc\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= word1.length, word2.length <= 105`\n  * `word1` and `word2` contain only lowercase English letters.",
+  "question": "Two strings are considered **close** if you can attain one from the other using the following operations:\n\n  * Operation 1: Swap any two **existing** characters. \n    * For example, `a _b_ cd _e_ -> a _e_ cd _b_`\n  * Operation 2: Transform **every** occurrence of one **existing** character into another **existing** character, and do the same with the other character. \n    * For example, `_aa_ c _abb_ -> _bb_ c _baa_` (all `a`'s turn into `b`'s, and all `b`'s turn into `a`'s)\n\n\n\nYou can use the operations on either string as many times as necessary.\n\nGiven two strings, `word1` and `word2`, return `true` _if_`word1` _and_`word2` _are**close** , and _`false` _otherwise._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** word1 = \"abc\", word2 = \"bca\"\n    **Output:** true\n    **Explanation:** You can attain word2 from word1 in 2 operations.\n    Apply Operation 1: \"a _bc_ \" -> \"a _cb_ \"\n    Apply Operation 1: \"_a_ c _b_ \" -> \"_b_ c _a_ \"\n    \n\n**Example 2:**\n    \n    \n    **Input:** word1 = \"a\", word2 = \"aa\"\n    **Output:** false\n    **Explanation:** It is impossible to attain word2 from word1, or vice versa, in any number of operations.\n    \n\n**Example 3:**\n    \n    \n    **Input:** word1 = \"cabbba\", word2 = \"abbccc\"\n    **Output:** true\n    **Explanation:** You can attain word2 from word1 in 3 operations.\n    Apply Operation 1: \"ca _b_ bb _a_ \" -> \"ca _a_ bb _b_ \"\n    Apply Operation 2: \"_c_ aa _bbb_ \" -> \"_b_ aa _ccc_ \"\n    Apply Operation 2: \"_baa_ ccc\" -> \"_abb_ ccc\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= word1.length, word2.length <= 105`\n  * `word1` and `word2` contain only lowercase English letters.",
+  "topics": ["Hash Table", "String", "Sorting", "Counting"],
+  "total_accepted": 554881,
+  "total_submissions": 1023128,
+  "acceptance_rate": "54.2%",
+  "similar_questions": [
+    {
+      "title": "Buddy Strings",
+      "slug": "buddy-strings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/buddy-strings/"
+    },
+    {
+      "title": "Minimum Swaps to Make Strings Equal",
+      "slug": "minimum-swaps-to-make-strings-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-swaps-to-make-strings-equal/"
+    },
+    {
+      "title": "Minimum Number of Steps to Make Two Strings Anagram",
+      "slug": "minimum-number-of-steps-to-make-two-strings-anagram",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram/"
+    }
+  ],
+  "hints": [
+    "Operation 1 allows you to freely reorder the string.",
+    "Operation 2 allows you to freely reassign the letters' frequencies."
+  ]
+}

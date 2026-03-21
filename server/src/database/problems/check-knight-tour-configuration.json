@@ -1,0 +1,34 @@
+{
+  "id": "2596",
+  "title": "Check Knight Tour Configuration",
+  "slug": "check-knight-tour-configuration",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a knight on an <code>n x n</code> chessboard. In a valid configuration, the knight starts <strong>at the top-left cell</strong> of the board and visits every cell on the board <strong>exactly once</strong>.</p>\n\n<p>You are given an <code>n x n</code> integer matrix <code>grid</code> consisting of distinct integers from the range <code>[0, n * n - 1]</code> where <code>grid[row][col]</code> indicates that the cell <code>(row, col)</code> is the <code>grid[row][col]<sup>th</sup></code> cell that the knight visited. The moves are <strong>0-indexed</strong>.</p>\n\n<p>Return <code>true</code> <em>if</em> <code>grid</code> <em>represents a valid configuration of the knight&#39;s movements or</em> <code>false</code> <em>otherwise</em>.</p>\n\n<p><strong>Note</strong> that a valid knight move consists of moving two squares vertically and one square horizontally, or two squares horizontally and one square vertically. The figure below illustrates all the possible eight moves of a knight from some cell.</p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/10/12/knight.png\" style=\"width: 300px; height: 300px;\" />\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/12/28/yetgriddrawio-5.png\" style=\"width: 251px; height: 251px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,11,16,5,20],[17,4,19,10,15],[12,1,8,21,6],[3,18,23,14,9],[24,13,2,7,22]]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The above diagram represents the grid. It can be shown that it is a valid configuration.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/12/28/yetgriddrawio-6.png\" style=\"width: 151px; height: 151px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,3,6],[5,8,1],[2,7,4]]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> The above diagram represents the grid. The 8<sup>th</sup> move of the knight is not valid considering its position after the 7<sup>th</sup> move.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == grid.length == grid[i].length</code></li>\n\t<li><code>3 &lt;= n &lt;= 7</code></li>\n\t<li><code>0 &lt;= grid[row][col] &lt; n * n</code></li>\n\t<li>All integers in <code>grid</code> are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "There is a knight on an `n x n` chessboard. In a valid configuration, the knight starts **at the top-left cell** of the board and visits every cell on the board **exactly once**.\n\nYou are given an `n x n` integer matrix `grid` consisting of distinct integers from the range `[0, n * n - 1]` where `grid[row][col]` indicates that the cell `(row, col)` is the `grid[row][col]th` cell that the knight visited. The moves are **0-indexed**.\n\nReturn `true` _if_ `grid` _represents a valid configuration of the knight 's movements or_ `false` _otherwise_.\n\n**Note** that a valid knight move consists of moving two squares vertically and one square horizontally, or two squares horizontally and one square vertically. The figure below illustrates all the possible eight moves of a knight from some cell.\n\n![](https://assets.leetcode.com/uploads/2018/10/12/knight.png)\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/12/28/yetgriddrawio-5.png)\n    \n    \n    **Input:** grid = [[0,11,16,5,20],[17,4,19,10,15],[12,1,8,21,6],[3,18,23,14,9],[24,13,2,7,22]]\n    **Output:** true\n    **Explanation:** The above diagram represents the grid. It can be shown that it is a valid configuration.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/12/28/yetgriddrawio-6.png)\n    \n    \n    **Input:** grid = [[0,3,6],[5,8,1],[2,7,4]]\n    **Output:** false\n    **Explanation:** The above diagram represents the grid. The 8th move of the knight is not valid considering its position after the 7th move.\n    \n\n \n\n**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `3 <= n <= 7`\n  * `0 <= grid[row][col] < n * n`\n  * All integers in `grid` are **unique**.",
+  "question": "There is a knight on an `n x n` chessboard. In a valid configuration, the knight starts **at the top-left cell** of the board and visits every cell on the board **exactly once**.\n\nYou are given an `n x n` integer matrix `grid` consisting of distinct integers from the range `[0, n * n - 1]` where `grid[row][col]` indicates that the cell `(row, col)` is the `grid[row][col]th` cell that the knight visited. The moves are **0-indexed**.\n\nReturn `true` _if_ `grid` _represents a valid configuration of the knight 's movements or_ `false` _otherwise_.\n\n**Note** that a valid knight move consists of moving two squares vertically and one square horizontally, or two squares horizontally and one square vertically. The figure below illustrates all the possible eight moves of a knight from some cell.\n\n![](https://assets.leetcode.com/uploads/2018/10/12/knight.png)",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/12/28/yetgriddrawio-5.png)\n    \n    \n    **Input:** grid = [[0,11,16,5,20],[17,4,19,10,15],[12,1,8,21,6],[3,18,23,14,9],[24,13,2,7,22]]\n    **Output:** true\n    **Explanation:** The above diagram represents the grid. It can be shown that it is a valid configuration.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/12/28/yetgriddrawio-6.png)\n    \n    \n    **Input:** grid = [[0,3,6],[5,8,1],[2,7,4]]\n    **Output:** false\n    **Explanation:** The above diagram represents the grid. The 8th move of the knight is not valid considering its position after the 7th move.",
+  "constraints": "**Constraints:**\n\n  * `n == grid.length == grid[i].length`\n  * `3 <= n <= 7`\n  * `0 <= grid[row][col] < n * n`\n  * All integers in `grid` are **unique**.",
+  "topics": ["Array", "Depth-First Search", "Breadth-First Search", "Matrix", "Simulation"],
+  "total_accepted": 52974,
+  "total_submissions": 87421,
+  "acceptance_rate": "60.6%",
+  "similar_questions": [
+    {
+      "title": "Minimum Knight Moves",
+      "slug": "minimum-knight-moves",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-knight-moves/"
+    },
+    {
+      "title": "Maximum Number of Moves to Kill All Pawns",
+      "slug": "maximum-number-of-moves-to-kill-all-pawns",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-moves-to-kill-all-pawns/"
+    }
+  ],
+  "hints": [
+    "It is enough to check if each move of the knight is valid.",
+    "Try all cases of the knight's movements to check if a move is valid."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1859",
+  "title": "Sorting the Sentence",
+  "slug": "sorting-the-sentence",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>A <strong>sentence</strong> is a list of words that are separated by a single space with no leading or trailing spaces. Each word consists of lowercase and uppercase English letters.</p>\n\n<p>A sentence can be <strong>shuffled</strong> by appending the <strong>1-indexed word position</strong> to each word then rearranging the words in the sentence.</p>\n\n<ul>\n\t<li>For example, the sentence <code>&quot;This is a sentence&quot;</code> can be shuffled as <code>&quot;sentence4 a3 is2 This1&quot;</code> or <code>&quot;is2 sentence4 This1 a3&quot;</code>.</li>\n</ul>\n\n<p>Given a <strong>shuffled sentence</strong> <code>s</code> containing no more than <code>9</code> words, reconstruct and return <em>the original sentence</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;is2 sentence4 This1 a3&quot;\n<strong>Output:</strong> &quot;This is a sentence&quot;\n<strong>Explanation:</strong> Sort the words in s to their original positions &quot;This1 is2 a3 sentence4&quot;, then remove the numbers.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Myself2 Me1 I4 and3&quot;\n<strong>Output:</strong> &quot;Me Myself and I&quot;\n<strong>Explanation:</strong> Sort the words in s to their original positions &quot;Me1 Myself2 and3 I4&quot;, then remove the numbers.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 200</code></li>\n\t<li><code>s</code> consists of lowercase and uppercase English letters, spaces, and digits from <code>1</code> to <code>9</code>.</li>\n\t<li>The number of words in <code>s</code> is between <code>1</code> and <code>9</code>.</li>\n\t<li>The words in <code>s</code> are separated by a single space.</li>\n\t<li><code>s</code> contains no leading or trailing spaces.</li>\n</ul>\n",
+  "content_markdown": "A **sentence** is a list of words that are separated by a single space with no leading or trailing spaces. Each word consists of lowercase and uppercase English letters.\n\nA sentence can be **shuffled** by appending the **1-indexed word position** to each word then rearranging the words in the sentence.\n\n  * For example, the sentence `\"This is a sentence\"` can be shuffled as `\"sentence4 a3 is2 This1\"` or `\"is2 sentence4 This1 a3\"`.\n\n\n\nGiven a **shuffled sentence** `s` containing no more than `9` words, reconstruct and return _the original sentence_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"is2 sentence4 This1 a3\"\n    **Output:** \"This is a sentence\"\n    **Explanation:** Sort the words in s to their original positions \"This1 is2 a3 sentence4\", then remove the numbers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Myself2 Me1 I4 and3\"\n    **Output:** \"Me Myself and I\"\n    **Explanation:** Sort the words in s to their original positions \"Me1 Myself2 and3 I4\", then remove the numbers.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 200`\n  * `s` consists of lowercase and uppercase English letters, spaces, and digits from `1` to `9`.\n  * The number of words in `s` is between `1` and `9`.\n  * The words in `s` are separated by a single space.\n  * `s` contains no leading or trailing spaces.",
+  "question": "A **sentence** is a list of words that are separated by a single space with no leading or trailing spaces. Each word consists of lowercase and uppercase English letters.\n\nA sentence can be **shuffled** by appending the **1-indexed word position** to each word then rearranging the words in the sentence.\n\n  * For example, the sentence `\"This is a sentence\"` can be shuffled as `\"sentence4 a3 is2 This1\"` or `\"is2 sentence4 This1 a3\"`.\n\n\n\nGiven a **shuffled sentence** `s` containing no more than `9` words, reconstruct and return _the original sentence_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"is2 sentence4 This1 a3\"\n    **Output:** \"This is a sentence\"\n    **Explanation:** Sort the words in s to their original positions \"This1 is2 a3 sentence4\", then remove the numbers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"Myself2 Me1 I4 and3\"\n    **Output:** \"Me Myself and I\"\n    **Explanation:** Sort the words in s to their original positions \"Me1 Myself2 and3 I4\", then remove the numbers.",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 200`\n  * `s` consists of lowercase and uppercase English letters, spaces, and digits from `1` to `9`.\n  * The number of words in `s` is between `1` and `9`.\n  * The words in `s` are separated by a single space.\n  * `s` contains no leading or trailing spaces.",
+  "topics": ["String", "Sorting"],
+  "total_accepted": 231660,
+  "total_submissions": 275515,
+  "acceptance_rate": "84.1%",
+  "similar_questions": [
+    {
+      "title": "Check if Numbers Are Ascending in a Sentence",
+      "slug": "check-if-numbers-are-ascending-in-a-sentence",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-numbers-are-ascending-in-a-sentence/"
+    }
+  ],
+  "hints": [
+    "Divide the string into the words as an array of strings",
+    "Sort the words by removing the last character from each word and sorting according to it"
+  ]
+}

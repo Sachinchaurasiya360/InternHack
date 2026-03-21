@@ -1,0 +1,20 @@
+{
+  "id": "1374",
+  "title": "Generate a String With Characters That Have Odd Counts",
+  "slug": "generate-a-string-with-characters-that-have-odd-counts",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an&nbsp;integer <code>n</code>, <em>return a string with <code>n</code>&nbsp;characters such that each character in such string occurs <strong>an odd number of times</strong></em>.</p>\n\n<p>The returned string must contain only lowercase English letters. If there are multiples valid strings, return <strong>any</strong> of them. &nbsp;</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> &quot;pppz&quot;\n<strong>Explanation:</strong> &quot;pppz&quot; is a valid string since the character &#39;p&#39; occurs three times and the character &#39;z&#39; occurs once. Note that there are many other valid strings such as &quot;ohhh&quot; and &quot;love&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> &quot;xy&quot;\n<strong>Explanation:</strong> &quot;xy&quot; is a valid string since the characters &#39;x&#39; and &#39;y&#39; occur once. Note that there are many other valid strings such as &quot;ag&quot; and &quot;ur&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 7\n<strong>Output:</strong> &quot;holasss&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 500</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, _return a string with`n` characters such that each character in such string occurs **an odd number of times**_.\n\nThe returned string must contain only lowercase English letters. If there are multiples valid strings, return **any** of them.  \n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** \"pppz\"\n    **Explanation:** \"pppz\" is a valid string since the character 'p' occurs three times and the character 'z' occurs once. Note that there are many other valid strings such as \"ohhh\" and \"love\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** \"xy\"\n    **Explanation:** \"xy\" is a valid string since the characters 'x' and 'y' occur once. Note that there are many other valid strings such as \"ag\" and \"ur\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 7\n    **Output:** \"holasss\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 500`",
+  "question": "Given an integer `n`, _return a string with`n` characters such that each character in such string occurs **an odd number of times**_.\n\nThe returned string must contain only lowercase English letters. If there are multiples valid strings, return **any** of them.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** \"pppz\"\n    **Explanation:** \"pppz\" is a valid string since the character 'p' occurs three times and the character 'z' occurs once. Note that there are many other valid strings such as \"ohhh\" and \"love\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** \"xy\"\n    **Explanation:** \"xy\" is a valid string since the characters 'x' and 'y' occur once. Note that there are many other valid strings such as \"ag\" and \"ur\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 7\n    **Output:** \"holasss\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 500`",
+  "topics": ["String"],
+  "total_accepted": 113020,
+  "total_submissions": 143992,
+  "acceptance_rate": "78.5%",
+  "similar_questions": [],
+  "hints": [
+    "If n is odd, return a string of size n formed only by 'a', else return string formed with n-1 'a' and 1 'b''."
+  ]
+}

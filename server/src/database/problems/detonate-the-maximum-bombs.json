@@ -1,0 +1,55 @@
+{
+  "id": "2101",
+  "title": "Detonate the Maximum Bombs",
+  "slug": "detonate-the-maximum-bombs",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a list of bombs. The <strong>range</strong> of a bomb is defined as the area where its effect can be felt. This area is in the shape of a <strong>circle</strong> with the center as the location of the bomb.</p>\n\n<p>The bombs are represented by a <strong>0-indexed</strong> 2D integer array <code>bombs</code> where <code>bombs[i] = [x<sub>i</sub>, y<sub>i</sub>, r<sub>i</sub>]</code>. <code>x<sub>i</sub></code> and <code>y<sub>i</sub></code> denote the X-coordinate and Y-coordinate of the location of the <code>i<sup>th</sup></code> bomb, whereas <code>r<sub>i</sub></code> denotes the <strong>radius</strong> of its range.</p>\n\n<p>You may choose to detonate a <strong>single</strong> bomb. When a bomb is detonated, it will detonate <strong>all bombs</strong> that lie in its range. These bombs will further detonate the bombs that lie in their ranges.</p>\n\n<p>Given the list of <code>bombs</code>, return <em>the <strong>maximum</strong> number of bombs that can be detonated if you are allowed to detonate <strong>only one</strong> bomb</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/06/desmos-eg-3.png\" style=\"width: 300px; height: 300px;\" />\n<pre>\n<strong>Input:</strong> bombs = [[2,1,3],[6,1,4]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong>\nThe above figure shows the positions and ranges of the 2 bombs.\nIf we detonate the left bomb, the right bomb will not be affected.\nBut if we detonate the right bomb, both bombs will be detonated.\nSo the maximum bombs that can be detonated is max(1, 2) = 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/06/desmos-eg-2.png\" style=\"width: 300px; height: 300px;\" />\n<pre>\n<strong>Input:</strong> bombs = [[1,1,5],[10,10,5]]\n<strong>Output:</strong> 1\n<strong>Explanation:\n</strong>Detonating either bomb will not detonate the other bomb, so the maximum number of bombs that can be detonated is 1.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/11/07/desmos-eg1.png\" style=\"width: 300px; height: 300px;\" />\n<pre>\n<strong>Input:</strong> bombs = [[1,2,3],[2,3,1],[3,4,2],[4,5,3],[5,6,4]]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong>\nThe best bomb to detonate is bomb 0 because:\n- Bomb 0 detonates bombs 1 and 2. The red circle denotes the range of bomb 0.\n- Bomb 2 detonates bomb 3. The blue circle denotes the range of bomb 2.\n- Bomb 3 detonates bomb 4. The green circle denotes the range of bomb 3.\nThus all 5 bombs are detonated.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= bombs.length&nbsp;&lt;= 100</code></li>\n\t<li><code>bombs[i].length == 3</code></li>\n\t<li><code>1 &lt;= x<sub>i</sub>, y<sub>i</sub>, r<sub>i</sub> &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a list of bombs. The **range** of a bomb is defined as the area where its effect can be felt. This area is in the shape of a **circle** with the center as the location of the bomb.\n\nThe bombs are represented by a **0-indexed** 2D integer array `bombs` where `bombs[i] = [xi, yi, ri]`. `xi` and `yi` denote the X-coordinate and Y-coordinate of the location of the `ith` bomb, whereas `ri` denotes the **radius** of its range.\n\nYou may choose to detonate a **single** bomb. When a bomb is detonated, it will detonate **all bombs** that lie in its range. These bombs will further detonate the bombs that lie in their ranges.\n\nGiven the list of `bombs`, return _the**maximum** number of bombs that can be detonated if you are allowed to detonate **only one** bomb_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/06/desmos-eg-3.png)\n    \n    \n    **Input:** bombs = [[2,1,3],[6,1,4]]\n    **Output:** 2\n    **Explanation:**\n    The above figure shows the positions and ranges of the 2 bombs.\n    If we detonate the left bomb, the right bomb will not be affected.\n    But if we detonate the right bomb, both bombs will be detonated.\n    So the maximum bombs that can be detonated is max(1, 2) = 2.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/11/06/desmos-eg-2.png)\n    \n    \n    **Input:** bombs = [[1,1,5],[10,10,5]]\n    **Output:** 1\n    **Explanation:** Detonating either bomb will not detonate the other bomb, so the maximum number of bombs that can be detonated is 1.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2021/11/07/desmos-eg1.png)\n    \n    \n    **Input:** bombs = [[1,2,3],[2,3,1],[3,4,2],[4,5,3],[5,6,4]]\n    **Output:** 5\n    **Explanation:**\n    The best bomb to detonate is bomb 0 because:\n    - Bomb 0 detonates bombs 1 and 2. The red circle denotes the range of bomb 0.\n    - Bomb 2 detonates bomb 3. The blue circle denotes the range of bomb 2.\n    - Bomb 3 detonates bomb 4. The green circle denotes the range of bomb 3.\n    Thus all 5 bombs are detonated.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= bombs.length <= 100`\n  * `bombs[i].length == 3`\n  * `1 <= xi, yi, ri <= 105`",
+  "question": "You are given a list of bombs. The **range** of a bomb is defined as the area where its effect can be felt. This area is in the shape of a **circle** with the center as the location of the bomb.\n\nThe bombs are represented by a **0-indexed** 2D integer array `bombs` where `bombs[i] = [xi, yi, ri]`. `xi` and `yi` denote the X-coordinate and Y-coordinate of the location of the `ith` bomb, whereas `ri` denotes the **radius** of its range.\n\nYou may choose to detonate a **single** bomb. When a bomb is detonated, it will detonate **all bombs** that lie in its range. These bombs will further detonate the bombs that lie in their ranges.\n\nGiven the list of `bombs`, return _the**maximum** number of bombs that can be detonated if you are allowed to detonate **only one** bomb_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/11/06/desmos-eg-3.png)\n    \n    \n    **Input:** bombs = [[2,1,3],[6,1,4]]\n    **Output:** 2\n    **Explanation:**\n    The above figure shows the positions and ranges of the 2 bombs.\n    If we detonate the left bomb, the right bomb will not be affected.\n    But if we detonate the right bomb, both bombs will be detonated.\n    So the maximum bombs that can be detonated is max(1, 2) = 2.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/11/06/desmos-eg-2.png)\n    \n    \n    **Input:** bombs = [[1,1,5],[10,10,5]]\n    **Output:** 1\n    **Explanation:** Detonating either bomb will not detonate the other bomb, so the maximum number of bombs that can be detonated is 1.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2021/11/07/desmos-eg1.png)\n    \n    \n    **Input:** bombs = [[1,2,3],[2,3,1],[3,4,2],[4,5,3],[5,6,4]]\n    **Output:** 5\n    **Explanation:**\n    The best bomb to detonate is bomb 0 because:\n    - Bomb 0 detonates bombs 1 and 2. The red circle denotes the range of bomb 0.\n    - Bomb 2 detonates bomb 3. The blue circle denotes the range of bomb 2.\n    - Bomb 3 detonates bomb 4. The green circle denotes the range of bomb 3.\n    Thus all 5 bombs are detonated.",
+  "constraints": "**Constraints:**\n\n  * `1 <= bombs.length <= 100`\n  * `bombs[i].length == 3`\n  * `1 <= xi, yi, ri <= 105`",
+  "topics": [
+    "Array",
+    "Math",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Geometry"
+  ],
+  "total_accepted": 174698,
+  "total_submissions": 349986,
+  "acceptance_rate": "49.9%",
+  "similar_questions": [
+    {
+      "title": "Minesweeper",
+      "slug": "minesweeper",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minesweeper/"
+    },
+    {
+      "title": "Number of Provinces",
+      "slug": "number-of-provinces",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-provinces/"
+    },
+    {
+      "title": "Max Area of Island",
+      "slug": "max-area-of-island",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/max-area-of-island/"
+    },
+    {
+      "title": "Rotting Oranges",
+      "slug": "rotting-oranges",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rotting-oranges/"
+    }
+  ],
+  "hints": [
+    "How can we model the relationship between different bombs? Can \"graphs\" help us?",
+    "Bombs are nodes and are connected to other bombs in their range by directed edges.",
+    "If we know which bombs will be affected when any bomb is detonated, how can we find the total number of bombs that will be detonated if we start from a fixed bomb?",
+    "Run a Depth First Search (DFS) from every node, and all the nodes it reaches are the bombs that will be detonated."
+  ]
+}

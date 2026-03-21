@@ -1,0 +1,37 @@
+{
+  "id": "23",
+  "title": "Merge k Sorted Lists",
+  "slug": "merge-k-sorted-lists",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of <code>k</code> linked-lists <code>lists</code>, each linked-list is sorted in ascending order.</p>\n\n<p><em>Merge all the linked-lists into one sorted linked-list and return it.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> lists = [[1,4,5],[1,3,4],[2,6]]\n<strong>Output:</strong> [1,1,2,3,4,4,5,6]\n<strong>Explanation:</strong> The linked-lists are:\n[\n  1-&gt;4-&gt;5,\n  1-&gt;3-&gt;4,\n  2-&gt;6\n]\nmerging them into one sorted linked list:\n1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4-&gt;5-&gt;6\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> lists = []\n<strong>Output:</strong> []\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> lists = [[]]\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>k == lists.length</code></li>\n\t<li><code>0 &lt;= k &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= lists[i].length &lt;= 500</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= lists[i][j] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>lists[i]</code> is sorted in <strong>ascending order</strong>.</li>\n\t<li>The sum of <code>lists[i].length</code> will not exceed <code>10<sup>4</sup></code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order.\n\n_Merge all the linked-lists into one sorted linked-list and return it._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** lists = [[1,4,5],[1,3,4],[2,6]]\n    **Output:** [1,1,2,3,4,4,5,6]\n    **Explanation:** The linked-lists are:\n    [\n      1->4->5,\n      1->3->4,\n      2->6\n    ]\n    merging them into one sorted linked list:\n    1->1->2->3->4->4->5->6\n    \n\n**Example 2:**\n    \n    \n    **Input:** lists = []\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** lists = [[]]\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * `k == lists.length`\n  * `0 <= k <= 104`\n  * `0 <= lists[i].length <= 500`\n  * `-104 <= lists[i][j] <= 104`\n  * `lists[i]` is sorted in **ascending order**.\n  * The sum of `lists[i].length` will not exceed `104`.",
+  "question": "You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order.\n\n_Merge all the linked-lists into one sorted linked-list and return it._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** lists = [[1,4,5],[1,3,4],[2,6]]\n    **Output:** [1,1,2,3,4,4,5,6]\n    **Explanation:** The linked-lists are:\n    [\n      1->4->5,\n      1->3->4,\n      2->6\n    ]\n    merging them into one sorted linked list:\n    1->1->2->3->4->4->5->6\n    \n\n**Example 2:**\n    \n    \n    **Input:** lists = []\n    **Output:** []\n    \n\n**Example 3:**\n    \n    \n    **Input:** lists = [[]]\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * `k == lists.length`\n  * `0 <= k <= 104`\n  * `0 <= lists[i].length <= 500`\n  * `-104 <= lists[i][j] <= 104`\n  * `lists[i]` is sorted in **ascending order**.\n  * The sum of `lists[i].length` will not exceed `104`.",
+  "topics": ["Linked List", "Divide and Conquer", "Heap (Priority Queue)", "Merge Sort"],
+  "total_accepted": 2890415,
+  "total_submissions": 4904592,
+  "acceptance_rate": "58.9%",
+  "similar_questions": [
+    {
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-two-sorted-lists/"
+    },
+    {
+      "title": "Ugly Number II",
+      "slug": "ugly-number-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/ugly-number-ii/"
+    },
+    {
+      "title": "Smallest Subarrays With Maximum Bitwise OR",
+      "slug": "smallest-subarrays-with-maximum-bitwise-or",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/smallest-subarrays-with-maximum-bitwise-or/"
+    }
+  ],
+  "hints": []
+}

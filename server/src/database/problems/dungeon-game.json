@@ -1,0 +1,61 @@
+{
+  "id": "174",
+  "title": "Dungeon Game",
+  "slug": "dungeon-game",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>The demons had captured the princess and imprisoned her in <strong>the bottom-right corner</strong> of a <code>dungeon</code>. The <code>dungeon</code> consists of <code>m x n</code> rooms laid out in a 2D grid. Our valiant knight was initially positioned in <strong>the top-left room</strong> and must fight his way through <code>dungeon</code> to rescue the princess.</p>\n\n<p>The knight has an initial health point represented by a positive integer. If at any point his health point drops to <code>0</code> or below, he dies immediately.</p>\n\n<p>Some of the rooms are guarded by demons (represented by negative integers), so the knight loses health upon entering these rooms; other rooms are either empty (represented as 0) or contain magic orbs that increase the knight&#39;s health (represented by positive integers).</p>\n\n<p>To reach the princess as quickly as possible, the knight decides to move only <strong>rightward</strong> or <strong>downward</strong> in each step.</p>\n\n<p>Return <em>the knight&#39;s minimum initial health so that he can rescue the princess</em>.</p>\n\n<p><strong>Note</strong> that any room can contain threats or power-ups, even the first room the knight enters and the bottom-right room where the princess is imprisoned.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/03/13/dungeon-grid-1.jpg\" style=\"width: 253px; height: 253px;\" />\n<pre>\n<strong>Input:</strong> dungeon = [[-2,-3,3],[-5,-10,1],[10,30,-5]]\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> The initial health of the knight must be at least 7 if he follows the optimal path: RIGHT-&gt; RIGHT -&gt; DOWN -&gt; DOWN.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> dungeon = [[0]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == dungeon.length</code></li>\n\t<li><code>n == dungeon[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>-1000 &lt;= dungeon[i][j] &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "The demons had captured the princess and imprisoned her in **the bottom-right corner** of a `dungeon`. The `dungeon` consists of `m x n` rooms laid out in a 2D grid. Our valiant knight was initially positioned in **the top-left room** and must fight his way through `dungeon` to rescue the princess.\n\nThe knight has an initial health point represented by a positive integer. If at any point his health point drops to `0` or below, he dies immediately.\n\nSome of the rooms are guarded by demons (represented by negative integers), so the knight loses health upon entering these rooms; other rooms are either empty (represented as 0) or contain magic orbs that increase the knight's health (represented by positive integers).\n\nTo reach the princess as quickly as possible, the knight decides to move only **rightward** or **downward** in each step.\n\nReturn _the knight 's minimum initial health so that he can rescue the princess_.\n\n**Note** that any room can contain threats or power-ups, even the first room the knight enters and the bottom-right room where the princess is imprisoned.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/13/dungeon-grid-1.jpg)\n    \n    \n    **Input:** dungeon = [[-2,-3,3],[-5,-10,1],[10,30,-5]]\n    **Output:** 7\n    **Explanation:** The initial health of the knight must be at least 7 if he follows the optimal path: RIGHT-> RIGHT -> DOWN -> DOWN.\n    \n\n**Example 2:**\n    \n    \n    **Input:** dungeon = [[0]]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `m == dungeon.length`\n  * `n == dungeon[i].length`\n  * `1 <= m, n <= 200`\n  * `-1000 <= dungeon[i][j] <= 1000`",
+  "question": "The demons had captured the princess and imprisoned her in **the bottom-right corner** of a `dungeon`. The `dungeon` consists of `m x n` rooms laid out in a 2D grid. Our valiant knight was initially positioned in **the top-left room** and must fight his way through `dungeon` to rescue the princess.\n\nThe knight has an initial health point represented by a positive integer. If at any point his health point drops to `0` or below, he dies immediately.\n\nSome of the rooms are guarded by demons (represented by negative integers), so the knight loses health upon entering these rooms; other rooms are either empty (represented as 0) or contain magic orbs that increase the knight's health (represented by positive integers).\n\nTo reach the princess as quickly as possible, the knight decides to move only **rightward** or **downward** in each step.\n\nReturn _the knight 's minimum initial health so that he can rescue the princess_.\n\n**Note** that any room can contain threats or power-ups, even the first room the knight enters and the bottom-right room where the princess is imprisoned.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/03/13/dungeon-grid-1.jpg)\n    \n    \n    **Input:** dungeon = [[-2,-3,3],[-5,-10,1],[10,30,-5]]\n    **Output:** 7\n    **Explanation:** The initial health of the knight must be at least 7 if he follows the optimal path: RIGHT-> RIGHT -> DOWN -> DOWN.\n    \n\n**Example 2:**\n    \n    \n    **Input:** dungeon = [[0]]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `m == dungeon.length`\n  * `n == dungeon[i].length`\n  * `1 <= m, n <= 200`\n  * `-1000 <= dungeon[i][j] <= 1000`",
+  "topics": ["Array", "Dynamic Programming", "Matrix"],
+  "total_accepted": 293360,
+  "total_submissions": 717515,
+  "acceptance_rate": "40.9%",
+  "similar_questions": [
+    {
+      "title": "Unique Paths",
+      "slug": "unique-paths",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-paths/"
+    },
+    {
+      "title": "Minimum Path Sum",
+      "slug": "minimum-path-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-sum/"
+    },
+    {
+      "title": "Cherry Pickup",
+      "slug": "cherry-pickup",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/cherry-pickup/"
+    },
+    {
+      "title": "Minimum Path Cost in a Grid",
+      "slug": "minimum-path-cost-in-a-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-cost-in-a-grid/"
+    },
+    {
+      "title": "Minimum Health to Beat Game",
+      "slug": "minimum-health-to-beat-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-health-to-beat-game/"
+    },
+    {
+      "title": "Paths in Matrix Whose Sum Is Divisible by K",
+      "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paths-in-matrix-whose-sum-is-divisible-by-k/"
+    },
+    {
+      "title": "Check if There is a Path With Equal Number of 0's And 1's",
+      "slug": "check-if-there-is-a-path-with-equal-number-of-0s-and-1s",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/check-if-there-is-a-path-with-equal-number-of-0s-and-1s/"
+    }
+  ],
+  "hints": []
+}

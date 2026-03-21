@@ -1,0 +1,67 @@
+{
+  "id": "286",
+  "title": "Walls and Gates",
+  "slug": "walls-and-gates",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Breadth-First Search", "Matrix"],
+  "total_accepted": 420944,
+  "total_submissions": 659809,
+  "acceptance_rate": "63.8%",
+  "similar_questions": [
+    {
+      "title": "Surrounded Regions",
+      "slug": "surrounded-regions",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/surrounded-regions/"
+    },
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-islands/"
+    },
+    {
+      "title": "Shortest Distance from All Buildings",
+      "slug": "shortest-distance-from-all-buildings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/shortest-distance-from-all-buildings/"
+    },
+    {
+      "title": "Battleships in a Board",
+      "slug": "battleships-in-a-board",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/battleships-in-a-board/"
+    },
+    {
+      "title": "Robot Room Cleaner",
+      "slug": "robot-room-cleaner",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/robot-room-cleaner/"
+    },
+    {
+      "title": "Rotting Oranges",
+      "slug": "rotting-oranges",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/rotting-oranges/"
+    },
+    {
+      "title": "Count the Number of Houses at a Certain Distance I",
+      "slug": "count-the-number-of-houses-at-a-certain-distance-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-the-number-of-houses-at-a-certain-distance-i/"
+    },
+    {
+      "title": "Count the Number of Houses at a Certain Distance II",
+      "slug": "count-the-number-of-houses-at-a-certain-distance-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-the-number-of-houses-at-a-certain-distance-ii/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,37 @@
+{
+  "id": "278",
+  "title": "First Bad Version",
+  "slug": "first-bad-version",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.</p>\n\n<p>Suppose you have <code>n</code> versions <code>[1, 2, ..., n]</code> and you want to find out the first bad one, which causes all the following ones to be bad.</p>\n\n<p>You are given an API <code>bool isBadVersion(version)</code> which returns whether <code>version</code> is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 5, bad = 4\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\ncall isBadVersion(3) -&gt; false\ncall isBadVersion(5)&nbsp;-&gt; true\ncall isBadVersion(4)&nbsp;-&gt; true\nThen 4 is the first bad version.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1, bad = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= bad &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.\n\nSuppose you have `n` versions `[1, 2, ..., n]` and you want to find out the first bad one, which causes all the following ones to be bad.\n\nYou are given an API `bool isBadVersion(version)` which returns whether `version` is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 5, bad = 4\n    **Output:** 4\n    **Explanation:**\n    call isBadVersion(3) -> false\n    call isBadVersion(5) -> true\n    call isBadVersion(4) -> true\n    Then 4 is the first bad version.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, bad = 1\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= bad <= n <= 231 - 1`",
+  "question": "You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.\n\nSuppose you have `n` versions `[1, 2, ..., n]` and you want to find out the first bad one, which causes all the following ones to be bad.\n\nYou are given an API `bool isBadVersion(version)` which returns whether `version` is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 5, bad = 4\n    **Output:** 4\n    **Explanation:**\n    call isBadVersion(3) -> false\n    call isBadVersion(5) -> true\n    call isBadVersion(4) -> true\n    Then 4 is the first bad version.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, bad = 1\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= bad <= n <= 231 - 1`",
+  "topics": ["Binary Search", "Interactive"],
+  "total_accepted": 2120894,
+  "total_submissions": 4526374,
+  "acceptance_rate": "46.9%",
+  "similar_questions": [
+    {
+      "title": "Find First and Last Position of Element in Sorted Array",
+      "slug": "find-first-and-last-position-of-element-in-sorted-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/"
+    },
+    {
+      "title": "Search Insert Position",
+      "slug": "search-insert-position",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/search-insert-position/"
+    },
+    {
+      "title": "Guess Number Higher or Lower",
+      "slug": "guess-number-higher-or-lower",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/guess-number-higher-or-lower/"
+    }
+  ],
+  "hints": []
+}

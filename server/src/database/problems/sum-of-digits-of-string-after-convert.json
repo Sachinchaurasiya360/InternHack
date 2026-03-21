@@ -1,0 +1,46 @@
+{
+  "id": "1945",
+  "title": "Sum of Digits of String After Convert",
+  "slug": "sum-of-digits-of-string-after-convert",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting of lowercase English letters, and an integer <code>k</code>. Your task is to <em>convert</em> the string into an integer by a special process, and then <em>transform</em> it by summing its digits repeatedly <code>k</code> times. More specifically, perform the following steps:</p>\n\n<ol>\n\t<li><strong>Convert</strong> <code>s</code> into an integer by replacing each letter with its position in the alphabet (i.e.&nbsp;replace <code>&#39;a&#39;</code> with <code>1</code>, <code>&#39;b&#39;</code> with <code>2</code>, ..., <code>&#39;z&#39;</code> with <code>26</code>).</li>\n\t<li><strong>T</strong><strong>ransform</strong> the integer by replacing it with the <strong>sum of its digits</strong>.</li>\n\t<li>Repeat the <strong>transform</strong> operation (step 2) <code>k</code><strong> times</strong> in total.</li>\n</ol>\n\n<p>For example, if <code>s = &quot;zbax&quot;</code> and <code>k = 2</code>, then the resulting integer would be <code>8</code> by the following operations:</p>\n\n<ol>\n\t<li><strong>Convert</strong>: <code>&quot;zbax&quot; ➝ &quot;(26)(2)(1)(24)&quot; ➝ &quot;262124&quot; ➝ 262124</code></li>\n\t<li><strong>Transform #1</strong>: <code>262124 ➝ 2 + 6 + 2 + 1 + 2 + 4 ➝ 17</code></li>\n\t<li><strong>Transform #2</strong>: <code>17 ➝ 1 + 7 ➝ 8</code></li>\n</ol>\n\n<p>Return the <strong>resulting</strong> <strong>integer</strong> after performing the <strong>operations</strong> described above.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;iiii&quot;, k = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">36</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The operations are as follows:<br />\n- Convert: &quot;iiii&quot; ➝ &quot;(9)(9)(9)(9)&quot; ➝ &quot;9999&quot; ➝ 9999<br />\n- Transform #1: 9999 ➝ 9 + 9 + 9 + 9 ➝ 36<br />\nThus the resulting integer is 36.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;leetcode&quot;, k = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">6</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The operations are as follows:<br />\n- Convert: &quot;leetcode&quot; ➝ &quot;(12)(5)(5)(20)(3)(15)(4)(5)&quot; ➝ &quot;12552031545&quot; ➝ 12552031545<br />\n- Transform #1: 12552031545 ➝ 1 + 2 + 5 + 5 + 2 + 0 + 3 + 1 + 5 + 4 + 5 ➝ 33<br />\n- Transform #2: 33 ➝ 3 + 3 ➝ 6<br />\nThus the resulting integer is 6.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;zbax&quot;, k = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">8</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= k &lt;= 10</code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting of lowercase English letters, and an integer `k`. Your task is to _convert_ the string into an integer by a special process, and then _transform_ it by summing its digits repeatedly `k` times. More specifically, perform the following steps:\n\n  1. **Convert** `s` into an integer by replacing each letter with its position in the alphabet (i.e. replace `'a'` with `1`, `'b'` with `2`, ..., `'z'` with `26`).\n  2. **T****ransform** the integer by replacing it with the **sum of its digits**.\n  3. Repeat the **transform** operation (step 2) `k`**times** in total.\n\n\n\nFor example, if `s = \"zbax\"` and `k = 2`, then the resulting integer would be `8` by the following operations:\n\n  1. **Convert** : `\"zbax\" ➝ \"(26)(2)(1)(24)\" ➝ \"262124\" ➝ 262124`\n  2. **Transform #1** : `262124 ➝ 2 + 6 + 2 + 1 + 2 + 4 ➝ 17`\n  3. **Transform #2** : `17 ➝ 1 + 7 ➝ 8`\n\n\n\nReturn the **resulting** **integer** after performing the **operations** described above.\n\n \n\n**Example 1:**\n\n**Input:** s = \"iiii\", k = 1\n\n**Output:** 36\n\n**Explanation:**\n\nThe operations are as follows:  \n\\- Convert: \"iiii\" ➝ \"(9)(9)(9)(9)\" ➝ \"9999\" ➝ 9999  \n\\- Transform #1: 9999 ➝ 9 + 9 + 9 + 9 ➝ 36  \nThus the resulting integer is 36.\n\n**Example 2:**\n\n**Input:** s = \"leetcode\", k = 2\n\n**Output:** 6\n\n**Explanation:**\n\nThe operations are as follows:  \n\\- Convert: \"leetcode\" ➝ \"(12)(5)(5)(20)(3)(15)(4)(5)\" ➝ \"12552031545\" ➝ 12552031545  \n\\- Transform #1: 12552031545 ➝ 1 + 2 + 5 + 5 + 2 + 0 + 3 + 1 + 5 + 4 + 5 ➝ 33  \n\\- Transform #2: 33 ➝ 3 + 3 ➝ 6  \nThus the resulting integer is 6.\n\n**Example 3:**\n\n**Input:** s = \"zbax\", k = 2\n\n**Output:** 8\n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `1 <= k <= 10`\n  * `s` consists of lowercase English letters.",
+  "question": "You are given a string `s` consisting of lowercase English letters, and an integer `k`. Your task is to _convert_ the string into an integer by a special process, and then _transform_ it by summing its digits repeatedly `k` times. More specifically, perform the following steps:\n\n  1. **Convert** `s` into an integer by replacing each letter with its position in the alphabet (i.e. replace `'a'` with `1`, `'b'` with `2`, ..., `'z'` with `26`).\n  2. **T****ransform** the integer by replacing it with the **sum of its digits**.\n  3. Repeat the **transform** operation (step 2) `k`**times** in total.\n\n\n\nFor example, if `s = \"zbax\"` and `k = 2`, then the resulting integer would be `8` by the following operations:\n\n  1. **Convert** : `\"zbax\" ➝ \"(26)(2)(1)(24)\" ➝ \"262124\" ➝ 262124`\n  2. **Transform #1** : `262124 ➝ 2 + 6 + 2 + 1 + 2 + 4 ➝ 17`\n  3. **Transform #2** : `17 ➝ 1 + 7 ➝ 8`\n\n\n\nReturn the **resulting** **integer** after performing the **operations** described above.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"iiii\", k = 1\n\n**Output:** 36\n\n**Explanation:**\n\nThe operations are as follows:  \n\\- Convert: \"iiii\" ➝ \"(9)(9)(9)(9)\" ➝ \"9999\" ➝ 9999  \n\\- Transform #1: 9999 ➝ 9 + 9 + 9 + 9 ➝ 36  \nThus the resulting integer is 36.\n\n**Example 2:**\n\n**Input:** s = \"leetcode\", k = 2\n\n**Output:** 6\n\n**Explanation:**\n\nThe operations are as follows:  \n\\- Convert: \"leetcode\" ➝ \"(12)(5)(5)(20)(3)(15)(4)(5)\" ➝ \"12552031545\" ➝ 12552031545  \n\\- Transform #1: 12552031545 ➝ 1 + 2 + 5 + 5 + 2 + 0 + 3 + 1 + 5 + 4 + 5 ➝ 33  \n\\- Transform #2: 33 ➝ 3 + 3 ➝ 6  \nThus the resulting integer is 6.\n\n**Example 3:**\n\n**Input:** s = \"zbax\", k = 2\n\n**Output:** 8",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `1 <= k <= 10`\n  * `s` consists of lowercase English letters.",
+  "topics": ["String", "Simulation"],
+  "total_accepted": 236025,
+  "total_submissions": 315580,
+  "acceptance_rate": "74.8%",
+  "similar_questions": [
+    {
+      "title": "Happy Number",
+      "slug": "happy-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/happy-number/"
+    },
+    {
+      "title": "Add Digits",
+      "slug": "add-digits",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/add-digits/"
+    },
+    {
+      "title": "Count Integers With Even Digit Sum",
+      "slug": "count-integers-with-even-digit-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-integers-with-even-digit-sum/"
+    },
+    {
+      "title": "Minimum Element After Replacement With Digit Sum",
+      "slug": "minimum-element-after-replacement-with-digit-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-element-after-replacement-with-digit-sum/"
+    }
+  ],
+  "hints": [
+    "First, let's note that after the first transform the value will be at most 100 * 10 which is not much",
+    "After The first transform, we can just do the rest of the transforms by brute force"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "598",
+  "title": "Range Addition II",
+  "slug": "range-addition-ii",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> matrix <code>M</code> initialized with all <code>0</code>&#39;s and an array of operations <code>ops</code>, where <code>ops[i] = [a<sub>i</sub>, b<sub>i</sub>]</code> means <code>M[x][y]</code> should be incremented by one for all <code>0 &lt;= x &lt; a<sub>i</sub></code> and <code>0 &lt;= y &lt; b<sub>i</sub></code>.</p>\n\n<p>Count and return <em>the number of maximum integers in the matrix after performing all the operations</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/02/ex1.jpg\" style=\"width: 750px; height: 176px;\" />\n<pre>\n<strong>Input:</strong> m = 3, n = 3, ops = [[2,2],[3,3]]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The maximum integer in M is 2, and there are four of it in M. So return 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> m = 3, n = 3, ops = [[2,2],[3,3],[3,3],[3,3],[2,2],[3,3],[3,3],[3,3],[2,2],[3,3],[3,3],[3,3]]\n<strong>Output:</strong> 4\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> m = 3, n = 3, ops = []\n<strong>Output:</strong> 9\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= m, n &lt;= 4 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= ops.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>ops[i].length == 2</code></li>\n\t<li><code>1 &lt;= a<sub>i</sub> &lt;= m</code></li>\n\t<li><code>1 &lt;= b<sub>i</sub> &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` matrix `M` initialized with all `0`'s and an array of operations `ops`, where `ops[i] = [ai, bi]` means `M[x][y]` should be incremented by one for all `0 <= x < ai` and `0 <= y < bi`.\n\nCount and return _the number of maximum integers in the matrix after performing all the operations_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/02/ex1.jpg)\n    \n    \n    **Input:** m = 3, n = 3, ops = [[2,2],[3,3]]\n    **Output:** 4\n    **Explanation:** The maximum integer in M is 2, and there are four of it in M. So return 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** m = 3, n = 3, ops = [[2,2],[3,3],[3,3],[3,3],[2,2],[3,3],[3,3],[3,3],[2,2],[3,3],[3,3],[3,3]]\n    **Output:** 4\n    \n\n**Example 3:**\n    \n    \n    **Input:** m = 3, n = 3, ops = []\n    **Output:** 9\n    \n\n \n\n**Constraints:**\n\n  * `1 <= m, n <= 4 * 104`\n  * `0 <= ops.length <= 104`\n  * `ops[i].length == 2`\n  * `1 <= ai <= m`\n  * `1 <= bi <= n`",
+  "question": "You are given an `m x n` matrix `M` initialized with all `0`'s and an array of operations `ops`, where `ops[i] = [ai, bi]` means `M[x][y]` should be incremented by one for all `0 <= x < ai` and `0 <= y < bi`.\n\nCount and return _the number of maximum integers in the matrix after performing all the operations_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/02/ex1.jpg)\n    \n    \n    **Input:** m = 3, n = 3, ops = [[2,2],[3,3]]\n    **Output:** 4\n    **Explanation:** The maximum integer in M is 2, and there are four of it in M. So return 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** m = 3, n = 3, ops = [[2,2],[3,3],[3,3],[3,3],[2,2],[3,3],[3,3],[3,3],[2,2],[3,3],[3,3],[3,3]]\n    **Output:** 4\n    \n\n**Example 3:**\n    \n    \n    **Input:** m = 3, n = 3, ops = []\n    **Output:** 9",
+  "constraints": "**Constraints:**\n\n  * `1 <= m, n <= 4 * 104`\n  * `0 <= ops.length <= 104`\n  * `ops[i].length == 2`\n  * `1 <= ai <= m`\n  * `1 <= bi <= n`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 131247,
+  "total_submissions": 224813,
+  "acceptance_rate": "58.4%",
+  "similar_questions": [
+    {
+      "title": "Range Addition",
+      "slug": "range-addition",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-addition/"
+    },
+    {
+      "title": "Sum of Matrix After Queries",
+      "slug": "sum-of-matrix-after-queries",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/sum-of-matrix-after-queries/"
+    }
+  ],
+  "hints": []
+}

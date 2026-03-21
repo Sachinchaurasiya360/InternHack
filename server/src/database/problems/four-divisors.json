@@ -1,0 +1,21 @@
+{
+  "id": "1390",
+  "title": "Four Divisors",
+  "slug": "four-divisors",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>the sum of divisors of the integers in that array that have exactly four divisors</em>. If there is no such integer in the array, return <code>0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [21,4,7]\n<strong>Output:</strong> 32\n<strong>Explanation:</strong> \n21 has 4 divisors: 1, 3, 7, 21\n4 has 3 divisors: 1, 2, 4\n7 has 2 divisors: 1, 7\nThe answer is the sum of divisors of 21 only.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [21,21]\n<strong>Output:</strong> 64\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, return _the sum of divisors of the integers in that array that have exactly four divisors_. If there is no such integer in the array, return `0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [21,4,7]\n    **Output:** 32\n    **Explanation:** \n    21 has 4 divisors: 1, 3, 7, 21\n    4 has 3 divisors: 1, 2, 4\n    7 has 2 divisors: 1, 7\n    The answer is the sum of divisors of 21 only.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [21,21]\n    **Output:** 64\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `1 <= nums[i] <= 105`",
+  "question": "Given an integer array `nums`, return _the sum of divisors of the integers in that array that have exactly four divisors_. If there is no such integer in the array, return `0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [21,4,7]\n    **Output:** 32\n    **Explanation:** \n    21 has 4 divisors: 1, 3, 7, 21\n    4 has 3 divisors: 1, 2, 4\n    7 has 2 divisors: 1, 7\n    The answer is the sum of divisors of 21 only.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [21,21]\n    **Output:** 64\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `1 <= nums[i] <= 105`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 193691,
+  "total_submissions": 342026,
+  "acceptance_rate": "56.6%",
+  "similar_questions": [],
+  "hints": [
+    "Find the divisors of each element in the array.",
+    "You only need to loop to the square root of a number to find its divisors."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "3827",
+  "title": "Count Monobit Integers",
+  "slug": "count-monobit-integers",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code>.</p>\n\n<p>An integer is called <strong>Monobit</strong> if all bits in its binary representation are the same.</p>\n\n<p>Return the count of <strong>Monobit</strong> integers in the range <code>[0, n]</code> (inclusive).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>The integers in the range <code>[0, 1]</code> have binary representations <code>&quot;0&quot;</code> and <code>&quot;1&quot;</code>.</li>\n\t<li>Each representation consists of identical bits. Thus, the answer is 2.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>The integers in the range <code>[0, 4]</code> include binaries <code>&quot;0&quot;</code>, <code>&quot;1&quot;</code>, <code>&quot;10&quot;</code>, <code>&quot;11&quot;</code>, and <code>&quot;100&quot;</code>.</li>\n\t<li>Only 0, 1 and 3 satisfy the Monobit condition. Thus, the answer is 3.</li>\n</ul>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n`.\n\nAn integer is called **Monobit** if all bits in its binary representation are the same.\n\nReturn the count of **Monobit** integers in the range `[0, n]` (inclusive).\n\n \n\n**Example 1:**\n\n**Input:** n = 1\n\n**Output:** 2\n\n**Explanation:**\n\n  * The integers in the range `[0, 1]` have binary representations `\"0\"` and `\"1\"`.\n  * Each representation consists of identical bits. Thus, the answer is 2.\n\n\n\n**Example 2:**\n\n**Input:** n = 4\n\n**Output:** 3\n\n**Explanation:**\n\n  * The integers in the range `[0, 4]` include binaries `\"0\"`, `\"1\"`, `\"10\"`, `\"11\"`, and `\"100\"`.\n  * Only 0, 1 and 3 satisfy the Monobit condition. Thus, the answer is 3.\n\n\n\n \n\n**Constraints:**\n\n  * `0 <= n <= 1000`",
+  "question": "You are given an integer `n`.\n\nAn integer is called **Monobit** if all bits in its binary representation are the same.\n\nReturn the count of **Monobit** integers in the range `[0, n]` (inclusive).",
+  "examples": "**Example 1:**\n\n**Input:** n = 1\n\n**Output:** 2\n\n**Explanation:**\n\n  * The integers in the range `[0, 1]` have binary representations `\"0\"` and `\"1\"`.\n  * Each representation consists of identical bits. Thus, the answer is 2.\n\n\n\n**Example 2:**\n\n**Input:** n = 4\n\n**Output:** 3\n\n**Explanation:**\n\n  * The integers in the range `[0, 4]` include binaries `\"0\"`, `\"1\"`, `\"10\"`, `\"11\"`, and `\"100\"`.\n  * Only 0, 1 and 3 satisfy the Monobit condition. Thus, the answer is 3.",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 1000`",
+  "topics": ["Bit Manipulation", "Enumeration"],
+  "total_accepted": 49470,
+  "total_submissions": 74884,
+  "acceptance_rate": "66.1%",
+  "similar_questions": [],
+  "hints": [
+    "Go through all the integers in the range <code>[0, n]</code> and count the monobit integers"
+  ]
+}

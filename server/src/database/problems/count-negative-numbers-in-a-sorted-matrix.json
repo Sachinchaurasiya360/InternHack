@@ -1,0 +1,25 @@
+{
+  "id": "1351",
+  "title": "Count Negative Numbers in a Sorted Matrix",
+  "slug": "count-negative-numbers-in-a-sorted-matrix",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <code>m x n</code> matrix <code>grid</code> which is sorted in non-increasing order both row-wise and column-wise, return <em>the number of <strong>negative</strong> numbers in</em> <code>grid</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[4,3,2,-1],[3,2,1,-1],[1,1,-1,-2],[-1,-1,-2,-3]]\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> There are 8 negatives number in the matrix.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[3,2],[1,0]]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 100</code></li>\n\t<li><code>-100 &lt;= grid[i][j] &lt;= 100</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Follow up:</strong> Could you find an <code>O(n + m)</code> solution?",
+  "content_markdown": "Given a `m x n` matrix `grid` which is sorted in non-increasing order both row-wise and column-wise, return _the number of**negative** numbers in_ `grid`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** grid = [[4,3,2,-1],[3,2,1,-1],[1,1,-1,-2],[-1,-1,-2,-3]]\n    **Output:** 8\n    **Explanation:** There are 8 negatives number in the matrix.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[3,2],[1,0]]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 100`\n  * `-100 <= grid[i][j] <= 100`\n\n\n\n \n\n**Follow up:** Could you find an `O(n + m)` solution?",
+  "question": "Given a `m x n` matrix `grid` which is sorted in non-increasing order both row-wise and column-wise, return _the number of**negative** numbers in_ `grid`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** grid = [[4,3,2,-1],[3,2,1,-1],[1,1,-1,-2],[-1,-1,-2,-3]]\n    **Output:** 8\n    **Explanation:** There are 8 negatives number in the matrix.\n    \n\n**Example 2:**\n    \n    \n    **Input:** grid = [[3,2],[1,0]]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 100`\n  * `-100 <= grid[i][j] <= 100`",
+  "topics": ["Array", "Binary Search", "Matrix"],
+  "total_accepted": 652946,
+  "total_submissions": 821017,
+  "acceptance_rate": "79.5%",
+  "similar_questions": [
+    {
+      "title": "Maximum Count of Positive Integer and Negative Integer",
+      "slug": "maximum-count-of-positive-integer-and-negative-integer",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/"
+    }
+  ],
+  "hints": ["Use binary search for optimization or simply brute force."]
+}

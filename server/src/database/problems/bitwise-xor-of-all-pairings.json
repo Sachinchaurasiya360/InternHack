@@ -1,0 +1,21 @@
+{
+  "id": "2425",
+  "title": "Bitwise XOR of All Pairings",
+  "slug": "bitwise-xor-of-all-pairings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <strong>0-indexed</strong> arrays, <code>nums1</code> and <code>nums2</code>, consisting of non-negative integers. Let there be another array, <code>nums3</code>, which contains the bitwise XOR of <strong>all pairings</strong> of integers between <code>nums1</code> and <code>nums2</code> (every integer in <code>nums1</code> is paired with every integer in <code>nums2</code> <strong>exactly once</strong>).</p>\n\n<p>Return<em> the <strong>bitwise XOR</strong> of all integers in </em><code>nums3</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [2,1,3], nums2 = [10,2,5,0]\n<strong>Output:</strong> 13\n<strong>Explanation:</strong>\nA possible nums3 array is [8,0,7,2,11,3,4,1,9,1,6,3].\nThe bitwise XOR of all these numbers is 13, so we return 13.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2], nums2 = [3,4]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong>\nAll possible pairs of bitwise XORs are nums1[0] ^ nums2[0], nums1[0] ^ nums2[1], nums1[1] ^ nums2[0],\nand nums1[1] ^ nums2[1].\nThus, one possible nums3 array is [2,5,1,6].\n2 ^ 5 ^ 1 ^ 6 = 0, so we return 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length, nums2.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums1[i], nums2[j] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given two **0-indexed** arrays, `nums1` and `nums2`, consisting of non-negative integers. Let there be another array, `nums3`, which contains the bitwise XOR of **all pairings** of integers between `nums1` and `nums2` (every integer in `nums1` is paired with every integer in `nums2` **exactly once**).\n\nReturn _the**bitwise XOR** of all integers in _`nums3`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [2,1,3], nums2 = [10,2,5,0]\n    **Output:** 13\n    **Explanation:**\n    A possible nums3 array is [8,0,7,2,11,3,4,1,9,1,6,3].\n    The bitwise XOR of all these numbers is 13, so we return 13.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,2], nums2 = [3,4]\n    **Output:** 0\n    **Explanation:**\n    All possible pairs of bitwise XORs are nums1[0] ^ nums2[0], nums1[0] ^ nums2[1], nums1[1] ^ nums2[0],\n    and nums1[1] ^ nums2[1].\n    Thus, one possible nums3 array is [2,5,1,6].\n    2 ^ 5 ^ 1 ^ 6 = 0, so we return 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 105`\n  * `0 <= nums1[i], nums2[j] <= 109`",
+  "question": "You are given two **0-indexed** arrays, `nums1` and `nums2`, consisting of non-negative integers. Let there be another array, `nums3`, which contains the bitwise XOR of **all pairings** of integers between `nums1` and `nums2` (every integer in `nums1` is paired with every integer in `nums2` **exactly once**).\n\nReturn _the**bitwise XOR** of all integers in _`nums3`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [2,1,3], nums2 = [10,2,5,0]\n    **Output:** 13\n    **Explanation:**\n    A possible nums3 array is [8,0,7,2,11,3,4,1,9,1,6,3].\n    The bitwise XOR of all these numbers is 13, so we return 13.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,2], nums2 = [3,4]\n    **Output:** 0\n    **Explanation:**\n    All possible pairs of bitwise XORs are nums1[0] ^ nums2[0], nums1[0] ^ nums2[1], nums1[1] ^ nums2[0],\n    and nums1[1] ^ nums2[1].\n    Thus, one possible nums3 array is [2,5,1,6].\n    2 ^ 5 ^ 1 ^ 6 = 0, so we return 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 105`\n  * `0 <= nums1[i], nums2[j] <= 109`",
+  "topics": ["Array", "Bit Manipulation", "Brainteaser"],
+  "total_accepted": 152133,
+  "total_submissions": 227266,
+  "acceptance_rate": "66.9%",
+  "similar_questions": [],
+  "hints": [
+    "Think how the count of each individual integer affects the final answer.",
+    "If the length of nums1 is m and the length of nums2 is n, then each number in nums1 is repeated n times and each number in nums2 is repeated m times."
+  ]
+}

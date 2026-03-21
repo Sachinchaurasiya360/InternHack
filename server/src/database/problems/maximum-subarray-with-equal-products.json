@@ -1,0 +1,25 @@
+{
+  "id": "3411",
+  "title": "Maximum Subarray With Equal Products",
+  "slug": "maximum-subarray-with-equal-products",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of <strong>positive</strong> integers <code>nums</code>.</p>\n\n<p>An array <code>arr</code> is called <strong>product equivalent</strong> if <code>prod(arr) == lcm(arr) * gcd(arr)</code>, where:</p>\n\n<ul>\n\t<li><code>prod(arr)</code> is the product of all elements of <code>arr</code>.</li>\n\t<li><code>gcd(arr)</code> is the <span data-keyword=\"gcd-function\">GCD</span> of all elements of <code>arr</code>.</li>\n\t<li><code>lcm(arr)</code> is the <span data-keyword=\"lcm-function\">LCM</span> of all elements of <code>arr</code>.</li>\n</ul>\n\n<p>Return the length of the <strong>longest</strong> <strong>product equivalent</strong> <span data-keyword=\"subarray-nonempty\">subarray</span> of <code>nums</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,1,2,1,1,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong>&nbsp;</p>\n\n<p>The longest product equivalent subarray is <code>[1, 2, 1, 1, 1]</code>, where&nbsp;<code>prod([1, 2, 1, 1, 1]) = 2</code>,&nbsp;<code>gcd([1, 2, 1, 1, 1]) = 1</code>, and&nbsp;<code>lcm([1, 2, 1, 1, 1]) = 2</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,3,4,5,6]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong>&nbsp;</p>\n\n<p>The longest product equivalent subarray is <code>[3, 4, 5].</code></p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3,1,4,5,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of **positive** integers `nums`.\n\nAn array `arr` is called **product equivalent** if `prod(arr) == lcm(arr) * gcd(arr)`, where:\n\n  * `prod(arr)` is the product of all elements of `arr`.\n  * `gcd(arr)` is the GCD of all elements of `arr`.\n  * `lcm(arr)` is the LCM of all elements of `arr`.\n\n\n\nReturn the length of the **longest** **product equivalent** subarray of `nums`.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,1,2,1,1,1]\n\n**Output:** 5\n\n**Explanation:**  \n\nThe longest product equivalent subarray is `[1, 2, 1, 1, 1]`, where `prod([1, 2, 1, 1, 1]) = 2`, `gcd([1, 2, 1, 1, 1]) = 1`, and `lcm([1, 2, 1, 1, 1]) = 2`.\n\n**Example 2:**\n\n**Input:** nums = [2,3,4,5,6]\n\n**Output:** 3\n\n**Explanation:**  \n\nThe longest product equivalent subarray is `[3, 4, 5].`\n\n**Example 3:**\n\n**Input:** nums = [1,2,3,1,4,5,1]\n\n**Output:** 5\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `1 <= nums[i] <= 10`",
+  "question": "You are given an array of **positive** integers `nums`.\n\nAn array `arr` is called **product equivalent** if `prod(arr) == lcm(arr) * gcd(arr)`, where:\n\n  * `prod(arr)` is the product of all elements of `arr`.\n  * `gcd(arr)` is the GCD of all elements of `arr`.\n  * `lcm(arr)` is the LCM of all elements of `arr`.\n\n\n\nReturn the length of the **longest** **product equivalent** subarray of `nums`.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,1,2,1,1,1]\n\n**Output:** 5\n\n**Explanation:**  \n\nThe longest product equivalent subarray is `[1, 2, 1, 1, 1]`, where `prod([1, 2, 1, 1, 1]) = 2`, `gcd([1, 2, 1, 1, 1]) = 1`, and `lcm([1, 2, 1, 1, 1]) = 2`.\n\n**Example 2:**\n\n**Input:** nums = [2,3,4,5,6]\n\n**Output:** 3\n\n**Explanation:**  \n\nThe longest product equivalent subarray is `[3, 4, 5].`\n\n**Example 3:**\n\n**Input:** nums = [1,2,3,1,4,5,1]\n\n**Output:** 5",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 100`\n  * `1 <= nums[i] <= 10`",
+  "topics": ["Array", "Math", "Sliding Window", "Enumeration", "Number Theory"],
+  "total_accepted": 28433,
+  "total_submissions": 61084,
+  "acceptance_rate": "46.5%",
+  "similar_questions": [
+    {
+      "title": "Find Greatest Common Divisor of Array",
+      "slug": "find-greatest-common-divisor-of-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-greatest-common-divisor-of-array/"
+    }
+  ],
+  "hints": ["What is the maximum possible lcm?"]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "3190",
+  "title": "Find Minimum Operations to Make All Elements Divisible by Three",
+  "slug": "find-minimum-operations-to-make-all-elements-divisible-by-three",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. In one operation, you can add or subtract 1 from <strong>any</strong> element of <code>nums</code>.</p>\n\n<p>Return the <strong>minimum</strong> number of operations to make all elements of <code>nums</code> divisible by 3.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3,4]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>All array elements can be made divisible by 3 using 3 operations:</p>\n\n<ul>\n\t<li>Subtract 1 from 1.</li>\n\t<li>Add 1 to 2.</li>\n\t<li>Subtract 1 from 4.</li>\n</ul>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [3,6,9]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">0</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 50</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`. In one operation, you can add or subtract 1 from **any** element of `nums`.\n\nReturn the **minimum** number of operations to make all elements of `nums` divisible by 3.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,3,4]\n\n**Output:** 3\n\n**Explanation:**\n\nAll array elements can be made divisible by 3 using 3 operations:\n\n  * Subtract 1 from 1.\n  * Add 1 to 2.\n  * Subtract 1 from 4.\n\n\n\n**Example 2:**\n\n**Input:** nums = [3,6,9]\n\n**Output:** 0\n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 50`",
+  "question": "You are given an integer array `nums`. In one operation, you can add or subtract 1 from **any** element of `nums`.\n\nReturn the **minimum** number of operations to make all elements of `nums` divisible by 3.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,3,4]\n\n**Output:** 3\n\n**Explanation:**\n\nAll array elements can be made divisible by 3 using 3 operations:\n\n  * Subtract 1 from 1.\n  * Add 1 to 2.\n  * Subtract 1 from 4.\n\n\n\n**Example 2:**\n\n**Input:** nums = [3,6,9]\n\n**Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 50`\n  * `1 <= nums[i] <= 50`",
+  "topics": ["Array", "Math"],
+  "total_accepted": 264418,
+  "total_submissions": 290858,
+  "acceptance_rate": "90.9%",
+  "similar_questions": [
+    {
+      "title": "Minimum Moves to Equal Array Elements",
+      "slug": "minimum-moves-to-equal-array-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements/"
+    }
+  ],
+  "hints": [
+    "If <code>x % 3 != 0</code> we can always increment or decrement <code>x</code> such that we only need 1 operation.",
+    "Add <code>min(nums[i] % 3, 3 - (nums[i] % 3))</code> to the count of operations."
+  ]
+}

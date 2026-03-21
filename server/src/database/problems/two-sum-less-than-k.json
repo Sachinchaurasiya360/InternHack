@@ -1,0 +1,46 @@
+{
+  "id": "1099",
+  "title": "Two Sum Less Than K",
+  "slug": "two-sum-less-than-k",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 148244,
+  "total_submissions": 238597,
+  "acceptance_rate": "62.1%",
+  "similar_questions": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/two-sum/"
+    },
+    {
+      "title": "Two Sum II - Input Array Is Sorted",
+      "slug": "two-sum-ii-input-array-is-sorted",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/"
+    },
+    {
+      "title": "3Sum Smaller",
+      "slug": "3sum-smaller",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/3sum-smaller/"
+    },
+    {
+      "title": "Subarray Product Less Than K",
+      "slug": "subarray-product-less-than-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subarray-product-less-than-k/"
+    }
+  ],
+  "hints": [
+    "What if we have the array sorted?",
+    "Loop the array and get the value A[i] then we need to find a value A[j] such that A[i] + A[j] < K  which means A[j] < K - A[i]. In order to do that we can find that value with a binary search."
+  ]
+}

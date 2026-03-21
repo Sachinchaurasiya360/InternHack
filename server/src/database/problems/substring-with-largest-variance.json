@@ -1,0 +1,29 @@
+{
+  "id": "2272",
+  "title": "Substring With Largest Variance",
+  "slug": "substring-with-largest-variance",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>The <strong>variance</strong> of a string is defined as the largest difference between the number of occurrences of <strong>any</strong> <code>2</code> characters present in the string. Note the two characters may or may not be the same.</p>\n\n<p>Given a string <code>s</code> consisting of lowercase English letters only, return <em>the <strong>largest variance</strong> possible among all <strong>substrings</strong> of</em> <code>s</code>.</p>\n\n<p>A <strong>substring</strong> is a contiguous sequence of characters within a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aababbb&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong>\nAll possible variances along with their respective substrings are listed below:\n- Variance 0 for substrings &quot;a&quot;, &quot;aa&quot;, &quot;ab&quot;, &quot;abab&quot;, &quot;aababb&quot;, &quot;ba&quot;, &quot;b&quot;, &quot;bb&quot;, and &quot;bbb&quot;.\n- Variance 1 for substrings &quot;aab&quot;, &quot;aba&quot;, &quot;abb&quot;, &quot;aabab&quot;, &quot;ababb&quot;, &quot;aababbb&quot;, and &quot;bab&quot;.\n- Variance 2 for substrings &quot;aaba&quot;, &quot;ababbb&quot;, &quot;abbb&quot;, and &quot;babb&quot;.\n- Variance 3 for substring &quot;babbb&quot;.\nSince the largest possible variance is 3, we return it.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcde&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong>\nNo letter occurs more than once in s, so the variance of every substring is 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "The **variance** of a string is defined as the largest difference between the number of occurrences of **any** `2` characters present in the string. Note the two characters may or may not be the same.\n\nGiven a string `s` consisting of lowercase English letters only, return _the**largest variance** possible among all **substrings** of_ `s`.\n\nA **substring** is a contiguous sequence of characters within a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aababbb\"\n    **Output:** 3\n    **Explanation:**\n    All possible variances along with their respective substrings are listed below:\n    - Variance 0 for substrings \"a\", \"aa\", \"ab\", \"abab\", \"aababb\", \"ba\", \"b\", \"bb\", and \"bbb\".\n    - Variance 1 for substrings \"aab\", \"aba\", \"abb\", \"aabab\", \"ababb\", \"aababbb\", and \"bab\".\n    - Variance 2 for substrings \"aaba\", \"ababbb\", \"abbb\", and \"babb\".\n    - Variance 3 for substring \"babbb\".\n    Since the largest possible variance is 3, we return it.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcde\"\n    **Output:** 0\n    **Explanation:**\n    No letter occurs more than once in s, so the variance of every substring is 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of lowercase English letters.",
+  "question": "The **variance** of a string is defined as the largest difference between the number of occurrences of **any** `2` characters present in the string. Note the two characters may or may not be the same.\n\nGiven a string `s` consisting of lowercase English letters only, return _the**largest variance** possible among all **substrings** of_ `s`.\n\nA **substring** is a contiguous sequence of characters within a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aababbb\"\n    **Output:** 3\n    **Explanation:**\n    All possible variances along with their respective substrings are listed below:\n    - Variance 0 for substrings \"a\", \"aa\", \"ab\", \"abab\", \"aababb\", \"ba\", \"b\", \"bb\", and \"bbb\".\n    - Variance 1 for substrings \"aab\", \"aba\", \"abb\", \"aabab\", \"ababb\", \"aababbb\", and \"bab\".\n    - Variance 2 for substrings \"aaba\", \"ababbb\", \"abbb\", and \"babb\".\n    - Variance 3 for substring \"babbb\".\n    Since the largest possible variance is 3, we return it.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcde\"\n    **Output:** 0\n    **Explanation:**\n    No letter occurs more than once in s, so the variance of every substring is 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 104`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Dynamic Programming", "Enumeration"],
+  "total_accepted": 75683,
+  "total_submissions": 164357,
+  "acceptance_rate": "46.0%",
+  "similar_questions": [
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-subarray/"
+    }
+  ],
+  "hints": [
+    "Think about how to solve the problem if the string had only two distinct characters.",
+    "If we replace all occurrences of the first character by +1 and those of the second character by -1, can we efficiently calculate the largest possible variance of a string with only two distinct characters?",
+    "Now, try finding the optimal answer by taking all possible pairs of characters into consideration."
+  ]
+}

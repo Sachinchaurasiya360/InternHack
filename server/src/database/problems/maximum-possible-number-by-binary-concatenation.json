@@ -1,0 +1,25 @@
+{
+  "id": "3309",
+  "title": "Maximum Possible Number by Binary Concatenation",
+  "slug": "maximum-possible-number-by-binary-concatenation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers <code>nums</code> of size 3.</p>\n\n<p>Return the <strong>maximum</strong> possible number whose <em>binary representation</em> can be formed by <strong>concatenating</strong> the <em>binary representation</em> of <strong>all</strong> elements in <code>nums</code> in some order.</p>\n\n<p><strong>Note</strong> that the binary representation of any number <em>does not</em> contain leading zeros.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [1,2,3]</span></p>\n\n<p><strong>Output:</strong> 30</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Concatenate the numbers in the order <code>[3, 1, 2]</code> to get the result <code>&quot;11110&quot;</code>, which is the binary representation of 30.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [2,8,16]</span></p>\n\n<p><strong>Output:</strong> 1296</p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Concatenate the numbers in the order <code>[2, 8, 16]</code> to get the result <code>&quot;10100010000&quot;</code>, which is the binary representation of 1296.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>nums.length == 3</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 127</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `nums` of size 3.\n\nReturn the **maximum** possible number whose _binary representation_ can be formed by **concatenating** the _binary representation_ of **all** elements in `nums` in some order.\n\n**Note** that the binary representation of any number _does not_ contain leading zeros.\n\n \n\n**Example 1:**\n\n**Input:** nums = [1,2,3]\n\n**Output:** 30\n\n**Explanation:**\n\nConcatenate the numbers in the order `[3, 1, 2]` to get the result `\"11110\"`, which is the binary representation of 30.\n\n**Example 2:**\n\n**Input:** nums = [2,8,16]\n\n**Output:** 1296\n\n**Explanation:**\n\nConcatenate the numbers in the order `[2, 8, 16]` to get the result `\"10100010000\"`, which is the binary representation of 1296.\n\n \n\n**Constraints:**\n\n  * `nums.length == 3`\n  * `1 <= nums[i] <= 127`",
+  "question": "You are given an array of integers `nums` of size 3.\n\nReturn the **maximum** possible number whose _binary representation_ can be formed by **concatenating** the _binary representation_ of **all** elements in `nums` in some order.\n\n**Note** that the binary representation of any number _does not_ contain leading zeros.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [1,2,3]\n\n**Output:** 30\n\n**Explanation:**\n\nConcatenate the numbers in the order `[3, 1, 2]` to get the result `\"11110\"`, which is the binary representation of 30.\n\n**Example 2:**\n\n**Input:** nums = [2,8,16]\n\n**Output:** 1296\n\n**Explanation:**\n\nConcatenate the numbers in the order `[2, 8, 16]` to get the result `\"10100010000\"`, which is the binary representation of 1296.",
+  "constraints": "**Constraints:**\n\n  * `nums.length == 3`\n  * `1 <= nums[i] <= 127`",
+  "topics": ["Array", "Bit Manipulation", "Enumeration"],
+  "total_accepted": 36737,
+  "total_submissions": 56125,
+  "acceptance_rate": "65.5%",
+  "similar_questions": [
+    {
+      "title": "Concatenation of Consecutive Binary Numbers",
+      "slug": "concatenation-of-consecutive-binary-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/concatenation-of-consecutive-binary-numbers/"
+    }
+  ],
+  "hints": ["How many possible concatenation orders are there?"]
+}

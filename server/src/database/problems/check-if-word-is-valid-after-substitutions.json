@@ -1,0 +1,25 @@
+{
+  "id": "1003",
+  "title": "Check If Word Is Valid After Substitutions",
+  "slug": "check-if-word-is-valid-after-substitutions",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, determine if it is <strong>valid</strong>.</p>\n\n<p>A string <code>s</code> is <strong>valid</strong> if, starting with an empty string <code>t = &quot;&quot;</code>, you can <strong>transform </strong><code>t</code><strong> into </strong><code>s</code> after performing the following operation <strong>any number of times</strong>:</p>\n\n<ul>\n\t<li>Insert string <code>&quot;abc&quot;</code> into any position in <code>t</code>. More formally, <code>t</code> becomes <code>t<sub>left</sub> + &quot;abc&quot; + t<sub>right</sub></code>, where <code>t == t<sub>left</sub> + t<sub>right</sub></code>. Note that <code>t<sub>left</sub></code> and <code>t<sub>right</sub></code> may be <strong>empty</strong>.</li>\n</ul>\n\n<p>Return <code>true</code> <em>if </em><code>s</code><em> is a <strong>valid</strong> string, otherwise, return</em> <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aabcbc&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong>\n&quot;&quot; -&gt; &quot;<u>abc</u>&quot; -&gt; &quot;a<u>abc</u>bc&quot;\nThus, &quot;aabcbc&quot; is valid.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abcabcababcc&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong>\n&quot;&quot; -&gt; &quot;<u>abc</u>&quot; -&gt; &quot;abc<u>abc</u>&quot; -&gt; &quot;abcabc<u>abc</u>&quot; -&gt; &quot;abcabcab<u>abc</u>c&quot;\nThus, &quot;abcabcababcc&quot; is valid.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abccba&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> It is impossible to get &quot;abccba&quot; using the operation.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>s</code> consists of letters <code>&#39;a&#39;</code>, <code>&#39;b&#39;</code>, and <code>&#39;c&#39;</code></li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, determine if it is **valid**.\n\nA string `s` is **valid** if, starting with an empty string `t = \"\"`, you can **transform**`t`**into**`s` after performing the following operation **any number of times** :\n\n  * Insert string `\"abc\"` into any position in `t`. More formally, `t` becomes `tleft + \"abc\" + tright`, where `t == tleft + tright`. Note that `tleft` and `tright` may be **empty**.\n\n\n\nReturn `true` _if_`s` _is a**valid** string, otherwise, return_ `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aabcbc\"\n    **Output:** true\n    **Explanation:**\n    \"\" -> \"_abc_ \" -> \"a _abc_ bc\"\n    Thus, \"aabcbc\" is valid.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcabcababcc\"\n    **Output:** true\n    **Explanation:**\n    \"\" -> \"_abc_ \" -> \"abc _abc_ \" -> \"abcabc _abc_ \" -> \"abcabcab _abc_ c\"\n    Thus, \"abcabcababcc\" is valid.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abccba\"\n    **Output:** false\n    **Explanation:** It is impossible to get \"abccba\" using the operation.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 2 * 104`\n  * `s` consists of letters `'a'`, `'b'`, and `'c'`",
+  "question": "Given a string `s`, determine if it is **valid**.\n\nA string `s` is **valid** if, starting with an empty string `t = \"\"`, you can **transform**`t`**into**`s` after performing the following operation **any number of times** :\n\n  * Insert string `\"abc\"` into any position in `t`. More formally, `t` becomes `tleft + \"abc\" + tright`, where `t == tleft + tright`. Note that `tleft` and `tright` may be **empty**.\n\n\n\nReturn `true` _if_`s` _is a**valid** string, otherwise, return_ `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aabcbc\"\n    **Output:** true\n    **Explanation:**\n    \"\" -> \"_abc_ \" -> \"a _abc_ bc\"\n    Thus, \"aabcbc\" is valid.\n\n**Example 2:**\n    \n    \n    **Input:** s = \"abcabcababcc\"\n    **Output:** true\n    **Explanation:**\n    \"\" -> \"_abc_ \" -> \"abc _abc_ \" -> \"abcabc _abc_ \" -> \"abcabcab _abc_ c\"\n    Thus, \"abcabcababcc\" is valid.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"abccba\"\n    **Output:** false\n    **Explanation:** It is impossible to get \"abccba\" using the operation.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 2 * 104`\n  * `s` consists of letters `'a'`, `'b'`, and `'c'`",
+  "topics": ["String", "Stack"],
+  "total_accepted": 83928,
+  "total_submissions": 137458,
+  "acceptance_rate": "61.1%",
+  "similar_questions": [
+    {
+      "title": "Valid Parentheses",
+      "slug": "valid-parentheses",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-parentheses/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,76 @@
+{
+  "id": "2029",
+  "title": "Stone Game IX",
+  "slug": "stone-game-ix",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Alice and Bob continue their games with stones. There is a row of n stones, and each stone has an associated value. You are given an integer array <code>stones</code>, where <code>stones[i]</code> is the <strong>value</strong> of the <code>i<sup>th</sup></code> stone.</p>\n\n<p>Alice and Bob take turns, with <strong>Alice</strong> starting first. On each turn, the player may remove any stone from <code>stones</code>. The player who removes a stone <strong>loses</strong> if the <strong>sum</strong> of the values of <strong>all removed stones</strong> is divisible by <code>3</code>. Bob will win automatically if there are no remaining stones (even if it is Alice&#39;s turn).</p>\n\n<p>Assuming both players play <strong>optimally</strong>, return <code>true</code> <em>if Alice wins and</em> <code>false</code> <em>if Bob wins</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [2,1]\n<strong>Output:</strong> true\n<strong>Explanation:</strong>&nbsp;The game will be played as follows:\n- Turn 1: Alice can remove either stone.\n- Turn 2: Bob removes the remaining stone. \nThe sum of the removed stones is 1 + 2 = 3 and is divisible by 3. Therefore, Bob loses and Alice wins the game.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [2]\n<strong>Output:</strong> false\n<strong>Explanation:</strong>&nbsp;Alice will remove the only stone, and the sum of the values on the removed stones is 2. \nSince all the stones are removed and the sum of values is not divisible by 3, Bob wins the game.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [5,1,2,4,3]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Bob will always win. One possible way for Bob to win is shown below:\n- Turn 1: Alice can remove the second stone with value 1. Sum of removed stones = 1.\n- Turn 2: Bob removes the fifth stone with value 3. Sum of removed stones = 1 + 3 = 4.\n- Turn 3: Alices removes the fourth stone with value 4. Sum of removed stones = 1 + 3 + 4 = 8.\n- Turn 4: Bob removes the third stone with value 2. Sum of removed stones = 1 + 3 + 4 + 2 = 10.\n- Turn 5: Alice removes the first stone with value 5. Sum of removed stones = 1 + 3 + 4 + 2 + 5 = 15.\nAlice loses the game because the sum of the removed stones (15) is divisible by 3. Bob wins the game.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= stones.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= stones[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Alice and Bob continue their games with stones. There is a row of n stones, and each stone has an associated value. You are given an integer array `stones`, where `stones[i]` is the **value** of the `ith` stone.\n\nAlice and Bob take turns, with **Alice** starting first. On each turn, the player may remove any stone from `stones`. The player who removes a stone **loses** if the **sum** of the values of **all removed stones** is divisible by `3`. Bob will win automatically if there are no remaining stones (even if it is Alice's turn).\n\nAssuming both players play **optimally** , return `true` _if Alice wins and_ `false` _if Bob wins_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** stones = [2,1]\n    **Output:** true\n    **Explanation:**  The game will be played as follows:\n    - Turn 1: Alice can remove either stone.\n    - Turn 2: Bob removes the remaining stone. \n    The sum of the removed stones is 1 + 2 = 3 and is divisible by 3. Therefore, Bob loses and Alice wins the game.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stones = [2]\n    **Output:** false\n    **Explanation:**  Alice will remove the only stone, and the sum of the values on the removed stones is 2. \n    Since all the stones are removed and the sum of values is not divisible by 3, Bob wins the game.\n    \n\n**Example 3:**\n    \n    \n    **Input:** stones = [5,1,2,4,3]\n    **Output:** false\n    **Explanation:** Bob will always win. One possible way for Bob to win is shown below:\n    - Turn 1: Alice can remove the second stone with value 1. Sum of removed stones = 1.\n    - Turn 2: Bob removes the fifth stone with value 3. Sum of removed stones = 1 + 3 = 4.\n    - Turn 3: Alices removes the fourth stone with value 4. Sum of removed stones = 1 + 3 + 4 = 8.\n    - Turn 4: Bob removes the third stone with value 2. Sum of removed stones = 1 + 3 + 4 + 2 = 10.\n    - Turn 5: Alice removes the first stone with value 5. Sum of removed stones = 1 + 3 + 4 + 2 + 5 = 15.\n    Alice loses the game because the sum of the removed stones (15) is divisible by 3. Bob wins the game.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= stones.length <= 105`\n  * `1 <= stones[i] <= 104`",
+  "question": "Alice and Bob continue their games with stones. There is a row of n stones, and each stone has an associated value. You are given an integer array `stones`, where `stones[i]` is the **value** of the `ith` stone.\n\nAlice and Bob take turns, with **Alice** starting first. On each turn, the player may remove any stone from `stones`. The player who removes a stone **loses** if the **sum** of the values of **all removed stones** is divisible by `3`. Bob will win automatically if there are no remaining stones (even if it is Alice's turn).\n\nAssuming both players play **optimally** , return `true` _if Alice wins and_ `false` _if Bob wins_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** stones = [2,1]\n    **Output:** true\n    **Explanation:**  The game will be played as follows:\n    - Turn 1: Alice can remove either stone.\n    - Turn 2: Bob removes the remaining stone. \n    The sum of the removed stones is 1 + 2 = 3 and is divisible by 3. Therefore, Bob loses and Alice wins the game.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stones = [2]\n    **Output:** false\n    **Explanation:**  Alice will remove the only stone, and the sum of the values on the removed stones is 2. \n    Since all the stones are removed and the sum of values is not divisible by 3, Bob wins the game.\n    \n\n**Example 3:**\n    \n    \n    **Input:** stones = [5,1,2,4,3]\n    **Output:** false\n    **Explanation:** Bob will always win. One possible way for Bob to win is shown below:\n    - Turn 1: Alice can remove the second stone with value 1. Sum of removed stones = 1.\n    - Turn 2: Bob removes the fifth stone with value 3. Sum of removed stones = 1 + 3 = 4.\n    - Turn 3: Alices removes the fourth stone with value 4. Sum of removed stones = 1 + 3 + 4 = 8.\n    - Turn 4: Bob removes the third stone with value 2. Sum of removed stones = 1 + 3 + 4 + 2 = 10.\n    - Turn 5: Alice removes the first stone with value 5. Sum of removed stones = 1 + 3 + 4 + 2 + 5 = 15.\n    Alice loses the game because the sum of the removed stones (15) is divisible by 3. Bob wins the game.",
+  "constraints": "**Constraints:**\n\n  * `1 <= stones.length <= 105`\n  * `1 <= stones[i] <= 104`",
+  "topics": ["Array", "Math", "Greedy", "Counting", "Game Theory"],
+  "total_accepted": 11449,
+  "total_submissions": 38192,
+  "acceptance_rate": "30.0%",
+  "similar_questions": [
+    {
+      "title": "Stone Game",
+      "slug": "stone-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game/"
+    },
+    {
+      "title": "Stone Game II",
+      "slug": "stone-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ii/"
+    },
+    {
+      "title": "Stone Game III",
+      "slug": "stone-game-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-iii/"
+    },
+    {
+      "title": "Stone Game IV",
+      "slug": "stone-game-iv",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-iv/"
+    },
+    {
+      "title": "Stone Game V",
+      "slug": "stone-game-v",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-v/"
+    },
+    {
+      "title": "Stone Game VI",
+      "slug": "stone-game-vi",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vi/"
+    },
+    {
+      "title": "Stone Game VII",
+      "slug": "stone-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-vii/"
+    },
+    {
+      "title": "Stone Game VIII",
+      "slug": "stone-game-viii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/stone-game-viii/"
+    },
+    {
+      "title": "Stone Game IX",
+      "slug": "stone-game-ix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/stone-game-ix/"
+    }
+  ],
+  "hints": [
+    "There are limited outcomes given the current sum and the stones remaining.",
+    "Can we greedily simulate starting with taking a stone with remainder 1 or 2 divided by 3?"
+  ]
+}

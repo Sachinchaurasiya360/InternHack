@@ -1,0 +1,25 @@
+{
+  "id": "536",
+  "title": "Construct Binary Tree from String",
+  "slug": "construct-binary-tree-from-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["String", "Stack", "Tree", "Depth-First Search", "Binary Tree"],
+  "total_accepted": 126766,
+  "total_submissions": 216011,
+  "acceptance_rate": "58.7%",
+  "similar_questions": [
+    {
+      "title": "Construct String from Binary Tree",
+      "slug": "construct-string-from-binary-tree",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/construct-string-from-binary-tree/"
+    }
+  ],
+  "hints": []
+}

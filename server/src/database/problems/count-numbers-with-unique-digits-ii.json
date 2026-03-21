@@ -1,0 +1,27 @@
+{
+  "id": "3032",
+  "title": "Count Numbers With Unique Digits II",
+  "slug": "count-numbers-with-unique-digits-ii",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Math", "Dynamic Programming"],
+  "total_accepted": 8288,
+  "total_submissions": 9521,
+  "acceptance_rate": "87.0%",
+  "similar_questions": [
+    {
+      "title": "Count Numbers with Unique Digits",
+      "slug": "count-numbers-with-unique-digits",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-numbers-with-unique-digits/"
+    }
+  ],
+  "hints": [
+    "You can traverse over all numbers and check if the current number has unique digits or not."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "2123",
+  "title": "Minimum Operations to Remove Adjacent Ones in Matrix",
+  "slug": "minimum-operations-to-remove-adjacent-ones-in-matrix",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Graph Theory", "Matrix"],
+  "total_accepted": 1305,
+  "total_submissions": 3042,
+  "acceptance_rate": "42.9%",
+  "similar_questions": [
+    {
+      "title": "Set Matrix Zeroes",
+      "slug": "set-matrix-zeroes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/set-matrix-zeroes/"
+    },
+    {
+      "title": "01 Matrix",
+      "slug": "01-matrix",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/01-matrix/"
+    },
+    {
+      "title": "Minimum Number of Flips to Convert Binary Matrix to Zero Matrix",
+      "slug": "minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix/"
+    },
+    {
+      "title": "Remove All Ones With Row and Column Flips",
+      "slug": "remove-all-ones-with-row-and-column-flips",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-all-ones-with-row-and-column-flips/"
+    }
+  ],
+  "hints": [
+    "Consider each cell containing a 1 as a vertex whose neighbors are the cells 4-directionally connected to it. The grid then becomes a bipartite graph.",
+    "You want to find the smallest set of vertices such that every edge in the graph has an endpoint in this set. If you remove every vertex in this set from the graph, then all the 1’s will be disconnected. Are there any well-known algorithms for finding this set?",
+    "This set of vertices is called a minimum vertex cover. You can find the size of a minimum vertex cover by finding the size of a maximum matching (Konig’s theorem).",
+    "There are well-known algorithms such as Kuhn’s algorithm and Hopcroft-Karp-Karzanov algorithm which can find a maximum matching in a bipartite graph quickly."
+  ]
+}

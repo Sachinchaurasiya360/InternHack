@@ -1,0 +1,18 @@
+{
+  "id": "634",
+  "title": "Find the Derangement of An Array",
+  "slug": "find-the-derangement-of-an-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming", "Combinatorics"],
+  "total_accepted": 12510,
+  "total_submissions": 29990,
+  "acceptance_rate": "41.7%",
+  "similar_questions": [],
+  "hints": []
+}

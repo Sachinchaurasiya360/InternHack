@@ -1,0 +1,25 @@
+{
+  "id": "522",
+  "title": "Longest Uncommon Subsequence II",
+  "slug": "longest-uncommon-subsequence-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of strings <code>strs</code>, return <em>the length of the <strong>longest uncommon subsequence</strong> between them</em>. If the longest uncommon subsequence does not exist, return <code>-1</code>.</p>\n\n<p>An <strong>uncommon subsequence</strong> between an array of strings is a string that is a <strong>subsequence of one string but not the others</strong>.</p>\n\n<p>A <strong>subsequence</strong> of a string <code>s</code> is a string that can be obtained after deleting any number of characters from <code>s</code>.</p>\n\n<ul>\n\t<li>For example, <code>&quot;abc&quot;</code> is a subsequence of <code>&quot;aebdc&quot;</code> because you can delete the underlined characters in <code>&quot;a<u>e</u>b<u>d</u>c&quot;</code> to get <code>&quot;abc&quot;</code>. Other subsequences of <code>&quot;aebdc&quot;</code> include <code>&quot;aebdc&quot;</code>, <code>&quot;aeb&quot;</code>, and <code>&quot;&quot;</code> (empty string).</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> strs = [\"aba\",\"cdc\",\"eae\"]\n<strong>Output:</strong> 3\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> strs = [\"aaa\",\"aaa\",\"aa\"]\n<strong>Output:</strong> -1\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= strs.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= strs[i].length &lt;= 10</code></li>\n\t<li><code>strs[i]</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "Given an array of strings `strs`, return _the length of the**longest uncommon subsequence** between them_. If the longest uncommon subsequence does not exist, return `-1`.\n\nAn **uncommon subsequence** between an array of strings is a string that is a **subsequence of one string but not the others**.\n\nA **subsequence** of a string `s` is a string that can be obtained after deleting any number of characters from `s`.\n\n  * For example, `\"abc\"` is a subsequence of `\"aebdc\"` because you can delete the underlined characters in `\"a _e_ b _d_ c\"` to get `\"abc\"`. Other subsequences of `\"aebdc\"` include `\"aebdc\"`, `\"aeb\"`, and `\"\"` (empty string).\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** strs = [\"aba\",\"cdc\",\"eae\"]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"aaa\",\"aaa\",\"aa\"]\n    **Output:** -1\n    \n\n \n\n**Constraints:**\n\n  * `2 <= strs.length <= 50`\n  * `1 <= strs[i].length <= 10`\n  * `strs[i]` consists of lowercase English letters.",
+  "question": "Given an array of strings `strs`, return _the length of the**longest uncommon subsequence** between them_. If the longest uncommon subsequence does not exist, return `-1`.\n\nAn **uncommon subsequence** between an array of strings is a string that is a **subsequence of one string but not the others**.\n\nA **subsequence** of a string `s` is a string that can be obtained after deleting any number of characters from `s`.\n\n  * For example, `\"abc\"` is a subsequence of `\"aebdc\"` because you can delete the underlined characters in `\"a _e_ b _d_ c\"` to get `\"abc\"`. Other subsequences of `\"aebdc\"` include `\"aebdc\"`, `\"aeb\"`, and `\"\"` (empty string).",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** strs = [\"aba\",\"cdc\",\"eae\"]\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** strs = [\"aaa\",\"aaa\",\"aa\"]\n    **Output:** -1",
+  "constraints": "**Constraints:**\n\n  * `2 <= strs.length <= 50`\n  * `1 <= strs[i].length <= 10`\n  * `strs[i]` consists of lowercase English letters.",
+  "topics": ["Array", "Hash Table", "Two Pointers", "String", "Sorting"],
+  "total_accepted": 66195,
+  "total_submissions": 148863,
+  "acceptance_rate": "44.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Uncommon Subsequence I",
+      "slug": "longest-uncommon-subsequence-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/longest-uncommon-subsequence-i/"
+    }
+  ],
+  "hints": []
+}

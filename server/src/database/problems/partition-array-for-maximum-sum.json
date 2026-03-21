@@ -1,0 +1,40 @@
+{
+  "id": "1043",
+  "title": "Partition Array for Maximum Sum",
+  "slug": "partition-array-for-maximum-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>arr</code>, partition the array into (contiguous) subarrays of length <strong>at most</strong> <code>k</code>. After partitioning, each subarray has their values changed to become the maximum value of that subarray.</p>\n\n<p>Return <em>the largest sum of the given array after partitioning. Test cases are generated so that the answer fits in a <strong>32-bit</strong> integer.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,15,7,9,2,5,10], k = 3\n<strong>Output:</strong> 84\n<strong>Explanation:</strong> arr becomes [15,15,15,9,10,10,10]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,4,1,5,7,3,6,1,9,9,3], k = 4\n<strong>Output:</strong> 83\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1], k = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 500</code></li>\n\t<li><code>0 &lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= arr.length</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr`, partition the array into (contiguous) subarrays of length **at most** `k`. After partitioning, each subarray has their values changed to become the maximum value of that subarray.\n\nReturn _the largest sum of the given array after partitioning. Test cases are generated so that the answer fits in a**32-bit** integer._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,15,7,9,2,5,10], k = 3\n    **Output:** 84\n    **Explanation:** arr becomes [15,15,15,9,10,10,10]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,4,1,5,7,3,6,1,9,9,3], k = 4\n    **Output:** 83\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1], k = 1\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 500`\n  * `0 <= arr[i] <= 109`\n  * `1 <= k <= arr.length`",
+  "question": "Given an integer array `arr`, partition the array into (contiguous) subarrays of length **at most** `k`. After partitioning, each subarray has their values changed to become the maximum value of that subarray.\n\nReturn _the largest sum of the given array after partitioning. Test cases are generated so that the answer fits in a**32-bit** integer._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,15,7,9,2,5,10], k = 3\n    **Output:** 84\n    **Explanation:** arr becomes [15,15,15,9,10,10,10]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,4,1,5,7,3,6,1,9,9,3], k = 4\n    **Output:** 83\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [1], k = 1\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 500`\n  * `0 <= arr[i] <= 109`\n  * `1 <= k <= arr.length`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 260721,
+  "total_submissions": 337207,
+  "acceptance_rate": "77.3%",
+  "similar_questions": [
+    {
+      "title": "Subsequence of Size K With the Largest Even Sum",
+      "slug": "subsequence-of-size-k-with-the-largest-even-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/subsequence-of-size-k-with-the-largest-even-sum/"
+    },
+    {
+      "title": "Partition String Into Minimum Beautiful Substrings",
+      "slug": "partition-string-into-minimum-beautiful-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-string-into-minimum-beautiful-substrings/"
+    },
+    {
+      "title": "Minimum Substring Partition of Equal Character Frequency",
+      "slug": "minimum-substring-partition-of-equal-character-frequency",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-substring-partition-of-equal-character-frequency/"
+    }
+  ],
+  "hints": [
+    "Think dynamic programming:  dp[i] will be the answer for array A[0], ..., A[i-1].",
+    "For j = 1 .. k that keeps everything in bounds, dp[i] is the maximum of dp[i-j] + max(A[i-1], ..., A[i-j]) * j ."
+  ]
+}

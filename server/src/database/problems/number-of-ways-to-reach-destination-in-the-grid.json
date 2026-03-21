@@ -1,0 +1,25 @@
+{
+  "id": "2912",
+  "title": "Number of Ways to Reach Destination in the Grid",
+  "slug": "number-of-ways-to-reach-destination-in-the-grid",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming", "Combinatorics"],
+  "total_accepted": 1167,
+  "total_submissions": 2005,
+  "acceptance_rate": "58.2%",
+  "similar_questions": [],
+  "hints": [
+    "We are asked to count the number of sequences of length <code>k + 1</code> that start from <code>(x<sub>s</sub>, y<sub>s</sub>)</code> and end with <code>(x<sub>d</sub>, y<sub>d</sub>)</code>. i.e., <code>(x<sub>s</sub>, y<sub>s</sub>), (x<sub>1</sub>, y<sub>1</sub>), ..., (x<sub>k - 1</sub>, y<sub>k - 1</sub>), (x<sub>d</sub>, y<sub>d</sub>)</code>.",
+    "The key point is to see <code>x</code> and <code>y</code> separately.",
+    "Suppose we do <code>i</code> vertical moves and <code>k - i</code> horizontal moves.",
+    "In each vertical move, we change only <code>y</code>. Now let's count the number of sequences of length <code>i + 1</code> that start with <code>source[2]</code> and end with <code>dest[2]</code>. Let's call this number <code>vertical_count</code>.",
+    "Do the same for horizontal moves and let it be <code>horizontal_count</code>.",
+    "For each <code>i</code>, the number of ways would be <code>vertical_count * horizontal_count * C(n, i)</code> since the order of vertical and horizontal moves could be arbitrary."
+  ]
+}

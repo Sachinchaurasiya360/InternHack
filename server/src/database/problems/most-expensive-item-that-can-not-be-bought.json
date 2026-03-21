@@ -1,0 +1,42 @@
+{
+  "id": "2979",
+  "title": "Most Expensive Item That Can Not Be Bought",
+  "slug": "most-expensive-item-that-can-not-be-bought",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Math", "Dynamic Programming", "Number Theory"],
+  "total_accepted": 6412,
+  "total_submissions": 7980,
+  "acceptance_rate": "80.4%",
+  "similar_questions": [
+    {
+      "title": "Coin Change",
+      "slug": "coin-change",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/coin-change/"
+    },
+    {
+      "title": "Minimum Cost For Tickets",
+      "slug": "minimum-cost-for-tickets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-for-tickets/"
+    },
+    {
+      "title": "Minimum Number of Coins to be Added",
+      "slug": "minimum-number-of-coins-to-be-added",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-coins-to-be-added/"
+    }
+  ],
+  "hints": [
+    "Write out a few cases. It can be seen that all items greater than <code>primeOne * primeTwo</code> can always be bought.",
+    "If we can buy items with cost <code>i</code>, we can also buy items with price <code>i + primeOne</code> and <code>i + primeTwo</code>.",
+    "Use dynamic programming.",
+    "There is an O(1) solution: Use the Chicken McNugget Theorem."
+  ]
+}

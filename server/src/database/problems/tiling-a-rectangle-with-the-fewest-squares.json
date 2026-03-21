@@ -1,0 +1,29 @@
+{
+  "id": "1240",
+  "title": "Tiling a Rectangle with the Fewest Squares",
+  "slug": "tiling-a-rectangle-with-the-fewest-squares",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given a rectangle of size <code>n</code> x <code>m</code>, return <em>the minimum number of integer-sided squares that tile the rectangle</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/10/17/sample_11_1592.png\" style=\"width: 154px; height: 106px;\" /></p>\n\n<pre>\n<strong>Input:</strong> n = 2, m = 3\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> <code>3</code> squares are necessary to cover the rectangle.\n<code>2</code> (squares of <code>1x1</code>)\n<code>1</code> (square of <code>2x2</code>)</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/10/17/sample_22_1592.png\" style=\"width: 224px; height: 126px;\" /></p>\n\n<pre>\n<strong>Input:</strong> n = 5, m = 8\n<strong>Output:</strong> 5\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/10/17/sample_33_1592.png\" style=\"width: 224px; height: 189px;\" /></p>\n\n<pre>\n<strong>Input:</strong> n = 11, m = 13\n<strong>Output:</strong> 6\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n, m &lt;= 13</code></li>\n</ul>\n",
+  "content_markdown": "Given a rectangle of size `n` x `m`, return _the minimum number of integer-sided squares that tile the rectangle_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/10/17/sample_11_1592.png)\n    \n    \n    **Input:** n = 2, m = 3\n    **Output:** 3\n    **Explanation:** 3 squares are necessary to cover the rectangle.\n    2 (squares of 1x1)\n    1 (square of 2x2)\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/10/17/sample_22_1592.png)\n    \n    \n    **Input:** n = 5, m = 8\n    **Output:** 5\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2019/10/17/sample_33_1592.png)\n    \n    \n    **Input:** n = 11, m = 13\n    **Output:** 6\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n, m <= 13`",
+  "question": "Given a rectangle of size `n` x `m`, return _the minimum number of integer-sided squares that tile the rectangle_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/10/17/sample_11_1592.png)\n    \n    \n    **Input:** n = 2, m = 3\n    **Output:** 3\n    **Explanation:** 3 squares are necessary to cover the rectangle.\n    2 (squares of 1x1)\n    1 (square of 2x2)\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2019/10/17/sample_22_1592.png)\n    \n    \n    **Input:** n = 5, m = 8\n    **Output:** 5\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2019/10/17/sample_33_1592.png)\n    \n    \n    **Input:** n = 11, m = 13\n    **Output:** 6",
+  "constraints": "**Constraints:**\n\n  * `1 <= n, m <= 13`",
+  "topics": ["Backtracking"],
+  "total_accepted": 27255,
+  "total_submissions": 49714,
+  "acceptance_rate": "54.8%",
+  "similar_questions": [
+    {
+      "title": "Selling Pieces of Wood",
+      "slug": "selling-pieces-of-wood",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/selling-pieces-of-wood/"
+    }
+  ],
+  "hints": [
+    "Can you use backtracking to solve this problem ?.",
+    "Suppose you've placed a bunch of squares. Where is the natural spot to place the next square ?.",
+    "The maximum number of squares to be placed will be ≤ max(n,m)."
+  ]
+}

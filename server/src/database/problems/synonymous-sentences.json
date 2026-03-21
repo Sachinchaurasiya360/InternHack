@@ -1,0 +1,22 @@
+{
+  "id": "1258",
+  "title": "Synonymous Sentences",
+  "slug": "synonymous-sentences",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String", "Backtracking", "Sort", "Union-Find"],
+  "total_accepted": 29184,
+  "total_submissions": 51102,
+  "acceptance_rate": "57.1%",
+  "similar_questions": [],
+  "hints": [
+    "Find all synonymous groups of words.",
+    "Use union-find data structure.",
+    "By backtracking, generate all possible statements."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "1097",
+  "title": "Game Play Analysis V",
+  "slug": "game-play-analysis-v",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 28741,
+  "total_submissions": 57080,
+  "acceptance_rate": "50.4%",
+  "similar_questions": [
+    {
+      "title": "Game Play Analysis IV",
+      "slug": "game-play-analysis-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/game-play-analysis-iv/"
+    }
+  ],
+  "hints": []
+}

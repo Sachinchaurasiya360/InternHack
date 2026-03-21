@@ -1,0 +1,31 @@
+{
+  "id": "991",
+  "title": "Broken Calculator",
+  "slug": "broken-calculator",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a broken calculator that has the integer <code>startValue</code> on its display initially. In one operation, you can:</p>\n\n<ul>\n\t<li>multiply the number on display by <code>2</code>, or</li>\n\t<li>subtract <code>1</code> from the number on display.</li>\n</ul>\n\n<p>Given two integers <code>startValue</code> and <code>target</code>, return <em>the minimum number of operations needed to display </em><code>target</code><em> on the calculator</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> startValue = 2, target = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Use double operation and then decrement operation {2 -&gt; 4 -&gt; 3}.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> startValue = 5, target = 8\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Use decrement and then double {5 -&gt; 4 -&gt; 8}.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> startValue = 3, target = 10\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> Use double, decrement and double {3 -&gt; 6 -&gt; 5 -&gt; 10}.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= startValue, target &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "There is a broken calculator that has the integer `startValue` on its display initially. In one operation, you can:\n\n  * multiply the number on display by `2`, or\n  * subtract `1` from the number on display.\n\n\n\nGiven two integers `startValue` and `target`, return _the minimum number of operations needed to display_`target` _on the calculator_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** startValue = 2, target = 3\n    **Output:** 2\n    **Explanation:** Use double operation and then decrement operation {2 -> 4 -> 3}.\n    \n\n**Example 2:**\n    \n    \n    **Input:** startValue = 5, target = 8\n    **Output:** 2\n    **Explanation:** Use decrement and then double {5 -> 4 -> 8}.\n    \n\n**Example 3:**\n    \n    \n    **Input:** startValue = 3, target = 10\n    **Output:** 3\n    **Explanation:** Use double, decrement and double {3 -> 6 -> 5 -> 10}.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= startValue, target <= 109`",
+  "question": "There is a broken calculator that has the integer `startValue` on its display initially. In one operation, you can:\n\n  * multiply the number on display by `2`, or\n  * subtract `1` from the number on display.\n\n\n\nGiven two integers `startValue` and `target`, return _the minimum number of operations needed to display_`target` _on the calculator_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** startValue = 2, target = 3\n    **Output:** 2\n    **Explanation:** Use double operation and then decrement operation {2 -> 4 -> 3}.\n    \n\n**Example 2:**\n    \n    \n    **Input:** startValue = 5, target = 8\n    **Output:** 2\n    **Explanation:** Use decrement and then double {5 -> 4 -> 8}.\n    \n\n**Example 3:**\n    \n    \n    **Input:** startValue = 3, target = 10\n    **Output:** 3\n    **Explanation:** Use double, decrement and double {3 -> 6 -> 5 -> 10}.",
+  "constraints": "**Constraints:**\n\n  * `1 <= startValue, target <= 109`",
+  "topics": ["Math", "Greedy"],
+  "total_accepted": 121176,
+  "total_submissions": 216715,
+  "acceptance_rate": "55.9%",
+  "similar_questions": [
+    {
+      "title": "2 Keys Keyboard",
+      "slug": "2-keys-keyboard",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/2-keys-keyboard/"
+    },
+    {
+      "title": "Minimum Operations to Make the Integer Zero",
+      "slug": "minimum-operations-to-make-the-integer-zero",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-the-integer-zero/"
+    }
+  ],
+  "hints": []
+}

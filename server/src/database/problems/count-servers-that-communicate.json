@@ -1,0 +1,28 @@
+{
+  "id": "1267",
+  "title": "Count Servers that Communicate",
+  "slug": "count-servers-that-communicate",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a map of a server center, represented as a <code>m * n</code> integer matrix&nbsp;<code>grid</code>, where 1 means that on that cell there is a server and 0 means that it is no server. Two servers are said to communicate if they are on the same row or on the same column.<br />\n<br />\nReturn the number of servers&nbsp;that communicate with any other server.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/11/14/untitled-diagram-6.jpg\" style=\"width: 202px; height: 203px;\" /></p>\n\n<pre>\n<strong>Input:</strong> grid = [[1,0],[0,1]]\n<strong>Output:</strong> 0\n<b>Explanation:</b>&nbsp;No servers can communicate with others.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/11/13/untitled-diagram-4.jpg\" style=\"width: 203px; height: 203px;\" /></strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [[1,0],[1,1]]\n<strong>Output:</strong> 3\n<b>Explanation:</b>&nbsp;All three servers can communicate with at least one other server.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/11/14/untitled-diagram-1-3.jpg\" style=\"width: 443px; height: 443px;\" /></p>\n\n<pre>\n<strong>Input:</strong> grid = [[1,1,0,0],[0,0,1,0],[0,0,1,0],[0,0,0,1]]\n<strong>Output:</strong> 4\n<b>Explanation:</b>&nbsp;The two servers in the first row can communicate with each other. The two servers in the third column can communicate with each other. The server at right bottom corner can&#39;t communicate with any other server.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m &lt;= 250</code></li>\n\t<li><code>1 &lt;= n &lt;= 250</code></li>\n\t<li><code>grid[i][j] == 0 or 1</code></li>\n</ul>\n",
+  "content_markdown": "You are given a map of a server center, represented as a `m * n` integer matrix `grid`, where 1 means that on that cell there is a server and 0 means that it is no server. Two servers are said to communicate if they are on the same row or on the same column.  \n  \nReturn the number of servers that communicate with any other server.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/11/14/untitled-diagram-6.jpg)\n    \n    \n    **Input:** grid = [[1,0],[0,1]]\n    **Output:** 0\n    **Explanation:**  No servers can communicate with others.\n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2019/11/13/untitled-diagram-4.jpg)**\n    \n    \n    **Input:** grid = [[1,0],[1,1]]\n    **Output:** 3\n    **Explanation:**  All three servers can communicate with at least one other server.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2019/11/14/untitled-diagram-1-3.jpg)\n    \n    \n    **Input:** grid = [[1,1,0,0],[0,0,1,0],[0,0,1,0],[0,0,0,1]]\n    **Output:** 4\n    **Explanation:**  The two servers in the first row can communicate with each other. The two servers in the third column can communicate with each other. The server at right bottom corner can't communicate with any other server.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m <= 250`\n  * `1 <= n <= 250`\n  * `grid[i][j] == 0 or 1`",
+  "question": "You are given a map of a server center, represented as a `m * n` integer matrix `grid`, where 1 means that on that cell there is a server and 0 means that it is no server. Two servers are said to communicate if they are on the same row or on the same column.  \n  \nReturn the number of servers that communicate with any other server.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/11/14/untitled-diagram-6.jpg)\n    \n    \n    **Input:** grid = [[1,0],[0,1]]\n    **Output:** 0\n    **Explanation:**  No servers can communicate with others.\n\n**Example 2:**\n\n**![](https://assets.leetcode.com/uploads/2019/11/13/untitled-diagram-4.jpg)**\n    \n    \n    **Input:** grid = [[1,0],[1,1]]\n    **Output:** 3\n    **Explanation:**  All three servers can communicate with at least one other server.\n    \n\n**Example 3:**\n\n![](https://assets.leetcode.com/uploads/2019/11/14/untitled-diagram-1-3.jpg)\n    \n    \n    **Input:** grid = [[1,1,0,0],[0,0,1,0],[0,0,1,0],[0,0,0,1]]\n    **Output:** 4\n    **Explanation:**  The two servers in the first row can communicate with each other. The two servers in the third column can communicate with each other. The server at right bottom corner can't communicate with any other server.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m <= 250`\n  * `1 <= n <= 250`\n  * `grid[i][j] == 0 or 1`",
+  "topics": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Matrix",
+    "Counting"
+  ],
+  "total_accepted": 199045,
+  "total_submissions": 270721,
+  "acceptance_rate": "73.5%",
+  "similar_questions": [],
+  "hints": [
+    "Store number of computer in each row and column.",
+    "Count all servers that are not isolated."
+  ]
+}

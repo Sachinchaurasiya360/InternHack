@@ -1,0 +1,35 @@
+{
+  "id": "2520",
+  "title": "Count the Digits That Divide a Number",
+  "slug": "count-the-digits-that-divide-a-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>num</code>, return <em>the number of digits in <code>num</code> that divide </em><code>num</code>.</p>\n\n<p>An integer <code>val</code> divides <code>nums</code> if <code>nums % val == 0</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong>Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 7\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> 7 divides itself, hence the answer is 1.\n</pre>\n\n<p><strong>Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 121\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> 121 is divisible by 1, but not 2. Since 1 occurs twice as a digit, we return 2.\n</pre>\n\n<p><strong>Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> num = 1248\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> 1248 is divisible by all of its digits, hence the answer is 4.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num &lt;= 10<sup>9</sup></code></li>\n\t<li><code>num</code> does not contain <code>0</code> as one of its digits.</li>\n</ul>\n",
+  "content_markdown": "Given an integer `num`, return _the number of digits in`num` that divide _`num`.\n\nAn integer `val` divides `nums` if `nums % val == 0`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num = 7\n    **Output:** 1\n    **Explanation:** 7 divides itself, hence the answer is 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 121\n    **Output:** 2\n    **Explanation:** 121 is divisible by 1, but not 2. Since 1 occurs twice as a digit, we return 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 1248\n    **Output:** 4\n    **Explanation:** 1248 is divisible by all of its digits, hence the answer is 4.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num <= 109`\n  * `num` does not contain `0` as one of its digits.",
+  "question": "Given an integer `num`, return _the number of digits in`num` that divide _`num`.\n\nAn integer `val` divides `nums` if `nums % val == 0`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num = 7\n    **Output:** 1\n    **Explanation:** 7 divides itself, hence the answer is 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num = 121\n    **Output:** 2\n    **Explanation:** 121 is divisible by 1, but not 2. Since 1 occurs twice as a digit, we return 2.\n    \n\n**Example 3:**\n    \n    \n    **Input:** num = 1248\n    **Output:** 4\n    **Explanation:** 1248 is divisible by all of its digits, hence the answer is 4.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num <= 109`\n  * `num` does not contain `0` as one of its digits.",
+  "topics": ["Math"],
+  "total_accepted": 166040,
+  "total_submissions": 193262,
+  "acceptance_rate": "85.9%",
+  "similar_questions": [
+    {
+      "title": "Happy Number",
+      "slug": "happy-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/happy-number/"
+    },
+    {
+      "title": "Self Dividing Numbers",
+      "slug": "self-dividing-numbers",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/self-dividing-numbers/"
+    }
+  ],
+  "hints": [
+    "Use mod by 10 to retrieve the least significant digit of the number",
+    "Divide the number by 10, then round it down so that the second least significant digit becomes the least significant digit of the number",
+    "Use your language’s mod operator to see if a number is a divisor of another."
+  ]
+}

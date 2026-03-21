@@ -1,0 +1,28 @@
+{
+  "id": "2534",
+  "title": "Time Taken to Cross the Door",
+  "slug": "time-taken-to-cross-the-door",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Queue", "Simulation"],
+  "total_accepted": 13849,
+  "total_submissions": 27663,
+  "acceptance_rate": "50.1%",
+  "similar_questions": [
+    {
+      "title": "The Latest Time to Catch a Bus",
+      "slug": "the-latest-time-to-catch-a-bus",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-latest-time-to-catch-a-bus/"
+    }
+  ],
+  "hints": [
+    "Use a queue to store the people who want to enter or exit and their corresponding times.",
+    "Simulate the process described in the statement and apply the 4 rules to the people crossing the door."
+  ]
+}

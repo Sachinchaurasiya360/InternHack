@@ -1,0 +1,51 @@
+{
+  "id": "251",
+  "title": "Flatten 2D Vector",
+  "slug": "flatten-2d-vector",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Two Pointers", "Design", "Iterator"],
+  "total_accepted": 145205,
+  "total_submissions": 287823,
+  "acceptance_rate": "50.4%",
+  "similar_questions": [
+    {
+      "title": "Binary Search Tree Iterator",
+      "slug": "binary-search-tree-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-search-tree-iterator/"
+    },
+    {
+      "title": "Zigzag Iterator",
+      "slug": "zigzag-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/zigzag-iterator/"
+    },
+    {
+      "title": "Peeking Iterator",
+      "slug": "peeking-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/peeking-iterator/"
+    },
+    {
+      "title": "Flatten Nested List Iterator",
+      "slug": "flatten-nested-list-iterator",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/flatten-nested-list-iterator/"
+    }
+  ],
+  "hints": [
+    "How many variables do you need to keep track?",
+    "Two variables is all you need. Try with <code>x</code> and <code>y</code>.",
+    "Beware of empty rows. It could be the first few rows.",
+    "To write correct code, think about the <a href=\"https://en.wikipedia.org/wiki/Invariant_(computer_science)\" target=\"_blank\">invariant</a> to maintain. What is it?",
+    "The invariant is <code>x</code> and <code>y</code> must always point to a valid point in the 2d vector. Should you maintain your invariant <i>ahead of time</i> or <i>right when you need it</i>?",
+    "Not sure? Think about how you would implement <code>hasNext()</code>. Which is more complex?",
+    "Common logic in two different places should be refactored into a common method."
+  ]
+}

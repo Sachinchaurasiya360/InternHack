@@ -1,0 +1,61 @@
+{
+  "id": "206",
+  "title": "Reverse Linked List",
+  "slug": "reverse-linked-list",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given the <code>head</code> of a singly linked list, reverse the list, and return <em>the reversed list</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/19/rev1ex1.jpg\" style=\"width: 542px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2,3,4,5]\n<strong>Output:</strong> [5,4,3,2,1]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/19/rev1ex2.jpg\" style=\"width: 182px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> head = [1,2]\n<strong>Output:</strong> [2,1]\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> head = []\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the list is the range <code>[0, 5000]</code>.</li>\n\t<li><code>-5000 &lt;= Node.val &lt;= 5000</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> A linked list can be reversed either iteratively or recursively. Could you implement both?</p>\n",
+  "content_markdown": "Given the `head` of a singly linked list, reverse the list, and return _the reversed list_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/rev1ex1.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5]\n    **Output:** [5,4,3,2,1]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/rev1ex2.jpg)\n    \n    \n    **Input:** head = [1,2]\n    **Output:** [2,1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** head = []\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the list is the range `[0, 5000]`.\n  * `-5000 <= Node.val <= 5000`\n\n\n\n \n\n**Follow up:** A linked list can be reversed either iteratively or recursively. Could you implement both?",
+  "question": "Given the `head` of a singly linked list, reverse the list, and return _the reversed list_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/rev1ex1.jpg)\n    \n    \n    **Input:** head = [1,2,3,4,5]\n    **Output:** [5,4,3,2,1]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/02/19/rev1ex2.jpg)\n    \n    \n    **Input:** head = [1,2]\n    **Output:** [2,1]\n    \n\n**Example 3:**\n    \n    \n    **Input:** head = []\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the list is the range `[0, 5000]`.\n  * `-5000 <= Node.val <= 5000`",
+  "topics": ["Linked List", "Recursion"],
+  "total_accepted": 6103254,
+  "total_submissions": 7602061,
+  "acceptance_rate": "80.3%",
+  "similar_questions": [
+    {
+      "title": "Reverse Linked List II",
+      "slug": "reverse-linked-list-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reverse-linked-list-ii/"
+    },
+    {
+      "title": "Binary Tree Upside Down",
+      "slug": "binary-tree-upside-down",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-upside-down/"
+    },
+    {
+      "title": "Palindrome Linked List",
+      "slug": "palindrome-linked-list",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-linked-list/"
+    },
+    {
+      "title": "Reverse Nodes in Even Length Groups",
+      "slug": "reverse-nodes-in-even-length-groups",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reverse-nodes-in-even-length-groups/"
+    },
+    {
+      "title": "Maximum Twin Sum of a Linked List",
+      "slug": "maximum-twin-sum-of-a-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/"
+    },
+    {
+      "title": "Remove Nodes From Linked List",
+      "slug": "remove-nodes-from-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-nodes-from-linked-list/"
+    },
+    {
+      "title": "Insert Greatest Common Divisors in Linked List",
+      "slug": "insert-greatest-common-divisors-in-linked-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/insert-greatest-common-divisors-in-linked-list/"
+    }
+  ],
+  "hints": []
+}

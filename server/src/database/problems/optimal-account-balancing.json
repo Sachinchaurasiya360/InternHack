@@ -1,0 +1,18 @@
+{
+  "id": "465",
+  "title": "Optimal Account Balancing",
+  "slug": "optimal-account-balancing",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming", "Backtracking", "Bit Manipulation", "Bitmask"],
+  "total_accepted": 113440,
+  "total_submissions": 225559,
+  "acceptance_rate": "50.3%",
+  "similar_questions": [],
+  "hints": []
+}

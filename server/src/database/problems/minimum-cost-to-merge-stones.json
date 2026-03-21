@@ -1,0 +1,31 @@
+{
+  "id": "1000",
+  "title": "Minimum Cost to Merge Stones",
+  "slug": "minimum-cost-to-merge-stones",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>There are <code>n</code> piles of <code>stones</code> arranged in a row. The <code>i<sup>th</sup></code> pile has <code>stones[i]</code> stones.</p>\n\n<p>A move consists of merging exactly <code>k</code> <strong>consecutive</strong> piles into one pile, and the cost of this move is equal to the total number of stones in these <code>k</code> piles.</p>\n\n<p>Return <em>the minimum cost to merge all piles of stones into one pile</em>. If it is impossible, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [3,2,4,1], k = 2\n<strong>Output:</strong> 20\n<strong>Explanation:</strong> We start with [3, 2, 4, 1].\nWe merge [3, 2] for a cost of 5, and we are left with [5, 4, 1].\nWe merge [4, 1] for a cost of 5, and we are left with [5, 5].\nWe merge [5, 5] for a cost of 10, and we are left with [10].\nThe total cost was 20, and this is the minimum possible.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [3,2,4,1], k = 3\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> After any merge operation, there are 2 piles left, and we can&#39;t merge anymore.  So the task is impossible.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> stones = [3,5,1,2,6], k = 3\n<strong>Output:</strong> 25\n<strong>Explanation:</strong> We start with [3, 5, 1, 2, 6].\nWe merge [5, 1, 2] for a cost of 8, and we are left with [3, 8, 6].\nWe merge [3, 8, 6] for a cost of 17, and we are left with [17].\nThe total cost was 25, and this is the minimum possible.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == stones.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 30</code></li>\n\t<li><code>1 &lt;= stones[i] &lt;= 100</code></li>\n\t<li><code>2 &lt;= k &lt;= 30</code></li>\n</ul>\n",
+  "content_markdown": "There are `n` piles of `stones` arranged in a row. The `ith` pile has `stones[i]` stones.\n\nA move consists of merging exactly `k` **consecutive** piles into one pile, and the cost of this move is equal to the total number of stones in these `k` piles.\n\nReturn _the minimum cost to merge all piles of stones into one pile_. If it is impossible, return `-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** stones = [3,2,4,1], k = 2\n    **Output:** 20\n    **Explanation:** We start with [3, 2, 4, 1].\n    We merge [3, 2] for a cost of 5, and we are left with [5, 4, 1].\n    We merge [4, 1] for a cost of 5, and we are left with [5, 5].\n    We merge [5, 5] for a cost of 10, and we are left with [10].\n    The total cost was 20, and this is the minimum possible.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stones = [3,2,4,1], k = 3\n    **Output:** -1\n    **Explanation:** After any merge operation, there are 2 piles left, and we can't merge anymore.  So the task is impossible.\n    \n\n**Example 3:**\n    \n    \n    **Input:** stones = [3,5,1,2,6], k = 3\n    **Output:** 25\n    **Explanation:** We start with [3, 5, 1, 2, 6].\n    We merge [5, 1, 2] for a cost of 8, and we are left with [3, 8, 6].\n    We merge [3, 8, 6] for a cost of 17, and we are left with [17].\n    The total cost was 25, and this is the minimum possible.\n    \n\n \n\n**Constraints:**\n\n  * `n == stones.length`\n  * `1 <= n <= 30`\n  * `1 <= stones[i] <= 100`\n  * `2 <= k <= 30`",
+  "question": "There are `n` piles of `stones` arranged in a row. The `ith` pile has `stones[i]` stones.\n\nA move consists of merging exactly `k` **consecutive** piles into one pile, and the cost of this move is equal to the total number of stones in these `k` piles.\n\nReturn _the minimum cost to merge all piles of stones into one pile_. If it is impossible, return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** stones = [3,2,4,1], k = 2\n    **Output:** 20\n    **Explanation:** We start with [3, 2, 4, 1].\n    We merge [3, 2] for a cost of 5, and we are left with [5, 4, 1].\n    We merge [4, 1] for a cost of 5, and we are left with [5, 5].\n    We merge [5, 5] for a cost of 10, and we are left with [10].\n    The total cost was 20, and this is the minimum possible.\n    \n\n**Example 2:**\n    \n    \n    **Input:** stones = [3,2,4,1], k = 3\n    **Output:** -1\n    **Explanation:** After any merge operation, there are 2 piles left, and we can't merge anymore.  So the task is impossible.\n    \n\n**Example 3:**\n    \n    \n    **Input:** stones = [3,5,1,2,6], k = 3\n    **Output:** 25\n    **Explanation:** We start with [3, 5, 1, 2, 6].\n    We merge [5, 1, 2] for a cost of 8, and we are left with [3, 8, 6].\n    We merge [3, 8, 6] for a cost of 17, and we are left with [17].\n    The total cost was 25, and this is the minimum possible.",
+  "constraints": "**Constraints:**\n\n  * `n == stones.length`\n  * `1 <= n <= 30`\n  * `1 <= stones[i] <= 100`\n  * `2 <= k <= 30`",
+  "topics": ["Array", "Dynamic Programming", "Prefix Sum"],
+  "total_accepted": 50917,
+  "total_submissions": 111581,
+  "acceptance_rate": "45.6%",
+  "similar_questions": [
+    {
+      "title": "Burst Balloons",
+      "slug": "burst-balloons",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/burst-balloons/"
+    },
+    {
+      "title": "Minimum Cost to Connect Sticks",
+      "slug": "minimum-cost-to-connect-sticks",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-cost-to-connect-sticks/"
+    }
+  ],
+  "hints": []
+}

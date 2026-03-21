@@ -1,0 +1,18 @@
+{
+  "id": "1126",
+  "title": "Active Businesses",
+  "slug": "active-businesses",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 52516,
+  "total_submissions": 79565,
+  "acceptance_rate": "66.0%",
+  "similar_questions": [],
+  "hints": []
+}

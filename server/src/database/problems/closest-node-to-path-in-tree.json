@@ -1,0 +1,35 @@
+{
+  "id": "2277",
+  "title": "Closest Node to Path in Tree",
+  "slug": "closest-node-to-path-in-tree",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Tree", "Depth-First Search", "Breadth-First Search"],
+  "total_accepted": 6559,
+  "total_submissions": 10516,
+  "acceptance_rate": "62.4%",
+  "similar_questions": [
+    {
+      "title": "Count Number of Possible Root Nodes",
+      "slug": "count-number-of-possible-root-nodes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-number-of-possible-root-nodes/"
+    },
+    {
+      "title": "Design Graph With Shortest Path Calculator",
+      "slug": "design-graph-with-shortest-path-calculator",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/design-graph-with-shortest-path-calculator/"
+    }
+  ],
+  "hints": [
+    "For the ith query, find the distance from node_i to every other node in the tree.",
+    "We can use a BFS to find the distances.",
+    "Use DFS to find all the nodes on the path from start_i to end_i."
+  ]
+}

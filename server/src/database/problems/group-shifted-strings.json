@@ -1,0 +1,31 @@
+{
+  "id": "249",
+  "title": "Group Shifted Strings",
+  "slug": "group-shifted-strings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Hash Table", "String"],
+  "total_accepted": 313886,
+  "total_submissions": 463376,
+  "acceptance_rate": "67.7%",
+  "similar_questions": [
+    {
+      "title": "Group Anagrams",
+      "slug": "group-anagrams",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/group-anagrams/"
+    },
+    {
+      "title": "Find Maximum Number of String Pairs",
+      "slug": "find-maximum-number-of-string-pairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-maximum-number-of-string-pairs/"
+    }
+  ],
+  "hints": []
+}

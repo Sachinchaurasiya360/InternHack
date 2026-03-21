@@ -1,0 +1,32 @@
+{
+  "id": "3009",
+  "title": "Maximum Number of Intersections on the Chart",
+  "slug": "maximum-number-of-intersections-on-the-chart",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "Hash Table",
+    "Math",
+    "Binary Indexed Tree",
+    "Geometry",
+    "Sweep Line",
+    "Sorting"
+  ],
+  "total_accepted": 4348,
+  "total_submissions": 9640,
+  "acceptance_rate": "45.1%",
+  "similar_questions": [],
+  "hints": [
+    "We move a horizontal line from the bottom of the chart to the top.",
+    "For each point we reach, the number of intersections might change, so we have to count it.",
+    "If a point we just reached is lower than its previous/next point, the number of intersections increases.",
+    "If a point we just reached is higher than its previous/next point, the number of intersections decreases.",
+    "There is also another solution using Fenwick Tree."
+  ]
+}

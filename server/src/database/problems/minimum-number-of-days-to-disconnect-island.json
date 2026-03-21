@@ -1,0 +1,42 @@
+{
+  "id": "1568",
+  "title": "Minimum Number of Days to Disconnect Island",
+  "slug": "minimum-number-of-days-to-disconnect-island",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> binary grid <code>grid</code> where <code>1</code> represents land and <code>0</code> represents water. An <strong>island</strong> is a maximal <strong>4-directionally</strong> (horizontal or vertical) connected group of <code>1</code>&#39;s.</p>\n\n<p>The grid is said to be <strong>connected</strong> if we have <strong>exactly one island</strong>, otherwise is said <strong>disconnected</strong>.</p>\n\n<p>In one day, we are allowed to change <strong>any </strong>single land cell <code>(1)</code> into a water cell <code>(0)</code>.</p>\n\n<p>Return <em>the minimum number of days to disconnect the grid</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/24/land1.jpg\" style=\"width: 500px; height: 169px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,1,1,0],[0,1,1,0],[0,0,0,0]]\n\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We need at least 2 days to get a disconnected grid.\nChange land grid[1][1] and grid[0][2] to water and get 2 disconnected island.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/12/24/land2.jpg\" style=\"width: 404px; height: 85px;\" />\n<pre>\n<strong>Input:</strong> grid = [[1,1]]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Grid of full water is also disconnected ([[1,1]] -&gt; [[0,0]]), 0 islands.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 30</code></li>\n\t<li><code>grid[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` binary grid `grid` where `1` represents land and `0` represents water. An **island** is a maximal **4-directionally** (horizontal or vertical) connected group of `1`'s.\n\nThe grid is said to be **connected** if we have **exactly one island** , otherwise is said **disconnected**.\n\nIn one day, we are allowed to change **any** single land cell `(1)` into a water cell `(0)`.\n\nReturn _the minimum number of days to disconnect the grid_.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/24/land1.jpg)\n    \n    \n    **Input:** grid = [[0,1,1,0],[0,1,1,0],[0,0,0,0]]\n    \n    **Output:** 2\n    **Explanation:** We need at least 2 days to get a disconnected grid.\n    Change land grid[1][1] and grid[0][2] to water and get 2 disconnected island.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/24/land2.jpg)\n    \n    \n    **Input:** grid = [[1,1]]\n    **Output:** 2\n    **Explanation:** Grid of full water is also disconnected ([[1,1]] -> [[0,0]]), 0 islands.\n    \n\n \n\n**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 30`\n  * `grid[i][j]` is either `0` or `1`.",
+  "question": "You are given an `m x n` binary grid `grid` where `1` represents land and `0` represents water. An **island** is a maximal **4-directionally** (horizontal or vertical) connected group of `1`'s.\n\nThe grid is said to be **connected** if we have **exactly one island** , otherwise is said **disconnected**.\n\nIn one day, we are allowed to change **any** single land cell `(1)` into a water cell `(0)`.\n\nReturn _the minimum number of days to disconnect the grid_.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/12/24/land1.jpg)\n    \n    \n    **Input:** grid = [[0,1,1,0],[0,1,1,0],[0,0,0,0]]\n    \n    **Output:** 2\n    **Explanation:** We need at least 2 days to get a disconnected grid.\n    Change land grid[1][1] and grid[0][2] to water and get 2 disconnected island.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2021/12/24/land2.jpg)\n    \n    \n    **Input:** grid = [[1,1]]\n    **Output:** 2\n    **Explanation:** Grid of full water is also disconnected ([[1,1]] -> [[0,0]]), 0 islands.",
+  "constraints": "**Constraints:**\n\n  * `m == grid.length`\n  * `n == grid[i].length`\n  * `1 <= m, n <= 30`\n  * `grid[i][j]` is either `0` or `1`.",
+  "topics": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Matrix",
+    "Strongly Connected Component"
+  ],
+  "total_accepted": 98399,
+  "total_submissions": 167414,
+  "acceptance_rate": "58.8%",
+  "similar_questions": [
+    {
+      "title": "Disconnect Path in a Binary Matrix by at Most One Flip",
+      "slug": "disconnect-path-in-a-binary-matrix-by-at-most-one-flip",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/disconnect-path-in-a-binary-matrix-by-at-most-one-flip/"
+    },
+    {
+      "title": "Minimum Runes to Add to Cast Spell",
+      "slug": "minimum-runes-to-add-to-cast-spell",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-runes-to-add-to-cast-spell/"
+    }
+  ],
+  "hints": [
+    "Return 0 if the grid is already disconnected.",
+    "Return 1 if changing a single land to water disconnect the island.",
+    "Otherwise return 2.",
+    "We can disconnect the grid within at most 2 days."
+  ]
+}

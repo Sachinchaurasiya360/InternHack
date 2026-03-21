@@ -1,0 +1,34 @@
+{
+  "id": "2779",
+  "title": "Maximum Beauty of an Array After Applying Operation",
+  "slug": "maximum-beauty-of-an-array-after-applying-operation",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array <code>nums</code> and a <strong>non-negative</strong> integer <code>k</code>.</p>\n\n<p>In one operation, you can do the following:</p>\n\n<ul>\n\t<li>Choose an index <code>i</code> that <strong>hasn&#39;t been chosen before</strong> from the range <code>[0, nums.length - 1]</code>.</li>\n\t<li>Replace <code>nums[i]</code> with any integer from the range <code>[nums[i] - k, nums[i] + k]</code>.</li>\n</ul>\n\n<p>The <strong>beauty</strong> of the array is the length of the longest subsequence consisting of equal elements.</p>\n\n<p>Return <em>the <strong>maximum</strong> possible beauty of the array </em><code>nums</code><em> after applying the operation any number of times.</em></p>\n\n<p><strong>Note</strong> that you can apply the operation to each index <strong>only once</strong>.</p>\n\n<p>A&nbsp;<strong>subsequence</strong> of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the order of the remaining elements.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [4,6,1,2], k = 2\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> In this example, we apply the following operations:\n- Choose index 1, replace it with 4 (from range [4,8]), nums = [4,4,1,2].\n- Choose index 3, replace it with 4 (from range [0,4]), nums = [4,4,1,4].\nAfter the applied operations, the beauty of the array nums is 3 (subsequence consisting of indices 0, 1, and 3).\nIt can be proven that 3 is the maximum possible length we can achieve.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,1,1], k = 10\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> In this example we don&#39;t have to apply any operations.\nThe beauty of the array nums is 4 (whole array).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= nums[i], k &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array `nums` and a **non-negative** integer `k`.\n\nIn one operation, you can do the following:\n\n  * Choose an index `i` that **hasn 't been chosen before** from the range `[0, nums.length - 1]`.\n  * Replace `nums[i]` with any integer from the range `[nums[i] - k, nums[i] + k]`.\n\n\n\nThe **beauty** of the array is the length of the longest subsequence consisting of equal elements.\n\nReturn _the**maximum** possible beauty of the array _`nums` _after applying the operation any number of times._\n\n**Note** that you can apply the operation to each index **only once**.\n\nA **subsequence** of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the order of the remaining elements.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [4,6,1,2], k = 2\n    **Output:** 3\n    **Explanation:** In this example, we apply the following operations:\n    - Choose index 1, replace it with 4 (from range [4,8]), nums = [4,4,1,2].\n    - Choose index 3, replace it with 4 (from range [0,4]), nums = [4,4,1,4].\n    After the applied operations, the beauty of the array nums is 3 (subsequence consisting of indices 0, 1, and 3).\n    It can be proven that 3 is the maximum possible length we can achieve.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,1,1], k = 10\n    **Output:** 4\n    **Explanation:** In this example we don't have to apply any operations.\n    The beauty of the array nums is 4 (whole array).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i], k <= 105`",
+  "question": "You are given a **0-indexed** array `nums` and a **non-negative** integer `k`.\n\nIn one operation, you can do the following:\n\n  * Choose an index `i` that **hasn 't been chosen before** from the range `[0, nums.length - 1]`.\n  * Replace `nums[i]` with any integer from the range `[nums[i] - k, nums[i] + k]`.\n\n\n\nThe **beauty** of the array is the length of the longest subsequence consisting of equal elements.\n\nReturn _the**maximum** possible beauty of the array _`nums` _after applying the operation any number of times._\n\n**Note** that you can apply the operation to each index **only once**.\n\nA **subsequence** of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the order of the remaining elements.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [4,6,1,2], k = 2\n    **Output:** 3\n    **Explanation:** In this example, we apply the following operations:\n    - Choose index 1, replace it with 4 (from range [4,8]), nums = [4,4,1,2].\n    - Choose index 3, replace it with 4 (from range [0,4]), nums = [4,4,1,4].\n    After the applied operations, the beauty of the array nums is 3 (subsequence consisting of indices 0, 1, and 3).\n    It can be proven that 3 is the maximum possible length we can achieve.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,1,1,1], k = 10\n    **Output:** 4\n    **Explanation:** In this example we don't have to apply any operations.\n    The beauty of the array nums is 4 (whole array).",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `0 <= nums[i], k <= 105`",
+  "topics": ["Array", "Binary Search", "Sliding Window", "Sorting"],
+  "total_accepted": 131535,
+  "total_submissions": 225450,
+  "acceptance_rate": "58.3%",
+  "similar_questions": [
+    {
+      "title": "Maximum Size Subarray Sum Equals k",
+      "slug": "maximum-size-subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/"
+    },
+    {
+      "title": "Partition Array Such That Maximum Difference Is K",
+      "slug": "partition-array-such-that-maximum-difference-is-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-array-such-that-maximum-difference-is-k/"
+    }
+  ],
+  "hints": [
+    "Sort the array.",
+    "The problem becomes the following: find maximum subarray A[i … j] such that A[j] - A[i] ≤ 2 * k."
+  ]
+}

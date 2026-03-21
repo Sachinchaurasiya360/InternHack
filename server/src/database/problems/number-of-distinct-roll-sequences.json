@@ -1,0 +1,35 @@
+{
+  "id": "2318",
+  "title": "Number of Distinct Roll Sequences",
+  "slug": "number-of-distinct-roll-sequences",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code>. You roll a fair 6-sided dice <code>n</code> times. Determine the total number of <strong>distinct</strong> sequences of rolls possible such that the following conditions are satisfied:</p>\n\n<ol>\n\t<li>The <strong>greatest common divisor</strong> of any <strong>adjacent</strong> values in the sequence is equal to <code>1</code>.</li>\n\t<li>There is <strong>at least</strong> a gap of <code>2</code> rolls between <strong>equal</strong> valued rolls. More formally, if the value of the <code>i<sup>th</sup></code> roll is <strong>equal</strong> to the value of the <code>j<sup>th</sup></code> roll, then <code>abs(i - j) &gt; 2</code>.</li>\n</ol>\n\n<p>Return <em>the<strong> total number</strong> of distinct sequences possible</em>. Since the answer may be very large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>Two sequences are considered distinct if at least one element is different.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> 184\n<strong>Explanation:</strong> Some of the possible sequences are (1, 2, 3, 4), (6, 1, 2, 3), (1, 2, 3, 1), etc.\nSome invalid sequences are (1, 2, 1, 3), (1, 2, 3, 6).\n(1, 2, 1, 3) is invalid since the first and third roll have an equal value and abs(1 - 3) = 2 (i and j are 1-indexed).\n(1, 2, 3, 6) is invalid since the greatest common divisor of 3 and 6 = 3.\nThere are a total of 184 distinct sequences possible, so we return 184.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2\n<strong>Output:</strong> 22\n<strong>Explanation:</strong> Some of the possible sequences are (1, 2), (2, 1), (3, 2).\nSome invalid sequences are (3, 6), (2, 4) since the greatest common divisor is not equal to 1.\nThere are a total of 22 distinct sequences possible, so we return 22.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n`. You roll a fair 6-sided dice `n` times. Determine the total number of **distinct** sequences of rolls possible such that the following conditions are satisfied:\n\n  1. The **greatest common divisor** of any **adjacent** values in the sequence is equal to `1`.\n  2. There is **at least** a gap of `2` rolls between **equal** valued rolls. More formally, if the value of the `ith` roll is **equal** to the value of the `jth` roll, then `abs(i - j) > 2`.\n\n\n\nReturn _the**total number** of distinct sequences possible_. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nTwo sequences are considered distinct if at least one element is different.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** 184\n    **Explanation:** Some of the possible sequences are (1, 2, 3, 4), (6, 1, 2, 3), (1, 2, 3, 1), etc.\n    Some invalid sequences are (1, 2, 1, 3), (1, 2, 3, 6).\n    (1, 2, 1, 3) is invalid since the first and third roll have an equal value and abs(1 - 3) = 2 (i and j are 1-indexed).\n    (1, 2, 3, 6) is invalid since the greatest common divisor of 3 and 6 = 3.\n    There are a total of 184 distinct sequences possible, so we return 184.\n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** 22\n    **Explanation:** Some of the possible sequences are (1, 2), (2, 1), (3, 2).\n    Some invalid sequences are (3, 6), (2, 4) since the greatest common divisor is not equal to 1.\n    There are a total of 22 distinct sequences possible, so we return 22.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 104`",
+  "question": "You are given an integer `n`. You roll a fair 6-sided dice `n` times. Determine the total number of **distinct** sequences of rolls possible such that the following conditions are satisfied:\n\n  1. The **greatest common divisor** of any **adjacent** values in the sequence is equal to `1`.\n  2. There is **at least** a gap of `2` rolls between **equal** valued rolls. More formally, if the value of the `ith` roll is **equal** to the value of the `jth` roll, then `abs(i - j) > 2`.\n\n\n\nReturn _the**total number** of distinct sequences possible_. Since the answer may be very large, return it **modulo** `109 + 7`.\n\nTwo sequences are considered distinct if at least one element is different.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** 184\n    **Explanation:** Some of the possible sequences are (1, 2, 3, 4), (6, 1, 2, 3), (1, 2, 3, 1), etc.\n    Some invalid sequences are (1, 2, 1, 3), (1, 2, 3, 6).\n    (1, 2, 1, 3) is invalid since the first and third roll have an equal value and abs(1 - 3) = 2 (i and j are 1-indexed).\n    (1, 2, 3, 6) is invalid since the greatest common divisor of 3 and 6 = 3.\n    There are a total of 184 distinct sequences possible, so we return 184.\n\n**Example 2:**\n    \n    \n    **Input:** n = 2\n    **Output:** 22\n    **Explanation:** Some of the possible sequences are (1, 2), (2, 1), (3, 2).\n    Some invalid sequences are (3, 6), (2, 4) since the greatest common divisor is not equal to 1.\n    There are a total of 22 distinct sequences possible, so we return 22.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 104`",
+  "topics": ["Dynamic Programming", "Memoization"],
+  "total_accepted": 13986,
+  "total_submissions": 24045,
+  "acceptance_rate": "58.2%",
+  "similar_questions": [
+    {
+      "title": "Dice Roll Simulation",
+      "slug": "dice-roll-simulation",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/dice-roll-simulation/"
+    },
+    {
+      "title": "Paint House III",
+      "slug": "paint-house-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/paint-house-iii/"
+    }
+  ],
+  "hints": [
+    "Can you think of a DP solution?",
+    "Consider a state that remembers the last 1 or 2 rolls.",
+    "Do you need to consider the last 3 rolls?"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "303",
+  "title": "Range Sum Query - Immutable",
+  "slug": "range-sum-query-immutable",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, handle multiple queries of the following type:</p>\n\n<ol>\n\t<li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\n<p>Implement the <code>NumArray</code> class:</p>\n\n<ul>\n\t<li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n\t<li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;NumArray&quot;, &quot;sumRange&quot;, &quot;sumRange&quot;, &quot;sumRange&quot;]\n[[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]\n<strong>Output</strong>\n[null, 1, -1, -3]\n\n<strong>Explanation</strong>\nNumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);\nnumArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1\nnumArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1\nnumArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= left &lt;= right &lt; nums.length</code></li>\n\t<li>At most <code>10<sup>4</sup></code> calls will be made to <code>sumRange</code>.</li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, handle multiple queries of the following type:\n\n  1. Calculate the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** where `left <= right`.\n\n\n\nImplement the `NumArray` class:\n\n  * `NumArray(int[] nums)` Initializes the object with the integer array `nums`.\n  * `int sumRange(int left, int right)` Returns the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input**\n    [\"NumArray\", \"sumRange\", \"sumRange\", \"sumRange\"]\n    [[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]\n    **Output**\n    [null, 1, -1, -3]\n    \n    **Explanation**\n    NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);\n    numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1\n    numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1\n    numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-105 <= nums[i] <= 105`\n  * `0 <= left <= right < nums.length`\n  * At most `104` calls will be made to `sumRange`.",
+  "question": "Given an integer array `nums`, handle multiple queries of the following type:\n\n  1. Calculate the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** where `left <= right`.\n\n\n\nImplement the `NumArray` class:\n\n  * `NumArray(int[] nums)` Initializes the object with the integer array `nums`.\n  * `int sumRange(int left, int right)` Returns the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).",
+  "examples": "**Example 1:**\n    \n    \n    **Input**\n    [\"NumArray\", \"sumRange\", \"sumRange\", \"sumRange\"]\n    [[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]\n    **Output**\n    [null, 1, -1, -3]\n    \n    **Explanation**\n    NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);\n    numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1\n    numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1\n    numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `-105 <= nums[i] <= 105`\n  * `0 <= left <= right < nums.length`\n  * At most `104` calls will be made to `sumRange`.",
+  "topics": ["Array", "Design", "Prefix Sum"],
+  "total_accepted": 884794,
+  "total_submissions": 1238357,
+  "acceptance_rate": "71.4%",
+  "similar_questions": [
+    {
+      "title": "Range Sum Query 2D - Immutable",
+      "slug": "range-sum-query-2d-immutable",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-sum-query-2d-immutable/"
+    },
+    {
+      "title": "Range Sum Query - Mutable",
+      "slug": "range-sum-query-mutable",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/range-sum-query-mutable/"
+    },
+    {
+      "title": "Maximum Size Subarray Sum Equals k",
+      "slug": "maximum-size-subarray-sum-equals-k",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/"
+    },
+    {
+      "title": "Sum of Variable Length Subarrays",
+      "slug": "sum-of-variable-length-subarrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sum-of-variable-length-subarrays/"
+    }
+  ],
+  "hints": []
+}

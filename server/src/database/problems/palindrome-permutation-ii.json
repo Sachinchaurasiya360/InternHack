@@ -1,0 +1,40 @@
+{
+  "id": "267",
+  "title": "Palindrome Permutation II",
+  "slug": "palindrome-permutation-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "String", "Backtracking"],
+  "total_accepted": 75646,
+  "total_submissions": 178775,
+  "acceptance_rate": "42.3%",
+  "similar_questions": [
+    {
+      "title": "Next Permutation",
+      "slug": "next-permutation",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/next-permutation/"
+    },
+    {
+      "title": "Permutations II",
+      "slug": "permutations-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/permutations-ii/"
+    },
+    {
+      "title": "Palindrome Permutation",
+      "slug": "palindrome-permutation",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-permutation/"
+    }
+  ],
+  "hints": [
+    "If a palindromic permutation exists, we just need to generate the first half of the string.",
+    "To generate all distinct permutations of a (half of) string, use a similar approach from: <a href=\"/problems/permutations-ii\">Permutations II</a> or <a href=\"/problems/next-permutation\">Next Permutation</a>."
+  ]
+}

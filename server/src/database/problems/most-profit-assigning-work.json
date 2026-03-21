@@ -1,0 +1,37 @@
+{
+  "id": "826",
+  "title": "Most Profit Assigning Work",
+  "slug": "most-profit-assigning-work",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You have <code>n</code> jobs and <code>m</code> workers. You are given three arrays: <code>difficulty</code>, <code>profit</code>, and <code>worker</code> where:</p>\n\n<ul>\n\t<li><code>difficulty[i]</code> and <code>profit[i]</code> are the difficulty and the profit of the <code>i<sup>th</sup></code> job, and</li>\n\t<li><code>worker[j]</code> is the ability of <code>j<sup>th</sup></code> worker (i.e., the <code>j<sup>th</sup></code> worker can only complete a job with difficulty at most <code>worker[j]</code>).</li>\n</ul>\n\n<p>Every worker can be assigned <strong>at most one job</strong>, but one job can be <strong>completed multiple times</strong>.</p>\n\n<ul>\n\t<li>For example, if three workers attempt the same job that pays <code>$1</code>, then the total profit will be <code>$3</code>. If a worker cannot complete any job, their profit is <code>$0</code>.</li>\n</ul>\n\n<p>Return the maximum profit we can achieve after assigning the workers to the jobs.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> difficulty = [2,4,6,8,10], profit = [10,20,30,40,50], worker = [4,5,6,7]\n<strong>Output:</strong> 100\n<strong>Explanation:</strong> Workers are assigned jobs of difficulty [4,4,6,6] and they get a profit of [20,20,30,30] separately.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> difficulty = [85,47,57], profit = [24,66,99], worker = [40,25,25]\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == difficulty.length</code></li>\n\t<li><code>n == profit.length</code></li>\n\t<li><code>m == worker.length</code></li>\n\t<li><code>1 &lt;= n, m &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= difficulty[i], profit[i], worker[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You have `n` jobs and `m` workers. You are given three arrays: `difficulty`, `profit`, and `worker` where:\n\n  * `difficulty[i]` and `profit[i]` are the difficulty and the profit of the `ith` job, and\n  * `worker[j]` is the ability of `jth` worker (i.e., the `jth` worker can only complete a job with difficulty at most `worker[j]`).\n\n\n\nEvery worker can be assigned **at most one job** , but one job can be **completed multiple times**.\n\n  * For example, if three workers attempt the same job that pays `$1`, then the total profit will be `$3`. If a worker cannot complete any job, their profit is `$0`.\n\n\n\nReturn the maximum profit we can achieve after assigning the workers to the jobs.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** difficulty = [2,4,6,8,10], profit = [10,20,30,40,50], worker = [4,5,6,7]\n    **Output:** 100\n    **Explanation:** Workers are assigned jobs of difficulty [4,4,6,6] and they get a profit of [20,20,30,30] separately.\n    \n\n**Example 2:**\n    \n    \n    **Input:** difficulty = [85,47,57], profit = [24,66,99], worker = [40,25,25]\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `n == difficulty.length`\n  * `n == profit.length`\n  * `m == worker.length`\n  * `1 <= n, m <= 104`\n  * `1 <= difficulty[i], profit[i], worker[i] <= 105`",
+  "question": "You have `n` jobs and `m` workers. You are given three arrays: `difficulty`, `profit`, and `worker` where:\n\n  * `difficulty[i]` and `profit[i]` are the difficulty and the profit of the `ith` job, and\n  * `worker[j]` is the ability of `jth` worker (i.e., the `jth` worker can only complete a job with difficulty at most `worker[j]`).\n\n\n\nEvery worker can be assigned **at most one job** , but one job can be **completed multiple times**.\n\n  * For example, if three workers attempt the same job that pays `$1`, then the total profit will be `$3`. If a worker cannot complete any job, their profit is `$0`.\n\n\n\nReturn the maximum profit we can achieve after assigning the workers to the jobs.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** difficulty = [2,4,6,8,10], profit = [10,20,30,40,50], worker = [4,5,6,7]\n    **Output:** 100\n    **Explanation:** Workers are assigned jobs of difficulty [4,4,6,6] and they get a profit of [20,20,30,30] separately.\n    \n\n**Example 2:**\n    \n    \n    **Input:** difficulty = [85,47,57], profit = [24,66,99], worker = [40,25,25]\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `n == difficulty.length`\n  * `n == profit.length`\n  * `m == worker.length`\n  * `1 <= n, m <= 104`\n  * `1 <= difficulty[i], profit[i], worker[i] <= 105`",
+  "topics": ["Array", "Two Pointers", "Binary Search", "Greedy", "Sorting"],
+  "total_accepted": 242374,
+  "total_submissions": 431760,
+  "acceptance_rate": "56.1%",
+  "similar_questions": [
+    {
+      "title": "Maximum Number of Tasks You Can Assign",
+      "slug": "maximum-number-of-tasks-you-can-assign",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-number-of-tasks-you-can-assign/"
+    },
+    {
+      "title": "Successful Pairs of Spells and Potions",
+      "slug": "successful-pairs-of-spells-and-potions",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/successful-pairs-of-spells-and-potions/"
+    },
+    {
+      "title": "Maximum Matching of Players With Trainers",
+      "slug": "maximum-matching-of-players-with-trainers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-matching-of-players-with-trainers/"
+    }
+  ],
+  "hints": []
+}

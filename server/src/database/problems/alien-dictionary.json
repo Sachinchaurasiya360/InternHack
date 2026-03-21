@@ -1,0 +1,32 @@
+{
+  "id": "269",
+  "title": "Alien Dictionary",
+  "slug": "alien-dictionary",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "Array",
+    "String",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Topological Sort"
+  ],
+  "total_accepted": 479712,
+  "total_submissions": 1293883,
+  "acceptance_rate": "37.1%",
+  "similar_questions": [
+    {
+      "title": "Course Schedule II",
+      "slug": "course-schedule-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/course-schedule-ii/"
+    }
+  ],
+  "hints": []
+}

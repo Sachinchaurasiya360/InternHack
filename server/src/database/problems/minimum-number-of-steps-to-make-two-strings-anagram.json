@@ -1,0 +1,40 @@
+{
+  "id": "1347",
+  "title": "Minimum Number of Steps to Make Two Strings Anagram",
+  "slug": "minimum-number-of-steps-to-make-two-strings-anagram",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two strings of the same length <code>s</code> and <code>t</code>. In one step you can choose <strong>any character</strong> of <code>t</code> and replace it with <strong>another character</strong>.</p>\n\n<p>Return <em>the minimum number of steps</em> to make <code>t</code> an anagram of <code>s</code>.</p>\n\n<p>An <strong>Anagram</strong> of a string is a string that contains the same characters with a different (or the same) ordering.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;bab&quot;, t = &quot;aba&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Replace the first &#39;a&#39; in t with b, t = &quot;bba&quot; which is anagram of s.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;leetcode&quot;, t = &quot;practice&quot;\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> Replace &#39;p&#39;, &#39;r&#39;, &#39;a&#39;, &#39;i&#39; and &#39;c&#39; from t with proper characters to make t anagram of s.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;anagram&quot;, t = &quot;mangaar&quot;\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> &quot;anagram&quot; and &quot;mangaar&quot; are anagrams. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>s.length == t.length</code></li>\n\t<li><code>s</code> and <code>t</code> consist of lowercase English letters only.</li>\n</ul>\n",
+  "content_markdown": "You are given two strings of the same length `s` and `t`. In one step you can choose **any character** of `t` and replace it with **another character**.\n\nReturn _the minimum number of steps_ to make `t` an anagram of `s`.\n\nAn **Anagram** of a string is a string that contains the same characters with a different (or the same) ordering.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"bab\", t = \"aba\"\n    **Output:** 1\n    **Explanation:** Replace the first 'a' in t with b, t = \"bba\" which is anagram of s.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"leetcode\", t = \"practice\"\n    **Output:** 5\n    **Explanation:** Replace 'p', 'r', 'a', 'i' and 'c' from t with proper characters to make t anagram of s.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"anagram\", t = \"mangaar\"\n    **Output:** 0\n    **Explanation:** \"anagram\" and \"mangaar\" are anagrams. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `s.length == t.length`\n  * `s` and `t` consist of lowercase English letters only.",
+  "question": "You are given two strings of the same length `s` and `t`. In one step you can choose **any character** of `t` and replace it with **another character**.\n\nReturn _the minimum number of steps_ to make `t` an anagram of `s`.\n\nAn **Anagram** of a string is a string that contains the same characters with a different (or the same) ordering.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"bab\", t = \"aba\"\n    **Output:** 1\n    **Explanation:** Replace the first 'a' in t with b, t = \"bba\" which is anagram of s.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"leetcode\", t = \"practice\"\n    **Output:** 5\n    **Explanation:** Replace 'p', 'r', 'a', 'i' and 'c' from t with proper characters to make t anagram of s.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"anagram\", t = \"mangaar\"\n    **Output:** 0\n    **Explanation:** \"anagram\" and \"mangaar\" are anagrams.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 5 * 104`\n  * `s.length == t.length`\n  * `s` and `t` consist of lowercase English letters only.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 333064,
+  "total_submissions": 403908,
+  "acceptance_rate": "82.5%",
+  "similar_questions": [
+    {
+      "title": "Determine if Two Strings Are Close",
+      "slug": "determine-if-two-strings-are-close",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/determine-if-two-strings-are-close/"
+    },
+    {
+      "title": "Minimum Number of Steps to Make Two Strings Anagram II",
+      "slug": "minimum-number-of-steps-to-make-two-strings-anagram-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram-ii/"
+    },
+    {
+      "title": "Minimum Operations to Make Character Frequencies Equal",
+      "slug": "minimum-operations-to-make-character-frequencies-equal",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-character-frequencies-equal/"
+    }
+  ],
+  "hints": [
+    "Count the frequency of characters of each string.",
+    "Loop over all characters if the frequency of a character in t is less than the frequency of the same character in s then add the difference between the frequencies to the answer."
+  ]
+}

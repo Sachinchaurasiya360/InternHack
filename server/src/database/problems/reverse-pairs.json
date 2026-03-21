@@ -1,0 +1,43 @@
+{
+  "id": "493",
+  "title": "Reverse Pairs",
+  "slug": "reverse-pairs",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code>, return <em>the number of <strong>reverse pairs</strong> in the array</em>.</p>\n\n<p>A <strong>reverse pair</strong> is a pair <code>(i, j)</code> where:</p>\n\n<ul>\n\t<li><code>0 &lt;= i &lt; j &lt; nums.length</code> and</li>\n\t<li><code>nums[i] &gt; 2 * nums[j]</code>.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,2,3,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The reverse pairs are:\n(1, 4) --&gt; nums[1] = 3, nums[4] = 1, 3 &gt; 2 * 1\n(3, 4) --&gt; nums[3] = 3, nums[4] = 1, 3 &gt; 2 * 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,4,3,5,1]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The reverse pairs are:\n(1, 4) --&gt; nums[1] = 4, nums[4] = 1, 4 &gt; 2 * 1\n(2, 4) --&gt; nums[2] = 3, nums[4] = 1, 3 &gt; 2 * 1\n(3, 4) --&gt; nums[3] = 5, nums[4] = 1, 5 &gt; 2 * 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums`, return _the number of**reverse pairs** in the array_.\n\nA **reverse pair** is a pair `(i, j)` where:\n\n  * `0 <= i < j < nums.length` and\n  * `nums[i] > 2 * nums[j]`.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,3,2,3,1]\n    **Output:** 2\n    **Explanation:** The reverse pairs are:\n    (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1\n    (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,4,3,5,1]\n    **Output:** 3\n    **Explanation:** The reverse pairs are:\n    (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1\n    (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1\n    (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 5 * 104`\n  * `-231 <= nums[i] <= 231 - 1`",
+  "question": "Given an integer array `nums`, return _the number of**reverse pairs** in the array_.\n\nA **reverse pair** is a pair `(i, j)` where:\n\n  * `0 <= i < j < nums.length` and\n  * `nums[i] > 2 * nums[j]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,3,2,3,1]\n    **Output:** 2\n    **Explanation:** The reverse pairs are:\n    (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1\n    (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [2,4,3,5,1]\n    **Output:** 3\n    **Explanation:** The reverse pairs are:\n    (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1\n    (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1\n    (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 5 * 104`\n  * `-231 <= nums[i] <= 231 - 1`",
+  "topics": [
+    "Array",
+    "Binary Search",
+    "Divide and Conquer",
+    "Binary Indexed Tree",
+    "Segment Tree",
+    "Merge Sort",
+    "Ordered Set"
+  ],
+  "total_accepted": 345101,
+  "total_submissions": 1023137,
+  "acceptance_rate": "33.7%",
+  "similar_questions": [
+    {
+      "title": "Count of Smaller Numbers After Self",
+      "slug": "count-of-smaller-numbers-after-self",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/"
+    },
+    {
+      "title": "Count of Range Sum",
+      "slug": "count-of-range-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-of-range-sum/"
+    }
+  ],
+  "hints": [
+    "Use the merge-sort technique.",
+    "Divide the array into two parts and sort them.",
+    "For each integer in the first part, count the number of integers that satisfy the condition from the second part. Use the pointer to help you in the counting process."
+  ]
+}

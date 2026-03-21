@@ -1,0 +1,20 @@
+{
+  "id": "1154",
+  "title": "Day of the Year",
+  "slug": "day-of-the-year",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>date</code> representing a <a href=\"https://en.wikipedia.org/wiki/Gregorian_calendar\" target=\"_blank\">Gregorian calendar</a> date formatted as <code>YYYY-MM-DD</code>, return <em>the day number of the year</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> date = &quot;2019-01-09&quot;\n<strong>Output:</strong> 9\n<strong>Explanation:</strong> Given date is the 9th day of the year in 2019.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> date = &quot;2019-02-10&quot;\n<strong>Output:</strong> 41\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>date.length == 10</code></li>\n\t<li><code>date[4] == date[7] == &#39;-&#39;</code>, and all other <code>date[i]</code>&#39;s are digits</li>\n\t<li><code>date</code> represents a calendar date between Jan 1<sup>st</sup>, 1900 and Dec 31<sup>st</sup>, 2019.</li>\n</ul>\n",
+  "content_markdown": "Given a string `date` representing a [Gregorian calendar](<https://en.wikipedia.org/wiki/Gregorian_calendar>) date formatted as `YYYY-MM-DD`, return _the day number of the year_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** date = \"2019-01-09\"\n    **Output:** 9\n    **Explanation:** Given date is the 9th day of the year in 2019.\n    \n\n**Example 2:**\n    \n    \n    **Input:** date = \"2019-02-10\"\n    **Output:** 41\n    \n\n \n\n**Constraints:**\n\n  * `date.length == 10`\n  * `date[4] == date[7] == '-'`, and all other `date[i]`'s are digits\n  * `date` represents a calendar date between Jan 1st, 1900 and Dec 31st, 2019.",
+  "question": "Given a string `date` representing a [Gregorian calendar](<https://en.wikipedia.org/wiki/Gregorian_calendar>) date formatted as `YYYY-MM-DD`, return _the day number of the year_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** date = \"2019-01-09\"\n    **Output:** 9\n    **Explanation:** Given date is the 9th day of the year in 2019.\n    \n\n**Example 2:**\n    \n    \n    **Input:** date = \"2019-02-10\"\n    **Output:** 41",
+  "constraints": "**Constraints:**\n\n  * `date.length == 10`\n  * `date[4] == date[7] == '-'`, and all other `date[i]`'s are digits\n  * `date` represents a calendar date between Jan 1st, 1900 and Dec 31st, 2019.",
+  "topics": ["Math", "String"],
+  "total_accepted": 92554,
+  "total_submissions": 186497,
+  "acceptance_rate": "49.6%",
+  "similar_questions": [],
+  "hints": [
+    "Have a integer array of how many days there are per month.  February gets one extra day if its a leap year.  Then, we can manually count the ordinal as day + (number of days in months before this one)."
+  ]
+}

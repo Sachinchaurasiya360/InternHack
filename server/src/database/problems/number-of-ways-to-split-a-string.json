@@ -1,0 +1,29 @@
+{
+  "id": "1573",
+  "title": "Number of Ways to Split a String",
+  "slug": "number-of-ways-to-split-a-string",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary string <code>s</code>, you can split <code>s</code> into 3 <strong>non-empty</strong> strings <code>s1</code>, <code>s2</code>, and <code>s3</code> where <code>s1 + s2 + s3 = s</code>.</p>\n\n<p>Return the number of ways <code>s</code> can be split such that the number of ones is the same in <code>s1</code>, <code>s2</code>, and <code>s3</code>. Since the answer may be too large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;10101&quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> There are four ways to split s in 3 parts where each part contain the same number of letters &#39;1&#39;.\n&quot;1|010|1&quot;\n&quot;1|01|01&quot;\n&quot;10|10|1&quot;\n&quot;10|1|01&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;1001&quot;\n<strong>Output:</strong> 0\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;0000&quot;\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> There are three ways to split s in 3 parts.\n&quot;0|0|00&quot;\n&quot;0|00|0&quot;\n&quot;00|0|0&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s[i]</code> is either <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "Given a binary string `s`, you can split `s` into 3 **non-empty** strings `s1`, `s2`, and `s3` where `s1 + s2 + s3 = s`.\n\nReturn the number of ways `s` can be split such that the number of ones is the same in `s1`, `s2`, and `s3`. Since the answer may be too large, return it **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"10101\"\n    **Output:** 4\n    **Explanation:** There are four ways to split s in 3 parts where each part contain the same number of letters '1'.\n    \"1|010|1\"\n    \"1|01|01\"\n    \"10|10|1\"\n    \"10|1|01\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"1001\"\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"0000\"\n    **Output:** 3\n    **Explanation:** There are three ways to split s in 3 parts.\n    \"0|0|00\"\n    \"0|00|0\"\n    \"00|0|0\"\n    \n\n \n\n**Constraints:**\n\n  * `3 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "question": "Given a binary string `s`, you can split `s` into 3 **non-empty** strings `s1`, `s2`, and `s3` where `s1 + s2 + s3 = s`.\n\nReturn the number of ways `s` can be split such that the number of ones is the same in `s1`, `s2`, and `s3`. Since the answer may be too large, return it **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"10101\"\n    **Output:** 4\n    **Explanation:** There are four ways to split s in 3 parts where each part contain the same number of letters '1'.\n    \"1|010|1\"\n    \"1|01|01\"\n    \"10|10|1\"\n    \"10|1|01\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"1001\"\n    **Output:** 0\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"0000\"\n    **Output:** 3\n    **Explanation:** There are three ways to split s in 3 parts.\n    \"0|0|00\"\n    \"0|00|0\"\n    \"00|0|0\"",
+  "constraints": "**Constraints:**\n\n  * `3 <= s.length <= 105`\n  * `s[i]` is either `'0'` or `'1'`.",
+  "topics": ["Math", "String"],
+  "total_accepted": 35636,
+  "total_submissions": 103271,
+  "acceptance_rate": "34.5%",
+  "similar_questions": [
+    {
+      "title": "Split Array with Equal Sum",
+      "slug": "split-array-with-equal-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-with-equal-sum/"
+    }
+  ],
+  "hints": [
+    "There is no way if the sum (number of '1's) is not divisible by the number of splits. So sum%3 should be 0.",
+    "Preffix s1 , and suffix s3 should have sum/3 characters '1'.",
+    "Follow up: Can you generalize the problem with numbers between [-10^9, 10^9] such the sum between subarrays s1, s2, s3 are the same?"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "1364",
+  "title": "Number of Trusted Contacts of a Customer",
+  "slug": "number-of-trusted-contacts-of-a-customer",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 24830,
+  "total_submissions": 33217,
+  "acceptance_rate": "74.8%",
+  "similar_questions": [],
+  "hints": []
+}

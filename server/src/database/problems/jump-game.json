@@ -1,0 +1,55 @@
+{
+  "id": "55",
+  "title": "Jump Game",
+  "slug": "jump-game",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code>. You are initially positioned at the array&#39;s <strong>first index</strong>, and each element in the array represents your maximum jump length at that position.</p>\n\n<p>Return <code>true</code><em> if you can reach the last index, or </em><code>false</code><em> otherwise</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [2,3,1,1,4]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Jump 1 step from index 0 to 1, then 3 steps to the last index.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,1,0,4]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums`. You are initially positioned at the array's **first index** , and each element in the array represents your maximum jump length at that position.\n\nReturn `true` _if you can reach the last index, or_`false` _otherwise_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [2,3,1,1,4]\n    **Output:** true\n    **Explanation:** Jump 1 step from index 0 to 1, then 3 steps to the last index.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,1,0,4]\n    **Output:** false\n    **Explanation:** You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `0 <= nums[i] <= 105`",
+  "question": "You are given an integer array `nums`. You are initially positioned at the array's **first index** , and each element in the array represents your maximum jump length at that position.\n\nReturn `true` _if you can reach the last index, or_`false` _otherwise_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [2,3,1,1,4]\n    **Output:** true\n    **Explanation:** Jump 1 step from index 0 to 1, then 3 steps to the last index.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,1,0,4]\n    **Output:** false\n    **Explanation:** You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 104`\n  * `0 <= nums[i] <= 105`",
+  "topics": ["Array", "Dynamic Programming", "Greedy"],
+  "total_accepted": 3080619,
+  "total_submissions": 7606360,
+  "acceptance_rate": "40.5%",
+  "similar_questions": [
+    {
+      "title": "Jump Game II",
+      "slug": "jump-game-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-ii/"
+    },
+    {
+      "title": "Jump Game III",
+      "slug": "jump-game-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-iii/"
+    },
+    {
+      "title": "Jump Game VII",
+      "slug": "jump-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vii/"
+    },
+    {
+      "title": "Jump Game VIII",
+      "slug": "jump-game-viii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-viii/"
+    },
+    {
+      "title": "Minimum Number of Visited Cells in a Grid",
+      "slug": "minimum-number-of-visited-cells-in-a-grid",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-visited-cells-in-a-grid/"
+    },
+    {
+      "title": "Largest Element in an Array after Merge Operations",
+      "slug": "largest-element-in-an-array-after-merge-operations",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/largest-element-in-an-array-after-merge-operations/"
+    }
+  ],
+  "hints": []
+}

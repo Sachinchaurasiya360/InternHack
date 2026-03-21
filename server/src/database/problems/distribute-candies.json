@@ -1,0 +1,36 @@
+{
+  "id": "575",
+  "title": "Distribute Candies",
+  "slug": "distribute-candies",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Alice has <code>n</code> candies, where the <code>i<sup>th</sup></code> candy is of type <code>candyType[i]</code>. Alice noticed that she started to gain weight, so she visited a doctor.</p>\n\n<p>The doctor advised Alice to only eat <code>n / 2</code> of the candies she has (<code>n</code> is always even). Alice likes her candies very much, and she wants to eat the maximum number of different types of candies while still following the doctor&#39;s advice.</p>\n\n<p>Given the integer array <code>candyType</code> of length <code>n</code>, return <em>the <strong>maximum</strong> number of different types of candies she can eat if she only eats </em><code>n / 2</code><em> of them</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> candyType = [1,1,2,2,3,3]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> Alice can only eat 6 / 2 = 3 candies. Since there are only 3 types, she can eat one of each type.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> candyType = [1,1,2,3]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Alice can only eat 4 / 2 = 2 candies. Whether she eats types [1,2], [1,3], or [2,3], she still can only eat 2 different types.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> candyType = [6,6,6,6]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Alice can only eat 4 / 2 = 2 candies. Even though she can eat 2 candies, she only has 1 type.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == candyType.length</code></li>\n\t<li><code>2 &lt;= n &lt;= 10<sup>4</sup></code></li>\n\t<li><code>n</code>&nbsp;is even.</li>\n\t<li><code>-10<sup>5</sup> &lt;= candyType[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "Alice has `n` candies, where the `ith` candy is of type `candyType[i]`. Alice noticed that she started to gain weight, so she visited a doctor.\n\nThe doctor advised Alice to only eat `n / 2` of the candies she has (`n` is always even). Alice likes her candies very much, and she wants to eat the maximum number of different types of candies while still following the doctor's advice.\n\nGiven the integer array `candyType` of length `n`, return _the**maximum** number of different types of candies she can eat if she only eats _`n / 2` _of them_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** candyType = [1,1,2,2,3,3]\n    **Output:** 3\n    **Explanation:** Alice can only eat 6 / 2 = 3 candies. Since there are only 3 types, she can eat one of each type.\n    \n\n**Example 2:**\n    \n    \n    **Input:** candyType = [1,1,2,3]\n    **Output:** 2\n    **Explanation:** Alice can only eat 4 / 2 = 2 candies. Whether she eats types [1,2], [1,3], or [2,3], she still can only eat 2 different types.\n    \n\n**Example 3:**\n    \n    \n    **Input:** candyType = [6,6,6,6]\n    **Output:** 1\n    **Explanation:** Alice can only eat 4 / 2 = 2 candies. Even though she can eat 2 candies, she only has 1 type.\n    \n\n \n\n**Constraints:**\n\n  * `n == candyType.length`\n  * `2 <= n <= 104`\n  * `n` is even.\n  * `-105 <= candyType[i] <= 105`",
+  "question": "Alice has `n` candies, where the `ith` candy is of type `candyType[i]`. Alice noticed that she started to gain weight, so she visited a doctor.\n\nThe doctor advised Alice to only eat `n / 2` of the candies she has (`n` is always even). Alice likes her candies very much, and she wants to eat the maximum number of different types of candies while still following the doctor's advice.\n\nGiven the integer array `candyType` of length `n`, return _the**maximum** number of different types of candies she can eat if she only eats _`n / 2` _of them_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** candyType = [1,1,2,2,3,3]\n    **Output:** 3\n    **Explanation:** Alice can only eat 6 / 2 = 3 candies. Since there are only 3 types, she can eat one of each type.\n    \n\n**Example 2:**\n    \n    \n    **Input:** candyType = [1,1,2,3]\n    **Output:** 2\n    **Explanation:** Alice can only eat 4 / 2 = 2 candies. Whether she eats types [1,2], [1,3], or [2,3], she still can only eat 2 different types.\n    \n\n**Example 3:**\n    \n    \n    **Input:** candyType = [6,6,6,6]\n    **Output:** 1\n    **Explanation:** Alice can only eat 4 / 2 = 2 candies. Even though she can eat 2 candies, she only has 1 type.",
+  "constraints": "**Constraints:**\n\n  * `n == candyType.length`\n  * `2 <= n <= 104`\n  * `n` is even.\n  * `-105 <= candyType[i] <= 105`",
+  "topics": ["Array", "Hash Table"],
+  "total_accepted": 392185,
+  "total_submissions": 554127,
+  "acceptance_rate": "70.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Operations to Satisfy Conditions",
+      "slug": "minimum-number-of-operations-to-satisfy-conditions",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-satisfy-conditions/"
+    },
+    {
+      "title": "Check if Grid Satisfies Conditions",
+      "slug": "check-if-grid-satisfies-conditions",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-grid-satisfies-conditions/"
+    }
+  ],
+  "hints": [
+    "To maximize the number of kinds of candies, we should try to distribute candies such that Alice will gain all kinds.",
+    "What is the upper limit of the number of kinds of candies Alice will gain? Remember candies are to distributed equally.",
+    "Which data structure is the most suitable for finding the number of kinds of candies?",
+    "Will hashset solves the problem? Inserting all candies kind in the hashset and then checking its size with upper limit."
+  ]
+}

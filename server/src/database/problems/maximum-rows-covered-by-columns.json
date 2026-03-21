@@ -1,0 +1,53 @@
+{
+  "id": "2397",
+  "title": "Maximum Rows Covered by Columns",
+  "slug": "maximum-rows-covered-by-columns",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an <code>m x n</code> binary matrix <code>matrix</code> and an integer <code>numSelect</code>.</p>\n\n<p>Your goal is to select exactly <code>numSelect</code> <strong>distinct </strong>columns from <code>matrix</code> such that you cover as many rows as possible.</p>\n\n<p>A row is considered <strong>covered</strong> if all the <code>1</code>&#39;s in that row are also part of a column that you have selected. If a row does not have any <code>1</code>s, it is also considered covered.</p>\n\n<p>More formally, let us consider <code>selected = {c<sub>1</sub>, c<sub>2</sub>, ...., c<sub>numSelect</sub>}</code> as the set of columns selected by you. A row <code>i</code> is <strong>covered</strong> by <code>selected</code> if:</p>\n\n<ul>\n\t<li>For each cell where <code>matrix[i][j] == 1</code>, the column <code>j</code> is in <code>selected</code>.</li>\n\t<li>Or, no cell in row <code>i</code> has a value of <code>1</code>.</li>\n</ul>\n\n<p>Return the <strong>maximum</strong> number of rows that can be <strong>covered</strong> by a set of <code>numSelect</code> columns.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/07/14/rowscovered.png\" style=\"width: 240px; height: 400px;\" /></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">matrix = [[0,0,0],[1,0,1],[0,1,1],[0,0,1]], numSelect = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>One possible way to cover 3 rows is shown in the diagram above.<br />\nWe choose s = {0, 2}.<br />\n- Row 0 is covered because it has no occurrences of 1.<br />\n- Row 1 is covered because the columns with value 1, i.e. 0 and 2 are present in s.<br />\n- Row 2 is not covered because matrix[2][1] == 1 but 1 is not present in s.<br />\n- Row 3 is covered because matrix[2][2] == 1 and 2 is present in s.<br />\nThus, we can cover three rows.<br />\nNote that s = {1, 2} will also cover 3 rows, but it can be shown that no more than three rows can be covered.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<p><img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/07/14/rowscovered2.png\" style=\"height: 250px; width: 84px;\" /></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">matrix = [[1],[0]], numSelect = 1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>Selecting the only column will result in both rows being covered since the entire matrix is selected.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 12</code></li>\n\t<li><code>matrix[i][j]</code> is either <code>0</code> or <code>1</code>.</li>\n\t<li><code>1 &lt;= numSelect&nbsp;&lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "You are given an `m x n` binary matrix `matrix` and an integer `numSelect`.\n\nYour goal is to select exactly `numSelect` **distinct** columns from `matrix` such that you cover as many rows as possible.\n\nA row is considered **covered** if all the `1`'s in that row are also part of a column that you have selected. If a row does not have any `1`s, it is also considered covered.\n\nMore formally, let us consider `selected = {c1, c2, ...., cnumSelect}` as the set of columns selected by you. A row `i` is **covered** by `selected` if:\n\n  * For each cell where `matrix[i][j] == 1`, the column `j` is in `selected`.\n  * Or, no cell in row `i` has a value of `1`.\n\n\n\nReturn the **maximum** number of rows that can be **covered** by a set of `numSelect` columns.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/07/14/rowscovered.png)\n\n**Input:** matrix = [[0,0,0],[1,0,1],[0,1,1],[0,0,1]], numSelect = 2\n\n**Output:** 3\n\n**Explanation:**\n\nOne possible way to cover 3 rows is shown in the diagram above.  \nWe choose s = {0, 2}.  \n\\- Row 0 is covered because it has no occurrences of 1.  \n\\- Row 1 is covered because the columns with value 1, i.e. 0 and 2 are present in s.  \n\\- Row 2 is not covered because matrix[2][1] == 1 but 1 is not present in s.  \n\\- Row 3 is covered because matrix[2][2] == 1 and 2 is present in s.  \nThus, we can cover three rows.  \nNote that s = {1, 2} will also cover 3 rows, but it can be shown that no more than three rows can be covered.\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/07/14/rowscovered2.png)\n\n**Input:** matrix = [[1],[0]], numSelect = 1\n\n**Output:** 2\n\n**Explanation:**\n\nSelecting the only column will result in both rows being covered since the entire matrix is selected.\n\n \n\n**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 12`\n  * `matrix[i][j]` is either `0` or `1`.\n  * `1 <= numSelect <= n`",
+  "question": "You are given an `m x n` binary matrix `matrix` and an integer `numSelect`.\n\nYour goal is to select exactly `numSelect` **distinct** columns from `matrix` such that you cover as many rows as possible.\n\nA row is considered **covered** if all the `1`'s in that row are also part of a column that you have selected. If a row does not have any `1`s, it is also considered covered.\n\nMore formally, let us consider `selected = {c1, c2, ...., cnumSelect}` as the set of columns selected by you. A row `i` is **covered** by `selected` if:\n\n  * For each cell where `matrix[i][j] == 1`, the column `j` is in `selected`.\n  * Or, no cell in row `i` has a value of `1`.\n\n\n\nReturn the **maximum** number of rows that can be **covered** by a set of `numSelect` columns.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/07/14/rowscovered.png)\n\n**Input:** matrix = [[0,0,0],[1,0,1],[0,1,1],[0,0,1]], numSelect = 2\n\n**Output:** 3\n\n**Explanation:**\n\nOne possible way to cover 3 rows is shown in the diagram above.  \nWe choose s = {0, 2}.  \n\\- Row 0 is covered because it has no occurrences of 1.  \n\\- Row 1 is covered because the columns with value 1, i.e. 0 and 2 are present in s.  \n\\- Row 2 is not covered because matrix[2][1] == 1 but 1 is not present in s.  \n\\- Row 3 is covered because matrix[2][2] == 1 and 2 is present in s.  \nThus, we can cover three rows.  \nNote that s = {1, 2} will also cover 3 rows, but it can be shown that no more than three rows can be covered.\n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2022/07/14/rowscovered2.png)\n\n**Input:** matrix = [[1],[0]], numSelect = 1\n\n**Output:** 2\n\n**Explanation:**\n\nSelecting the only column will result in both rows being covered since the entire matrix is selected.",
+  "constraints": "**Constraints:**\n\n  * `m == matrix.length`\n  * `n == matrix[i].length`\n  * `1 <= m, n <= 12`\n  * `matrix[i][j]` is either `0` or `1`.\n  * `1 <= numSelect <= n`",
+  "topics": ["Array", "Backtracking", "Bit Manipulation", "Matrix", "Enumeration"],
+  "total_accepted": 19750,
+  "total_submissions": 34213,
+  "acceptance_rate": "57.7%",
+  "similar_questions": [
+    {
+      "title": "Matchsticks to Square",
+      "slug": "matchsticks-to-square",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/matchsticks-to-square/"
+    },
+    {
+      "title": "Partition to K Equal Sum Subsets",
+      "slug": "partition-to-k-equal-sum-subsets",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-to-k-equal-sum-subsets/"
+    },
+    {
+      "title": "Find the Shortest Superstring",
+      "slug": "find-the-shortest-superstring",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-shortest-superstring/"
+    },
+    {
+      "title": "Smallest Sufficient Team",
+      "slug": "smallest-sufficient-team",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/smallest-sufficient-team/"
+    },
+    {
+      "title": "Fair Distribution of Cookies",
+      "slug": "fair-distribution-of-cookies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fair-distribution-of-cookies/"
+    }
+  ],
+  "hints": [
+    "Try a brute-force approach.",
+    "Iterate through all possible sets of exactly <code>cols</code> columns.",
+    "For each valid set, check how many rows are covered, and return the maximum."
+  ]
+}

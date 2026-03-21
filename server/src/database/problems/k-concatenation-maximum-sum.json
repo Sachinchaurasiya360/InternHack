@@ -1,0 +1,23 @@
+{
+  "id": "1191",
+  "title": "K-Concatenation Maximum Sum",
+  "slug": "k-concatenation-maximum-sum",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>arr</code> and an integer <code>k</code>, modify the array by repeating it <code>k</code> times.</p>\n\n<p>For example, if <code>arr = [1, 2]</code> and <code>k = 3 </code>then the modified array will be <code>[1, 2, 1, 2, 1, 2]</code>.</p>\n\n<p>Return the maximum sub-array sum in the modified array. Note that the length of the sub-array can be <code>0</code> and its sum in that case is <code>0</code>.</p>\n\n<p>As the answer can be very large, return the answer <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,2], k = 3\n<strong>Output:</strong> 9\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [1,-2,1], k = 5\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [-1,-2], k = 7\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= arr[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `arr` and an integer `k`, modify the array by repeating it `k` times.\n\nFor example, if `arr = [1, 2]` and `k = 3 `then the modified array will be `[1, 2, 1, 2, 1, 2]`.\n\nReturn the maximum sub-array sum in the modified array. Note that the length of the sub-array can be `0` and its sum in that case is `0`.\n\nAs the answer can be very large, return the answer **modulo** `109 + 7`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [1,2], k = 3\n    **Output:** 9\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,-2,1], k = 5\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [-1,-2], k = 7\n    **Output:** 0\n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `1 <= k <= 105`\n  * `-104 <= arr[i] <= 104`",
+  "question": "Given an integer array `arr` and an integer `k`, modify the array by repeating it `k` times.\n\nFor example, if `arr = [1, 2]` and `k = 3 `then the modified array will be `[1, 2, 1, 2, 1, 2]`.\n\nReturn the maximum sub-array sum in the modified array. Note that the length of the sub-array can be `0` and its sum in that case is `0`.\n\nAs the answer can be very large, return the answer **modulo** `109 + 7`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [1,2], k = 3\n    **Output:** 9\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [1,-2,1], k = 5\n    **Output:** 2\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [-1,-2], k = 7\n    **Output:** 0",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 105`\n  * `1 <= k <= 105`\n  * `-104 <= arr[i] <= 104`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 44007,
+  "total_submissions": 174381,
+  "acceptance_rate": "25.2%",
+  "similar_questions": [],
+  "hints": [
+    "How to solve the problem for k=1 ?",
+    "Use Kadane's algorithm for k=1.",
+    "What are the possible cases for the answer ?",
+    "The answer is the maximum between, the answer for k=1, the sum of the whole array multiplied by k, or the maximum suffix sum plus the maximum prefix sum plus (k-2) multiplied by the whole array sum for k > 1."
+  ]
+}

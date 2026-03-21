@@ -1,0 +1,34 @@
+{
+  "id": "1340",
+  "title": "Jump Game V",
+  "slug": "jump-game-v",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of&nbsp;integers <code>arr</code> and an integer <code>d</code>. In one step you can jump from index <code>i</code> to index:</p>\n\n<ul>\n\t<li><code>i + x</code> where:&nbsp;<code>i + x &lt; arr.length</code> and <code> 0 &lt;&nbsp;x &lt;= d</code>.</li>\n\t<li><code>i - x</code> where:&nbsp;<code>i - x &gt;= 0</code> and <code> 0 &lt;&nbsp;x &lt;= d</code>.</li>\n</ul>\n\n<p>In addition, you can only jump from index <code>i</code> to index <code>j</code>&nbsp;if <code>arr[i] &gt; arr[j]</code> and <code>arr[i] &gt; arr[k]</code> for all indices <code>k</code> between <code>i</code> and <code>j</code> (More formally <code>min(i,&nbsp;j) &lt; k &lt; max(i, j)</code>).</p>\n\n<p>You can choose any index of the array and start jumping. Return <em>the maximum number of indices</em>&nbsp;you can visit.</p>\n\n<p>Notice that you can not jump outside of the array at any time.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/23/meta-chart.jpeg\" style=\"width: 633px; height: 419px;\" />\n<pre>\n<strong>Input:</strong> arr = [6,4,14,6,8,13,9,7,10,6,12], d = 2\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> You can start at index 10. You can jump 10 --&gt; 8 --&gt; 6 --&gt; 7 as shown.\nNote that if you start at index 6 you can only jump to index 7. You cannot jump to index 5 because 13 &gt; 9. You cannot jump to index 4 because index 5 is between index 4 and 6 and 13 &gt; 9.\nSimilarly You cannot jump from index 3 to index 2 or index 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [3,3,3,3,3], d = 3\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> You can start at any index. You always cannot jump to any index.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [7,6,5,4,3,2,1], d = 1\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> Start at index 0. You can visit all the indicies. \n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= arr.length &lt;= 1000</code></li>\n\t<li><code>1 &lt;= arr[i] &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= d &lt;= arr.length</code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `arr` and an integer `d`. In one step you can jump from index `i` to index:\n\n  * `i + x` where: `i + x < arr.length` and ` 0 < x <= d`.\n  * `i - x` where: `i - x >= 0` and ` 0 < x <= d`.\n\n\n\nIn addition, you can only jump from index `i` to index `j` if `arr[i] > arr[j]` and `arr[i] > arr[k]` for all indices `k` between `i` and `j` (More formally `min(i, j) < k < max(i, j)`).\n\nYou can choose any index of the array and start jumping. Return _the maximum number of indices_  you can visit.\n\nNotice that you can not jump outside of the array at any time.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/23/meta-chart.jpeg)\n    \n    \n    **Input:** arr = [6,4,14,6,8,13,9,7,10,6,12], d = 2\n    **Output:** 4\n    **Explanation:** You can start at index 10. You can jump 10 --> 8 --> 6 --> 7 as shown.\n    Note that if you start at index 6 you can only jump to index 7. You cannot jump to index 5 because 13 > 9. You cannot jump to index 4 because index 5 is between index 4 and 6 and 13 > 9.\n    Similarly You cannot jump from index 3 to index 2 or index 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [3,3,3,3,3], d = 3\n    **Output:** 1\n    **Explanation:** You can start at any index. You always cannot jump to any index.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [7,6,5,4,3,2,1], d = 1\n    **Output:** 7\n    **Explanation:** Start at index 0. You can visit all the indicies. \n    \n\n \n\n**Constraints:**\n\n  * `1 <= arr.length <= 1000`\n  * `1 <= arr[i] <= 105`\n  * `1 <= d <= arr.length`",
+  "question": "Given an array of integers `arr` and an integer `d`. In one step you can jump from index `i` to index:\n\n  * `i + x` where: `i + x < arr.length` and ` 0 < x <= d`.\n  * `i - x` where: `i - x >= 0` and ` 0 < x <= d`.\n\n\n\nIn addition, you can only jump from index `i` to index `j` if `arr[i] > arr[j]` and `arr[i] > arr[k]` for all indices `k` between `i` and `j` (More formally `min(i, j) < k < max(i, j)`).\n\nYou can choose any index of the array and start jumping. Return _the maximum number of indices_  you can visit.\n\nNotice that you can not jump outside of the array at any time.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/01/23/meta-chart.jpeg)\n    \n    \n    **Input:** arr = [6,4,14,6,8,13,9,7,10,6,12], d = 2\n    **Output:** 4\n    **Explanation:** You can start at index 10. You can jump 10 --> 8 --> 6 --> 7 as shown.\n    Note that if you start at index 6 you can only jump to index 7. You cannot jump to index 5 because 13 > 9. You cannot jump to index 4 because index 5 is between index 4 and 6 and 13 > 9.\n    Similarly You cannot jump from index 3 to index 2 or index 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [3,3,3,3,3], d = 3\n    **Output:** 1\n    **Explanation:** You can start at any index. You always cannot jump to any index.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [7,6,5,4,3,2,1], d = 1\n    **Output:** 7\n    **Explanation:** Start at index 0. You can visit all the indicies.",
+  "constraints": "**Constraints:**\n\n  * `1 <= arr.length <= 1000`\n  * `1 <= arr[i] <= 105`\n  * `1 <= d <= arr.length`",
+  "topics": ["Array", "Dynamic Programming", "Sorting"],
+  "total_accepted": 41734,
+  "total_submissions": 64382,
+  "acceptance_rate": "64.8%",
+  "similar_questions": [
+    {
+      "title": "Jump Game VII",
+      "slug": "jump-game-vii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-vii/"
+    },
+    {
+      "title": "Jump Game VIII",
+      "slug": "jump-game-viii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/jump-game-viii/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming. dp[i] is max jumps you can do starting from index i. Answer is max(dp[i]).",
+    "dp[i] = 1 + max (dp[j]) where j is all indices you can reach from i."
+  ]
+}

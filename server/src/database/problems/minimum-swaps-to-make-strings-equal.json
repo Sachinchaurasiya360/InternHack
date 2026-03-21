@@ -1,0 +1,35 @@
+{
+  "id": "1247",
+  "title": "Minimum Swaps to Make Strings Equal",
+  "slug": "minimum-swaps-to-make-strings-equal",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two strings <code>s1</code> and <code>s2</code> of equal length consisting of letters <code>&quot;x&quot;</code> and <code>&quot;y&quot;</code> <strong>only</strong>. Your task is to make these two strings equal to each other. You can swap any two characters that belong to <strong>different</strong> strings, which means: swap <code>s1[i]</code> and <code>s2[j]</code>.</p>\n\n<p>Return the minimum number of swaps required to make <code>s1</code> and <code>s2</code> equal, or return <code>-1</code> if it is impossible to do so.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;xx&quot;, s2 = &quot;yy&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> Swap s1[0] and s2[1], s1 = &quot;yx&quot;, s2 = &quot;yx&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;xy&quot;, s2 = &quot;yx&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Swap s1[0] and s2[0], s1 = &quot;yy&quot;, s2 = &quot;xx&quot;.\nSwap s1[0] and s2[1], s1 = &quot;xy&quot;, s2 = &quot;xy&quot;.\nNote that you cannot swap s1[0] and s1[1] to make s1 equal to &quot;yx&quot;, cause we can only swap chars in different strings.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;xx&quot;, s2 = &quot;xy&quot;\n<strong>Output:</strong> -1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s1.length, s2.length &lt;= 1000</code></li>\n\t<li><code>s1.length == s2.length</code></li>\n\t<li><code>s1, s2</code> only contain <code>&#39;x&#39;</code> or <code>&#39;y&#39;</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given two strings `s1` and `s2` of equal length consisting of letters `\"x\"` and `\"y\"` **only**. Your task is to make these two strings equal to each other. You can swap any two characters that belong to **different** strings, which means: swap `s1[i]` and `s2[j]`.\n\nReturn the minimum number of swaps required to make `s1` and `s2` equal, or return `-1` if it is impossible to do so.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s1 = \"xx\", s2 = \"yy\"\n    **Output:** 1\n    **Explanation:** Swap s1[0] and s2[1], s1 = \"yx\", s2 = \"yx\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"xy\", s2 = \"yx\"\n    **Output:** 2\n    **Explanation:** Swap s1[0] and s2[0], s1 = \"yy\", s2 = \"xx\".\n    Swap s1[0] and s2[1], s1 = \"xy\", s2 = \"xy\".\n    Note that you cannot swap s1[0] and s1[1] to make s1 equal to \"yx\", cause we can only swap chars in different strings.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s1 = \"xx\", s2 = \"xy\"\n    **Output:** -1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 1000`\n  * `s1.length == s2.length`\n  * `s1, s2` only contain `'x'` or `'y'`.",
+  "question": "You are given two strings `s1` and `s2` of equal length consisting of letters `\"x\"` and `\"y\"` **only**. Your task is to make these two strings equal to each other. You can swap any two characters that belong to **different** strings, which means: swap `s1[i]` and `s2[j]`.\n\nReturn the minimum number of swaps required to make `s1` and `s2` equal, or return `-1` if it is impossible to do so.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s1 = \"xx\", s2 = \"yy\"\n    **Output:** 1\n    **Explanation:** Swap s1[0] and s2[1], s1 = \"yx\", s2 = \"yx\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"xy\", s2 = \"yx\"\n    **Output:** 2\n    **Explanation:** Swap s1[0] and s2[0], s1 = \"yy\", s2 = \"xx\".\n    Swap s1[0] and s2[1], s1 = \"xy\", s2 = \"xy\".\n    Note that you cannot swap s1[0] and s1[1] to make s1 equal to \"yx\", cause we can only swap chars in different strings.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s1 = \"xx\", s2 = \"xy\"\n    **Output:** -1",
+  "constraints": "**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 1000`\n  * `s1.length == s2.length`\n  * `s1, s2` only contain `'x'` or `'y'`.",
+  "topics": ["Math", "String", "Greedy"],
+  "total_accepted": 50936,
+  "total_submissions": 77998,
+  "acceptance_rate": "65.3%",
+  "similar_questions": [
+    {
+      "title": "Determine if Two Strings Are Close",
+      "slug": "determine-if-two-strings-are-close",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/determine-if-two-strings-are-close/"
+    },
+    {
+      "title": "Make Number of Distinct Characters Equal",
+      "slug": "make-number-of-distinct-characters-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/make-number-of-distinct-characters-equal/"
+    }
+  ],
+  "hints": [
+    "First, ignore all the already matched positions, they don't affect the answer at all. For the unmatched positions, there are three basic cases (already given in the examples):",
+    "(\"xx\", \"yy\") => 1 swap, (\"xy\", \"yx\") => 2 swaps",
+    "So the strategy is, apply case 1 as much as possible, then apply case 2 if the last two unmatched are in this case, or fall into impossible if only one pair of unmatched left. This can be done via a simple math."
+  ]
+}

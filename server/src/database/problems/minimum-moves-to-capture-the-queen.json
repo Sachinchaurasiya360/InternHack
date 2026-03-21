@@ -1,0 +1,34 @@
+{
+  "id": "3001",
+  "title": "Minimum Moves to Capture The Queen",
+  "slug": "minimum-moves-to-capture-the-queen",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>There is a <strong>1-indexed</strong> <code>8 x 8</code> chessboard containing <code>3</code> pieces.</p>\n\n<p>You are given <code>6</code> integers <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code>, <code>e</code>, and <code>f</code> where:</p>\n\n<ul>\n\t<li><code>(a, b)</code> denotes the position of the white rook.</li>\n\t<li><code>(c, d)</code> denotes the position of the white bishop.</li>\n\t<li><code>(e, f)</code> denotes the position of the black queen.</li>\n</ul>\n\n<p>Given that you can only move the white pieces, return <em>the <strong>minimum</strong> number of moves required to capture the black queen</em>.</p>\n\n<p><strong>Note</strong> that:</p>\n\n<ul>\n\t<li>Rooks can move any number of squares either vertically or horizontally, but cannot jump over other pieces.</li>\n\t<li>Bishops can move any number of squares diagonally, but cannot jump over other pieces.</li>\n\t<li>A rook or a bishop can capture the queen if it is located in a square that they can move to.</li>\n\t<li>The queen does not move.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/12/21/ex1.png\" style=\"width: 600px; height: 600px; padding: 10px; background: #fff; border-radius: .5rem;\" />\n<pre>\n<strong>Input:</strong> a = 1, b = 1, c = 8, d = 8, e = 2, f = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> We can capture the black queen in two moves by moving the white rook to (1, 3) then to (2, 3).\nIt is impossible to capture the black queen in less than two moves since it is not being attacked by any of the pieces at the beginning.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2023/12/21/ex2.png\" style=\"width: 600px; height: 600px;padding: 10px; background: #fff; border-radius: .5rem;\" />\n<pre>\n<strong>Input:</strong> a = 5, b = 3, c = 3, d = 4, e = 5, f = 2\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> We can capture the black queen in a single move by doing one of the following: \n- Move the white rook to (5, 2).\n- Move the white bishop to (5, 2).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= a, b, c, d, e, f &lt;= 8</code></li>\n\t<li>No two pieces are on the same square.</li>\n</ul>\n",
+  "content_markdown": "There is a **1-indexed** `8 x 8` chessboard containing `3` pieces.\n\nYou are given `6` integers `a`, `b`, `c`, `d`, `e`, and `f` where:\n\n  * `(a, b)` denotes the position of the white rook.\n  * `(c, d)` denotes the position of the white bishop.\n  * `(e, f)` denotes the position of the black queen.\n\n\n\nGiven that you can only move the white pieces, return _the**minimum** number of moves required to capture the black queen_.\n\n**Note** that:\n\n  * Rooks can move any number of squares either vertically or horizontally, but cannot jump over other pieces.\n  * Bishops can move any number of squares diagonally, but cannot jump over other pieces.\n  * A rook or a bishop can capture the queen if it is located in a square that they can move to.\n  * The queen does not move.\n\n\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/12/21/ex1.png)\n    \n    \n    **Input:** a = 1, b = 1, c = 8, d = 8, e = 2, f = 3\n    **Output:** 2\n    **Explanation:** We can capture the black queen in two moves by moving the white rook to (1, 3) then to (2, 3).\n    It is impossible to capture the black queen in less than two moves since it is not being attacked by any of the pieces at the beginning.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/12/21/ex2.png)\n    \n    \n    **Input:** a = 5, b = 3, c = 3, d = 4, e = 5, f = 2\n    **Output:** 1\n    **Explanation:** We can capture the black queen in a single move by doing one of the following: \n    - Move the white rook to (5, 2).\n    - Move the white bishop to (5, 2).\n    \n\n \n\n**Constraints:**\n\n  * `1 <= a, b, c, d, e, f <= 8`\n  * No two pieces are on the same square.",
+  "question": "There is a **1-indexed** `8 x 8` chessboard containing `3` pieces.\n\nYou are given `6` integers `a`, `b`, `c`, `d`, `e`, and `f` where:\n\n  * `(a, b)` denotes the position of the white rook.\n  * `(c, d)` denotes the position of the white bishop.\n  * `(e, f)` denotes the position of the black queen.\n\n\n\nGiven that you can only move the white pieces, return _the**minimum** number of moves required to capture the black queen_.\n\n**Note** that:\n\n  * Rooks can move any number of squares either vertically or horizontally, but cannot jump over other pieces.\n  * Bishops can move any number of squares diagonally, but cannot jump over other pieces.\n  * A rook or a bishop can capture the queen if it is located in a square that they can move to.\n  * The queen does not move.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2023/12/21/ex1.png)\n    \n    \n    **Input:** a = 1, b = 1, c = 8, d = 8, e = 2, f = 3\n    **Output:** 2\n    **Explanation:** We can capture the black queen in two moves by moving the white rook to (1, 3) then to (2, 3).\n    It is impossible to capture the black queen in less than two moves since it is not being attacked by any of the pieces at the beginning.\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2023/12/21/ex2.png)\n    \n    \n    **Input:** a = 5, b = 3, c = 3, d = 4, e = 5, f = 2\n    **Output:** 1\n    **Explanation:** We can capture the black queen in a single move by doing one of the following: \n    - Move the white rook to (5, 2).\n    - Move the white bishop to (5, 2).",
+  "constraints": "**Constraints:**\n\n  * `1 <= a, b, c, d, e, f <= 8`\n  * No two pieces are on the same square.",
+  "topics": ["Math", "Enumeration"],
+  "total_accepted": 22560,
+  "total_submissions": 101274,
+  "acceptance_rate": "22.3%",
+  "similar_questions": [
+    {
+      "title": "Available Captures for Rook",
+      "slug": "available-captures-for-rook",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/available-captures-for-rook/"
+    },
+    {
+      "title": "Queens That Can Attack the King",
+      "slug": "queens-that-can-attack-the-king",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/queens-that-can-attack-the-king/"
+    }
+  ],
+  "hints": [
+    "The minimum number of moves can be either <code>1</code> or <code>2</code>.",
+    "The answer will be <code>1</code> if the queen is on the path of the rook or bishop and none of them is in between."
+  ]
+}

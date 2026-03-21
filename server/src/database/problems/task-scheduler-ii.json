@@ -1,0 +1,40 @@
+{
+  "id": "2365",
+  "title": "Task Scheduler II",
+  "slug": "task-scheduler-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> array of positive integers <code>tasks</code>, representing tasks that need to be completed <strong>in order</strong>, where <code>tasks[i]</code> represents the <strong>type</strong> of the <code>i<sup>th</sup></code> task.</p>\n\n<p>You are also given a positive integer <code>space</code>, which represents the <strong>minimum</strong> number of days that must pass <strong>after</strong> the completion of a task before another task of the <strong>same</strong> type can be performed.</p>\n\n<p>Each day, until all tasks have been completed, you must either:</p>\n\n<ul>\n\t<li>Complete the next task from <code>tasks</code>, or</li>\n\t<li>Take a break.</li>\n</ul>\n\n<p>Return<em> the <strong>minimum</strong> number of days needed to complete all tasks</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> tasks = [1,2,1,2,3,1], space = 3\n<strong>Output:</strong> 9\n<strong>Explanation:</strong>\nOne way to complete all tasks in 9 days is as follows:\nDay 1: Complete the 0th task.\nDay 2: Complete the 1st task.\nDay 3: Take a break.\nDay 4: Take a break.\nDay 5: Complete the 2nd task.\nDay 6: Complete the 3rd task.\nDay 7: Take a break.\nDay 8: Complete the 4th task.\nDay 9: Complete the 5th task.\nIt can be shown that the tasks cannot be completed in less than 9 days.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> tasks = [5,8,8,5], space = 2\n<strong>Output:</strong> 6\n<strong>Explanation:</strong>\nOne way to complete all tasks in 6 days is as follows:\nDay 1: Complete the 0th task.\nDay 2: Complete the 1st task.\nDay 3: Take a break.\nDay 4: Take a break.\nDay 5: Complete the 2nd task.\nDay 6: Complete the 3rd task.\nIt can be shown that the tasks cannot be completed in less than 6 days.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= tasks.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= tasks[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>1 &lt;= space &lt;= tasks.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** array of positive integers `tasks`, representing tasks that need to be completed **in order** , where `tasks[i]` represents the **type** of the `ith` task.\n\nYou are also given a positive integer `space`, which represents the **minimum** number of days that must pass **after** the completion of a task before another task of the **same** type can be performed.\n\nEach day, until all tasks have been completed, you must either:\n\n  * Complete the next task from `tasks`, or\n  * Take a break.\n\n\n\nReturn _the**minimum** number of days needed to complete all tasks_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** tasks = [1,2,1,2,3,1], space = 3\n    **Output:** 9\n    **Explanation:**\n    One way to complete all tasks in 9 days is as follows:\n    Day 1: Complete the 0th task.\n    Day 2: Complete the 1st task.\n    Day 3: Take a break.\n    Day 4: Take a break.\n    Day 5: Complete the 2nd task.\n    Day 6: Complete the 3rd task.\n    Day 7: Take a break.\n    Day 8: Complete the 4th task.\n    Day 9: Complete the 5th task.\n    It can be shown that the tasks cannot be completed in less than 9 days.\n    \n\n**Example 2:**\n    \n    \n    **Input:** tasks = [5,8,8,5], space = 2\n    **Output:** 6\n    **Explanation:**\n    One way to complete all tasks in 6 days is as follows:\n    Day 1: Complete the 0th task.\n    Day 2: Complete the 1st task.\n    Day 3: Take a break.\n    Day 4: Take a break.\n    Day 5: Complete the 2nd task.\n    Day 6: Complete the 3rd task.\n    It can be shown that the tasks cannot be completed in less than 6 days.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= tasks.length <= 105`\n  * `1 <= tasks[i] <= 109`\n  * `1 <= space <= tasks.length`",
+  "question": "You are given a **0-indexed** array of positive integers `tasks`, representing tasks that need to be completed **in order** , where `tasks[i]` represents the **type** of the `ith` task.\n\nYou are also given a positive integer `space`, which represents the **minimum** number of days that must pass **after** the completion of a task before another task of the **same** type can be performed.\n\nEach day, until all tasks have been completed, you must either:\n\n  * Complete the next task from `tasks`, or\n  * Take a break.\n\n\n\nReturn _the**minimum** number of days needed to complete all tasks_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** tasks = [1,2,1,2,3,1], space = 3\n    **Output:** 9\n    **Explanation:**\n    One way to complete all tasks in 9 days is as follows:\n    Day 1: Complete the 0th task.\n    Day 2: Complete the 1st task.\n    Day 3: Take a break.\n    Day 4: Take a break.\n    Day 5: Complete the 2nd task.\n    Day 6: Complete the 3rd task.\n    Day 7: Take a break.\n    Day 8: Complete the 4th task.\n    Day 9: Complete the 5th task.\n    It can be shown that the tasks cannot be completed in less than 9 days.\n    \n\n**Example 2:**\n    \n    \n    **Input:** tasks = [5,8,8,5], space = 2\n    **Output:** 6\n    **Explanation:**\n    One way to complete all tasks in 6 days is as follows:\n    Day 1: Complete the 0th task.\n    Day 2: Complete the 1st task.\n    Day 3: Take a break.\n    Day 4: Take a break.\n    Day 5: Complete the 2nd task.\n    Day 6: Complete the 3rd task.\n    It can be shown that the tasks cannot be completed in less than 6 days.",
+  "constraints": "**Constraints:**\n\n  * `1 <= tasks.length <= 105`\n  * `1 <= tasks[i] <= 109`\n  * `1 <= space <= tasks.length`",
+  "topics": ["Array", "Hash Table", "Simulation"],
+  "total_accepted": 56747,
+  "total_submissions": 103787,
+  "acceptance_rate": "54.7%",
+  "similar_questions": [
+    {
+      "title": "Task Scheduler",
+      "slug": "task-scheduler",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/task-scheduler/"
+    },
+    {
+      "title": "Maximize Distance to Closest Person",
+      "slug": "maximize-distance-to-closest-person",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximize-distance-to-closest-person/"
+    },
+    {
+      "title": "Check If All 1's Are at Least Length K Places Away",
+      "slug": "check-if-all-1s-are-at-least-length-k-places-away",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-all-1s-are-at-least-length-k-places-away/"
+    }
+  ],
+  "hints": [
+    "Try taking breaks as late as possible, such that tasks are still spaced appropriately.",
+    "Whenever considering whether to complete the next task, if it is not the first task of its type, check how many days ago the previous task was completed and add an appropriate number of breaks."
+  ]
+}

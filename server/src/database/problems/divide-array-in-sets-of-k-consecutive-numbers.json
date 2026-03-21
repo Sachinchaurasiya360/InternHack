@@ -1,0 +1,35 @@
+{
+  "id": "1296",
+  "title": "Divide Array in Sets of K Consecutive Numbers",
+  "slug": "divide-array-in-sets-of-k-consecutive-numbers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers <code>nums</code> and a positive integer <code>k</code>, check whether it is possible to divide this array into sets of <code>k</code> consecutive numbers.</p>\n\n<p>Return <code>true</code> <em>if it is possible</em>.<strong> </strong>Otherwise, return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,3,4,4,5,6], k = 4\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Array can be divided into [1,2,3,4] and [3,4,5,6].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,2,1,2,3,4,3,4,5,9,10,11], k = 3\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Array can be divided into [1,2,3] , [2,3,4] , [3,4,5] and [9,10,11].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4], k = 3\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Each array should be divided in subarrays of size 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n\n<p>&nbsp;</p>\n<strong>Note:</strong> This question is the same as&nbsp;846:&nbsp;<a href=\"https://leetcode.com/problems/hand-of-straights/\" target=\"_blank\">https://leetcode.com/problems/hand-of-straights/</a>",
+  "content_markdown": "Given an array of integers `nums` and a positive integer `k`, check whether it is possible to divide this array into sets of `k` consecutive numbers.\n\nReturn `true` _if it is possible_.**** Otherwise, return `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,3,4,4,5,6], k = 4\n    **Output:** true\n    **Explanation:** Array can be divided into [1,2,3,4] and [3,4,5,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,1,2,3,4,3,4,5,9,10,11], k = 3\n    **Output:** true\n    **Explanation:** Array can be divided into [1,2,3] , [2,3,4] , [3,4,5] and [9,10,11].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 3\n    **Output:** false\n    **Explanation:** Each array should be divided in subarrays of size 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n\n\n\n \n\n**Note:** This question is the same as 846: <https://leetcode.com/problems/hand-of-straights/>",
+  "question": "Given an array of integers `nums` and a positive integer `k`, check whether it is possible to divide this array into sets of `k` consecutive numbers.\n\nReturn `true` _if it is possible_.**** Otherwise, return `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,3,4,4,5,6], k = 4\n    **Output:** true\n    **Explanation:** Array can be divided into [1,2,3,4] and [3,4,5,6].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,2,1,2,3,4,3,4,5,9,10,11], k = 3\n    **Output:** true\n    **Explanation:** Array can be divided into [1,2,3] , [2,3,4] , [3,4,5] and [9,10,11].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,2,3,4], k = 3\n    **Output:** false\n    **Explanation:** Each array should be divided in subarrays of size 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= nums.length <= 105`\n  * `1 <= nums[i] <= 109`\n\n\n\n \n\n**Note:** This question is the same as 846: <https://leetcode.com/problems/hand-of-straights/>",
+  "topics": ["Array", "Hash Table", "Greedy", "Sorting"],
+  "total_accepted": 125351,
+  "total_submissions": 212019,
+  "acceptance_rate": "59.1%",
+  "similar_questions": [
+    {
+      "title": "Split Array into Consecutive Subsequences",
+      "slug": "split-array-into-consecutive-subsequences",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/split-array-into-consecutive-subsequences/"
+    },
+    {
+      "title": "All Divisions With the Highest Score of a Binary Array",
+      "slug": "all-divisions-with-the-highest-score-of-a-binary-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/"
+    }
+  ],
+  "hints": [
+    "If the smallest number in the possible-to-split array is V, then numbers V+1, V+2, ... V+k-1 must contain there as well.",
+    "You can iteratively find k sets and remove them from array until it becomes empty.",
+    "Failure to do so would mean that array is unsplittable."
+  ]
+}

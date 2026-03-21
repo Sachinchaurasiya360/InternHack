@@ -1,0 +1,40 @@
+{
+  "id": "2330",
+  "title": "Valid Palindrome IV",
+  "slug": "valid-palindrome-iv",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 20732,
+  "total_submissions": 27383,
+  "acceptance_rate": "75.7%",
+  "similar_questions": [
+    {
+      "title": "Valid Palindrome",
+      "slug": "valid-palindrome",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-palindrome/"
+    },
+    {
+      "title": "Valid Palindrome II",
+      "slug": "valid-palindrome-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/valid-palindrome-ii/"
+    },
+    {
+      "title": "Valid Palindrome III",
+      "slug": "valid-palindrome-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/valid-palindrome-iii/"
+    }
+  ],
+  "hints": [
+    "Count the number of pairs of characters that should be equal if s were a palindrome, but are not equal.",
+    "If the number of pairs is 0, then s is already palindrome. You can pick any pair of characters and change them both to a different character and s will stay a palindrome."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "2262",
+  "title": "Total Appeal of A String",
+  "slug": "total-appeal-of-a-string",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>The <b>appeal</b> of a string is the number of <strong>distinct</strong> characters found in the string.</p>\n\n<ul>\n\t<li>For example, the appeal of <code>&quot;abbca&quot;</code> is <code>3</code> because it has <code>3</code> distinct characters: <code>&#39;a&#39;</code>, <code>&#39;b&#39;</code>, and <code>&#39;c&#39;</code>.</li>\n</ul>\n\n<p>Given a string <code>s</code>, return <em>the <strong>total appeal of all of its <strong>substrings</strong>.</strong></em></p>\n\n<p>A <strong>substring</strong> is a contiguous sequence of characters within a string.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;abbca&quot;\n<strong>Output:</strong> 28\n<strong>Explanation:</strong> The following are the substrings of &quot;abbca&quot;:\n- Substrings of length 1: &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;c&quot;, &quot;a&quot; have an appeal of 1, 1, 1, 1, and 1 respectively. The sum is 5.\n- Substrings of length 2: &quot;ab&quot;, &quot;bb&quot;, &quot;bc&quot;, &quot;ca&quot; have an appeal of 2, 1, 2, and 2 respectively. The sum is 7.\n- Substrings of length 3: &quot;abb&quot;, &quot;bbc&quot;, &quot;bca&quot; have an appeal of 2, 2, and 3 respectively. The sum is 7.\n- Substrings of length 4: &quot;abbc&quot;, &quot;bbca&quot; have an appeal of 3 and 3 respectively. The sum is 6.\n- Substrings of length 5: &quot;abbca&quot; has an appeal of 3. The sum is 3.\nThe total sum is 5 + 7 + 7 + 6 + 3 = 28.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;code&quot;\n<strong>Output:</strong> 20\n<strong>Explanation:</strong> The following are the substrings of &quot;code&quot;:\n- Substrings of length 1: &quot;c&quot;, &quot;o&quot;, &quot;d&quot;, &quot;e&quot; have an appeal of 1, 1, 1, and 1 respectively. The sum is 4.\n- Substrings of length 2: &quot;co&quot;, &quot;od&quot;, &quot;de&quot; have an appeal of 2, 2, and 2 respectively. The sum is 6.\n- Substrings of length 3: &quot;cod&quot;, &quot;ode&quot; have an appeal of 3 and 3 respectively. The sum is 6.\n- Substrings of length 4: &quot;code&quot; has an appeal of 4. The sum is 4.\nThe total sum is 4 + 6 + 6 + 4 = 20.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "The **appeal** of a string is the number of **distinct** characters found in the string.\n\n  * For example, the appeal of `\"abbca\"` is `3` because it has `3` distinct characters: `'a'`, `'b'`, and `'c'`.\n\n\n\nGiven a string `s`, return _the**total appeal of all of its**substrings**.**_\n\nA **substring** is a contiguous sequence of characters within a string.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"abbca\"\n    **Output:** 28\n    **Explanation:** The following are the substrings of \"abbca\":\n    - Substrings of length 1: \"a\", \"b\", \"b\", \"c\", \"a\" have an appeal of 1, 1, 1, 1, and 1 respectively. The sum is 5.\n    - Substrings of length 2: \"ab\", \"bb\", \"bc\", \"ca\" have an appeal of 2, 1, 2, and 2 respectively. The sum is 7.\n    - Substrings of length 3: \"abb\", \"bbc\", \"bca\" have an appeal of 2, 2, and 3 respectively. The sum is 7.\n    - Substrings of length 4: \"abbc\", \"bbca\" have an appeal of 3 and 3 respectively. The sum is 6.\n    - Substrings of length 5: \"abbca\" has an appeal of 3. The sum is 3.\n    The total sum is 5 + 7 + 7 + 6 + 3 = 28.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"code\"\n    **Output:** 20\n    **Explanation:** The following are the substrings of \"code\":\n    - Substrings of length 1: \"c\", \"o\", \"d\", \"e\" have an appeal of 1, 1, 1, and 1 respectively. The sum is 4.\n    - Substrings of length 2: \"co\", \"od\", \"de\" have an appeal of 2, 2, and 2 respectively. The sum is 6.\n    - Substrings of length 3: \"cod\", \"ode\" have an appeal of 3 and 3 respectively. The sum is 6.\n    - Substrings of length 4: \"code\" has an appeal of 4. The sum is 4.\n    The total sum is 4 + 6 + 6 + 4 = 20.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "question": "The **appeal** of a string is the number of **distinct** characters found in the string.\n\n  * For example, the appeal of `\"abbca\"` is `3` because it has `3` distinct characters: `'a'`, `'b'`, and `'c'`.\n\n\n\nGiven a string `s`, return _the**total appeal of all of its**substrings**.**_\n\nA **substring** is a contiguous sequence of characters within a string.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"abbca\"\n    **Output:** 28\n    **Explanation:** The following are the substrings of \"abbca\":\n    - Substrings of length 1: \"a\", \"b\", \"b\", \"c\", \"a\" have an appeal of 1, 1, 1, 1, and 1 respectively. The sum is 5.\n    - Substrings of length 2: \"ab\", \"bb\", \"bc\", \"ca\" have an appeal of 2, 1, 2, and 2 respectively. The sum is 7.\n    - Substrings of length 3: \"abb\", \"bbc\", \"bca\" have an appeal of 2, 2, and 3 respectively. The sum is 7.\n    - Substrings of length 4: \"abbc\", \"bbca\" have an appeal of 3 and 3 respectively. The sum is 6.\n    - Substrings of length 5: \"abbca\" has an appeal of 3. The sum is 3.\n    The total sum is 5 + 7 + 7 + 6 + 3 = 28.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"code\"\n    **Output:** 20\n    **Explanation:** The following are the substrings of \"code\":\n    - Substrings of length 1: \"c\", \"o\", \"d\", \"e\" have an appeal of 1, 1, 1, and 1 respectively. The sum is 4.\n    - Substrings of length 2: \"co\", \"od\", \"de\" have an appeal of 2, 2, and 2 respectively. The sum is 6.\n    - Substrings of length 3: \"cod\", \"ode\" have an appeal of 3 and 3 respectively. The sum is 6.\n    - Substrings of length 4: \"code\" has an appeal of 4. The sum is 4.\n    The total sum is 4 + 6 + 6 + 4 = 20.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Dynamic Programming"],
+  "total_accepted": 46276,
+  "total_submissions": 82120,
+  "acceptance_rate": "56.4%",
+  "similar_questions": [
+    {
+      "title": "Count Unique Characters of All Substrings of a Given String",
+      "slug": "count-unique-characters-of-all-substrings-of-a-given-string",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/"
+    },
+    {
+      "title": "Count Vowel Substrings of a String",
+      "slug": "count-vowel-substrings-of-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-vowel-substrings-of-a-string/"
+    },
+    {
+      "title": "Vowels of All Substrings",
+      "slug": "vowels-of-all-substrings",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/vowels-of-all-substrings/"
+    },
+    {
+      "title": "Find the Median of the Uniqueness Array",
+      "slug": "find-the-median-of-the-uniqueness-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-median-of-the-uniqueness-array/"
+    }
+  ],
+  "hints": [
+    "Consider the set of substrings that end at a certain index i. Then, consider a specific alphabetic character. How do you count the number of substrings ending at index i that contain that character?",
+    "The number of substrings that contain the alphabetic character is equivalent to 1 plus the index of the last occurrence of the character before index i + 1.",
+    "The total appeal of all substrings ending at index i is the total sum of the number of substrings that contain each alphabetic character.",
+    "To find the total appeal of all substrings, we simply sum up the total appeal for each index."
+  ]
+}

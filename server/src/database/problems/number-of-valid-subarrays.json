@@ -1,0 +1,28 @@
+{
+  "id": "1063",
+  "title": "Number of Valid Subarrays",
+  "slug": "number-of-valid-subarrays",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Stack", "Monotonic Stack"],
+  "total_accepted": 19069,
+  "total_submissions": 23865,
+  "acceptance_rate": "79.9%",
+  "similar_questions": [
+    {
+      "title": "Number of Smooth Descent Periods of a Stock",
+      "slug": "number-of-smooth-descent-periods-of-a-stock",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-smooth-descent-periods-of-a-stock/"
+    }
+  ],
+  "hints": [
+    "Given a data structure that answers queries of the type to find the minimum in a range of an array (Range minimum query (RMQ) sparse table) in O(1) time. How can you solve this problem?",
+    "For each starting index do a binary search with an RMQ to find the ending possible position."
+  ]
+}

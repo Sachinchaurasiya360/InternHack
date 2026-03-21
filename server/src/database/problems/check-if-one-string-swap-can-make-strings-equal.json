@@ -1,0 +1,40 @@
+{
+  "id": "1790",
+  "title": "Check if One String Swap Can Make Strings Equal",
+  "slug": "check-if-one-string-swap-can-make-strings-equal",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two strings <code>s1</code> and <code>s2</code> of equal length. A <strong>string swap</strong> is an operation where you choose two indices in a string (not necessarily different) and swap the characters at these indices.</p>\n\n<p>Return <code>true</code> <em>if it is possible to make both strings equal by performing <strong>at most one string swap </strong>on <strong>exactly one</strong> of the strings. </em>Otherwise, return <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;bank&quot;, s2 = &quot;kanb&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> For example, swap the first character with the last character of s2 to make &quot;bank&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;attack&quot;, s2 = &quot;defend&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> It is impossible to make them equal with one string swap.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s1 = &quot;kelb&quot;, s2 = &quot;kelb&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> The two strings are already equal, so no string swap operation is required.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s1.length, s2.length &lt;= 100</code></li>\n\t<li><code>s1.length == s2.length</code></li>\n\t<li><code>s1</code> and <code>s2</code> consist of only lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given two strings `s1` and `s2` of equal length. A **string swap** is an operation where you choose two indices in a string (not necessarily different) and swap the characters at these indices.\n\nReturn `true` _if it is possible to make both strings equal by performing**at most one string swap** on **exactly one** of the strings. _Otherwise, return `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s1 = \"bank\", s2 = \"kanb\"\n    **Output:** true\n    **Explanation:** For example, swap the first character with the last character of s2 to make \"bank\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"attack\", s2 = \"defend\"\n    **Output:** false\n    **Explanation:** It is impossible to make them equal with one string swap.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s1 = \"kelb\", s2 = \"kelb\"\n    **Output:** true\n    **Explanation:** The two strings are already equal, so no string swap operation is required.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 100`\n  * `s1.length == s2.length`\n  * `s1` and `s2` consist of only lowercase English letters.",
+  "question": "You are given two strings `s1` and `s2` of equal length. A **string swap** is an operation where you choose two indices in a string (not necessarily different) and swap the characters at these indices.\n\nReturn `true` _if it is possible to make both strings equal by performing**at most one string swap** on **exactly one** of the strings. _Otherwise, return `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s1 = \"bank\", s2 = \"kanb\"\n    **Output:** true\n    **Explanation:** For example, swap the first character with the last character of s2 to make \"bank\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** s1 = \"attack\", s2 = \"defend\"\n    **Output:** false\n    **Explanation:** It is impossible to make them equal with one string swap.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s1 = \"kelb\", s2 = \"kelb\"\n    **Output:** true\n    **Explanation:** The two strings are already equal, so no string swap operation is required.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s1.length, s2.length <= 100`\n  * `s1.length == s2.length`\n  * `s1` and `s2` consist of only lowercase English letters.",
+  "topics": ["Hash Table", "String", "Counting"],
+  "total_accepted": 308748,
+  "total_submissions": 623949,
+  "acceptance_rate": "49.5%",
+  "similar_questions": [
+    {
+      "title": "Buddy Strings",
+      "slug": "buddy-strings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/buddy-strings/"
+    },
+    {
+      "title": "Make Number of Distinct Characters Equal",
+      "slug": "make-number-of-distinct-characters-equal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/make-number-of-distinct-characters-equal/"
+    },
+    {
+      "title": "Count Almost Equal Pairs I",
+      "slug": "count-almost-equal-pairs-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-almost-equal-pairs-i/"
+    }
+  ],
+  "hints": [
+    "The answer is false if the number of nonequal positions in the strings is not equal to 0 or 2.",
+    "Check that these positions have the same set of characters."
+  ]
+}

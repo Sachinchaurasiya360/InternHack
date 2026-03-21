@@ -1,0 +1,43 @@
+{
+  "id": "1995",
+  "title": "Count Special Quadruplets",
+  "slug": "count-special-quadruplets",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>0-indexed</strong> integer array <code>nums</code>, return <em>the number of <strong>distinct</strong> quadruplets</em> <code>(a, b, c, d)</code> <em>such that:</em></p>\n\n<ul>\n\t<li><code>nums[a] + nums[b] + nums[c] == nums[d]</code>, and</li>\n\t<li><code>a &lt; b &lt; c &lt; d</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,6]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The only quadruplet that satisfies the requirement is (0, 1, 2, 3) because 1 + 2 + 3 == 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,3,6,4,5]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> There are no such quadruplets in [3,3,6,4,5].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,1,3,5]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The 4 quadruplets that satisfy the requirement are:\n- (0, 1, 2, 3): 1 + 1 + 1 == 3\n- (0, 1, 3, 4): 1 + 1 + 3 == 5\n- (0, 2, 3, 4): 1 + 1 + 3 == 5\n- (1, 2, 3, 4): 1 + 1 + 3 == 5\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>4 &lt;= nums.length &lt;= 50</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "Given a **0-indexed** integer array `nums`, return _the number of**distinct** quadruplets_ `(a, b, c, d)` _such that:_\n\n  * `nums[a] + nums[b] + nums[c] == nums[d]`, and\n  * `a < b < c < d`\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,6]\n    **Output:** 1\n    **Explanation:** The only quadruplet that satisfies the requirement is (0, 1, 2, 3) because 1 + 2 + 3 == 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,3,6,4,5]\n    **Output:** 0\n    **Explanation:** There are no such quadruplets in [3,3,6,4,5].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,1,3,5]\n    **Output:** 4\n    **Explanation:** The 4 quadruplets that satisfy the requirement are:\n    - (0, 1, 2, 3): 1 + 1 + 1 == 3\n    - (0, 1, 3, 4): 1 + 1 + 3 == 5\n    - (0, 2, 3, 4): 1 + 1 + 3 == 5\n    - (1, 2, 3, 4): 1 + 1 + 3 == 5\n    \n\n \n\n**Constraints:**\n\n  * `4 <= nums.length <= 50`\n  * `1 <= nums[i] <= 100`",
+  "question": "Given a **0-indexed** integer array `nums`, return _the number of**distinct** quadruplets_ `(a, b, c, d)` _such that:_\n\n  * `nums[a] + nums[b] + nums[c] == nums[d]`, and\n  * `a < b < c < d`",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,3,6]\n    **Output:** 1\n    **Explanation:** The only quadruplet that satisfies the requirement is (0, 1, 2, 3) because 1 + 2 + 3 == 6.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3,3,6,4,5]\n    **Output:** 0\n    **Explanation:** There are no such quadruplets in [3,3,6,4,5].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,1,3,5]\n    **Output:** 4\n    **Explanation:** The 4 quadruplets that satisfy the requirement are:\n    - (0, 1, 2, 3): 1 + 1 + 1 == 3\n    - (0, 1, 3, 4): 1 + 1 + 3 == 5\n    - (0, 2, 3, 4): 1 + 1 + 3 == 5\n    - (1, 2, 3, 4): 1 + 1 + 3 == 5",
+  "constraints": "**Constraints:**\n\n  * `4 <= nums.length <= 50`\n  * `1 <= nums[i] <= 100`",
+  "topics": ["Array", "Hash Table", "Enumeration"],
+  "total_accepted": 61320,
+  "total_submissions": 95177,
+  "acceptance_rate": "64.4%",
+  "similar_questions": [
+    {
+      "title": "4Sum",
+      "slug": "4sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/4sum/"
+    },
+    {
+      "title": "Increasing Triplet Subsequence",
+      "slug": "increasing-triplet-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/increasing-triplet-subsequence/"
+    },
+    {
+      "title": "Count Good Triplets",
+      "slug": "count-good-triplets",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-good-triplets/"
+    },
+    {
+      "title": "Count Increasing Quadruplets",
+      "slug": "count-increasing-quadruplets",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-increasing-quadruplets/"
+    }
+  ],
+  "hints": ["N is very small, how can we use that?", "Can we check every possible quadruplet?"]
+}

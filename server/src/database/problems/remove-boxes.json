@@ -1,0 +1,31 @@
+{
+  "id": "546",
+  "title": "Remove Boxes",
+  "slug": "remove-boxes",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given several <code>boxes</code> with different colors represented by different positive numbers.</p>\n\n<p>You may experience several rounds to remove boxes until there is no box left. Each time you can choose some continuous boxes with the same color (i.e., composed of <code>k</code> boxes, <code>k &gt;= 1</code>), remove them and get <code>k * k</code> points.</p>\n\n<p>Return <em>the maximum points you can get</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> boxes = [1,3,2,2,2,3,4,3,1]\n<strong>Output:</strong> 23\n<strong>Explanation:</strong>\n[1, 3, 2, 2, 2, 3, 4, 3, 1] \n----&gt; [1, 3, 3, 4, 3, 1] (3*3=9 points) \n----&gt; [1, 3, 3, 3, 1] (1*1=1 points) \n----&gt; [1, 1] (3*3=9 points) \n----&gt; [] (2*2=4 points)\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> boxes = [1,1,1]\n<strong>Output:</strong> 9\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> boxes = [1]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= boxes.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= boxes[i]&nbsp;&lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given several `boxes` with different colors represented by different positive numbers.\n\nYou may experience several rounds to remove boxes until there is no box left. Each time you can choose some continuous boxes with the same color (i.e., composed of `k` boxes, `k >= 1`), remove them and get `k * k` points.\n\nReturn _the maximum points you can get_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** boxes = [1,3,2,2,2,3,4,3,1]\n    **Output:** 23\n    **Explanation:**\n    [1, 3, 2, 2, 2, 3, 4, 3, 1] \n    ----> [1, 3, 3, 4, 3, 1] (3*3=9 points) \n    ----> [1, 3, 3, 3, 1] (1*1=1 points) \n    ----> [1, 1] (3*3=9 points) \n    ----> [] (2*2=4 points)\n    \n\n**Example 2:**\n    \n    \n    **Input:** boxes = [1,1,1]\n    **Output:** 9\n    \n\n**Example 3:**\n    \n    \n    **Input:** boxes = [1]\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= boxes.length <= 100`\n  * `1 <= boxes[i] <= 100`",
+  "question": "You are given several `boxes` with different colors represented by different positive numbers.\n\nYou may experience several rounds to remove boxes until there is no box left. Each time you can choose some continuous boxes with the same color (i.e., composed of `k` boxes, `k >= 1`), remove them and get `k * k` points.\n\nReturn _the maximum points you can get_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** boxes = [1,3,2,2,2,3,4,3,1]\n    **Output:** 23\n    **Explanation:**\n    [1, 3, 2, 2, 2, 3, 4, 3, 1] \n    ----> [1, 3, 3, 4, 3, 1] (3*3=9 points) \n    ----> [1, 3, 3, 3, 1] (1*1=1 points) \n    ----> [1, 1] (3*3=9 points) \n    ----> [] (2*2=4 points)\n    \n\n**Example 2:**\n    \n    \n    **Input:** boxes = [1,1,1]\n    **Output:** 9\n    \n\n**Example 3:**\n    \n    \n    **Input:** boxes = [1]\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= boxes.length <= 100`\n  * `1 <= boxes[i] <= 100`",
+  "topics": ["Array", "Dynamic Programming", "Memoization"],
+  "total_accepted": 61052,
+  "total_submissions": 123736,
+  "acceptance_rate": "49.3%",
+  "similar_questions": [
+    {
+      "title": "Strange Printer",
+      "slug": "strange-printer",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/strange-printer/"
+    },
+    {
+      "title": "Number of Unique Flavors After Sharing K Candies",
+      "slug": "number-of-unique-flavors-after-sharing-k-candies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-unique-flavors-after-sharing-k-candies/"
+    }
+  ],
+  "hints": []
+}

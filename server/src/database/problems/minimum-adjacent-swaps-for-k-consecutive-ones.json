@@ -1,0 +1,41 @@
+{
+  "id": "1703",
+  "title": "Minimum Adjacent Swaps for K Consecutive Ones",
+  "slug": "minimum-adjacent-swaps-for-k-consecutive-ones",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array, <code>nums</code>, and an integer <code>k</code>. <code>nums</code> comprises of only <code>0</code>&#39;s and <code>1</code>&#39;s. In one move, you can choose two <strong>adjacent</strong> indices and swap their values.</p>\n\n<p>Return <em>the <strong>minimum</strong> number of moves required so that </em><code>nums</code><em> has </em><code>k</code><em> <strong>consecutive</strong> </em><code>1</code><em>&#39;s</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,0,0,1,0,1], k = 2\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> In 1 move, nums could be [1,0,0,0,<u>1</u>,<u>1</u>] and have 2 consecutive 1&#39;s.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,0,0,0,0,0,1,1], k = 3\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> In 5 moves, the leftmost 1 can be shifted right until nums = [0,0,0,0,0,<u>1</u>,<u>1</u>,<u>1</u>].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,1,0,1], k = 2\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> nums already has 2 consecutive 1&#39;s.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>nums[i]</code> is <code>0</code> or <code>1</code>.</li>\n\t<li><code>1 &lt;= k &lt;= sum(nums)</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array, `nums`, and an integer `k`. `nums` comprises of only `0`'s and `1`'s. In one move, you can choose two **adjacent** indices and swap their values.\n\nReturn _the**minimum** number of moves required so that _`nums` _has_`k` _**consecutive** _`1` _' s_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,0,0,1,0,1], k = 2\n    **Output:** 1\n    **Explanation:** In 1 move, nums could be [1,0,0,0,_1_ ,_1_] and have 2 consecutive 1's.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,0,0,0,0,0,1,1], k = 3\n    **Output:** 5\n    **Explanation:** In 5 moves, the leftmost 1 can be shifted right until nums = [0,0,0,0,0,_1_ ,_1_ ,_1_].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,0,1], k = 2\n    **Output:** 0\n    **Explanation:** nums already has 2 consecutive 1's.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is `0` or `1`.\n  * `1 <= k <= sum(nums)`",
+  "question": "You are given an integer array, `nums`, and an integer `k`. `nums` comprises of only `0`'s and `1`'s. In one move, you can choose two **adjacent** indices and swap their values.\n\nReturn _the**minimum** number of moves required so that _`nums` _has_`k` _**consecutive** _`1` _' s_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,0,0,1,0,1], k = 2\n    **Output:** 1\n    **Explanation:** In 1 move, nums could be [1,0,0,0,_1_ ,_1_] and have 2 consecutive 1's.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,0,0,0,0,0,1,1], k = 3\n    **Output:** 5\n    **Explanation:** In 5 moves, the leftmost 1 can be shifted right until nums = [0,0,0,0,0,_1_ ,_1_ ,_1_].\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [1,1,0,1], k = 2\n    **Output:** 0\n    **Explanation:** nums already has 2 consecutive 1's.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 105`\n  * `nums[i]` is `0` or `1`.\n  * `1 <= k <= sum(nums)`",
+  "topics": ["Array", "Greedy", "Sliding Window", "Prefix Sum"],
+  "total_accepted": 14011,
+  "total_submissions": 33144,
+  "acceptance_rate": "42.3%",
+  "similar_questions": [
+    {
+      "title": "Minimum Swaps to Group All 1's Together",
+      "slug": "minimum-swaps-to-group-all-1s-together",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together/"
+    },
+    {
+      "title": "Minimum Number of Operations to Make Array Continuous",
+      "slug": "minimum-number-of-operations-to-make-array-continuous",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/"
+    },
+    {
+      "title": "Minimum Adjacent Swaps to Make a Valid Array",
+      "slug": "minimum-adjacent-swaps-to-make-a-valid-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-adjacent-swaps-to-make-a-valid-array/"
+    }
+  ],
+  "hints": [
+    "Choose k 1s and determine how many steps are required to move them into 1 group.",
+    "Maintain a sliding window of k 1s, and maintain the steps required to group them.",
+    "When you slide the window across, should you move the group to the right? Once you move the group to the right, it will never need to slide to the left again."
+  ]
+}

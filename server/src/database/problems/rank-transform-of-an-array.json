@@ -1,0 +1,34 @@
+{
+  "id": "1331",
+  "title": "Rank Transform of an Array",
+  "slug": "rank-transform-of-an-array",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array of integers&nbsp;<code>arr</code>, replace each element with its rank.</p>\n\n<p>The rank represents how large the element is. The rank has the following rules:</p>\n\n<ul>\n\t<li>Rank is an integer starting from 1.</li>\n\t<li>The larger the element, the larger the rank. If two elements are equal, their rank must be the same.</li>\n\t<li>Rank should be as small as possible.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [40,10,20,30]\n<strong>Output:</strong> [4,1,2,3]\n<strong>Explanation</strong>: 40 is the largest element. 10 is the smallest. 20 is the second smallest. 30 is the third smallest.</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [100,100,100]\n<strong>Output:</strong> [1,1,1]\n<strong>Explanation</strong>: Same elements share the same rank.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [37,12,28,9,100,56,80,5,12]\n<strong>Output:</strong> [5,3,4,2,8,6,7,1,3]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= arr.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>9</sup>&nbsp;&lt;= arr[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array of integers `arr`, replace each element with its rank.\n\nThe rank represents how large the element is. The rank has the following rules:\n\n  * Rank is an integer starting from 1.\n  * The larger the element, the larger the rank. If two elements are equal, their rank must be the same.\n  * Rank should be as small as possible.\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [40,10,20,30]\n    **Output:** [4,1,2,3]\n    **Explanation** : 40 is the largest element. 10 is the smallest. 20 is the second smallest. 30 is the third smallest.\n\n**Example 2:**\n    \n    \n    **Input:** arr = [100,100,100]\n    **Output:** [1,1,1]\n    **Explanation** : Same elements share the same rank.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [37,12,28,9,100,56,80,5,12]\n    **Output:** [5,3,4,2,8,6,7,1,3]\n    \n\n \n\n**Constraints:**\n\n  * `0 <= arr.length <= 105`\n  * `-109 <= arr[i] <= 109`",
+  "question": "Given an array of integers `arr`, replace each element with its rank.\n\nThe rank represents how large the element is. The rank has the following rules:\n\n  * Rank is an integer starting from 1.\n  * The larger the element, the larger the rank. If two elements are equal, their rank must be the same.\n  * Rank should be as small as possible.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [40,10,20,30]\n    **Output:** [4,1,2,3]\n    **Explanation** : 40 is the largest element. 10 is the smallest. 20 is the second smallest. 30 is the third smallest.\n\n**Example 2:**\n    \n    \n    **Input:** arr = [100,100,100]\n    **Output:** [1,1,1]\n    **Explanation** : Same elements share the same rank.\n    \n\n**Example 3:**\n    \n    \n    **Input:** arr = [37,12,28,9,100,56,80,5,12]\n    **Output:** [5,3,4,2,8,6,7,1,3]",
+  "constraints": "**Constraints:**\n\n  * `0 <= arr.length <= 105`\n  * `-109 <= arr[i] <= 109`",
+  "topics": ["Array", "Hash Table", "Sorting"],
+  "total_accepted": 317574,
+  "total_submissions": 448441,
+  "acceptance_rate": "70.8%",
+  "similar_questions": [
+    {
+      "title": "Rank Transform of a Matrix",
+      "slug": "rank-transform-of-a-matrix",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/rank-transform-of-a-matrix/"
+    },
+    {
+      "title": "Find Target Indices After Sorting Array",
+      "slug": "find-target-indices-after-sorting-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-target-indices-after-sorting-array/"
+    }
+  ],
+  "hints": [
+    "Use a temporary array to copy the array and sort it.",
+    "The rank of each element is the number of unique elements smaller than it in the sorted array plus one."
+  ]
+}

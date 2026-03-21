@@ -1,0 +1,22 @@
+{
+  "id": "3658",
+  "title": "GCD of Odd and Even Sums",
+  "slug": "gcd-of-odd-and-even-sums",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code>. Your task is to compute the <strong>GCD</strong> (greatest common divisor) of two values:</p>\n\n<ul>\n\t<li>\n\t<p><code>sumOdd</code>: the sum of the smallest&nbsp;<code>n</code>&nbsp;positive odd numbers.</p>\n\t</li>\n\t<li>\n\t<p><code>sumEven</code>: the sum of the smallest&nbsp;<code>n</code>&nbsp;positive even numbers.</p>\n\t</li>\n</ul>\n\n<p>Return the GCD of <code>sumOdd</code> and <code>sumEven</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>Sum of the first 4 odd numbers <code>sumOdd = 1 + 3 + 5 + 7 = 16</code></li>\n\t<li>Sum of the first 4 even numbers <code>sumEven = 2 + 4 + 6 + 8 = 20</code></li>\n</ul>\n\n<p>Hence, <code>GCD(sumOdd, sumEven) = GCD(16, 20) = 4</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 5</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<ul>\n\t<li>Sum of the first 5 odd numbers <code>sumOdd = 1 + 3 + 5 + 7 + 9 = 25</code></li>\n\t<li>Sum of the first 5 even numbers <code>sumEven = 2 + 4 + 6 + 8 + 10 = 30</code></li>\n</ul>\n\n<p>Hence, <code>GCD(sumOdd, sumEven) = GCD(25, 30) = 5</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10​​​​​​​00</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n`. Your task is to compute the **GCD** (greatest common divisor) of two values:\n\n  * `sumOdd`: the sum of the smallest `n` positive odd numbers.\n\n  * `sumEven`: the sum of the smallest `n` positive even numbers.\n\n\n\n\nReturn the GCD of `sumOdd` and `sumEven`.\n\n \n\n**Example 1:**\n\n**Input:** n = 4\n\n**Output:** 4\n\n**Explanation:**\n\n  * Sum of the first 4 odd numbers `sumOdd = 1 + 3 + 5 + 7 = 16`\n  * Sum of the first 4 even numbers `sumEven = 2 + 4 + 6 + 8 = 20`\n\n\n\nHence, `GCD(sumOdd, sumEven) = GCD(16, 20) = 4`.\n\n**Example 2:**\n\n**Input:** n = 5\n\n**Output:** 5\n\n**Explanation:**\n\n  * Sum of the first 5 odd numbers `sumOdd = 1 + 3 + 5 + 7 + 9 = 25`\n  * Sum of the first 5 even numbers `sumEven = 2 + 4 + 6 + 8 + 10 = 30`\n\n\n\nHence, `GCD(sumOdd, sumEven) = GCD(25, 30) = 5`.\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 10​​​​​​​00`",
+  "question": "You are given an integer `n`. Your task is to compute the **GCD** (greatest common divisor) of two values:\n\n  * `sumOdd`: the sum of the smallest `n` positive odd numbers.\n\n  * `sumEven`: the sum of the smallest `n` positive even numbers.\n\n\n\n\nReturn the GCD of `sumOdd` and `sumEven`.",
+  "examples": "**Example 1:**\n\n**Input:** n = 4\n\n**Output:** 4\n\n**Explanation:**\n\n  * Sum of the first 4 odd numbers `sumOdd = 1 + 3 + 5 + 7 = 16`\n  * Sum of the first 4 even numbers `sumEven = 2 + 4 + 6 + 8 = 20`\n\n\n\nHence, `GCD(sumOdd, sumEven) = GCD(16, 20) = 4`.\n\n**Example 2:**\n\n**Input:** n = 5\n\n**Output:** 5\n\n**Explanation:**\n\n  * Sum of the first 5 odd numbers `sumOdd = 1 + 3 + 5 + 7 + 9 = 25`\n  * Sum of the first 5 even numbers `sumEven = 2 + 4 + 6 + 8 + 10 = 30`\n\n\n\nHence, `GCD(sumOdd, sumEven) = GCD(25, 30) = 5`.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 10​​​​​​​00`",
+  "topics": ["Math", "Number Theory"],
+  "total_accepted": 88490,
+  "total_submissions": 104406,
+  "acceptance_rate": "84.8%",
+  "similar_questions": [],
+  "hints": [
+    "The first <code>n</code> odd numbers sum to <code>n * n</code>",
+    "First <code>n</code> even numbers sum to <code>n * (n + 1)</code>",
+    "<code>gcd(n, n + 1) = 1</code>, so the answer is <code>n</code>"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "3646",
+  "title": "Next Special Palindrome Number",
+  "slug": "next-special-palindrome-number",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>n</code>.</p>\n\n<p>A number is called <strong>special</strong> if:</p>\n\n<ul>\n\t<li>It is a <strong><span data-keyword=\"palindrome-integer\">palindrome</span></strong>.</li>\n\t<li>Every digit <code>k</code> in the number appears <strong>exactly</strong> <code>k</code> times.</li>\n</ul>\n\n<p>Return the <strong>smallest</strong> special number <strong>strictly </strong>greater than <code>n</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 2</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">22</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>22 is the smallest special number greater than 2, as it is a palindrome and the digit 2 appears exactly 2 times.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 33</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">212</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>212 is the smallest special number greater than 33, as it is a palindrome and the digits 1 and 2 appear exactly 1 and 2 times respectively.<br />\n </p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 10<sup>15</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `n`.\n\nA number is called **special** if:\n\n  * It is a **palindrome**.\n  * Every digit `k` in the number appears **exactly** `k` times.\n\n\n\nReturn the **smallest** special number **strictly** greater than `n`.\n\n \n\n**Example 1:**\n\n**Input:** n = 2\n\n**Output:** 22\n\n**Explanation:**\n\n22 is the smallest special number greater than 2, as it is a palindrome and the digit 2 appears exactly 2 times.\n\n**Example 2:**\n\n**Input:** n = 33\n\n**Output:** 212\n\n**Explanation:**\n\n212 is the smallest special number greater than 33, as it is a palindrome and the digits 1 and 2 appear exactly 1 and 2 times respectively.  \n\n\n \n\n**Constraints:**\n\n  * `0 <= n <= 1015`",
+  "question": "You are given an integer `n`.\n\nA number is called **special** if:\n\n  * It is a **palindrome**.\n  * Every digit `k` in the number appears **exactly** `k` times.\n\n\n\nReturn the **smallest** special number **strictly** greater than `n`.",
+  "examples": "**Example 1:**\n\n**Input:** n = 2\n\n**Output:** 22\n\n**Explanation:**\n\n22 is the smallest special number greater than 2, as it is a palindrome and the digit 2 appears exactly 2 times.\n\n**Example 2:**\n\n**Input:** n = 33\n\n**Output:** 212\n\n**Explanation:**\n\n212 is the smallest special number greater than 33, as it is a palindrome and the digits 1 and 2 appear exactly 1 and 2 times respectively.",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 1015`",
+  "topics": ["Backtracking", "Bit Manipulation"],
+  "total_accepted": 11736,
+  "total_submissions": 42065,
+  "acceptance_rate": "27.9%",
+  "similar_questions": [],
+  "hints": [
+    "There are only a few special numbers; preprocess them.",
+    "Use bitmasking to brute‑force all valid selections of digits <code>k</code> for the number.",
+    "Generate all permutations of the first half of the digits, then mirror them to form the full palindrome.",
+    "For each <code>n</code>, use binary search to find the smallest special number strictly greater than <code>n</code>."
+  ]
+}

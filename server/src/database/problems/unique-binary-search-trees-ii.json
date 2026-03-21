@@ -1,0 +1,31 @@
+{
+  "id": "95",
+  "title": "Unique Binary Search Trees II",
+  "slug": "unique-binary-search-trees-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>n</code>, return <em>all the structurally unique <strong>BST&#39;</strong>s (binary search trees), which has exactly </em><code>n</code><em> nodes of unique values from</em> <code>1</code> <em>to</em> <code>n</code>. Return the answer in <strong>any order</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/18/uniquebstn3.jpg\" style=\"width: 600px; height: 148px;\" />\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> [[1,null,2,null,3],[1,null,3,2],[2,1,3],[3,1,null,null,2],[3,2,null,1]]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> [[1]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 8</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `n`, return _all the structurally unique**BST '**s (binary search trees), which has exactly _`n` _nodes of unique values from_ `1` _to_ `n`. Return the answer in **any order**.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/uniquebstn3.jpg)\n    \n    \n    **Input:** n = 3\n    **Output:** [[1,null,2,null,3],[1,null,3,2],[2,1,3],[3,1,null,null,2],[3,2,null,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [[1]]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 8`",
+  "question": "Given an integer `n`, return _all the structurally unique**BST '**s (binary search trees), which has exactly _`n` _nodes of unique values from_ `1` _to_ `n`. Return the answer in **any order**.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2021/01/18/uniquebstn3.jpg)\n    \n    \n    **Input:** n = 3\n    **Output:** [[1,null,2,null,3],[1,null,3,2],[2,1,3],[3,1,null,null,2],[3,2,null,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** [[1]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 8`",
+  "topics": ["Dynamic Programming", "Backtracking", "Tree", "Binary Search Tree", "Binary Tree"],
+  "total_accepted": 567573,
+  "total_submissions": 915526,
+  "acceptance_rate": "62.0%",
+  "similar_questions": [
+    {
+      "title": "Unique Binary Search Trees",
+      "slug": "unique-binary-search-trees",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/unique-binary-search-trees/"
+    },
+    {
+      "title": "Different Ways to Add Parentheses",
+      "slug": "different-ways-to-add-parentheses",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/different-ways-to-add-parentheses/"
+    }
+  ],
+  "hints": []
+}

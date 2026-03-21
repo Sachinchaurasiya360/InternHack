@@ -1,0 +1,35 @@
+{
+  "id": "3260",
+  "title": "Find the Largest Palindrome Divisible by K",
+  "slug": "find-the-largest-palindrome-divisible-by-k",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two <strong>positive</strong> integers <code>n</code> and <code>k</code>.</p>\n\n<p>An integer <code>x</code> is called <strong>k-palindromic</strong> if:</p>\n\n<ul>\n\t<li><code>x</code> is a <span data-keyword=\"palindrome-integer\">palindrome</span>.</li>\n\t<li><code>x</code> is divisible by <code>k</code>.</li>\n</ul>\n\n<p>Return the<strong> largest</strong> integer having <code>n</code> digits (as a string) that is <strong>k-palindromic</strong>.</p>\n\n<p><strong>Note</strong> that the integer must <strong>not</strong> have leading zeros.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 3, k = 5</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;595&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>595 is the largest k-palindromic integer with 3 digits.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 1, k = 4</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;8&quot;</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>4 and 8 are the only k-palindromic integers with 1 digit.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">n = 5, k = 6</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">&quot;89898&quot;</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= 9</code></li>\n</ul>\n",
+  "content_markdown": "You are given two **positive** integers `n` and `k`.\n\nAn integer `x` is called **k-palindromic** if:\n\n  * `x` is a palindrome.\n  * `x` is divisible by `k`.\n\n\n\nReturn the**largest** integer having `n` digits (as a string) that is **k-palindromic**.\n\n**Note** that the integer must **not** have leading zeros.\n\n \n\n**Example 1:**\n\n**Input:** n = 3, k = 5\n\n**Output:** \"595\"\n\n**Explanation:**\n\n595 is the largest k-palindromic integer with 3 digits.\n\n**Example 2:**\n\n**Input:** n = 1, k = 4\n\n**Output:** \"8\"\n\n**Explanation:**\n\n4 and 8 are the only k-palindromic integers with 1 digit.\n\n**Example 3:**\n\n**Input:** n = 5, k = 6\n\n**Output:** \"89898\"\n\n \n\n**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= k <= 9`",
+  "question": "You are given two **positive** integers `n` and `k`.\n\nAn integer `x` is called **k-palindromic** if:\n\n  * `x` is a palindrome.\n  * `x` is divisible by `k`.\n\n\n\nReturn the**largest** integer having `n` digits (as a string) that is **k-palindromic**.\n\n**Note** that the integer must **not** have leading zeros.",
+  "examples": "**Example 1:**\n\n**Input:** n = 3, k = 5\n\n**Output:** \"595\"\n\n**Explanation:**\n\n595 is the largest k-palindromic integer with 3 digits.\n\n**Example 2:**\n\n**Input:** n = 1, k = 4\n\n**Output:** \"8\"\n\n**Explanation:**\n\n4 and 8 are the only k-palindromic integers with 1 digit.\n\n**Example 3:**\n\n**Input:** n = 5, k = 6\n\n**Output:** \"89898\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 105`\n  * `1 <= k <= 9`",
+  "topics": ["Math", "String", "Dynamic Programming", "Greedy", "Number Theory"],
+  "total_accepted": 9187,
+  "total_submissions": 54299,
+  "acceptance_rate": "16.9%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Number",
+      "slug": "palindrome-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/palindrome-number/"
+    },
+    {
+      "title": "Find the Closest Palindrome",
+      "slug": "find-the-closest-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-closest-palindrome/"
+    }
+  ],
+  "hints": [
+    "It must have a solution since we can have all digits equal to <code>k</code>.",
+    "Use string dp, store modulus along with length of number currently formed.",
+    "Is it possible to solve greedily using divisibility rules?"
+  ]
+}

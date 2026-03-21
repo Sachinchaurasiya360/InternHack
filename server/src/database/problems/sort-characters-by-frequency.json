@@ -1,0 +1,67 @@
+{
+  "id": "451",
+  "title": "Sort Characters By Frequency",
+  "slug": "sort-characters-by-frequency",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, sort it in <strong>decreasing order</strong> based on the <strong>frequency</strong> of the characters. The <strong>frequency</strong> of a character is the number of times it appears in the string.</p>\n\n<p>Return <em>the sorted string</em>. If there are multiple answers, return <em>any of them</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;tree&quot;\n<strong>Output:</strong> &quot;eert&quot;\n<strong>Explanation:</strong> &#39;e&#39; appears twice while &#39;r&#39; and &#39;t&#39; both appear once.\nSo &#39;e&#39; must appear before both &#39;r&#39; and &#39;t&#39;. Therefore &quot;eetr&quot; is also a valid answer.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;cccaaa&quot;\n<strong>Output:</strong> &quot;aaaccc&quot;\n<strong>Explanation:</strong> Both &#39;c&#39; and &#39;a&#39; appear three times, so both &quot;cccaaa&quot; and &quot;aaaccc&quot; are valid answers.\nNote that &quot;cacaca&quot; is incorrect, as the same characters must be together.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Aabb&quot;\n<strong>Output:</strong> &quot;bbAa&quot;\n<strong>Explanation:</strong> &quot;bbaA&quot; is also a valid answer, but &quot;Aabb&quot; is incorrect.\nNote that &#39;A&#39; and &#39;a&#39; are treated as two different characters.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 5 * 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of uppercase and lowercase English letters and digits.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, sort it in **decreasing order** based on the **frequency** of the characters. The **frequency** of a character is the number of times it appears in the string.\n\nReturn _the sorted string_. If there are multiple answers, return _any of them_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"tree\"\n    **Output:** \"eert\"\n    **Explanation:** 'e' appears twice while 'r' and 't' both appear once.\n    So 'e' must appear before both 'r' and 't'. Therefore \"eetr\" is also a valid answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"cccaaa\"\n    **Output:** \"aaaccc\"\n    **Explanation:** Both 'c' and 'a' appear three times, so both \"cccaaa\" and \"aaaccc\" are valid answers.\n    Note that \"cacaca\" is incorrect, as the same characters must be together.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"Aabb\"\n    **Output:** \"bbAa\"\n    **Explanation:** \"bbaA\" is also a valid answer, but \"Aabb\" is incorrect.\n    Note that 'A' and 'a' are treated as two different characters.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 5 * 105`\n  * `s` consists of uppercase and lowercase English letters and digits.",
+  "question": "Given a string `s`, sort it in **decreasing order** based on the **frequency** of the characters. The **frequency** of a character is the number of times it appears in the string.\n\nReturn _the sorted string_. If there are multiple answers, return _any of them_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"tree\"\n    **Output:** \"eert\"\n    **Explanation:** 'e' appears twice while 'r' and 't' both appear once.\n    So 'e' must appear before both 'r' and 't'. Therefore \"eetr\" is also a valid answer.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"cccaaa\"\n    **Output:** \"aaaccc\"\n    **Explanation:** Both 'c' and 'a' appear three times, so both \"cccaaa\" and \"aaaccc\" are valid answers.\n    Note that \"cacaca\" is incorrect, as the same characters must be together.\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"Aabb\"\n    **Output:** \"bbAa\"\n    **Explanation:** \"bbaA\" is also a valid answer, but \"Aabb\" is incorrect.\n    Note that 'A' and 'a' are treated as two different characters.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 5 * 105`\n  * `s` consists of uppercase and lowercase English letters and digits.",
+  "topics": ["Hash Table", "String", "Sorting", "Heap (Priority Queue)", "Bucket Sort", "Counting"],
+  "total_accepted": 1078531,
+  "total_submissions": 1435676,
+  "acceptance_rate": "75.1%",
+  "similar_questions": [
+    {
+      "title": "Top K Frequent Elements",
+      "slug": "top-k-frequent-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/top-k-frequent-elements/"
+    },
+    {
+      "title": "First Unique Character in a String",
+      "slug": "first-unique-character-in-a-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/first-unique-character-in-a-string/"
+    },
+    {
+      "title": "Sort Array by Increasing Frequency",
+      "slug": "sort-array-by-increasing-frequency",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/sort-array-by-increasing-frequency/"
+    },
+    {
+      "title": "Percentage of Letter in String",
+      "slug": "percentage-of-letter-in-string",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/percentage-of-letter-in-string/"
+    },
+    {
+      "title": "Maximum Number of Pairs in Array",
+      "slug": "maximum-number-of-pairs-in-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-number-of-pairs-in-array/"
+    },
+    {
+      "title": "Node With Highest Edge Score",
+      "slug": "node-with-highest-edge-score",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/node-with-highest-edge-score/"
+    },
+    {
+      "title": "Most Frequent Even Element",
+      "slug": "most-frequent-even-element",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/most-frequent-even-element/"
+    },
+    {
+      "title": "Count Pairs Of Similar Strings",
+      "slug": "count-pairs-of-similar-strings",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/count-pairs-of-similar-strings/"
+    }
+  ],
+  "hints": []
+}

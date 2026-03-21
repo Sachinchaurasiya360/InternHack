@@ -1,0 +1,18 @@
+{
+  "id": "3385",
+  "title": "Minimum Time to Break Locks II",
+  "slug": "minimum-time-to-break-locks-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Depth-First Search", "Graph Theory"],
+  "total_accepted": 340,
+  "total_submissions": 752,
+  "acceptance_rate": "45.2%",
+  "similar_questions": [],
+  "hints": ["Use the Hungarian algorithm for minimum cost matching."]
+}

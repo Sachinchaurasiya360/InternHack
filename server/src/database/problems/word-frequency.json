@@ -1,0 +1,25 @@
+{
+  "id": "192",
+  "title": "Word Frequency",
+  "slug": "word-frequency",
+  "difficulty": "Medium",
+  "category": "Shell",
+  "content_html": "<p>Write a bash script to calculate the <span data-keyword=\"frequency-textfile\">frequency</span> of each word in a text file <code>words.txt</code>.</p>\n\n<p>For simplicity sake, you may assume:</p>\n\n<ul>\n\t<li><code>words.txt</code> contains only lowercase characters and space <code>&#39; &#39;</code> characters.</li>\n\t<li>Each word must consist of lowercase characters only.</li>\n\t<li>Words are separated by one or more whitespace characters.</li>\n</ul>\n\n<p><strong class=\"example\">Example:</strong></p>\n\n<p>Assume that <code>words.txt</code> has the following content:</p>\n\n<pre>\nthe day is sunny the the\nthe sunny is is\n</pre>\n\n<p>Your script should output the following, sorted by descending frequency:</p>\n\n<pre>\nthe 4\nis 3\nsunny 2\nday 1\n</pre>\n\n<p><b>Note:</b></p>\n\n<ul>\n\t<li>Don&#39;t worry about handling ties, it is guaranteed that each word&#39;s frequency count is unique.</li>\n\t<li>Could you write it in one-line using <a href=\"http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-4.html\">Unix pipes</a>?</li>\n</ul>\n",
+  "content_markdown": "Write a bash script to calculate the frequency of each word in a text file `words.txt`.\n\nFor simplicity sake, you may assume:\n\n  * `words.txt` contains only lowercase characters and space `' '` characters.\n  * Each word must consist of lowercase characters only.\n  * Words are separated by one or more whitespace characters.\n\n\n\n**Example:**\n\nAssume that `words.txt` has the following content:\n    \n    \n    the day is sunny the the\n    the sunny is is\n    \n\nYour script should output the following, sorted by descending frequency:\n    \n    \n    the 4\n    is 3\n    sunny 2\n    day 1\n    \n\n**Note:**\n\n  * Don't worry about handling ties, it is guaranteed that each word's frequency count is unique.\n  * Could you write it in one-line using [Unix pipes](<http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-4.html>)?",
+  "question": "Write a bash script to calculate the frequency of each word in a text file `words.txt`.\n\nFor simplicity sake, you may assume:\n\n  * `words.txt` contains only lowercase characters and space `' '` characters.\n  * Each word must consist of lowercase characters only.\n  * Words are separated by one or more whitespace characters.",
+  "examples": "**Example:**\n\nAssume that `words.txt` has the following content:\n    \n    \n    the day is sunny the the\n    the sunny is is\n    \n\nYour script should output the following, sorted by descending frequency:\n    \n    \n    the 4\n    is 3\n    sunny 2\n    day 1\n    \n\n**Note:**\n\n  * Don't worry about handling ties, it is guaranteed that each word's frequency count is unique.\n  * Could you write it in one-line using [Unix pipes](<http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-4.html>)?",
+  "constraints": "",
+  "topics": ["Shell"],
+  "total_accepted": 74465,
+  "total_submissions": 262053,
+  "acceptance_rate": "28.4%",
+  "similar_questions": [
+    {
+      "title": "Top K Frequent Elements",
+      "slug": "top-k-frequent-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/top-k-frequent-elements/"
+    }
+  ],
+  "hints": []
+}

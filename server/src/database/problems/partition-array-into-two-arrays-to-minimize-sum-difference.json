@@ -1,0 +1,87 @@
+{
+  "id": "2035",
+  "title": "Partition Array Into Two Arrays to Minimize Sum Difference",
+  "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer array <code>nums</code> of <code>2 * n</code> integers. You need to partition <code>nums</code> into <strong>two</strong> arrays of length <code>n</code> to <strong>minimize the absolute difference</strong> of the <strong>sums</strong> of the arrays. To partition <code>nums</code>, put each element of <code>nums</code> into <strong>one</strong> of the two arrays.</p>\n\n<p>Return <em>the <strong>minimum</strong> possible absolute difference</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"example-1\" src=\"https://assets.leetcode.com/uploads/2021/10/02/ex1.png\" style=\"width: 240px; height: 106px;\" />\n<pre>\n<strong>Input:</strong> nums = [3,9,7,3]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> One optimal partition is: [3,9] and [7,3].\nThe absolute difference between the sums of the arrays is abs((3 + 9) - (7 + 3)) = 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-36,36]\n<strong>Output:</strong> 72\n<strong>Explanation:</strong> One optimal partition is: [-36] and [36].\nThe absolute difference between the sums of the arrays is abs((-36) - (36)) = 72.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n<img alt=\"example-3\" src=\"https://assets.leetcode.com/uploads/2021/10/02/ex3.png\" style=\"width: 316px; height: 106px;\" />\n<pre>\n<strong>Input:</strong> nums = [2,-1,0,4,-2,-9]\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> One optimal partition is: [2,4,-9] and [-1,0,-2].\nThe absolute difference between the sums of the arrays is abs((2 + 4 + -9) - (-1 + 0 + -2)) = 0.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 15</code></li>\n\t<li><code>nums.length == 2 * n</code></li>\n\t<li><code>-10<sup>7</sup> &lt;= nums[i] &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer array `nums` of `2 * n` integers. You need to partition `nums` into **two** arrays of length `n` to **minimize the absolute difference** of the **sums** of the arrays. To partition `nums`, put each element of `nums` into **one** of the two arrays.\n\nReturn _the**minimum** possible absolute difference_.\n\n \n\n**Example 1:**\n\n![example-1](https://assets.leetcode.com/uploads/2021/10/02/ex1.png)\n    \n    \n    **Input:** nums = [3,9,7,3]\n    **Output:** 2\n    **Explanation:** One optimal partition is: [3,9] and [7,3].\n    The absolute difference between the sums of the arrays is abs((3 + 9) - (7 + 3)) = 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-36,36]\n    **Output:** 72\n    **Explanation:** One optimal partition is: [-36] and [36].\n    The absolute difference between the sums of the arrays is abs((-36) - (36)) = 72.\n    \n\n**Example 3:**\n\n![example-3](https://assets.leetcode.com/uploads/2021/10/02/ex3.png)\n    \n    \n    **Input:** nums = [2,-1,0,4,-2,-9]\n    **Output:** 0\n    **Explanation:** One optimal partition is: [2,4,-9] and [-1,0,-2].\n    The absolute difference between the sums of the arrays is abs((2 + 4 + -9) - (-1 + 0 + -2)) = 0.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 15`\n  * `nums.length == 2 * n`\n  * `-107 <= nums[i] <= 107`",
+  "question": "You are given an integer array `nums` of `2 * n` integers. You need to partition `nums` into **two** arrays of length `n` to **minimize the absolute difference** of the **sums** of the arrays. To partition `nums`, put each element of `nums` into **one** of the two arrays.\n\nReturn _the**minimum** possible absolute difference_.",
+  "examples": "**Example 1:**\n\n![example-1](https://assets.leetcode.com/uploads/2021/10/02/ex1.png)\n    \n    \n    **Input:** nums = [3,9,7,3]\n    **Output:** 2\n    **Explanation:** One optimal partition is: [3,9] and [7,3].\n    The absolute difference between the sums of the arrays is abs((3 + 9) - (7 + 3)) = 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-36,36]\n    **Output:** 72\n    **Explanation:** One optimal partition is: [-36] and [36].\n    The absolute difference between the sums of the arrays is abs((-36) - (36)) = 72.\n    \n\n**Example 3:**\n\n![example-3](https://assets.leetcode.com/uploads/2021/10/02/ex3.png)\n    \n    \n    **Input:** nums = [2,-1,0,4,-2,-9]\n    **Output:** 0\n    **Explanation:** One optimal partition is: [2,4,-9] and [-1,0,-2].\n    The absolute difference between the sums of the arrays is abs((2 + 4 + -9) - (-1 + 0 + -2)) = 0.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 15`\n  * `nums.length == 2 * n`\n  * `-107 <= nums[i] <= 107`",
+  "topics": [
+    "Array",
+    "Two Pointers",
+    "Binary Search",
+    "Dynamic Programming",
+    "Bit Manipulation",
+    "Sorting",
+    "Ordered Set",
+    "Bitmask"
+  ],
+  "total_accepted": 56476,
+  "total_submissions": 245092,
+  "acceptance_rate": "23.0%",
+  "similar_questions": [
+    {
+      "title": "Partition Equal Subset Sum",
+      "slug": "partition-equal-subset-sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/partition-equal-subset-sum/"
+    },
+    {
+      "title": "Split Array With Same Average",
+      "slug": "split-array-with-same-average",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/split-array-with-same-average/"
+    },
+    {
+      "title": "Tallest Billboard",
+      "slug": "tallest-billboard",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/tallest-billboard/"
+    },
+    {
+      "title": "Last Stone Weight II",
+      "slug": "last-stone-weight-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/last-stone-weight-ii/"
+    },
+    {
+      "title": "Fair Distribution of Cookies",
+      "slug": "fair-distribution-of-cookies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fair-distribution-of-cookies/"
+    },
+    {
+      "title": "Closest Subsequence Sum",
+      "slug": "closest-subsequence-sum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/closest-subsequence-sum/"
+    },
+    {
+      "title": "Number of Ways to Split Array",
+      "slug": "number-of-ways-to-split-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-ways-to-split-array/"
+    },
+    {
+      "title": "Minimum Sum of Squared Difference",
+      "slug": "minimum-sum-of-squared-difference",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-sum-of-squared-difference/"
+    },
+    {
+      "title": "Split With Minimum Sum",
+      "slug": "split-with-minimum-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/split-with-minimum-sum/"
+    }
+  ],
+  "hints": [
+    "The target sum for the two partitions is sum(nums) / 2.",
+    "Could you reduce the time complexity if you arbitrarily divide nums into two halves (two arrays)? Meet-in-the-Middle?",
+    "For both halves, pre-calculate a 2D array where the kth index will store all possible sum values if only k elements from this half are added.",
+    "For each sum of k elements in the first half, find the best sum of n-k elements in the second half such that the two sums add up to a value closest to the target sum from hint 1. These two subsets will form one array of the partition."
+  ]
+}

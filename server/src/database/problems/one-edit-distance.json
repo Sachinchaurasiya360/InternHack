@@ -1,0 +1,25 @@
+{
+  "id": "161",
+  "title": "One Edit Distance",
+  "slug": "one-edit-distance",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 235362,
+  "total_submissions": 681208,
+  "acceptance_rate": "34.6%",
+  "similar_questions": [
+    {
+      "title": "Edit Distance",
+      "slug": "edit-distance",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/edit-distance/"
+    }
+  ],
+  "hints": []
+}

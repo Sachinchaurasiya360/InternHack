@@ -1,0 +1,50 @@
+{
+  "id": "658",
+  "title": "Find K Closest Elements",
+  "slug": "find-k-closest-elements",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given a <strong>sorted</strong> integer array <code>arr</code>, two integers <code>k</code> and <code>x</code>, return the <code>k</code> closest integers to <code>x</code> in the array. The result should also be sorted in ascending order.</p>\n\n<p>An integer <code>a</code> is closer to <code>x</code> than an integer <code>b</code> if:</p>\n\n<ul>\n\t<li><code>|a - x| &lt; |b - x|</code>, or</li>\n\t<li><code>|a - x| == |b - x|</code> and <code>a &lt; b</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">arr = [1,2,3,4,5], k = 4, x = 3</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1,2,3,4]</span></p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">arr = [1,1,2,3,4,5], k = 4, x = -1</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">[1,1,2,3]</span></p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= arr.length</code></li>\n\t<li><code>1 &lt;= arr.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>arr</code> is sorted in <strong>ascending</strong> order.</li>\n\t<li><code>-10<sup>4</sup> &lt;= arr[i], x &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given a **sorted** integer array `arr`, two integers `k` and `x`, return the `k` closest integers to `x` in the array. The result should also be sorted in ascending order.\n\nAn integer `a` is closer to `x` than an integer `b` if:\n\n  * `|a - x| < |b - x|`, or\n  * `|a - x| == |b - x|` and `a < b`\n\n\n\n \n\n**Example 1:**\n\n**Input:** arr = [1,2,3,4,5], k = 4, x = 3\n\n**Output:** [1,2,3,4]\n\n**Example 2:**\n\n**Input:** arr = [1,1,2,3,4,5], k = 4, x = -1\n\n**Output:** [1,1,2,3]\n\n \n\n**Constraints:**\n\n  * `1 <= k <= arr.length`\n  * `1 <= arr.length <= 104`\n  * `arr` is sorted in **ascending** order.\n  * `-104 <= arr[i], x <= 104`",
+  "question": "Given a **sorted** integer array `arr`, two integers `k` and `x`, return the `k` closest integers to `x` in the array. The result should also be sorted in ascending order.\n\nAn integer `a` is closer to `x` than an integer `b` if:\n\n  * `|a - x| < |b - x|`, or\n  * `|a - x| == |b - x|` and `a < b`",
+  "examples": "**Example 1:**\n\n**Input:** arr = [1,2,3,4,5], k = 4, x = 3\n\n**Output:** [1,2,3,4]\n\n**Example 2:**\n\n**Input:** arr = [1,1,2,3,4,5], k = 4, x = -1\n\n**Output:** [1,1,2,3]",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= arr.length`\n  * `1 <= arr.length <= 104`\n  * `arr` is sorted in **ascending** order.\n  * `-104 <= arr[i], x <= 104`",
+  "topics": [
+    "Array",
+    "Two Pointers",
+    "Binary Search",
+    "Sliding Window",
+    "Sorting",
+    "Heap (Priority Queue)"
+  ],
+  "total_accepted": 796947,
+  "total_submissions": 1611768,
+  "acceptance_rate": "49.4%",
+  "similar_questions": [
+    {
+      "title": "Guess Number Higher or Lower",
+      "slug": "guess-number-higher-or-lower",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/guess-number-higher-or-lower/"
+    },
+    {
+      "title": "Guess Number Higher or Lower II",
+      "slug": "guess-number-higher-or-lower-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/guess-number-higher-or-lower-ii/"
+    },
+    {
+      "title": "Find K-th Smallest Pair Distance",
+      "slug": "find-k-th-smallest-pair-distance",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-k-th-smallest-pair-distance/"
+    },
+    {
+      "title": "Find Closest Number to Zero",
+      "slug": "find-closest-number-to-zero",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/find-closest-number-to-zero/"
+    }
+  ],
+  "hints": []
+}

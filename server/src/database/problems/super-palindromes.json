@@ -1,0 +1,18 @@
+{
+  "id": "906",
+  "title": "Super Palindromes",
+  "slug": "super-palindromes",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Let&#39;s say a positive integer is a <strong>super-palindrome</strong> if it is a palindrome, and it is also the square of a palindrome.</p>\n\n<p>Given two positive integers <code>left</code> and <code>right</code> represented as strings, return <em>the number of <strong>super-palindromes</strong> integers in the inclusive range</em> <code>[left, right]</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = &quot;4&quot;, right = &quot;1000&quot;\n<strong>Output:</strong> 4\n<strong>Explanation</strong>: 4, 9, 121, and 484 are superpalindromes.\nNote that 676 is not a superpalindrome: 26 * 26 = 676, but 26 is not a palindrome.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> left = &quot;1&quot;, right = &quot;2&quot;\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= left.length, right.length &lt;= 18</code></li>\n\t<li><code>left</code> and <code>right</code> consist of only digits.</li>\n\t<li><code>left</code> and <code>right</code> cannot have leading zeros.</li>\n\t<li><code>left</code> and <code>right</code> represent integers in the range <code>[1, 10<sup>18</sup> - 1]</code>.</li>\n\t<li><code>left</code> is less than or equal to <code>right</code>.</li>\n</ul>\n",
+  "content_markdown": "Let's say a positive integer is a **super-palindrome** if it is a palindrome, and it is also the square of a palindrome.\n\nGiven two positive integers `left` and `right` represented as strings, return _the number of**super-palindromes** integers in the inclusive range_ `[left, right]`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** left = \"4\", right = \"1000\"\n    **Output:** 4\n    **Explanation** : 4, 9, 121, and 484 are superpalindromes.\n    Note that 676 is not a superpalindrome: 26 * 26 = 676, but 26 is not a palindrome.\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = \"1\", right = \"2\"\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= left.length, right.length <= 18`\n  * `left` and `right` consist of only digits.\n  * `left` and `right` cannot have leading zeros.\n  * `left` and `right` represent integers in the range `[1, 1018 - 1]`.\n  * `left` is less than or equal to `right`.",
+  "question": "Let's say a positive integer is a **super-palindrome** if it is a palindrome, and it is also the square of a palindrome.\n\nGiven two positive integers `left` and `right` represented as strings, return _the number of**super-palindromes** integers in the inclusive range_ `[left, right]`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** left = \"4\", right = \"1000\"\n    **Output:** 4\n    **Explanation** : 4, 9, 121, and 484 are superpalindromes.\n    Note that 676 is not a superpalindrome: 26 * 26 = 676, but 26 is not a palindrome.\n    \n\n**Example 2:**\n    \n    \n    **Input:** left = \"1\", right = \"2\"\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= left.length, right.length <= 18`\n  * `left` and `right` consist of only digits.\n  * `left` and `right` cannot have leading zeros.\n  * `left` and `right` represent integers in the range `[1, 1018 - 1]`.\n  * `left` is less than or equal to `right`.",
+  "topics": ["Math", "String", "Enumeration"],
+  "total_accepted": 28320,
+  "total_submissions": 71106,
+  "acceptance_rate": "39.8%",
+  "similar_questions": [],
+  "hints": []
+}

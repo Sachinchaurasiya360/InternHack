@@ -1,0 +1,31 @@
+{
+  "id": "16",
+  "title": "3Sum Closest",
+  "slug": "3sum-closest",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> of length <code>n</code> and an integer <code>target</code>, find three integers at <strong>distinct indices</strong> in <code>nums</code> such that the sum is closest to <code>target</code>.</p>\n\n<p>Return <em>the sum of the three integers</em>.</p>\n\n<p>You may assume that each input would have exactly one solution.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,2,1,-4], target = 1\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [0,0,0], target = 1\n<strong>Output:</strong> 0\n<strong>Explanation:</strong> The sum that is closest to the target is 0. (0 + 0 + 0 = 0).\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>3 &lt;= nums.length &lt;= 500</code></li>\n\t<li><code>-1000 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= target &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` of length `n` and an integer `target`, find three integers at **distinct indices** in `nums` such that the sum is closest to `target`.\n\nReturn _the sum of the three integers_.\n\nYou may assume that each input would have exactly one solution.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [-1,2,1,-4], target = 1\n    **Output:** 2\n    **Explanation:** The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,0,0], target = 1\n    **Output:** 0\n    **Explanation:** The sum that is closest to the target is 0. (0 + 0 + 0 = 0).\n    \n\n \n\n**Constraints:**\n\n  * `3 <= nums.length <= 500`\n  * `-1000 <= nums[i] <= 1000`\n  * `-104 <= target <= 104`",
+  "question": "Given an integer array `nums` of length `n` and an integer `target`, find three integers at **distinct indices** in `nums` such that the sum is closest to `target`.\n\nReturn _the sum of the three integers_.\n\nYou may assume that each input would have exactly one solution.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [-1,2,1,-4], target = 1\n    **Output:** 2\n    **Explanation:** The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [0,0,0], target = 1\n    **Output:** 0\n    **Explanation:** The sum that is closest to the target is 0. (0 + 0 + 0 = 0).",
+  "constraints": "**Constraints:**\n\n  * `3 <= nums.length <= 500`\n  * `-1000 <= nums[i] <= 1000`\n  * `-104 <= target <= 104`",
+  "topics": ["Array", "Two Pointers", "Sorting"],
+  "total_accepted": 1762081,
+  "total_submissions": 3664625,
+  "acceptance_rate": "48.1%",
+  "similar_questions": [
+    {
+      "title": "3Sum",
+      "slug": "3sum",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/3sum/"
+    },
+    {
+      "title": "3Sum Smaller",
+      "slug": "3sum-smaller",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/3sum-smaller/"
+    }
+  ],
+  "hints": []
+}

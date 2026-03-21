@@ -1,0 +1,23 @@
+{
+  "id": "3511",
+  "title": "Make a Positive Array",
+  "slug": "make-a-positive-array",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Greedy", "Prefix Sum"],
+  "total_accepted": 695,
+  "total_submissions": 1965,
+  "acceptance_rate": "35.4%",
+  "similar_questions": [],
+  "hints": [
+    "Only check subarrays up to a specific size.",
+    "Find the subarrays containing between 3 and 5 elements with a non-positive total sum.",
+    "Use a greedy approach to assign certain indices the maximum value.",
+    "Start with the subarray with the smallest last index <code>i</code>. Replace the element at index <code>i</code> with the maximum value. Find the selected subarray with the next smallest last index <code>j</code> that does not contain index <code>i</code>. Replace the element at index <code>j</code> with the maximum value, and repeat this process until all non-positive subarrays are fixed."
+  ]
+}

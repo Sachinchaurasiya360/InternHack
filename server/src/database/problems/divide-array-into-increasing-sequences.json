@@ -1,0 +1,24 @@
+{
+  "id": "1121",
+  "title": "Divide Array Into Increasing Sequences",
+  "slug": "divide-array-into-increasing-sequences",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Counting"],
+  "total_accepted": 7283,
+  "total_submissions": 11137,
+  "acceptance_rate": "65.4%",
+  "similar_questions": [],
+  "hints": [
+    "Think in the frequency of the numbers and how this affects the number of sequences needed.",
+    "What is the minimum number of sequences we need to form? Considering frequency of the numbers.",
+    "Think about the least number of sequences to maximize the lengths.",
+    "The number of sequences needed is equal to the maximum frequency of an element.",
+    "How to put the other elements into sequences ? Think in a greedy approach."
+  ]
+}

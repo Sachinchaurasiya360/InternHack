@@ -1,0 +1,31 @@
+{
+  "id": "118",
+  "title": "Pascal's Triangle",
+  "slug": "pascals-triangle",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer <code>numRows</code>, return the first numRows of <strong>Pascal&#39;s triangle</strong>.</p>\n\n<p>In <strong>Pascal&#39;s triangle</strong>, each number is the sum of the two numbers directly above it as shown:</p>\n<img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/0/0d/PascalTriangleAnimated2.gif\" style=\"height:240px; width:260px\" />\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> numRows = 5\n<strong>Output:</strong> [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> numRows = 1\n<strong>Output:</strong> [[1]]\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= numRows &lt;= 30</code></li>\n</ul>\n",
+  "content_markdown": "Given an integer `numRows`, return the first numRows of **Pascal 's triangle**.\n\nIn **Pascal 's triangle**, each number is the sum of the two numbers directly above it as shown:\n\n![](https://upload.wikimedia.org/wikipedia/commons/0/0d/PascalTriangleAnimated2.gif)\n\n \n\n**Example 1:**\n    \n    \n    **Input:** numRows = 5\n    **Output:** [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** numRows = 1\n    **Output:** [[1]]\n    \n\n \n\n**Constraints:**\n\n  * `1 <= numRows <= 30`",
+  "question": "Given an integer `numRows`, return the first numRows of **Pascal 's triangle**.\n\nIn **Pascal 's triangle**, each number is the sum of the two numbers directly above it as shown:\n\n![](https://upload.wikimedia.org/wikipedia/commons/0/0d/PascalTriangleAnimated2.gif)",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** numRows = 5\n    **Output:** [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]\n    \n\n**Example 2:**\n    \n    \n    **Input:** numRows = 1\n    **Output:** [[1]]",
+  "constraints": "**Constraints:**\n\n  * `1 <= numRows <= 30`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 2593634,
+  "total_submissions": 3296162,
+  "acceptance_rate": "78.7%",
+  "similar_questions": [
+    {
+      "title": "Pascal's Triangle II",
+      "slug": "pascals-triangle-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/pascals-triangle-ii/"
+    },
+    {
+      "title": "Check If Digits Are Equal in String After Operations II",
+      "slug": "check-if-digits-are-equal-in-string-after-operations-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/check-if-digits-are-equal-in-string-after-operations-ii/"
+    }
+  ],
+  "hints": []
+}

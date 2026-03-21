@@ -1,0 +1,31 @@
+{
+  "id": "111",
+  "title": "Minimum Depth of Binary Tree",
+  "slug": "minimum-depth-of-binary-tree",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a binary tree, find its minimum depth.</p>\n\n<p>The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.</p>\n\n<p><strong>Note:</strong>&nbsp;A leaf is a node with no children.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/12/ex_depth.jpg\" style=\"width: 432px; height: 302px;\" />\n<pre>\n<strong>Input:</strong> root = [3,9,20,null,null,15,7]\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = [2,null,3,null,4,null,5,null,6]\n<strong>Output:</strong> 5\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 10<sup>5</sup>]</code>.</li>\n\t<li><code>-1000 &lt;= Node.val &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given a binary tree, find its minimum depth.\n\nThe minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.\n\n**Note:**  A leaf is a node with no children.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/12/ex_depth.jpg)\n    \n    \n    **Input:** root = [3,9,20,null,null,15,7]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [2,null,3,null,4,null,5,null,6]\n    **Output:** 5\n    \n\n \n\n**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 105]`.\n  * `-1000 <= Node.val <= 1000`",
+  "question": "Given a binary tree, find its minimum depth.\n\nThe minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.\n\n**Note:**  A leaf is a node with no children.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/10/12/ex_depth.jpg)\n    \n    \n    **Input:** root = [3,9,20,null,null,15,7]\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** root = [2,null,3,null,4,null,5,null,6]\n    **Output:** 5",
+  "constraints": "**Constraints:**\n\n  * The number of nodes in the tree is in the range `[0, 105]`.\n  * `-1000 <= Node.val <= 1000`",
+  "topics": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+  "total_accepted": 1629326,
+  "total_submissions": 3109878,
+  "acceptance_rate": "52.4%",
+  "similar_questions": [
+    {
+      "title": "Binary Tree Level Order Traversal",
+      "slug": "binary-tree-level-order-traversal",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/"
+    },
+    {
+      "title": "Maximum Depth of Binary Tree",
+      "slug": "maximum-depth-of-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/"
+    }
+  ],
+  "hints": []
+}

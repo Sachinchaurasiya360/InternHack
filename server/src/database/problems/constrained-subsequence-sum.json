@@ -1,0 +1,37 @@
+{
+  "id": "1425",
+  "title": "Constrained Subsequence Sum",
+  "slug": "constrained-subsequence-sum",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an integer array <code>nums</code> and an integer <code>k</code>, return the maximum sum of a <strong>non-empty</strong> subsequence of that array such that for every two <strong>consecutive</strong> integers in the subsequence, <code>nums[i]</code> and <code>nums[j]</code>, where <code>i &lt; j</code>, the condition <code>j - i &lt;= k</code> is satisfied.</p>\n\n<p>A <em>subsequence</em> of an array is obtained by deleting some number of elements (can be zero) from the array, leaving the remaining elements in their original order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,2,-10,5,20], k = 2\n<strong>Output:</strong> 37\n<b>Explanation:</b> The subsequence is [10, 2, 5, 20].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [-1,-2,-3], k = 1\n<strong>Output:</strong> -1\n<b>Explanation:</b> The subsequence must be non-empty, so we choose the largest number.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,-2,-10,-5,20], k = 2\n<strong>Output:</strong> 23\n<b>Explanation:</b> The subsequence is [10, -2, -5, 20].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an integer array `nums` and an integer `k`, return the maximum sum of a **non-empty** subsequence of that array such that for every two **consecutive** integers in the subsequence, `nums[i]` and `nums[j]`, where `i < j`, the condition `j - i <= k` is satisfied.\n\nA _subsequence_ of an array is obtained by deleting some number of elements (can be zero) from the array, leaving the remaining elements in their original order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [10,2,-10,5,20], k = 2\n    **Output:** 37\n    **Explanation:** The subsequence is [10, 2, 5, 20].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,-2,-3], k = 1\n    **Output:** -1\n    **Explanation:** The subsequence must be non-empty, so we choose the largest number.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [10,-2,-10,-5,20], k = 2\n    **Output:** 23\n    **Explanation:** The subsequence is [10, -2, -5, 20].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= nums.length <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "question": "Given an integer array `nums` and an integer `k`, return the maximum sum of a **non-empty** subsequence of that array such that for every two **consecutive** integers in the subsequence, `nums[i]` and `nums[j]`, where `i < j`, the condition `j - i <= k` is satisfied.\n\nA _subsequence_ of an array is obtained by deleting some number of elements (can be zero) from the array, leaving the remaining elements in their original order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [10,2,-10,5,20], k = 2\n    **Output:** 37\n    **Explanation:** The subsequence is [10, 2, 5, 20].\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [-1,-2,-3], k = 1\n    **Output:** -1\n    **Explanation:** The subsequence must be non-empty, so we choose the largest number.\n    \n\n**Example 3:**\n    \n    \n    **Input:** nums = [10,-2,-10,-5,20], k = 2\n    **Output:** 23\n    **Explanation:** The subsequence is [10, -2, -5, 20].",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= nums.length <= 105`\n  * `-104 <= nums[i] <= 104`",
+  "topics": [
+    "Array",
+    "Dynamic Programming",
+    "Queue",
+    "Sliding Window",
+    "Heap (Priority Queue)",
+    "Monotonic Queue"
+  ],
+  "total_accepted": 90967,
+  "total_submissions": 161385,
+  "acceptance_rate": "56.4%",
+  "similar_questions": [
+    {
+      "title": "Maximum Element-Sum of a Complete Subset of Indices",
+      "slug": "maximum-element-sum-of-a-complete-subset-of-indices",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-element-sum-of-a-complete-subset-of-indices/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming.",
+    "Let dp[i] be the solution for the prefix of the array that ends at index i, if the element at index i is in the subsequence.",
+    "dp[i] = nums[i] + max(0, dp[i-k], dp[i-k+1], ..., dp[i-1])",
+    "Use a heap with the sliding window technique to optimize the dp."
+  ]
+}

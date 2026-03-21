@@ -1,0 +1,23 @@
+{
+  "id": "3557",
+  "title": "Find Maximum Number of Non Intersecting Substrings",
+  "slug": "find-maximum-number-of-non-intersecting-substrings",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>word</code>.</p>\n\n<p>Return the <strong>maximum</strong> number of non-intersecting <strong><span data-keyword=\"substring-nonempty\">substrings</span></strong> of word that are at <strong>least</strong> four characters long and start and end with the same letter.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;abcdeafdef&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">2</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The two substrings are <code>&quot;abcdea&quot;</code> and <code>&quot;fdef&quot;</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">word = &quot;bcdaaaab&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">1</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The only substring is <code>&quot;aaaa&quot;</code>. Note that we cannot <strong>also</strong> choose <code>&quot;bcdaaaab&quot;</code> since it intersects with the other substring.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= word.length &lt;= 2 * 10<sup>5</sup></code></li>\n\t<li><code>word</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `word`.\n\nReturn the **maximum** number of non-intersecting **substrings** of word that are at **least** four characters long and start and end with the same letter.\n\n \n\n**Example 1:**\n\n**Input:** word = \"abcdeafdef\"\n\n**Output:** 2\n\n**Explanation:**\n\nThe two substrings are `\"abcdea\"` and `\"fdef\"`.\n\n**Example 2:**\n\n**Input:** word = \"bcdaaaab\"\n\n**Output:** 1\n\n**Explanation:**\n\nThe only substring is `\"aaaa\"`. Note that we cannot **also** choose `\"bcdaaaab\"` since it intersects with the other substring.\n\n \n\n**Constraints:**\n\n  * `1 <= word.length <= 2 * 105`\n  * `word` consists only of lowercase English letters.",
+  "question": "You are given a string `word`.\n\nReturn the **maximum** number of non-intersecting **substrings** of word that are at **least** four characters long and start and end with the same letter.",
+  "examples": "**Example 1:**\n\n**Input:** word = \"abcdeafdef\"\n\n**Output:** 2\n\n**Explanation:**\n\nThe two substrings are `\"abcdea\"` and `\"fdef\"`.\n\n**Example 2:**\n\n**Input:** word = \"bcdaaaab\"\n\n**Output:** 1\n\n**Explanation:**\n\nThe only substring is `\"aaaa\"`. Note that we cannot **also** choose `\"bcdaaaab\"` since it intersects with the other substring.",
+  "constraints": "**Constraints:**\n\n  * `1 <= word.length <= 2 * 105`\n  * `word` consists only of lowercase English letters.",
+  "topics": ["Hash Table", "String", "Dynamic Programming", "Greedy"],
+  "total_accepted": 15965,
+  "total_submissions": 52464,
+  "acceptance_rate": "30.4%",
+  "similar_questions": [],
+  "hints": [
+    "Can we solve the problem using Dynamic Programming?",
+    "For each character <code>c</code>, store all occurrence indices in order",
+    "At each position <code>i</code>, let <code>j</code> be the first index of <code>word[i]</code>; if <code>i - j >= 3</code>, we can form substring <code>[j, i]</code>",
+    "For each index, also store the maximum for <b>any</b> substring ending before that index in the dp."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "743",
+  "title": "Network Delay Time",
+  "slug": "network-delay-time",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a network of <code>n</code> nodes, labeled from <code>1</code> to <code>n</code>. You are also given <code>times</code>, a list of travel times as directed edges <code>times[i] = (u<sub>i</sub>, v<sub>i</sub>, w<sub>i</sub>)</code>, where <code>u<sub>i</sub></code> is the source node, <code>v<sub>i</sub></code> is the target node, and <code>w<sub>i</sub></code> is the time it takes for a signal to travel from source to target.</p>\n\n<p>We will send a signal from a given node <code>k</code>. Return <em>the <strong>minimum</strong> time it takes for all the</em> <code>n</code> <em>nodes to receive the signal</em>. If it is impossible for all the <code>n</code> nodes to receive the signal, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/05/23/931_example_1.png\" style=\"width: 217px; height: 239px;\" />\n<pre>\n<strong>Input:</strong> times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2\n<strong>Output:</strong> 2\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> times = [[1,2,1]], n = 2, k = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> times = [[1,2,1]], n = 2, k = 2\n<strong>Output:</strong> -1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= k &lt;= n &lt;= 100</code></li>\n\t<li><code>1 &lt;= times.length &lt;= 6000</code></li>\n\t<li><code>times[i].length == 3</code></li>\n\t<li><code>1 &lt;= u<sub>i</sub>, v<sub>i</sub> &lt;= n</code></li>\n\t<li><code>u<sub>i</sub> != v<sub>i</sub></code></li>\n\t<li><code>0 &lt;= w<sub>i</sub> &lt;= 100</code></li>\n\t<li>All the pairs <code>(u<sub>i</sub>, v<sub>i</sub>)</code> are <strong>unique</strong>. (i.e., no multiple edges.)</li>\n</ul>\n",
+  "content_markdown": "You are given a network of `n` nodes, labeled from `1` to `n`. You are also given `times`, a list of travel times as directed edges `times[i] = (ui, vi, wi)`, where `ui` is the source node, `vi` is the target node, and `wi` is the time it takes for a signal to travel from source to target.\n\nWe will send a signal from a given node `k`. Return _the**minimum** time it takes for all the_ `n` _nodes to receive the signal_. If it is impossible for all the `n` nodes to receive the signal, return `-1`.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/05/23/931_example_1.png)\n    \n    \n    **Input:** times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** times = [[1,2,1]], n = 2, k = 1\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** times = [[1,2,1]], n = 2, k = 2\n    **Output:** -1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= k <= n <= 100`\n  * `1 <= times.length <= 6000`\n  * `times[i].length == 3`\n  * `1 <= ui, vi <= n`\n  * `ui != vi`\n  * `0 <= wi <= 100`\n  * All the pairs `(ui, vi)` are **unique**. (i.e., no multiple edges.)",
+  "question": "You are given a network of `n` nodes, labeled from `1` to `n`. You are also given `times`, a list of travel times as directed edges `times[i] = (ui, vi, wi)`, where `ui` is the source node, `vi` is the target node, and `wi` is the time it takes for a signal to travel from source to target.\n\nWe will send a signal from a given node `k`. Return _the**minimum** time it takes for all the_ `n` _nodes to receive the signal_. If it is impossible for all the `n` nodes to receive the signal, return `-1`.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2019/05/23/931_example_1.png)\n    \n    \n    **Input:** times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2\n    **Output:** 2\n    \n\n**Example 2:**\n    \n    \n    **Input:** times = [[1,2,1]], n = 2, k = 1\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** times = [[1,2,1]], n = 2, k = 2\n    **Output:** -1",
+  "constraints": "**Constraints:**\n\n  * `1 <= k <= n <= 100`\n  * `1 <= times.length <= 6000`\n  * `times[i].length == 3`\n  * `1 <= ui, vi <= n`\n  * `ui != vi`\n  * `0 <= wi <= 100`\n  * All the pairs `(ui, vi)` are **unique**. (i.e., no multiple edges.)",
+  "topics": [
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Heap (Priority Queue)",
+    "Shortest Path"
+  ],
+  "total_accepted": 837073,
+  "total_submissions": 1400840,
+  "acceptance_rate": "59.8%",
+  "similar_questions": [
+    {
+      "title": "The Time When the Network Becomes Idle",
+      "slug": "the-time-when-the-network-becomes-idle",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/the-time-when-the-network-becomes-idle/"
+    },
+    {
+      "title": "Second Minimum Time to Reach Destination",
+      "slug": "second-minimum-time-to-reach-destination",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/second-minimum-time-to-reach-destination/"
+    }
+  ],
+  "hints": [
+    "We visit each node at some time, and if that time is better than the fastest time we've reached this node, we travel along outgoing edges in sorted order.  Alternatively, we could use Dijkstra's algorithm."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "1551",
+  "title": "Minimum Operations to Make Array Equal",
+  "slug": "minimum-operations-to-make-array-equal",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You have an array <code>arr</code> of length <code>n</code> where <code>arr[i] = (2 * i) + 1</code> for all valid values of <code>i</code> (i.e.,&nbsp;<code>0 &lt;= i &lt; n</code>).</p>\n\n<p>In one operation, you can select two indices <code>x</code> and <code>y</code> where <code>0 &lt;= x, y &lt; n</code> and subtract <code>1</code> from <code>arr[x]</code> and add <code>1</code> to <code>arr[y]</code> (i.e., perform <code>arr[x] -=1 </code>and <code>arr[y] += 1</code>). The goal is to make all the elements of the array <strong>equal</strong>. It is <strong>guaranteed</strong> that all the elements of the array can be made equal using some operations.</p>\n\n<p>Given an integer <code>n</code>, the length of the array, return <em>the minimum number of operations</em> needed to make all the elements of arr equal.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 3\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> arr = [1, 3, 5]\nFirst operation choose x = 2 and y = 0, this leads arr to be [2, 3, 4]\nIn the second operation choose x = 2 and y = 0 again, thus arr = [3, 3, 3].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 6\n<strong>Output:</strong> 9\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 10<sup>4</sup></code></li>\n</ul>\n",
+  "content_markdown": "You have an array `arr` of length `n` where `arr[i] = (2 * i) + 1` for all valid values of `i` (i.e., `0 <= i < n`).\n\nIn one operation, you can select two indices `x` and `y` where `0 <= x, y < n` and subtract `1` from `arr[x]` and add `1` to `arr[y]` (i.e., perform `arr[x] -=1 `and `arr[y] += 1`). The goal is to make all the elements of the array **equal**. It is **guaranteed** that all the elements of the array can be made equal using some operations.\n\nGiven an integer `n`, the length of the array, return _the minimum number of operations_ needed to make all the elements of arr equal.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** arr = [1, 3, 5]\n    First operation choose x = 2 and y = 0, this leads arr to be [2, 3, 4]\n    In the second operation choose x = 2 and y = 0 again, thus arr = [3, 3, 3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 6\n    **Output:** 9\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 104`",
+  "question": "You have an array `arr` of length `n` where `arr[i] = (2 * i) + 1` for all valid values of `i` (i.e., `0 <= i < n`).\n\nIn one operation, you can select two indices `x` and `y` where `0 <= x, y < n` and subtract `1` from `arr[x]` and add `1` to `arr[y]` (i.e., perform `arr[x] -=1 `and `arr[y] += 1`). The goal is to make all the elements of the array **equal**. It is **guaranteed** that all the elements of the array can be made equal using some operations.\n\nGiven an integer `n`, the length of the array, return _the minimum number of operations_ needed to make all the elements of arr equal.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 3\n    **Output:** 2\n    **Explanation:** arr = [1, 3, 5]\n    First operation choose x = 2 and y = 0, this leads arr to be [2, 3, 4]\n    In the second operation choose x = 2 and y = 0 again, thus arr = [3, 3, 3].\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 6\n    **Output:** 9",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 104`",
+  "topics": ["Math"],
+  "total_accepted": 116458,
+  "total_submissions": 140820,
+  "acceptance_rate": "82.7%",
+  "similar_questions": [
+    {
+      "title": "Minimum Number of Operations to Make Arrays Similar",
+      "slug": "minimum-number-of-operations-to-make-arrays-similar",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-arrays-similar/"
+    },
+    {
+      "title": "Minimum Operations to Make Array Equal II",
+      "slug": "minimum-operations-to-make-array-equal-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-operations-to-make-array-equal-ii/"
+    }
+  ],
+  "hints": [
+    "Build the array arr using the given formula, define target = sum(arr) / n",
+    "What is the number of operations needed to convert arr so that all elements equal target ?"
+  ]
+}

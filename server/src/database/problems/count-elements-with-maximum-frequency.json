@@ -1,0 +1,40 @@
+{
+  "id": "3005",
+  "title": "Count Elements With Maximum Frequency",
+  "slug": "count-elements-with-maximum-frequency",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>nums</code> consisting of <strong>positive</strong> integers.</p>\n\n<p>Return <em>the <strong>total frequencies</strong> of elements in</em><em> </em><code>nums</code>&nbsp;<em>such that those elements all have the <strong>maximum</strong> frequency</em>.</p>\n\n<p>The <strong>frequency</strong> of an element is the number of occurrences of that element in the array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,2,3,1,4]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The elements 1 and 2 have a frequency of 2 which is the maximum frequency in the array.\nSo the number of elements in the array with maximum frequency is 4.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,3,4,5]\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> All elements of the array have a frequency of 1 which is the maximum.\nSo the number of elements in the array with maximum frequency is 5.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 100</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 100</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `nums` consisting of **positive** integers.\n\nReturn _the**total frequencies** of elements in_ __`nums` _such that those elements all have the**maximum** frequency_.\n\nThe **frequency** of an element is the number of occurrences of that element in the array.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2,3,1,4]\n    **Output:** 4\n    **Explanation:** The elements 1 and 2 have a frequency of 2 which is the maximum frequency in the array.\n    So the number of elements in the array with maximum frequency is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** 5\n    **Explanation:** All elements of the array have a frequency of 1 which is the maximum.\n    So the number of elements in the array with maximum frequency is 5.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 100`",
+  "question": "You are given an array `nums` consisting of **positive** integers.\n\nReturn _the**total frequencies** of elements in_ __`nums` _such that those elements all have the**maximum** frequency_.\n\nThe **frequency** of an element is the number of occurrences of that element in the array.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [1,2,2,3,1,4]\n    **Output:** 4\n    **Explanation:** The elements 1 and 2 have a frequency of 2 which is the maximum frequency in the array.\n    So the number of elements in the array with maximum frequency is 4.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,2,3,4,5]\n    **Output:** 5\n    **Explanation:** All elements of the array have a frequency of 1 which is the maximum.\n    So the number of elements in the array with maximum frequency is 5.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 100`\n  * `1 <= nums[i] <= 100`",
+  "topics": ["Array", "Hash Table", "Counting"],
+  "total_accepted": 416413,
+  "total_submissions": 521546,
+  "acceptance_rate": "79.8%",
+  "similar_questions": [
+    {
+      "title": "Maximum Frequency of an Element After Performing Operations I",
+      "slug": "maximum-frequency-of-an-element-after-performing-operations-i",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/maximum-frequency-of-an-element-after-performing-operations-i/"
+    },
+    {
+      "title": "Maximum Frequency of an Element After Performing Operations II",
+      "slug": "maximum-frequency-of-an-element-after-performing-operations-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-frequency-of-an-element-after-performing-operations-ii/"
+    },
+    {
+      "title": "Maximum Difference Between Even and Odd Frequency II",
+      "slug": "maximum-difference-between-even-and-odd-frequency-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/maximum-difference-between-even-and-odd-frequency-ii/"
+    }
+  ],
+  "hints": [
+    "Find frequencies of all elements of the array.",
+    "Find the elements that have the maximum frequencies and count their total occurrences."
+  ]
+}

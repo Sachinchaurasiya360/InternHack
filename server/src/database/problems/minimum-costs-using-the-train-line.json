@@ -1,0 +1,36 @@
+{
+  "id": "2361",
+  "title": "Minimum Costs Using the Train Line",
+  "slug": "minimum-costs-using-the-train-line",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 14943,
+  "total_submissions": 19188,
+  "acceptance_rate": "77.9%",
+  "similar_questions": [
+    {
+      "title": "Bus Routes",
+      "slug": "bus-routes",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/bus-routes/"
+    },
+    {
+      "title": "Distance Between Bus Stops",
+      "slug": "distance-between-bus-stops",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/distance-between-bus-stops/"
+    }
+  ],
+  "hints": [
+    "Notice and evaluate the different ways there are to move from one stop to the next.",
+    "From the express route at a previous stop, we can use either the express route or the regular route to the next stop without paying expressCost.",
+    "From the regular route at a previous stop, we can either use the express route after paying expressCost or use the regular route without paying expressCost.",
+    "Iterate through the stops and compare the above cases to obtain the minimum costs for each stop."
+  ]
+}

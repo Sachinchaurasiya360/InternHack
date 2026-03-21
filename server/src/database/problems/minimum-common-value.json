@@ -1,0 +1,31 @@
+{
+  "id": "2540",
+  "title": "Minimum Common Value",
+  "slug": "minimum-common-value",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integer arrays <code>nums1</code> and <code>nums2</code>, sorted in non-decreasing order, return <em>the <strong>minimum integer common</strong> to both arrays</em>. If there is no common integer amongst <code>nums1</code> and <code>nums2</code>, return <code>-1</code>.</p>\n\n<p>Note that an integer is said to be <strong>common</strong> to <code>nums1</code> and <code>nums2</code> if both arrays have <strong>at least one</strong> occurrence of that integer.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2,3], nums2 = [2,4]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The smallest element common to both arrays is 2, so we return 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2,3,6], nums2 = [2,3,4,5]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> There are two common elements in the array 2 and 3 out of which 2 is the smallest, so 2 is returned.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length, nums2.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums1[i], nums2[j] &lt;= 10<sup>9</sup></code></li>\n\t<li>Both <code>nums1</code> and <code>nums2</code> are sorted in <strong>non-decreasing</strong> order.</li>\n</ul>\n",
+  "content_markdown": "Given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order, return _the**minimum integer common** to both arrays_. If there is no common integer amongst `nums1` and `nums2`, return `-1`.\n\nNote that an integer is said to be **common** to `nums1` and `nums2` if both arrays have **at least one** occurrence of that integer.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2,3], nums2 = [2,4]\n    **Output:** 2\n    **Explanation:** The smallest element common to both arrays is 2, so we return 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,2,3,6], nums2 = [2,3,4,5]\n    **Output:** 2\n    **Explanation:** There are two common elements in the array 2 and 3 out of which 2 is the smallest, so 2 is returned.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 105`\n  * `1 <= nums1[i], nums2[j] <= 109`\n  * Both `nums1` and `nums2` are sorted in **non-decreasing** order.",
+  "question": "Given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order, return _the**minimum integer common** to both arrays_. If there is no common integer amongst `nums1` and `nums2`, return `-1`.\n\nNote that an integer is said to be **common** to `nums1` and `nums2` if both arrays have **at least one** occurrence of that integer.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [1,2,3], nums2 = [2,4]\n    **Output:** 2\n    **Explanation:** The smallest element common to both arrays is 2, so we return 2.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [1,2,3,6], nums2 = [2,3,4,5]\n    **Output:** 2\n    **Explanation:** There are two common elements in the array 2 and 3 out of which 2 is the smallest, so 2 is returned.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 105`\n  * `1 <= nums1[i], nums2[j] <= 109`\n  * Both `nums1` and `nums2` are sorted in **non-decreasing** order.",
+  "topics": ["Array", "Hash Table", "Two Pointers", "Binary Search"],
+  "total_accepted": 308039,
+  "total_submissions": 530925,
+  "acceptance_rate": "58.0%",
+  "similar_questions": [
+    {
+      "title": "Intersection of Two Arrays",
+      "slug": "intersection-of-two-arrays",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-two-arrays/"
+    },
+    {
+      "title": "Intersection of Two Arrays II",
+      "slug": "intersection-of-two-arrays-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/intersection-of-two-arrays-ii/"
+    }
+  ],
+  "hints": ["Try to use a set.", "Otherwise, try to use a two-pointer approach."]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "1346",
+  "title": "Check If N and Its Double Exist",
+  "slug": "check-if-n-and-its-double-exist",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given an array <code>arr</code> of integers, check if there exist two indices <code>i</code> and <code>j</code> such that :</p>\n\n<ul>\n\t<li><code>i != j</code></li>\n\t<li><code>0 &lt;= i, j &lt; arr.length</code></li>\n\t<li><code>arr[i] == 2 * arr[j]</code></li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [10,2,5,3]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> For i = 0 and j = 2, arr[i] == 10 == 2 * 5 == 2 * arr[j]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> arr = [3,1,7,11]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> There is no i and j that satisfy the conditions.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= arr.length &lt;= 500</code></li>\n\t<li><code>-10<sup>3</sup> &lt;= arr[i] &lt;= 10<sup>3</sup></code></li>\n</ul>\n",
+  "content_markdown": "Given an array `arr` of integers, check if there exist two indices `i` and `j` such that :\n\n  * `i != j`\n  * `0 <= i, j < arr.length`\n  * `arr[i] == 2 * arr[j]`\n\n\n\n \n\n**Example 1:**\n    \n    \n    **Input:** arr = [10,2,5,3]\n    **Output:** true\n    **Explanation:** For i = 0 and j = 2, arr[i] == 10 == 2 * 5 == 2 * arr[j]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [3,1,7,11]\n    **Output:** false\n    **Explanation:** There is no i and j that satisfy the conditions.\n    \n\n \n\n**Constraints:**\n\n  * `2 <= arr.length <= 500`\n  * `-103 <= arr[i] <= 103`",
+  "question": "Given an array `arr` of integers, check if there exist two indices `i` and `j` such that :\n\n  * `i != j`\n  * `0 <= i, j < arr.length`\n  * `arr[i] == 2 * arr[j]`",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** arr = [10,2,5,3]\n    **Output:** true\n    **Explanation:** For i = 0 and j = 2, arr[i] == 10 == 2 * 5 == 2 * arr[j]\n    \n\n**Example 2:**\n    \n    \n    **Input:** arr = [3,1,7,11]\n    **Output:** false\n    **Explanation:** There is no i and j that satisfy the conditions.",
+  "constraints": "**Constraints:**\n\n  * `2 <= arr.length <= 500`\n  * `-103 <= arr[i] <= 103`",
+  "topics": ["Array", "Hash Table", "Two Pointers", "Binary Search", "Sorting"],
+  "total_accepted": 620050,
+  "total_submissions": 1488675,
+  "acceptance_rate": "41.7%",
+  "similar_questions": [
+    {
+      "title": "Keep Multiplying Found Values by Two",
+      "slug": "keep-multiplying-found-values-by-two",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/keep-multiplying-found-values-by-two/"
+    }
+  ],
+  "hints": [
+    "Loop from i = 0 to arr.length, maintaining in a hashTable the array elements from [0, i - 1].",
+    "On each step of the loop check if we have seen the element <code>2 * arr[i]</code> so far.",
+    "Also check if we have seen <code>arr[i] / 2</code> in case <code>arr[i] % 2 == 0</code>."
+  ]
+}

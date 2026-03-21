@@ -1,0 +1,22 @@
+{
+  "id": "1274",
+  "title": "Number of Ships in a Rectangle",
+  "slug": "number-of-ships-in-a-rectangle",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Divide and Conquer", "Interactive"],
+  "total_accepted": 34245,
+  "total_submissions": 49700,
+  "acceptance_rate": "68.9%",
+  "similar_questions": [],
+  "hints": [
+    "Use divide and conquer technique.",
+    "Divide the query rectangle into 4 rectangles.",
+    "Use recursion to continue with the rectangles that has ships only."
+  ]
+}

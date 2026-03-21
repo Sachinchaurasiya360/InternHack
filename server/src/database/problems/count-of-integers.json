@@ -1,0 +1,29 @@
+{
+  "id": "2719",
+  "title": "Count of Integers",
+  "slug": "count-of-integers",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given two numeric strings <code>num1</code> and <code>num2</code> and two integers <code>max_sum</code> and <code>min_sum</code>. We denote an integer <code>x</code> to be <em>good</em> if:</p>\n\n<ul>\n\t<li><code>num1 &lt;= x &lt;= num2</code></li>\n\t<li><code>min_sum &lt;= digit_sum(x) &lt;= max_sum</code>.</li>\n</ul>\n\n<p>Return <em>the number of good integers</em>. Since the answer may be large, return it modulo <code>10<sup>9</sup> + 7</code>.</p>\n\n<p>Note that <code>digit_sum(x)</code> denotes the sum of the digits of <code>x</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> num1 = &quot;1&quot;, num2 = &quot;12&quot;, <code>min_sum</code> = 1, max_sum = 8\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> There are 11 integers whose sum of digits lies between 1 and 8 are 1,2,3,4,5,6,7,8,10,11, and 12. Thus, we return 11.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> num1 = &quot;1&quot;, num2 = &quot;5&quot;, <code>min_sum</code> = 1, max_sum = 5\n<strong>Output:</strong> 5\n<strong>Explanation:</strong> The 5 integers whose sum of digits lies between 1 and 5 are 1,2,3,4, and 5. Thus, we return 5.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= num1 &lt;= num2 &lt;= 10<sup>22</sup></code></li>\n\t<li><code>1 &lt;= min_sum &lt;= max_sum &lt;= 400</code></li>\n</ul>\n",
+  "content_markdown": "You are given two numeric strings `num1` and `num2` and two integers `max_sum` and `min_sum`. We denote an integer `x` to be _good_ if:\n\n  * `num1 <= x <= num2`\n  * `min_sum <= digit_sum(x) <= max_sum`.\n\n\n\nReturn _the number of good integers_. Since the answer may be large, return it modulo `109 + 7`.\n\nNote that `digit_sum(x)` denotes the sum of the digits of `x`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** num1 = \"1\", num2 = \"12\", min_sum = 1, max_sum = 8\n    **Output:** 11\n    **Explanation:** There are 11 integers whose sum of digits lies between 1 and 8 are 1,2,3,4,5,6,7,8,10,11, and 12. Thus, we return 11.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num1 = \"1\", num2 = \"5\", min_sum = 1, max_sum = 5\n    **Output:** 5\n    **Explanation:** The 5 integers whose sum of digits lies between 1 and 5 are 1,2,3,4, and 5. Thus, we return 5.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= num1 <= num2 <= 1022`\n  * `1 <= min_sum <= max_sum <= 400`",
+  "question": "You are given two numeric strings `num1` and `num2` and two integers `max_sum` and `min_sum`. We denote an integer `x` to be _good_ if:\n\n  * `num1 <= x <= num2`\n  * `min_sum <= digit_sum(x) <= max_sum`.\n\n\n\nReturn _the number of good integers_. Since the answer may be large, return it modulo `109 + 7`.\n\nNote that `digit_sum(x)` denotes the sum of the digits of `x`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** num1 = \"1\", num2 = \"12\", min_sum = 1, max_sum = 8\n    **Output:** 11\n    **Explanation:** There are 11 integers whose sum of digits lies between 1 and 8 are 1,2,3,4,5,6,7,8,10,11, and 12. Thus, we return 11.\n    \n\n**Example 2:**\n    \n    \n    **Input:** num1 = \"1\", num2 = \"5\", min_sum = 1, max_sum = 5\n    **Output:** 5\n    **Explanation:** The 5 integers whose sum of digits lies between 1 and 5 are 1,2,3,4, and 5. Thus, we return 5.",
+  "constraints": "**Constraints:**\n\n  * `1 <= num1 <= num2 <= 1022`\n  * `1 <= min_sum <= max_sum <= 400`",
+  "topics": ["Math", "String", "Dynamic Programming"],
+  "total_accepted": 19373,
+  "total_submissions": 50720,
+  "acceptance_rate": "38.2%",
+  "similar_questions": [
+    {
+      "title": "Count Numbers with Non-Decreasing Digits ",
+      "slug": "count-numbers-with-non-decreasing-digits",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/count-numbers-with-non-decreasing-digits/"
+    }
+  ],
+  "hints": [
+    "Let f(n, l, r) denotes the number of integers from 1 to n with the sum of digits between l and r.",
+    "The answer is f(num2, min_sum, max_sum) - f(num1-1, min_sum, max_sum).",
+    "You can calculate f(n, l, r) using digit dp."
+  ]
+}

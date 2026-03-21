@@ -1,0 +1,35 @@
+{
+  "id": "1147",
+  "title": "Longest Chunked Palindrome Decomposition",
+  "slug": "longest-chunked-palindrome-decomposition",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>text</code>. You should split it to k substrings <code>(subtext<sub>1</sub>, subtext<sub>2</sub>, ..., subtext<sub>k</sub>)</code> such that:</p>\n\n<ul>\n\t<li><code>subtext<sub>i</sub></code> is a <strong>non-empty</strong> string.</li>\n\t<li>The concatenation of all the substrings is equal to <code>text</code> (i.e., <code>subtext<sub>1</sub> + subtext<sub>2</sub> + ... + subtext<sub>k</sub> == text</code>).</li>\n\t<li><code>subtext<sub>i</sub> == subtext<sub>k - i + 1</sub></code> for all valid values of <code>i</code> (i.e., <code>1 &lt;= i &lt;= k</code>).</li>\n</ul>\n\n<p>Return the largest possible value of <code>k</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;ghiabcdefhelloadamhelloabcdefghi&quot;\n<strong>Output:</strong> 7\n<strong>Explanation:</strong> We can split the string on &quot;(ghi)(abcdef)(hello)(adam)(hello)(abcdef)(ghi)&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;merchant&quot;\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> We can split the string on &quot;(merchant)&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> text = &quot;antaprezatepzapreanta&quot;\n<strong>Output:</strong> 11\n<strong>Explanation:</strong> We can split the string on &quot;(a)(nt)(a)(pre)(za)(tep)(za)(pre)(a)(nt)(a)&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= text.length &lt;= 1000</code></li>\n\t<li><code>text</code> consists only of lowercase English characters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `text`. You should split it to k substrings `(subtext1, subtext2, ..., subtextk)` such that:\n\n  * `subtexti` is a **non-empty** string.\n  * The concatenation of all the substrings is equal to `text` (i.e., `subtext1 + subtext2 + ... + subtextk == text`).\n  * `subtexti == subtextk - i + 1` for all valid values of `i` (i.e., `1 <= i <= k`).\n\n\n\nReturn the largest possible value of `k`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** text = \"ghiabcdefhelloadamhelloabcdefghi\"\n    **Output:** 7\n    **Explanation:** We can split the string on \"(ghi)(abcdef)(hello)(adam)(hello)(abcdef)(ghi)\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** text = \"merchant\"\n    **Output:** 1\n    **Explanation:** We can split the string on \"(merchant)\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** text = \"antaprezatepzapreanta\"\n    **Output:** 11\n    **Explanation:** We can split the string on \"(a)(nt)(a)(pre)(za)(tep)(za)(pre)(a)(nt)(a)\".\n    \n\n \n\n**Constraints:**\n\n  * `1 <= text.length <= 1000`\n  * `text` consists only of lowercase English characters.",
+  "question": "You are given a string `text`. You should split it to k substrings `(subtext1, subtext2, ..., subtextk)` such that:\n\n  * `subtexti` is a **non-empty** string.\n  * The concatenation of all the substrings is equal to `text` (i.e., `subtext1 + subtext2 + ... + subtextk == text`).\n  * `subtexti == subtextk - i + 1` for all valid values of `i` (i.e., `1 <= i <= k`).\n\n\n\nReturn the largest possible value of `k`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** text = \"ghiabcdefhelloadamhelloabcdefghi\"\n    **Output:** 7\n    **Explanation:** We can split the string on \"(ghi)(abcdef)(hello)(adam)(hello)(abcdef)(ghi)\".\n    \n\n**Example 2:**\n    \n    \n    **Input:** text = \"merchant\"\n    **Output:** 1\n    **Explanation:** We can split the string on \"(merchant)\".\n    \n\n**Example 3:**\n    \n    \n    **Input:** text = \"antaprezatepzapreanta\"\n    **Output:** 11\n    **Explanation:** We can split the string on \"(a)(nt)(a)(pre)(za)(tep)(za)(pre)(a)(nt)(a)\".",
+  "constraints": "**Constraints:**\n\n  * `1 <= text.length <= 1000`\n  * `text` consists only of lowercase English characters.",
+  "topics": [
+    "Two Pointers",
+    "String",
+    "Dynamic Programming",
+    "Greedy",
+    "Rolling Hash",
+    "Hash Function"
+  ],
+  "total_accepted": 30810,
+  "total_submissions": 52218,
+  "acceptance_rate": "59.0%",
+  "similar_questions": [
+    {
+      "title": "Palindrome Rearrangement Queries",
+      "slug": "palindrome-rearrangement-queries",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/palindrome-rearrangement-queries/"
+    }
+  ],
+  "hints": [
+    "Using a rolling hash, we can quickly check whether two strings are equal.",
+    "Use that as the basis of a dp."
+  ]
+}

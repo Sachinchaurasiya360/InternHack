@@ -1,0 +1,20 @@
+{
+  "id": "3110",
+  "title": "Score of a String",
+  "slug": "score-of-a-string",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code>. The <strong>score</strong> of a string is defined as the sum of the absolute difference between the <strong>ASCII</strong> values of adjacent characters.</p>\n\n<p>Return the <strong>score</strong> of<em> </em><code>s</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;hello&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">13</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The <strong>ASCII</strong> values of the characters in <code>s</code> are: <code>&#39;h&#39; = 104</code>, <code>&#39;e&#39; = 101</code>, <code>&#39;l&#39; = 108</code>, <code>&#39;o&#39; = 111</code>. So, the score of <code>s</code> would be <code>|104 - 101| + |101 - 108| + |108 - 108| + |108 - 111| = 3 + 7 + 0 + 3 = 13</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">s = &quot;zaz&quot;</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">50</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The <strong>ASCII</strong> values of the characters in <code>s</code> are: <code>&#39;z&#39; = 122</code>, <code>&#39;a&#39; = 97</code>. So, the score of <code>s</code> would be <code>|122 - 97| + |97 - 122| = 25 + 25 = 50</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists only of lowercase English letters.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `s`. The **score** of a string is defined as the sum of the absolute difference between the **ASCII** values of adjacent characters.\n\nReturn the **score** of __`s`.\n\n \n\n**Example 1:**\n\n**Input:** s = \"hello\"\n\n**Output:** 13\n\n**Explanation:**\n\nThe **ASCII** values of the characters in `s` are: `'h' = 104`, `'e' = 101`, `'l' = 108`, `'o' = 111`. So, the score of `s` would be `|104 - 101| + |101 - 108| + |108 - 108| + |108 - 111| = 3 + 7 + 0 + 3 = 13`.\n\n**Example 2:**\n\n**Input:** s = \"zaz\"\n\n**Output:** 50\n\n**Explanation:**\n\nThe **ASCII** values of the characters in `s` are: `'z' = 122`, `'a' = 97`. So, the score of `s` would be `|122 - 97| + |97 - 122| = 25 + 25 = 50`.\n\n \n\n**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists only of lowercase English letters.",
+  "question": "You are given a string `s`. The **score** of a string is defined as the sum of the absolute difference between the **ASCII** values of adjacent characters.\n\nReturn the **score** of __`s`.",
+  "examples": "**Example 1:**\n\n**Input:** s = \"hello\"\n\n**Output:** 13\n\n**Explanation:**\n\nThe **ASCII** values of the characters in `s` are: `'h' = 104`, `'e' = 101`, `'l' = 108`, `'o' = 111`. So, the score of `s` would be `|104 - 101| + |101 - 108| + |108 - 108| + |108 - 111| = 3 + 7 + 0 + 3 = 13`.\n\n**Example 2:**\n\n**Input:** s = \"zaz\"\n\n**Output:** 50\n\n**Explanation:**\n\nThe **ASCII** values of the characters in `s` are: `'z' = 122`, `'a' = 97`. So, the score of `s` would be `|122 - 97| + |97 - 122| = 25 + 25 = 50`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= s.length <= 100`\n  * `s` consists only of lowercase English letters.",
+  "topics": ["String"],
+  "total_accepted": 434571,
+  "total_submissions": 475636,
+  "acceptance_rate": "91.4%",
+  "similar_questions": [],
+  "hints": [
+    "Sum the difference between all the adjacent characters by just taking the absolute difference of their ASCII values."
+  ]
+}

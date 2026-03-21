@@ -1,0 +1,34 @@
+{
+  "id": "3409",
+  "title": "Longest Subsequence With Decreasing Adjacent Difference",
+  "slug": "longest-subsequence-with-decreasing-adjacent-difference",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array of integers <code>nums</code>.</p>\n\n<p>Your task is to find the length of the <strong>longest</strong> <span data-keyword=\"subsequence-array\">subsequence</span> <code>seq</code> of <code>nums</code>, such that the <strong>absolute differences</strong> between<em> consecutive</em> elements form a <strong>non-increasing sequence</strong> of integers. In other words, for a subsequence <code>seq<sub>0</sub></code>, <code>seq<sub>1</sub></code>, <code>seq<sub>2</sub></code>, ..., <code>seq<sub>m</sub></code> of <code>nums</code>, <code>|seq<sub>1</sub> - seq<sub>0</sub>| &gt;= |seq<sub>2</sub> - seq<sub>1</sub>| &gt;= ... &gt;= |seq<sub>m</sub> - seq<sub>m - 1</sub>|</code>.</p>\n\n<p>Return the length of such a subsequence.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [16,6,3]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">3</span></p>\n\n<p><strong>Explanation:</strong>&nbsp;</p>\n\n<p>The longest subsequence is <code>[16, 6, 3]</code> with the absolute adjacent differences <code>[10, 3]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [6,5,3,4,2,1]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">4</span></p>\n\n<p><strong>Explanation:</strong></p>\n\n<p>The longest subsequence is <code>[6, 4, 2, 1]</code> with the absolute adjacent differences <code>[2, 2, 1]</code>.</p>\n</div>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<div class=\"example-block\">\n<p><strong>Input:</strong> <span class=\"example-io\">nums = [10,20,10,19,10,20]</span></p>\n\n<p><strong>Output:</strong> <span class=\"example-io\">5</span></p>\n\n<p><strong>Explanation:</strong>&nbsp;</p>\n\n<p>The longest subsequence is <code>[10, 20, 10, 19, 10]</code> with the absolute adjacent differences <code>[10, 10, 9, 9]</code>.</p>\n</div>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 300</code></li>\n</ul>\n",
+  "content_markdown": "You are given an array of integers `nums`.\n\nYour task is to find the length of the **longest** subsequence `seq` of `nums`, such that the **absolute differences** between _consecutive_ elements form a **non-increasing sequence** of integers. In other words, for a subsequence `seq0`, `seq1`, `seq2`, ..., `seqm` of `nums`, `|seq1 - seq0| >= |seq2 - seq1| >= ... >= |seqm - seqm - 1|`.\n\nReturn the length of such a subsequence.\n\n \n\n**Example 1:**\n\n**Input:** nums = [16,6,3]\n\n**Output:** 3\n\n**Explanation:**  \n\nThe longest subsequence is `[16, 6, 3]` with the absolute adjacent differences `[10, 3]`.\n\n**Example 2:**\n\n**Input:** nums = [6,5,3,4,2,1]\n\n**Output:** 4\n\n**Explanation:**\n\nThe longest subsequence is `[6, 4, 2, 1]` with the absolute adjacent differences `[2, 2, 1]`.\n\n**Example 3:**\n\n**Input:** nums = [10,20,10,19,10,20]\n\n**Output:** 5\n\n**Explanation:**  \n\nThe longest subsequence is `[10, 20, 10, 19, 10]` with the absolute adjacent differences `[10, 10, 9, 9]`.\n\n \n\n**Constraints:**\n\n  * `2 <= nums.length <= 104`\n  * `1 <= nums[i] <= 300`",
+  "question": "You are given an array of integers `nums`.\n\nYour task is to find the length of the **longest** subsequence `seq` of `nums`, such that the **absolute differences** between _consecutive_ elements form a **non-increasing sequence** of integers. In other words, for a subsequence `seq0`, `seq1`, `seq2`, ..., `seqm` of `nums`, `|seq1 - seq0| >= |seq2 - seq1| >= ... >= |seqm - seqm - 1|`.\n\nReturn the length of such a subsequence.",
+  "examples": "**Example 1:**\n\n**Input:** nums = [16,6,3]\n\n**Output:** 3\n\n**Explanation:**  \n\nThe longest subsequence is `[16, 6, 3]` with the absolute adjacent differences `[10, 3]`.\n\n**Example 2:**\n\n**Input:** nums = [6,5,3,4,2,1]\n\n**Output:** 4\n\n**Explanation:**\n\nThe longest subsequence is `[6, 4, 2, 1]` with the absolute adjacent differences `[2, 2, 1]`.\n\n**Example 3:**\n\n**Input:** nums = [10,20,10,19,10,20]\n\n**Output:** 5\n\n**Explanation:**  \n\nThe longest subsequence is `[10, 20, 10, 19, 10]` with the absolute adjacent differences `[10, 10, 9, 9]`.",
+  "constraints": "**Constraints:**\n\n  * `2 <= nums.length <= 104`\n  * `1 <= nums[i] <= 300`",
+  "topics": ["Array", "Dynamic Programming"],
+  "total_accepted": 7067,
+  "total_submissions": 42587,
+  "acceptance_rate": "16.6%",
+  "similar_questions": [
+    {
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence/"
+    },
+    {
+      "title": "Longest Increasing Subsequence II",
+      "slug": "longest-increasing-subsequence-ii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/longest-increasing-subsequence-ii/"
+    }
+  ],
+  "hints": [
+    "Use dynamic programming.",
+    "Store the maximum answer for each index and every possible difference."
+  ]
+}

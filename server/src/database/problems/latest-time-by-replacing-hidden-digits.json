@@ -1,0 +1,34 @@
+{
+  "id": "1736",
+  "title": "Latest Time by Replacing Hidden Digits",
+  "slug": "latest-time-by-replacing-hidden-digits",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>time</code> in the form of <code> hh:mm</code>, where some of the digits in the string are hidden (represented by <code>?</code>).</p>\n\n<p>The valid times are those inclusively between <code>00:00</code> and <code>23:59</code>.</p>\n\n<p>Return <em>the latest valid time you can get from</em> <code>time</code><em> by replacing the hidden</em> <em>digits</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = &quot;2?:?0&quot;\n<strong>Output:</strong> &quot;23:50&quot;\n<strong>Explanation:</strong> The latest hour beginning with the digit &#39;2&#39; is 23 and the latest minute ending with the digit &#39;0&#39; is 50.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = &quot;0?:3?&quot;\n<strong>Output:</strong> &quot;09:39&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> time = &quot;1?:22&quot;\n<strong>Output:</strong> &quot;19:22&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>time</code> is in the format <code>hh:mm</code>.</li>\n\t<li>It is guaranteed that you can produce a valid time from the given string.</li>\n</ul>\n",
+  "content_markdown": "You are given a string `time` in the form of ` hh:mm`, where some of the digits in the string are hidden (represented by `?`).\n\nThe valid times are those inclusively between `00:00` and `23:59`.\n\nReturn _the latest valid time you can get from_ `time` _by replacing the hidden_ _digits_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** time = \"2?:?0\"\n    **Output:** \"23:50\"\n    **Explanation:** The latest hour beginning with the digit '2' is 23 and the latest minute ending with the digit '0' is 50.\n    \n\n**Example 2:**\n    \n    \n    **Input:** time = \"0?:3?\"\n    **Output:** \"09:39\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** time = \"1?:22\"\n    **Output:** \"19:22\"\n    \n\n \n\n**Constraints:**\n\n  * `time` is in the format `hh:mm`.\n  * It is guaranteed that you can produce a valid time from the given string.",
+  "question": "You are given a string `time` in the form of ` hh:mm`, where some of the digits in the string are hidden (represented by `?`).\n\nThe valid times are those inclusively between `00:00` and `23:59`.\n\nReturn _the latest valid time you can get from_ `time` _by replacing the hidden_ _digits_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** time = \"2?:?0\"\n    **Output:** \"23:50\"\n    **Explanation:** The latest hour beginning with the digit '2' is 23 and the latest minute ending with the digit '0' is 50.\n    \n\n**Example 2:**\n    \n    \n    **Input:** time = \"0?:3?\"\n    **Output:** \"09:39\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** time = \"1?:22\"\n    **Output:** \"19:22\"",
+  "constraints": "**Constraints:**\n\n  * `time` is in the format `hh:mm`.\n  * It is guaranteed that you can produce a valid time from the given string.",
+  "topics": ["String", "Greedy"],
+  "total_accepted": 47352,
+  "total_submissions": 108493,
+  "acceptance_rate": "43.6%",
+  "similar_questions": [
+    {
+      "title": "Number of Valid Clock Times",
+      "slug": "number-of-valid-clock-times",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/number-of-valid-clock-times/"
+    },
+    {
+      "title": "Latest Time You Can Obtain After Replacing Characters",
+      "slug": "latest-time-you-can-obtain-after-replacing-characters",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/latest-time-you-can-obtain-after-replacing-characters/"
+    }
+  ],
+  "hints": [
+    "Trying out all possible solutions from biggest to smallest would fit in the time limit.",
+    "To check if the solution is okay, you need to find out if it's valid and matches every character"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "2880",
+  "title": "Select Data",
+  "slug": "select-data",
+  "difficulty": "Easy",
+  "category": "pandas",
+  "content_html": "<pre>\nDataFrame students\n+-------------+--------+\n| Column Name | Type   |\n+-------------+--------+\n| student_id  | int    |\n| name        | object |\n| age         | int    |\n+-------------+--------+\n\n</pre>\n\n<p>Write a solution to select the name and age of the student with <code>student_id = 101</code>.</p>\n\n<p>The result format is in the following example.</p>\n\n<p>&nbsp;</p>\n<pre>\n<strong>Example 1:\nInput:</strong>\n+------------+---------+-----+\n| student_id | name    | age |\n+------------+---------+-----+\n| 101        | Ulysses | 13  |\n| 53         | William | 10  |\n| 128        | Henry   | 6   |\n| 3          | Henry   | 11  |\n+------------+---------+-----+\n<strong>Output:</strong>\n+---------+-----+\n| name    | age | \n+---------+-----+\n| Ulysses | 13  |\n+---------+-----+\n<strong>Explanation:\n</strong>Student Ulysses has student_id = 101, we select the name and age.</pre>\n",
+  "content_markdown": "DataFrame students\n    +-------------+--------+\n    | Column Name | Type   |\n    +-------------+--------+\n    | student_id  | int    |\n    | name        | object |\n    | age         | int    |\n    +-------------+--------+\n    \n    \n\nWrite a solution to select the name and age of the student with `student_id = 101`.\n\nThe result format is in the following example.\n\n \n    \n    \n    **Example 1:\n    Input:**\n    +------------+---------+-----+\n    | student_id | name    | age |\n    +------------+---------+-----+\n    | 101        | Ulysses | 13  |\n    | 53         | William | 10  |\n    | 128        | Henry   | 6   |\n    | 3          | Henry   | 11  |\n    +------------+---------+-----+\n    **Output:**\n    +---------+-----+\n    | name    | age | \n    +---------+-----+\n    | Ulysses | 13  |\n    +---------+-----+\n    **Explanation:** Student Ulysses has student_id = 101, we select the name and age.",
+  "question": "DataFrame students\n    +-------------+--------+\n    | Column Name | Type   |\n    +-------------+--------+\n    | student_id  | int    |\n    | name        | object |\n    | age         | int    |\n    +-------------+--------+\n    \n    \n\nWrite a solution to select the name and age of the student with `student_id = 101`.\n\nThe result format is in the following example.",
+  "examples": "**Example 1:\n    Input:**\n    +------------+---------+-----+\n    | student_id | name    | age |\n    +------------+---------+-----+\n    | 101        | Ulysses | 13  |\n    | 53         | William | 10  |\n    | 128        | Henry   | 6   |\n    | 3          | Henry   | 11  |\n    +------------+---------+-----+\n    **Output:**\n    +---------+-----+\n    | name    | age | \n    +---------+-----+\n    | Ulysses | 13  |\n    +---------+-----+\n    **Explanation:** Student Ulysses has student_id = 101, we select the name and age.",
+  "constraints": "",
+  "topics": [],
+  "total_accepted": 162665,
+  "total_submissions": 206659,
+  "acceptance_rate": "78.7%",
+  "similar_questions": [],
+  "hints": ["Consider applying both row and column filtering to select the desired data."]
+}

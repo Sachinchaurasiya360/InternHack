@@ -1,0 +1,34 @@
+{
+  "id": "2293",
+  "title": "Min Max Game",
+  "slug": "min-max-game",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code> whose length is a power of <code>2</code>.</p>\n\n<p>Apply the following algorithm on <code>nums</code>:</p>\n\n<ol>\n\t<li>Let <code>n</code> be the length of <code>nums</code>. If <code>n == 1</code>, <strong>end</strong> the process. Otherwise, <strong>create</strong> a new <strong>0-indexed</strong> integer array <code>newNums</code> of length <code>n / 2</code>.</li>\n\t<li>For every <strong>even</strong> index <code>i</code> where <code>0 &lt;= i &lt; n / 2</code>, <strong>assign</strong> the value of <code>newNums[i]</code> as <code>min(nums[2 * i], nums[2 * i + 1])</code>.</li>\n\t<li>For every <strong>odd</strong> index <code>i</code> where <code>0 &lt;= i &lt; n / 2</code>, <strong>assign</strong> the value of <code>newNums[i]</code> as <code>max(nums[2 * i], nums[2 * i + 1])</code>.</li>\n\t<li><strong>Replace</strong> the array <code>nums</code> with <code>newNums</code>.</li>\n\t<li><strong>Repeat</strong> the entire process starting from step 1.</li>\n</ol>\n\n<p>Return <em>the last number that remains in </em><code>nums</code><em> after applying the algorithm.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2022/04/13/example1drawio-1.png\" style=\"width: 500px; height: 240px;\" />\n<pre>\n<strong>Input:</strong> nums = [1,3,5,2,4,8,2,2]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The following arrays are the results of applying the algorithm repeatedly.\nFirst: nums = [1,5,4,2]\nSecond: nums = [1,4]\nThird: nums = [1]\n1 is the last remaining number, so we return 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> 3 is already the last remaining number, so we return 3.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 1024</code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n\t<li><code>nums.length</code> is a power of <code>2</code>.</li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums` whose length is a power of `2`.\n\nApply the following algorithm on `nums`:\n\n  1. Let `n` be the length of `nums`. If `n == 1`, **end** the process. Otherwise, **create** a new **0-indexed** integer array `newNums` of length `n / 2`.\n  2. For every **even** index `i` where `0 <= i < n / 2`, **assign** the value of `newNums[i]` as `min(nums[2 * i], nums[2 * i + 1])`.\n  3. For every **odd** index `i` where `0 <= i < n / 2`, **assign** the value of `newNums[i]` as `max(nums[2 * i], nums[2 * i + 1])`.\n  4. **Replace** the array `nums` with `newNums`.\n  5. **Repeat** the entire process starting from step 1.\n\n\n\nReturn _the last number that remains in_`nums` _after applying the algorithm._\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/04/13/example1drawio-1.png)\n    \n    \n    **Input:** nums = [1,3,5,2,4,8,2,2]\n    **Output:** 1\n    **Explanation:** The following arrays are the results of applying the algorithm repeatedly.\n    First: nums = [1,5,4,2]\n    Second: nums = [1,4]\n    Third: nums = [1]\n    1 is the last remaining number, so we return 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3]\n    **Output:** 3\n    **Explanation:** 3 is already the last remaining number, so we return 3.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length <= 1024`\n  * `1 <= nums[i] <= 109`\n  * `nums.length` is a power of `2`.",
+  "question": "You are given a **0-indexed** integer array `nums` whose length is a power of `2`.\n\nApply the following algorithm on `nums`:\n\n  1. Let `n` be the length of `nums`. If `n == 1`, **end** the process. Otherwise, **create** a new **0-indexed** integer array `newNums` of length `n / 2`.\n  2. For every **even** index `i` where `0 <= i < n / 2`, **assign** the value of `newNums[i]` as `min(nums[2 * i], nums[2 * i + 1])`.\n  3. For every **odd** index `i` where `0 <= i < n / 2`, **assign** the value of `newNums[i]` as `max(nums[2 * i], nums[2 * i + 1])`.\n  4. **Replace** the array `nums` with `newNums`.\n  5. **Repeat** the entire process starting from step 1.\n\n\n\nReturn _the last number that remains in_`nums` _after applying the algorithm._",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2022/04/13/example1drawio-1.png)\n    \n    \n    **Input:** nums = [1,3,5,2,4,8,2,2]\n    **Output:** 1\n    **Explanation:** The following arrays are the results of applying the algorithm repeatedly.\n    First: nums = [1,5,4,2]\n    Second: nums = [1,4]\n    Third: nums = [1]\n    1 is the last remaining number, so we return 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [3]\n    **Output:** 3\n    **Explanation:** 3 is already the last remaining number, so we return 3.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length <= 1024`\n  * `1 <= nums[i] <= 109`\n  * `nums.length` is a power of `2`.",
+  "topics": ["Array", "Simulation"],
+  "total_accepted": 65073,
+  "total_submissions": 101269,
+  "acceptance_rate": "64.3%",
+  "similar_questions": [
+    {
+      "title": "Elimination Game",
+      "slug": "elimination-game",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/elimination-game/"
+    },
+    {
+      "title": "Find Triangular Sum of an Array",
+      "slug": "find-triangular-sum-of-an-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-triangular-sum-of-an-array/"
+    }
+  ],
+  "hints": [
+    "Simply simulate the algorithm.",
+    "Note that the size of the array decreases exponentially, so the process will terminate after just O(log n) steps."
+  ]
+}

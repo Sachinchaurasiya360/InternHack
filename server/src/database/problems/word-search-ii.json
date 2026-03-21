@@ -1,0 +1,40 @@
+{
+  "id": "212",
+  "title": "Word Search II",
+  "slug": "word-search-ii",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>Given an <code>m x n</code> <code>board</code>&nbsp;of characters and a list of strings <code>words</code>, return <em>all words on the board</em>.</p>\n\n<p>Each word must be constructed from letters of sequentially adjacent cells, where <strong>adjacent cells</strong> are horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/07/search1.jpg\" style=\"width: 322px; height: 322px;\" />\n<pre>\n<strong>Input:</strong> board = [[&quot;o&quot;,&quot;a&quot;,&quot;a&quot;,&quot;n&quot;],[&quot;e&quot;,&quot;t&quot;,&quot;a&quot;,&quot;e&quot;],[&quot;i&quot;,&quot;h&quot;,&quot;k&quot;,&quot;r&quot;],[&quot;i&quot;,&quot;f&quot;,&quot;l&quot;,&quot;v&quot;]], words = [&quot;oath&quot;,&quot;pea&quot;,&quot;eat&quot;,&quot;rain&quot;]\n<strong>Output:</strong> [&quot;eat&quot;,&quot;oath&quot;]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/11/07/search2.jpg\" style=\"width: 162px; height: 162px;\" />\n<pre>\n<strong>Input:</strong> board = [[&quot;a&quot;,&quot;b&quot;],[&quot;c&quot;,&quot;d&quot;]], words = [&quot;abcb&quot;]\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == board.length</code></li>\n\t<li><code>n == board[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 12</code></li>\n\t<li><code>board[i][j]</code> is a lowercase English letter.</li>\n\t<li><code>1 &lt;= words.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= words[i].length &lt;= 10</code></li>\n\t<li><code>words[i]</code> consists of lowercase English letters.</li>\n\t<li>All the strings of <code>words</code> are unique.</li>\n</ul>\n",
+  "content_markdown": "Given an `m x n` `board` of characters and a list of strings `words`, return _all words on the board_.\n\nEach word must be constructed from letters of sequentially adjacent cells, where **adjacent cells** are horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.\n\n \n\n**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/07/search1.jpg)\n    \n    \n    **Input:** board = [[\"o\",\"a\",\"a\",\"n\"],[\"e\",\"t\",\"a\",\"e\"],[\"i\",\"h\",\"k\",\"r\"],[\"i\",\"f\",\"l\",\"v\"]], words = [\"oath\",\"pea\",\"eat\",\"rain\"]\n    **Output:** [\"eat\",\"oath\"]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/07/search2.jpg)\n    \n    \n    **Input:** board = [[\"a\",\"b\"],[\"c\",\"d\"]], words = [\"abcb\"]\n    **Output:** []\n    \n\n \n\n**Constraints:**\n\n  * `m == board.length`\n  * `n == board[i].length`\n  * `1 <= m, n <= 12`\n  * `board[i][j]` is a lowercase English letter.\n  * `1 <= words.length <= 3 * 104`\n  * `1 <= words[i].length <= 10`\n  * `words[i]` consists of lowercase English letters.\n  * All the strings of `words` are unique.",
+  "question": "Given an `m x n` `board` of characters and a list of strings `words`, return _all words on the board_.\n\nEach word must be constructed from letters of sequentially adjacent cells, where **adjacent cells** are horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.",
+  "examples": "**Example 1:**\n\n![](https://assets.leetcode.com/uploads/2020/11/07/search1.jpg)\n    \n    \n    **Input:** board = [[\"o\",\"a\",\"a\",\"n\"],[\"e\",\"t\",\"a\",\"e\"],[\"i\",\"h\",\"k\",\"r\"],[\"i\",\"f\",\"l\",\"v\"]], words = [\"oath\",\"pea\",\"eat\",\"rain\"]\n    **Output:** [\"eat\",\"oath\"]\n    \n\n**Example 2:**\n\n![](https://assets.leetcode.com/uploads/2020/11/07/search2.jpg)\n    \n    \n    **Input:** board = [[\"a\",\"b\"],[\"c\",\"d\"]], words = [\"abcb\"]\n    **Output:** []",
+  "constraints": "**Constraints:**\n\n  * `m == board.length`\n  * `n == board[i].length`\n  * `1 <= m, n <= 12`\n  * `board[i][j]` is a lowercase English letter.\n  * `1 <= words.length <= 3 * 104`\n  * `1 <= words[i].length <= 10`\n  * `words[i]` consists of lowercase English letters.\n  * All the strings of `words` are unique.",
+  "topics": ["Array", "String", "Backtracking", "Trie", "Matrix"],
+  "total_accepted": 885068,
+  "total_submissions": 2320785,
+  "acceptance_rate": "38.1%",
+  "similar_questions": [
+    {
+      "title": "Word Search",
+      "slug": "word-search",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/word-search/"
+    },
+    {
+      "title": "Unique Paths III",
+      "slug": "unique-paths-iii",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/unique-paths-iii/"
+    },
+    {
+      "title": "Encrypt and Decrypt Strings",
+      "slug": "encrypt-and-decrypt-strings",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/encrypt-and-decrypt-strings/"
+    }
+  ],
+  "hints": [
+    "You would need to optimize your backtracking to pass the larger test. Could you stop backtracking earlier?",
+    "If the current candidate does not exist in all words&#39; prefix, you could stop backtracking immediately. What kind of data structure could answer such query efficiently? Does a hash table work? Why or why not? How about a Trie? If you would like to learn how to implement a basic trie, please work on this problem: <a href=\"https://leetcode.com/problems/implement-trie-prefix-tree/\">Implement Trie (Prefix Tree)</a> first."
+  ]
+}

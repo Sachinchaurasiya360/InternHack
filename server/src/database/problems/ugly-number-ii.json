@@ -1,0 +1,60 @@
+{
+  "id": "264",
+  "title": "Ugly Number II",
+  "slug": "ugly-number-ii",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>An <strong>ugly number</strong> is a positive integer whose prime factors are limited to <code>2</code>, <code>3</code>, and <code>5</code>.</p>\n\n<p>Given an integer <code>n</code>, return <em>the</em> <code>n<sup>th</sup></code> <em><strong>ugly number</strong></em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 10\n<strong>Output:</strong> 12\n<strong>Explanation:</strong> [1, 2, 3, 4, 5, 6, 8, 9, 10, 12] is the sequence of the first 10 ugly numbers.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> 1 has no prime factors, therefore all of its prime factors are limited to 2, 3, and 5.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 1690</code></li>\n</ul>\n",
+  "content_markdown": "An **ugly number** is a positive integer whose prime factors are limited to `2`, `3`, and `5`.\n\nGiven an integer `n`, return _the_ `nth` _**ugly number**_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 10\n    **Output:** 12\n    **Explanation:** [1, 2, 3, 4, 5, 6, 8, 9, 10, 12] is the sequence of the first 10 ugly numbers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1\n    **Explanation:** 1 has no prime factors, therefore all of its prime factors are limited to 2, 3, and 5.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 1690`",
+  "question": "An **ugly number** is a positive integer whose prime factors are limited to `2`, `3`, and `5`.\n\nGiven an integer `n`, return _the_ `nth` _**ugly number**_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 10\n    **Output:** 12\n    **Explanation:** [1, 2, 3, 4, 5, 6, 8, 9, 10, 12] is the sequence of the first 10 ugly numbers.\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1\n    **Output:** 1\n    **Explanation:** 1 has no prime factors, therefore all of its prime factors are limited to 2, 3, and 5.",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 1690`",
+  "topics": ["Hash Table", "Math", "Dynamic Programming", "Heap (Priority Queue)"],
+  "total_accepted": 528714,
+  "total_submissions": 1067901,
+  "acceptance_rate": "49.5%",
+  "similar_questions": [
+    {
+      "title": "Merge k Sorted Lists",
+      "slug": "merge-k-sorted-lists",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/merge-k-sorted-lists/"
+    },
+    {
+      "title": "Count Primes",
+      "slug": "count-primes",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/count-primes/"
+    },
+    {
+      "title": "Ugly Number",
+      "slug": "ugly-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/ugly-number/"
+    },
+    {
+      "title": "Perfect Squares",
+      "slug": "perfect-squares",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/perfect-squares/"
+    },
+    {
+      "title": "Super Ugly Number",
+      "slug": "super-ugly-number",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/super-ugly-number/"
+    },
+    {
+      "title": "Ugly Number III",
+      "slug": "ugly-number-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/ugly-number-iii/"
+    }
+  ],
+  "hints": [
+    "The naive approach is to call <code>isUgly</code> for every number until you reach the n<sup>th</sup> one. Most numbers are <i>not</i> ugly. Try to focus your effort on generating only the ugly ones.",
+    "An ugly number must be multiplied by either 2, 3, or 5 from a smaller ugly number.",
+    "The key is how to maintain the order of the ugly numbers. Try a similar approach of merging from three sorted lists: L<sub>1</sub>, L<sub>2</sub>, and L<sub>3</sub>.",
+    "Assume you have U<sub>k</sub>, the k<sup>th</sup> ugly number. Then U<sub>k+1</sub> must be Min(L<sub>1</sub> * 2, L<sub>2</sub> * 3, L<sub>3</sub> * 5)."
+  ]
+}

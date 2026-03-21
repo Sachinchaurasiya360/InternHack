@@ -1,0 +1,43 @@
+{
+  "id": "489",
+  "title": "Robot Room Cleaner",
+  "slug": "robot-room-cleaner",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Backtracking", "Interactive"],
+  "total_accepted": 209165,
+  "total_submissions": 268521,
+  "acceptance_rate": "77.9%",
+  "similar_questions": [
+    {
+      "title": "Walls and Gates",
+      "slug": "walls-and-gates",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/walls-and-gates/"
+    },
+    {
+      "title": "Shortest Path in a Hidden Grid",
+      "slug": "shortest-path-in-a-hidden-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/shortest-path-in-a-hidden-grid/"
+    },
+    {
+      "title": "Minimum Path Cost in a Hidden Grid",
+      "slug": "minimum-path-cost-in-a-hidden-grid",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/minimum-path-cost-in-a-hidden-grid/"
+    },
+    {
+      "title": "Number of Spaces Cleaning Robot Cleaned",
+      "slug": "number-of-spaces-cleaning-robot-cleaned",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/number-of-spaces-cleaning-robot-cleaned/"
+    }
+  ],
+  "hints": []
+}

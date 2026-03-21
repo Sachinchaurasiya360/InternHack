@@ -1,0 +1,53 @@
+{
+  "id": "2100",
+  "title": "Find Good Days to Rob the Bank",
+  "slug": "find-good-days-to-rob-the-bank",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You and a gang of thieves are planning on robbing a bank. You are given a <strong>0-indexed</strong> integer array <code>security</code>, where <code>security[i]</code> is the number of guards on duty on the <code>i<sup>th</sup></code> day. The days are numbered starting from <code>0</code>. You are also given an integer <code>time</code>.</p>\n\n<p>The <code>i<sup>th</sup></code> day is a good day to rob the bank if:</p>\n\n<ul>\n\t<li>There are at least <code>time</code> days before and after the <code>i<sup>th</sup></code> day,</li>\n\t<li>The number of guards at the bank for the <code>time</code> days <strong>before</strong> <code>i</code> are <strong>non-increasing</strong>, and</li>\n\t<li>The number of guards at the bank for the <code>time</code> days <strong>after</strong> <code>i</code> are <strong>non-decreasing</strong>.</li>\n</ul>\n\n<p>More formally, this means day <code>i</code> is a good day to rob the bank if and only if <code>security[i - time] &gt;= security[i - time + 1] &gt;= ... &gt;= security[i] &lt;= ... &lt;= security[i + time - 1] &lt;= security[i + time]</code>.</p>\n\n<p>Return <em>a list of <strong>all</strong> days <strong>(0-indexed) </strong>that are good days to rob the bank</em>.<em> The order that the days are returned in does<strong> </strong><strong>not</strong> matter.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> security = [5,3,3,3,5,6,2], time = 2\n<strong>Output:</strong> [2,3]\n<strong>Explanation:</strong>\nOn day 2, we have security[0] &gt;= security[1] &gt;= security[2] &lt;= security[3] &lt;= security[4].\nOn day 3, we have security[1] &gt;= security[2] &gt;= security[3] &lt;= security[4] &lt;= security[5].\nNo other days satisfy this condition, so days 2 and 3 are the only good days to rob the bank.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> security = [1,1,1,1,1], time = 0\n<strong>Output:</strong> [0,1,2,3,4]\n<strong>Explanation:</strong>\nSince time equals 0, every day is a good day to rob the bank, so return every day.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> security = [1,2,3,4,5,6], time = 2\n<strong>Output:</strong> []\n<strong>Explanation:</strong>\nNo day has 2 days before it that have a non-increasing number of guards.\nThus, no day is a good day to rob the bank, so return an empty list.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= security.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= security[i], time &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+  "content_markdown": "You and a gang of thieves are planning on robbing a bank. You are given a **0-indexed** integer array `security`, where `security[i]` is the number of guards on duty on the `ith` day. The days are numbered starting from `0`. You are also given an integer `time`.\n\nThe `ith` day is a good day to rob the bank if:\n\n  * There are at least `time` days before and after the `ith` day,\n  * The number of guards at the bank for the `time` days **before** `i` are **non-increasing** , and\n  * The number of guards at the bank for the `time` days **after** `i` are **non-decreasing**.\n\n\n\nMore formally, this means day `i` is a good day to rob the bank if and only if `security[i - time] >= security[i - time + 1] >= ... >= security[i] <= ... <= security[i + time - 1] <= security[i + time]`.\n\nReturn _a list of**all** days **(0-indexed)** that are good days to rob the bank_._The order that the days are returned in does******not** matter._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** security = [5,3,3,3,5,6,2], time = 2\n    **Output:** [2,3]\n    **Explanation:**\n    On day 2, we have security[0] >= security[1] >= security[2] <= security[3] <= security[4].\n    On day 3, we have security[1] >= security[2] >= security[3] <= security[4] <= security[5].\n    No other days satisfy this condition, so days 2 and 3 are the only good days to rob the bank.\n    \n\n**Example 2:**\n    \n    \n    **Input:** security = [1,1,1,1,1], time = 0\n    **Output:** [0,1,2,3,4]\n    **Explanation:**\n    Since time equals 0, every day is a good day to rob the bank, so return every day.\n    \n\n**Example 3:**\n    \n    \n    **Input:** security = [1,2,3,4,5,6], time = 2\n    **Output:** []\n    **Explanation:**\n    No day has 2 days before it that have a non-increasing number of guards.\n    Thus, no day is a good day to rob the bank, so return an empty list.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= security.length <= 105`\n  * `0 <= security[i], time <= 105`",
+  "question": "You and a gang of thieves are planning on robbing a bank. You are given a **0-indexed** integer array `security`, where `security[i]` is the number of guards on duty on the `ith` day. The days are numbered starting from `0`. You are also given an integer `time`.\n\nThe `ith` day is a good day to rob the bank if:\n\n  * There are at least `time` days before and after the `ith` day,\n  * The number of guards at the bank for the `time` days **before** `i` are **non-increasing** , and\n  * The number of guards at the bank for the `time` days **after** `i` are **non-decreasing**.\n\n\n\nMore formally, this means day `i` is a good day to rob the bank if and only if `security[i - time] >= security[i - time + 1] >= ... >= security[i] <= ... <= security[i + time - 1] <= security[i + time]`.\n\nReturn _a list of**all** days **(0-indexed)** that are good days to rob the bank_._The order that the days are returned in does******not** matter._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** security = [5,3,3,3,5,6,2], time = 2\n    **Output:** [2,3]\n    **Explanation:**\n    On day 2, we have security[0] >= security[1] >= security[2] <= security[3] <= security[4].\n    On day 3, we have security[1] >= security[2] >= security[3] <= security[4] <= security[5].\n    No other days satisfy this condition, so days 2 and 3 are the only good days to rob the bank.\n    \n\n**Example 2:**\n    \n    \n    **Input:** security = [1,1,1,1,1], time = 0\n    **Output:** [0,1,2,3,4]\n    **Explanation:**\n    Since time equals 0, every day is a good day to rob the bank, so return every day.\n    \n\n**Example 3:**\n    \n    \n    **Input:** security = [1,2,3,4,5,6], time = 2\n    **Output:** []\n    **Explanation:**\n    No day has 2 days before it that have a non-increasing number of guards.\n    Thus, no day is a good day to rob the bank, so return an empty list.",
+  "constraints": "**Constraints:**\n\n  * `1 <= security.length <= 105`\n  * `0 <= security[i], time <= 105`",
+  "topics": ["Array", "Dynamic Programming", "Prefix Sum"],
+  "total_accepted": 43176,
+  "total_submissions": 83956,
+  "acceptance_rate": "51.4%",
+  "similar_questions": [
+    {
+      "title": "Non-decreasing Array",
+      "slug": "non-decreasing-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/non-decreasing-array/"
+    },
+    {
+      "title": "Longest Mountain in Array",
+      "slug": "longest-mountain-in-array",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-mountain-in-array/"
+    },
+    {
+      "title": "Find in Mountain Array",
+      "slug": "find-in-mountain-array",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-in-mountain-array/"
+    },
+    {
+      "title": "Maximum Ascending Subarray Sum",
+      "slug": "maximum-ascending-subarray-sum",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/maximum-ascending-subarray-sum/"
+    },
+    {
+      "title": "Find All Good Indices",
+      "slug": "find-all-good-indices",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-all-good-indices/"
+    }
+  ],
+  "hints": [
+    "The trivial solution is to check the time days before and after each day. There are a lot of repeated operations using this solution. How could we optimize this solution?",
+    "We can use precomputation to make the solution faster.",
+    "Use an array to store the number of days before the i<sup>th</sup> day that is non-increasing, and another array to store the number of days after the i<sup>th</sup> day that is non-decreasing."
+  ]
+}

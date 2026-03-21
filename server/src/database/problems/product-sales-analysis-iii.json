@@ -1,0 +1,37 @@
+{
+  "id": "1070",
+  "title": "Product Sales Analysis III",
+  "slug": "product-sales-analysis-iii",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "<p>Table: <code>Sales</code></p>\n\n<pre>\n+-------------+-------+\n| Column Name | Type  |\n+-------------+-------+\n| sale_id     | int   |\n| product_id  | int   |\n| year        | int   |\n| quantity    | int   |\n| price       | int   |\n+-------------+-------+\n(sale_id, year) is the primary key (combination of columns with unique values) of this table.\nEach row records a sale of a product in a given year.\nA product may have multiple sales entries in the same year.\nNote that the per-unit price.\n\n</pre>\n\n<p>Write a solution to find all sales that occurred in the <strong data-end=\"967\" data-start=\"953\">first year</strong> each product was sold.</p>\n\n<ul data-end=\"1234\" data-start=\"992\">\n\t<li data-end=\"1078\" data-start=\"992\">\n\t<p data-end=\"1078\" data-start=\"994\">For each <code data-end=\"1015\" data-start=\"1003\">product_id</code>, identify the earliest <code data-end=\"1045\" data-start=\"1039\">year</code> it appears in the <code data-end=\"1071\" data-start=\"1064\">Sales</code> table.</p>\n\t</li>\n\t<li data-end=\"1140\" data-start=\"1079\">\n\t<p data-end=\"1140\" data-start=\"1081\">Return <strong data-end=\"1095\" data-start=\"1088\">all</strong> sales entries for that product in that year.</p>\n\t</li>\n</ul>\n\n<p data-end=\"1234\" data-start=\"1143\">Return a table with the following columns: <strong>product_id</strong>,<strong> first_year</strong>, <strong>quantity, </strong>and<strong> price</strong>.<br />\nReturn the result in any order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> \nSales table:\n+---------+------------+------+----------+-------+\n| sale_id | product_id | year | quantity | price |\n+---------+------------+------+----------+-------+ \n| 1       | 100        | 2008 | 10       | 5000  |\n| 2       | 100        | 2009 | 12       | 5000  |\n| 7       | 200        | 2011 | 15       | 9000  |\n+---------+------------+------+----------+-------+\n\n<strong>Output:</strong> \n+------------+------------+----------+-------+\n| product_id | first_year | quantity | price |\n+------------+------------+----------+-------+ \n| 100        | 2008       | 10       | 5000  |\n| 200        | 2011       | 15       | 9000  |\n+------------+------------+----------+-------+\n</pre>\n",
+  "content_markdown": "Table: `Sales`\n    \n    \n    +-------------+-------+\n    | Column Name | Type  |\n    +-------------+-------+\n    | sale_id     | int   |\n    | product_id  | int   |\n    | year        | int   |\n    | quantity    | int   |\n    | price       | int   |\n    +-------------+-------+\n    (sale_id, year) is the primary key (combination of columns with unique values) of this table.\n    Each row records a sale of a product in a given year.\n    A product may have multiple sales entries in the same year.\n    Note that the per-unit price.\n    \n    \n\nWrite a solution to find all sales that occurred in the **first year** each product was sold.\n\n  * For each `product_id`, identify the earliest `year` it appears in the `Sales` table.\n\n  * Return **all** sales entries for that product in that year.\n\n\n\n\nReturn a table with the following columns: **product_id** ,**first_year** , **quantity,** and**price**.  \nReturn the result in any order.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** \n    Sales table:\n    +---------+------------+------+----------+-------+\n    | sale_id | product_id | year | quantity | price |\n    +---------+------------+------+----------+-------+ \n    | 1       | 100        | 2008 | 10       | 5000  |\n    | 2       | 100        | 2009 | 12       | 5000  |\n    | 7       | 200        | 2011 | 15       | 9000  |\n    +---------+------------+------+----------+-------+\n    \n    **Output:** \n    +------------+------------+----------+-------+\n    | product_id | first_year | quantity | price |\n    +------------+------------+----------+-------+ \n    | 100        | 2008       | 10       | 5000  |\n    | 200        | 2011       | 15       | 9000  |\n    +------------+------------+----------+-------+",
+  "question": "Table: `Sales`\n    \n    \n    +-------------+-------+\n    | Column Name | Type  |\n    +-------------+-------+\n    | sale_id     | int   |\n    | product_id  | int   |\n    | year        | int   |\n    | quantity    | int   |\n    | price       | int   |\n    +-------------+-------+\n    (sale_id, year) is the primary key (combination of columns with unique values) of this table.\n    Each row records a sale of a product in a given year.\n    A product may have multiple sales entries in the same year.\n    Note that the per-unit price.\n    \n    \n\nWrite a solution to find all sales that occurred in the **first year** each product was sold.\n\n  * For each `product_id`, identify the earliest `year` it appears in the `Sales` table.\n\n  * Return **all** sales entries for that product in that year.\n\n\n\n\nReturn a table with the following columns: **product_id** ,**first_year** , **quantity,** and**price**.  \nReturn the result in any order.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** \n    Sales table:\n    +---------+------------+------+----------+-------+\n    | sale_id | product_id | year | quantity | price |\n    +---------+------------+------+----------+-------+ \n    | 1       | 100        | 2008 | 10       | 5000  |\n    | 2       | 100        | 2009 | 12       | 5000  |\n    | 7       | 200        | 2011 | 15       | 9000  |\n    +---------+------------+------+----------+-------+\n    \n    **Output:** \n    +------------+------------+----------+-------+\n    | product_id | first_year | quantity | price |\n    +------------+------------+----------+-------+ \n    | 100        | 2008       | 10       | 5000  |\n    | 200        | 2011       | 15       | 9000  |\n    +------------+------------+----------+-------+",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 424238,
+  "total_submissions": 929448,
+  "acceptance_rate": "45.6%",
+  "similar_questions": [
+    {
+      "title": "Product Sales Analysis II",
+      "slug": "product-sales-analysis-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/product-sales-analysis-ii/"
+    },
+    {
+      "title": "Product Sales Analysis IV",
+      "slug": "product-sales-analysis-iv",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/product-sales-analysis-iv/"
+    },
+    {
+      "title": "Product Sales Analysis V",
+      "slug": "product-sales-analysis-v",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/product-sales-analysis-v/"
+    }
+  ],
+  "hints": []
+}

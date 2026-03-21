@@ -1,0 +1,21 @@
+{
+  "id": "2605",
+  "title": "Form Smallest Number From Two Digit Arrays",
+  "slug": "form-smallest-number-from-two-digit-arrays",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "Given two arrays of <strong>unique</strong> digits <code>nums1</code> and <code>nums2</code>, return <em>the <strong>smallest</strong> number that contains <strong>at least</strong> one digit from each array</em>.\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [4,1,3], nums2 = [5,7]\n<strong>Output:</strong> 15\n<strong>Explanation:</strong> The number 15 contains the digit 1 from nums1 and the digit 5 from nums2. It can be proven that 15 is the smallest number we can have.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [3,5,2,6], nums2 = [3,1,7]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The number 3 contains the digit 3 which exists in both arrays.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums1.length, nums2.length &lt;= 9</code></li>\n\t<li><code>1 &lt;= nums1[i], nums2[i] &lt;= 9</code></li>\n\t<li>All digits in each array are <strong>unique</strong>.</li>\n</ul>\n",
+  "content_markdown": "Given two arrays of **unique** digits `nums1` and `nums2`, return _the**smallest** number that contains **at least** one digit from each array_. \n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums1 = [4,1,3], nums2 = [5,7]\n    **Output:** 15\n    **Explanation:** The number 15 contains the digit 1 from nums1 and the digit 5 from nums2. It can be proven that 15 is the smallest number we can have.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [3,5,2,6], nums2 = [3,1,7]\n    **Output:** 3\n    **Explanation:** The number 3 contains the digit 3 which exists in both arrays.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 9`\n  * `1 <= nums1[i], nums2[i] <= 9`\n  * All digits in each array are **unique**.",
+  "question": "Given two arrays of **unique** digits `nums1` and `nums2`, return _the**smallest** number that contains **at least** one digit from each array_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums1 = [4,1,3], nums2 = [5,7]\n    **Output:** 15\n    **Explanation:** The number 15 contains the digit 1 from nums1 and the digit 5 from nums2. It can be proven that 15 is the smallest number we can have.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums1 = [3,5,2,6], nums2 = [3,1,7]\n    **Output:** 3\n    **Explanation:** The number 3 contains the digit 3 which exists in both arrays.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums1.length, nums2.length <= 9`\n  * `1 <= nums1[i], nums2[i] <= 9`\n  * All digits in each array are **unique**.",
+  "topics": ["Array", "Hash Table", "Enumeration"],
+  "total_accepted": 50284,
+  "total_submissions": 91421,
+  "acceptance_rate": "55.0%",
+  "similar_questions": [],
+  "hints": [
+    "How many digits will the resulting number have at most?",
+    "The resulting number will have either one or two digits. Try to find when each case is possible."
+  ]
+}

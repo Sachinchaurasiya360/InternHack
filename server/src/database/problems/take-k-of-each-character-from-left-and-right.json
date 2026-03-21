@@ -1,0 +1,41 @@
+{
+  "id": "2516",
+  "title": "Take K of Each Character From Left and Right",
+  "slug": "take-k-of-each-character-from-left-and-right",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a string <code>s</code> consisting of the characters <code>&#39;a&#39;</code>, <code>&#39;b&#39;</code>, and <code>&#39;c&#39;</code> and a non-negative integer <code>k</code>. Each minute, you may take either the <strong>leftmost</strong> character of <code>s</code>, or the <strong>rightmost</strong> character of <code>s</code>.</p>\n\n<p>Return<em> the <strong>minimum</strong> number of minutes needed for you to take <strong>at least</strong> </em><code>k</code><em> of each character, or return </em><code>-1</code><em> if it is not possible to take </em><code>k</code><em> of each character.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aabaaaacaabc&quot;, k = 2\n<strong>Output:</strong> 8\n<strong>Explanation:</strong> \nTake three characters from the left of s. You now have two &#39;a&#39; characters, and one &#39;b&#39; character.\nTake five characters from the right of s. You now have four &#39;a&#39; characters, two &#39;b&#39; characters, and two &#39;c&#39; characters.\nA total of 3 + 5 = 8 minutes is needed.\nIt can be proven that 8 is the minimum number of minutes needed.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a&quot;, k = 1\n<strong>Output:</strong> -1\n<strong>Explanation:</strong> It is not possible to take one &#39;b&#39; or &#39;c&#39; so return -1.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> consists of only the letters <code>&#39;a&#39;</code>, <code>&#39;b&#39;</code>, and <code>&#39;c&#39;</code>.</li>\n\t<li><code>0 &lt;= k &lt;= s.length</code></li>\n</ul>\n",
+  "content_markdown": "You are given a string `s` consisting of the characters `'a'`, `'b'`, and `'c'` and a non-negative integer `k`. Each minute, you may take either the **leftmost** character of `s`, or the **rightmost** character of `s`.\n\nReturn _the**minimum** number of minutes needed for you to take **at least** _`k` _of each character, or return_`-1` _if it is not possible to take_`k` _of each character._\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"aabaaaacaabc\", k = 2\n    **Output:** 8\n    **Explanation:** \n    Take three characters from the left of s. You now have two 'a' characters, and one 'b' character.\n    Take five characters from the right of s. You now have four 'a' characters, two 'b' characters, and two 'c' characters.\n    A total of 3 + 5 = 8 minutes is needed.\n    It can be proven that 8 is the minimum number of minutes needed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\", k = 1\n    **Output:** -1\n    **Explanation:** It is not possible to take one 'b' or 'c' so return -1.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of only the letters `'a'`, `'b'`, and `'c'`.\n  * `0 <= k <= s.length`",
+  "question": "You are given a string `s` consisting of the characters `'a'`, `'b'`, and `'c'` and a non-negative integer `k`. Each minute, you may take either the **leftmost** character of `s`, or the **rightmost** character of `s`.\n\nReturn _the**minimum** number of minutes needed for you to take **at least** _`k` _of each character, or return_`-1` _if it is not possible to take_`k` _of each character._",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"aabaaaacaabc\", k = 2\n    **Output:** 8\n    **Explanation:** \n    Take three characters from the left of s. You now have two 'a' characters, and one 'b' character.\n    Take five characters from the right of s. You now have four 'a' characters, two 'b' characters, and two 'c' characters.\n    A total of 3 + 5 = 8 minutes is needed.\n    It can be proven that 8 is the minimum number of minutes needed.\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"a\", k = 1\n    **Output:** -1\n    **Explanation:** It is not possible to take one 'b' or 'c' so return -1.",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 105`\n  * `s` consists of only the letters `'a'`, `'b'`, and `'c'`.\n  * `0 <= k <= s.length`",
+  "topics": ["Hash Table", "String", "Sliding Window"],
+  "total_accepted": 114008,
+  "total_submissions": 221531,
+  "acceptance_rate": "51.5%",
+  "similar_questions": [
+    {
+      "title": "Merge Sorted Array",
+      "slug": "merge-sorted-array",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/merge-sorted-array/"
+    },
+    {
+      "title": "Reorder List",
+      "slug": "reorder-list",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/reorder-list/"
+    },
+    {
+      "title": "Defuse the Bomb",
+      "slug": "defuse-the-bomb",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/defuse-the-bomb/"
+    }
+  ],
+  "hints": [
+    "Start by counting the frequency of each character and checking if it is possible.",
+    "If you take x characters from the left side, what is the minimum number of characters you need to take from the right side? Find this for all values of x in the range 0 ≤ x ≤ s.length.",
+    "Use a two-pointers approach to avoid computing the same information multiple times."
+  ]
+}

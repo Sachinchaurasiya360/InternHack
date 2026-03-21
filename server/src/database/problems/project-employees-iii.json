@@ -1,0 +1,25 @@
+{
+  "id": "1077",
+  "title": "Project Employees III",
+  "slug": "project-employees-iii",
+  "difficulty": "Medium",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 71938,
+  "total_submissions": 93235,
+  "acceptance_rate": "77.2%",
+  "similar_questions": [
+    {
+      "title": "Project Employees II",
+      "slug": "project-employees-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/project-employees-ii/"
+    }
+  ],
+  "hints": []
+}

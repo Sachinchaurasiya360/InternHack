@@ -1,0 +1,25 @@
+{
+  "id": "571",
+  "title": "Find Median Given Frequency of Numbers",
+  "slug": "find-median-given-frequency-of-numbers",
+  "difficulty": "Hard",
+  "category": "Database",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Database"],
+  "total_accepted": 35637,
+  "total_submissions": 84292,
+  "acceptance_rate": "42.3%",
+  "similar_questions": [
+    {
+      "title": "Median Employee Salary",
+      "slug": "median-employee-salary",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/median-employee-salary/"
+    }
+  ],
+  "hints": []
+}

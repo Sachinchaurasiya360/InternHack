@@ -1,0 +1,34 @@
+{
+  "id": "1137",
+  "title": "N-th Tribonacci Number",
+  "slug": "n-th-tribonacci-number",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>The Tribonacci sequence T<sub>n</sub> is defined as follows:&nbsp;</p>\n\n<p>T<sub>0</sub> = 0, T<sub>1</sub> = 1, T<sub>2</sub> = 1, and T<sub>n+3</sub> = T<sub>n</sub> + T<sub>n+1</sub> + T<sub>n+2</sub> for n &gt;= 0.</p>\n\n<p>Given <code>n</code>, return the value of T<sub>n</sub>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 4\n<strong>Output:</strong> 4\n<strong>Explanation:</strong>\nT_3 = 0 + 1 + 1 = 2\nT_4 = 1 + 1 + 2 = 4\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 25\n<strong>Output:</strong> 1389537\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= n &lt;= 37</code></li>\n\t<li>The answer is guaranteed to fit within a 32-bit integer, ie. <code>answer &lt;= 2^31 - 1</code>.</li>\n</ul>\n",
+  "content_markdown": "The Tribonacci sequence Tn is defined as follows: \n\nT0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn \\+ Tn+1 \\+ Tn+2 for n >= 0.\n\nGiven `n`, return the value of Tn.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** 4\n    **Explanation:**\n    T_3 = 0 + 1 + 1 = 2\n    T_4 = 1 + 1 + 2 = 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 25\n    **Output:** 1389537\n    \n\n \n\n**Constraints:**\n\n  * `0 <= n <= 37`\n  * The answer is guaranteed to fit within a 32-bit integer, ie. `answer <= 2^31 - 1`.",
+  "question": "The Tribonacci sequence Tn is defined as follows: \n\nT0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn \\+ Tn+1 \\+ Tn+2 for n >= 0.\n\nGiven `n`, return the value of Tn.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 4\n    **Output:** 4\n    **Explanation:**\n    T_3 = 0 + 1 + 1 = 2\n    T_4 = 1 + 1 + 2 = 4\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 25\n    **Output:** 1389537",
+  "constraints": "**Constraints:**\n\n  * `0 <= n <= 37`\n  * The answer is guaranteed to fit within a 32-bit integer, ie. `answer <= 2^31 - 1`.",
+  "topics": ["Math", "Dynamic Programming", "Memoization"],
+  "total_accepted": 1061770,
+  "total_submissions": 1678287,
+  "acceptance_rate": "63.3%",
+  "similar_questions": [
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/climbing-stairs/"
+    },
+    {
+      "title": "Fibonacci Number",
+      "slug": "fibonacci-number",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/fibonacci-number/"
+    }
+  ],
+  "hints": [
+    "Make an array F of length 38, and set F[0] = 0, F[1] = F[2] = 1.",
+    "Now write a loop where you set F[n+3] = F[n] + F[n+1] + F[n+2], and return F[n]."
+  ]
+}

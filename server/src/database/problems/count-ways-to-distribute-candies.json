@@ -1,0 +1,36 @@
+{
+  "id": "1692",
+  "title": "Count Ways to Distribute Candies",
+  "slug": "count-ways-to-distribute-candies",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Dynamic Programming"],
+  "total_accepted": 3121,
+  "total_submissions": 4892,
+  "acceptance_rate": "63.8%",
+  "similar_questions": [
+    {
+      "title": "Distribute Candies Among Children I",
+      "slug": "distribute-candies-among-children-i",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/distribute-candies-among-children-i/"
+    },
+    {
+      "title": "Distribute Candies Among Children II",
+      "slug": "distribute-candies-among-children-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/distribute-candies-among-children-ii/"
+    }
+  ],
+  "hints": [
+    "Try to define a recursive approach. For the ith candies, there will be one of the two following cases:",
+    "If the i - 1 previous candies are already distributed into k bags for the ith candy, you can have k * dp[n - 1][k] ways to distribute the ith candy. We need then to solve the state of (n - 1, k).",
+    "If the i - 1 previous candies are already distributed into k - 1 bags for the ith candy, you can have dp[n - 1][k - 1] ways to distribute the ith candy. We need then to solve the state of (n - 1, k - 1).",
+    "This approach will be too slow and will traverse some states more than once. We should use memoization to make the algorithm efficient."
+  ]
+}

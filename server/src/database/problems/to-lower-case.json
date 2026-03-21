@@ -1,0 +1,29 @@
+{
+  "id": "709",
+  "title": "To Lower Case",
+  "slug": "to-lower-case",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>Given a string <code>s</code>, return <em>the string after replacing every uppercase letter with the same lowercase letter</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;Hello&quot;\n<strong>Output:</strong> &quot;hello&quot;\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;here&quot;\n<strong>Output:</strong> &quot;here&quot;\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;LOVELY&quot;\n<strong>Output:</strong> &quot;lovely&quot;\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length &lt;= 100</code></li>\n\t<li><code>s</code> consists of printable ASCII characters.</li>\n</ul>\n",
+  "content_markdown": "Given a string `s`, return _the string after replacing every uppercase letter with the same lowercase letter_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** s = \"Hello\"\n    **Output:** \"hello\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"here\"\n    **Output:** \"here\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"LOVELY\"\n    **Output:** \"lovely\"\n    \n\n \n\n**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of printable ASCII characters.",
+  "question": "Given a string `s`, return _the string after replacing every uppercase letter with the same lowercase letter_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** s = \"Hello\"\n    **Output:** \"hello\"\n    \n\n**Example 2:**\n    \n    \n    **Input:** s = \"here\"\n    **Output:** \"here\"\n    \n\n**Example 3:**\n    \n    \n    **Input:** s = \"LOVELY\"\n    **Output:** \"lovely\"",
+  "constraints": "**Constraints:**\n\n  * `1 <= s.length <= 100`\n  * `s` consists of printable ASCII characters.",
+  "topics": ["String"],
+  "total_accepted": 715820,
+  "total_submissions": 844726,
+  "acceptance_rate": "84.7%",
+  "similar_questions": [
+    {
+      "title": "Capitalize the Title",
+      "slug": "capitalize-the-title",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/capitalize-the-title/"
+    }
+  ],
+  "hints": [
+    "Most languages support lowercase conversion for a string data type. However, that is certainly not the purpose of the problem. Think about how the implementation of the lowercase function call can be done easily.",
+    "<b>Think ASCII!</b>",
+    "Think about the different capital letters and their ASCII codes and how that relates to their lowercase counterparts. Does there seem to be any pattern there? Any mathematical relationship that we can use?"
+  ]
+}

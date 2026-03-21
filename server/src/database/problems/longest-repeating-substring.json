@@ -1,0 +1,28 @@
+{
+  "id": "1062",
+  "title": "Longest Repeating Substring",
+  "slug": "longest-repeating-substring",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": [
+    "String",
+    "Binary Search",
+    "Dynamic Programming",
+    "Rolling Hash",
+    "Suffix Array",
+    "Hash Function"
+  ],
+  "total_accepted": 57449,
+  "total_submissions": 90649,
+  "acceptance_rate": "63.4%",
+  "similar_questions": [],
+  "hints": [
+    "Generate all substrings in O(N^2) time with hashing.",
+    "Choose those hashing of strings with the largest length."
+  ]
+}

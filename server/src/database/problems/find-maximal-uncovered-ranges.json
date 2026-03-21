@@ -1,0 +1,41 @@
+{
+  "id": "2655",
+  "title": "Find Maximal Uncovered Ranges",
+  "slug": "find-maximal-uncovered-ranges",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Sorting"],
+  "total_accepted": 2194,
+  "total_submissions": 4450,
+  "acceptance_rate": "49.3%",
+  "similar_questions": [
+    {
+      "title": "Missing Ranges",
+      "slug": "missing-ranges",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/missing-ranges/"
+    },
+    {
+      "title": "Summary Ranges",
+      "slug": "summary-ranges",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/summary-ranges/"
+    },
+    {
+      "title": "Check if All the Integers in a Range Are Covered",
+      "slug": "check-if-all-the-integers-in-a-range-are-covered",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/check-if-all-the-integers-in-a-range-are-covered/"
+    }
+  ],
+  "hints": [
+    "The complexity of the solution is independent of the length of the array nums.",
+    "Sort ranges by their start points.",
+    "An uncovered range should start right after the end of one of the input ranges (or starts at zero) and also ends right before the start of one of the input ranges (or ends at n)."
+  ]
+}

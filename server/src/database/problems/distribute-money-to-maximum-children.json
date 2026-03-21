@@ -1,0 +1,40 @@
+{
+  "id": "2591",
+  "title": "Distribute Money to Maximum Children",
+  "slug": "distribute-money-to-maximum-children",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an integer <code>money</code> denoting the amount of money (in dollars) that you have and another integer <code>children</code> denoting the number of children that you must distribute the money to.</p>\n\n<p>You have to distribute the money according to the following rules:</p>\n\n<ul>\n\t<li>All money must be distributed.</li>\n\t<li>Everyone must receive at least <code>1</code> dollar.</li>\n\t<li>Nobody receives <code>4</code> dollars.</li>\n</ul>\n\n<p>Return <em>the <strong>maximum</strong> number of children who may receive <strong>exactly</strong> </em><code>8</code> <em>dollars if you distribute the money according to the aforementioned rules</em>. If there is no way to distribute the money, return <code>-1</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> money = 20, children = 3\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> \nThe maximum number of children with 8 dollars will be 1. One of the ways to distribute the money is:\n- 8 dollars to the first child.\n- 9 dollars to the second child. \n- 3 dollars to the third child.\nIt can be proven that no distribution exists such that number of children getting 8 dollars is greater than 1.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> money = 16, children = 2\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> Each child can be given 8 dollars.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= money &lt;= 200</code></li>\n\t<li><code>2 &lt;= children &lt;= 30</code></li>\n</ul>\n",
+  "content_markdown": "You are given an integer `money` denoting the amount of money (in dollars) that you have and another integer `children` denoting the number of children that you must distribute the money to.\n\nYou have to distribute the money according to the following rules:\n\n  * All money must be distributed.\n  * Everyone must receive at least `1` dollar.\n  * Nobody receives `4` dollars.\n\n\n\nReturn _the**maximum** number of children who may receive **exactly** _`8` _dollars if you distribute the money according to the aforementioned rules_. If there is no way to distribute the money, return `-1`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** money = 20, children = 3\n    **Output:** 1\n    **Explanation:** \n    The maximum number of children with 8 dollars will be 1. One of the ways to distribute the money is:\n    - 8 dollars to the first child.\n    - 9 dollars to the second child. \n    - 3 dollars to the third child.\n    It can be proven that no distribution exists such that number of children getting 8 dollars is greater than 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** money = 16, children = 2\n    **Output:** 2\n    **Explanation:** Each child can be given 8 dollars.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= money <= 200`\n  * `2 <= children <= 30`",
+  "question": "You are given an integer `money` denoting the amount of money (in dollars) that you have and another integer `children` denoting the number of children that you must distribute the money to.\n\nYou have to distribute the money according to the following rules:\n\n  * All money must be distributed.\n  * Everyone must receive at least `1` dollar.\n  * Nobody receives `4` dollars.\n\n\n\nReturn _the**maximum** number of children who may receive **exactly** _`8` _dollars if you distribute the money according to the aforementioned rules_. If there is no way to distribute the money, return `-1`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** money = 20, children = 3\n    **Output:** 1\n    **Explanation:** \n    The maximum number of children with 8 dollars will be 1. One of the ways to distribute the money is:\n    - 8 dollars to the first child.\n    - 9 dollars to the second child. \n    - 3 dollars to the third child.\n    It can be proven that no distribution exists such that number of children getting 8 dollars is greater than 1.\n    \n\n**Example 2:**\n    \n    \n    **Input:** money = 16, children = 2\n    **Output:** 2\n    **Explanation:** Each child can be given 8 dollars.",
+  "constraints": "**Constraints:**\n\n  * `1 <= money <= 200`\n  * `2 <= children <= 30`",
+  "topics": ["Math", "Greedy"],
+  "total_accepted": 47932,
+  "total_submissions": 234201,
+  "acceptance_rate": "20.5%",
+  "similar_questions": [
+    {
+      "title": "Distribute Candies to People",
+      "slug": "distribute-candies-to-people",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/distribute-candies-to-people/"
+    },
+    {
+      "title": "Fair Distribution of Cookies",
+      "slug": "fair-distribution-of-cookies",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/fair-distribution-of-cookies/"
+    },
+    {
+      "title": "Calculate Money in Leetcode Bank",
+      "slug": "calculate-money-in-leetcode-bank",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/calculate-money-in-leetcode-bank/"
+    }
+  ],
+  "hints": [
+    "Can we distribute the money according to the rules if we give 'k' children exactly 8 dollars?",
+    "Brute force to find the largest possible value of k, or return -1 if there doesn’t exist any such k."
+  ]
+}

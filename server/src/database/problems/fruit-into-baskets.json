@@ -1,0 +1,31 @@
+{
+  "id": "904",
+  "title": "Fruit Into Baskets",
+  "slug": "fruit-into-baskets",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are visiting a farm that has a single row of fruit trees arranged from left to right. The trees are represented by an integer array <code>fruits</code> where <code>fruits[i]</code> is the <strong>type</strong> of fruit the <code>i<sup>th</sup></code> tree produces.</p>\n\n<p>You want to collect as much fruit as possible. However, the owner has some strict rules that you must follow:</p>\n\n<ul>\n\t<li>You only have <strong>two</strong> baskets, and each basket can only hold a <strong>single type</strong> of fruit. There is no limit on the amount of fruit each basket can hold.</li>\n\t<li>Starting from any tree of your choice, you must pick <strong>exactly one fruit</strong> from <strong>every</strong> tree (including the start tree) while moving to the right. The picked fruits must fit in one of your baskets.</li>\n\t<li>Once you reach a tree with fruit that cannot fit in your baskets, you must stop.</li>\n</ul>\n\n<p>Given the integer array <code>fruits</code>, return <em>the <strong>maximum</strong> number of fruits you can pick</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> fruits = [<u>1,2,1</u>]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can pick from all 3 trees.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> fruits = [0,<u>1,2,2</u>]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> We can pick from trees [1,2,2].\nIf we had started at the first tree, we would only pick from trees [0,1].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> fruits = [1,<u>2,3,2,2</u>]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> We can pick from trees [2,3,2,2].\nIf we had started at the first tree, we would only pick from trees [1,2].\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= fruits.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= fruits[i] &lt; fruits.length</code></li>\n</ul>\n",
+  "content_markdown": "You are visiting a farm that has a single row of fruit trees arranged from left to right. The trees are represented by an integer array `fruits` where `fruits[i]` is the **type** of fruit the `ith` tree produces.\n\nYou want to collect as much fruit as possible. However, the owner has some strict rules that you must follow:\n\n  * You only have **two** baskets, and each basket can only hold a **single type** of fruit. There is no limit on the amount of fruit each basket can hold.\n  * Starting from any tree of your choice, you must pick **exactly one fruit** from **every** tree (including the start tree) while moving to the right. The picked fruits must fit in one of your baskets.\n  * Once you reach a tree with fruit that cannot fit in your baskets, you must stop.\n\n\n\nGiven the integer array `fruits`, return _the**maximum** number of fruits you can pick_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** fruits = [_1,2,1_]\n    **Output:** 3\n    **Explanation:** We can pick from all 3 trees.\n    \n\n**Example 2:**\n    \n    \n    **Input:** fruits = [0,_1,2,2_]\n    **Output:** 3\n    **Explanation:** We can pick from trees [1,2,2].\n    If we had started at the first tree, we would only pick from trees [0,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** fruits = [1,_2,3,2,2_]\n    **Output:** 4\n    **Explanation:** We can pick from trees [2,3,2,2].\n    If we had started at the first tree, we would only pick from trees [1,2].\n    \n\n \n\n**Constraints:**\n\n  * `1 <= fruits.length <= 105`\n  * `0 <= fruits[i] < fruits.length`",
+  "question": "You are visiting a farm that has a single row of fruit trees arranged from left to right. The trees are represented by an integer array `fruits` where `fruits[i]` is the **type** of fruit the `ith` tree produces.\n\nYou want to collect as much fruit as possible. However, the owner has some strict rules that you must follow:\n\n  * You only have **two** baskets, and each basket can only hold a **single type** of fruit. There is no limit on the amount of fruit each basket can hold.\n  * Starting from any tree of your choice, you must pick **exactly one fruit** from **every** tree (including the start tree) while moving to the right. The picked fruits must fit in one of your baskets.\n  * Once you reach a tree with fruit that cannot fit in your baskets, you must stop.\n\n\n\nGiven the integer array `fruits`, return _the**maximum** number of fruits you can pick_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** fruits = [_1,2,1_]\n    **Output:** 3\n    **Explanation:** We can pick from all 3 trees.\n    \n\n**Example 2:**\n    \n    \n    **Input:** fruits = [0,_1,2,2_]\n    **Output:** 3\n    **Explanation:** We can pick from trees [1,2,2].\n    If we had started at the first tree, we would only pick from trees [0,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** fruits = [1,_2,3,2,2_]\n    **Output:** 4\n    **Explanation:** We can pick from trees [2,3,2,2].\n    If we had started at the first tree, we would only pick from trees [1,2].",
+  "constraints": "**Constraints:**\n\n  * `1 <= fruits.length <= 105`\n  * `0 <= fruits[i] < fruits.length`",
+  "topics": ["Array", "Hash Table", "Sliding Window"],
+  "total_accepted": 788528,
+  "total_submissions": 1560128,
+  "acceptance_rate": "50.5%",
+  "similar_questions": [
+    {
+      "title": "Longest Nice Subarray",
+      "slug": "longest-nice-subarray",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/longest-nice-subarray/"
+    },
+    {
+      "title": "Fruits Into Baskets II",
+      "slug": "fruits-into-baskets-ii",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/fruits-into-baskets-ii/"
+    }
+  ],
+  "hints": []
+}

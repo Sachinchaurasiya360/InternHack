@@ -1,0 +1,34 @@
+{
+  "id": "2530",
+  "title": "Maximal Score After Applying K Operations",
+  "slug": "maximal-score-after-applying-k-operations",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>You are given a <strong>0-indexed</strong> integer array <code>nums</code> and an integer <code>k</code>. You have a <strong>starting score</strong> of <code>0</code>.</p>\n\n<p>In one <strong>operation</strong>:</p>\n\n<ol>\n\t<li>choose an index <code>i</code> such that <code>0 &lt;= i &lt; nums.length</code>,</li>\n\t<li>increase your <strong>score</strong> by <code>nums[i]</code>, and</li>\n\t<li>replace <code>nums[i]</code> with <code>ceil(nums[i] / 3)</code>.</li>\n</ol>\n\n<p>Return <em>the maximum possible <strong>score</strong> you can attain after applying <strong>exactly</strong></em> <code>k</code> <em>operations</em>.</p>\n\n<p>The ceiling function <code>ceil(val)</code> is the least integer greater than or equal to <code>val</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong>Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [10,10,10,10,10], k = 5\n<strong>Output:</strong> 50\n<strong>Explanation:</strong> Apply the operation to each array element exactly once. The final score is 10 + 10 + 10 + 10 + 10 = 50.\n</pre>\n\n<p><strong>Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,10,3,3,3], k = 3\n<strong>Output:</strong> 17\n<strong>Explanation: </strong>You can do the following operations:\nOperation 1: Select i = 1, so nums becomes [1,<strong><u>4</u></strong>,3,3,3]. Your score increases by 10.\nOperation 2: Select i = 1, so nums becomes [1,<strong><u>2</u></strong>,3,3,3]. Your score increases by 4.\nOperation 3: Select i = 2, so nums becomes [1,2,<u><strong>1</strong></u>,3,3]. Your score increases by 3.\nThe final score is 10 + 4 + 3 = 17.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length, k &lt;= 10<sup>5</sup></code></li>\n\t<li><code>1 &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given a **0-indexed** integer array `nums` and an integer `k`. You have a **starting score** of `0`.\n\nIn one **operation** :\n\n  1. choose an index `i` such that `0 <= i < nums.length`,\n  2. increase your **score** by `nums[i]`, and\n  3. replace `nums[i]` with `ceil(nums[i] / 3)`.\n\n\n\nReturn _the maximum possible**score** you can attain after applying **exactly**_ `k` _operations_.\n\nThe ceiling function `ceil(val)` is the least integer greater than or equal to `val`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** nums = [10,10,10,10,10], k = 5\n    **Output:** 50\n    **Explanation:** Apply the operation to each array element exactly once. The final score is 10 + 10 + 10 + 10 + 10 = 50.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,10,3,3,3], k = 3\n    **Output:** 17\n    **Explanation:** You can do the following operations:\n    Operation 1: Select i = 1, so nums becomes [1,**_4_** ,3,3,3]. Your score increases by 10.\n    Operation 2: Select i = 1, so nums becomes [1,**_2_** ,3,3,3]. Your score increases by 4.\n    Operation 3: Select i = 2, so nums becomes [1,2,_**1**_ ,3,3]. Your score increases by 3.\n    The final score is 10 + 4 + 3 = 17.\n    \n\n \n\n**Constraints:**\n\n  * `1 <= nums.length, k <= 105`\n  * `1 <= nums[i] <= 109`",
+  "question": "You are given a **0-indexed** integer array `nums` and an integer `k`. You have a **starting score** of `0`.\n\nIn one **operation** :\n\n  1. choose an index `i` such that `0 <= i < nums.length`,\n  2. increase your **score** by `nums[i]`, and\n  3. replace `nums[i]` with `ceil(nums[i] / 3)`.\n\n\n\nReturn _the maximum possible**score** you can attain after applying **exactly**_ `k` _operations_.\n\nThe ceiling function `ceil(val)` is the least integer greater than or equal to `val`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** nums = [10,10,10,10,10], k = 5\n    **Output:** 50\n    **Explanation:** Apply the operation to each array element exactly once. The final score is 10 + 10 + 10 + 10 + 10 = 50.\n    \n\n**Example 2:**\n    \n    \n    **Input:** nums = [1,10,3,3,3], k = 3\n    **Output:** 17\n    **Explanation:** You can do the following operations:\n    Operation 1: Select i = 1, so nums becomes [1,**_4_** ,3,3,3]. Your score increases by 10.\n    Operation 2: Select i = 1, so nums becomes [1,**_2_** ,3,3,3]. Your score increases by 4.\n    Operation 3: Select i = 2, so nums becomes [1,2,_**1**_ ,3,3]. Your score increases by 3.\n    The final score is 10 + 4 + 3 = 17.",
+  "constraints": "**Constraints:**\n\n  * `1 <= nums.length, k <= 105`\n  * `1 <= nums[i] <= 109`",
+  "topics": ["Array", "Greedy", "Heap (Priority Queue)"],
+  "total_accepted": 162994,
+  "total_submissions": 254598,
+  "acceptance_rate": "64.0%",
+  "similar_questions": [
+    {
+      "title": "Sliding Window Maximum",
+      "slug": "sliding-window-maximum",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/sliding-window-maximum/"
+    },
+    {
+      "title": "Remove Stones to Minimize the Total",
+      "slug": "remove-stones-to-minimize-the-total",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/remove-stones-to-minimize-the-total/"
+    }
+  ],
+  "hints": [
+    "It is always optimal to select the greatest element in the array.",
+    "Use a heap to query for the maximum in O(log n) time."
+  ]
+}

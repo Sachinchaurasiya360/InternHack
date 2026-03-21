@@ -1,0 +1,40 @@
+{
+  "id": "1612",
+  "title": "Check If Two Expression Trees are Equivalent",
+  "slug": "check-if-two-expression-trees-are-equivalent",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Hash Table", "Tree", "Depth-First Search", "Binary Tree", "Counting"],
+  "total_accepted": 8621,
+  "total_submissions": 12011,
+  "acceptance_rate": "71.8%",
+  "similar_questions": [
+    {
+      "title": "Build Binary Expression Tree From Infix Expression",
+      "slug": "build-binary-expression-tree-from-infix-expression",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/build-binary-expression-tree-from-infix-expression/"
+    },
+    {
+      "title": "Minimum Flips in Binary Tree to Get Result",
+      "slug": "minimum-flips-in-binary-tree-to-get-result",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/minimum-flips-in-binary-tree-to-get-result/"
+    },
+    {
+      "title": "Evaluate Boolean Binary Tree",
+      "slug": "evaluate-boolean-binary-tree",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/evaluate-boolean-binary-tree/"
+    }
+  ],
+  "hints": [
+    "Count for each variable how many times it appeared in the first tree.",
+    "Do the same for the second tree and check if the count is the same for both tree."
+  ]
+}

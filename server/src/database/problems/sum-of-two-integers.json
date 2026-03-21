@@ -1,0 +1,25 @@
+{
+  "id": "371",
+  "title": "Sum of Two Integers",
+  "slug": "sum-of-two-integers",
+  "difficulty": "Medium",
+  "category": "Algorithms",
+  "content_html": "<p>Given two integers <code>a</code> and <code>b</code>, return <em>the sum of the two integers without using the operators</em> <code>+</code> <em>and</em> <code>-</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> a = 1, b = 2\n<strong>Output:</strong> 3\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> a = 2, b = 3\n<strong>Output:</strong> 5\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>-1000 &lt;= a, b &lt;= 1000</code></li>\n</ul>\n",
+  "content_markdown": "Given two integers `a` and `b`, return _the sum of the two integers without using the operators_ `+` _and_ `-`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** a = 1, b = 2\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = 2, b = 3\n    **Output:** 5\n    \n\n \n\n**Constraints:**\n\n  * `-1000 <= a, b <= 1000`",
+  "question": "Given two integers `a` and `b`, return _the sum of the two integers without using the operators_ `+` _and_ `-`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** a = 1, b = 2\n    **Output:** 3\n    \n\n**Example 2:**\n    \n    \n    **Input:** a = 2, b = 3\n    **Output:** 5",
+  "constraints": "**Constraints:**\n\n  * `-1000 <= a, b <= 1000`",
+  "topics": ["Math", "Bit Manipulation"],
+  "total_accepted": 680413,
+  "total_submissions": 1235091,
+  "acceptance_rate": "55.1%",
+  "similar_questions": [
+    {
+      "title": "Add Two Numbers",
+      "slug": "add-two-numbers",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/add-two-numbers/"
+    }
+  ],
+  "hints": []
+}

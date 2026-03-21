@@ -1,0 +1,21 @@
+{
+  "id": "1243",
+  "title": "Array Transformation",
+  "slug": "array-transformation",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Array", "Simulation"],
+  "total_accepted": 16155,
+  "total_submissions": 30150,
+  "acceptance_rate": "53.6%",
+  "similar_questions": [],
+  "hints": [
+    "Try to simulate the process.",
+    "For every iteration, find the new array using the old one and the given rules."
+  ]
+}

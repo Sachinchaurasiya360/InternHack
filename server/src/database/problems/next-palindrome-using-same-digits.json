@@ -1,0 +1,34 @@
+{
+  "id": "1842",
+  "title": "Next Palindrome Using Same Digits",
+  "slug": "next-palindrome-using-same-digits",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "",
+  "content_markdown": "",
+  "question": "",
+  "examples": "",
+  "constraints": "",
+  "topics": ["Two Pointers", "String"],
+  "total_accepted": 6915,
+  "total_submissions": 12770,
+  "acceptance_rate": "54.2%",
+  "similar_questions": [
+    {
+      "title": "Next Greater Element III",
+      "slug": "next-greater-element-iii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/next-greater-element-iii/"
+    },
+    {
+      "title": "Find the Closest Palindrome",
+      "slug": "find-the-closest-palindrome",
+      "difficulty": "Hard",
+      "url": "https://leetcode.com/problems/find-the-closest-palindrome/"
+    }
+  ],
+  "hints": [
+    "Is it possible to swap one character in the first half of the palindrome to make the next one?",
+    "Are there different cases for when the length is odd and even?"
+  ]
+}

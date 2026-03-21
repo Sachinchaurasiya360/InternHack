@@ -1,0 +1,37 @@
+{
+  "id": "374",
+  "title": "Guess Number Higher or Lower",
+  "slug": "guess-number-higher-or-lower",
+  "difficulty": "Easy",
+  "category": "Algorithms",
+  "content_html": "<p>We are playing the Guess Game. The game is as follows:</p>\n\n<p>I pick a number from <code>1</code> to <code>n</code>. You have to guess which number I picked (the number I picked stays the same throughout the game).</p>\n\n<p>Every time you guess wrong, I will tell you whether the number I picked is higher or lower than your guess.</p>\n\n<p>You call a pre-defined API <code>int guess(int num)</code>, which returns three possible results:</p>\n\n<ul>\n\t<li><code>-1</code>: Your guess is higher than the number I picked (i.e. <code>num &gt; pick</code>).</li>\n\t<li><code>1</code>: Your guess is lower than the number I picked (i.e. <code>num &lt; pick</code>).</li>\n\t<li><code>0</code>: your guess is equal to the number I picked (i.e. <code>num == pick</code>).</li>\n</ul>\n\n<p>Return <em>the number that I picked</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 10, pick = 6\n<strong>Output:</strong> 6\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 1, pick = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, pick = 1\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= n &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li><code>1 &lt;= pick &lt;= n</code></li>\n</ul>\n",
+  "content_markdown": "We are playing the Guess Game. The game is as follows:\n\nI pick a number from `1` to `n`. You have to guess which number I picked (the number I picked stays the same throughout the game).\n\nEvery time you guess wrong, I will tell you whether the number I picked is higher or lower than your guess.\n\nYou call a pre-defined API `int guess(int num)`, which returns three possible results:\n\n  * `-1`: Your guess is higher than the number I picked (i.e. `num > pick`).\n  * `1`: Your guess is lower than the number I picked (i.e. `num < pick`).\n  * `0`: your guess is equal to the number I picked (i.e. `num == pick`).\n\n\n\nReturn _the number that I picked_.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** n = 10, pick = 6\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, pick = 1\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 2, pick = 1\n    **Output:** 1\n    \n\n \n\n**Constraints:**\n\n  * `1 <= n <= 231 - 1`\n  * `1 <= pick <= n`",
+  "question": "We are playing the Guess Game. The game is as follows:\n\nI pick a number from `1` to `n`. You have to guess which number I picked (the number I picked stays the same throughout the game).\n\nEvery time you guess wrong, I will tell you whether the number I picked is higher or lower than your guess.\n\nYou call a pre-defined API `int guess(int num)`, which returns three possible results:\n\n  * `-1`: Your guess is higher than the number I picked (i.e. `num > pick`).\n  * `1`: Your guess is lower than the number I picked (i.e. `num < pick`).\n  * `0`: your guess is equal to the number I picked (i.e. `num == pick`).\n\n\n\nReturn _the number that I picked_.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** n = 10, pick = 6\n    **Output:** 6\n    \n\n**Example 2:**\n    \n    \n    **Input:** n = 1, pick = 1\n    **Output:** 1\n    \n\n**Example 3:**\n    \n    \n    **Input:** n = 2, pick = 1\n    **Output:** 1",
+  "constraints": "**Constraints:**\n\n  * `1 <= n <= 231 - 1`\n  * `1 <= pick <= n`",
+  "topics": ["Binary Search", "Interactive"],
+  "total_accepted": 986982,
+  "total_submissions": 1726721,
+  "acceptance_rate": "57.2%",
+  "similar_questions": [
+    {
+      "title": "First Bad Version",
+      "slug": "first-bad-version",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/first-bad-version/"
+    },
+    {
+      "title": "Guess Number Higher or Lower II",
+      "slug": "guess-number-higher-or-lower-ii",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/guess-number-higher-or-lower-ii/"
+    },
+    {
+      "title": "Find K Closest Elements",
+      "slug": "find-k-closest-elements",
+      "difficulty": "Medium",
+      "url": "https://leetcode.com/problems/find-k-closest-elements/"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1354",
+  "title": "Construct Target Array With Multiple Sums",
+  "slug": "construct-target-array-with-multiple-sums",
+  "difficulty": "Hard",
+  "category": "Algorithms",
+  "content_html": "<p>You are given an array <code>target</code> of n integers. From a starting array <code>arr</code> consisting of <code>n</code> 1&#39;s, you may perform the following procedure :</p>\n\n<ul>\n\t<li>let <code>x</code> be the sum of all elements currently in your array.</li>\n\t<li>choose index <code>i</code>, such that <code>0 &lt;= i &lt; n</code> and set the value of <code>arr</code> at index <code>i</code> to <code>x</code>.</li>\n\t<li>You may repeat this procedure as many times as needed.</li>\n</ul>\n\n<p>Return <code>true</code> <em>if it is possible to construct the</em> <code>target</code> <em>array from</em> <code>arr</code><em>, otherwise, return</em> <code>false</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = [9,3,5]\n<strong>Output:</strong> true\n<strong>Explanation:</strong> Start with arr = [1, 1, 1] \n[1, 1, 1], sum = 3 choose index 1\n[1, 3, 1], sum = 5 choose index 2\n[1, 3, 5], sum = 9 choose index 0\n[9, 3, 5] Done\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = [1,1,1,2]\n<strong>Output:</strong> false\n<strong>Explanation:</strong> Impossible to create target array from [1,1,1,1].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> target = [8,5]\n<strong>Output:</strong> true\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == target.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 5 * 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= target[i] &lt;= 10<sup>9</sup></code></li>\n</ul>\n",
+  "content_markdown": "You are given an array `target` of n integers. From a starting array `arr` consisting of `n` 1's, you may perform the following procedure :\n\n  * let `x` be the sum of all elements currently in your array.\n  * choose index `i`, such that `0 <= i < n` and set the value of `arr` at index `i` to `x`.\n  * You may repeat this procedure as many times as needed.\n\n\n\nReturn `true` _if it is possible to construct the_ `target` _array from_ `arr` _, otherwise, return_ `false`.\n\n \n\n**Example 1:**\n    \n    \n    **Input:** target = [9,3,5]\n    **Output:** true\n    **Explanation:** Start with arr = [1, 1, 1] \n    [1, 1, 1], sum = 3 choose index 1\n    [1, 3, 1], sum = 5 choose index 2\n    [1, 3, 5], sum = 9 choose index 0\n    [9, 3, 5] Done\n    \n\n**Example 2:**\n    \n    \n    **Input:** target = [1,1,1,2]\n    **Output:** false\n    **Explanation:** Impossible to create target array from [1,1,1,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** target = [8,5]\n    **Output:** true\n    \n\n \n\n**Constraints:**\n\n  * `n == target.length`\n  * `1 <= n <= 5 * 104`\n  * `1 <= target[i] <= 109`",
+  "question": "You are given an array `target` of n integers. From a starting array `arr` consisting of `n` 1's, you may perform the following procedure :\n\n  * let `x` be the sum of all elements currently in your array.\n  * choose index `i`, such that `0 <= i < n` and set the value of `arr` at index `i` to `x`.\n  * You may repeat this procedure as many times as needed.\n\n\n\nReturn `true` _if it is possible to construct the_ `target` _array from_ `arr` _, otherwise, return_ `false`.",
+  "examples": "**Example 1:**\n    \n    \n    **Input:** target = [9,3,5]\n    **Output:** true\n    **Explanation:** Start with arr = [1, 1, 1] \n    [1, 1, 1], sum = 3 choose index 1\n    [1, 3, 1], sum = 5 choose index 2\n    [1, 3, 5], sum = 9 choose index 0\n    [9, 3, 5] Done\n    \n\n**Example 2:**\n    \n    \n    **Input:** target = [1,1,1,2]\n    **Output:** false\n    **Explanation:** Impossible to create target array from [1,1,1,1].\n    \n\n**Example 3:**\n    \n    \n    **Input:** target = [8,5]\n    **Output:** true",
+  "constraints": "**Constraints:**\n\n  * `n == target.length`\n  * `1 <= n <= 5 * 104`\n  * `1 <= target[i] <= 109`",
+  "topics": ["Array", "Heap (Priority Queue)"],
+  "total_accepted": 80884,
+  "total_submissions": 219530,
+  "acceptance_rate": "36.8%",
+  "similar_questions": [
+    {
+      "title": "Minimum Amount of Time to Fill Cups",
+      "slug": "minimum-amount-of-time-to-fill-cups",
+      "difficulty": "Easy",
+      "url": "https://leetcode.com/problems/minimum-amount-of-time-to-fill-cups/"
+    }
+  ],
+  "hints": [
+    "Given that the sum is strictly increasing, the largest element in the target must be formed in the last step by adding the total sum in the previous step. Thus, we can simulate the process in a reversed way.",
+    "Subtract the largest with the rest of the array, and put the new element into the array. Repeat until all elements become one"
+  ]
+}
