@@ -67,6 +67,7 @@ model user {
   aptitudeProgress      studentAptitudeProgress[] @relation("StudentAptitudeProgress")
   studentBadges         studentBadge[]            @relation("StudentBadges")
   dsaProgress           studentDsaProgress[]      @relation("StudentDsaProgress")
+  dsaSubmissions        dsaSubmission[]           @relation("StudentDsaSubmissions")
   sqlProgress           studentSqlProgress[]      @relation("StudentSqlProgress")
   talentPools           talentPool[]              @relation("RecruiterTalentPools")
   talentPoolMemberships talentPoolMember[]        @relation("TalentPoolMemberships")
@@ -527,6 +528,8 @@ model dsaProblem {
   isPremium        Boolean              @default(false)
   bookmarks        dsaBookmark[]
   progress         studentDsaProgress[]
+  testCases        dsaTestCase[]
+  submissions      dsaSubmission[]
 
   @@index([difficulty])
   @@index([leetcodeId])
@@ -556,6 +559,40 @@ model dsaBookmark {
 
   @@unique([studentId, problemId])
   @@index([studentId])
+}
+
+model dsaTestCase {
+  id         Int        @id @default(autoincrement())
+  problemId  Int
+  input      String
+  expected   String
+  label      String?
+  orderIndex Int        @default(0)
+  createdAt  DateTime   @default(now())
+  problem    dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId])
+}
+
+model dsaSubmission {
+  id        Int        @id @default(autoincrement())
+  studentId Int
+  problemId Int
+  language  String
+  code      String
+  passed    Int        @default(0)
+  total     Int        @default(0)
+  allPassed Boolean    @default(false)
+  timeMs    Int?
+  memoryKb  Int?
+  results   Json       @default("[]")
+  createdAt DateTime   @default(now())
+  student   user       @relation("StudentDsaSubmissions", fields: [studentId], references: [id], onDelete: Cascade)
+  problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, problemId])
+  @@index([studentId])
+  @@index([createdAt])
 }
 
 model studentSqlProgress {
@@ -1142,6 +1179,7 @@ enum UsageAction {
   JOB_APPLICATION
   MOCK_INTERVIEW
   AI_JOB_CHAT
+  CODE_RUN
 }
 
 enum EmailCampaignStatus {

@@ -8,7 +8,7 @@ const PRACTICE_TRACKS = [
   {
     id: "interview",
     title: "Interview Preparation",
-    description: "Curated interview questions - JS, React, Node, Python, SQL, system design, behavioral & more.",
+    description: "Interview questions curated by FAANG engineers - JS, React, Node, Python, SQL, system design, behavioral & more.",
     icon: GraduationCap,
     color: "text-violet-500",
     bgColor: "bg-violet-50 dark:bg-violet-900/30",
@@ -19,7 +19,7 @@ const PRACTICE_TRACKS = [
   {
     id: "dsa",
     title: "DSA",
-    description: "Data structures and algorithms - arrays, trees, graphs, dynamic programming, and company-wise problems.",
+    description: "3,300+ problems handpicked by industry engineers - arrays, trees, graphs, DP, and company-wise question banks.",
     icon: BookOpen,
     color: "text-indigo-500",
     bgColor: "bg-indigo-50 dark:bg-indigo-900/30",
@@ -180,7 +180,7 @@ export default function LearnHubPage() {
     <div className="relative pb-12">
       <SEO
         title="Learning Hub - Free Programming Tutorials"
-        description="Learn programming for free with interactive tutorials in JavaScript, Python, React, HTML, CSS, TypeScript, Node.js, SQL, DSA, and more."
+        description="Curated questions and study material by Google, Amazon, and Meta engineers. Learn JavaScript, Python, React, DSA, SQL, and more."
         keywords="learn programming, free coding tutorials, JavaScript tutorial, Python tutorial, React tutorial, web development, DSA practice"
         canonicalUrl={canonicalUrl("/learn")}
       />
@@ -208,8 +208,8 @@ export default function LearnHubPage() {
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
           Learning <span className="text-gradient-accent">Hub</span>
         </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
-          Choose a track and start building your skills - all free, all curated
+        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
+          Curated questions and study material crafted by engineers from Google, Amazon, and Meta
         </p>
       </motion.div>
 

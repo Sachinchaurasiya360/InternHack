@@ -141,9 +141,8 @@ export class JobMatchingService {
           });
           matchCount++;
         }
-      } catch (err) {
-        // pgvector may not be set up yet — skip vector matching for this user
-        console.error(`[Matching] Failed for user ${pref.userId}:`, err);
+      } catch {
+        // pgvector / embedding columns not set up yet — skip silently
       }
     }
 

@@ -1,42 +1,76 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
+import { executeCode, LANGUAGE_IDS } from "../../utils/judge0.utils.js";
+
+interface TestCaseResult {
+  input: string;
+  expected: string;
+  actual: string;
+  passed: boolean;
+  label: string | null;
+  timeMs: number;
+  memoryKb: number;
+  statusId: number;
+  statusDescription: string;
+  stderr: string | null;
+  compileOutput: string | null;
+}
 
 export class DsaService {
   async listTopics(studentId?: number, sheet?: string, difficulty?: string[]) {
-    const topics = await prisma.dsaTopic.findMany({
-      orderBy: { orderIndex: "asc" },
-    });
-
-    // Build problem filter
+    // Fetch topics + all problem tags in just 2-3 queries (not N per topic)
     const baseWhere: Record<string, unknown> = {};
     if (sheet) baseWhere.sheets = { has: sheet };
     if (difficulty?.length) baseWhere.difficulty = { in: difficulty };
 
-    const results = [];
+    const [topics, problems] = await Promise.all([
+      prisma.dsaTopic.findMany({ orderBy: { orderIndex: "asc" } }),
+      prisma.dsaProblem.findMany({
+        where: baseWhere,
+        select: { id: true, tags: true },
+      }),
+    ]);
 
-    for (const topic of topics) {
-      const problemWhere = { ...baseWhere, tags: { has: topic.slug } };
-      const problemCount = await prisma.dsaProblem.count({ where: problemWhere });
-      if (problemCount < 10) continue;
-
-      let solvedCount = 0;
-      if (studentId) {
-        solvedCount = await prisma.studentDsaProgress.count({
-          where: { studentId, solved: true, problem: problemWhere },
-        });
+    // Count problems per topic slug in memory
+    const countMap = new Map<string, number>();
+    const problemIdsByTopic = new Map<string, number[]>();
+    for (const p of problems) {
+      for (const tag of p.tags) {
+        countMap.set(tag, (countMap.get(tag) || 0) + 1);
+        if (!problemIdsByTopic.has(tag)) problemIdsByTopic.set(tag, []);
+        problemIdsByTopic.get(tag)!.push(p.id);
       }
-
-      results.push({
-        id: topic.id,
-        name: topic.name,
-        slug: topic.slug,
-        description: topic.description,
-        orderIndex: topic.orderIndex,
-        problemCount,
-        solvedCount,
-      });
     }
 
-    return results;
+    // Get solved counts in one query
+    let solvedByTopic = new Map<string, number>();
+    if (studentId) {
+      const solved = await prisma.studentDsaProgress.findMany({
+        where: { studentId, solved: true },
+        select: { problemId: true },
+      });
+      const solvedIds = new Set(solved.map((s) => s.problemId));
+
+      for (const [slug, pIds] of problemIdsByTopic) {
+        const count = pIds.filter((id) => solvedIds.has(id)).length;
+        if (count > 0) solvedByTopic.set(slug, count);
+      }
+    }
+
+    return {
+      uniqueProblems: problems.length,
+      topics: topics
+        .filter((t) => (countMap.get(t.slug) || 0) >= 10)
+        .map((t) => ({
+          id: t.id,
+          name: t.name,
+          slug: t.slug,
+          description: t.description,
+          orderIndex: t.orderIndex,
+          problemCount: countMap.get(t.slug) || 0,
+          solvedCount: solvedByTopic.get(t.slug) || 0,
+        })),
+    };
   }
 
   async getTopicBySlug(slug: string, studentId?: number, page = 1, limit = 50, difficulty?: string, search?: string) {
@@ -483,5 +517,244 @@ export class DsaService {
       totalSolved: solvedIds.size,
       byDifficulty: stats,
     };
+  }
+
+  // ── Test case generation (cached permanently) ──
+
+  async getOrGenerateTestCases(problemId: number) {
+    const existing = await prisma.dsaTestCase.findMany({
+      where: { problemId },
+      orderBy: { orderIndex: "asc" },
+    });
+    if (existing.length > 0) return existing;
+
+    const problem = await prisma.dsaProblem.findUnique({ where: { id: problemId } });
+    if (!problem) throw new Error("Problem not found");
+    if (!problem.description) throw new Error("Cannot generate test cases — problem has no description");
+
+    const testCases = await this.generateTestCasesWithAI(problem);
+
+    return Promise.all(
+      testCases.map((tc, idx) =>
+        prisma.dsaTestCase.create({
+          data: {
+            problemId,
+            input: tc.input,
+            expected: tc.expected,
+            label: tc.label || null,
+            orderIndex: idx,
+          },
+        }),
+      ),
+    );
+  }
+
+  private async generateTestCasesWithAI(problem: {
+    title: string;
+    description: string | null;
+    examples: string | null;
+    constraints: string | null;
+    difficulty: string;
+  }): Promise<{ input: string; expected: string; label: string }[]> {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
+    const prompt = `You are a competitive programming test case generator.
+
+PROBLEM: ${problem.title}
+
+DESCRIPTION:
+${problem.description ?? ""}
+
+${problem.examples ? `EXAMPLES:\n${problem.examples}` : ""}
+
+${problem.constraints ? `CONSTRAINTS:\n${problem.constraints}` : ""}
+
+DIFFICULTY: ${problem.difficulty}
+
+Generate exactly 6 test cases. Include:
+- 2 basic cases from the examples
+- 2 edge cases (empty input, single element, minimum values, etc.)
+- 2 larger cases within constraints
+
+RULES:
+1. "input" = exact stdin string (values on separate lines or space-separated as typical for competitive programming)
+2. "expected" = exact stdout output (trimmed, no trailing whitespace)
+3. For array inputs: first line = n (size), second line = space-separated elements
+4. For string inputs: just the string on one line
+5. For arrays as output: space-separated values on one line
+6. For booleans: output "true" or "false"
+
+Return ONLY a JSON array, no markdown fences:
+[{"input":"...","expected":"...","label":"Basic case 1"},...]`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text().trim();
+
+    let cleaned = text;
+    if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+    }
+
+    try {
+      const parsed = JSON.parse(cleaned);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error("AI returned empty or non-array result");
+      }
+      return parsed.map((tc: Record<string, unknown>) => ({
+        input: String(tc.input ?? ""),
+        expected: String(tc.expected ?? ""),
+        label: String(tc.label ?? "Test case"),
+      }));
+    } catch {
+      const arrMatch = cleaned.match(/\[[\s\S]*\]/);
+      if (arrMatch) {
+        const parsed = JSON.parse(arrMatch[0]);
+        return parsed.map((tc: Record<string, unknown>) => ({
+          input: String(tc.input ?? ""),
+          expected: String(tc.expected ?? ""),
+          label: String(tc.label ?? "Test case"),
+        }));
+      }
+      throw new Error("Failed to parse AI-generated test cases");
+    }
+  }
+
+  // ── Code execution ──
+
+  async executeCodeAgainstTestCases(
+    studentId: number,
+    problemId: number,
+    language: string,
+    code: string,
+  ) {
+    const languageId = LANGUAGE_IDS[language];
+    if (!languageId) throw new Error(`Unsupported language: ${language}`);
+
+    const testCases = await this.getOrGenerateTestCases(problemId);
+    if (testCases.length === 0) throw new Error("No test cases available");
+
+    const results: TestCaseResult[] = [];
+    let maxTime = 0;
+    let maxMemory = 0;
+
+    for (const tc of testCases) {
+      try {
+        const result = await executeCode(code, languageId, tc.input);
+
+        const actualOutput = (result.stdout ?? "").trim();
+        const expectedOutput = tc.expected.trim();
+        const passed = actualOutput === expectedOutput;
+
+        const timeMs = result.time ? Math.round(parseFloat(result.time) * 1000) : 0;
+        const memoryKb = result.memory ?? 0;
+        if (timeMs > maxTime) maxTime = timeMs;
+        if (memoryKb > maxMemory) maxMemory = memoryKb;
+
+        results.push({
+          input: tc.input,
+          expected: expectedOutput,
+          actual: actualOutput,
+          passed,
+          label: tc.label,
+          timeMs,
+          memoryKb,
+          statusId: result.status.id,
+          statusDescription: result.status.description,
+          stderr: result.stderr,
+          compileOutput: result.compile_output,
+        });
+
+        // On compile/runtime error, stop early
+        if (result.status.id !== 3 && result.status.id !== 4) {
+          for (let i = results.length; i < testCases.length; i++) {
+            const skipped = testCases[i]!;
+            results.push({
+              input: skipped.input,
+              expected: skipped.expected.trim(),
+              actual: "",
+              passed: false,
+              label: skipped.label,
+              timeMs: 0,
+              memoryKb: 0,
+              statusId: -1,
+              statusDescription: "Not executed",
+              stderr: null,
+              compileOutput: null,
+            });
+          }
+          break;
+        }
+      } catch (err: unknown) {
+        results.push({
+          input: tc.input,
+          expected: tc.expected.trim(),
+          actual: "",
+          passed: false,
+          label: tc.label,
+          timeMs: 0,
+          memoryKb: 0,
+          statusId: -1,
+          statusDescription: err instanceof Error ? err.message : "Execution failed",
+          stderr: null,
+          compileOutput: null,
+        });
+      }
+    }
+
+    const passedCount = results.filter((r) => r.passed).length;
+    const allPassed = passedCount === testCases.length;
+
+    const submission = await prisma.dsaSubmission.create({
+      data: {
+        studentId,
+        problemId,
+        language,
+        code,
+        passed: passedCount,
+        total: testCases.length,
+        allPassed,
+        timeMs: maxTime,
+        memoryKb: maxMemory,
+        results: JSON.stringify(results),
+      },
+    });
+
+    // Auto-mark solved when all pass
+    if (allPassed) {
+      await prisma.studentDsaProgress.upsert({
+        where: { studentId_problemId: { studentId, problemId } },
+        update: { solved: true, solvedAt: new Date() },
+        create: { studentId, problemId, solved: true },
+      });
+    }
+
+    // Log usage for rate limiting
+    await prisma.usageLog.create({
+      data: { userId: studentId, action: "CODE_RUN" },
+    });
+
+    return { passed: passedCount, total: testCases.length, allPassed, results, submissionId: submission.id };
+  }
+
+  // ── Submission history ──
+
+  async getSubmissionHistory(studentId: number, problemId: number) {
+    return prisma.dsaSubmission.findMany({
+      where: { studentId, problemId },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: {
+        id: true,
+        language: true,
+        code: true,
+        passed: true,
+        total: true,
+        allPassed: true,
+        timeMs: true,
+        memoryKb: true,
+        createdAt: true,
+      },
+    });
   }
 }

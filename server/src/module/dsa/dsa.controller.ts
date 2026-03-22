@@ -154,4 +154,31 @@ export class DsaController {
       next(err);
     }
   }
+
+  async executeCode(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const problemId = parseInt(req.params.problemId);
+      if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const { language, code } = req.body;
+      const result = await this.dsaService.executeCodeAgainstTestCases(userId, problemId, language, code);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getSubmissionHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const problemId = parseInt(req.params.problemId);
+      if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const history = await this.dsaService.getSubmissionHistory(userId, problemId);
+      res.json(history);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
