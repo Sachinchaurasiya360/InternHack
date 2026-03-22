@@ -3,6 +3,7 @@ import { DsaController } from "./dsa.controller.js";
 import { DsaService } from "./dsa.service.js";
 import { authMiddleware, optionalAuthMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 
 const dsaService = new DsaService();
 const dsaController = new DsaController(dsaService);
@@ -15,6 +16,8 @@ dsaRouter.put("/problems/:problemId/notes", authMiddleware, requireRole("STUDENT
 dsaRouter.post("/problems/:problemId/bookmark", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.toggleBookmark(req, res, next));
 dsaRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getBookmarks(req, res, next));
 dsaRouter.get("/my-progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getMyProgress(req, res, next));
+dsaRouter.post("/problems/:problemId/execute", authMiddleware, requireRole("STUDENT"), usageLimit("CODE_RUN"), (req, res, next) => dsaController.executeCode(req, res, next));
+dsaRouter.get("/problems/:problemId/submissions", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getSubmissionHistory(req, res, next));
 
 // Public routes (with optional auth)
 dsaRouter.get("/topics", optionalAuthMiddleware, (req, res, next) => dsaController.listTopics(req, res, next));

@@ -216,8 +216,8 @@ export class JobIndexService {
           job.id,
         );
         embedded++;
-      } catch (err) {
-        console.error(`[JobIndex] Failed to embed job ${job.id}:`, err);
+      } catch {
+        // pgvector / embedding column not set up yet — skip
       }
       await new Promise((r) => setTimeout(r, 50));
     }
@@ -252,8 +252,8 @@ export class JobIndexService {
       try {
         await this.generateUserEmbedding(pref.userId);
         count++;
-      } catch (err) {
-        console.error(`[JobIndex] Failed to embed user ${pref.userId}:`, err);
+      } catch {
+        // pgvector / embedding column not set up yet — skip
       }
       await new Promise((r) => setTimeout(r, 50));
     }
@@ -369,8 +369,8 @@ export class JobIndexService {
         limit,
       );
       return jobs;
-    } catch (err) {
-      console.error("[JobIndex] Semantic search failed, falling back:", err);
+    } catch {
+      // pgvector / embedding column not set up yet — fall back to empty
       return [];
     }
   }

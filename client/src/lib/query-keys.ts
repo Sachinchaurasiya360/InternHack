@@ -198,5 +198,6 @@ export const queryKeys = {
     patterns: () => ["dsa", "patterns"] as const,
     pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
+    submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
   },
 };

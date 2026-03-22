@@ -661,6 +661,11 @@ export interface DsaTopic {
   solvedCount: number;
 }
 
+export interface DsaTopicsResponse {
+  uniqueProblems: number;
+  topics: DsaTopic[];
+}
+
 export interface DsaProblem {
   id: number;
   title: string;
@@ -788,6 +793,43 @@ export interface DsaPaginatedProblems {
   total: number;
   totalPages: number;
   page: number;
+}
+
+// DSA Code Execution
+export type DsaLanguage = "python" | "cpp" | "java";
+
+export interface DsaTestCaseResult {
+  input: string;
+  expected: string;
+  actual: string;
+  passed: boolean;
+  label: string | null;
+  timeMs: number;
+  memoryKb: number;
+  statusId: number;
+  statusDescription: string;
+  stderr: string | null;
+  compileOutput: string | null;
+}
+
+export interface DsaExecutionResult {
+  passed: number;
+  total: number;
+  allPassed: boolean;
+  results: DsaTestCaseResult[];
+  submissionId: number;
+}
+
+export interface DsaSubmissionSummary {
+  id: number;
+  language: DsaLanguage;
+  code: string;
+  passed: number;
+  total: number;
+  allPassed: boolean;
+  timeMs: number | null;
+  memoryKb: number | null;
+  createdAt: string;
 }
 
 // Aptitude Practice

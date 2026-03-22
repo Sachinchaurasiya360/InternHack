@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaTopic, DsaProgress } from "../../../lib/types";
+import type { DsaTopicsResponse, DsaProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -59,15 +59,17 @@ export default function DsaTopicsPage() {
     activeTab === "medium-hard" ? "Medium,Hard" :
     undefined;
 
-  const { data: topics, isLoading } = useQuery({
+  const { data: topicsData, isLoading } = useQuery({
     queryKey: queryKeys.dsa.topics(difficultyParam),
     queryFn: () => {
       const params = difficultyParam ? `?difficulty=${difficultyParam}` : "";
-      return api.get<DsaTopic[]>(`/dsa/topics${params}`).then((r) => r.data);
+      return api.get<DsaTopicsResponse>(`/dsa/topics${params}`).then((r) => r.data);
     },
     placeholderData: keepPreviousData,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
+  const topics = topicsData?.topics;
+  const uniqueProblems = topicsData?.uniqueProblems ?? 0;
 
   const { data: progress } = useQuery({
     queryKey: queryKeys.dsa.progress(),
@@ -76,7 +78,7 @@ export default function DsaTopicsPage() {
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
-  const totalProblems = topics?.reduce((s, t) => s + t.problemCount, 0) ?? 0;
+  const totalProblems = uniqueProblems;
   const totalSolved = topics?.reduce((s, t) => s + t.solvedCount, 0) ?? 0;
   const overallPct = totalProblems > 0 ? Math.round((totalSolved / totalProblems) * 100) : 0;
 
@@ -123,7 +125,7 @@ export default function DsaTopicsPage() {
               DSA Practice
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              {totalProblems.toLocaleString()} problems across {totalTopics} topics
+              {totalProblems.toLocaleString()} problems across {totalTopics} topics &middot; Curated by FAANG engineers
               {user && totalSolved > 0 && (
                 <span className="text-emerald-600 dark:text-emerald-400 font-medium"> &middot; {totalSolved} solved</span>
               )}

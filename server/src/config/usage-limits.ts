@@ -9,6 +9,7 @@ export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
   JOB_APPLICATION: { FREE: 10, PREMIUM: 999999 },
   MOCK_INTERVIEW:  { FREE: 0,  PREMIUM: 999999 },
   AI_JOB_CHAT:     { FREE: 0,  PREMIUM: 50 },
+  CODE_RUN:        { FREE: 0,  PREMIUM: 50 },
 };
 
 export function getPlanTier(
