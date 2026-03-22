@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft, ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
-  Building2, Tag, BarChart3, Lightbulb, StickyNote, Link2, ArrowRight,
+  Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowRight,
   History, Terminal, Lock, Crown, Code2,
 } from "lucide-react";
 import toast from "react-hot-toast";
