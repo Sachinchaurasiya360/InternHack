@@ -18,19 +18,19 @@
         },
         {
           "title": "Using functools.wraps",
-          "code": "from functools import wraps\n\ndef my_decorator(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        print(\"Calling:\", func.__name__)\n        return func(*args, **kwargs)\n    return wrapper\n\n@my_decorator\ndef add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n    return a + b\n\nprint(add(3, 4))\nprint(add.__name__)\nprint(add.__doc__)",
+          "code": "from functools import wraps\n\ndef my_decorator(func):\n    @wraps(func)\n    def wrapper(*args, kwargs):\n        print(\"Calling:\", func.__name__)\n        return func(*args, kwargs)\n    return wrapper\n\n@my_decorator\ndef add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n    return a + b\n\nprint(add(3, 4))\nprint(add.__name__)\nprint(add.__doc__)",
           "output": "Calling: add\n7\nadd\nAdd two numbers.",
           "explanation": "@wraps(func) preserves the original function's __name__ and __doc__ attributes, which is critical for debugging and introspection."
         },
         {
           "title": "Decorator with Arguments",
-          "code": "from functools import wraps\n\ndef repeat(n):\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                result = func(*args, **kwargs)\n            return result\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef greet(name):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Alice\")",
+          "code": "from functools import wraps\n\ndef repeat(n):\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, kwargs):\n            for _ in range(n):\n                result = func(*args, kwargs)\n            return result\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef greet(name):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Alice\")",
           "output": "Hello, Alice!\nHello, Alice!\nHello, Alice!",
           "explanation": "repeat(3) returns the actual decorator. The three-level nesting (repeat -> decorator -> wrapper) allows passing configuration to the decorator."
         },
         {
           "title": "Stacking Multiple Decorators",
-          "code": "from functools import wraps\n\ndef bold(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        return \"<b>\" + func(*args, **kwargs) + \"</b>\"\n    return wrapper\n\ndef italic(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        return \"<i>\" + func(*args, **kwargs) + \"</i>\"\n    return wrapper\n\n@bold\n@italic\ndef format_text(text):\n    return text\n\nprint(format_text(\"Hello\"))",
+          "code": "from functools import wraps\n\ndef bold(func):\n    @wraps(func)\n    def wrapper(*args, kwargs):\n        return \"<b>\" + func(*args, kwargs) + \"</b>\"\n    return wrapper\n\ndef italic(func):\n    @wraps(func)\n    def wrapper(*args, kwargs):\n        return \"<i>\" + func(*args, kwargs) + \"</i>\"\n    return wrapper\n\n@bold\n@italic\ndef format_text(text):\n    return text\n\nprint(format_text(\"Hello\"))",
           "output": "<b><i>Hello</i></b>",
           "explanation": "Decorators are applied bottom-up: italic wraps format_text first, then bold wraps the result. This is equivalent to bold(italic(format_text))."
         }
@@ -45,7 +45,7 @@
         "When creating decorators with arguments, forgetting the extra nesting level (decorator factory) will cause a TypeError because Python passes the decorated function where the arguments are expected."
       ],
       "interviewTips": [
-        "Be ready to write a timing decorator from scratch -- it demonstrates understanding of closures, *args/**kwargs, and wraps.",
+        "Be ready to write a timing decorator from scratch -- it demonstrates understanding of closures, *args/kwargs, and wraps.",
         "Explain that @decorator is just syntactic sugar for func = decorator(func), and that decorators can be stacked with bottom-up application order."
       ]
     },
@@ -55,10 +55,10 @@
         "title": "Logging Decorator",
         "description": "Write a decorator called `log_call` that prints 'Calling: <function_name>' before the function runs and 'Finished: <function_name>' after. Apply it to a function `multiply(a, b)` that prints the product. Call multiply(5, 3).",
         "starterCode": "# Write your log_call decorator here\n\n\n@log_call\ndef multiply(a, b):\n    print(a * b)\n\nmultiply(5, 3)",
-        "solution": "def log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling: {func.__name__}\")\n        result = func(*args, **kwargs)\n        print(f\"Finished: {func.__name__}\")\n        return result\n    return wrapper\n\n@log_call\ndef multiply(a, b):\n    print(a * b)\n\nmultiply(5, 3)",
+        "solution": "def log_call(func):\n    def wrapper(*args, kwargs):\n        print(f\"Calling: {func.__name__}\")\n        result = func(*args, kwargs)\n        print(f\"Finished: {func.__name__}\")\n        return result\n    return wrapper\n\n@log_call\ndef multiply(a, b):\n    print(a * b)\n\nmultiply(5, 3)",
         "expectedOutput": "Calling: multiply\n15\nFinished: multiply",
         "hints": [
-          "The decorator should return a wrapper function that accepts *args and **kwargs.",
+          "The decorator should return a wrapper function that accepts *args and kwargs.",
           "Use func.__name__ to get the original function's name."
         ],
         "difficulty": "Easy"
@@ -68,11 +68,11 @@
         "title": "Repeat Decorator with Argument",
         "description": "Write a decorator factory called `repeat(n)` that causes the decorated function to execute n times. Apply @repeat(2) to a function `say(msg)` that prints the message. Call say(\"Hi\").",
         "starterCode": "# Write your repeat decorator factory here\n\n\n@repeat(2)\ndef say(msg):\n    print(msg)\n\nsay(\"Hi\")",
-        "solution": "def repeat(n):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                func(*args, **kwargs)\n        return wrapper\n    return decorator\n\n@repeat(2)\ndef say(msg):\n    print(msg)\n\nsay(\"Hi\")",
+        "solution": "def repeat(n):\n    def decorator(func):\n        def wrapper(*args, kwargs):\n            for _ in range(n):\n                func(*args, kwargs)\n        return wrapper\n    return decorator\n\n@repeat(2)\ndef say(msg):\n    print(msg)\n\nsay(\"Hi\")",
         "expectedOutput": "Hi\nHi",
         "hints": [
           "You need three levels of nesting: repeat(n) returns the decorator, which returns the wrapper.",
-          "The wrapper should loop n times, calling func(*args, **kwargs) each iteration."
+          "The wrapper should loop n times, calling func(*args, kwargs) each iteration."
         ],
         "difficulty": "Medium"
       },
@@ -81,7 +81,7 @@
         "title": "Access Control Decorator",
         "description": "Write a decorator factory `require_role(role)` that checks if the first argument to the decorated function matches the required role. If it matches, call the function normally. If not, print 'Access denied'. Apply @require_role(\"admin\") to a function `delete_user(role, username)` that prints '<username> deleted'. Test with both 'admin' and 'guest' roles.",
         "starterCode": "# Write your require_role decorator factory here\n\n\n@require_role(\"admin\")\ndef delete_user(role, username):\n    print(f\"{username} deleted\")\n\ndelete_user(\"admin\", \"bob\")\ndelete_user(\"guest\", \"bob\")",
-        "solution": "def require_role(role):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            if args[0] == role:\n                return func(*args, **kwargs)\n            else:\n                print(\"Access denied\")\n        return wrapper\n    return decorator\n\n@require_role(\"admin\")\ndef delete_user(role, username):\n    print(f\"{username} deleted\")\n\ndelete_user(\"admin\", \"bob\")\ndelete_user(\"guest\", \"bob\")",
+        "solution": "def require_role(role):\n    def decorator(func):\n        def wrapper(*args, kwargs):\n            if args[0] == role:\n                return func(*args, kwargs)\n            else:\n                print(\"Access denied\")\n        return wrapper\n    return decorator\n\n@require_role(\"admin\")\ndef delete_user(role, username):\n    print(f\"{username} deleted\")\n\ndelete_user(\"admin\", \"bob\")\ndelete_user(\"guest\", \"bob\")",
         "expectedOutput": "bob deleted\nAccess denied",
         "hints": [
           "require_role returns a decorator, which returns a wrapper -- three levels of nesting.",
@@ -100,7 +100,7 @@
     "isInterviewQuestion": true,
     "concepts": ["yield", "generator expressions", "send()", "next()", "itertools"],
     "content": {
-      "explanation": "Generators are a special type of iterator in Python that allow you to produce a sequence of values lazily -- one at a time, on demand -- rather than computing and storing them all in memory at once. This makes generators extremely memory-efficient for working with large or infinite sequences.\n\nA generator function looks like a regular function but uses the `yield` keyword instead of (or in addition to) `return`. When called, a generator function returns a generator object without executing the function body. Each call to next() on the generator resumes execution until the next yield, which produces a value and suspends the function's state. When the function exits, StopIteration is raised automatically.\n\nGenerator expressions provide a concise syntax similar to list comprehensions but with parentheses instead of brackets: (x**2 for x in range(10)). They create generator objects that produce values lazily, making them ideal for large datasets where you don't need all values at once.\n\nThe send() method allows you to send a value back into a generator, which becomes the result of the yield expression inside the generator. This enables two-way communication and turns generators into coroutines. The first call must be send(None) or next() to advance the generator to its first yield.\n\nPython's itertools module provides a collection of fast, memory-efficient tools for working with iterators. Functions like chain(), islice(), count(), cycle(), and combinations() build on the generator concept and are indispensable for advanced iteration patterns.",
+      "explanation": "Generators are a special type of iterator in Python that allow you to produce a sequence of values lazily -- one at a time, on demand -- rather than computing and storing them all in memory at once. This makes generators extremely memory-efficient for working with large or infinite sequences.\n\nA generator function looks like a regular function but uses the `yield` keyword instead of (or in addition to) `return`. When called, a generator function returns a generator object without executing the function body. Each call to next() on the generator resumes execution until the next yield, which produces a value and suspends the function's state. When the function exits, StopIteration is raised automatically.\n\nGenerator expressions provide a concise syntax similar to list comprehensions but with parentheses instead of brackets: (x2 for x in range(10)). They create generator objects that produce values lazily, making them ideal for large datasets where you don't need all values at once.\n\nThe send() method allows you to send a value back into a generator, which becomes the result of the yield expression inside the generator. This enables two-way communication and turns generators into coroutines. The first call must be send(None) or next() to advance the generator to its first yield.\n\nPython's itertools module provides a collection of fast, memory-efficient tools for working with iterators. Functions like chain(), islice(), count(), cycle(), and combinations() build on the generator concept and are indispensable for advanced iteration patterns.",
       "codeExamples": [
         {
           "title": "Basic Generator with yield",
@@ -110,7 +110,7 @@
         },
         {
           "title": "Generator Expression vs List Comprehension",
-          "code": "squares_list = [x**2 for x in range(5)]\nprint(type(squares_list))\nprint(squares_list)\n\nsquares_gen = (x**2 for x in range(5))\nprint(type(squares_gen))\nprint(list(squares_gen))",
+          "code": "squares_list = [x2 for x in range(5)]\nprint(type(squares_list))\nprint(squares_list)\n\nsquares_gen = (x2 for x in range(5))\nprint(type(squares_gen))\nprint(list(squares_gen))",
           "output": "<class 'list'>\n[0, 1, 4, 9, 16]\n<class 'generator'>\n[0, 1, 4, 9, 16]",
           "explanation": "List comprehensions build the entire list in memory. Generator expressions produce values lazily, using minimal memory regardless of sequence length."
         },
@@ -129,7 +129,7 @@
       ],
       "notes": [
         "Generators are iterators -- they implement __iter__ and __next__ automatically, so you can use them in for loops and with next().",
-        "Generator expressions use parentheses: (expr for x in iterable). When passed as the sole argument to a function, the extra parentheses can be omitted: sum(x**2 for x in range(10)).",
+        "Generator expressions use parentheses: (expr for x in iterable). When passed as the sole argument to a function, the extra parentheses can be omitted: sum(x2 for x in range(10)).",
         "A generator can only be iterated once. After exhaustion, calling next() raises StopIteration."
       ],
       "commonPitfalls": [
@@ -386,7 +386,7 @@
         },
         {
           "title": "Using functools.partial",
-          "code": "from functools import partial\n\ndef power(base, exponent):\n    return base ** exponent\n\nsquare = partial(power, exponent=2)\ncube = partial(power, exponent=3)\n\nprint(square(5))\nprint(cube(3))\nprint(square(10))",
+          "code": "from functools import partial\n\ndef power(base, exponent):\n    return base  exponent\n\nsquare = partial(power, exponent=2)\ncube = partial(power, exponent=3)\n\nprint(square(5))\nprint(cube(3))\nprint(square(10))",
           "output": "25\n27\n100",
           "explanation": "partial freezes the exponent argument, creating specialized versions of power. This is cleaner than using lambda x: power(x, 2)."
         },

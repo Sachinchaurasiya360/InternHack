@@ -11,6 +11,7 @@ import systemDesignData from "./lessons/system-design-interview.json";
 import behavioralData from "./lessons/behavioral-interview.json";
 import htmlCssData from "./lessons/html-css-interview.json";
 import gitDevopsData from "./lessons/git-devops-interview.json";
+import fastapiData from "./lessons/fastapi-interview.json";
 
 export const sections: InterviewSection[] = interviewSections;
 
@@ -25,4 +26,5 @@ export const questions: InterviewQuestion[] = [
   ...(behavioralData as InterviewQuestion[]),
   ...(htmlCssData as InterviewQuestion[]),
   ...(gitDevopsData as InterviewQuestion[]),
+  ...(fastapiData as InterviewQuestion[]),
 ];

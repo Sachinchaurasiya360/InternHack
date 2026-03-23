@@ -201,16 +201,23 @@ export class RecruiterService {
       prisma.application.count({ where }),
     ]);
 
-    // Sign S3 URLs so the recruiter's browser can access them
-    const signed = await Promise.all(
-      applications.map(async (app) => ({
-        ...app,
-        resumeUrl: app.resumeUrl ? await signUrl(app.resumeUrl) : app.resumeUrl,
-        student: app.student
-          ? { ...app.student, resumes: await signUrls(app.student.resumes) }
-          : app.student,
-      })),
-    );
+    // Sign S3 URLs in a single batch instead of N+1 per application
+    const allUrls = new Set<string>();
+    for (const app of applications) {
+      if (app.resumeUrl) allUrls.add(app.resumeUrl);
+      if (app.student) for (const u of app.student.resumes) allUrls.add(u);
+    }
+    const urlArr = [...allUrls];
+    const signedArr = await Promise.all(urlArr.map((u) => signUrl(u)));
+    const signedMap = new Map(urlArr.map((u, i) => [u, signedArr[i]!]));
+
+    const signed = applications.map((app) => ({
+      ...app,
+      resumeUrl: app.resumeUrl ? (signedMap.get(app.resumeUrl) ?? app.resumeUrl) : app.resumeUrl,
+      student: app.student
+        ? { ...app.student, resumes: app.student.resumes.map((u) => signedMap.get(u) ?? u) }
+        : app.student,
+    }));
 
     return {
       applications: signed,
@@ -553,28 +560,33 @@ export class RecruiterService {
       prisma.user.count({ where }),
     ]);
 
-    const results = await Promise.all(
-      students.map(async (s) => ({
-        id: s.id,
-        name: s.name,
-        email: s.email,
-        profilePic: s.profilePic,
-        bio: s.bio,
-        college: s.college,
-        graduationYear: s.graduationYear,
-        skills: s.skills,
-        location: s.location,
-        linkedinUrl: s.linkedinUrl,
-        githubUrl: s.githubUrl,
-        portfolioUrl: s.portfolioUrl,
-        resumes: await signUrls(s.resumes),
-        jobStatus: s.jobStatus,
-        bestAtsScore: s.atsScores[0]?.overallScore ?? null,
-        verifiedSkillCount: s.verifiedSkills.length,
-        verifiedSkills: s.verifiedSkills.map((vs) => vs.skillName),
-        standaloneVerifiedSkills: s.verifiedSkills,
-      })),
-    );
+    // Batch-sign all resume URLs at once
+    const allResumeUrls = new Set<string>();
+    for (const s of students) for (const u of s.resumes) allResumeUrls.add(u);
+    const resumeUrlArr = [...allResumeUrls];
+    const signedResumeArr = await Promise.all(resumeUrlArr.map((u) => signUrl(u)));
+    const resumeSignedMap = new Map(resumeUrlArr.map((u, i) => [u, signedResumeArr[i]!]));
+
+    const results = students.map((s) => ({
+      id: s.id,
+      name: s.name,
+      email: s.email,
+      profilePic: s.profilePic,
+      bio: s.bio,
+      college: s.college,
+      graduationYear: s.graduationYear,
+      skills: s.skills,
+      location: s.location,
+      linkedinUrl: s.linkedinUrl,
+      githubUrl: s.githubUrl,
+      portfolioUrl: s.portfolioUrl,
+      resumes: s.resumes.map((u) => resumeSignedMap.get(u) ?? u),
+      jobStatus: s.jobStatus,
+      bestAtsScore: s.atsScores[0]?.overallScore ?? null,
+      verifiedSkillCount: s.verifiedSkills.length,
+      verifiedSkills: s.verifiedSkills.map((vs) => vs.skillName),
+      standaloneVerifiedSkills: s.verifiedSkills,
+    }));
 
     return {
       students: results,

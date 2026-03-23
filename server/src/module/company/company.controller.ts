@@ -68,8 +68,10 @@ export class CompanyController {
       }
 
       const sort = (req.query["sort"] as string) || "latest";
-      const reviews = await this.companyService.getCompanyReviews(slug, sort);
-      res.json({ reviews });
+      const page = Math.max(1, parseInt(String(req.query["page"] || "1"), 10));
+      const limit = Math.min(50, Math.max(1, parseInt(String(req.query["limit"] || "20"), 10)));
+      const result = await this.companyService.getCompanyReviews(slug, sort, page, limit);
+      res.json(result);
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
         res.status(404).json({ message: err.message });

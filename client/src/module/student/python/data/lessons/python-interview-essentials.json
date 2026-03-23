@@ -198,11 +198,11 @@
     "isInterviewQuestion": true,
     "concepts": ["list comprehension", "enumerate", "zip", "unpacking", "walrus operator", "ternary"],
     "content": {
-      "explanation": "Writing Pythonic code means using the language's features idiomatically rather than translating patterns from other languages. Interviewers look for this because it signals fluency and practical experience with Python.\n\nList comprehensions are one of the most distinctive Python features. They replace verbose for-loops-with-append patterns into concise, readable one-liners: `[x**2 for x in range(10) if x % 2 == 0]`. Dict and set comprehensions follow the same pattern. Comprehensions are generally faster than equivalent loops because they are optimized at the bytecode level.\n\nThe built-in functions `enumerate()` and `zip()` are indispensable. `enumerate()` gives you index-value pairs without maintaining a manual counter. `zip()` iterates over multiple sequences in parallel, stopping at the shortest. Combined with unpacking, they produce clean, readable iteration patterns.\n\nUnpacking is used everywhere in Python: multiple assignment (`a, b = 1, 2`), swapping (`a, b = b, a`), starred expressions (`first, *rest = items`), and function argument unpacking (`func(*args, **kwargs)`). Understanding unpacking is essential for writing concise code.\n\nThe walrus operator (`:=`), introduced in Python 3.8, allows assignment within expressions. It is useful in while-loops, list comprehensions, and conditional expressions where you want to both compute and test a value. The ternary expression `x if condition else y` replaces verbose if-else blocks for simple conditional assignments.\n\nThese patterns are not just stylistic preferences -- they make code shorter, more readable, and often faster. Interviewers expect you to use them naturally when solving problems.",
+      "explanation": "Writing Pythonic code means using the language's features idiomatically rather than translating patterns from other languages. Interviewers look for this because it signals fluency and practical experience with Python.\n\nList comprehensions are one of the most distinctive Python features. They replace verbose for-loops-with-append patterns into concise, readable one-liners: `[x2 for x in range(10) if x % 2 == 0]`. Dict and set comprehensions follow the same pattern. Comprehensions are generally faster than equivalent loops because they are optimized at the bytecode level.\n\nThe built-in functions `enumerate()` and `zip()` are indispensable. `enumerate()` gives you index-value pairs without maintaining a manual counter. `zip()` iterates over multiple sequences in parallel, stopping at the shortest. Combined with unpacking, they produce clean, readable iteration patterns.\n\nUnpacking is used everywhere in Python: multiple assignment (`a, b = 1, 2`), swapping (`a, b = b, a`), starred expressions (`first, *rest = items`), and function argument unpacking (`func(*args, kwargs)`). Understanding unpacking is essential for writing concise code.\n\nThe walrus operator (`:=`), introduced in Python 3.8, allows assignment within expressions. It is useful in while-loops, list comprehensions, and conditional expressions where you want to both compute and test a value. The ternary expression `x if condition else y` replaces verbose if-else blocks for simple conditional assignments.\n\nThese patterns are not just stylistic preferences -- they make code shorter, more readable, and often faster. Interviewers expect you to use them naturally when solving problems.",
       "codeExamples": [
         {
           "title": "List comprehension with filtering",
-          "code": "# Squares of even numbers from 0 to 9\nsquares = [x**2 for x in range(10) if x % 2 == 0]\nprint(\"squares:\", squares)\n\n# Dict comprehension\nword_lengths = {w: len(w) for w in [\"python\", \"is\", \"great\"]}\nprint(\"lengths:\", word_lengths)",
+          "code": "# Squares of even numbers from 0 to 9\nsquares = [x2 for x in range(10) if x % 2 == 0]\nprint(\"squares:\", squares)\n\n# Dict comprehension\nword_lengths = {w: len(w) for w in [\"python\", \"is\", \"great\"]}\nprint(\"lengths:\", word_lengths)",
           "output": "squares: [0, 4, 16, 36, 64]\nlengths: {'python': 6, 'is': 2, 'great': 5}",
           "explanation": "Comprehensions replace multi-line loops with concise expressions. The filter condition (if x % 2 == 0) is optional."
         },
@@ -247,12 +247,12 @@
         "id": "comprehension-challenge",
         "title": "Filtered Comprehension",
         "description": "Use a list comprehension to create a list of tuples (number, square) for all numbers from 1 to 10 where the square is greater than 20.",
-        "starterCode": "result = [(x, x**2) for x in range(1, 11) if x**2 > 20]\nprint(result)",
-        "solution": "result = [(x, x**2) for x in range(1, 11) if x**2 > 20]\nprint(result)",
+        "starterCode": "result = [(x, x2) for x in range(1, 11) if x2 > 20]\nprint(result)",
+        "solution": "result = [(x, x2) for x in range(1, 11) if x2 > 20]\nprint(result)",
         "expectedOutput": "[(5, 25), (6, 36), (7, 49), (8, 64), (9, 81), (10, 100)]",
         "hints": [
-          "Use a conditional filter in the comprehension: if x**2 > 20.",
-          "Each element should be a tuple (x, x**2)."
+          "Use a conditional filter in the comprehension: if x2 > 20.",
+          "Each element should be a tuple (x, x2)."
         ],
         "difficulty": "Easy"
       },

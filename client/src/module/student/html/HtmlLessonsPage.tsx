@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock } from "lucide-react";
+import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star, Lock } from "lucide-react";
 import { sections, lessons } from "./data";
 import type { HtmlProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
@@ -92,10 +92,6 @@ export default function HtmlLessonsPage() {
           }}
         />
       </div>
-
-      <Link to="/learn" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors no-underline mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back to Learning Hub
-      </Link>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

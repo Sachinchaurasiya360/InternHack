@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, ExternalLink, Trophy, ChevronDown, X, ArrowLeft,
+  Search, ExternalLink, Trophy, ChevronDown, X,
   Code2, Globe, Calendar, Layers, Tag, ChevronLeft, ChevronRight,
   Users, Mail, MessageSquare, Lightbulb, BookOpen,
 } from "lucide-react";
-import { Link } from "react-router";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -348,15 +347,6 @@ export default function GSoCReposPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Breadcrumb */}
-      <Link
-        to="/student/opensource"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white mb-6 no-underline transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Open Source
-      </Link>
-
       {/* Hero */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-yellow-950/20 border border-amber-100 dark:border-amber-800 mb-8 p-8">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-amber-200/30 dark:from-amber-700/20 to-transparent rounded-bl-full pointer-events-none" />

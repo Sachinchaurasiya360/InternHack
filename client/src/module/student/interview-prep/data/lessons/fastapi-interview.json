@@ -4,16 +4,15 @@
     "sectionId": "fastapi-interview",
     "orderIndex": 0,
     "title": "What is FastAPI and what makes it stand out?",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["FastAPI", "ASGI", "type hints", "OpenAPI"],
     "content": {
       "question": "What is FastAPI? What are its key features and advantages over Flask or Django?",
-      "answer": "FastAPI is a modern, high-performance Python web framework for building APIs, based on standard Python type hints. It is built on top of Starlette (ASGI) and Pydantic.\n\nKey features:\n- **Speed**: One of the fastest Python frameworks, on par with Node.js and Go, thanks to async support via ASGI\n- **Automatic docs**: Generates interactive OpenAPI (Swagger UI) and ReDoc documentation automatically\n- **Type safety**: Uses Python type hints for request/response validation via Pydantic\n- **Dependency injection**: Built-in, easy-to-use DI system\n- **Async support**: Native async/await support for non-blocking I/O\n- **Standards-based**: Built on OpenAPI and JSON Schema\n\nVs Flask: Flask is synchronous by default, no built-in validation, no auto docs. FastAPI is async-first with validation and docs built in.\nVs Django: Django is a full-stack framework with ORM, admin, templates. FastAPI is API-focused and lightweight.",
+      "answer": "FastAPI is a modern, high-performance Python web framework for building APIs, based on standard Python type hints. It is built on top of Starlette (ASGI) and Pydantic.\n\nKey features:\n- Speed: One of the fastest Python frameworks, on par with Node.js and Go, thanks to async support via ASGI\n- Automatic docs: Generates interactive OpenAPI (Swagger UI) and ReDoc documentation automatically\n- Type safety: Uses Python type hints for request/response validation via Pydantic\n- Dependency injection: Built-in, easy-to-use DI system\n- Async support: Native async/await support for non-blocking I/O\n- Standards-based: Built on OpenAPI and JSON Schema\n\nVs Flask: Flask is synchronous by default, no built-in validation, no auto docs. FastAPI is async-first with validation and docs built in.\nVs Django: Django is a full-stack framework with ORM, admin, templates. FastAPI is API-focused and lightweight.",
       "codeExamples": [
         {
           "title": "Minimal FastAPI app",
-          "language": "python",
           "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Hello, FastAPI!\"}\n\n# Run: uvicorn main:app --reload\n# Docs: http://127.0.0.1:8000/docs"
         }
       ],
@@ -27,7 +26,7 @@
         "How does FastAPI generate documentation automatically?"
       ],
       "interviewTips": [
-        "Mention performance benchmarks — FastAPI is consistently near the top for Python frameworks",
+        "Mention performance benchmarks - FastAPI is consistently near the top for Python frameworks",
         "Highlight that automatic docs reduce developer effort significantly"
       ]
     }
@@ -37,8 +36,8 @@
     "sectionId": "fastapi-interview",
     "orderIndex": 1,
     "title": "Path operations and HTTP methods",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["path operations", "HTTP methods", "decorators", "route handlers"],
     "content": {
       "question": "What are path operations in FastAPI? How do you define routes for different HTTP methods?",
@@ -46,12 +45,11 @@
       "codeExamples": [
         {
           "title": "Multiple HTTP methods",
-          "language": "python",
           "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\nitems = {}\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    return items.get(item_id)\n\n@app.post(\"/items\", status_code=201)\ndef create_item(item: Item):\n    items[len(items)] = item\n    return item\n\n@app.put(\"/items/{item_id}\")\ndef update_item(item_id: int, item: Item):\n    items[item_id] = item\n    return item\n\n@app.delete(\"/items/{item_id}\", status_code=204)\ndef delete_item(item_id: int):\n    items.pop(item_id, None)"
         }
       ],
       "notes": [
-        "Order of route definitions matters — FastAPI matches routes top to bottom",
+        "Order of route definitions matters - FastAPI matches routes top to bottom",
         "Use `status_code` to set non-200 default responses",
         "Tags group endpoints in the auto-generated docs"
       ],
@@ -69,17 +67,16 @@
     "sectionId": "fastapi-interview",
     "orderIndex": 2,
     "title": "Path parameters vs query parameters",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["path parameters", "query parameters", "type coercion", "Optional"],
     "content": {
       "question": "How does FastAPI distinguish between path parameters and query parameters? How are they declared?",
-      "answer": "**Path parameters** are part of the URL path, declared using `{param}` in the path string and as function arguments with matching names. They are required.\n\n**Query parameters** are everything in the URL after `?`, declared as function arguments that are NOT path parameters. They can be optional with default values.\n\nFastAPI uses Python type hints to automatically parse and validate both types. If a parameter has a default value of `None` with `Optional[T]`, it becomes an optional query parameter.",
+      "answer": "Path parameters are part of the URL path, declared using `{param}` in the path string and as function arguments with matching names. They are required.\n\nQuery parameters are everything in the URL after `?`, declared as function arguments that are NOT path parameters. They can be optional with default values.\n\nFastAPI uses Python type hints to automatically parse and validate both types. If a parameter has a default value of `None` with `Optional[T]`, it becomes an optional query parameter.",
       "codeExamples": [
         {
           "title": "Path and query parameters",
-          "language": "python",
-          "code": "from fastapi import FastAPI\nfrom typing import Optional\n\napp = FastAPI()\n\n@app.get(\"/items/{item_id}\")\ndef get_item(\n    item_id: int,          # path parameter — required\n    q: Optional[str] = None,  # query parameter — optional\n    limit: int = 10,       # query parameter — optional with default\n):\n    result = {\"item_id\": item_id, \"limit\": limit}\n    if q:\n        result[\"q\"] = q\n    return result\n\n# GET /items/5?q=search&limit=20\n# => {\"item_id\": 5, \"limit\": 20, \"q\": \"search\"}"
+          "code": "from fastapi import FastAPI\nfrom typing import Optional\n\napp = FastAPI()\n\n@app.get(\"/items/{item_id}\")\ndef get_item(\n    item_id: int,          # path parameter - required\n    q: Optional[str] = None,  # query parameter - optional\n    limit: int = 10,       # query parameter - optional with default\n):\n    result = {\"item_id\": item_id, \"limit\": limit}\n    if q:\n        result[\"q\"] = q\n    return result\n\n# GET /items/5?q=search&limit=20\n# => {\"item_id\": 5, \"limit\": 20, \"q\": \"search\"}"
         }
       ],
       "notes": [
@@ -101,8 +98,8 @@
     "sectionId": "fastapi-interview",
     "orderIndex": 3,
     "title": "Pydantic models and request body",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["Pydantic", "BaseModel", "request body", "validation", "serialization"],
     "content": {
       "question": "What is Pydantic and how does FastAPI use it for request body validation?",
@@ -110,7 +107,6 @@
       "codeExamples": [
         {
           "title": "Pydantic model for request body",
-          "language": "python",
           "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel, EmailStr, field_validator\nfrom typing import Optional\n\napp = FastAPI()\n\nclass UserCreate(BaseModel):\n    name: str\n    email: EmailStr\n    age: int\n    bio: Optional[str] = None\n\n    @field_validator('age')\n    @classmethod\n    def age_must_be_positive(cls, v):\n        if v < 0:\n            raise ValueError('age must be positive')\n        return v\n\n@app.post(\"/users\")\ndef create_user(user: UserCreate):\n    # user is already validated\n    return {\"created\": user.model_dump()}"
         }
       ],
@@ -124,7 +120,7 @@
         "How do you handle optional fields vs fields with default values?"
       ],
       "interviewTips": [
-        "Mention that validation errors automatically return 422 with detailed error messages — no manual error handling needed"
+        "Mention that validation errors automatically return 422 with detailed error messages - no manual error handling needed"
       ]
     }
   },
@@ -133,16 +129,15 @@
     "sectionId": "fastapi-interview",
     "orderIndex": 4,
     "title": "Response models and response filtering",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["response_model", "output filtering", "security", "serialization"],
     "content": {
       "question": "What is response_model in FastAPI and why is it important?",
-      "answer": "The `response_model` parameter on a path operation decorator specifies the Pydantic model used to validate and filter the response data. It serves three purposes:\n\n1. **Filtering**: Strips fields not in the response model (e.g., passwords)\n2. **Validation**: Ensures the response matches the expected schema\n3. **Documentation**: Adds the response schema to OpenAPI docs\n\nThis separates input models (request body) from output models (response), which is critical for security — you can return a database object and have FastAPI automatically exclude sensitive fields.",
+      "answer": "The `response_model` parameter on a path operation decorator specifies the Pydantic model used to validate and filter the response data. It serves three purposes:\n\n1. Filtering: Strips fields not in the response model (e.g., passwords)\n2. Validation: Ensures the response matches the expected schema\n3. Documentation: Adds the response schema to OpenAPI docs\n\nThis separates input models (request body) from output models (response), which is critical for security - you can return a database object and have FastAPI automatically exclude sensitive fields.",
       "codeExamples": [
         {
           "title": "Using response_model to filter sensitive fields",
-          "language": "python",
           "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass UserCreate(BaseModel):\n    name: str\n    email: str\n    password: str\n\nclass UserResponse(BaseModel):\n    name: str\n    email: str\n    # no password field\n\n@app.post(\"/users\", response_model=UserResponse)\ndef create_user(user: UserCreate):\n    # password is in `user` but won't be returned\n    return user  # FastAPI filters it using UserResponse\n\n# Use response_model_exclude_unset=True to omit unset optional fields\n@app.get(\"/users/{id}\", response_model=UserResponse, response_model_exclude_unset=True)\ndef get_user(id: int):\n    return {\"name\": \"Alice\", \"email\": \"alice@example.com\"}"
         }
       ],
@@ -156,7 +151,7 @@
         "What is the difference between response_model and the return type annotation?"
       ],
       "interviewTips": [
-        "Emphasize the security angle — response_model prevents accidental data leaks"
+        "Emphasize the security angle - response_model prevents accidental data leaks"
       ]
     }
   },
@@ -166,16 +161,15 @@
     "orderIndex": 5,
     "title": "Dependency Injection in FastAPI",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["Depends", "dependency injection", "reusability", "scoping"],
     "content": {
       "question": "How does FastAPI's dependency injection system work? What are its benefits?",
-      "answer": "FastAPI's DI system uses the `Depends()` function. Dependencies are regular functions or classes that FastAPI calls before the path operation function, injecting their return values.\n\n**How it works:**\n1. Declare a dependency function\n2. Use `Depends(dependency_fn)` as a default value in the path operation's parameters\n3. FastAPI calls the dependency, resolves nested dependencies recursively, and passes results to the path operation\n\n**Benefits:**\n- Code reuse across multiple routes\n- Automatic handling of shared logic (auth, DB sessions, pagination)\n- Easy testing — dependencies can be overridden\n- Dependency caching within a request (same instance per request by default)",
+      "answer": "FastAPI's DI system uses the `Depends()` function. Dependencies are regular functions or classes that FastAPI calls before the path operation function, injecting their return values.\n\nHow it works:\n1. Declare a dependency function\n2. Use `Depends(dependency_fn)` as a default value in the path operation's parameters\n3. FastAPI calls the dependency, resolves nested dependencies recursively, and passes results to the path operation\n\nBenefits:\n- Code reuse across multiple routes\n- Automatic handling of shared logic (auth, DB sessions, pagination)\n- Easy testing - dependencies can be overridden\n- Dependency caching within a request (same instance per request by default)",
       "codeExamples": [
         {
           "title": "Dependency injection example",
-          "language": "python",
-          "code": "from fastapi import FastAPI, Depends, HTTPException\nfrom typing import Annotated\n\napp = FastAPI()\n\n# Simple dependency\ndef get_pagination(skip: int = 0, limit: int = 10):\n    return {\"skip\": skip, \"limit\": limit}\n\n# Auth dependency\ndef get_current_user(token: str):\n    if token != \"secret\":\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    return {\"user\": \"alice\"}\n\n# Using Annotated (recommended in FastAPI 0.95+)\nPagination = Annotated[dict, Depends(get_pagination)]\nCurrentUser = Annotated[dict, Depends(get_current_user)]\n\n@app.get(\"/items\")\ndef list_items(pagination: Pagination, user: CurrentUser):\n    return {\"user\": user, **pagination}"
+          "code": "from fastapi import FastAPI, Depends, HTTPException\nfrom typing import Annotated\n\napp = FastAPI()\n\n# Simple dependency\ndef get_pagination(skip: int = 0, limit: int = 10):\n    return {\"skip\": skip, \"limit\": limit}\n\n# Auth dependency\ndef get_current_user(token: str):\n    if token != \"secret\":\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    return {\"user\": \"alice\"}\n\n# Using Annotated (recommended in FastAPI 0.95+)\nPagination = Annotated[dict, Depends(get_pagination)]\nCurrentUser = Annotated[dict, Depends(get_current_user)]\n\n@app.get(\"/items\")\ndef list_items(pagination: Pagination, user: CurrentUser):\n    return {\"user\": user, pagination}"
         }
       ],
       "notes": [
@@ -198,16 +192,15 @@
     "orderIndex": 6,
     "title": "Async vs sync route handlers",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["async/await", "ASGI", "concurrency", "blocking I/O"],
     "content": {
       "question": "When should you use async def vs def for FastAPI route handlers?",
-      "answer": "**Use `async def` when** the route performs I/O-bound operations that support async: async database drivers (asyncpg, motor, tortoise-orm), httpx async HTTP client, async file I/O, etc. This allows FastAPI to handle other requests while waiting.\n\n**Use `def` (sync) when** the code uses blocking libraries (requests, psycopg2, standard file I/O). FastAPI automatically runs sync route handlers in a thread pool so they don't block the event loop.\n\n**The problem**: Calling a blocking library inside `async def` blocks the event loop for all requests. Always use async alternatives in async routes.\n\nRule of thumb: If in doubt and you're using a blocking library, use `def`. FastAPI handles thread pool execution automatically.",
+      "answer": "Use `async def` when the route performs I/O-bound operations that support async: async database drivers (asyncpg, motor, tortoise-orm), httpx async HTTP client, async file I/O, etc. This allows FastAPI to handle other requests while waiting.\n\nUse `def` (sync) when the code uses blocking libraries (requests, psycopg2, standard file I/O). FastAPI automatically runs sync route handlers in a thread pool so they don't block the event loop.\n\nThe problem: Calling a blocking library inside `async def` blocks the event loop for all requests. Always use async alternatives in async routes.\n\nRule of thumb: If in doubt and you're using a blocking library, use `def`. FastAPI handles thread pool execution automatically.",
       "codeExamples": [
         {
           "title": "Async vs sync routes",
-          "language": "python",
-          "code": "import httpx\nimport requests\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n# GOOD: async route with async HTTP client\n@app.get(\"/async-fetch\")\nasync def fetch_async():\n    async with httpx.AsyncClient() as client:\n        response = await client.get(\"https://api.example.com/data\")\n    return response.json()\n\n# GOOD: sync route with blocking library — runs in thread pool\n@app.get(\"/sync-fetch\")\ndef fetch_sync():\n    response = requests.get(\"https://api.example.com/data\")\n    return response.json()\n\n# BAD: blocking call inside async def — blocks event loop!\n@app.get(\"/bad\")\nasync def bad_route():\n    response = requests.get(\"https://api.example.com/data\")  # BLOCKS!\n    return response.json()"
+          "code": "import httpx\nimport requests\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n# GOOD: async route with async HTTP client\n@app.get(\"/async-fetch\")\nasync def fetch_async():\n    async with httpx.AsyncClient() as client:\n        response = await client.get(\"https://api.example.com/data\")\n    return response.json()\n\n# GOOD: sync route with blocking library - runs in thread pool\n@app.get(\"/sync-fetch\")\ndef fetch_sync():\n    response = requests.get(\"https://api.example.com/data\")\n    return response.json()\n\n# BAD: blocking call inside async def - blocks event loop!\n@app.get(\"/bad\")\nasync def bad_route():\n    response = requests.get(\"https://api.example.com/data\")  # BLOCKS!\n    return response.json()"
         }
       ],
       "notes": [
@@ -220,7 +213,7 @@
         "What happens if you block the event loop?"
       ],
       "interviewTips": [
-        "Interviewers often ask about the blocking-in-async pitfall — be explicit about it"
+        "Interviewers often ask about the blocking-in-async pitfall - be explicit about it"
       ]
     }
   },
@@ -230,7 +223,7 @@
     "orderIndex": 7,
     "title": "Authentication and JWT in FastAPI",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["OAuth2", "JWT", "Bearer token", "security schemes"],
     "content": {
       "question": "How do you implement JWT-based authentication in FastAPI?",
@@ -238,8 +231,7 @@
       "codeExamples": [
         {
           "title": "JWT auth flow",
-          "language": "python",
-          "code": "from fastapi import FastAPI, Depends, HTTPException, status\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\nfrom jose import JWTError, jwt\nfrom datetime import datetime, timedelta\n\napp = FastAPI()\nSECRET_KEY = \"your-secret-key\"\nALGORITHM = \"HS256\"\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"/token\")\n\ndef create_token(data: dict):\n    expire = datetime.utcnow() + timedelta(minutes=30)\n    return jwt.encode({**data, \"exp\": expire}, SECRET_KEY, algorithm=ALGORITHM)\n\nasync def get_current_user(token: str = Depends(oauth2_scheme)):\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])\n        username = payload.get(\"sub\")\n        if username is None:\n            raise HTTPException(status_code=401, detail=\"Invalid token\")\n        return username\n    except JWTError:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n\n@app.post(\"/token\")\nasync def login(form: OAuth2PasswordRequestForm = Depends()):\n    # verify form.username and form.password against DB...\n    token = create_token({\"sub\": form.username})\n    return {\"access_token\": token, \"token_type\": \"bearer\"}\n\n@app.get(\"/me\")\nasync def read_me(user: str = Depends(get_current_user)):\n    return {\"user\": user}"
+          "code": "from fastapi import FastAPI, Depends, HTTPException, status\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\nfrom jose import JWTError, jwt\nfrom datetime import datetime, timedelta\n\napp = FastAPI()\nSECRET_KEY = \"your-secret-key\"\nALGORITHM = \"HS256\"\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"/token\")\n\ndef create_token(data: dict):\n    expire = datetime.utcnow() + timedelta(minutes=30)\n    return jwt.encode({data, \"exp\": expire}, SECRET_KEY, algorithm=ALGORITHM)\n\nasync def get_current_user(token: str = Depends(oauth2_scheme)):\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])\n        username = payload.get(\"sub\")\n        if username is None:\n            raise HTTPException(status_code=401, detail=\"Invalid token\")\n        return username\n    except JWTError:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n\n@app.post(\"/token\")\nasync def login(form: OAuth2PasswordRequestForm = Depends()):\n    # verify form.username and form.password against DB...\n    token = create_token({\"sub\": form.username})\n    return {\"access_token\": token, \"token_type\": \"bearer\"}\n\n@app.get(\"/me\")\nasync def read_me(user: str = Depends(get_current_user)):\n    return {\"user\": user}"
         }
       ],
       "notes": [
@@ -261,8 +253,8 @@
     "sectionId": "fastapi-interview",
     "orderIndex": 8,
     "title": "Error handling and HTTPException",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["HTTPException", "exception handlers", "status codes", "custom errors"],
     "content": {
       "question": "How does FastAPI handle errors? How do you raise and customize HTTP errors?",
@@ -270,7 +262,6 @@
       "codeExamples": [
         {
           "title": "HTTPException and custom exception handler",
-          "language": "python",
           "code": "from fastapi import FastAPI, HTTPException, Request\nfrom fastapi.responses import JSONResponse\nfrom fastapi.exceptions import RequestValidationError\n\napp = FastAPI()\n\nclass ItemNotFound(Exception):\n    def __init__(self, item_id: int):\n        self.item_id = item_id\n\n@app.exception_handler(ItemNotFound)\nasync def item_not_found_handler(request: Request, exc: ItemNotFound):\n    return JSONResponse(\n        status_code=404,\n        content={\"error\": f\"Item {exc.item_id} not found\"}\n    )\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request: Request, exc: RequestValidationError):\n    return JSONResponse(\n        status_code=422,\n        content={\"detail\": exc.errors(), \"body\": str(exc.body)}\n    )\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    if item_id not in [1, 2, 3]:\n        raise ItemNotFound(item_id=item_id)  # custom exception\n    if item_id < 0:\n        raise HTTPException(status_code=400, detail=\"ID must be positive\")\n    return {\"item_id\": item_id}"
         }
       ],
@@ -294,29 +285,28 @@
     "orderIndex": 9,
     "title": "Middleware in FastAPI",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["middleware", "CORS", "request/response cycle", "BaseHTTPMiddleware"],
     "content": {
       "question": "What is middleware in FastAPI and how do you add it? Give an example use case.",
-      "answer": "Middleware is code that runs on every request before it reaches the route handler, and on every response before it's returned to the client. It wraps the entire request/response cycle.\n\nAdd middleware using `@app.middleware('http')` decorator or `app.add_middleware(MiddlewareClass, **options)`.\n\nCommon use cases:\n- Request timing and logging\n- CORS (Cross-Origin Resource Sharing)\n- Authentication token extraction\n- Rate limiting\n- Request ID injection\n- GZip compression",
+      "answer": "Middleware is code that runs on every request before it reaches the route handler, and on every response before it's returned to the client. It wraps the entire request/response cycle.\n\nAdd middleware using `@app.middleware('http')` decorator or `app.add_middleware(MiddlewareClass, options)`.\n\nCommon use cases:\n- Request timing and logging\n- CORS (Cross-Origin Resource Sharing)\n- Authentication token extraction\n- Rate limiting\n- Request ID injection\n- GZip compression",
       "codeExamples": [
         {
           "title": "Custom middleware and CORS",
-          "language": "python",
           "code": "import time\nfrom fastapi import FastAPI, Request\nfrom fastapi.middleware.cors import CORSMiddleware\n\napp = FastAPI()\n\n# Built-in CORS middleware\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=[\"https://example.com\", \"http://localhost:3000\"],\n    allow_credentials=True,\n    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],\n)\n\n# Custom timing middleware\n@app.middleware(\"http\")\nasync def add_process_time_header(request: Request, call_next):\n    start_time = time.time()\n    response = await call_next(request)  # call the route handler\n    process_time = time.time() - start_time\n    response.headers[\"X-Process-Time\"] = str(process_time)\n    return response"
         }
       ],
       "notes": [
-        "Middleware runs in the order it is added — add CORS before custom middleware",
+        "Middleware runs in the order it is added - add CORS before custom middleware",
         "`BaseHTTPMiddleware` from Starlette is another way to define middleware as a class",
-        "Middleware cannot directly raise HTTPException — use responses directly"
+        "Middleware cannot directly raise HTTPException - use responses directly"
       ],
       "followUps": [
         "What is the difference between middleware and a dependency?",
         "How do you add rate limiting in FastAPI?"
       ],
       "interviewTips": [
-        "CORS is one of the most common interview topics — know the allow_origins wildcard vs explicit origins trade-off"
+        "CORS is one of the most common interview topics - know the allow_origins wildcard vs explicit origins trade-off"
       ]
     }
   },
@@ -326,7 +316,7 @@
     "orderIndex": 10,
     "title": "Database integration with SQLAlchemy",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["SQLAlchemy", "session", "dependency", "async ORM"],
     "content": {
       "question": "How do you integrate a relational database with FastAPI using SQLAlchemy?",
@@ -334,8 +324,7 @@
       "codeExamples": [
         {
           "title": "SQLAlchemy session dependency",
-          "language": "python",
-          "code": "from sqlalchemy import create_engine\nfrom sqlalchemy.orm import sessionmaker, Session, DeclarativeBase\nfrom fastapi import FastAPI, Depends\nfrom typing import Generator\n\nDATABASE_URL = \"sqlite:///./test.db\"\nengine = create_engine(DATABASE_URL)\nSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n\nclass Base(DeclarativeBase):\n    pass\n\n# Dependency — yields DB session per request\ndef get_db() -> Generator[Session, None, None]:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}\")\ndef read_user(user_id: int, db: Session = Depends(get_db)):\n    user = db.query(User).filter(User.id == user_id).first()\n    if not user:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return user"
+          "code": "from sqlalchemy import create_engine\nfrom sqlalchemy.orm import sessionmaker, Session, DeclarativeBase\nfrom fastapi import FastAPI, Depends\nfrom typing import Generator\n\nDATABASE_URL = \"sqlite:///./test.db\"\nengine = create_engine(DATABASE_URL)\nSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n\nclass Base(DeclarativeBase):\n    pass\n\n# Dependency - yields DB session per request\ndef get_db() -> Generator[Session, None, None]:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}\")\ndef read_user(user_id: int, db: Session = Depends(get_db)):\n    user = db.query(User).filter(User.id == user_id).first()\n    if not user:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return user"
         }
       ],
       "notes": [
@@ -348,7 +337,7 @@
         "What is the N+1 query problem and how do you solve it with SQLAlchemy?"
       ],
       "interviewTips": [
-        "The yield-based session dependency is a classic FastAPI pattern — demonstrate it confidently"
+        "The yield-based session dependency is a classic FastAPI pattern - demonstrate it confidently"
       ]
     }
   },
@@ -358,21 +347,20 @@
     "orderIndex": 11,
     "title": "Background tasks in FastAPI",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["BackgroundTasks", "async tasks", "fire and forget", "Celery"],
     "content": {
       "question": "What are background tasks in FastAPI and when should you use them?",
-      "answer": "FastAPI's `BackgroundTasks` allows you to run functions after returning a response — useful for operations that don't need to block the client.\n\nUse cases:\n- Sending confirmation emails\n- Logging to external services\n- Post-processing uploaded files\n- Sending notifications\n\n**Limitations**: Background tasks run in the same process/event loop. They are not persistent — if the server restarts, queued tasks are lost. For production-grade background processing, use Celery with Redis/RabbitMQ or ARQ (async Redis Queue).",
+      "answer": "FastAPI's `BackgroundTasks` allows you to run functions after returning a response - useful for operations that don't need to block the client.\n\nUse cases:\n- Sending confirmation emails\n- Logging to external services\n- Post-processing uploaded files\n- Sending notifications\n\nLimitations: Background tasks run in the same process/event loop. They are not persistent - if the server restarts, queued tasks are lost. For production-grade background processing, use Celery with Redis/RabbitMQ or ARQ (async Redis Queue).",
       "codeExamples": [
         {
           "title": "BackgroundTasks usage",
-          "language": "python",
           "code": "from fastapi import FastAPI, BackgroundTasks\nimport time\n\napp = FastAPI()\n\ndef send_email(email: str, message: str):\n    # Simulate slow email send\n    time.sleep(2)\n    print(f\"Email sent to {email}: {message}\")\n\nasync def log_action(user_id: int, action: str):\n    # Async background task\n    await some_logging_service.log(user_id, action)\n\n@app.post(\"/signup\")\nasync def signup(email: str, background_tasks: BackgroundTasks):\n    # ... create user in DB ...\n    background_tasks.add_task(send_email, email, \"Welcome to the platform!\")\n    return {\"message\": \"Signed up! Check your email.\"}  # returns immediately"
         }
       ],
       "notes": [
         "BackgroundTasks are added via dependency injection or directly in the route",
-        "Multiple tasks can be queued — they run sequentially after the response",
+        "Multiple tasks can be queued - they run sequentially after the response",
         "For async background tasks, define them with `async def`"
       ],
       "followUps": [
@@ -380,7 +368,7 @@
         "What happens to background tasks if an exception occurs?"
       ],
       "interviewTips": [
-        "Always mention the persistence limitation — BackgroundTasks are process-scoped, not durable"
+        "Always mention the persistence limitation - BackgroundTasks are process-scoped, not durable"
       ]
     }
   },
@@ -390,15 +378,14 @@
     "orderIndex": 12,
     "title": "File uploads in FastAPI",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["UploadFile", "File", "multipart/form-data", "streaming"],
     "content": {
       "question": "How do you handle file uploads in FastAPI? What is the difference between File and UploadFile?",
-      "answer": "`File` is a basic bytes object — the entire file is loaded into memory. `UploadFile` is a file-like object with metadata (filename, content_type) and supports async reading, making it suitable for large files.\n\n`UploadFile` provides:\n- `filename`: Original filename\n- `content_type`: MIME type\n- `read(size)` / `await file.read()`: Read content\n- `seek(offset)` / `write()`: Seek/write operations\n- The file is spooled in memory up to a threshold, then stored on disk\n\nFor multiple files, use `List[UploadFile]`.",
+      "answer": "`File` is a basic bytes object - the entire file is loaded into memory. `UploadFile` is a file-like object with metadata (filename, content_type) and supports async reading, making it suitable for large files.\n\n`UploadFile` provides:\n- `filename`: Original filename\n- `content_type`: MIME type\n- `read(size)` / `await file.read()`: Read content\n- `seek(offset)` / `write()`: Seek/write operations\n- The file is spooled in memory up to a threshold, then stored on disk\n\nFor multiple files, use `List[UploadFile]`.",
       "codeExamples": [
         {
           "title": "File upload endpoint",
-          "language": "python",
           "code": "from fastapi import FastAPI, File, UploadFile\nfrom typing import List\nimport shutil\nimport os\n\napp = FastAPI()\n\n@app.post(\"/upload\")\nasync def upload_file(file: UploadFile = File(...)):\n    # Read file content\n    content = await file.read()\n    \n    # Save to disk\n    file_path = f\"uploads/{file.filename}\"\n    os.makedirs(\"uploads\", exist_ok=True)\n    with open(file_path, \"wb\") as f:\n        f.write(content)\n    \n    return {\n        \"filename\": file.filename,\n        \"content_type\": file.content_type,\n        \"size\": len(content)\n    }\n\n@app.post(\"/upload-multiple\")\nasync def upload_multiple(files: List[UploadFile] = File(...)):\n    results = []\n    for file in files:\n        content = await file.read()\n        results.append({\"filename\": file.filename, \"size\": len(content)})\n    return results"
         }
       ],
@@ -412,7 +399,7 @@
         "How do you combine file uploads with JSON data?"
       ],
       "interviewTips": [
-        "Note that you cannot have both a JSON body and file upload in the same request — use Form fields for text data alongside files"
+        "Note that you cannot have both a JSON body and file upload in the same request - use Form fields for text data alongside files"
       ]
     }
   },
@@ -422,20 +409,19 @@
     "orderIndex": 13,
     "title": "WebSockets in FastAPI",
     "difficulty": "Advanced",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["WebSocket", "real-time", "bidirectional", "connection manager"],
     "content": {
       "question": "How does FastAPI support WebSockets? Describe the basic pattern.",
-      "answer": "FastAPI supports WebSockets natively via Starlette. Define a WebSocket endpoint using `@app.websocket('/ws')` and accept a `WebSocket` parameter. The connection lifecycle:\n\n1. `await websocket.accept()` — handshake\n2. Loop: `await websocket.receive_text()` / `receive_json()` / `receive_bytes()`\n3. `await websocket.send_text()` / `send_json()` / `send_bytes()`\n4. Handle `WebSocketDisconnect` exception for clean disconnection\n\nFor multi-client broadcasting, maintain a connection manager that tracks active connections.",
+      "answer": "FastAPI supports WebSockets natively via Starlette. Define a WebSocket endpoint using `@app.websocket('/ws')` and accept a `WebSocket` parameter. The connection lifecycle:\n\n1. `await websocket.accept()` - handshake\n2. Loop: `await websocket.receive_text()` / `receive_json()` / `receive_bytes()`\n3. `await websocket.send_text()` / `send_json()` / `send_bytes()`\n4. Handle `WebSocketDisconnect` exception for clean disconnection\n\nFor multi-client broadcasting, maintain a connection manager that tracks active connections.",
       "codeExamples": [
         {
           "title": "WebSocket chat example",
-          "language": "python",
           "code": "from fastapi import FastAPI, WebSocket, WebSocketDisconnect\nfrom typing import List\n\napp = FastAPI()\n\nclass ConnectionManager:\n    def __init__(self):\n        self.active: List[WebSocket] = []\n\n    async def connect(self, ws: WebSocket):\n        await ws.accept()\n        self.active.append(ws)\n\n    def disconnect(self, ws: WebSocket):\n        self.active.remove(ws)\n\n    async def broadcast(self, message: str):\n        for ws in self.active:\n            await ws.send_text(message)\n\nmanager = ConnectionManager()\n\n@app.websocket(\"/ws/{client_id}\")\nasync def websocket_endpoint(websocket: WebSocket, client_id: str):\n    await manager.connect(websocket)\n    try:\n        while True:\n            data = await websocket.receive_text()\n            await manager.broadcast(f\"{client_id}: {data}\")\n    except WebSocketDisconnect:\n        manager.disconnect(websocket)\n        await manager.broadcast(f\"{client_id} left the chat\")"
         }
       ],
       "notes": [
-        "WebSocket connections are long-lived — handle disconnects with try/except",
+        "WebSocket connections are long-lived - handle disconnects with try/except",
         "The connection manager pattern is essential for multi-client scenarios",
         "For production, consider Redis Pub/Sub for multi-instance broadcasting"
       ],
@@ -444,7 +430,7 @@
         "What are the limitations of in-memory connection managers in multi-server deployments?"
       ],
       "interviewTips": [
-        "The disconnect handler is often forgotten — always show the try/except WebSocketDisconnect pattern"
+        "The disconnect handler is often forgotten - always show the try/except WebSocketDisconnect pattern"
       ]
     }
   },
@@ -454,7 +440,7 @@
     "orderIndex": 14,
     "title": "Application lifespan and startup/shutdown events",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["lifespan", "startup", "shutdown", "context manager", "app state"],
     "content": {
       "question": "How do you run code on application startup and shutdown in FastAPI?",
@@ -462,7 +448,6 @@
       "codeExamples": [
         {
           "title": "Lifespan context manager",
-          "language": "python",
           "code": "from contextlib import asynccontextmanager\nfrom fastapi import FastAPI\nimport asyncpg\n\ndb_pool = None\n\n@asynccontextmanager\nasync def lifespan(app: FastAPI):\n    # Startup\n    global db_pool\n    db_pool = await asyncpg.create_pool(\"postgresql://localhost/mydb\")\n    print(\"Database pool created\")\n    \n    yield  # App runs here\n    \n    # Shutdown\n    await db_pool.close()\n    print(\"Database pool closed\")\n\napp = FastAPI(lifespan=lifespan)\n\n@app.get(\"/health\")\nasync def health():\n    return {\"status\": \"ok\", \"db_pool\": db_pool is not None}"
         }
       ],
@@ -476,7 +461,7 @@
         "What happens if lifespan startup code raises an exception?"
       ],
       "interviewTips": [
-        "Use the lifespan pattern when asked about initialization — it's the modern FastAPI way"
+        "Use the lifespan pattern when asked about initialization - it's the modern FastAPI way"
       ]
     }
   },
@@ -486,7 +471,7 @@
     "orderIndex": 15,
     "title": "Testing FastAPI applications",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["TestClient", "pytest", "dependency overrides", "async testing"],
     "content": {
       "question": "How do you test FastAPI applications? How do you mock dependencies in tests?",
@@ -494,21 +479,20 @@
       "codeExamples": [
         {
           "title": "FastAPI testing with dependency override",
-          "language": "python",
           "code": "from fastapi.testclient import TestClient\nfrom main import app, get_current_user\nimport pytest\n\n# Override auth dependency\ndef mock_user():\n    return {\"id\": 1, \"name\": \"Test User\"}\n\n@pytest.fixture\ndef client():\n    app.dependency_overrides[get_current_user] = mock_user\n    with TestClient(app) as c:\n        yield c\n    app.dependency_overrides.clear()\n\ndef test_get_profile(client):\n    response = client.get(\"/me\")\n    assert response.status_code == 200\n    assert response.json()[\"name\"] == \"Test User\"\n\n# Async testing with httpx\nimport pytest_asyncio\nfrom httpx import AsyncClient, ASGITransport\n\n@pytest.mark.asyncio\nasync def test_async_endpoint():\n    async with AsyncClient(transport=ASGITransport(app=app), base_url=\"http://test\") as ac:\n        response = await ac.get(\"/items\")\n    assert response.status_code == 200"
         }
       ],
       "notes": [
         "TestClient handles lifespan events automatically when used as a context manager",
         "Use `pytest-asyncio` for async tests",
-        "`app.dependency_overrides` is a dict — clear it after tests to avoid leaking state"
+        "`app.dependency_overrides` is a dict - clear it after tests to avoid leaking state"
       ],
       "followUps": [
         "How do you test WebSocket endpoints in FastAPI?",
         "How do you test with a real test database instead of mocking?"
       ],
       "interviewTips": [
-        "Dependency overrides are FastAPI's killer feature for testing — always mention them"
+        "Dependency overrides are FastAPI's killer feature for testing - always mention them"
       ]
     }
   },
@@ -517,16 +501,15 @@
     "sectionId": "fastapi-interview",
     "orderIndex": 16,
     "title": "OpenAPI and automatic documentation",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["OpenAPI", "Swagger UI", "ReDoc", "schema generation"],
     "content": {
       "question": "How does FastAPI generate API documentation automatically? How can you customize it?",
-      "answer": "FastAPI generates an OpenAPI schema from your route definitions, Pydantic models, and type hints. It serves:\n- **Swagger UI** at `/docs` — interactive, allows making real API calls\n- **ReDoc** at `/redoc` — clean, readable documentation\n- **Raw JSON schema** at `/openapi.json`\n\nCustomization options:\n- `title`, `description`, `version` in `FastAPI()` constructor\n- `tags` parameter on routes for grouping\n- `summary` and `description` on routes for documentation text\n- `response_model` adds response schemas\n- `openapi_tags` for tag-level metadata\n- Disable docs with `docs_url=None, redoc_url=None`",
+      "answer": "FastAPI generates an OpenAPI schema from your route definitions, Pydantic models, and type hints. It serves:\n- Swagger UI at `/docs` - interactive, allows making real API calls\n- ReDoc at `/redoc` - clean, readable documentation\n- Raw JSON schema at `/openapi.json`\n\nCustomization options:\n- `title`, `description`, `version` in `FastAPI()` constructor\n- `tags` parameter on routes for grouping\n- `summary` and `description` on routes for documentation text\n- `response_model` adds response schemas\n- `openapi_tags` for tag-level metadata\n- Disable docs with `docs_url=None, redoc_url=None`",
       "codeExamples": [
         {
           "title": "Customizing OpenAPI docs",
-          "language": "python",
           "code": "from fastapi import FastAPI\n\napp = FastAPI(\n    title=\"My API\",\n    description=\"This is a demo API with full OpenAPI docs.\",\n    version=\"1.0.0\",\n    docs_url=\"/swagger\",       # change Swagger URL\n    redoc_url=\"/docs\",         # change ReDoc URL\n    openapi_tags=[\n        {\"name\": \"items\", \"description\": \"Operations with items\"},\n        {\"name\": \"users\", \"description\": \"User management\"},\n    ]\n)\n\n@app.get(\n    \"/items/{id}\",\n    tags=[\"items\"],\n    summary=\"Get an item by ID\",\n    description=\"Retrieve a single item. Returns 404 if not found.\",\n    response_description=\"The requested item\"\n)\ndef get_item(id: int):\n    return {\"id\": id}"
         }
       ],
@@ -540,7 +523,7 @@
         "How do you generate a client SDK from FastAPI's OpenAPI schema?"
       ],
       "interviewTips": [
-        "Auto-documentation is a major selling point of FastAPI — be enthusiastic about it"
+        "Auto-documentation is a major selling point of FastAPI - be enthusiastic about it"
       ]
     }
   },
@@ -550,7 +533,7 @@
     "orderIndex": 17,
       "title": "APIRouter and application structure",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["APIRouter", "modular structure", "prefix", "tags"],
     "content": {
       "question": "How do you organize a large FastAPI application using APIRouter?",
@@ -558,7 +541,6 @@
       "codeExamples": [
         {
           "title": "APIRouter usage",
-          "language": "python",
           "code": "# routers/users.py\nfrom fastapi import APIRouter, Depends\n\nrouter = APIRouter(\n    prefix=\"/users\",\n    tags=[\"users\"],\n    responses={404: {\"description\": \"Not found\"}}\n)\n\n@router.get(\"/\")\ndef list_users():\n    return [{\"id\": 1, \"name\": \"Alice\"}]\n\n@router.get(\"/{user_id}\")\ndef get_user(user_id: int):\n    return {\"id\": user_id, \"name\": \"Alice\"}\n\n# main.py\nfrom fastapi import FastAPI\nfrom routers import users, items\n\napp = FastAPI()\napp.include_router(users.router)\napp.include_router(items.router, prefix=\"/api/v1\")  # override prefix"
         }
       ],
@@ -582,7 +564,7 @@
     "orderIndex": 18,
     "title": "Configuration and settings management",
     "difficulty": "Intermediate",
-    "type": "conceptual",
+    "type": "Concept",
     "concepts": ["pydantic-settings", "BaseSettings", "environment variables", ".env"],
     "content": {
       "question": "How do you manage configuration and environment variables in FastAPI?",
@@ -590,13 +572,12 @@
       "codeExamples": [
         {
           "title": "Settings with pydantic-settings",
-          "language": "python",
           "code": "# config.py\nfrom pydantic_settings import BaseSettings, SettingsConfigDict\nfrom functools import lru_cache\n\nclass Settings(BaseSettings):\n    app_name: str = \"MyApp\"\n    database_url: str\n    secret_key: str\n    debug: bool = False\n    max_connections: int = 10\n\n    model_config = SettingsConfigDict(env_file=\".env\", env_file_encoding=\"utf-8\")\n\n@lru_cache\ndef get_settings() -> Settings:\n    return Settings()\n\n# main.py\nfrom fastapi import FastAPI, Depends\nfrom config import Settings, get_settings\n\napp = FastAPI()\n\n@app.get(\"/info\")\ndef app_info(settings: Settings = Depends(get_settings)):\n    return {\"app\": settings.app_name, \"debug\": settings.debug}"
         }
       ],
       "notes": [
         "Install with: `pip install pydantic-settings`",
-        "`@lru_cache` ensures the settings object is singleton — env/file is read only once",
+        "`@lru_cache` ensures the settings object is singleton - env/file is read only once",
         "For testing, override `get_settings` via `app.dependency_overrides`"
       ],
       "followUps": [
@@ -604,7 +585,7 @@
         "How do you handle secrets that should never be in .env files?"
       ],
       "interviewTips": [
-        "Always mention lru_cache — without it, the .env file is re-read on every request"
+        "Always mention lru_cache - without it, the .env file is re-read on every request"
       ]
     }
   },
@@ -612,17 +593,16 @@
     "id": "fastapi-vs-flask-django",
     "sectionId": "fastapi-interview",
     "orderIndex": 19,
-    "title": "FastAPI vs Flask vs Django — when to use which?",
-    "difficulty": "Easy",
-    "type": "conceptual",
+    "title": "FastAPI vs Flask vs Django - when to use which?",
+    "difficulty": "Beginner",
+    "type": "Concept",
     "concepts": ["framework comparison", "async", "ORM", "use cases"],
     "content": {
       "question": "When would you choose FastAPI over Flask or Django? What are the trade-offs?",
-      "answer": "**FastAPI** — Best for: high-performance async APIs, microservices, ML model serving, projects where auto-documentation and type safety matter.\n- Pros: Fast, async-native, automatic validation, auto docs, modern Python patterns\n- Cons: Smaller ecosystem than Django, no built-in ORM or admin panel, relatively newer\n\n**Flask** — Best for: small to medium APIs, rapid prototyping, projects needing maximum flexibility.\n- Pros: Minimal, flexible, large ecosystem of extensions\n- Cons: No async by default, no built-in validation, no auto docs, more boilerplate\n\n**Django** — Best for: full-stack web apps, rapid development with admin panel, projects needing an ORM out of the box.\n- Pros: Batteries included (ORM, admin, auth, migrations), mature ecosystem\n- Cons: Heavy for pure APIs, sync by default (async support improving), opinionated structure",
+      "answer": "FastAPI - Best for: high-performance async APIs, microservices, ML model serving, projects where auto-documentation and type safety matter.\n- Pros: Fast, async-native, automatic validation, auto docs, modern Python patterns\n- Cons: Smaller ecosystem than Django, no built-in ORM or admin panel, relatively newer\n\nFlask - Best for: small to medium APIs, rapid prototyping, projects needing maximum flexibility.\n- Pros: Minimal, flexible, large ecosystem of extensions\n- Cons: No async by default, no built-in validation, no auto docs, more boilerplate\n\nDjango - Best for: full-stack web apps, rapid development with admin panel, projects needing an ORM out of the box.\n- Pros: Batteries included (ORM, admin, auth, migrations), mature ecosystem\n- Cons: Heavy for pure APIs, sync by default (async support improving), opinionated structure",
       "codeExamples": [
         {
           "title": "Equivalent POST endpoint in all three frameworks",
-          "language": "python",
           "code": "# FastAPI (auto-validates, auto-docs)\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\napp = FastAPI()\nclass Item(BaseModel):\n    name: str\n    price: float\n@app.post(\"/items\")\ndef create(item: Item):\n    return item\n\n# Flask (manual validation)\nfrom flask import Flask, request, jsonify\napp = Flask(__name__)\n@app.post(\"/items\")\ndef create():\n    data = request.get_json()\n    # manual validation required\n    return jsonify(data)\n\n# Django REST Framework\nfrom rest_framework.decorators import api_view\nfrom rest_framework.response import Response\n@api_view(['POST'])\ndef create(request):\n    # uses DRF serializers for validation\n    return Response(request.data)"
         }
       ],
@@ -636,7 +616,317 @@
         "Can FastAPI and Django be used together in the same project?"
       ],
       "interviewTips": [
-        "Frame your answer around the project requirements rather than declaring one framework 'best' — context matters"
+        "Frame your answer around the project requirements rather than declaring one framework 'best' - context matters"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-rate-limiting",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 20,
+    "title": "Rate limiting in FastAPI",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["rate limiting", "slowapi", "throttling", "Redis"],
+    "content": {
+      "question": "How do you implement rate limiting in a FastAPI application?",
+      "answer": "FastAPI doesn't include built-in rate limiting, but the most popular solution is SlowAPI, a library built on top of `limits`. It integrates as middleware and supports multiple storage backends.\n\nSlowAPI uses a decorator `@limiter.limit()` on individual routes. Limits are specified as strings like `'5/minute'` or `'100/hour'`. The client is identified by IP address by default, but you can customize the key function (e.g., by user ID or API key).\n\nFor production, use Redis as the backend so limits are shared across multiple server instances. In-memory storage works for single-instance development.\n\nAlternative approaches:\n- Custom middleware with Redis INCR + EXPIRE\n- API gateway-level limiting (Nginx, Kong, AWS API Gateway)\n- Token bucket algorithm for burst-friendly limits",
+      "codeExamples": [
+        {
+          "title": "Rate limiting with SlowAPI",
+          "code": "from fastapi import FastAPI, Request\nfrom slowapi import Limiter, _rate_limit_exceeded_handler\nfrom slowapi.util import get_remote_address\nfrom slowapi.errors import RateLimitExceeded\n\nlimiter = Limiter(key_func=get_remote_address)\napp = FastAPI()\napp.state.limiter = limiter\napp.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)\n\n@app.get(\"/search\")\n@limiter.limit(\"10/minute\")\nasync def search(request: Request, q: str = \"\"):\n    return {\"results\": [], \"query\": q}\n\n@app.get(\"/health\")\nasync def health():\n    return {\"status\": \"ok\"}  # no rate limit on health checks"
+        }
+      ],
+      "notes": [
+        "SlowAPI requires the `Request` parameter in the route for IP extraction",
+        "Use Redis backend in production: `Limiter(key_func=..., storage_uri='redis://localhost')`",
+        "Rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining) are added automatically"
+      ],
+      "followUps": [
+        "How do you apply different rate limits to free vs premium users?",
+        "What is the difference between rate limiting at the application level vs the gateway level?"
+      ],
+      "interviewTips": [
+        "Mention that in-memory rate limiting doesn't work in multi-process or multi-server setups - Redis is needed"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-caching",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 21,
+    "title": "Caching strategies in FastAPI",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["caching", "Redis", "in-memory cache", "ETags", "cache invalidation"],
+    "content": {
+      "question": "What are different caching strategies you can use in a FastAPI application?",
+      "answer": "1. In-memory caching - Use `@lru_cache` or `cachetools` for simple function-level caching. Fast, but per-process and lost on restart.\n\n2. Redis caching - Store responses or computed values in Redis with TTL. Shared across instances, persistent, and supports complex invalidation.\n\n3. HTTP caching - Set `Cache-Control`, `ETag`, and `Last-Modified` headers. The client or CDN caches the response, reducing server load entirely.\n\n4. fastapi-cache2 - A library that adds `@cache()` decorator support with Redis, Memcached, or in-memory backends. Automatic key generation from function arguments.\n\nCache invalidation is the hard part. Common strategies:\n- Time-based (TTL) - simplest\n- Event-based - invalidate on write operations\n- Cache-aside - check cache first, query DB on miss, store result",
+      "codeExamples": [
+        {
+          "title": "Redis caching with fastapi-cache2",
+          "code": "from fastapi import FastAPI\nfrom fastapi_cache import FastAPICache\nfrom fastapi_cache.backends.redis import RedisBackend\nfrom fastapi_cache.decorator import cache\nfrom redis import asyncio as aioredis\nfrom contextlib import asynccontextmanager\n\n@asynccontextmanager\nasync def lifespan(app: FastAPI):\n    redis = aioredis.from_url(\"redis://localhost\")\n    FastAPICache.init(RedisBackend(redis), prefix=\"api-cache\")\n    yield\n\napp = FastAPI(lifespan=lifespan)\n\n@app.get(\"/products\")\n@cache(expire=300)  # Cache for 5 minutes\nasync def get_products():\n    # Expensive DB query\n    return await fetch_all_products()\n\n@app.post(\"/products\")\nasync def create_product(product: dict):\n    await save_product(product)\n    await FastAPICache.clear(namespace=\"api-cache\")  # invalidate\n    return product"
+        }
+      ],
+      "notes": [
+        "Cache keys are auto-generated from function name + arguments",
+        "Use namespaces to selectively invalidate groups of cached data",
+        "HTTP caching with ETags is the most efficient - zero server processing on cache hit"
+      ],
+      "followUps": [
+        "What is cache stampede and how do you prevent it?",
+        "How do you cache responses that depend on the authenticated user?"
+      ],
+      "interviewTips": [
+        "Always mention cache invalidation - it's the hardest part and interviewers want to hear your strategy"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-streaming-responses",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 22,
+    "title": "Streaming responses and Server-Sent Events",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["StreamingResponse", "SSE", "generators", "real-time updates"],
+    "content": {
+      "question": "How do you implement streaming responses and Server-Sent Events (SSE) in FastAPI?",
+      "answer": "StreamingResponse sends data in chunks using a generator or async generator. Useful for large files, real-time logs, or AI chat responses (like ChatGPT's streaming output).\n\nServer-Sent Events (SSE) are a protocol for server-to-client streaming over HTTP. The server sends events in `text/event-stream` format. Unlike WebSockets, SSE is unidirectional (server → client only) and uses regular HTTP - simpler to deploy behind load balancers and proxies.\n\nSSE format: each event is `data: <payload>\\n\\n`. Named events use `event: <name>\\n`.\n\nFor production SSE, use the `sse-starlette` library which handles connection management and heartbeats.",
+      "codeExamples": [
+        {
+          "title": "Streaming response and SSE",
+          "code": "from fastapi import FastAPI\nfrom fastapi.responses import StreamingResponse\nimport asyncio\nimport json\n\napp = FastAPI()\n\n# 1. Streaming a large file\n@app.get(\"/download\")\nasync def download_large_file():\n    async def generate():\n        with open(\"large_file.csv\", \"rb\") as f:\n            while chunk := f.read(8192):\n                yield chunk\n    return StreamingResponse(generate(), media_type=\"text/csv\")\n\n# 2. Server-Sent Events for real-time updates\n@app.get(\"/events\")\nasync def event_stream():\n    async def generate():\n        for i in range(10):\n            data = json.dumps({\"count\": i, \"message\": f\"Update {i}\"})\n            yield f\"data: {data}\\n\\n\"\n            await asyncio.sleep(1)\n        yield \"data: [DONE]\\n\\n\"\n    return StreamingResponse(\n        generate(),\n        media_type=\"text/event-stream\",\n        headers={\"Cache-Control\": \"no-cache\", \"Connection\": \"keep-alive\"}\n    )"
+        }
+      ],
+      "notes": [
+        "Use `media_type='text/event-stream'` and disable caching for SSE",
+        "SSE auto-reconnects on the client side using `EventSource` API",
+        "For AI/LLM streaming, yield tokens as they are generated - same pattern as OpenAI's streaming API"
+      ],
+      "followUps": [
+        "When would you use SSE vs WebSockets?",
+        "How do you handle client disconnection in a streaming response?"
+      ],
+      "interviewTips": [
+        "SSE is increasingly popular due to LLM streaming - relate it to real-world AI chat applications"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-query-path-body-validators",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 23,
+    "title": "Advanced validation with Query, Path, and Body",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Query", "Path", "Body", "Field", "validation constraints"],
+    "content": {
+      "question": "How do you add advanced validation to query parameters, path parameters, and request bodies in FastAPI?",
+      "answer": "FastAPI provides `Query()`, `Path()`, `Body()`, and `Field()` classes for fine-grained validation beyond basic type hints.\n\nQuery() - Validates query parameters with min/max length, regex patterns, greater-than/less-than constraints.\nPath() - Same validation for path parameters, always required.\nBody() - Extracts and validates individual fields from the request body.\nField() - Used inside Pydantic models for per-field validation.\n\nAll accept:\n- `min_length` / `max_length` (strings)\n- `ge`, `gt`, `le`, `lt` (numbers)\n- `pattern` (regex)\n- `title`, `description`, `examples` (OpenAPI docs)\n- `alias` (alternative field name)\n\nThese constraints appear in the generated OpenAPI schema and Swagger UI.",
+      "codeExamples": [
+        {
+          "title": "Advanced parameter validation",
+          "code": "from fastapi import FastAPI, Query, Path, Body\nfrom pydantic import BaseModel, Field\nfrom typing import Annotated\n\napp = FastAPI()\n\nclass Product(BaseModel):\n    name: str = Field(min_length=1, max_length=100, examples=[\"Laptop\"])\n    price: float = Field(gt=0, description=\"Price must be positive\")\n    category: str = Field(pattern=r\"^[a-z-]+$\", description=\"Lowercase slug\")\n\n@app.get(\"/search\")\ndef search(\n    q: Annotated[str, Query(min_length=2, max_length=50, description=\"Search term\")] = \"\",\n    page: Annotated[int, Query(ge=1, le=1000)] = 1,\n    size: Annotated[int, Query(ge=10, le=100)] = 20,\n):\n    return {\"q\": q, \"page\": page, \"size\": size}\n\n@app.get(\"/items/{item_id}\")\ndef get_item(\n    item_id: Annotated[int, Path(gt=0, title=\"The ID of the item to get\")]\n):\n    return {\"item_id\": item_id}"
+        }
+      ],
+      "notes": [
+        "Use `Annotated[type, Query(...)]` (Python 3.9+) instead of default value syntax",
+        "Constraints are reflected in the OpenAPI schema - Swagger UI validates them client-side too",
+        "`Field(alias='fieldName')` allows camelCase JSON while using snake_case in Python"
+      ],
+      "followUps": [
+        "How do you validate that at least one of two optional query params is provided?",
+        "What is the difference between Query(default=...) and Query(default=None)?"
+      ],
+      "interviewTips": [
+        "Show the Annotated syntax - it's the modern recommended approach in FastAPI 0.95+"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-deployment",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 24,
+    "title": "Deploying FastAPI in production",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Uvicorn", "Gunicorn", "Docker", "reverse proxy", "HTTPS"],
+    "content": {
+      "question": "How do you deploy a FastAPI application in production?",
+      "answer": "A production FastAPI deployment typically involves:\n\n1. ASGI server - Uvicorn is the standard. For multi-core utilization, run Uvicorn workers behind Gunicorn:\n`gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker`\n\n2. Reverse proxy - Nginx or Caddy in front for SSL termination, static files, load balancing, and request buffering.\n\n3. Docker - Containerize the app with a multi-stage Dockerfile. Use a slim Python image.\n\n4. Process management - Use Docker's restart policy, systemd, or supervisord to keep the app running.\n\n5. HTTPS - Terminate SSL at the reverse proxy level (Let's Encrypt with Certbot or Caddy's auto-SSL).\n\nCloud options: AWS ECS/Fargate, Google Cloud Run, Azure Container Apps, Railway, Render, or traditional VPS with Docker Compose.",
+      "codeExamples": [
+        {
+          "title": "Production Dockerfile",
+          "code": "# Dockerfile\nFROM python:3.12-slim AS base\n\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\nCOPY . .\n\n# Run with Uvicorn\nCMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\", \"--workers\", \"4\"]\n\n# Or with Gunicorn + Uvicorn workers (recommended)\n# CMD [\"gunicorn\", \"main:app\", \"-w\", \"4\", \"-k\", \"uvicorn.workers.UvicornWorker\",\n#      \"--bind\", \"0.0.0.0:8000\"]"
+        }
+      ],
+      "notes": [
+        "Use `--workers` based on CPU cores: `2 * num_cores + 1` is a common formula",
+        "Never run with `--reload` in production - it's for development only",
+        "Set `--proxy-headers` and `--forwarded-allow-ips` when behind a reverse proxy"
+      ],
+      "followUps": [
+        "How do you handle zero-downtime deployments?",
+        "What is the difference between Uvicorn workers and Gunicorn workers?"
+      ],
+      "interviewTips": [
+        "Mention the Gunicorn + Uvicorn worker pattern - it's the gold standard for production FastAPI"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-pagination",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 25,
+    "title": "Pagination patterns in FastAPI",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["pagination", "offset", "cursor", "dependency", "reusable"],
+    "content": {
+      "question": "What are the common pagination patterns in FastAPI and how do you implement them?",
+      "answer": "1. Offset-based pagination - Uses `skip` (offset) and `limit` query parameters. Simple but slow for large datasets (DB scans rows to skip).\n\n2. Cursor-based pagination - Uses a pointer (cursor) to the last item. Much more efficient for large datasets because the DB can seek directly. Common in APIs with real-time data (timelines, feeds).\n\n3. Page-number pagination - Uses `page` and `page_size` parameters. User-friendly but internally converts to offset.\n\nBest practice: Encapsulate pagination logic in a reusable dependency so all list endpoints share the same interface. Return metadata (`total`, `page`, `has_next`) alongside the data.",
+      "codeExamples": [
+        {
+          "title": "Reusable pagination dependency",
+          "code": "from fastapi import FastAPI, Depends, Query\nfrom pydantic import BaseModel\nfrom typing import Annotated, Generic, TypeVar, List\n\napp = FastAPI()\nT = TypeVar(\"T\")\n\nclass PaginationParams:\n    def __init__(\n        self,\n        page: Annotated[int, Query(ge=1)] = 1,\n        size: Annotated[int, Query(ge=1, le=100)] = 20,\n    ):\n        self.page = page\n        self.size = size\n        self.offset = (page - 1) * size\n\nclass PaginatedResponse(BaseModel, Generic[T]):\n    items: List[T]\n    total: int\n    page: int\n    size: int\n    pages: int\n\n@app.get(\"/users\")\ndef list_users(pagination: PaginationParams = Depends()):\n    total = db.query(User).count()\n    users = db.query(User).offset(pagination.offset).limit(pagination.size).all()\n    return PaginatedResponse(\n        items=users,\n        total=total,\n        page=pagination.page,\n        size=pagination.size,\n        pages=(total + pagination.size - 1) // pagination.size,\n    )"
+        }
+      ],
+      "notes": [
+        "Cursor-based pagination is more scalable but harder to implement 'go to page N'",
+        "Always cap the maximum page size to prevent abuse",
+        "Return pagination metadata in the response body, not headers"
+      ],
+      "followUps": [
+        "When would you prefer cursor-based over offset-based pagination?",
+        "How do you paginate results from a joined query?"
+      ],
+      "interviewTips": [
+        "Show the dependency-based approach - it demonstrates FastAPI's DI and clean code patterns"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-rbac",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 26,
+    "title": "Role-based access control (RBAC)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["RBAC", "permissions", "roles", "authorization", "dependency"],
+    "content": {
+      "question": "How do you implement role-based access control in FastAPI?",
+      "answer": "RBAC in FastAPI is implemented using layered dependencies:\n\n1. Authentication dependency - Extracts and validates the JWT, returns the user object.\n2. Authorization dependency - Checks the user's role against the required role(s) for the route.\n\nCommon pattern: Create a `require_role()` function that returns a dependency. This dependency calls the auth dependency first, then checks if the user's role is in the allowed set.\n\nFor fine-grained permissions, use a permission model instead of roles: each route requires specific permissions (e.g., `can_delete_users`, `can_edit_posts`), and roles are collections of permissions.",
+      "codeExamples": [
+        {
+          "title": "RBAC with dependency factory",
+          "code": "from fastapi import FastAPI, Depends, HTTPException, status\nfrom enum import Enum\nfrom typing import Annotated\n\nclass Role(str, Enum):\n    ADMIN = \"admin\"\n    EDITOR = \"editor\"\n    VIEWER = \"viewer\"\n\n# Auth dependency (returns user with role)\nasync def get_current_user(token: str = Depends(oauth2_scheme)):\n    user = decode_token(token)  # returns {\"id\": 1, \"role\": \"admin\"}\n    if not user:\n        raise HTTPException(status_code=401, detail=\"Invalid credentials\")\n    return user\n\n# Authorization dependency factory\ndef require_role(*roles: Role):\n    async def check_role(user: dict = Depends(get_current_user)):\n        if user[\"role\"] not in [r.value for r in roles]:\n            raise HTTPException(\n                status_code=status.HTTP_403_FORBIDDEN,\n                detail=f\"Role {user['role']} not authorized\"\n            )\n        return user\n    return check_role\n\napp = FastAPI()\n\n@app.delete(\"/users/{user_id}\")\nasync def delete_user(\n    user_id: int,\n    user: dict = Depends(require_role(Role.ADMIN))\n):\n    return {\"deleted\": user_id}\n\n@app.put(\"/posts/{post_id}\")\nasync def edit_post(\n    post_id: int,\n    user: dict = Depends(require_role(Role.ADMIN, Role.EDITOR))\n):\n    return {\"edited\": post_id}"
+        }
+      ],
+      "notes": [
+        "Store roles in the JWT payload or fetch from the database on each request",
+        "For complex apps, use a permission table: Role → Permissions mapping",
+        "Router-level dependencies can apply role checks to all routes in a group"
+      ],
+      "followUps": [
+        "How do you handle resource-level authorization (e.g., users can only edit their own posts)?",
+        "What is the difference between authentication and authorization?"
+      ],
+      "interviewTips": [
+        "The dependency factory pattern (function that returns a dependency) is powerful - demonstrate it clearly"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-security-headers",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 27,
+    "title": "Security best practices in FastAPI",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["security headers", "HTTPS", "CSRF", "input sanitization", "secrets"],
+    "content": {
+      "question": "What security best practices should you follow when building a FastAPI application?",
+      "answer": "1. HTTPS everywhere - Terminate SSL at the reverse proxy. Use `--forwarded-allow-ips` to trust proxy headers.\n\n2. Security headers - Add via middleware: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Strict-Transport-Security`, `Content-Security-Policy`.\n\n3. CORS - Whitelist specific origins, never use `allow_origins=['*']` with `allow_credentials=True`.\n\n4. Input validation - Pydantic models handle this, but sanitize HTML output and use parameterized DB queries.\n\n5. Secrets management - Use `pydantic-settings` with env vars. Never commit secrets to code.\n\n6. Rate limiting - Prevent brute force and DDoS with SlowAPI or API gateway.\n\n7. SQL injection - Use ORM (SQLAlchemy) or parameterized queries. Never interpolate user input into SQL strings.\n\n8. Dependency updates - Regularly update dependencies. Use `pip-audit` or `safety` to check for CVEs.",
+      "codeExamples": [
+        {
+          "title": "Security headers middleware",
+          "code": "from fastapi import FastAPI, Request\nfrom fastapi.middleware.cors import CORSMiddleware\nfrom fastapi.middleware.trustedhost import TrustedHostMiddleware\n\napp = FastAPI()\n\n# Restrict allowed hosts\napp.add_middleware(TrustedHostMiddleware, allowed_hosts=[\"example.com\", \"*.example.com\"])\n\n# Strict CORS\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=[\"https://app.example.com\"],\n    allow_credentials=True,\n    allow_methods=[\"GET\", \"POST\", \"PUT\", \"DELETE\"],\n    allow_headers=[\"Authorization\", \"Content-Type\"],\n)\n\n# Custom security headers\n@app.middleware(\"http\")\nasync def add_security_headers(request: Request, call_next):\n    response = await call_next(request)\n    response.headers[\"X-Content-Type-Options\"] = \"nosniff\"\n    response.headers[\"X-Frame-Options\"] = \"DENY\"\n    response.headers[\"X-XSS-Protection\"] = \"1; mode=block\"\n    response.headers[\"Strict-Transport-Security\"] = \"max-age=31536000; includeSubDomains\"\n    return response"
+        }
+      ],
+      "notes": [
+        "TrustedHostMiddleware prevents Host header attacks",
+        "Use `secrets.token_urlsafe()` for generating tokens, not `random`",
+        "Enable Pydantic's strict mode to prevent type coercion attacks"
+      ],
+      "followUps": [
+        "How do you prevent CSRF attacks in a FastAPI + SPA architecture?",
+        "What is the difference between CORS and CSRF protection?"
+      ],
+      "interviewTips": [
+        "Security is a broad topic - focus on the OWASP Top 10 and how FastAPI addresses each one"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-graphql",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 28,
+    "title": "GraphQL with FastAPI (Strawberry)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["GraphQL", "Strawberry", "schema", "resolvers", "REST vs GraphQL"],
+    "content": {
+      "question": "Can you use GraphQL with FastAPI? How does it compare to REST?",
+      "answer": "Yes - Strawberry is the recommended GraphQL library for FastAPI. It uses Python type hints and dataclasses to define the schema, fitting naturally with FastAPI's type-driven approach.\n\nStrawberry provides a `GraphQLRouter` that mounts directly into FastAPI. It supports queries, mutations, subscriptions, and a built-in GraphiQL IDE.\n\nREST vs GraphQL trade-offs:\n- GraphQL eliminates over-fetching and under-fetching - clients request exactly the fields they need\n- REST is simpler, has better caching (HTTP cache), and is more widely understood\n- GraphQL adds complexity: N+1 queries, schema management, and client tooling\n- Use GraphQL when clients have diverse data needs; REST for simple CRUD APIs\n\nFastAPI supports both simultaneously - mount GraphQL alongside REST routes.",
+      "codeExamples": [
+        {
+          "title": "Strawberry GraphQL with FastAPI",
+          "code": "import strawberry\nfrom fastapi import FastAPI\nfrom strawberry.fastapi import GraphQLRouter\nfrom typing import List\n\n@strawberry.type\nclass User:\n    id: int\n    name: str\n    email: str\n\nusers_db = [\n    User(id=1, name=\"Alice\", email=\"alice@example.com\"),\n    User(id=2, name=\"Bob\", email=\"bob@example.com\"),\n]\n\n@strawberry.type\nclass Query:\n    @strawberry.field\n    def users(self) -> List[User]:\n        return users_db\n\n    @strawberry.field\n    def user(self, id: int) -> User | None:\n        return next((u for u in users_db if u.id == id), None)\n\n@strawberry.type\nclass Mutation:\n    @strawberry.mutation\n    def create_user(self, name: str, email: str) -> User:\n        user = User(id=len(users_db) + 1, name=name, email=email)\n        users_db.append(user)\n        return user\n\nschema = strawberry.Schema(query=Query, mutation=Mutation)\ngraphql_app = GraphQLRouter(schema)\n\napp = FastAPI()\napp.include_router(graphql_app, prefix=\"/graphql\")\n# GraphiQL IDE available at /graphql"
+        }
+      ],
+      "notes": [
+        "Strawberry uses Python dataclasses - no separate schema definition language",
+        "Use DataLoader to solve the N+1 query problem in GraphQL resolvers",
+        "Strawberry supports subscriptions via WebSocket for real-time GraphQL"
+      ],
+      "followUps": [
+        "What is the N+1 problem in GraphQL and how does DataLoader solve it?",
+        "When would you choose REST over GraphQL for a new project?"
+      ],
+      "interviewTips": [
+        "Don't take sides - explain trade-offs. Many production systems use both REST and GraphQL"
+      ]
+    }
+  },
+  {
+    "id": "fastapi-event-driven",
+    "sectionId": "fastapi-interview",
+    "orderIndex": 29,
+    "title": "Event-driven architecture and message queues",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["message queue", "Celery", "RabbitMQ", "Kafka", "event-driven"],
+    "content": {
+      "question": "How do you integrate FastAPI with message queues for event-driven processing?",
+      "answer": "For heavy or long-running tasks that exceed what `BackgroundTasks` can handle, integrate with a message queue:\n\nCelery + Redis/RabbitMQ - The most popular Python task queue. Define tasks as decorated functions, call them asynchronously from FastAPI routes. Celery workers run separately and process tasks from the queue.\n\nARQ (Async Redis Queue) - Lightweight async alternative to Celery. Works naturally with FastAPI's async architecture.\n\nKafka - For high-throughput event streaming. FastAPI produces messages; separate consumers process them. Used for analytics, audit logs, cross-service communication.\n\nPattern: FastAPI handles the HTTP request, publishes an event/task to the queue, and returns immediately. The worker processes the task asynchronously. Use webhooks or polling for the client to check task status.",
+      "codeExamples": [
+        {
+          "title": "Celery integration with FastAPI",
+          "code": "# tasks.py\nfrom celery import Celery\n\ncelery_app = Celery(\"tasks\", broker=\"redis://localhost:6379/0\", backend=\"redis://localhost:6379/1\")\n\n@celery_app.task\ndef process_video(video_id: int):\n    # Heavy processing - runs in Celery worker, not FastAPI\n    import time\n    time.sleep(30)  # simulate long processing\n    return {\"video_id\": video_id, \"status\": \"processed\"}\n\n# main.py\nfrom fastapi import FastAPI\nfrom tasks import process_video\n\napp = FastAPI()\n\n@app.post(\"/videos/{video_id}/process\")\ndef start_processing(video_id: int):\n    task = process_video.delay(video_id)  # enqueue task\n    return {\"task_id\": task.id, \"status\": \"queued\"}\n\n@app.get(\"/tasks/{task_id}\")\ndef get_task_status(task_id: str):\n    result = process_video.AsyncResult(task_id)\n    return {\n        \"task_id\": task_id,\n        \"status\": result.status,\n        \"result\": result.result if result.ready() else None\n    }"
+        }
+      ],
+      "notes": [
+        "Run Celery workers separately: `celery -A tasks worker --loglevel=info`",
+        "Use Celery Beat for scheduled/periodic tasks (cron-like)",
+        "For microservices communication, consider event-driven patterns over direct HTTP calls"
+      ],
+      "followUps": [
+        "How do you handle task failures and retries in Celery?",
+        "What is the difference between a task queue and a message broker?"
+      ],
+      "interviewTips": [
+        "Distinguish when to use BackgroundTasks (lightweight, in-process) vs Celery (durable, distributed, persistent)"
       ]
     }
   }

@@ -147,7 +147,7 @@ export class CompanyService {
     return company;
   }
 
-  async getCompanyReviews(slug: string, sort: string = "latest") {
+  async getCompanyReviews(slug: string, sort: string = "latest", page = 1, limit = 20) {
     const company = await prisma.company.findUnique({
       where: { slug },
       select: { id: true, isApproved: true },
@@ -162,13 +162,28 @@ export class CompanyService {
       sort === "lowest" ? { rating: "asc" } :
       { createdAt: "desc" };
 
-    return prisma.companyReview.findMany({
-      where: { companyId: company.id, status: "APPROVED" },
-      orderBy,
-      include: {
-        user: { select: { id: true, name: true, profilePic: true } },
-      },
-    });
+    const safeLimit = Math.min(50, Math.max(1, limit));
+    const skip = (Math.max(1, page) - 1) * safeLimit;
+
+    const where = { companyId: company.id, status: "APPROVED" as const };
+
+    const [reviews, total] = await Promise.all([
+      prisma.companyReview.findMany({
+        where,
+        orderBy,
+        skip,
+        take: safeLimit,
+        include: {
+          user: { select: { id: true, name: true, profilePic: true } },
+        },
+      }),
+      prisma.companyReview.count({ where }),
+    ]);
+
+    return {
+      reviews,
+      pagination: { page, limit: safeLimit, total, totalPages: Math.ceil(total / safeLimit) },
+    };
   }
 
   async getCitiesWithCounts() {

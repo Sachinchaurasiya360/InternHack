@@ -65,10 +65,10 @@
       {
         "id": "what-is-python-ex2",
         "title": "Print a Pattern",
-        "description": "Print the following three-line pattern using three separate print() calls:\n*\n**\n***",
-        "starterCode": "# TODO: Print a triangle pattern of asterisks\n# Line 1: *\n# Line 2: **\n# Line 3: ***",
-        "solution": "print(\"*\")\nprint(\"**\")\nprint(\"***\")",
-        "expectedOutput": "*\n**\n***",
+        "description": "Print the following three-line pattern using three separate print() calls:\n*\n\n*",
+        "starterCode": "# TODO: Print a triangle pattern of asterisks\n# Line 1: *\n# Line 2: \n# Line 3: *",
+        "solution": "print(\"*\")\nprint(\"\")\nprint(\"*\")",
+        "expectedOutput": "*\n\n*",
         "hints": [
           "Each line has an increasing number of * characters.",
           "Use one print() call per line of the pattern.",
@@ -183,13 +183,13 @@
     "isInterviewQuestion": true,
     "concepts": ["Arithmetic operators", "Comparison operators", "Logical operators", "Assignment operators", "Operator precedence"],
     "content": {
-      "explanation": "Operators are special symbols that perform operations on values and variables. Python provides a rich set of operators organized into several categories: arithmetic, comparison, logical, and assignment operators. Understanding these is fundamental to writing any Python program.\n\nArithmetic operators perform mathematical calculations. Python supports the standard operators: + (addition), - (subtraction), * (multiplication), / (division), // (floor division), % (modulus/remainder), and ** (exponentiation). One important distinction is between / and //: the / operator always returns a float, while // returns the largest integer less than or equal to the result.\n\nComparison operators compare two values and return a boolean (True or False). They include == (equal to), != (not equal to), > (greater than), < (less than), >= (greater than or equal to), and <= (less than or equal to). These are essential for conditional logic and loops. Python also supports chained comparisons like 1 < x < 10, which is equivalent to 1 < x and x < 10.\n\nLogical operators combine boolean expressions. Python uses the English words and, or, and not instead of symbols like && and ||. The and operator returns True only when both operands are True, or returns True when at least one operand is True, and not negates a boolean value. Python uses short-circuit evaluation: in an and expression, if the first operand is False, the second is never evaluated.\n\nAssignment operators provide shorthand for updating variables. Beyond the basic = operator, Python supports augmented assignment operators like +=, -=, *=, /=, //=, %=, and **=. These modify a variable in place. For example, x += 5 is equivalent to x = x + 5. Note that Python does not have ++ or -- increment/decrement operators like C or Java.",
+      "explanation": "Operators are special symbols that perform operations on values and variables. Python provides a rich set of operators organized into several categories: arithmetic, comparison, logical, and assignment operators. Understanding these is fundamental to writing any Python program.\n\nArithmetic operators perform mathematical calculations. Python supports the standard operators: + (addition), - (subtraction), * (multiplication), / (division), // (floor division), % (modulus/remainder), and  (exponentiation). One important distinction is between / and //: the / operator always returns a float, while // returns the largest integer less than or equal to the result.\n\nComparison operators compare two values and return a boolean (True or False). They include == (equal to), != (not equal to), > (greater than), < (less than), >= (greater than or equal to), and <= (less than or equal to). These are essential for conditional logic and loops. Python also supports chained comparisons like 1 < x < 10, which is equivalent to 1 < x and x < 10.\n\nLogical operators combine boolean expressions. Python uses the English words and, or, and not instead of symbols like && and ||. The and operator returns True only when both operands are True, or returns True when at least one operand is True, and not negates a boolean value. Python uses short-circuit evaluation: in an and expression, if the first operand is False, the second is never evaluated.\n\nAssignment operators provide shorthand for updating variables. Beyond the basic = operator, Python supports augmented assignment operators like +=, -=, *=, /=, //=, %=, and =. These modify a variable in place. For example, x += 5 is equivalent to x = x + 5. Note that Python does not have ++ or -- increment/decrement operators like C or Java.",
       "codeExamples": [
         {
           "title": "Arithmetic Operators",
-          "code": "a = 17\nb = 5\n\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)",
+          "code": "a = 17\nb = 5\n\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a  b)",
           "output": "22\n12\n85\n3.4\n3\n2\n1419857",
-          "explanation": "Demonstrates all 7 arithmetic operators. Note that / returns 3.4 (float) while // returns 3 (floor division). The % operator gives the remainder, and ** raises to a power."
+          "explanation": "Demonstrates all 7 arithmetic operators. Note that / returns 3.4 (float) while // returns 3 (floor division). The % operator gives the remainder, and  raises to a power."
         },
         {
           "title": "Comparison Operators",
@@ -205,16 +205,16 @@
         },
         {
           "title": "Assignment Operators",
-          "code": "x = 10\nprint(x)\n\nx += 5\nprint(x)\n\nx -= 3\nprint(x)\n\nx *= 2\nprint(x)\n\nx //= 4\nprint(x)\n\nx **= 3\nprint(x)",
+          "code": "x = 10\nprint(x)\n\nx += 5\nprint(x)\n\nx -= 3\nprint(x)\n\nx *= 2\nprint(x)\n\nx //= 4\nprint(x)\n\nx = 3\nprint(x)",
           "output": "10\n15\n12\n24\n6\n216",
-          "explanation": "Augmented assignment operators modify a variable in place. x += 5 is shorthand for x = x + 5. The sequence: 10 -> +5=15 -> -3=12 -> *2=24 -> //4=6 -> **3=216."
+          "explanation": "Augmented assignment operators modify a variable in place. x += 5 is shorthand for x = x + 5. The sequence: 10 -> +5=15 -> -3=12 -> *2=24 -> //4=6 -> 3=216."
         }
       ],
       "notes": [
         "Division (/) always returns a float in Python 3, even when dividing two integers: 10 / 2 gives 5.0, not 5.",
         "Floor division (//) rounds toward negative infinity, not toward zero: -7 // 2 gives -4, not -3.",
         "Python does not have ++ or -- operators. Use x += 1 or x -= 1 instead.",
-        "Operator precedence follows standard math rules: ** > unary - > *, /, //, % > +, -. Use parentheses to override."
+        "Operator precedence follows standard math rules:  > unary - > *, /, //, % > +, -. Use parentheses to override."
       ],
       "commonPitfalls": [
         "Confusing / (true division, returns float) with // (floor division, returns int for int operands). 7 / 2 is 3.5 but 7 // 2 is 3.",
@@ -232,10 +232,10 @@
         "title": "Calculator",
         "description": "Given two numbers a = 23 and b = 7, print the result of addition, subtraction, multiplication, true division, floor division, modulus, and exponentiation, each on a new line.",
         "starterCode": "a = 23\nb = 7\n\n# TODO: Print the result of each operation on a new line\n# Addition, Subtraction, Multiplication, True Division,\n# Floor Division, Modulus, Exponentiation",
-        "solution": "a = 23\nb = 7\n\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)",
+        "solution": "a = 23\nb = 7\n\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a  b)",
         "expectedOutput": "30\n16\n161\n3.2857142857142856\n3\n2\n3404825447",
         "hints": [
-          "Use +, -, *, /, //, %, and ** for the seven operations.",
+          "Use +, -, *, /, //, %, and  for the seven operations.",
           "True division (/) returns a float; floor division (//) returns an integer.",
           "Print each result using a separate print() call."
         ],
@@ -259,12 +259,12 @@
         "id": "operators-ex3",
         "title": "Compound Expression",
         "description": "Start with x = 100. Apply these operations in order: subtract 15, floor divide by 4, raise to the power of 2, find the modulus with 50. Print x after each operation.",
-        "starterCode": "x = 100\n\n# TODO: Subtract 15 from x using -=, then print x\n# TODO: Floor divide x by 4 using //=, then print x\n# TODO: Raise x to the power of 2 using **=, then print x\n# TODO: Find x modulus 50 using %=, then print x",
-        "solution": "x = 100\n\nx -= 15\nprint(x)\n\nx //= 4\nprint(x)\n\nx **= 2\nprint(x)\n\nx %= 50\nprint(x)",
+        "starterCode": "x = 100\n\n# TODO: Subtract 15 from x using -=, then print x\n# TODO: Floor divide x by 4 using //=, then print x\n# TODO: Raise x to the power of 2 using =, then print x\n# TODO: Find x modulus 50 using %=, then print x",
+        "solution": "x = 100\n\nx -= 15\nprint(x)\n\nx //= 4\nprint(x)\n\nx = 2\nprint(x)\n\nx %= 50\nprint(x)",
         "expectedOutput": "85\n21\n441\n41",
         "hints": [
-          "Apply each operation in sequence: 100 - 15 = 85, 85 // 4 = 21, 21 ** 2 = 441, 441 % 50 = 41.",
-          "Use augmented assignment operators: -=, //=, **=, %=",
+          "Apply each operation in sequence: 100 - 15 = 85, 85 // 4 = 21, 21  2 = 441, 441 % 50 = 41.",
+          "Use augmented assignment operators: -=, //=, =, %=",
           "Print the value of x after each operation."
         ],
         "difficulty": "Medium"

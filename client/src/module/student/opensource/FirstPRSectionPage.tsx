@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ArrowRight,
   ChevronLeft,
   ChevronRight,
@@ -118,14 +117,6 @@ export default function FirstPRSectionPage() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mb-6"
       >
-        <Link
-          to="/student/opensource/first-pr"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 no-underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Your First Contribution
-        </Link>
-
         <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">

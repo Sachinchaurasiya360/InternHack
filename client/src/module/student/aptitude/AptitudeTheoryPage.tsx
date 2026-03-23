@@ -3,7 +3,6 @@ import { useParams, Link, Navigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   BookOpen,
   Calculator,
   Lightbulb,
@@ -209,19 +208,13 @@ export default function AptitudeTheoryPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-10 mt-6"
+        className="mb-10"
       >
-        <Link
-          to={basePath}
-          className="inline-flex items-center gap-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm mb-6 no-underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to {topic?.categoryName ?? "Categories"}
-        </Link>
         <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-2">
           {topic?.name ?? slug}
         </h1>
         {topic?.description && (
-          <p className="text-sm text-gray-500 dark:text-gray-500 max-w-lg mx-auto">{topic.description}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-500 max-w-lg">{topic.description}</p>
         )}
         {topic && (
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 tabular-nums">

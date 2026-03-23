@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowLeft, ExternalLink, CheckCircle2, Circle,
+  ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowRight,
   History, Terminal, Lock, Crown, Code2,
@@ -85,7 +85,6 @@ export default function DsaProblemDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const isPremium =
     (user?.subscriptionPlan === "MONTHLY" || user?.subscriptionPlan === "YEARLY") &&
@@ -211,10 +210,6 @@ export default function DsaProblemDetailPage() {
         {/* ── Top bar ── */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-800/80 bg-white dark:bg-gray-950 shrink-0">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-            <div className="h-4 w-px bg-gray-200 dark:bg-gray-800" />
             <span className={`text-xs font-semibold px-2 py-0.5 rounded-md border ${DIFF_BG[problem.difficulty]} ${DIFF_COLORS[problem.difficulty]}`}>
               {problem.difficulty}
             </span>

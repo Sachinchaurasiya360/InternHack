@@ -7,6 +7,7 @@ export const SERVER_URL = API_BASE.replace(/\/api\/?$/, "");
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true, // sends httpOnly cookie automatically
+  timeout: 30_000,       // 30-second timeout to avoid hanging requests
 });
 
 api.interceptors.response.use(
@@ -14,9 +15,9 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
-      }
+      // Dispatch a custom event so the router can handle navigation
+      // without a full-page reload that wipes in-memory state.
+      window.dispatchEvent(new CustomEvent("auth:expired"));
     }
     return Promise.reject(error);
   }

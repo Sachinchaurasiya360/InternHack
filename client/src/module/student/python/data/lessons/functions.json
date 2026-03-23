@@ -35,7 +35,7 @@
         },
         {
           "title": "Docstrings and the __doc__ Attribute",
-          "code": "def calculate_area(radius):\n    \"\"\"Calculate the area of a circle.\n\n    Args:\n        radius: The radius of the circle (non-negative number).\n\n    Returns:\n        The area as a float.\n    \"\"\"\n    import math\n    return math.pi * radius ** 2\n\nprint(round(calculate_area(5), 2))\nprint(calculate_area.__doc__.strip().split('\\n')[0])",
+          "code": "def calculate_area(radius):\n    \"\"\"Calculate the area of a circle.\n\n    Args:\n        radius: The radius of the circle (non-negative number).\n\n    Returns:\n        The area as a float.\n    \"\"\"\n    import math\n    return math.pi * radius  2\n\nprint(round(calculate_area(5), 2))\nprint(calculate_area.__doc__.strip().split('\\n')[0])",
           "output": "78.54\nCalculate the area of a circle.",
           "explanation": "The docstring follows the Google style guide format with Args and Returns sections. Accessing `__doc__` at runtime retrieves the raw docstring, which tools like `help()` and documentation generators use."
         }
@@ -74,11 +74,11 @@
         "title": "Power Function with Default Exponent",
         "description": "Write a function `power` that takes a base and an optional exponent (default 2). It should return the base raised to the exponent. Test with power(3), power(2, 10), and power(5, 3).",
         "starterCode": "def power(base, exponent=2):\n    # your code here\n    pass\n\nprint(power(3))\nprint(power(2, 10))\nprint(power(5, 3))",
-        "solution": "def power(base, exponent=2):\n    return base ** exponent\n\nprint(power(3))\nprint(power(2, 10))\nprint(power(5, 3))",
+        "solution": "def power(base, exponent=2):\n    return base  exponent\n\nprint(power(3))\nprint(power(2, 10))\nprint(power(5, 3))",
         "expectedOutput": "9\n1024\n125",
         "hints": [
-          "Use the ** operator to raise base to the exponent.",
-          "When no exponent is passed, the default value 2 is used, so power(3) computes 3 ** 2."
+          "Use the  operator to raise base to the exponent.",
+          "When no exponent is passed, the default value 2 is used, so power(3) computes 3  2."
         ],
         "difficulty": "Easy"
       },
@@ -106,12 +106,12 @@
     "isInterviewQuestion": true,
     "concepts": [
       "*args",
-      "**kwargs",
+      "kwargs",
       "Positional-Only Parameters",
       "Keyword-Only Parameters"
     ],
     "content": {
-      "explanation": "Python provides two special syntaxes for writing functions that accept a variable number of arguments: `*args` and `**kwargs`. The `*args` syntax collects any number of positional arguments into a tuple, while `**kwargs` collects any number of keyword arguments into a dictionary. These mechanisms make it possible to write highly flexible functions and are used extensively in frameworks, decorators, and wrapper functions.\n\nWhen you define a function with `*args`, any positional arguments that do not match a named parameter are gathered into a tuple named `args` (the name `args` is convention, not a requirement -- the `*` is what matters). Similarly, `**kwargs` collects unmatched keyword arguments into a dictionary. You can use both in the same function, but `*args` must come before `**kwargs` in the parameter list. A common pattern is `def wrapper(*args, **kwargs)` which forwards all arguments to another function.\n\nPython 3 introduced positional-only parameters (using `/` in the signature) and keyword-only parameters (any parameters defined after `*` or `*args`). Positional-only parameters cannot be passed by name, which is useful when the parameter name is an implementation detail you do not want callers to depend on. Keyword-only parameters must be passed by name, improving readability at the call site for functions with many arguments.\n\nThe order of parameters in a function signature follows strict rules: regular positional parameters come first, then `/` for positional-only boundary, then regular parameters, then `*args` or bare `*`, then keyword-only parameters, and finally `**kwargs`. Understanding this ordering is essential for reading library source code and for writing robust public APIs.\n\nThese features also play an important role in function forwarding and the decorator pattern. When writing a decorator, you typically define an inner wrapper that accepts `*args, **kwargs` and passes them through to the decorated function. This ensures the decorator works with any function signature without needing to know the specific parameters in advance.",
+      "explanation": "Python provides two special syntaxes for writing functions that accept a variable number of arguments: `*args` and `kwargs`. The `*args` syntax collects any number of positional arguments into a tuple, while `kwargs` collects any number of keyword arguments into a dictionary. These mechanisms make it possible to write highly flexible functions and are used extensively in frameworks, decorators, and wrapper functions.\n\nWhen you define a function with `*args`, any positional arguments that do not match a named parameter are gathered into a tuple named `args` (the name `args` is convention, not a requirement -- the `*` is what matters). Similarly, `kwargs` collects unmatched keyword arguments into a dictionary. You can use both in the same function, but `*args` must come before `kwargs` in the parameter list. A common pattern is `def wrapper(*args, kwargs)` which forwards all arguments to another function.\n\nPython 3 introduced positional-only parameters (using `/` in the signature) and keyword-only parameters (any parameters defined after `*` or `*args`). Positional-only parameters cannot be passed by name, which is useful when the parameter name is an implementation detail you do not want callers to depend on. Keyword-only parameters must be passed by name, improving readability at the call site for functions with many arguments.\n\nThe order of parameters in a function signature follows strict rules: regular positional parameters come first, then `/` for positional-only boundary, then regular parameters, then `*args` or bare `*`, then keyword-only parameters, and finally `kwargs`. Understanding this ordering is essential for reading library source code and for writing robust public APIs.\n\nThese features also play an important role in function forwarding and the decorator pattern. When writing a decorator, you typically define an inner wrapper that accepts `*args, kwargs` and passes them through to the decorated function. This ensures the decorator works with any function signature without needing to know the specific parameters in advance.",
       "codeExamples": [
         {
           "title": "Using *args to Accept Variable Positional Arguments",
@@ -120,16 +120,16 @@
           "explanation": "The `*args` parameter collects all positional arguments into a tuple. Inside the function, `args` is a regular tuple that you can iterate over, index, or pass to built-in functions like `sum()`."
         },
         {
-          "title": "Using **kwargs to Accept Variable Keyword Arguments",
-          "code": "def build_profile(name, **kwargs):\n    \"\"\"Build a user profile dictionary.\"\"\"\n    profile = {\"name\": name}\n    profile.update(kwargs)\n    return profile\n\nresult = build_profile(\"Alice\", age=30, city=\"NYC\", role=\"Developer\")\nfor key, value in sorted(result.items()):\n    print(f\"{key}: {value}\")",
+          "title": "Using kwargs to Accept Variable Keyword Arguments",
+          "code": "def build_profile(name, kwargs):\n    \"\"\"Build a user profile dictionary.\"\"\"\n    profile = {\"name\": name}\n    profile.update(kwargs)\n    return profile\n\nresult = build_profile(\"Alice\", age=30, city=\"NYC\", role=\"Developer\")\nfor key, value in sorted(result.items()):\n    print(f\"{key}: {value}\")",
           "output": "age: 30\ncity: NYC\nname: Alice\nrole: Developer",
-          "explanation": "The `**kwargs` parameter collects all extra keyword arguments into a dictionary. This pattern is common for building configuration objects or forwarding options to other functions."
+          "explanation": "The `kwargs` parameter collects all extra keyword arguments into a dictionary. This pattern is common for building configuration objects or forwarding options to other functions."
         },
         {
-          "title": "Combining *args and **kwargs",
-          "code": "def log_call(func_name, *args, **kwargs):\n    \"\"\"Log a function call with its arguments.\"\"\"\n    parts = [repr(a) for a in args]\n    parts += [f\"{k}={v!r}\" for k, v in kwargs.items()]\n    print(f\"{func_name}({', '.join(parts)})\")\n\nlog_call(\"greet\", \"Alice\", greeting=\"Hello\")\nlog_call(\"add\", 3, 5)\nlog_call(\"configure\", timeout=30, retries=3, verbose=True)",
+          "title": "Combining *args and kwargs",
+          "code": "def log_call(func_name, *args, kwargs):\n    \"\"\"Log a function call with its arguments.\"\"\"\n    parts = [repr(a) for a in args]\n    parts += [f\"{k}={v!r}\" for k, v in kwargs.items()]\n    print(f\"{func_name}({', '.join(parts)})\")\n\nlog_call(\"greet\", \"Alice\", greeting=\"Hello\")\nlog_call(\"add\", 3, 5)\nlog_call(\"configure\", timeout=30, retries=3, verbose=True)",
           "output": "greet('Alice', greeting='Hello')\nadd(3, 5)\nconfigure(timeout=30, retries=3, verbose=True)",
-          "explanation": "Regular parameters come first, then `*args` collects remaining positional arguments, and `**kwargs` collects remaining keyword arguments. This is the standard pattern for wrapper and logging functions."
+          "explanation": "Regular parameters come first, then `*args` collects remaining positional arguments, and `kwargs` collects remaining keyword arguments. This is the standard pattern for wrapper and logging functions."
         },
         {
           "title": "Positional-Only and Keyword-Only Parameters",
@@ -139,19 +139,19 @@
         }
       ],
       "notes": [
-        "The names `args` and `kwargs` are conventions -- only the `*` and `**` prefixes have syntactic meaning.",
+        "The names `args` and `kwargs` are conventions -- only the `*` and `` prefixes have syntactic meaning.",
         "Inside the function, `args` is a tuple and `kwargs` is a dictionary.",
-        "You can unpack sequences into function calls with `*` and dictionaries with `**`: `func(*my_list, **my_dict)`.",
+        "You can unpack sequences into function calls with `*` and dictionaries with ``: `func(*my_list, my_dict)`.",
         "Positional-only parameters (using `/`) were introduced in Python 3.8."
       ],
       "commonPitfalls": [
-        "Placing `**kwargs` before `*args` in the parameter list causes a SyntaxError. The correct order is always `*args` before `**kwargs`.",
+        "Placing `kwargs` before `*args` in the parameter list causes a SyntaxError. The correct order is always `*args` before `kwargs`.",
         "Forgetting that `*args` produces a tuple, not a list. If you need list operations like `.append()`, convert it first with `list(args)`."
       ],
       "interviewTips": [
-        "Be ready to explain the full parameter ordering: positional, /, regular, *args (or bare *), keyword-only, **kwargs.",
-        "Know how to use `*args` and `**kwargs` to write a generic decorator wrapper that works with any function signature.",
-        "Understand unpacking: `*` unpacks iterables into positional args, `**` unpacks dicts into keyword args at the call site."
+        "Be ready to explain the full parameter ordering: positional, /, regular, *args (or bare *), keyword-only, kwargs.",
+        "Know how to use `*args` and `kwargs` to write a generic decorator wrapper that works with any function signature.",
+        "Understand unpacking: `*` unpacks iterables into positional args, `` unpacks dicts into keyword args at the call site."
       ]
     },
     "exercises": [
@@ -171,12 +171,12 @@
       {
         "id": "args-and-kwargs-ex2",
         "title": "HTML Tag Builder",
-        "description": "Write a function `make_tag(tag, content, **attrs)` that builds an HTML-like string. The attrs should be rendered as key=\"value\" pairs inside the opening tag. Test with the examples below.",
-        "starterCode": "def make_tag(tag, content, **attrs):\n    # your code here\n    pass\n\nprint(make_tag(\"p\", \"Hello\"))\nprint(make_tag(\"a\", \"Click here\", href=\"https://example.com\"))\nprint(make_tag(\"div\", \"Box\", id=\"main\", style=\"color:red\"))",
-        "solution": "def make_tag(tag, content, **attrs):\n    attr_str = \"\"\n    if attrs:\n        attr_str = \" \" + \" \".join(f'{k}=\"{v}\"' for k, v in attrs.items())\n    return f\"<{tag}{attr_str}>{content}</{tag}>\"\n\nprint(make_tag(\"p\", \"Hello\"))\nprint(make_tag(\"a\", \"Click here\", href=\"https://example.com\"))\nprint(make_tag(\"div\", \"Box\", id=\"main\", style=\"color:red\"))",
+        "description": "Write a function `make_tag(tag, content, attrs)` that builds an HTML-like string. The attrs should be rendered as key=\"value\" pairs inside the opening tag. Test with the examples below.",
+        "starterCode": "def make_tag(tag, content, attrs):\n    # your code here\n    pass\n\nprint(make_tag(\"p\", \"Hello\"))\nprint(make_tag(\"a\", \"Click here\", href=\"https://example.com\"))\nprint(make_tag(\"div\", \"Box\", id=\"main\", style=\"color:red\"))",
+        "solution": "def make_tag(tag, content, attrs):\n    attr_str = \"\"\n    if attrs:\n        attr_str = \" \" + \" \".join(f'{k}=\"{v}\"' for k, v in attrs.items())\n    return f\"<{tag}{attr_str}>{content}</{tag}>\"\n\nprint(make_tag(\"p\", \"Hello\"))\nprint(make_tag(\"a\", \"Click here\", href=\"https://example.com\"))\nprint(make_tag(\"div\", \"Box\", id=\"main\", style=\"color:red\"))",
         "expectedOutput": "<p>Hello</p>\n<a href=\"https://example.com\">Click here</a>\n<div id=\"main\" style=\"color:red\">Box</div>",
         "hints": [
-          "Use **kwargs to collect HTML attributes as key-value pairs.",
+          "Use kwargs to collect HTML attributes as key-value pairs.",
           "Join the attributes into a string with spaces and format each as key=\"value\"."
         ],
         "difficulty": "Medium"
@@ -185,12 +185,12 @@
         "id": "args-and-kwargs-ex3",
         "title": "Argument Unpacking",
         "description": "Given a function `multiply(a, b, c)`, demonstrate argument unpacking by calling it with a list and a dictionary. Print the results.",
-        "starterCode": "def multiply(a, b, c):\n    return a * b * c\n\nnums = [2, 3, 4]\nparams = {\"a\": 5, \"b\": 6, \"c\": 7}\n\n# Call multiply using * unpacking with nums\n# Call multiply using ** unpacking with params\n# your code here",
-        "solution": "def multiply(a, b, c):\n    return a * b * c\n\nnums = [2, 3, 4]\nparams = {\"a\": 5, \"b\": 6, \"c\": 7}\n\nprint(multiply(*nums))\nprint(multiply(**params))",
+        "starterCode": "def multiply(a, b, c):\n    return a * b * c\n\nnums = [2, 3, 4]\nparams = {\"a\": 5, \"b\": 6, \"c\": 7}\n\n# Call multiply using * unpacking with nums\n# Call multiply using  unpacking with params\n# your code here",
+        "solution": "def multiply(a, b, c):\n    return a * b * c\n\nnums = [2, 3, 4]\nparams = {\"a\": 5, \"b\": 6, \"c\": 7}\n\nprint(multiply(*nums))\nprint(multiply(params))",
         "expectedOutput": "24\n210",
         "hints": [
           "Use *nums to unpack the list into positional arguments: multiply(*nums).",
-          "Use **params to unpack the dictionary into keyword arguments: multiply(**params)."
+          "Use params to unpack the dictionary into keyword arguments: multiply(params)."
         ],
         "difficulty": "Easy"
       }
@@ -211,7 +211,7 @@
       "sorted() with key"
     ],
     "content": {
-      "explanation": "Lambda functions are small anonymous functions defined with the `lambda` keyword. Unlike regular functions defined with `def`, a lambda is a single expression that is evaluated and returned automatically -- no `return` statement is needed or allowed. The syntax is `lambda parameters: expression`. Lambdas are most useful as short throwaway functions passed as arguments to higher-order functions like `map()`, `filter()`, and `sorted()`.\n\nThe `map()` function applies a given function to every item in an iterable and returns a map object (a lazy iterator). It is commonly used with lambda functions to transform data in a concise, functional style. For example, `map(lambda x: x ** 2, numbers)` squares every element. Since `map()` returns an iterator, you typically wrap it in `list()` to see all results at once.\n\nThe `filter()` function works similarly but keeps only the items for which the function returns `True`. It is the functional equivalent of a list comprehension with an `if` clause. Combined with lambda, it reads naturally: `filter(lambda x: x > 0, numbers)` keeps only positive numbers. Like `map()`, it returns a lazy iterator.\n\nThe `reduce()` function, found in the `functools` module, applies a two-argument function cumulatively to the items of an iterable, reducing them to a single value. For example, `reduce(lambda a, b: a + b, [1, 2, 3, 4])` computes `((1 + 2) + 3) + 4 = 10`. While powerful, `reduce()` can be harder to read than an explicit loop, so Python's style guide recommends using it judiciously.\n\nThe `sorted()` function and the `list.sort()` method both accept a `key` parameter -- a function that extracts a comparison key from each element. Lambda functions are the most common way to supply custom sort keys. For instance, `sorted(words, key=lambda w: len(w))` sorts strings by length. You can also sort tuples, dictionaries, and objects by any attribute or computed value using this pattern.",
+      "explanation": "Lambda functions are small anonymous functions defined with the `lambda` keyword. Unlike regular functions defined with `def`, a lambda is a single expression that is evaluated and returned automatically -- no `return` statement is needed or allowed. The syntax is `lambda parameters: expression`. Lambdas are most useful as short throwaway functions passed as arguments to higher-order functions like `map()`, `filter()`, and `sorted()`.\n\nThe `map()` function applies a given function to every item in an iterable and returns a map object (a lazy iterator). It is commonly used with lambda functions to transform data in a concise, functional style. For example, `map(lambda x: x  2, numbers)` squares every element. Since `map()` returns an iterator, you typically wrap it in `list()` to see all results at once.\n\nThe `filter()` function works similarly but keeps only the items for which the function returns `True`. It is the functional equivalent of a list comprehension with an `if` clause. Combined with lambda, it reads naturally: `filter(lambda x: x > 0, numbers)` keeps only positive numbers. Like `map()`, it returns a lazy iterator.\n\nThe `reduce()` function, found in the `functools` module, applies a two-argument function cumulatively to the items of an iterable, reducing them to a single value. For example, `reduce(lambda a, b: a + b, [1, 2, 3, 4])` computes `((1 + 2) + 3) + 4 = 10`. While powerful, `reduce()` can be harder to read than an explicit loop, so Python's style guide recommends using it judiciously.\n\nThe `sorted()` function and the `list.sort()` method both accept a `key` parameter -- a function that extracts a comparison key from each element. Lambda functions are the most common way to supply custom sort keys. For instance, `sorted(words, key=lambda w: len(w))` sorts strings by length. You can also sort tuples, dictionaries, and objects by any attribute or computed value using this pattern.",
       "codeExamples": [
         {
           "title": "Lambda Basics",
@@ -221,7 +221,7 @@
         },
         {
           "title": "map() and filter() with Lambda",
-          "code": "numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\nsquared = list(map(lambda x: x ** 2, numbers))\nprint(f\"Squared: {squared}\")\n\nevens = list(filter(lambda x: x % 2 == 0, numbers))\nprint(f\"Evens: {evens}\")\n\n# Chaining: square only the even numbers\nresult = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, numbers)))\nprint(f\"Squared evens: {result}\")",
+          "code": "numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\nsquared = list(map(lambda x: x  2, numbers))\nprint(f\"Squared: {squared}\")\n\nevens = list(filter(lambda x: x % 2 == 0, numbers))\nprint(f\"Evens: {evens}\")\n\n# Chaining: square only the even numbers\nresult = list(map(lambda x: x  2, filter(lambda x: x % 2 == 0, numbers)))\nprint(f\"Squared evens: {result}\")",
           "output": "Squared: [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\nEvens: [2, 4, 6, 8, 10]\nSquared evens: [4, 16, 36, 64, 100]",
           "explanation": "map() transforms each element, filter() keeps elements that satisfy the condition. Nesting them together chains the operations: first filter for evens, then square the results."
         },
@@ -241,7 +241,7 @@
       "notes": [
         "Lambdas are limited to a single expression -- no statements, assignments, or multiple lines.",
         "PEP 8 discourages assigning lambdas to variables. If you need a named function, use `def` instead.",
-        "List comprehensions are often preferred over `map()` and `filter()` for readability: `[x**2 for x in nums if x % 2 == 0]`.",
+        "List comprehensions are often preferred over `map()` and `filter()` for readability: `[x2 for x in nums if x % 2 == 0]`.",
         "reduce() was moved from builtins to `functools` in Python 3 because Guido van Rossum felt it was overused."
       ],
       "commonPitfalls": [
@@ -418,7 +418,7 @@
         },
         {
           "title": "Passing Functions as Arguments",
-          "code": "def apply_operation(func, values):\n    \"\"\"Apply a function to each value and return results.\"\"\"\n    return [func(v) for v in values]\n\nnumbers = [1, -2, 3, -4, 5]\n\nprint(apply_operation(abs, numbers))\nprint(apply_operation(lambda x: x ** 2, numbers))\nprint(apply_operation(str, numbers))",
+          "code": "def apply_operation(func, values):\n    \"\"\"Apply a function to each value and return results.\"\"\"\n    return [func(v) for v in values]\n\nnumbers = [1, -2, 3, -4, 5]\n\nprint(apply_operation(abs, numbers))\nprint(apply_operation(lambda x: x  2, numbers))\nprint(apply_operation(str, numbers))",
           "output": "[1, 2, 3, 4, 5]\n[1, 4, 9, 16, 25]\n['1', '-2', '3', '-4', '5']",
           "explanation": "The `apply_operation` function does not know or care what transformation is applied -- it delegates that to the function passed in. This separation of concerns is the core benefit of higher-order functions."
         },
@@ -430,7 +430,7 @@
         },
         {
           "title": "Function Composition",
-          "code": "def compose(*funcs):\n    \"\"\"Compose multiple functions: compose(f, g, h)(x) = f(g(h(x))).\"\"\"\n    from functools import reduce\n    def composed(x):\n        return reduce(lambda acc, f: f(acc), reversed(funcs), x)\n    return composed\n\ndouble = lambda x: x * 2\nadd_ten = lambda x: x + 10\nsquare = lambda x: x ** 2\n\npipeline = compose(square, add_ten, double)\n\n# double(3) = 6 -> add_ten(6) = 16 -> square(16) = 256\nprint(pipeline(3))\nprint(pipeline(5))\nprint(pipeline(0))",
+          "code": "def compose(*funcs):\n    \"\"\"Compose multiple functions: compose(f, g, h)(x) = f(g(h(x))).\"\"\"\n    from functools import reduce\n    def composed(x):\n        return reduce(lambda acc, f: f(acc), reversed(funcs), x)\n    return composed\n\ndouble = lambda x: x * 2\nadd_ten = lambda x: x + 10\nsquare = lambda x: x  2\n\npipeline = compose(square, add_ten, double)\n\n# double(3) = 6 -> add_ten(6) = 16 -> square(16) = 256\nprint(pipeline(3))\nprint(pipeline(5))\nprint(pipeline(0))",
           "output": "256\n400\n100",
           "explanation": "The compose function chains functions right-to-left. For pipeline(3): double(3)=6, add_ten(6)=16, square(16)=256. This pattern lets you build complex transformations from simple, reusable building blocks."
         }
@@ -456,8 +456,8 @@
         "id": "higher-order-functions-ex1",
         "title": "Custom apply_to_each",
         "description": "Write a function `apply_to_each(func, items)` that applies `func` to every element in `items` and returns a list of results. Test it with `abs`, a squaring lambda, and `str.upper` on appropriate inputs.",
-        "starterCode": "def apply_to_each(func, items):\n    # your code here\n    pass\n\nprint(apply_to_each(abs, [-3, -1, 0, 2, -5]))\nprint(apply_to_each(lambda x: x ** 2, [1, 2, 3, 4]))\nprint(apply_to_each(str.upper, [\"hello\", \"world\"]))",
-        "solution": "def apply_to_each(func, items):\n    return [func(item) for item in items]\n\nprint(apply_to_each(abs, [-3, -1, 0, 2, -5]))\nprint(apply_to_each(lambda x: x ** 2, [1, 2, 3, 4]))\nprint(apply_to_each(str.upper, [\"hello\", \"world\"]))",
+        "starterCode": "def apply_to_each(func, items):\n    # your code here\n    pass\n\nprint(apply_to_each(abs, [-3, -1, 0, 2, -5]))\nprint(apply_to_each(lambda x: x  2, [1, 2, 3, 4]))\nprint(apply_to_each(str.upper, [\"hello\", \"world\"]))",
+        "solution": "def apply_to_each(func, items):\n    return [func(item) for item in items]\n\nprint(apply_to_each(abs, [-3, -1, 0, 2, -5]))\nprint(apply_to_each(lambda x: x  2, [1, 2, 3, 4]))\nprint(apply_to_each(str.upper, [\"hello\", \"world\"]))",
         "expectedOutput": "[3, 1, 0, 2, 5]\n[1, 4, 9, 16]\n['HELLO', 'WORLD']",
         "hints": [
           "Use a list comprehension to apply func to each item.",

@@ -145,7 +145,7 @@ export const grants: Grant[] = [
     fundingAmount: "$5,000 - $500,000",
     category: "Infrastructure",
     tags: ["Chainlink", "Oracles", "Integrations", "Research"],
-    website: "https://chain.link/community/grants",
+    website: "https://chain.link/community",
     eligibility: [
       "Must present a clear project roadmap and transparent budget",
       "Projects should show tangible progress including a working MVP",
@@ -545,7 +545,7 @@ export const grants: Grant[] = [
     fundingAmount: "7B HBAR allocated",
     category: "Infrastructure",
     tags: ["Hedera", "Enterprise", "Sustainability", "Fintech"],
-    website: "https://www.hbarfoundation.org/apply",
+    website: "https://hedera.foundation",
     eligibility: [
       "Open to startups, enterprises, and organizations on Hedera",
       "Grant themes: Developer Ecosystem, Community, Education, Integrations",
@@ -770,7 +770,7 @@ export const grants: Grant[] = [
     fundingAmount: "5,000 - 50,000 DAI",
     category: "DeFi",
     tags: ["MakerDAO", "Stablecoin", "DAI", "Financial Inclusion"],
-    website: "https://grants.makerdao.com",
+    website: "https://vote.makerdao.com",
     eligibility: [
       "Must increase DAI/USDS adoption or support emerging economies",
       "Novel uses for the stablecoin that further Foundation principles",
@@ -995,7 +995,7 @@ export const grants: Grant[] = [
     fundingAmount: "Varies by program",
     category: "Public Goods",
     tags: ["Celo", "Financial Inclusion", "Mobile-First", "ReFi"],
-    website: "https://celocommunityfund.org",
+    website: "https://docs.celo.org/build-on-celo/fund-your-project",
     eligibility: [
       "Projects must align with Celo's mission of financial inclusion",
       "Include Karma GAP project profile when applying",
@@ -1373,7 +1373,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to ₹10 Lakhs",
     category: "Government India",
     tags: ["Prototyping", "Innovation", "DST", "India"],
-    website: "https://dst.gov.in/nidhi-prayas",
+    website: "https://nidhi.dst.gov.in/schemes-programmes/nidhiprayas/",
     eligibility: [
       "Indian innovators with ideas at ideation or early prototype stage",
       "Must apply through a PRAYAS center (TBI-hosted)",
@@ -1448,7 +1448,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to ₹50 Lakhs/year",
     category: "Government India",
     tags: ["Research", "Science", "Engineering", "SERB", "India"],
-    website: "https://serb.gov.in/page/english/core-research-grant",
+    website: "https://anrf.gov.in/page/english/research_grants",
     eligibility: [
       "Faculty and scientists at recognized Indian institutions",
       "PhD holders with active research positions",
@@ -1523,7 +1523,7 @@ export const grants: Grant[] = [
     fundingAmount: "Project-based",
     category: "Government India",
     tags: ["Commercialization", "Innovation", "PSA", "India"],
-    website: "https://agnii.gov.in",
+    website: "https://www.investindia.gov.in/agnii",
     eligibility: [
       "Indian innovators with market-ready technologies",
       "Solutions addressing national challenges in health, agriculture, energy, or water",
@@ -1548,7 +1548,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to ₹25 Lakhs",
     category: "Government India",
     tags: ["MeitY", "Digital India", "Tech Startups", "India"],
-    website: "https://meitystartuphub.in",
+    website: "https://msh.meity.gov.in",
     eligibility: [
       "Indian tech startups in software, AI, cybersecurity, or emerging tech",
       "Must apply through MSH programs (SAMRIDH, GENESIS, etc.)",
@@ -1801,7 +1801,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to ₹10 Lakhs",
     category: "State Government",
     tags: ["Punjab", "Seed Grant", "Infrastructure", "India"],
-    website: "https://punjabinfotech.gov.in",
+    website: "https://punjabinfotech.in",
     eligibility: [
       "Startups incorporated in Punjab",
       "DPIIT recognition required",
@@ -1979,7 +1979,7 @@ export const grants: Grant[] = [
     fundingAmount: "CHF 1,920/month",
     category: "International Research",
     tags: ["Switzerland", "Doctoral", "Postdoctoral", "Excellence"],
-    website: "https://www.sbfi.admin.ch/scholarships",
+    website: "https://www.sbfi.admin.ch/en/swiss-government-excellence-scholarships",
     eligibility: [
       "Researchers from 180+ countries including India",
       "Master's degree holders for PhD programs; PhD holders for postdoc",
@@ -2182,7 +2182,7 @@ export const grants: Grant[] = [
     fundingAmount: "£18,000/year",
     category: "Global Youth",
     tags: ["Social Enterprise", "Youth", "UK", "Poverty"],
-    website: "https://www.resolution-foundation.org",
+    website: "https://www.resolutionfoundation.org",
     eligibility: [
       "Aged 18-25 at time of application",
       "Must be based in the UK or addressing UK social issues",
@@ -2435,7 +2435,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to £25,000",
     category: "University",
     tags: ["Oxford", "Entrepreneurship", "UK", "Accelerator"],
-    website: "https://oxfordfoundry.ox.ac.uk",
+    website: "https://www.sbs.ox.ac.uk/oxford-foundry",
     eligibility: [
       "Current Oxford students or alumni within 3 years of graduation",
       "Ventures at idea or early-stage",
@@ -2460,7 +2460,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to ₹25 Lakhs",
     category: "University",
     tags: ["IIT Bombay", "Incubation", "Tech Startups", "India"],
-    website: "https://sineiitb.org",
+    website: "https://www.sineiitb.org",
     eligibility: [
       "IIT Bombay students, alumni, or faculty-founded startups",
       "Must be a technology-based startup",
@@ -2485,7 +2485,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to ₹25 Lakhs",
     category: "University",
     tags: ["IIT Delhi", "Tech Transfer", "Incubation", "India"],
-    website: "https://fitt.iitd.ac.in",
+    website: "https://fitt-iitd.in",
     eligibility: [
       "IIT Delhi students, alumni, or researchers",
       "Technology startups with strong R&D component",
@@ -2510,7 +2510,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to ₹10 Lakhs",
     category: "University",
     tags: ["IISc", "Deep Tech", "Research", "Bangalore", "India"],
-    website: "https://step.iisc.ac.in",
+    website: "https://www.fsid-iisc.in",
     eligibility: [
       "IISc students, alumni, or researchers with tech innovations",
       "Deep tech or science-based startups preferred",
@@ -2560,7 +2560,7 @@ export const grants: Grant[] = [
     fundingAmount: "CHF 150,000",
     category: "University",
     tags: ["ETH Zurich", "Deep Tech", "Spin-off", "Switzerland"],
-    website: "https://ethz.ch/pioneer-fellowships",
+    website: "https://entrepreneurship.ethz.ch/startups-spinoffs/find-offers-programs-space-grants-for-entrepreneurs/pioneer-fellowship.html",
     eligibility: [
       "ETH Zurich students, alumni, or researchers",
       "Must have technology originating from ETH research",
@@ -3144,7 +3144,7 @@ export const grants: Grant[] = [
     fundingAmount: "GPU hardware grants",
     category: "AI & Deep Tech",
     tags: ["NVIDIA", "GPU", "Deep Learning", "Hardware"],
-    website: "https://developer.nvidia.com/academic-grant-program",
+    website: "https://www.nvidia.com/en-us/industries/higher-education-research/academic-grant-program/",
     eligibility: [
       "Faculty and researchers at accredited universities",
       "Research must involve GPU computing (deep learning, HPC, graphics)",
@@ -3294,7 +3294,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to $50,000",
     category: "AI & Deep Tech",
     tags: ["Huawei", "5G", "Cloud", "AI", "Research"],
-    website: "https://www.huawei.com/en/sustainability/win-win-development/social-contribution/seeds-for-the-future",
+    website: "https://www.huawei.com/minisite/seeds-for-the-future/index.html",
     eligibility: [
       "University researchers and PhD students",
       "Research in ICT, AI, cloud, or wireless technologies",
@@ -3675,7 +3675,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to $250,000",
     category: "Corporate Innovation",
     tags: ["Cisco", "Networking", "IoT", "Security", "Digital"],
-    website: "https://www.cisco.com/c/en/us/about/csr/community/cisco-foundation.html",
+    website: "https://www.cisco.com/site/us/en/about/purpose/social-impact/cisco-foundation.html",
     eligibility: [
       "Startups with networking, security, or IoT innovations",
       "Must align with Cisco's strategic technology areas",
@@ -3750,7 +3750,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to €250,000 in value",
     category: "Corporate Innovation",
     tags: ["SAP", "B2B", "Enterprise", "ERP", "Accelerator"],
-    website: "https://sap.io",
+    website: "https://www.sap.com/partners.html",
     eligibility: [
       "B2B startups with solutions complementing SAP's ecosystem",
       "Must be willing to integrate with SAP technologies",
@@ -3800,7 +3800,7 @@ export const grants: Grant[] = [
     fundingAmount: "Up to $25,000",
     category: "Corporate Innovation",
     tags: ["Adobe", "Design", "Education", "Creativity", "Diversity"],
-    website: "https://www.adobe.com/about-adobe/adobe-fund-for-design.html",
+    website: "https://developer.adobe.com/fund-for-design/",
     eligibility: [
       "Nonprofits, educational institutions, and community organizations",
       "Projects expanding access to design and creativity tools",

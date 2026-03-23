@@ -23,6 +23,17 @@ export function welcomeEmailHtml(name: string): string {
         <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
           Your account is verified and ready to roll. InternHack is packed with tools to fast-track your career &mdash; here's everything you get access to:
         </p>
+        <!-- Learning Hub highlight -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+          <tr>
+            <td style="padding:16px 18px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:8px;">
+              <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#3730a3;">Learning Hub</p>
+              <p style="margin:0;font-size:13px;color:#4338ca;line-height:1.5;">
+                Curated questions and study material crafted by engineers from Google, Amazon, and Meta &mdash; 3,300+ DSA problems, interview prep, SQL practice, aptitude, and 500+ lessons across 12 technologies.
+              </p>
+            </td>
+          </tr>
+        </table>
         <!-- Features - 2 column grid using tables -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
           <tr>
@@ -63,20 +74,20 @@ export function welcomeEmailHtml(name: string): string {
           <tr><td colspan="3" style="height:4px;"></td></tr>
           <tr>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">DSA Practice</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">LeetCode-style problems with progress tracking</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">DSA & Interview Prep</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">3,300+ problems curated by FAANG engineers</p>
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
               <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">SQL Practice</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Hands-on SQL challenges to sharpen your DB skills</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">188 interactive exercises running in your browser</p>
             </td>
           </tr>
           <tr><td colspan="3" style="height:4px;"></td></tr>
           <tr>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Aptitude Quizzes</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Prep for placement tests with curated questions</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">500+ Lessons</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">JS, Python, React, Node.js, TypeScript, and more</p>
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
@@ -98,7 +109,7 @@ export function welcomeEmailHtml(name: string): string {
           </tr>
         </table>
         <p style="margin:0 0 20px;font-size:14px;line-height:1.5;color:#52525b;text-align:center;">
-          That's <strong>12 features</strong> built to get you hired faster.
+          All built to get you hired faster.
         </p>
         <!-- CTA -->
         <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
@@ -214,10 +225,10 @@ export function followUpEmailHtml(name: string): string {
         <!-- Checklist -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;padding:16px 18px;background-color:#f0fdf4;border-left:3px solid #22c55e;">
           <tr><td style="padding:3px 0;font-size:14px;font-weight:600;color:#166534;">Have you tried these yet?</td></tr>
+          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Explore the Learning Hub &mdash; 3,300+ DSA problems and 500+ lessons curated by Google, Amazon &amp; Meta engineers</td></tr>
           <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Score your resume with the AI ATS Scorer</td></tr>
-          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Practice DSA problems with progress tracking</td></tr>
+          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Practice SQL with 188 interactive exercises</td></tr>
           <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Generate a cover letter for your dream role</td></tr>
-          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Follow a career roadmap to level up</td></tr>
           <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Get verified skill badges for your profile</td></tr>
         </table>
         <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#52525b;">

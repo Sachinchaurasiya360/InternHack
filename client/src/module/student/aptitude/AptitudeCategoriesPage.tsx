@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Brain, CheckCircle2, ChevronRight, Building2, BookOpen, TrendingUp, ArrowRight, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Building2, ArrowRight, Brain, BookOpen, MessageSquare } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
@@ -11,29 +11,19 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
-const CATEGORY_COLORS: Record<string, { bg: string; text: string; icon: string }> = {
-  aptitude:           { bg: "bg-orange-50 dark:bg-orange-900/20", text: "text-orange-600 dark:text-orange-400", icon: "text-orange-500" },
-  "logical-reasoning": { bg: "bg-blue-50 dark:bg-blue-900/20",   text: "text-blue-600 dark:text-blue-400",     icon: "text-blue-500" },
-  verbal:             { bg: "bg-green-50 dark:bg-green-900/20",   text: "text-green-600 dark:text-green-400",   icon: "text-green-500" },
-};
-
-function getColors(slug: string) {
-  return CATEGORY_COLORS[slug] ?? { bg: "bg-purple-50 dark:bg-purple-900/20", text: "text-purple-600 dark:text-purple-400", icon: "text-purple-500" };
-}
-
-function CircularProgress({ progress, size = 56 }: { progress: number; size?: number }) {
-  const r = (size - 8) / 2;
+function CircularProgress({ progress, size = 52 }: { progress: number; size?: number }) {
+  const r = (size - 6) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ - (progress / 100) * circ;
 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg className="-rotate-90" style={{ width: size, height: size }} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f3f4f6" className="dark:stroke-gray-700" strokeWidth="4" />
+      <svg className="-rotate-90" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" className="stroke-gray-100 dark:stroke-gray-800" strokeWidth="4" />
         <circle
           cx={size / 2} cy={size / 2} r={r}
           fill="none"
-          className="stroke-purple-500"
+          className={progress === 100 ? "stroke-emerald-500" : "stroke-purple-500"}
           strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={`${circ}`}
@@ -41,7 +31,7 @@ function CircularProgress({ progress, size = 56 }: { progress: number; size?: nu
           style={{ transition: "stroke-dashoffset 0.6s ease" }}
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-800 dark:text-gray-200">
+      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-300">
         {progress}%
       </span>
     </div>
@@ -49,9 +39,8 @@ function CircularProgress({ progress, size = 56 }: { progress: number; size?: nu
 }
 
 export default function AptitudeCategoriesPage() {
-  const navigate = useNavigate();
   const { user } = useAuthStore();
-  const [expandedCat, setExpandedCat] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("all");
 
   const { data: categories, isLoading } = useQuery({
     queryKey: queryKeys.aptitude.categories(),
@@ -67,6 +56,13 @@ export default function AptitudeCategoriesPage() {
   const totalQuestions = categories?.reduce((s, c) => s + c.questionCount, 0) ?? 0;
   const totalAnswered = categories?.reduce((s, c) => s + c.answeredCount, 0) ?? 0;
   const overallPct = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
+  const totalTopics = categories?.reduce((s, c) => s + c.topics.length, 0) ?? 0;
+
+  // Flatten all topics, optionally filtered by active category tab
+  const allTopics = categories?.flatMap((cat) =>
+    cat.topics.map((t) => ({ ...t, categorySlug: cat.slug, categoryName: cat.name }))
+  ) ?? [];
+  const filteredTopics = activeTab === "all" ? allTopics : allTopics.filter((t) => t.categorySlug === activeTab);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -79,246 +75,187 @@ export default function AptitudeCategoriesPage() {
         canonicalUrl={canonicalUrl("/learn/aptitude")}
       />
 
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back
-      </button>
-
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-purple-100 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
         <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-indigo-100 dark:from-slate-900/20 dark:to-indigo-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
       </div>
 
-      {/* Header */}
+      {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-10 mt-6"
+        className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 mb-8 mt-2"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-          Aptitude <span className="text-gradient-accent">Practice</span>
-        </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-md mx-auto">
-          Master quantitative, logical & verbal skills
-        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-6">
+          {/* Progress ring */}
+          {user && (
+            <CircularProgress progress={overallPct} size={80} />
+          )}
+
+          <div className="flex-1 text-center sm:text-left">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-1">
+              Aptitude Practice
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              {totalQuestions.toLocaleString()} questions across {totalTopics} topics &middot; Quantitative, Logical & Verbal
+              {user && totalAnswered > 0 && (
+                <span className="text-emerald-600 dark:text-emerald-400 font-medium"> &middot; {totalAnswered} answered</span>
+              )}
+            </p>
+          </div>
+
+          {/* Quick nav */}
+          <div className="flex items-center gap-2">
+            <Link
+              to="/learn/aptitude/companies"
+              className="flex flex-col items-center gap-1 px-4 py-3 rounded-xl text-blue-500 bg-blue-50 dark:bg-blue-900/20 hover:opacity-80 transition-opacity no-underline"
+            >
+              <Building2 className="w-5 h-5" />
+              <span className="text-[10px] font-semibold uppercase tracking-wide opacity-70">Companies</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Category breakdown bar */}
+        {user && progress && categories && (
+          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+            <div className="grid grid-cols-3 gap-4">
+              {categories.map((cat) => {
+                const catPct = cat.questionCount > 0 ? Math.round((cat.answeredCount / cat.questionCount) * 100) : 0;
+                const iconConfig = cat.slug === "aptitude"
+                  ? { icon: Brain, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500" }
+                  : cat.slug === "logical-reasoning"
+                  ? { icon: BookOpen, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500" }
+                  : { icon: MessageSquare, color: "text-green-600 dark:text-green-400", bg: "bg-green-500" };
+                const Icon = iconConfig.icon;
+                return (
+                  <div key={cat.id} className="text-center">
+                    <div className="flex items-center justify-center gap-1.5 mb-2">
+                      <Icon className={`w-3.5 h-3.5 ${iconConfig.color}`} />
+                      <span className={`text-xs font-bold uppercase tracking-wider ${iconConfig.color}`}>{cat.name}</span>
+                    </div>
+                    <p className="font-display text-lg font-bold text-gray-950 dark:text-white">
+                      {cat.answeredCount}<span className="text-gray-300 dark:text-gray-600 font-normal">/{cat.questionCount}</span>
+                    </p>
+                    <div className="w-full h-1 bg-gray-100 dark:bg-gray-800 rounded-full mt-2 overflow-hidden">
+                      <div className={`h-full rounded-full ${iconConfig.bg}`} style={{ width: `${catPct}%`, transition: "width 0.6s ease" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </motion.div>
 
-      {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-4 mb-8"
-      >
-        {[
-          { icon: BookOpen, value: totalQuestions, label: "Questions", iconColor: "text-purple-500" },
-          { icon: TrendingUp, value: totalAnswered, label: "Answered", iconColor: "text-violet-500" },
-          { icon: CheckCircle2, value: `${overallPct}%`, label: "Complete", iconColor: "text-emerald-500" },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
-          >
-            <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
-            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Quick Access */}
+      {/* Category Tabs */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.15 }}
-        className="flex items-center gap-3 mb-8 flex-wrap"
+        className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-1.5 mb-6"
       >
-        <Link
-          to="/learn/aptitude/companies"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
-        >
-          <Building2 className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Company Wise</span>
-        </Link>
+        {[
+          { key: "all", label: "All Topics" },
+          ...(categories?.map((c) => ({ key: c.slug, label: c.name })) ?? []),
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+              activeTab === tab.key
+                ? "bg-gray-950 text-white dark:bg-white dark:text-gray-950 shadow-sm"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </motion.div>
 
-      {/* Overall Progress */}
-      {user && progress && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 mb-8"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">Overall Progress</span>
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400 tabular-nums">
-              {progress.totalAnswered}/{progress.totalQuestions} answered
-              {progress.totalCorrect > 0 && ` (${progress.totalCorrect} correct)`}
-            </span>
-          </div>
-          <div className="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${overallPct}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className={`h-full rounded-full ${overallPct === 100 ? "bg-green-500" : "bg-purple-500"}`}
-            />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Categories */}
-      <div className="space-y-3">
-        {categories?.map((cat, idx) => {
-          const isExpanded = expandedCat === cat.slug;
-          const catPct = cat.questionCount > 0 ? Math.round((cat.answeredCount / cat.questionCount) * 100) : 0;
-          const colors = getColors(cat.slug);
+      {/* Topic List */}
+      <div className="space-y-2.5">
+        {filteredTopics.map((topic, idx) => {
+          const pct = topic.questionCount > 0
+            ? Math.round((topic.answeredCount / topic.questionCount) * 100)
+            : 0;
+          const isComplete = pct === 100 && topic.questionCount > 0;
 
           return (
             <motion.div
-              key={cat.id}
+              key={topic.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 + idx * 0.06 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 overflow-hidden"
+              transition={{ delay: Math.min(idx, 10) * 0.03 }}
             >
-              {/* Category Header */}
-              <button
-                onClick={() => setExpandedCat(isExpanded ? null : cat.slug)}
-                className="w-full flex items-center gap-5 px-6 py-5 text-left"
+              <Link
+                to={`/learn/aptitude/${topic.slug}`}
+                className="group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg hover:shadow-gray-200/40 dark:hover:shadow-gray-900/40 transition-all duration-300 no-underline"
               >
+                {/* Progress or number */}
                 {user ? (
-                  <CircularProgress progress={catPct} />
+                  <CircularProgress progress={pct} size={44} />
                 ) : (
-                  <div className={`w-14 h-14 rounded-2xl ${colors.bg} flex items-center justify-center shrink-0`}>
-                    <Brain className={`w-6 h-6 ${colors.icon}`} />
+                  <div className="w-11 h-11 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                    <span className="text-sm font-bold text-gray-400 dark:text-gray-500">{idx + 1}</span>
                   </div>
                 )}
 
+                {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h2 className="text-base font-semibold text-gray-950 dark:text-white truncate">
-                      {cat.name}
-                    </h2>
-                    {catPct === 100 && user && cat.questionCount > 0 && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
-                        Complete
-                      </span>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="text-sm font-semibold text-gray-950 dark:text-white truncate">
+                      {topic.name}
+                    </h3>
+                    {isComplete && user && (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                     )}
                   </div>
 
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5">
-                    {cat.topicCount} topics &middot; {cat.questionCount} questions
-                    {user && cat.answeredCount > 0 && ` \u00B7 ${cat.answeredCount} answered`}
-                  </p>
-
-                  {/* Progress bar */}
-                  {user && (
-                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${catPct}%` }}
-                        transition={{ duration: 0.6, delay: 0.25 + idx * 0.06 }}
-                        className={`h-full rounded-full ${
-                          catPct === 100 ? "bg-green-500" : catPct > 0 ? "bg-gray-950 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
-                        }`}
-                      />
+                  {/* Progress bar or question count */}
+                  {user ? (
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, delay: Math.min(idx, 10) * 0.03 }}
+                          className={`h-full rounded-full ${
+                            isComplete ? "bg-emerald-500" : pct > 0 ? "bg-purple-500" : "bg-transparent"
+                          }`}
+                        />
+                      </div>
+                      <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500 shrink-0 tabular-nums">
+                        {topic.answeredCount}/{topic.questionCount}
+                      </span>
                     </div>
+                  ) : (
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{topic.questionCount} questions</p>
                   )}
-
-                  <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
-                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
-                      {cat.topicCount} topics
-                    </span>
-                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
-                      {cat.questionCount} questions
-                    </span>
-                  </div>
                 </div>
 
-                <ChevronRight className={`w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
-              </button>
-
-              {/* Topics List */}
-              {isExpanded && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="border-t border-gray-100 dark:border-gray-800"
-                >
-                  {cat.topics.map((topic, tidx) => {
-                    const topicPct = topic.questionCount > 0
-                      ? Math.round((topic.answeredCount / topic.questionCount) * 100) : 0;
-                    const basePath = "/learn/aptitude";
-                    const isComplete = topicPct === 100 && topic.questionCount > 0;
-
-                    return (
-                      <Link
-                        key={topic.id}
-                        to={`${basePath}/${topic.slug}`}
-                        className="group flex items-center gap-4 px-6 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border-b border-gray-50 dark:border-gray-800/50 last:border-b-0 no-underline"
-                      >
-                        {isComplete ? (
-                          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border-2 border-gray-200 dark:border-gray-700 shrink-0 flex items-center justify-center">
-                            <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500">{tidx + 1}</span>
-                          </div>
-                        )}
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-gray-950 dark:group-hover:text-white transition-colors truncate">
-                              {topic.name}
-                            </span>
-                            {isComplete && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
-                                Done
-                              </span>
-                            )}
-                          </div>
-                          {topic.description && (
-                            <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{topic.description}</p>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-3 shrink-0">
-                          <div className="text-right">
-                            <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500 tabular-nums">
-                              {topic.answeredCount}/{topic.questionCount}
-                            </span>
-                            {user && topicPct > 0 && (
-                              <div className="w-16 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full mt-1 overflow-hidden">
-                                <div
-                                  className={`h-full rounded-full transition-all ${isComplete ? "bg-green-500" : "bg-purple-500"}`}
-                                  style={{ width: `${topicPct}%` }}
-                                />
-                              </div>
-                            )}
-                          </div>
-                          <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </motion.div>
-              )}
+                <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </Link>
             </motion.div>
           );
         })}
+
+        {filteredTopics.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
+          >
+            <Brain className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="font-display text-lg font-bold text-gray-950 dark:text-white mb-2">No topics found</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-500 max-w-sm mx-auto">
+              No topics available for this category.
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );

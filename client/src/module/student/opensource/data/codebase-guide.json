@@ -1,0 +1,246 @@
+{
+  "codebaseGuide": [
+    {
+      "step": 1,
+      "id": "mental-model",
+      "title": "Build a Mental Model First",
+      "description": "Before reading a single line of code, understand what the project does from a user's perspective. You can't navigate a city without a map, and you can't read a codebase without context.",
+      "mentor_guidance": "The biggest mistake I see juniors make is jumping straight into /src and trying to read code line by line. That's like trying to understand a movie by starting from a random scene in the middle.\n\nHere's what I do every single time I encounter a new codebase - and I've been doing this for years across hundreds of projects:\n\nFirst, I USE the software. I install it, run it, click every button, trigger every error. I spend 15-30 minutes just being a user. This gives me an intuition that no amount of code reading can provide. When I later see a function called `handleCheckout()`, I already know what checkout looks like, what data it needs, and what can go wrong.\n\nSecond, I read the README. Not skim - actually read it. The README is the project's elevator pitch, setup guide, and architecture overview compressed into one document. Pay attention to the tech stack mentioned, the folder structure if documented, and any 'How it works' sections.\n\nThird, I check for a CONTRIBUTING.md file. This is the project's instruction manual for new contributors. It tells you how to set up the dev environment, how to run tests, what coding standards to follow, and how to submit changes. Ignoring this file is like ignoring the assembly instructions for IKEA furniture - you'll waste hours and end up with something wobbly.\n\nDon't rush this step. Spending 30 minutes here saves you 3 hours of confused code reading later.",
+      "details": [
+        "Start by reading the README.md from top to bottom. Look for: what problem the project solves, what technologies it uses (this tells you what patterns to expect), how to install and run it, and any architecture diagrams or documentation links. A well-maintained README is your best friend. If the README is sparse, check the project's website, wiki, or /docs folder.",
+        "Use the software as an end user before reading any code. If it's a web app, click through every page and feature. If it's a CLI tool, run every command with --help. If it's a library, read the examples and try them. This builds an intuitive map of what the code needs to do, so when you read functions and classes later, you can connect them to real behaviors.",
+        "Read CONTRIBUTING.md if it exists - it's the project's style guide, workflow expectations, and development setup instructions rolled into one. Some projects also have a CODE_OF_CONDUCT.md (community behavior expectations) and ARCHITECTURE.md (how the codebase is structured). These documents exist specifically for new contributors like you.",
+        "Check the project's issue tracker and recent pull requests. Read 3-5 recently merged PRs - they show you what kinds of changes the team makes, how they write commit messages, what the review process looks like, and what standards they enforce. This is like watching how a kitchen operates before you start cooking in it. You'll learn the unwritten rules that no documentation covers.",
+        "Look at the tech stack and dependencies. In a JavaScript project, check package.json. In Python, check requirements.txt or pyproject.toml. In Rust, check Cargo.toml. The dependencies tell you a LOT about the project's architecture. If you see Express, it's a Node.js web server. If you see React and Redux, it's a state-managed frontend. If you see Prisma, it uses an ORM for database access. Each dependency is a clue about how the code is organized.",
+        "Don't try to understand everything at once. Your goal at this stage is a 30,000-foot view - you want to know the rough shape of the codebase, not every detail. Think of it like looking at a city from an airplane before you start walking its streets. You'll explore specific neighborhoods later."
+      ],
+      "commands": [
+        { "label": "Clone a project and read its docs first", "code": "git clone https://github.com/org/project.git\ncd project\ncat README.md\ncat CONTRIBUTING.md" },
+        { "label": "Check the tech stack via package.json (JS/TS projects)", "code": "cat package.json | head -50" },
+        { "label": "Check Python project dependencies", "code": "cat requirements.txt\n# or\ncat pyproject.toml" },
+        { "label": "Look at recent commit history for patterns", "code": "git log --oneline -20" }
+      ],
+      "resources": [
+        { "title": "How to Read Unfamiliar Code (freeCodeCamp)", "url": "https://www.freecodecamp.org/news/how-to-read-your-way-to-becoming-a-better-developer/", "type": "article" },
+        { "title": "The Art of Reading Code", "url": "https://www.youtube.com/watch?v=MiKul6LPsHU", "type": "video" }
+      ],
+      "tips": [
+        "Keep a scratch pad open while exploring. Write down questions like 'Where does authentication happen?' or 'How does data flow from API to UI?' You'll answer these as you dig deeper, and the act of writing questions focuses your exploration.",
+        "If a project has a demo or live version, use it extensively before reading code. Understanding the user experience is the fastest shortcut to understanding the codebase.",
+        "Check the /docs or /wiki folder - many projects have detailed architecture documentation that's not linked from the README."
+      ]
+    },
+    {
+      "step": 2,
+      "id": "folder-structure",
+      "title": "Map the Folder Structure",
+      "description": "Every codebase has a skeleton. Learn to read the directory tree and you'll know where 80% of the code lives before opening a single file.",
+      "mentor_guidance": "Here's a secret that experienced developers rarely talk about: most codebases follow predictable patterns. Once you've seen 5-10 projects in a given framework, you can navigate a new one in minutes because the folder structure tells you everything.\n\nA React project will almost always have src/components, src/pages or src/routes, src/hooks, src/utils, and src/lib. A Django project will have apps/ with models.py, views.py, urls.py, and templates/. A Go project will have cmd/, internal/, and pkg/. An Express/Node project will have routes/, controllers/, services/, and models/ or a module-based structure.\n\nWhen I open a new codebase, the first thing I do is run `tree -L 2` (or `ls -R` limited to 2 levels deep). This gives me the skeleton. I look for these things:\n\n1. Where does the app start? Look for main.ts, index.ts, app.py, main.go, or whatever the entry point is.\n2. Where are the routes/endpoints? This tells me what the app can do.\n3. Where is the database logic? Models, migrations, schemas.\n4. Where are the tests? This tells me how to verify my changes.\n5. Where is the config? Environment variables, settings files.\n\nDon't memorize folder structures - learn to recognize patterns. After a few projects, you'll look at any folder tree and immediately know 'oh, this is a module-based architecture' or 'they're using the MVC pattern with services.'",
+      "details": [
+        "Run `tree -L 2` or `ls -la` at the root to see the top-level structure. Common top-level folders: src/ (source code), tests/ or __tests__/ (tests), docs/ (documentation), scripts/ (build/deploy scripts), config/ or .config/ (configuration). Files at root: README.md, package.json/Cargo.toml/pyproject.toml (dependencies), Dockerfile (containerization), .github/ (CI/CD workflows, issue templates).",
+        "Identify the entry point - this is where execution begins. In Node.js: look for 'main' in package.json, or check src/index.ts or src/app.ts. In Python: look for __main__.py, app.py, or manage.py. In Go: look for main.go in cmd/ directory. In React: it's typically src/main.tsx or src/index.tsx which renders the root component. The entry point is your starting node for tracing how the app boots up.",
+        "Recognize common architectural patterns from folder names. If you see /models, /views, /controllers - that's MVC. If you see /module/user, /module/auth, /module/payment with each having its own routes, controllers, services - that's modular architecture. If you see /components, /hooks, /context, /pages - that's a typical React SPA. If you see /domain, /application, /infrastructure - that's domain-driven design (DDD). Pattern recognition is your superpower.",
+        "Look for the routing layer - it's the table of contents for the entire application. In Express: search for `app.use()` or `router.get/post`. In Django: look for urls.py. In React: look for <Route> elements in App.tsx. In Flask: search for `@app.route`. The routes file maps URLs to functions, so it tells you 'when a user does X, this function handles it.' Reading routes first is like reading a book's table of contents before the chapters.",
+        "Find the database layer. Look for: /models (ORM model definitions), /migrations (database schema changes), /prisma or /drizzle (schema files), /schemas (validation schemas, not the same as DB schemas). Understanding the data model tells you what entities the app works with (users, posts, orders, etc.) and how they relate to each other. This is fundamental context you need before making changes.",
+        "Locate the test directory. Tests are a goldmine for understanding code behavior. A test file named user.service.test.ts tells you exactly what the UserService is supposed to do, with concrete examples. Reading tests is often faster than reading source code because tests describe behavior in plain, assertion-based language: 'when input is X, output should be Y.'"
+      ],
+      "commands": [
+        { "label": "View folder structure (2 levels deep)", "code": "tree -L 2\n# or on systems without tree:\nfind . -maxdepth 2 -type d | head -40" },
+        { "label": "Find the entry point (Node.js)", "code": "cat package.json | grep -E '\"main\"|\"start\"'" },
+        { "label": "Find all route definitions (Express)", "code": "grep -rn 'router\\.' src/ --include='*.ts' | head -30" },
+        { "label": "Find all test files", "code": "find . -name '*.test.*' -o -name '*.spec.*' | head -20" },
+        { "label": "Find all model/schema definitions", "code": "find . -path '*/models/*' -o -path '*/schema*' | head -20" }
+      ],
+      "resources": [
+        { "title": "Project Structure Best Practices", "url": "https://github.com/goldbergyoni/nodebestpractices#1-project-architecture-practices", "type": "docs" },
+        { "title": "Folder Structure Conventions", "url": "https://github.com/kriasoft/Folder-Structure-Conventions", "type": "docs" }
+      ],
+      "tips": [
+        "Create a quick mental map: 'Entry point is here, routes are here, database models are here, tests are here.' That's all you need to start navigating confidently.",
+        "If a project has a Makefile, read it. Makefiles often document the most common development commands: how to run the app, run tests, build for production, and seed the database.",
+        "Ignore node_modules/, .git/, vendor/, __pycache__/, and build/dist folders. These are auto-generated and not part of the codebase you need to understand."
+      ]
+    },
+    {
+      "step": 3,
+      "id": "trace-the-flow",
+      "title": "Trace a Single Feature End-to-End",
+      "description": "Pick one simple feature and follow the code from user action to database and back. This single trace teaches you more about the codebase than reading 100 files randomly.",
+      "mentor_guidance": "This is the technique that separates developers who 'kinda understand' a codebase from those who truly get it. And it's embarrassingly simple.\n\nPick ONE feature. The simplest, most boring feature you can find. Something like 'user logs in' or 'display a list of items' or 'submit a form.' Then trace EVERY step of that feature through the codebase.\n\nHere's exactly how I do it:\n\n1. I start at the UI. What button does the user click? What component renders it?\n2. I find the event handler. What function runs when the button is clicked?\n3. I follow the API call. What endpoint does the frontend call?\n4. I find the route handler. What server function receives this request?\n5. I trace the business logic. What service or controller processes it?\n6. I follow the database query. What data gets read or written?\n7. I trace the response back. How does the data flow back to the UI?\n\nThis end-to-end trace gives you a complete 'slice' through the entire application. It's like cutting a cross-section of a tree - you see every layer (bark, cambium, sapwood, heartwood) in one cut.\n\nAfter tracing one feature, you understand the patterns well enough to trace any other feature in minutes. The architecture becomes predictable because most features follow the same path with different data.\n\nUse your editor's 'Go to Definition' (F12 in VS Code) and 'Find All References' (Shift+F12) aggressively. These two shortcuts replace hours of manual searching.",
+      "details": [
+        "Choose the simplest feature to trace. In a web app: 'how does the homepage load?' or 'how does the login form work?' In a CLI tool: 'what happens when I run the simplest command?' In a library: 'what happens when I call the most basic function from the docs?' Simple features are better because they have fewer branches and edge cases, letting you focus on understanding the architecture rather than business logic.",
+        "Start from the user-facing layer and work inward. In a web app, find the React component or HTML template that renders the UI. Look at its onClick handlers, form submissions, or useEffect calls. These will point you to API calls (fetch, axios, React Query hooks). Follow those calls to the backend endpoint.",
+        "On the backend, trace: Route → Controller → Service → Database. The route maps the URL to a handler. The controller parses the request and calls the service. The service contains business logic and talks to the database. The database query reads or writes data. This layered architecture is used by 90% of web applications. Once you see it once, you see it everywhere.",
+        "Use your editor's navigation features. In VS Code: Cmd/Ctrl+Click on a function to go to its definition. Shift+F12 to find all references (everywhere this function is called). Cmd/Ctrl+Shift+F to search across the entire project. Alt+Left to go back to where you were. These four shortcuts are essential for tracing code flow - memorize them.",
+        "Draw the flow as you trace it. Use a text file, paper, or whiteboard. Something like: 'LoginButton.tsx → handleSubmit() → api.post(/auth/login) → auth.routes.ts → auth.controller.ts → auth.service.ts → prisma.user.findUnique() → returns JWT → stored in localStorage → redirect to dashboard.' This drawing becomes your reference for the rest of your work on the project.",
+        "Pay attention to middleware, hooks, and interceptors along the path. In Express: middleware functions that run before the route handler (auth checks, validation, rate limiting). In React: custom hooks, context providers, and HOCs that wrap components. These 'invisible' layers are where a lot of important logic lives, and they're easy to miss if you're only looking at the obvious function calls."
+      ],
+      "commands": [
+        { "label": "Search for a specific function across the codebase", "code": "grep -rn 'functionName' src/ --include='*.ts'" },
+        { "label": "Find where a component is imported/used", "code": "grep -rn 'ComponentName' src/ --include='*.tsx'" },
+        { "label": "Find all API route definitions", "code": "grep -rn 'app\\.get\\|app\\.post\\|router\\.' src/ --include='*.ts'" },
+        { "label": "Find all database queries for a model", "code": "grep -rn 'prisma\\.user' src/ --include='*.ts'" }
+      ],
+      "resources": [
+        { "title": "VS Code Keyboard Shortcuts Reference", "url": "https://code.visualstudio.com/docs/getstarted/keybindings", "type": "docs" },
+        { "title": "Reading Code is a Skill (YouTube)", "url": "https://www.youtube.com/watch?v=r36NaAGKOuI", "type": "video" }
+      ],
+      "tips": [
+        "Use 'Go to Definition' (Cmd/Ctrl+Click) and 'Find All References' (Shift+F12) obsessively. These two shortcuts replace hours of manual grep-ing and file browsing.",
+        "After tracing one feature, trace a second one. You'll notice that 80% of the path is identical - the same middleware, the same patterns, the same database access layer. The architecture becomes predictable.",
+        "If you get lost during a trace, add temporary console.log statements and trigger the feature. The logs will show you exactly which functions run and in what order. Just remember to remove them before committing."
+      ]
+    },
+    {
+      "step": 4,
+      "id": "read-tests-first",
+      "title": "Read Tests Before Source Code",
+      "description": "Tests are executable documentation. They tell you exactly what each function is supposed to do, with concrete inputs and expected outputs. Reading tests is often faster than reading the code itself.",
+      "mentor_guidance": "This is maybe the most counterintuitive advice I give, and it's the one that gets the strongest 'aha' moment from every developer I mentor.\n\nDon't read the source code first. Read the tests first.\n\nWhy? Because tests are written in plain assertion language. They say things like:\n\n- 'When the user has no email, return an error'\n- 'When the cart is empty, the total should be 0'\n- 'When the API key is invalid, throw an UnauthorizedError'\n\nThis is infinitely clearer than reading the actual implementation, which might involve 200 lines of validation, error handling, edge cases, and database queries to achieve the same thing.\n\nTests give you the WHAT (what the code should do) without the HOW (the implementation details). Once you know what a function is supposed to do, reading the implementation becomes much easier because you already know the expected behavior.\n\nI've walked into codebases with zero documentation but comprehensive test suites, and I was productive within a day. Conversely, I've struggled for weeks with codebases that have great README files but no tests, because I could never be sure what the code was actually supposed to do versus what it accidentally did.\n\nPro tip: tests also show you how to USE the code. They import functions, set up dependencies, call methods with specific arguments, and check the results. If you want to know how to use a class or function, the test file is the best example you'll find.",
+      "details": [
+        "Test files are usually named component.test.ts, service.spec.ts, or placed in a __tests__/ directory. The naming convention tells you exactly which source file the test covers. user.service.test.ts tests the user service. LoginForm.test.tsx tests the LoginForm component. This 1:1 mapping makes it easy to find the test for any file.",
+        "Read the 'describe' and 'it' blocks as English sentences. `describe('UserService')` → `it('should create a user with valid data')` reads as: 'The UserService should create a user with valid data.' The test body then shows you: what input is valid, what the function returns on success, and how errors are handled. This is a complete behavior specification.",
+        "Look at the test setup (beforeEach/beforeAll blocks). These show you what dependencies a module needs, how to initialize it, and what mock data the project uses. This is invaluable when you need to set up the same thing for your own changes. Many bugs in open source contributions come from incorrect setup - the tests show you the right way.",
+        "Test fixtures and mock data reveal the data shapes and edge cases the team cares about. If a test creates a user with {email: 'test@example.com', role: 'ADMIN', verified: true}, you now know the User model has email, role, and verified fields. If there's a separate test for role: 'GUEST', you know the system handles different roles differently.",
+        "Integration tests and end-to-end tests show you complete user workflows. A test that does: create user → login → create post → fetch posts → verify post appears tells you the entire happy path for a feature. These high-level tests are the best 'documentation' of what the application actually does.",
+        "If the project has no tests (or poor test coverage), that's useful information too. It means you should be extra careful about changes (no safety net to catch regressions), and it might be an opportunity for you to contribute by adding tests - many maintainers love PRs that improve test coverage."
+      ],
+      "commands": [
+        { "label": "Find all test files in the project", "code": "find . -name '*.test.*' -o -name '*.spec.*' | sort" },
+        { "label": "Run the test suite to see what passes", "code": "npm test\n# or\npython -m pytest\n# or\ngo test ./..." },
+        { "label": "Run tests for a specific file with verbose output", "code": "npx jest user.service.test.ts --verbose" },
+        { "label": "Check test coverage (shows which lines are tested)", "code": "npm test -- --coverage" }
+      ],
+      "resources": [
+        { "title": "Testing Best Practices by Goldberg", "url": "https://github.com/goldbergyoni/javascript-testing-best-practices", "type": "docs" },
+        { "title": "Understanding Test Doubles (Mocks, Stubs, Fakes)", "url": "https://martinfowler.com/articles/mocksArentStubs.html", "type": "article" }
+      ],
+      "tips": [
+        "When you want to understand a function, find its test first. The test shows you what inputs it expects, what it returns, and what errors it throws - all without reading the implementation.",
+        "If you're asked to fix a bug, write a failing test for the bug FIRST. This proves the bug exists and gives you a clear signal when your fix works. This is called Test-Driven Bug Fixing, and maintainers love PRs that include regression tests.",
+        "Running `npm test -- --coverage` shows you which files have tests and which don't. Untested files are risky to change (no safety net) but also great candidates for contribution (maintainers appreciate coverage improvements)."
+      ]
+    },
+    {
+      "step": 5,
+      "id": "understand-data-model",
+      "title": "Understand the Data Model",
+      "description": "The database schema is the foundation everything is built on. Once you understand what entities exist and how they relate, the rest of the code makes sense.",
+      "mentor_guidance": "Every application is fundamentally about data. It stores data, transforms data, and displays data. If you understand what data the app works with, you understand the app.\n\nI always tell my mentees: before you read a single service function or API handler, understand the data model. It's like understanding the ingredients before reading a recipe.\n\nThe data model answers the most important questions about any application:\n- What 'things' does the app manage? (Users, Posts, Orders, Products, etc.)\n- What properties does each thing have? (A User has a name, email, role, password hash)\n- How do things relate to each other? (A User has many Posts, a Post belongs to one User, an Order has many Products)\n- What constraints exist? (Email must be unique, price must be positive, status can only be 'ACTIVE' or 'INACTIVE')\n\nOnce you know this, reading the code becomes dramatically easier. When you see `prisma.user.findMany({ where: { role: 'ADMIN' } })`, you already know what a User is, that it has a role field, and that ADMIN is a valid value.\n\nIn most projects, the data model is defined in one place: Prisma schema files, Django models, SQLAlchemy models, TypeORM entities, or raw SQL migration files. Find that one place and read it thoroughly.",
+      "details": [
+        "Find the schema/model definitions. In Prisma projects: look for schema.prisma files. In Django: models.py in each app. In Rails: db/schema.rb or app/models/. In SQLAlchemy: models/ directory. In TypeORM: entities/ directory. In raw SQL projects: migrations/ folder. These files define every table, column, type, constraint, and relationship in the database.",
+        "Map the relationships between entities. Look for: one-to-many (a User has many Posts), many-to-many (Users and Roles through a junction table), one-to-one (a User has one Profile). In Prisma, relationships are explicit with @relation. In Django, they use ForeignKey, ManyToManyField. Understanding relationships helps you predict how data flows through the application and what queries are necessary.",
+        "Look at field types and constraints. A field marked as `@unique` means the app has to handle duplicate errors. A field with `@default(now())` is auto-generated. An enum field like `status: Status` limits values to specific options. Optional fields (String?) are treated differently from required ones. These details matter when you write code that creates or updates records.",
+        "Check migration files to understand how the schema evolved over time. Migrations tell a story: 'First we had users with just email and password. Then we added roles. Then we added email verification. Then we added OAuth.' This history helps you understand WHY the schema looks the way it does, not just WHAT it is. It also warns you about legacy patterns or technical debt.",
+        "Look for seed files or fixtures - they create sample data for development and testing. Seed data shows you what realistic data looks like in this app: what a typical user object contains, what orders look like, what valid states exist. This is much more useful than abstract schema definitions because it's concrete.",
+        "Draw an ER diagram (Entity-Relationship) on paper. Boxes for entities, lines for relationships. Even a rough sketch helps you see the big picture. Tools like dbdiagram.io can generate diagrams from schema definitions if you prefer digital."
+      ],
+      "commands": [
+        { "label": "Find Prisma schema files", "code": "find . -name 'schema.prisma' -o -name '*.prisma'" },
+        { "label": "Find Django model files", "code": "find . -name 'models.py' | grep -v node_modules" },
+        { "label": "View migration history", "code": "ls -la prisma/migrations/\n# or\npython manage.py showmigrations" },
+        { "label": "Find seed/fixture files", "code": "find . -name 'seed*' -o -name '*fixture*' -o -name '*factory*' | head -10" }
+      ],
+      "resources": [
+        { "title": "Prisma Schema Reference", "url": "https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference", "type": "docs" },
+        { "title": "dbdiagram.io - Quick ER Diagrams", "url": "https://dbdiagram.io", "type": "tool" }
+      ],
+      "tips": [
+        "When you can name all the main entities in a project and explain how they relate, you understand the project well enough to contribute meaningful code. Everything else is implementation detail.",
+        "Pay attention to enum types - they define the 'vocabulary' of the application. Status, Role, Permission, Plan - these tell you what states and categories exist in the system.",
+        "If you're confused about a relationship, look at how the data is queried. Search for `include:` or `populate()` or `.join()` calls - they reveal which entities are fetched together and how they're connected."
+      ]
+    },
+    {
+      "step": 6,
+      "id": "debugging-as-reading",
+      "title": "Use the Debugger as a Reading Tool",
+      "description": "Set breakpoints, trigger a feature, and watch the code execute step by step. The debugger shows you the actual execution path - no guessing, no assumptions.",
+      "mentor_guidance": "Here's a technique that 10x'd my ability to understand unfamiliar code: use the debugger not to fix bugs, but to READ code.\n\nMost developers think of debuggers as tools you use when something is broken. But a debugger is actually the best code reading tool ever invented. Here's why:\n\nWhen you read code statically (just looking at files), you're guessing at the execution path. 'I think this function calls that function, which probably queries this table.' You're constructing a mental model based on assumptions.\n\nWhen you use a debugger, you see the ACTUAL execution path. You set a breakpoint on line 1 of a function, trigger the feature, and then step through line by line. You see exactly which branch of an if/else is taken. You see the actual values of variables, not what you imagined them to be. You see which functions are called and in what order.\n\nI use this technique on every new codebase. I set a breakpoint at the API entry point (the route handler), trigger a request from the browser, and then step through the entire flow: middleware → controller → service → database → response. In 15 minutes, I understand the complete request lifecycle.\n\nThis is especially powerful for understanding middleware chains, dependency injection, event systems, and any pattern where the control flow isn't obvious from reading the code top to bottom.",
+      "details": [
+        "In VS Code, you can debug Node.js apps by creating a launch.json configuration. Click the Run and Debug icon (Ctrl+Shift+D), click 'create a launch.json file', and select Node.js. Set 'program' to the entry file (e.g., src/index.ts). For TypeScript, add 'runtimeArgs': ['--loader', 'tsx'] or use ts-node. Hit F5 to start debugging.",
+        "Set strategic breakpoints at the entry points of the feature you want to understand. Don't set breakpoints everywhere - start at the route handler, and then step INTO (F11) function calls as they happen. Step OVER (F10) utility functions you don't care about. Step OUT (Shift+F11) when you're deep inside a function and want to go back up.",
+        "The Watch panel and Variables panel are your best friends. Add expressions to the Watch panel to monitor specific values as you step through code. The Variables panel shows all local variables and their current values. This is infinitely better than console.log because you see everything at once, in context.",
+        "Use conditional breakpoints for code that runs frequently. Right-click a breakpoint → Edit Breakpoint → add a condition like `userId === '123'`. The debugger will only pause when that condition is true. This is essential for understanding code in loops or middleware that runs on every request.",
+        "The Call Stack panel shows you exactly how you got to the current line - what function called what function called what function. This is a visual representation of the execution trace you were drawing manually in the previous step. It's the fastest way to understand control flow in complex applications.",
+        "For frontend debugging, use Chrome DevTools. Open DevTools (F12), go to Sources tab, find your component file, and set breakpoints. When React components re-render, the breakpoint hits and you can inspect props, state, and context values. This is incredibly useful for understanding how data flows through a React component tree."
+      ],
+      "commands": [
+        { "label": "VS Code launch.json for Node.js (TypeScript with tsx)", "code": "{\n  \"version\": \"0.2.0\",\n  \"configurations\": [\n    {\n      \"type\": \"node\",\n      \"request\": \"launch\",\n      \"name\": \"Debug Server\",\n      \"program\": \"${workspaceFolder}/src/index.ts\",\n      \"runtimeArgs\": [\"--loader\", \"tsx\"],\n      \"env\": { \"NODE_ENV\": \"development\" }\n    }\n  ]\n}" },
+        { "label": "Launch Chrome with debugging enabled", "code": "google-chrome --remote-debugging-port=9222" },
+        { "label": "Node.js inspect mode (attach debugger from VS Code)", "code": "node --inspect src/index.js\n# Then attach VS Code debugger to port 9229" }
+      ],
+      "resources": [
+        { "title": "VS Code Debugging Guide", "url": "https://code.visualstudio.com/docs/editor/debugging", "type": "docs" },
+        { "title": "Chrome DevTools - Debug JavaScript", "url": "https://developer.chrome.com/docs/devtools/javascript/", "type": "docs" }
+      ],
+      "tips": [
+        "You don't need to understand the debugger deeply - just learn three keys: F5 (start/continue), F10 (step over), F11 (step into). That's 90% of what you need.",
+        "If the project uses Docker, you can still debug by exposing the debug port: add '--inspect=0.0.0.0:9229' to the Node.js command in docker-compose.yml.",
+        "When you're lost in deeply nested function calls, look at the Call Stack panel - it shows you the bread crumb trail of how you got to the current line. Click any frame to jump to that context."
+      ]
+    },
+    {
+      "step": 7,
+      "id": "common-patterns",
+      "title": "Recognize Common Architecture Patterns",
+      "description": "Most codebases use well-known patterns: MVC, layered architecture, event-driven, etc. Recognizing the pattern tells you where to find what you're looking for.",
+      "mentor_guidance": "After you've traced a feature or two, you'll start to see the underlying architecture pattern. This is where things click.\n\nMost applications follow one of a few well-known patterns, and once you recognize which one is being used, the entire codebase becomes predictable. It's like recognizing that a building is a house vs. an office building - you immediately know where to find the kitchen vs. the conference room.\n\nHere are the patterns you'll encounter most often in open source projects:\n\nMVC (Model-View-Controller): The classic. Models define data, Views render UI, Controllers handle logic. Used by Rails, Django, Laravel, and many Express apps.\n\nLayered/Clean Architecture: Routes → Controllers → Services → Repositories. Each layer only talks to the one below it. This is what most modern Node.js and Java apps use.\n\nComponent-Based (React, Vue, Svelte): The app is split into reusable UI components, each managing its own state and rendering. Parent components pass data down via props, children communicate up via callbacks.\n\nEvent-Driven: Components communicate through events/messages rather than direct function calls. Common in microservices, real-time apps, and systems using message queues.\n\nMonorepo: Multiple packages/apps in one repository, managed by tools like Turborepo, Nx, or Lerna. Each package in packages/ or apps/ is essentially a mini-project.\n\nThe pattern tells you WHERE to find things. In MVC, business logic is in controllers. In layered architecture, it's in services. In component-based apps, it's co-located with the UI component. Knowing the pattern saves you from hunting through random files.",
+      "details": [
+        "MVC (Model-View-Controller): The most common backend pattern. Models define database schema and data validation (models/ or entities/). Views render HTML templates or API responses (views/ or templates/). Controllers handle incoming requests, orchestrate logic, and return responses (controllers/). In modern apps, the View is often a separate frontend (React/Vue), and the backend is a pure API.",
+        "Layered Architecture (Routes → Controllers → Services → Repositories): An evolution of MVC where business logic is extracted from controllers into a service layer. Routes define endpoints and middleware. Controllers parse requests and format responses. Services contain business logic (the 'what'). Repositories handle data access (the 'how'). This separation means you can test business logic without a database and change databases without touching business logic.",
+        "Component-Based Architecture (React, Vue, Svelte): The UI is composed of independent, reusable components. Each component manages its own rendering, state, and lifecycle. Components communicate through props (parent → child) and callbacks/events (child → parent). Shared state lives in context providers, state management libraries (Redux, Zustand), or server state caches (React Query, SWR). Understanding the component tree is essential - start from the root (App.tsx) and work down.",
+        "Event-Driven Architecture: Instead of direct function calls, components emit events that other components listen to. In Node.js, this often uses EventEmitter or libraries like RxJS. In microservices, it uses message queues (RabbitMQ, Kafka, Redis pub/sub). The key challenge is tracing flow - 'who emits this event?' and 'who listens for it?' - because the connection isn't visible in a simple grep. Search for event names as strings.",
+        "Monorepo Structure: Multiple related projects in one repository. Look for packages/, apps/, or libs/ directories, each containing a separate package with its own package.json. A root-level turbo.json, nx.json, or lerna.json manages the workspace. Each package can depend on other packages in the monorepo. Start by understanding which package you need to modify - usually the app or package that contains the feature you're working on.",
+        "Plugin/Extension Architecture: The core is minimal, and functionality is added through plugins. Examples: VS Code extensions, Webpack plugins, Express middleware, Gatsby plugins. The core defines interfaces/hooks that plugins implement. Look for a plugin registration mechanism (app.use(), registerPlugin()) and interface definitions to understand how plugins interact with the core."
+      ],
+      "commands": [
+        { "label": "Check for monorepo tooling", "code": "ls turbo.json nx.json lerna.json pnpm-workspace.yaml 2>/dev/null" },
+        { "label": "Find controller files (layered architecture)", "code": "find . -name '*controller*' -o -name '*Controller*' | head -10" },
+        { "label": "Find service files (layered architecture)", "code": "find . -name '*service*' -o -name '*Service*' | head -10" },
+        { "label": "Find event emitters/listeners", "code": "grep -rn 'emit\\|addEventListener\\|on(' src/ --include='*.ts' | head -15" }
+      ],
+      "resources": [
+        { "title": "Patterns of Enterprise Application Architecture (Martin Fowler)", "url": "https://martinfowler.com/eaaCatalog/", "type": "article" },
+        { "title": "Clean Architecture by Robert C. Martin", "url": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html", "type": "article" }
+      ],
+      "tips": [
+        "You don't need to memorize architecture patterns - you need to recognize them. After seeing 3-4 projects that use the same pattern, it becomes second nature.",
+        "If the codebase doesn't follow any recognizable pattern, that's a red flag. It likely grew organically without a plan. Tread carefully and rely heavily on tests and git blame to understand intent.",
+        "When the architecture feels confusing, check if there's an ARCHITECTURE.md or ADR (Architecture Decision Records) folder. Some projects document why they chose their architecture and what tradeoffs they made."
+      ]
+    },
+    {
+      "step": 8,
+      "id": "git-blame-history",
+      "title": "Use Git History as Documentation",
+      "description": "Every line of code has a history - who wrote it, when, and why. Git blame and git log are your time machine for understanding the reasoning behind any piece of code.",
+      "mentor_guidance": "Here's a scenario every developer faces: you're reading code and you see something that looks wrong, or confusing, or unnecessarily complex. Your instinct is to 'fix' it or simplify it.\n\nDon't. Not yet. First, understand WHY it was written that way.\n\nGit blame and git log are your tools for this. They answer the question every developer should ask before changing existing code: 'What was the author thinking when they wrote this?'\n\nI once saw a junior developer 'simplify' a function by removing what looked like an unnecessary check. The PR passed review, got merged, and everything worked fine - for two months. Then a specific edge case hit production and caused a cascading failure. The 'unnecessary' check was handling a race condition that only occurred under high load.\n\nIf they had run `git blame` on that line, they would have seen a commit message: 'Fix race condition when concurrent requests modify the same order.' That context would have saved everyone a lot of pain.\n\nGit blame shows you who wrote each line and links to the commit that introduced it. The commit message (if well-written) explains why the change was made. The associated PR (if you follow the commit to GitHub) shows the discussion, the review comments, and often links to the issue that motivated the change.\n\nThis chain - line → commit → PR → issue - is the complete provenance of any piece of code. Use it.",
+      "details": [
+        "git blame shows you who last modified each line of a file, when, and the commit hash. Run `git blame filename.ts` to see the annotated file. Each line shows: the commit hash, the author, the date, and the code. Click the commit hash (or copy it and run `git show <hash>`) to see the full commit: what changed, the commit message, and other files affected in the same commit.",
+        "git log for a specific file shows the history of changes to that file. Run `git log --follow filename.ts` to see every commit that modified this file, ordered from newest to oldest. The --follow flag tracks the file even if it was renamed. Add --patch (or -p) to see the actual diff for each commit - what lines were added and removed.",
+        "When git blame reveals a confusing change, go deeper. Copy the commit hash, go to GitHub, and navigate to the commit page (github.com/org/repo/commit/<hash>). From there, check if the commit is linked to a PR - the PR page will have discussion, review comments, and often a link to the issue that motivated the change. This chain (blame → commit → PR → issue) gives you the complete story.",
+        "Use `git log --all --oneline --graph` to visualize the branch and merge history. This shows you how the project has evolved, when major features were merged, and what the branching strategy looks like (feature branches, release branches, etc.). It's a timeline of the project's development.",
+        "The GitLens extension for VS Code makes git blame effortless - it shows inline annotations next to every line, showing who wrote it and when. Hover over any line to see the full commit message. This turns git blame from a command you run occasionally to ambient context that's always visible.",
+        "When you see code that looks intentionally complex, check the commit message before simplifying it. Comments like 'Handle edge case where X' or 'Workaround for Y browser bug' tell you the complexity is intentional. Simplifying it will reintroduce the bug it was written to prevent."
+      ],
+      "commands": [
+        { "label": "See who wrote each line of a file", "code": "git blame src/services/auth.service.ts" },
+        { "label": "View the complete history of a file", "code": "git log --follow --oneline src/services/auth.service.ts" },
+        { "label": "See full details of a specific commit", "code": "git show <commit-hash>" },
+        { "label": "See the diff for a specific commit", "code": "git show <commit-hash> --stat" },
+        { "label": "Visualize branch history", "code": "git log --all --oneline --graph --decorate | head -30" },
+        { "label": "Find when a specific line/string was introduced", "code": "git log -S 'searchString' --oneline" }
+      ],
+      "resources": [
+        { "title": "GitLens Extension for VS Code", "url": "https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens", "type": "tool" },
+        { "title": "Git Log Documentation", "url": "https://git-scm.com/docs/git-log", "type": "docs" }
+      ],
+      "tips": [
+        "Before you change existing code, always ask: 'Why was it written this way?' The answer might be: 'there's a bug workaround', 'there's a performance reason', or 'it handles an edge case you haven't thought of.' git blame gives you the answer.",
+        "If a commit message is just 'fix' or 'update', check the associated PR on GitHub - the PR description and review comments often contain the context the commit message lacks.",
+        "Use `git log -S 'searchString'` (the 'pickaxe' option) to find when a specific piece of code was introduced or removed. This is incredibly powerful for understanding the history of a specific feature or bug fix."
+      ]
+    }
+  ]
+}

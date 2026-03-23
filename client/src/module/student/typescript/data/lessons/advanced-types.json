@@ -81,7 +81,7 @@
       "codeExamples": [
         {
           "title": "Basic Discriminated Union",
-          "code": "type Circle = { kind: \"circle\"; radius: number };\ntype Square = { kind: \"square\"; side: number };\ntype Triangle = { kind: \"triangle\"; base: number; height: number };\n\ntype Shape = Circle | Square | Triangle;\n\nfunction area(shape: Shape): number {\n  switch (shape.kind) {\n    case \"circle\":\n      return Math.round(Math.PI * shape.radius ** 2 * 100) / 100;\n    case \"square\":\n      return shape.side ** 2;\n    case \"triangle\":\n      return (shape.base * shape.height) / 2;\n  }\n}\n\nconsole.log(area({ kind: \"circle\", radius: 5 }));\nconsole.log(area({ kind: \"square\", side: 4 }));\nconsole.log(area({ kind: \"triangle\", base: 6, height: 3 }));",
+          "code": "type Circle = { kind: \"circle\"; radius: number };\ntype Square = { kind: \"square\"; side: number };\ntype Triangle = { kind: \"triangle\"; base: number; height: number };\n\ntype Shape = Circle | Square | Triangle;\n\nfunction area(shape: Shape): number {\n  switch (shape.kind) {\n    case \"circle\":\n      return Math.round(Math.PI * shape.radius  2 * 100) / 100;\n    case \"square\":\n      return shape.side  2;\n    case \"triangle\":\n      return (shape.base * shape.height) / 2;\n  }\n}\n\nconsole.log(area({ kind: \"circle\", radius: 5 }));\nconsole.log(area({ kind: \"square\", side: 4 }));\nconsole.log(area({ kind: \"triangle\", base: 6, height: 3 }));",
           "output": "78.54\n16\n9",
           "explanation": "The `kind` property is the discriminant. In each case branch, TypeScript knows exactly which shape variant it is and provides access to its specific properties."
         },

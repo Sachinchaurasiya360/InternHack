@@ -77,7 +77,7 @@
         "title": "Build a List Dynamically",
         "description": "Start with an empty list called 'squares'. Use a for loop to append the squares of numbers 1 through 5. Print the final list and its length.",
         "starterCode": "# Start with an empty list\n\n# Use a for loop to append squares of 1 through 5\n\n# Print the list and its length\n",
-        "solution": "squares = []\nfor i in range(1, 6):\n    squares.append(i ** 2)\nprint(squares)\nprint(len(squares))",
+        "solution": "squares = []\nfor i in range(1, 6):\n    squares.append(i  2)\nprint(squares)\nprint(len(squares))",
         "expectedOutput": "[1, 4, 9, 16, 25]\n5",
         "hints": [
           "range(1, 6) generates 1, 2, 3, 4, 5",
@@ -200,7 +200,7 @@
         },
         {
           "title": "List Comprehensions",
-          "code": "# Basic comprehension\nsquares = [x ** 2 for x in range(1, 6)]\nprint(squares)\n\n# With condition (filter)\nevens = [x for x in range(10) if x % 2 == 0]\nprint(evens)\n\n# With if-else (transform)\nlabels = [\"even\" if x % 2 == 0 else \"odd\" for x in range(5)]\nprint(labels)\n\n# From string\nuppers = [c.upper() for c in \"hello\" if c != 'l']\nprint(uppers)",
+          "code": "# Basic comprehension\nsquares = [x  2 for x in range(1, 6)]\nprint(squares)\n\n# With condition (filter)\nevens = [x for x in range(10) if x % 2 == 0]\nprint(evens)\n\n# With if-else (transform)\nlabels = [\"even\" if x % 2 == 0 else \"odd\" for x in range(5)]\nprint(labels)\n\n# From string\nuppers = [c.upper() for c in \"hello\" if c != 'l']\nprint(uppers)",
           "output": "[1, 4, 9, 16, 25]\n[0, 2, 4, 6, 8]\n['even', 'odd', 'even', 'odd', 'even']\n['H', 'E', 'O']",
           "explanation": "List comprehensions are a concise way to build lists. The if clause after 'for' filters elements. An if-else before 'for' transforms each element. Comprehensions can work with any iterable, including strings."
         },
@@ -245,7 +245,7 @@
         "title": "Comprehension with Filter",
         "description": "Use a list comprehension to create a list of squares of all odd numbers from 1 to 10 (inclusive). Print the resulting list.",
         "starterCode": "# Use a list comprehension for squares of odd numbers 1-10\n\n# Print the result\n",
-        "solution": "result = [x ** 2 for x in range(1, 11) if x % 2 != 0]\nprint(result)",
+        "solution": "result = [x  2 for x in range(1, 11) if x % 2 != 0]\nprint(result)",
         "expectedOutput": "[1, 9, 25, 49, 81]",
         "hints": [
           "Use range(1, 11) to get numbers 1 through 10",

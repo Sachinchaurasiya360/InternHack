@@ -13,18 +13,18 @@
       "codeExamples": [
         {
           "title": "Basic Decorator with Arguments",
-          "code": "import functools\nimport time\n\ndef timer(func):\n    @functools.wraps(func)  # preserves func name & docstring\n    def wrapper(*args, **kwargs):\n        start = time.perf_counter()\n        result = func(*args, **kwargs)\n        elapsed = time.perf_counter() - start\n        print(f\"{func.__name__} took {elapsed:.4f}s\")\n        return result\n    return wrapper\n\n@timer\ndef slow_function(n):\n    \"\"\"Simulates a slow operation.\"\"\"\n    time.sleep(n)\n    return f\"Done after {n}s\"\n\n# @timer is equivalent to:\n# slow_function = timer(slow_function)\nresult = slow_function(1)\nprint(result)\nprint(slow_function.__name__)  # 'slow_function' (thanks to @wraps)",
+          "code": "import functools\nimport time\n\ndef timer(func):\n    @functools.wraps(func)  # preserves func name & docstring\n    def wrapper(*args, kwargs):\n        start = time.perf_counter()\n        result = func(*args, kwargs)\n        elapsed = time.perf_counter() - start\n        print(f\"{func.__name__} took {elapsed:.4f}s\")\n        return result\n    return wrapper\n\n@timer\ndef slow_function(n):\n    \"\"\"Simulates a slow operation.\"\"\"\n    time.sleep(n)\n    return f\"Done after {n}s\"\n\n# @timer is equivalent to:\n# slow_function = timer(slow_function)\nresult = slow_function(1)\nprint(result)\nprint(slow_function.__name__)  # 'slow_function' (thanks to @wraps)",
           "output": "slow_function took 1.0012s\nDone after 1s\nslow_function",
           "explanation": "The decorator wraps the original function. @functools.wraps preserves the original function's metadata (name, docstring)."
         },
         {
           "title": "Decorator Factory (with parameters)",
-          "code": "def retry(max_attempts=3, delay=1):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(1, max_attempts + 1):\n                try:\n                    return func(*args, **kwargs)\n                except Exception as e:\n                    if attempt == max_attempts:\n                        raise\n                    print(f\"Attempt {attempt} failed: {e}. Retrying...\")\n                    time.sleep(delay)\n        return wrapper\n    return decorator\n\n@retry(max_attempts=3, delay=0.5)\ndef fetch_data(url):\n    import random\n    if random.random() < 0.7:\n        raise ConnectionError(\"Server unavailable\")\n    return {\"data\": \"success\"}\n\n# Three levels of nesting:\n# retry(3, 0.5) returns decorator\n# decorator(fetch_data) returns wrapper\n# wrapper() is called when fetch_data() is called",
+          "code": "def retry(max_attempts=3, delay=1):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, kwargs):\n            for attempt in range(1, max_attempts + 1):\n                try:\n                    return func(*args, kwargs)\n                except Exception as e:\n                    if attempt == max_attempts:\n                        raise\n                    print(f\"Attempt {attempt} failed: {e}. Retrying...\")\n                    time.sleep(delay)\n        return wrapper\n    return decorator\n\n@retry(max_attempts=3, delay=0.5)\ndef fetch_data(url):\n    import random\n    if random.random() < 0.7:\n        raise ConnectionError(\"Server unavailable\")\n    return {\"data\": \"success\"}\n\n# Three levels of nesting:\n# retry(3, 0.5) returns decorator\n# decorator(fetch_data) returns wrapper\n# wrapper() is called when fetch_data() is called",
           "explanation": "A decorator factory is a function that returns a decorator. This pattern allows passing configuration parameters to decorators."
         },
         {
           "title": "Stacking Multiple Decorators",
-          "code": "def bold(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        return f\"<b>{func(*args, **kwargs)}</b>\"\n    return wrapper\n\ndef italic(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        return f\"<i>{func(*args, **kwargs)}</i>\"\n    return wrapper\n\n@bold\n@italic\ndef greet(name):\n    return f\"Hello, {name}\"\n\nprint(greet(\"Alice\"))\n# Equivalent to: bold(italic(greet))(\"Alice\")\n# Inner decorator applies first, outer wraps around it",
+          "code": "def bold(func):\n    @functools.wraps(func)\n    def wrapper(*args, kwargs):\n        return f\"<b>{func(*args, kwargs)}</b>\"\n    return wrapper\n\ndef italic(func):\n    @functools.wraps(func)\n    def wrapper(*args, kwargs):\n        return f\"<i>{func(*args, kwargs)}</i>\"\n    return wrapper\n\n@bold\n@italic\ndef greet(name):\n    return f\"Hello, {name}\"\n\nprint(greet(\"Alice\"))\n# Equivalent to: bold(italic(greet))(\"Alice\")\n# Inner decorator applies first, outer wraps around it",
           "output": "<b><i>Hello, Alice</i></b>",
           "explanation": "Decorators stack bottom-up: @italic applies first, then @bold wraps the result. Read them inside-out."
         }
@@ -60,7 +60,7 @@
       "codeExamples": [
         {
           "title": "Generator vs List: Memory Comparison",
-          "code": "import sys\n\n# List: stores ALL values in memory\nnums_list = [x ** 2 for x in range(1_000_000)]\nprint(f\"List size: {sys.getsizeof(nums_list):,} bytes\")\n\n# Generator: computes values on demand\nnums_gen = (x ** 2 for x in range(1_000_000))\nprint(f\"Generator size: {sys.getsizeof(nums_gen):,} bytes\")\n\n# Generator function\ndef squares(n):\n    for i in range(n):\n        yield i ** 2  # pauses here, resumes on next()\n\nfor sq in squares(5):\n    print(sq, end=' ')",
+          "code": "import sys\n\n# List: stores ALL values in memory\nnums_list = [x  2 for x in range(1_000_000)]\nprint(f\"List size: {sys.getsizeof(nums_list):,} bytes\")\n\n# Generator: computes values on demand\nnums_gen = (x  2 for x in range(1_000_000))\nprint(f\"Generator size: {sys.getsizeof(nums_gen):,} bytes\")\n\n# Generator function\ndef squares(n):\n    for i in range(n):\n        yield i  2  # pauses here, resumes on next()\n\nfor sq in squares(5):\n    print(sq, end=' ')",
           "output": "List size: 8,448,728 bytes\nGenerator size: 200 bytes\n0 1 4 9 16",
           "explanation": "The list stores 1M values in memory (~8MB). The generator object is only 200 bytes because it computes values one at a time."
         },
@@ -206,8 +206,8 @@
         },
         {
           "title": "f-strings and Formatting",
-          "code": "name = \"Alice\"\nage = 30\nsalary = 75000.5\n\n# f-strings (Python 3.6+)\nprint(f\"Name: {name}, Age: {age}\")\nprint(f\"Salary: ${salary:,.2f}\")  # $75,000.50\nprint(f\"{'centered':^20}\")       # '      centered      '\nprint(f\"{'left':<20}\")           # 'left                '\nprint(f\"{'right':>20}\")          # '                right'\n\n# Expressions inside f-strings\nprint(f\"{name.upper() = }\")      # \"name.upper() = 'ALICE'\"\nprint(f\"{2 ** 10 = }\")           # '2 ** 10 = 1024'\n\n# Multiline f-strings\nmessage = (\n    f\"Dear {name},\\n\"\n    f\"You are {age} years old.\\n\"\n    f\"Retirement in {65 - age} years.\"\n)\nprint(message)",
-          "output": "Name: Alice, Age: 30\nSalary: $75,000.50\n      centered      \nleft                \n                right\nname.upper() = 'ALICE'\n2 ** 10 = 1024\nDear Alice,\nYou are 30 years old.\nRetirement in 35 years.",
+          "code": "name = \"Alice\"\nage = 30\nsalary = 75000.5\n\n# f-strings (Python 3.6+)\nprint(f\"Name: {name}, Age: {age}\")\nprint(f\"Salary: ${salary:,.2f}\")  # $75,000.50\nprint(f\"{'centered':^20}\")       # '      centered      '\nprint(f\"{'left':<20}\")           # 'left                '\nprint(f\"{'right':>20}\")          # '                right'\n\n# Expressions inside f-strings\nprint(f\"{name.upper() = }\")      # \"name.upper() = 'ALICE'\"\nprint(f\"{2  10 = }\")           # '2  10 = 1024'\n\n# Multiline f-strings\nmessage = (\n    f\"Dear {name},\\n\"\n    f\"You are {age} years old.\\n\"\n    f\"Retirement in {65 - age} years.\"\n)\nprint(message)",
+          "output": "Name: Alice, Age: 30\nSalary: $75,000.50\n      centered      \nleft                \n                right\nname.upper() = 'ALICE'\n2  10 = 1024\nDear Alice,\nYou are 30 years old.\nRetirement in 35 years.",
           "explanation": "f-strings support format specs after a colon: alignment (<, >, ^), width, precision for floats, and comma separators."
         },
         {
@@ -296,13 +296,13 @@
       "codeExamples": [
         {
           "title": "Common Dict Operations",
-          "code": "user = {'name': 'Alice', 'age': 30, 'role': 'Engineer'}\n\n# Access\nprint(user['name'])           # 'Alice'\nprint(user.get('salary', 0))  # 0 (default if missing)\n\n# Modify\nuser['age'] = 31              # Update\nuser['salary'] = 80000        # Add new key\ndel user['role']               # Delete key\n\n# Iteration\nfor key, value in user.items():\n    print(f\"{key}: {value}\")\n\n# Merging (Python 3.9+)\ndefaults = {'theme': 'dark', 'lang': 'en'}\nprefs = {'theme': 'light', 'font': 14}\nmerged = defaults | prefs  # prefs overrides defaults\nprint(merged)\n\n# Dictionary unpacking\nmerged2 = {**defaults, **prefs}  # Same result, works in 3.5+\nprint(merged2)",
+          "code": "user = {'name': 'Alice', 'age': 30, 'role': 'Engineer'}\n\n# Access\nprint(user['name'])           # 'Alice'\nprint(user.get('salary', 0))  # 0 (default if missing)\n\n# Modify\nuser['age'] = 31              # Update\nuser['salary'] = 80000        # Add new key\ndel user['role']               # Delete key\n\n# Iteration\nfor key, value in user.items():\n    print(f\"{key}: {value}\")\n\n# Merging (Python 3.9+)\ndefaults = {'theme': 'dark', 'lang': 'en'}\nprefs = {'theme': 'light', 'font': 14}\nmerged = defaults | prefs  # prefs overrides defaults\nprint(merged)\n\n# Dictionary unpacking\nmerged2 = {defaults, prefs}  # Same result, works in 3.5+\nprint(merged2)",
           "output": "Alice\n0\nname: Alice\nage: 31\nsalary: 80000\n{'theme': 'light', 'lang': 'en', 'font': 14}\n{'theme': 'light', 'lang': 'en', 'font': 14}",
-          "explanation": "Use .get() with a default instead of [] to avoid KeyError. The | merge operator (3.9+) is cleaner than {**a, **b}."
+          "explanation": "Use .get() with a default instead of [] to avoid KeyError. The | merge operator (3.9+) is cleaner than {a, b}."
         },
         {
           "title": "Dict Comprehensions & Patterns",
-          "code": "# Dict comprehension\nsquares = {x: x**2 for x in range(6)}\nprint(squares)  # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}\n\n# Invert a dictionary\noriginal = {'a': 1, 'b': 2, 'c': 3}\ninverted = {v: k for k, v in original.items()}\nprint(inverted)  # {1: 'a', 2: 'b', 3: 'c'}\n\n# Count word frequency\nwords = \"the cat sat on the mat the cat\".split()\nfreq = {}\nfor w in words:\n    freq[w] = freq.get(w, 0) + 1\nprint(freq)  # {'the': 3, 'cat': 2, 'sat': 1, 'on': 1, 'mat': 1}\n\n# setdefault: get or set if missing\ngraph = {}\ngraph.setdefault('A', []).append('B')\ngraph.setdefault('A', []).append('C')\nprint(graph)  # {'A': ['B', 'C']}",
+          "code": "# Dict comprehension\nsquares = {x: x2 for x in range(6)}\nprint(squares)  # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}\n\n# Invert a dictionary\noriginal = {'a': 1, 'b': 2, 'c': 3}\ninverted = {v: k for k, v in original.items()}\nprint(inverted)  # {1: 'a', 2: 'b', 3: 'c'}\n\n# Count word frequency\nwords = \"the cat sat on the mat the cat\".split()\nfreq = {}\nfor w in words:\n    freq[w] = freq.get(w, 0) + 1\nprint(freq)  # {'the': 3, 'cat': 2, 'sat': 1, 'on': 1, 'mat': 1}\n\n# setdefault: get or set if missing\ngraph = {}\ngraph.setdefault('A', []).append('B')\ngraph.setdefault('A', []).append('C')\nprint(graph)  # {'A': ['B', 'C']}",
           "output": "{0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}\n{1: 'a', 2: 'b', 3: 'c'}\n{'the': 3, 'cat': 2, 'sat': 1, 'on': 1, 'mat': 1}\n{'A': ['B', 'C']}",
           "explanation": "Dict comprehensions are concise for transformations. setdefault() combines get-or-create in one call, perfect for building adjacency lists."
         },
@@ -350,7 +350,7 @@
         },
         {
           "title": "Ternary and Walrus Operator",
-          "code": "# Ternary expression\nage = 20\nstatus = \"adult\" if age >= 18 else \"minor\"\nprint(status)  # 'adult'\n\n# Chained comparisons\nx = 5\nprint(1 < x < 10)    # True (equivalent to 1 < x and x < 10)\nprint(1 < x > 3)     # True\n\n# Walrus operator := (Python 3.8+)\n# Assigns and returns value in one expression\nimport re\ntext = \"Hello World 42\"\nif (match := re.search(r'\\d+', text)):\n    print(f\"Found number: {match.group()}\")  # 'Found number: 42'\n\n# Walrus in while loop\nwhile (line := input(\"Enter (q to quit): \")) != 'q':\n    print(f\"You said: {line}\")\n\n# Walrus in list comprehension\nnums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nresults = [y for x in nums if (y := x ** 2) > 20]\nprint(results)  # [25, 36, 49, 64, 81, 100]",
+          "code": "# Ternary expression\nage = 20\nstatus = \"adult\" if age >= 18 else \"minor\"\nprint(status)  # 'adult'\n\n# Chained comparisons\nx = 5\nprint(1 < x < 10)    # True (equivalent to 1 < x and x < 10)\nprint(1 < x > 3)     # True\n\n# Walrus operator := (Python 3.8+)\n# Assigns and returns value in one expression\nimport re\ntext = \"Hello World 42\"\nif (match := re.search(r'\\d+', text)):\n    print(f\"Found number: {match.group()}\")  # 'Found number: 42'\n\n# Walrus in while loop\nwhile (line := input(\"Enter (q to quit): \")) != 'q':\n    print(f\"You said: {line}\")\n\n# Walrus in list comprehension\nnums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nresults = [y for x in nums if (y := x  2) > 20]\nprint(results)  # [25, 36, 49, 64, 81, 100]",
           "output": "adult\nTrue\nTrue\nFound number: 42\n[25, 36, 49, 64, 81, 100]",
           "explanation": "The walrus operator (:=) assigns a value inside an expression, reducing repetition. Chained comparisons are more readable than using 'and'."
         },
@@ -388,11 +388,11 @@
     "concepts": ["Functions", "Arguments", "Default Values", "Scope", "First-Class Functions", "Closures"],
     "content": {
       "question": "Explain Python functions, argument types, scope rules, and first-class function concepts.",
-      "answer": "Functions in Python are first-class objects - they can be assigned to variables, passed as arguments, and returned from other functions.\n\nArgument types:\n- Positional: func(a, b)\n- Keyword: func(name='Alice')\n- Default: def func(x=10)\n- *args: variable positional arguments (tuple)\n- **kwargs: variable keyword arguments (dict)\n\nScope follows LEGB rule: Local -> Enclosing -> Global -> Built-in.\n\nMutable default argument is a common Python gotcha - default values are evaluated once at function definition, not at each call.",
+      "answer": "Functions in Python are first-class objects - they can be assigned to variables, passed as arguments, and returned from other functions.\n\nArgument types:\n- Positional: func(a, b)\n- Keyword: func(name='Alice')\n- Default: def func(x=10)\n- *args: variable positional arguments (tuple)\n- kwargs: variable keyword arguments (dict)\n\nScope follows LEGB rule: Local -> Enclosing -> Global -> Built-in.\n\nMutable default argument is a common Python gotcha - default values are evaluated once at function definition, not at each call.",
       "codeExamples": [
         {
           "title": "Argument Types and the Mutable Default Gotcha",
-          "code": "# All argument types in one function\ndef example(a, b, c=10, *args, **kwargs):\n    print(f\"a={a}, b={b}, c={c}\")\n    print(f\"args={args}\")\n    print(f\"kwargs={kwargs}\")\n\nexample(1, 2, 3, 4, 5, name='Alice', age=30)\n\n# GOTCHA: Mutable default argument\ndef append_to(element, target=[]):  # BUG!\n    target.append(element)\n    return target\n\nprint(append_to(1))  # [1]\nprint(append_to(2))  # [1, 2] - NOT [2]!\n\n# Fix: use None as default\ndef append_to_fixed(element, target=None):\n    if target is None:\n        target = []\n    target.append(element)\n    return target\n\nprint(append_to_fixed(1))  # [1]\nprint(append_to_fixed(2))  # [2] - correct!",
+          "code": "# All argument types in one function\ndef example(a, b, c=10, *args, kwargs):\n    print(f\"a={a}, b={b}, c={c}\")\n    print(f\"args={args}\")\n    print(f\"kwargs={kwargs}\")\n\nexample(1, 2, 3, 4, 5, name='Alice', age=30)\n\n# GOTCHA: Mutable default argument\ndef append_to(element, target=[]):  # BUG!\n    target.append(element)\n    return target\n\nprint(append_to(1))  # [1]\nprint(append_to(2))  # [1, 2] - NOT [2]!\n\n# Fix: use None as default\ndef append_to_fixed(element, target=None):\n    if target is None:\n        target = []\n    target.append(element)\n    return target\n\nprint(append_to_fixed(1))  # [1]\nprint(append_to_fixed(2))  # [2] - correct!",
           "output": "a=1, b=2, c=3\nargs=(4, 5)\nkwargs={'name': 'Alice', 'age': 30}\n[1]\n[1, 2]\n[1]\n[2]",
           "explanation": "Default mutable arguments are shared across calls because they are created once at function definition time. Always use None as default for mutable types."
         },
@@ -430,46 +430,46 @@
     "id": "python-args-kwargs",
     "sectionId": "python-interview",
     "orderIndex": 9,
-    "title": "*args & **kwargs",
+    "title": "*args & kwargs",
     "difficulty": "Intermediate",
     "type": "Coding",
-    "concepts": ["*args", "**kwargs", "Unpacking", "Argument Forwarding", "Variadic Functions"],
+    "concepts": ["*args", "kwargs", "Unpacking", "Argument Forwarding", "Variadic Functions"],
     "content": {
-      "question": "Explain *args and **kwargs. How and when do you use them?",
-      "answer": "*args collects extra positional arguments into a tuple. **kwargs collects extra keyword arguments into a dictionary.\n\nOrder in function signature: regular args, *args, keyword-only args, **kwargs.\n\nCommon use cases:\n- Writing flexible APIs that accept variable arguments\n- Forwarding arguments to another function (decorators, wrappers)\n- Creating functions that work with any number of inputs\n\nThe * and ** operators also work for unpacking in function calls and assignments.",
+      "question": "Explain *args and kwargs. How and when do you use them?",
+      "answer": "*args collects extra positional arguments into a tuple. kwargs collects extra keyword arguments into a dictionary.\n\nOrder in function signature: regular args, *args, keyword-only args, kwargs.\n\nCommon use cases:\n- Writing flexible APIs that accept variable arguments\n- Forwarding arguments to another function (decorators, wrappers)\n- Creating functions that work with any number of inputs\n\nThe * and  operators also work for unpacking in function calls and assignments.",
       "codeExamples": [
         {
-          "title": "*args and **kwargs Basics",
-          "code": "def flexible(*args, **kwargs):\n    print(f\"Positional: {args}\")   # tuple\n    print(f\"Keyword: {kwargs}\")     # dict\n\nflexible(1, 2, 3, name='Alice', age=30)\n\n# Real-world: logging wrapper\ndef log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {func.__name__}({args}, {kwargs})\")\n        result = func(*args, **kwargs)\n        print(f\"Returned: {result}\")\n        return result\n    return wrapper\n\n@log_call\ndef add(a, b):\n    return a + b\n\nadd(3, 5)\nadd(a=10, b=20)",
+          "title": "*args and kwargs Basics",
+          "code": "def flexible(*args, kwargs):\n    print(f\"Positional: {args}\")   # tuple\n    print(f\"Keyword: {kwargs}\")     # dict\n\nflexible(1, 2, 3, name='Alice', age=30)\n\n# Real-world: logging wrapper\ndef log_call(func):\n    def wrapper(*args, kwargs):\n        print(f\"Calling {func.__name__}({args}, {kwargs})\")\n        result = func(*args, kwargs)\n        print(f\"Returned: {result}\")\n        return result\n    return wrapper\n\n@log_call\ndef add(a, b):\n    return a + b\n\nadd(3, 5)\nadd(a=10, b=20)",
           "output": "Positional: (1, 2, 3)\nKeyword: {'name': 'Alice', 'age': 30}\nCalling add((3, 5), {})\nReturned: 8\nCalling add((), {'a': 10, 'b': 20})\nReturned: 30",
-          "explanation": "*args captures positional arguments as a tuple, **kwargs captures keyword arguments as a dict. Together they let you forward any arguments to the wrapped function."
+          "explanation": "*args captures positional arguments as a tuple, kwargs captures keyword arguments as a dict. Together they let you forward any arguments to the wrapped function."
         },
         {
-          "title": "Unpacking Operator (* and **)",
-          "code": "# * unpacking in function calls\ndef add(a, b, c):\n    return a + b + c\n\nnums = [1, 2, 3]\nprint(add(*nums))  # 6 - unpacks list into positional args\n\nconfig = {'a': 10, 'b': 20, 'c': 30}\nprint(add(**config))  # 60 - unpacks dict into keyword args\n\n# * unpacking in assignments (Python 3)\nfirst, *middle, last = [1, 2, 3, 4, 5]\nprint(first)    # 1\nprint(middle)   # [2, 3, 4]\nprint(last)     # 5\n\nhead, *tail = [1, 2, 3]\nprint(head)     # 1\nprint(tail)     # [2, 3]\n\n# * unpacking for merging\nlist1 = [1, 2, 3]\nlist2 = [4, 5, 6]\nmerged = [*list1, *list2, 7]\nprint(merged)  # [1, 2, 3, 4, 5, 6, 7]\n\ndict1 = {'a': 1}\ndict2 = {'b': 2}\nmerged = {**dict1, **dict2, 'c': 3}\nprint(merged)  # {'a': 1, 'b': 2, 'c': 3}",
+          "title": "Unpacking Operator (* and )",
+          "code": "# * unpacking in function calls\ndef add(a, b, c):\n    return a + b + c\n\nnums = [1, 2, 3]\nprint(add(*nums))  # 6 - unpacks list into positional args\n\nconfig = {'a': 10, 'b': 20, 'c': 30}\nprint(add(config))  # 60 - unpacks dict into keyword args\n\n# * unpacking in assignments (Python 3)\nfirst, *middle, last = [1, 2, 3, 4, 5]\nprint(first)    # 1\nprint(middle)   # [2, 3, 4]\nprint(last)     # 5\n\nhead, *tail = [1, 2, 3]\nprint(head)     # 1\nprint(tail)     # [2, 3]\n\n# * unpacking for merging\nlist1 = [1, 2, 3]\nlist2 = [4, 5, 6]\nmerged = [*list1, *list2, 7]\nprint(merged)  # [1, 2, 3, 4, 5, 6, 7]\n\ndict1 = {'a': 1}\ndict2 = {'b': 2}\nmerged = {dict1, dict2, 'c': 3}\nprint(merged)  # {'a': 1, 'b': 2, 'c': 3}",
           "output": "6\n60\n1\n[2, 3, 4]\n5\n1\n[2, 3]\n[1, 2, 3, 4, 5, 6, 7]\n{'a': 1, 'b': 2, 'c': 3}",
-          "explanation": "The * and ** operators unpack iterables and dicts respectively. In assignments, *variable captures remaining items into a list."
+          "explanation": "The * and  operators unpack iterables and dicts respectively. In assignments, *variable captures remaining items into a list."
         },
         {
           "title": "Argument Order and Keyword-Only Args",
-          "code": "# Full argument order:\n# def func(positional, /, normal, *, keyword_only, **kwargs)\n\ndef api_call(url, /, method='GET', *, headers=None, timeout=30):\n    \"\"\"url is positional-only, headers and timeout are keyword-only.\"\"\"\n    print(f\"{method} {url}\")\n    print(f\"Headers: {headers}, Timeout: {timeout}\")\n\napi_call('https://api.example.com')  # OK\napi_call('https://api.example.com', 'POST', headers={'Auth': 'token'})\n# api_call(url='...')  # Error: url is positional-only\n# api_call('...', 'GET', {'Auth': 'token'})  # Error: headers is keyword-only\n\n# Forcing keyword-only with bare *\ndef safe_divide(a, b, *, raise_on_zero=False):\n    if b == 0:\n        if raise_on_zero:\n            raise ZeroDivisionError\n        return None\n    return a / b\n\nprint(safe_divide(10, 0))                      # None\nprint(safe_divide(10, 0, raise_on_zero=True))  # Raises error",
+          "code": "# Full argument order:\n# def func(positional, /, normal, *, keyword_only, kwargs)\n\ndef api_call(url, /, method='GET', *, headers=None, timeout=30):\n    \"\"\"url is positional-only, headers and timeout are keyword-only.\"\"\"\n    print(f\"{method} {url}\")\n    print(f\"Headers: {headers}, Timeout: {timeout}\")\n\napi_call('https://api.example.com')  # OK\napi_call('https://api.example.com', 'POST', headers={'Auth': 'token'})\n# api_call(url='...')  # Error: url is positional-only\n# api_call('...', 'GET', {'Auth': 'token'})  # Error: headers is keyword-only\n\n# Forcing keyword-only with bare *\ndef safe_divide(a, b, *, raise_on_zero=False):\n    if b == 0:\n        if raise_on_zero:\n            raise ZeroDivisionError\n        return None\n    return a / b\n\nprint(safe_divide(10, 0))                      # None\nprint(safe_divide(10, 0, raise_on_zero=True))  # Raises error",
           "output": "GET https://api.example.com\nHeaders: None, Timeout: 30\nPOST https://api.example.com\nHeaders: {'Auth': 'token'}, Timeout: 30\nNone",
           "explanation": "Arguments after * are keyword-only: they must be passed by name. Arguments before / are positional-only. This creates clear, self-documenting APIs."
         }
       ],
       "notes": [
-        "The names args and kwargs are conventions, not requirements - *x and **y work too",
-        "*args is a tuple (immutable), **kwargs is a dict",
+        "The names args and kwargs are conventions, not requirements - *x and y work too",
+        "*args is a tuple (immutable), kwargs is a dict",
         "In Python 3.12+, you can use *args with type hints: def func(*args: int)"
       ],
       "followUps": [
-        "How would you use *args and **kwargs in a decorator?",
+        "How would you use *args and kwargs in a decorator?",
         "What is the difference between positional-only (/) and keyword-only (*) parameters?",
-        "How do you type-hint *args and **kwargs?"
+        "How do you type-hint *args and kwargs?"
       ],
       "interviewTips": [
-        "Show the decorator/wrapper pattern - it is the most practical use of *args/**kwargs",
-        "Know the full argument order: positional-only, /, normal, *args, keyword-only, **kwargs",
+        "Show the decorator/wrapper pattern - it is the most practical use of *args/kwargs",
+        "Know the full argument order: positional-only, /, normal, *args, keyword-only, kwargs",
         "Demonstrate unpacking in assignments and merging - it shows Python fluency"
       ]
     }
@@ -488,7 +488,7 @@
       "codeExamples": [
         {
           "title": "Basic List Comprehensions",
-          "code": "# Simple transformation\nsquares = [x ** 2 for x in range(10)]\nprint(squares)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\n\n# With filtering\nevens = [x for x in range(20) if x % 2 == 0]\nprint(evens)  # [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]\n\n# Conditional expression (ternary in comprehension)\nlabels = ['even' if x % 2 == 0 else 'odd' for x in range(5)]\nprint(labels)  # ['even', 'odd', 'even', 'odd', 'even']\n\n# String processing\nwords = ['  Hello ', ' World  ', '  Python ']\ncleaned = [w.strip().lower() for w in words]\nprint(cleaned)  # ['hello', 'world', 'python']\n\n# Flattening with method calls\nsentences = ['hello world', 'foo bar baz']\nall_words = [word for sentence in sentences for word in sentence.split()]\nprint(all_words)  # ['hello', 'world', 'foo', 'bar', 'baz']",
+          "code": "# Simple transformation\nsquares = [x  2 for x in range(10)]\nprint(squares)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\n\n# With filtering\nevens = [x for x in range(20) if x % 2 == 0]\nprint(evens)  # [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]\n\n# Conditional expression (ternary in comprehension)\nlabels = ['even' if x % 2 == 0 else 'odd' for x in range(5)]\nprint(labels)  # ['even', 'odd', 'even', 'odd', 'even']\n\n# String processing\nwords = ['  Hello ', ' World  ', '  Python ']\ncleaned = [w.strip().lower() for w in words]\nprint(cleaned)  # ['hello', 'world', 'python']\n\n# Flattening with method calls\nsentences = ['hello world', 'foo bar baz']\nall_words = [word for sentence in sentences for word in sentence.split()]\nprint(all_words)  # ['hello', 'world', 'foo', 'bar', 'baz']",
           "output": "[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\n[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]\n['even', 'odd', 'even', 'odd', 'even']\n['hello', 'world', 'python']\n['hello', 'world', 'foo', 'bar', 'baz']",
           "explanation": "The if clause filters items. Ternary expressions (x if cond else y) transform each item. Nested for clauses flatten nested structures."
         },
@@ -500,7 +500,7 @@
         },
         {
           "title": "Performance: Comprehension vs Loop",
-          "code": "import time\n\n# Loop approach\nstart = time.time()\nresult = []\nfor i in range(1_000_000):\n    result.append(i ** 2)\nloop_time = time.time() - start\n\n# Comprehension approach\nstart = time.time()\nresult = [i ** 2 for i in range(1_000_000)]\ncomp_time = time.time() - start\n\nprint(f\"Loop: {loop_time:.4f}s\")\nprint(f\"Comprehension: {comp_time:.4f}s\")\nprint(f\"Speedup: {loop_time / comp_time:.1f}x\")\n\n# When NOT to use comprehension\n# Bad: too complex, hard to read\n# result = [transform(x) for x in data if validate(x) for y in x.items() if check(y)]\n\n# Better: use a regular loop\nresult = []\nfor x in data:\n    if validate(x):\n        for y in x.items():\n            if check(y):\n                result.append(transform(x))",
+          "code": "import time\n\n# Loop approach\nstart = time.time()\nresult = []\nfor i in range(1_000_000):\n    result.append(i  2)\nloop_time = time.time() - start\n\n# Comprehension approach\nstart = time.time()\nresult = [i  2 for i in range(1_000_000)]\ncomp_time = time.time() - start\n\nprint(f\"Loop: {loop_time:.4f}s\")\nprint(f\"Comprehension: {comp_time:.4f}s\")\nprint(f\"Speedup: {loop_time / comp_time:.1f}x\")\n\n# When NOT to use comprehension\n# Bad: too complex, hard to read\n# result = [transform(x) for x in data if validate(x) for y in x.items() if check(y)]\n\n# Better: use a regular loop\nresult = []\nfor x in data:\n    if validate(x):\n        for y in x.items():\n            if check(y):\n                result.append(transform(x))",
           "output": "Loop: 0.1850s\nComprehension: 0.1200s\nSpeedup: 1.5x",
           "explanation": "Comprehensions are faster because they avoid the overhead of list.append() method lookup on each iteration. But readability matters more than micro-optimization."
         }
@@ -536,13 +536,13 @@
       "codeExamples": [
         {
           "title": "Lambda Functions",
-          "code": "# Basic lambda\nsquare = lambda x: x ** 2\nprint(square(5))  # 25\n\n# Lambda with multiple arguments\nadd = lambda a, b: a + b\nprint(add(3, 7))  # 10\n\n# Lambda in sorting\nstudents = [('Alice', 85), ('Bob', 92), ('Charlie', 78)]\nstudents.sort(key=lambda s: s[1], reverse=True)\nprint(students)  # [('Bob', 92), ('Alice', 85), ('Charlie', 78)]\n\n# Lambda with max/min\npeople = [{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 25}]\noldest = max(people, key=lambda p: p['age'])\nprint(oldest)  # {'name': 'Alice', 'age': 30}\n\n# Immediately invoked lambda\nresult = (lambda x, y: x + y)(3, 4)\nprint(result)  # 7",
+          "code": "# Basic lambda\nsquare = lambda x: x  2\nprint(square(5))  # 25\n\n# Lambda with multiple arguments\nadd = lambda a, b: a + b\nprint(add(3, 7))  # 10\n\n# Lambda in sorting\nstudents = [('Alice', 85), ('Bob', 92), ('Charlie', 78)]\nstudents.sort(key=lambda s: s[1], reverse=True)\nprint(students)  # [('Bob', 92), ('Alice', 85), ('Charlie', 78)]\n\n# Lambda with max/min\npeople = [{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 25}]\noldest = max(people, key=lambda p: p['age'])\nprint(oldest)  # {'name': 'Alice', 'age': 30}\n\n# Immediately invoked lambda\nresult = (lambda x, y: x + y)(3, 4)\nprint(result)  # 7",
           "output": "25\n10\n[('Bob', 92), ('Alice', 85), ('Charlie', 78)]\n{'name': 'Alice', 'age': 30}\n7",
           "explanation": "Lambdas are best for short, throwaway functions - especially as key arguments for sort(), max(), min(). For anything complex, use a named function."
         },
         {
           "title": "map and filter",
-          "code": "# map: apply function to each item\nnums = [1, 2, 3, 4, 5]\nsquared = list(map(lambda x: x ** 2, nums))\nprint(squared)  # [1, 4, 9, 16, 25]\n\n# Equivalent list comprehension (preferred)\nsquared2 = [x ** 2 for x in nums]\nprint(squared2)  # [1, 4, 9, 16, 25]\n\n# map with multiple iterables\nnames = ['alice', 'bob', 'charlie']\ngreetings = list(map(lambda n: f'Hello, {n.title()}!', names))\nprint(greetings)\n\n# filter: keep items where function returns True\nevens = list(filter(lambda x: x % 2 == 0, range(10)))\nprint(evens)  # [0, 2, 4, 6, 8]\n\n# Chaining map and filter\nresult = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, range(10))))\nprint(result)  # [0, 4, 16, 36, 64]\n\n# Comprehension equivalent (more readable)\nresult2 = [x ** 2 for x in range(10) if x % 2 == 0]\nprint(result2)  # [0, 4, 16, 36, 64]",
+          "code": "# map: apply function to each item\nnums = [1, 2, 3, 4, 5]\nsquared = list(map(lambda x: x  2, nums))\nprint(squared)  # [1, 4, 9, 16, 25]\n\n# Equivalent list comprehension (preferred)\nsquared2 = [x  2 for x in nums]\nprint(squared2)  # [1, 4, 9, 16, 25]\n\n# map with multiple iterables\nnames = ['alice', 'bob', 'charlie']\ngreetings = list(map(lambda n: f'Hello, {n.title()}!', names))\nprint(greetings)\n\n# filter: keep items where function returns True\nevens = list(filter(lambda x: x % 2 == 0, range(10)))\nprint(evens)  # [0, 2, 4, 6, 8]\n\n# Chaining map and filter\nresult = list(map(lambda x: x  2, filter(lambda x: x % 2 == 0, range(10))))\nprint(result)  # [0, 4, 16, 36, 64]\n\n# Comprehension equivalent (more readable)\nresult2 = [x  2 for x in range(10) if x % 2 == 0]\nprint(result2)  # [0, 4, 16, 36, 64]",
           "output": "[1, 4, 9, 16, 25]\n[1, 4, 9, 16, 25]\n['Hello, Alice!', 'Hello, Bob!', 'Hello, Charlie!']\n[0, 2, 4, 6, 8]\n[0, 4, 16, 36, 64]\n[0, 4, 16, 36, 64]",
           "explanation": "map() and filter() return iterators (lazy). List comprehensions are usually preferred in Python for readability, but map/filter are useful when passing existing functions."
         },
@@ -638,7 +638,7 @@
         },
         {
           "title": "Multiple Inheritance and Diamond Problem",
-          "code": "class A:\n    def greet(self):\n        return \"Hello from A\"\n\nclass B(A):\n    def greet(self):\n        return \"Hello from B\"\n\nclass C(A):\n    def greet(self):\n        return \"Hello from C\"\n\nclass D(B, C):  # Diamond: D -> B -> C -> A\n    pass\n\nd = D()\nprint(d.greet())       # 'Hello from B' (B comes first in MRO)\nprint(D.__mro__)        # D -> B -> C -> A -> object\n# or equivalently:\nprint(D.mro())\n\n# Cooperative multiple inheritance with super()\nclass Base:\n    def __init__(self, **kwargs):\n        print(f\"Base.__init__\")\n\nclass Left(Base):\n    def __init__(self, left_val=0, **kwargs):\n        print(f\"Left.__init__({left_val})\")\n        super().__init__(**kwargs)\n\nclass Right(Base):\n    def __init__(self, right_val=0, **kwargs):\n        print(f\"Right.__init__({right_val})\")\n        super().__init__(**kwargs)\n\nclass Child(Left, Right):\n    def __init__(self):\n        print(\"Child.__init__\")\n        super().__init__(left_val=1, right_val=2)\n\nc = Child()",
+          "code": "class A:\n    def greet(self):\n        return \"Hello from A\"\n\nclass B(A):\n    def greet(self):\n        return \"Hello from B\"\n\nclass C(A):\n    def greet(self):\n        return \"Hello from C\"\n\nclass D(B, C):  # Diamond: D -> B -> C -> A\n    pass\n\nd = D()\nprint(d.greet())       # 'Hello from B' (B comes first in MRO)\nprint(D.__mro__)        # D -> B -> C -> A -> object\n# or equivalently:\nprint(D.mro())\n\n# Cooperative multiple inheritance with super()\nclass Base:\n    def __init__(self, kwargs):\n        print(f\"Base.__init__\")\n\nclass Left(Base):\n    def __init__(self, left_val=0, kwargs):\n        print(f\"Left.__init__({left_val})\")\n        super().__init__(kwargs)\n\nclass Right(Base):\n    def __init__(self, right_val=0, kwargs):\n        print(f\"Right.__init__({right_val})\")\n        super().__init__(kwargs)\n\nclass Child(Left, Right):\n    def __init__(self):\n        print(\"Child.__init__\")\n        super().__init__(left_val=1, right_val=2)\n\nc = Child()",
           "output": "Hello from B\n(<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>)\n[<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>]\nChild.__init__\nLeft.__init__(1)\nRight.__init__(2)\nBase.__init__",
           "explanation": "MRO uses C3 linearization: depth-first, left-to-right, each class appears once. super() follows MRO, so Left.super() calls Right, not Base."
         },
@@ -686,7 +686,7 @@
         },
         {
           "title": "Arithmetic Operator Overloading",
-          "code": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    \n    def __add__(self, other):\n        if isinstance(other, Vector):\n            return Vector(self.x + other.x, self.y + other.y)\n        return NotImplemented\n    \n    def __mul__(self, scalar):\n        if isinstance(scalar, (int, float)):\n            return Vector(self.x * scalar, self.y * scalar)\n        return NotImplemented\n    \n    def __rmul__(self, scalar):\n        return self.__mul__(scalar)  # 3 * v == v * 3\n    \n    def __abs__(self):\n        return (self.x ** 2 + self.y ** 2) ** 0.5\n    \n    def __bool__(self):\n        return self.x != 0 or self.y != 0\n    \n    def __repr__(self):\n        return f\"Vector({self.x}, {self.y})\"\n\nv1 = Vector(3, 4)\nv2 = Vector(1, 2)\nprint(v1 + v2)      # Vector(4, 6)\nprint(v1 * 3)       # Vector(9, 12)\nprint(3 * v1)       # Vector(9, 12) - uses __rmul__\nprint(abs(v1))      # 5.0\nprint(bool(Vector(0, 0)))  # False",
+          "code": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    \n    def __add__(self, other):\n        if isinstance(other, Vector):\n            return Vector(self.x + other.x, self.y + other.y)\n        return NotImplemented\n    \n    def __mul__(self, scalar):\n        if isinstance(scalar, (int, float)):\n            return Vector(self.x * scalar, self.y * scalar)\n        return NotImplemented\n    \n    def __rmul__(self, scalar):\n        return self.__mul__(scalar)  # 3 * v == v * 3\n    \n    def __abs__(self):\n        return (self.x  2 + self.y  2)  0.5\n    \n    def __bool__(self):\n        return self.x != 0 or self.y != 0\n    \n    def __repr__(self):\n        return f\"Vector({self.x}, {self.y})\"\n\nv1 = Vector(3, 4)\nv2 = Vector(1, 2)\nprint(v1 + v2)      # Vector(4, 6)\nprint(v1 * 3)       # Vector(9, 12)\nprint(3 * v1)       # Vector(9, 12) - uses __rmul__\nprint(abs(v1))      # 5.0\nprint(bool(Vector(0, 0)))  # False",
           "output": "Vector(4, 6)\nVector(9, 12)\nVector(9, 12)\n5.0\nFalse",
           "explanation": "__rmul__ handles the case where the left operand doesn't support the operation (3 * v). __abs__ is called by abs(), __bool__ by bool() and in if statements."
         },
@@ -728,7 +728,7 @@
       "codeExamples": [
         {
           "title": "Abstract Base Classes (ABC)",
-          "code": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        \"\"\"Calculate the area of the shape.\"\"\"\n        pass\n    \n    @abstractmethod\n    def perimeter(self):\n        \"\"\"Calculate the perimeter of the shape.\"\"\"\n        pass\n    \n    def describe(self):\n        \"\"\"Non-abstract method: shared by all shapes.\"\"\"\n        return f\"{self.__class__.__name__}: area={self.area():.2f}, perimeter={self.perimeter():.2f}\"\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n    \n    def area(self):\n        return 3.14159 * self.radius ** 2\n    \n    def perimeter(self):\n        return 2 * 3.14159 * self.radius\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n    \n    def area(self):\n        return self.width * self.height\n    \n    def perimeter(self):\n        return 2 * (self.width + self.height)\n\n# shape = Shape()  # TypeError: Can't instantiate abstract class\nc = Circle(5)\nr = Rectangle(3, 4)\nprint(c.describe())  # Circle: area=78.54, perimeter=31.42\nprint(r.describe())  # Rectangle: area=12.00, perimeter=14.00",
+          "code": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        \"\"\"Calculate the area of the shape.\"\"\"\n        pass\n    \n    @abstractmethod\n    def perimeter(self):\n        \"\"\"Calculate the perimeter of the shape.\"\"\"\n        pass\n    \n    def describe(self):\n        \"\"\"Non-abstract method: shared by all shapes.\"\"\"\n        return f\"{self.__class__.__name__}: area={self.area():.2f}, perimeter={self.perimeter():.2f}\"\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n    \n    def area(self):\n        return 3.14159 * self.radius  2\n    \n    def perimeter(self):\n        return 2 * 3.14159 * self.radius\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n    \n    def area(self):\n        return self.width * self.height\n    \n    def perimeter(self):\n        return 2 * (self.width + self.height)\n\n# shape = Shape()  # TypeError: Can't instantiate abstract class\nc = Circle(5)\nr = Rectangle(3, 4)\nprint(c.describe())  # Circle: area=78.54, perimeter=31.42\nprint(r.describe())  # Rectangle: area=12.00, perimeter=14.00",
           "output": "Circle: area=78.54, perimeter=31.42\nRectangle: area=12.00, perimeter=14.00",
           "explanation": "Abstract classes enforce a contract: subclasses MUST implement all abstract methods. Non-abstract methods provide shared default behavior."
         },
@@ -932,8 +932,8 @@
         },
         {
           "title": "Substitution and Compilation",
-          "code": "import re\n\n# re.sub: find and replace\ntext = \"Hello World, Hello Python\"\nresult = re.sub(r'Hello', 'Hi', text)\nprint(result)  # 'Hi World, Hi Python'\n\n# Substitution with function\ndef censor(match):\n    word = match.group()\n    return word[0] + '*' * (len(word) - 1)\n\ntext = \"The password is secret123\"\nresult = re.sub(r'\\b\\w*\\d+\\w*\\b', censor, text)\nprint(result)  # 'The password is s*********'\n\n# Compile for reuse (better performance in loops)\nemail_pattern = re.compile(\n    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'\n)\n\nemails = ['user@example.com', 'bad@', 'test@site.org', 'invalid']\nfor email in emails:\n    if email_pattern.match(email):\n        print(f\"Valid: {email}\")\n    else:\n        print(f\"Invalid: {email}\")\n\n# Flags\ntext = \"Hello\\nhello\\nHELLO\"\nmatches = re.findall(r'hello', text, re.IGNORECASE)\nprint(matches)  # ['Hello', 'hello', 'HELLO']",
-          "output": "Hi World, Hi Python\nThe password is s*********\nValid: user@example.com\nInvalid: bad@\nValid: test@site.org\nInvalid: invalid\n['Hello', 'hello', 'HELLO']",
+          "code": "import re\n\n# re.sub: find and replace\ntext = \"Hello World, Hello Python\"\nresult = re.sub(r'Hello', 'Hi', text)\nprint(result)  # 'Hi World, Hi Python'\n\n# Substitution with function\ndef censor(match):\n    word = match.group()\n    return word[0] + '*' * (len(word) - 1)\n\ntext = \"The password is secret123\"\nresult = re.sub(r'\\b\\w*\\d+\\w*\\b', censor, text)\nprint(result)  # 'The password is s*'\n\n# Compile for reuse (better performance in loops)\nemail_pattern = re.compile(\n    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'\n)\n\nemails = ['user@example.com', 'bad@', 'test@site.org', 'invalid']\nfor email in emails:\n    if email_pattern.match(email):\n        print(f\"Valid: {email}\")\n    else:\n        print(f\"Invalid: {email}\")\n\n# Flags\ntext = \"Hello\\nhello\\nHELLO\"\nmatches = re.findall(r'hello', text, re.IGNORECASE)\nprint(matches)  # ['Hello', 'hello', 'HELLO']",
+          "output": "Hi World, Hi Python\nThe password is s*\nValid: user@example.com\nInvalid: bad@\nValid: test@site.org\nInvalid: invalid\n['Hello', 'hello', 'HELLO']",
           "explanation": "re.compile() pre-compiles the pattern for better performance when reused. re.sub() can take a function as replacement for dynamic substitution."
         }
       ],
@@ -980,7 +980,7 @@
         },
         {
           "title": "namedtuple and ChainMap",
-          "code": "from collections import namedtuple, ChainMap\n\n# namedtuple: lightweight, immutable class\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(3, 4)\nprint(p.x, p.y)          # 3 4 (access by name)\nprint(p[0], p[1])        # 3 4 (access by index)\nx, y = p                 # Unpacking works\nprint(f\"({x}, {y})\")\n\n# Convert to dict\nprint(p._asdict())        # {'x': 3, 'y': 4}\n\n# Create from dict\ndata = {'x': 10, 'y': 20}\np2 = Point(**data)\nprint(p2)                 # Point(x=10, y=20)\n\n# namedtuple with defaults (Python 3.6.1+)\nConfig = namedtuple('Config', ['host', 'port', 'debug'], defaults=['localhost', 8080, False])\nprint(Config())           # Config(host='localhost', port=8080, debug=False)\nprint(Config('0.0.0.0'))  # Config(host='0.0.0.0', port=8080, debug=False)\n\n# ChainMap: layered dict lookup\ndefaults = {'color': 'blue', 'size': 'medium', 'font': 'Arial'}\nuser_prefs = {'color': 'red'}\nenv_overrides = {'size': 'large'}\n\nconfig = ChainMap(env_overrides, user_prefs, defaults)\nprint(config['color'])  # 'red' (from user_prefs)\nprint(config['size'])   # 'large' (from env_overrides)\nprint(config['font'])   # 'Arial' (from defaults)",
+          "code": "from collections import namedtuple, ChainMap\n\n# namedtuple: lightweight, immutable class\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(3, 4)\nprint(p.x, p.y)          # 3 4 (access by name)\nprint(p[0], p[1])        # 3 4 (access by index)\nx, y = p                 # Unpacking works\nprint(f\"({x}, {y})\")\n\n# Convert to dict\nprint(p._asdict())        # {'x': 3, 'y': 4}\n\n# Create from dict\ndata = {'x': 10, 'y': 20}\np2 = Point(data)\nprint(p2)                 # Point(x=10, y=20)\n\n# namedtuple with defaults (Python 3.6.1+)\nConfig = namedtuple('Config', ['host', 'port', 'debug'], defaults=['localhost', 8080, False])\nprint(Config())           # Config(host='localhost', port=8080, debug=False)\nprint(Config('0.0.0.0'))  # Config(host='0.0.0.0', port=8080, debug=False)\n\n# ChainMap: layered dict lookup\ndefaults = {'color': 'blue', 'size': 'medium', 'font': 'Arial'}\nuser_prefs = {'color': 'red'}\nenv_overrides = {'size': 'large'}\n\nconfig = ChainMap(env_overrides, user_prefs, defaults)\nprint(config['color'])  # 'red' (from user_prefs)\nprint(config['size'])   # 'large' (from env_overrides)\nprint(config['font'])   # 'Arial' (from defaults)",
           "output": "3 4\n3 4\n(3, 4)\n{'x': 3, 'y': 4}\nPoint(x=10, y=20)\nConfig(host='localhost', port=8080, debug=False)\nConfig(host='0.0.0.0', port=8080, debug=False)\nred\nlarge\nArial",
           "explanation": "namedtuple creates readable, immutable records. ChainMap provides a layered lookup - first dict found wins. Both are used extensively in production code."
         }
@@ -1028,7 +1028,7 @@
         },
         {
           "title": "functools: Caching and Partials",
-          "code": "from functools import lru_cache, partial, reduce, singledispatch\n\n# lru_cache: memoization decorator\n@lru_cache(maxsize=128)\ndef fibonacci(n):\n    if n < 2:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\nprint(fibonacci(50))  # 12586269025 (instant with cache)\nprint(fibonacci.cache_info())\n# CacheInfo(hits=48, misses=51, maxsize=128, currsize=51)\n\n# partial: fix some function arguments\ndef power(base, exponent):\n    return base ** exponent\n\nsquare = partial(power, exponent=2)\ncube = partial(power, exponent=3)\nprint(square(5))  # 25\nprint(cube(5))    # 125\n\n# singledispatch: function overloading by type\n@singledispatch\ndef process(data):\n    raise TypeError(f\"Unsupported type: {type(data)}\")\n\n@process.register(str)\ndef _(data):\n    return f\"String: {data.upper()}\"\n\n@process.register(list)\ndef _(data):\n    return f\"List with {len(data)} items\"\n\n@process.register(int)\ndef _(data):\n    return f\"Integer: {data * 2}\"\n\nprint(process(\"hello\"))    # 'String: HELLO'\nprint(process([1, 2, 3]))  # 'List with 3 items'\nprint(process(42))         # 'Integer: 84'",
+          "code": "from functools import lru_cache, partial, reduce, singledispatch\n\n# lru_cache: memoization decorator\n@lru_cache(maxsize=128)\ndef fibonacci(n):\n    if n < 2:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\nprint(fibonacci(50))  # 12586269025 (instant with cache)\nprint(fibonacci.cache_info())\n# CacheInfo(hits=48, misses=51, maxsize=128, currsize=51)\n\n# partial: fix some function arguments\ndef power(base, exponent):\n    return base  exponent\n\nsquare = partial(power, exponent=2)\ncube = partial(power, exponent=3)\nprint(square(5))  # 25\nprint(cube(5))    # 125\n\n# singledispatch: function overloading by type\n@singledispatch\ndef process(data):\n    raise TypeError(f\"Unsupported type: {type(data)}\")\n\n@process.register(str)\ndef _(data):\n    return f\"String: {data.upper()}\"\n\n@process.register(list)\ndef _(data):\n    return f\"List with {len(data)} items\"\n\n@process.register(int)\ndef _(data):\n    return f\"Integer: {data * 2}\"\n\nprint(process(\"hello\"))    # 'String: HELLO'\nprint(process([1, 2, 3]))  # 'List with 3 items'\nprint(process(42))         # 'Integer: 84'",
           "output": "12586269025\nCacheInfo(hits=48, misses=51, maxsize=128, currsize=51)\n25\n125\nString: HELLO\nList with 3 items\nInteger: 84",
           "explanation": "lru_cache turns recursive fibonacci from O(2^n) to O(n). partial creates specialized functions. singledispatch enables function overloading by argument type."
         }
@@ -1076,7 +1076,7 @@
         },
         {
           "title": "__init_subclass__: Modern Alternative",
-          "code": "# __init_subclass__ (Python 3.6+) - simpler than metaclasses\nclass Plugin:\n    _registry = {}\n    \n    def __init_subclass__(cls, plugin_name=None, **kwargs):\n        super().__init_subclass__(**kwargs)\n        name = plugin_name or cls.__name__.lower()\n        Plugin._registry[name] = cls\n        print(f\"Registered plugin: {name}\")\n\nclass JsonPlugin(Plugin, plugin_name='json'):\n    def process(self):\n        return 'Processing JSON'\n\nclass CsvPlugin(Plugin, plugin_name='csv'):\n    def process(self):\n        return 'Processing CSV'\n\nclass XmlPlugin(Plugin):  # Uses class name as default\n    def process(self):\n        return 'Processing XML'\n\nprint(Plugin._registry)\n# {'json': <class 'JsonPlugin'>, 'csv': <class 'CsvPlugin'>, 'xmlplugin': <class 'XmlPlugin'>}\n\n# Factory pattern using registry\ndef get_plugin(name):\n    cls = Plugin._registry.get(name)\n    if cls:\n        return cls()\n    raise ValueError(f\"Unknown plugin: {name}\")\n\nplugin = get_plugin('json')\nprint(plugin.process())  # 'Processing JSON'",
+          "code": "# __init_subclass__ (Python 3.6+) - simpler than metaclasses\nclass Plugin:\n    _registry = {}\n    \n    def __init_subclass__(cls, plugin_name=None, kwargs):\n        super().__init_subclass__(kwargs)\n        name = plugin_name or cls.__name__.lower()\n        Plugin._registry[name] = cls\n        print(f\"Registered plugin: {name}\")\n\nclass JsonPlugin(Plugin, plugin_name='json'):\n    def process(self):\n        return 'Processing JSON'\n\nclass CsvPlugin(Plugin, plugin_name='csv'):\n    def process(self):\n        return 'Processing CSV'\n\nclass XmlPlugin(Plugin):  # Uses class name as default\n    def process(self):\n        return 'Processing XML'\n\nprint(Plugin._registry)\n# {'json': <class 'JsonPlugin'>, 'csv': <class 'CsvPlugin'>, 'xmlplugin': <class 'XmlPlugin'>}\n\n# Factory pattern using registry\ndef get_plugin(name):\n    cls = Plugin._registry.get(name)\n    if cls:\n        return cls()\n    raise ValueError(f\"Unknown plugin: {name}\")\n\nplugin = get_plugin('json')\nprint(plugin.process())  # 'Processing JSON'",
           "output": "Registered plugin: json\nRegistered plugin: csv\nRegistered plugin: xmlplugin\n{'json': <class '__main__.JsonPlugin'>, 'csv': <class '__main__.CsvPlugin'>, 'xmlplugin': <class '__main__.XmlPlugin'>}\nProcessing JSON",
           "explanation": "__init_subclass__ is called every time a class is subclassed. It handles 90% of metaclass use cases (registration, validation) without the complexity."
         }
@@ -1352,7 +1352,7 @@
       "codeExamples": [
         {
           "title": "Singleton and Factory Patterns",
-          "code": "# Singleton via module (Pythonic way)\n# config.py\n# settings = Settings()  # Module-level = singleton\n\n# Singleton via __new__\nclass Singleton:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\na = Singleton()\nb = Singleton()\nprint(a is b)  # True - same instance\n\n# Factory Method with classmethods\nclass Serializer:\n    def __init__(self, format_type):\n        self.format_type = format_type\n    \n    @classmethod\n    def json(cls):\n        return cls('json')\n    \n    @classmethod\n    def xml(cls):\n        return cls('xml')\n    \n    @classmethod\n    def csv(cls):\n        return cls('csv')\n\ns = Serializer.json()  # Factory method\nprint(s.format_type)   # 'json'\n\n# Simple factory function (most Pythonic)\ndef create_connection(db_type, **kwargs):\n    connections = {\n        'postgres': lambda: f\"PostgreSQL({kwargs})\",\n        'mysql': lambda: f\"MySQL({kwargs})\",\n        'sqlite': lambda: f\"SQLite({kwargs})\",\n    }\n    creator = connections.get(db_type)\n    if not creator:\n        raise ValueError(f\"Unknown db: {db_type}\")\n    return creator()\n\nprint(create_connection('postgres', host='localhost', port=5432))",
+          "code": "# Singleton via module (Pythonic way)\n# config.py\n# settings = Settings()  # Module-level = singleton\n\n# Singleton via __new__\nclass Singleton:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\na = Singleton()\nb = Singleton()\nprint(a is b)  # True - same instance\n\n# Factory Method with classmethods\nclass Serializer:\n    def __init__(self, format_type):\n        self.format_type = format_type\n    \n    @classmethod\n    def json(cls):\n        return cls('json')\n    \n    @classmethod\n    def xml(cls):\n        return cls('xml')\n    \n    @classmethod\n    def csv(cls):\n        return cls('csv')\n\ns = Serializer.json()  # Factory method\nprint(s.format_type)   # 'json'\n\n# Simple factory function (most Pythonic)\ndef create_connection(db_type, kwargs):\n    connections = {\n        'postgres': lambda: f\"PostgreSQL({kwargs})\",\n        'mysql': lambda: f\"MySQL({kwargs})\",\n        'sqlite': lambda: f\"SQLite({kwargs})\",\n    }\n    creator = connections.get(db_type)\n    if not creator:\n        raise ValueError(f\"Unknown db: {db_type}\")\n    return creator()\n\nprint(create_connection('postgres', host='localhost', port=5432))",
           "output": "True\njson\nPostgreSQL({'host': 'localhost', 'port': 5432})",
           "explanation": "In Python, modules are singletons naturally. Factory classmethods are cleaner than separate factory classes. A dict of callables replaces complex factory hierarchies."
         },
@@ -1364,7 +1364,7 @@
         },
         {
           "title": "Observer Pattern",
-          "code": "# Observer with callbacks\nclass EventEmitter:\n    def __init__(self):\n        self._listeners: dict[str, list] = {}\n    \n    def on(self, event: str, callback):\n        self._listeners.setdefault(event, []).append(callback)\n        return self  # Allow chaining\n    \n    def off(self, event: str, callback):\n        if event in self._listeners:\n            self._listeners[event].remove(callback)\n    \n    def emit(self, event: str, *args, **kwargs):\n        for callback in self._listeners.get(event, []):\n            callback(*args, **kwargs)\n\n# Usage\nclass UserService(EventEmitter):\n    def register(self, name, email):\n        user = {'name': name, 'email': email}\n        print(f\"User registered: {name}\")\n        self.emit('user_registered', user)\n        return user\n\n# Observers (listeners)\ndef send_welcome_email(user):\n    print(f\"Sending welcome email to {user['email']}\")\n\ndef log_registration(user):\n    print(f\"LOG: New user {user['name']} registered\")\n\ndef update_analytics(user):\n    print(f\"Analytics: Registration count updated\")\n\nservice = UserService()\nservice.on('user_registered', send_welcome_email)\nservice.on('user_registered', log_registration)\nservice.on('user_registered', update_analytics)\n\nservice.register('Alice', 'alice@example.com')",
+          "code": "# Observer with callbacks\nclass EventEmitter:\n    def __init__(self):\n        self._listeners: dict[str, list] = {}\n    \n    def on(self, event: str, callback):\n        self._listeners.setdefault(event, []).append(callback)\n        return self  # Allow chaining\n    \n    def off(self, event: str, callback):\n        if event in self._listeners:\n            self._listeners[event].remove(callback)\n    \n    def emit(self, event: str, *args, kwargs):\n        for callback in self._listeners.get(event, []):\n            callback(*args, kwargs)\n\n# Usage\nclass UserService(EventEmitter):\n    def register(self, name, email):\n        user = {'name': name, 'email': email}\n        print(f\"User registered: {name}\")\n        self.emit('user_registered', user)\n        return user\n\n# Observers (listeners)\ndef send_welcome_email(user):\n    print(f\"Sending welcome email to {user['email']}\")\n\ndef log_registration(user):\n    print(f\"LOG: New user {user['name']} registered\")\n\ndef update_analytics(user):\n    print(f\"Analytics: Registration count updated\")\n\nservice = UserService()\nservice.on('user_registered', send_welcome_email)\nservice.on('user_registered', log_registration)\nservice.on('user_registered', update_analytics)\n\nservice.register('Alice', 'alice@example.com')",
           "output": "User registered: Alice\nSending welcome email to alice@example.com\nLOG: New user Alice registered\nAnalytics: Registration count updated",
           "explanation": "The observer pattern decouples the event source from its handlers. Adding new behavior (analytics, logging) doesn't require modifying the UserService."
         }
@@ -1454,7 +1454,7 @@
         },
         {
           "title": "Frozen, Order, and __post_init__",
-          "code": "from dataclasses import dataclass\nfrom math import sqrt\n\n@dataclass(frozen=True, order=True)\nclass Version:\n    major: int\n    minor: int\n    patch: int\n\n    def __str__(self):\n        return f'{self.major}.{self.minor}.{self.patch}'\n\nv1 = Version(1, 2, 3)\nv2 = Version(2, 0, 0)\n\ntry:\n    v1.major = 99  # Raises FrozenInstanceError\nexcept Exception as e:\n    print(e)\n\nprint(v1 < v2)   # True (order=True)\nprint(sorted([v2, v1]))  # [Version(1,2,3), Version(2,0,0)]\n\n# __post_init__ for derived fields\n@dataclass\nclass Circle:\n    radius: float\n    area: float = field(init=False)\n\n    def __post_init__(self):\n        self.area = 3.14159 * self.radius ** 2\n\nc = Circle(5)\nprint(c.area)  # 78.53975",
+          "code": "from dataclasses import dataclass\nfrom math import sqrt\n\n@dataclass(frozen=True, order=True)\nclass Version:\n    major: int\n    minor: int\n    patch: int\n\n    def __str__(self):\n        return f'{self.major}.{self.minor}.{self.patch}'\n\nv1 = Version(1, 2, 3)\nv2 = Version(2, 0, 0)\n\ntry:\n    v1.major = 99  # Raises FrozenInstanceError\nexcept Exception as e:\n    print(e)\n\nprint(v1 < v2)   # True (order=True)\nprint(sorted([v2, v1]))  # [Version(1,2,3), Version(2,0,0)]\n\n# __post_init__ for derived fields\n@dataclass\nclass Circle:\n    radius: float\n    area: float = field(init=False)\n\n    def __post_init__(self):\n        self.area = 3.14159 * self.radius  2\n\nc = Circle(5)\nprint(c.area)  # 78.53975",
           "output": "cannot assign to field 'major'\nTrue\n[Version(1,2,3), Version(2,0,0)]\n78.53975",
           "explanation": "frozen=True makes instances hashable and usable as dict keys or in sets. __post_init__ computes derived fields after __init__ runs."
         }
@@ -1462,7 +1462,7 @@
       "notes": [
         "field(default_factory=list) prevents the mutable default argument bug",
         "frozen=True sets __hash__; without it, mutable dataclasses are unhashable (hash=None)",
-        "slots=True (Python 3.10+) adds __slots__ automatically — reduces memory by ~40%",
+        "slots=True (Python 3.10+) adds __slots__ automatically - reduces memory by ~40%",
         "Pydantic's BaseModel is a more powerful alternative for validation and serialization"
       ],
       "followUps": [
@@ -1471,7 +1471,7 @@
         "How does frozen=True affect hashability?"
       ],
       "interviewTips": [
-        "Show field(default_factory=list) — the mutable default bug is a classic interview question",
+        "Show field(default_factory=list) - the mutable default bug is a classic interview question",
         "Mention frozen for immutable value objects and __post_init__ for derived fields",
         "Compare to namedtuple: dataclass is mutable by default, has methods, more flexible"
       ]
@@ -1487,7 +1487,7 @@
     "concepts": ["__slots__", "__dict__", "Memory", "Attribute Access", "Performance"],
     "content": {
       "question": "What is __slots__ in Python? How does it improve memory and performance?",
-      "answer": "By default, each Python instance has a __dict__ dictionary to store attributes — flexible but memory-heavy.\n\n__slots__ replaces __dict__ with a fixed-size array of slots for specified attributes. This:\n1. Reduces memory by 30-50% per instance\n2. Speeds up attribute access (array lookup vs dict lookup)\n3. Prevents adding undeclared attributes at runtime\n\nBest for: classes instantiated millions of times (data records, ORM rows, coordinate objects).\n\nLimitations: cannot add new attributes at runtime, inheritance with __slots__ is complex, pickle/copy may need adjustments.",
+      "answer": "By default, each Python instance has a __dict__ dictionary to store attributes - flexible but memory-heavy.\n\n__slots__ replaces __dict__ with a fixed-size array of slots for specified attributes. This:\n1. Reduces memory by 30-50% per instance\n2. Speeds up attribute access (array lookup vs dict lookup)\n3. Prevents adding undeclared attributes at runtime\n\nBest for: classes instantiated millions of times (data records, ORM rows, coordinate objects).\n\nLimitations: cannot add new attributes at runtime, inheritance with __slots__ is complex, pickle/copy may need adjustments.",
       "codeExamples": [
         {
           "title": "__slots__ vs __dict__",
@@ -1499,7 +1499,7 @@
           "title": "Slots with Inheritance",
           "code": "class Base:\n    __slots__ = ('x',)\n\n    def __init__(self, x):\n        self.x = x\n\nclass Child(Base):\n    __slots__ = ('y',)  # Only declare NEW slots\n\n    def __init__(self, x, y):\n        super().__init__(x)\n        self.y = y\n\nc = Child(1, 2)\nprint(c.x, c.y)  # 1 2\n\n# If parent does NOT define __slots__, child gets __dict__\nclass RegularBase:\n    pass\n\nclass MixedChild(RegularBase):\n    __slots__ = ('x',)\n\nm = MixedChild()\nm.x = 1\nm.z = 99  # Works! RegularBase provides __dict__\n\n# Checking memory with dataclass slots (Python 3.10+)\nfrom dataclasses import dataclass\n\n@dataclass(slots=True)\nclass Coord:\n    x: float\n    y: float\n    z: float\n\nimport sys\nprint(sys.getsizeof(Coord(1.0, 2.0, 3.0)))",
           "output": "1 2\n56",
-          "explanation": "Child class only declares additional slots. If any base in the MRO lacks __slots__, a __dict__ is created anyway — defeating the purpose."
+          "explanation": "Child class only declares additional slots. If any base in the MRO lacks __slots__, a __dict__ is created anyway - defeating the purpose."
         }
       ],
       "notes": [
@@ -1514,8 +1514,8 @@
         "How do you add weakref support to a class with __slots__?"
       ],
       "interviewTips": [
-        "Lead with the memory benefit — that is the primary reason to use slots",
-        "Show that it prevents dynamic attribute assignment — a secondary benefit",
+        "Lead with the memory benefit - that is the primary reason to use slots",
+        "Show that it prevents dynamic attribute assignment - a secondary benefit",
         "Mention @dataclass(slots=True) as the ergonomic modern way"
       ]
     }
@@ -1536,7 +1536,7 @@
           "title": "@property with getter, setter, deleter",
           "code": "class Temperature:\n    def __init__(self, celsius=0):\n        self._celsius = celsius  # Private backing attribute\n\n    @property\n    def celsius(self):\n        return self._celsius\n\n    @celsius.setter\n    def celsius(self, value):\n        if value < -273.15:\n            raise ValueError('Temperature below absolute zero!')\n        self._celsius = value\n\n    @celsius.deleter\n    def celsius(self):\n        del self._celsius\n\n    @property\n    def fahrenheit(self):\n        return self._celsius * 9/5 + 32\n\n    # Read-only computed property\n    @property\n    def kelvin(self):\n        return self._celsius + 273.15\n\nt = Temperature(25)\nprint(t.celsius)     # 25\nprint(t.fahrenheit)  # 77.0\nprint(t.kelvin)      # 298.15\n\nt.celsius = 100\nprint(t.fahrenheit)  # 212.0\n\ntry:\n    t.celsius = -500\nexcept ValueError as e:\n    print(e)",
           "output": "25\n77.0\n298.15\n212.0\nTemperature below absolute zero!",
-          "explanation": "The @celsius.setter validates input before storing. fahrenheit and kelvin are computed properties — always derived from _celsius."
+          "explanation": "The @celsius.setter validates input before storing. fahrenheit and kelvin are computed properties - always derived from _celsius."
         },
         {
           "title": "Custom Descriptor",
@@ -1557,9 +1557,9 @@
         "When would you write a custom descriptor instead of using @property?"
       ],
       "interviewTips": [
-        "Show the temperature example — it is the canonical @property use case",
-        "Custom descriptors show advanced Python knowledge — ideal for senior interviews",
-        "Explain the Uniform Access Principle — properties let you add logic without breaking API"
+        "Show the temperature example - it is the canonical @property use case",
+        "Custom descriptors show advanced Python knowledge - ideal for senior interviews",
+        "Explain the Uniform Access Principle - properties let you add logic without breaking API"
       ]
     }
   },
@@ -1573,13 +1573,13 @@
     "concepts": ["Walrus Operator", ":=", "match-case", "Structural Pattern Matching", "Python 3.10"],
     "content": {
       "question": "What is the walrus operator (:=) in Python? What is structural pattern matching (match-case)?",
-      "answer": "Walrus operator (:=) — also called assignment expression (Python 3.8+): assigns a value as part of an expression. Useful for reusing a computed value in the same expression.\n\nCommon use cases: while loops reading input, avoiding double-calling functions, list comprehension filters.\n\nStructural pattern matching (match-case, Python 3.10+): like switch-case but with powerful pattern deconstruction for sequences, mappings, classes, and guards.",
+      "answer": "Walrus operator (:=) - also called assignment expression (Python 3.8+): assigns a value as part of an expression. Useful for reusing a computed value in the same expression.\n\nCommon use cases: while loops reading input, avoiding double-calling functions, list comprehension filters.\n\nStructural pattern matching (match-case, Python 3.10+): like switch-case but with powerful pattern deconstruction for sequences, mappings, classes, and guards.",
       "codeExamples": [
         {
           "title": "Walrus Operator",
-          "code": "# Without walrus: compute twice or use temp var\ndata = [1, 2, 3, 4, 5]\nresult1 = [y for x in data if (y := x**2) > 10]\nprint(result1)  # [16, 25] — y is computed once per element\n\n# Reading until EOF\nimport io\nstream = io.StringIO('line1\\nline2\\nline3')\nwhile chunk := stream.readline():\n    print(chunk.strip())\n\n# Re-using regex match\nimport re\ntext = 'Error: File not found (code: 404)'\nif m := re.search(r'code: (\\d+)', text):\n    print(f'Error code: {m.group(1)}')\n\n# Avoiding redundant computation\ndef expensive():\n    print('computed')\n    return [1, 2, 3]\n\n# Without walrus: expensive() called twice\nif expensive():  # call 1\n    print(len(expensive()))  # call 2\n\n# With walrus: called once\nif result := expensive():\n    print(len(result))",
+          "code": "# Without walrus: compute twice or use temp var\ndata = [1, 2, 3, 4, 5]\nresult1 = [y for x in data if (y := x2) > 10]\nprint(result1)  # [16, 25] - y is computed once per element\n\n# Reading until EOF\nimport io\nstream = io.StringIO('line1\\nline2\\nline3')\nwhile chunk := stream.readline():\n    print(chunk.strip())\n\n# Re-using regex match\nimport re\ntext = 'Error: File not found (code: 404)'\nif m := re.search(r'code: (\\d+)', text):\n    print(f'Error code: {m.group(1)}')\n\n# Avoiding redundant computation\ndef expensive():\n    print('computed')\n    return [1, 2, 3]\n\n# Without walrus: expensive() called twice\nif expensive():  # call 1\n    print(len(expensive()))  # call 2\n\n# With walrus: called once\nif result := expensive():\n    print(len(result))",
           "output": "[16, 25]\nline1\nline2\nline3\nError code: 404\ncomputed\n3",
-          "explanation": "The walrus operator assigns and evaluates in one step. In the list comprehension, y = x**2 is computed once but used in both the filter and the result."
+          "explanation": "The walrus operator assigns and evaluates in one step. In the list comprehension, y = x2 is computed once but used in both the filter and the result."
         },
         {
           "title": "Structural Pattern Matching (match-case)",
@@ -1589,8 +1589,8 @@
         }
       ],
       "notes": [
-        "Walrus operator has lower precedence than most operators — use parentheses in complex expressions",
-        "match-case is not a hash-table lookup like C switch — it uses pattern matching",
+        "Walrus operator has lower precedence than most operators - use parentheses in complex expressions",
+        "match-case is not a hash-table lookup like C switch - it uses pattern matching",
         "Patterns can match class instances: case Point(x=0, y=0)",
         "match-case does not fall through by default (unlike C switch)"
       ],
@@ -1601,7 +1601,7 @@
       ],
       "interviewTips": [
         "The walrus operator in while loops (reading input) is the clearest use case",
-        "match-case shows awareness of modern Python — many interviewers are still learning it",
+        "match-case shows awareness of modern Python - many interviewers are still learning it",
         "Guards in match-case (if ...) are a powerful feature worth demonstrating"
       ]
     }
@@ -1616,11 +1616,11 @@
     "concepts": ["Protocol", "Structural Subtyping", "Duck Typing", "runtime_checkable", "ABC"],
     "content": {
       "question": "What is Protocol in Python? How does it differ from ABC (Abstract Base Class)?",
-      "answer": "Protocol (typing.Protocol, Python 3.8+) enables structural subtyping — a class satisfies a Protocol if it has the required methods/attributes, regardless of inheritance.\n\nThis formalizes Python's duck typing: 'if it walks like a duck and quacks like a duck, it is a duck'.\n\nABC vs Protocol:\n- ABC: nominal subtyping — must explicitly inherit (class MyClass(MyABC))\n- Protocol: structural subtyping — must have the right methods (no inheritance needed)\n\nUse Protocol when: working with third-party classes you cannot modify, keeping coupling low, multiple unrelated classes share behavior.",
+      "answer": "Protocol (typing.Protocol, Python 3.8+) enables structural subtyping - a class satisfies a Protocol if it has the required methods/attributes, regardless of inheritance.\n\nThis formalizes Python's duck typing: 'if it walks like a duck and quacks like a duck, it is a duck'.\n\nABC vs Protocol:\n- ABC: nominal subtyping - must explicitly inherit (class MyClass(MyABC))\n- Protocol: structural subtyping - must have the right methods (no inheritance needed)\n\nUse Protocol when: working with third-party classes you cannot modify, keeping coupling low, multiple unrelated classes share behavior.",
       "codeExamples": [
         {
           "title": "Protocol vs ABC",
-          "code": "from typing import Protocol, runtime_checkable\nfrom abc import ABC, abstractmethod\n\n# ABC approach — must inherit\nclass Drawable(ABC):\n    @abstractmethod\n    def draw(self) -> None: ...\n\n# Protocol approach — no inheritance needed\n@runtime_checkable\nclass Drawable(Protocol):\n    def draw(self) -> None: ...\n\nclass Circle:\n    def draw(self):\n        print('Drawing circle')\n\nclass Square:\n    def draw(self):\n        print('Drawing square')\n\n# Third-party class — you cannot modify it\nclass ThirdPartyWidget:\n    def draw(self):\n        print('Third party drawing')\n\ndef render(item: Drawable):\n    item.draw()\n\n# All work — no inheritance required\nrender(Circle())\nrender(Square())\nrender(ThirdPartyWidget())\n\n# runtime_checkable enables isinstance\nprint(isinstance(Circle(), Drawable))  # True\nprint(isinstance(42, Drawable))        # False",
+          "code": "from typing import Protocol, runtime_checkable\nfrom abc import ABC, abstractmethod\n\n# ABC approach - must inherit\nclass Drawable(ABC):\n    @abstractmethod\n    def draw(self) -> None: ...\n\n# Protocol approach - no inheritance needed\n@runtime_checkable\nclass Drawable(Protocol):\n    def draw(self) -> None: ...\n\nclass Circle:\n    def draw(self):\n        print('Drawing circle')\n\nclass Square:\n    def draw(self):\n        print('Drawing square')\n\n# Third-party class - you cannot modify it\nclass ThirdPartyWidget:\n    def draw(self):\n        print('Third party drawing')\n\ndef render(item: Drawable):\n    item.draw()\n\n# All work - no inheritance required\nrender(Circle())\nrender(Square())\nrender(ThirdPartyWidget())\n\n# runtime_checkable enables isinstance\nprint(isinstance(Circle(), Drawable))  # True\nprint(isinstance(42, Drawable))        # False",
           "output": "Drawing circle\nDrawing square\nThird party drawing\nTrue\nFalse",
           "explanation": "Protocol enables duck typing with type checker support. ThirdPartyWidget satisfies Drawable without inheriting from it."
         },
@@ -1632,7 +1632,7 @@
         }
       ],
       "notes": [
-        "Protocol is from typing (Python 3.8+) — use from typing import Protocol",
+        "Protocol is from typing (Python 3.8+) - use from typing import Protocol",
         "@runtime_checkable enables isinstance() checks but only verifies method existence, not signatures",
         "mypy uses Protocols for static type checking without runtime overhead",
         "The standard library uses informal protocols (Iterable, Sequence) defined in collections.abc"
@@ -1643,9 +1643,9 @@
         "How does Protocol relate to Python's duck typing?"
       ],
       "interviewTips": [
-        "Protocol formalizes duck typing with type checker support — that is the key insight",
-        "Show the third-party class example — it demonstrates why Protocol beats ABC for decoupling",
-        "Mention mypy compatibility — shows production type safety awareness"
+        "Protocol formalizes duck typing with type checker support - that is the key insight",
+        "Show the third-party class example - it demonstrates why Protocol beats ABC for decoupling",
+        "Mention mypy compatibility - shows production type safety awareness"
       ]
     }
   },
@@ -1659,7 +1659,7 @@
     "concepts": ["ThreadPoolExecutor", "ProcessPoolExecutor", "Future", "GIL", "I/O vs CPU"],
     "content": {
       "question": "How do ThreadPoolExecutor and ProcessPoolExecutor work? When do you use each?",
-      "answer": "concurrent.futures provides a high-level interface for parallelism.\n\nThreadPoolExecutor:\n- Runs in multiple threads but shares the GIL\n- Best for I/O-bound tasks (network requests, file I/O, database queries)\n- Threads are lightweight — thousands are feasible\n- GIL prevents true parallel execution of Python bytecode\n\nProcessPoolExecutor:\n- Runs in separate processes with separate GILs — true parallelism\n- Best for CPU-bound tasks (image processing, data analysis, encryption)\n- Processes are heavy — typically CPU core count\n- Data must be picklable to pass between processes",
+      "answer": "concurrent.futures provides a high-level interface for parallelism.\n\nThreadPoolExecutor:\n- Runs in multiple threads but shares the GIL\n- Best for I/O-bound tasks (network requests, file I/O, database queries)\n- Threads are lightweight - thousands are feasible\n- GIL prevents true parallel execution of Python bytecode\n\nProcessPoolExecutor:\n- Runs in separate processes with separate GILs - true parallelism\n- Best for CPU-bound tasks (image processing, data analysis, encryption)\n- Processes are heavy - typically CPU core count\n- Data must be picklable to pass between processes",
       "codeExamples": [
         {
           "title": "ThreadPoolExecutor for I/O",
@@ -1669,14 +1669,14 @@
         },
         {
           "title": "ProcessPoolExecutor for CPU",
-          "code": "from concurrent.futures import ProcessPoolExecutor\nimport time\nimport math\n\ndef is_prime(n):\n    if n < 2: return False\n    for i in range(2, int(math.sqrt(n)) + 1):\n        if n % i == 0: return False\n    return True\n\nnumbers = list(range(10**6, 10**6 + 100))\n\n# Sequential\nstart = time.time()\nseq_result = list(map(is_prime, numbers))\nprint(f'Sequential: {time.time() - start:.2f}s')\n\n# Multiprocessing\nstart = time.time()\nwith ProcessPoolExecutor() as executor:\n    par_result = list(executor.map(is_prime, numbers))\nprint(f'Parallel: {time.time() - start:.2f}s')\n\nprint('Results match:', seq_result == par_result)\n\n# executor.map vs executor.submit\n# map: simple, ordered results, like built-in map\n# submit: returns Future, flexible, as_completed, error handling\n\n# Limitations of ProcessPoolExecutor:\n# - Functions must be picklable (no lambdas!)\n# - Arguments must be picklable\n# - More overhead per task than threads",
+          "code": "from concurrent.futures import ProcessPoolExecutor\nimport time\nimport math\n\ndef is_prime(n):\n    if n < 2: return False\n    for i in range(2, int(math.sqrt(n)) + 1):\n        if n % i == 0: return False\n    return True\n\nnumbers = list(range(106, 106 + 100))\n\n# Sequential\nstart = time.time()\nseq_result = list(map(is_prime, numbers))\nprint(f'Sequential: {time.time() - start:.2f}s')\n\n# Multiprocessing\nstart = time.time()\nwith ProcessPoolExecutor() as executor:\n    par_result = list(executor.map(is_prime, numbers))\nprint(f'Parallel: {time.time() - start:.2f}s')\n\nprint('Results match:', seq_result == par_result)\n\n# executor.map vs executor.submit\n# map: simple, ordered results, like built-in map\n# submit: returns Future, flexible, as_completed, error handling\n\n# Limitations of ProcessPoolExecutor:\n# - Functions must be picklable (no lambdas!)\n# - Arguments must be picklable\n# - More overhead per task than threads",
           "output": "Sequential: 0.45s\nParallel: 0.12s\nResults match: True",
           "explanation": "CPU-bound tasks get true speedup with processes. executor.map preserves order unlike as_completed. Functions and args must be picklable."
         }
       ],
       "notes": [
         "GIL allows only one thread to execute Python bytecode at a time",
-        "I/O releases the GIL — threads work well for network/file/DB operations",
+        "I/O releases the GIL - threads work well for network/file/DB operations",
         "ProcessPoolExecutor default workers = os.cpu_count()",
         "multiprocessing.Pool is the lower-level equivalent of ProcessPoolExecutor"
       ],
@@ -1686,9 +1686,9 @@
         "What is the difference between executor.map and executor.submit?"
       ],
       "interviewTips": [
-        "I/O-bound → ThreadPoolExecutor, CPU-bound → ProcessPoolExecutor — this is the key rule",
+        "I/O-bound → ThreadPoolExecutor, CPU-bound → ProcessPoolExecutor - this is the key rule",
         "Show as_completed for processing results as they arrive, not in order",
-        "Mention pickle requirement for ProcessPoolExecutor — common gotcha with lambdas"
+        "Mention pickle requirement for ProcessPoolExecutor - common gotcha with lambdas"
       ]
     }
   },
@@ -1702,23 +1702,23 @@
     "concepts": ["Closure", "LEGB", "nonlocal", "global", "Free Variables"],
     "content": {
       "question": "Explain Python closures and the LEGB scoping rule. What does nonlocal do?",
-      "answer": "LEGB rule — Python looks up names in this order:\n1. Local: current function scope\n2. Enclosing: enclosing function scopes (for nested functions)\n3. Global: module-level scope\n4. Built-in: Python built-in names (len, print, etc.)\n\nClosure: a nested function that captures free variables from its enclosing scope. The captured variables are stored in the closure's __closure__ attribute.\n\nnonlocal: declares that a name refers to the enclosing scope's variable and allows assignment to it (without nonlocal, assignment creates a new local variable).",
+      "answer": "LEGB rule - Python looks up names in this order:\n1. Local: current function scope\n2. Enclosing: enclosing function scopes (for nested functions)\n3. Global: module-level scope\n4. Built-in: Python built-in names (len, print, etc.)\n\nClosure: a nested function that captures free variables from its enclosing scope. The captured variables are stored in the closure's __closure__ attribute.\n\nnonlocal: declares that a name refers to the enclosing scope's variable and allows assignment to it (without nonlocal, assignment creates a new local variable).",
       "codeExamples": [
         {
           "title": "LEGB and Closures",
-          "code": "x = 'global'\n\ndef outer():\n    x = 'enclosing'\n\n    def inner():\n        # x = 'local'  # Would shadow enclosing x\n        print(x)  # Finds x in enclosing scope (LEGB)\n\n    inner()\n\nouter()  # enclosing\n\n# Closure — counter factory\ndef make_counter(start=0):\n    count = start  # Free variable captured by closure\n\n    def increment(step=1):\n        nonlocal count  # Modify enclosing count\n        count += step\n        return count\n\n    def reset():\n        nonlocal count\n        count = start\n\n    def get():\n        return count\n\n    return increment, reset, get\n\ninc, reset, get = make_counter(10)\nprint(inc())    # 11\nprint(inc(5))   # 16\nprint(get())    # 16\nreset()\nprint(get())    # 10\n\n# Inspect closure\nprint(inc.__code__.co_freevars)  # ('count', 'start')\nprint(inc.__closure__[0].cell_contents)  # 10",
+          "code": "x = 'global'\n\ndef outer():\n    x = 'enclosing'\n\n    def inner():\n        # x = 'local'  # Would shadow enclosing x\n        print(x)  # Finds x in enclosing scope (LEGB)\n\n    inner()\n\nouter()  # enclosing\n\n# Closure - counter factory\ndef make_counter(start=0):\n    count = start  # Free variable captured by closure\n\n    def increment(step=1):\n        nonlocal count  # Modify enclosing count\n        count += step\n        return count\n\n    def reset():\n        nonlocal count\n        count = start\n\n    def get():\n        return count\n\n    return increment, reset, get\n\ninc, reset, get = make_counter(10)\nprint(inc())    # 11\nprint(inc(5))   # 16\nprint(get())    # 16\nreset()\nprint(get())    # 10\n\n# Inspect closure\nprint(inc.__code__.co_freevars)  # ('count', 'start')\nprint(inc.__closure__[0].cell_contents)  # 10",
           "output": "enclosing\n11\n16\n16\n10\n('count', 'start')\n10",
           "explanation": "nonlocal allows modifying the enclosing scope's variable. Without it, count += step would create a new local count (UnboundLocalError)."
         },
         {
           "title": "Classic Closure Gotcha and Fix",
-          "code": "# Classic gotcha: loop variable in closure\nfunctions = []\nfor i in range(5):\n    functions.append(lambda: i)  # All capture same i\n\nresult = [f() for f in functions]\nprint(result)  # [4, 4, 4, 4, 4] — i is 4 at call time\n\n# Fix 1: default argument captures current value\nfunctions = []\nfor i in range(5):\n    functions.append(lambda i=i: i)  # i=i captures current i\n\nprint([f() for f in functions])  # [0, 1, 2, 3, 4]\n\n# Fix 2: factory function\ndef make_fn(i):\n    return lambda: i\n\nfunctions = [make_fn(i) for i in range(5)]\nprint([f() for f in functions])  # [0, 1, 2, 3, 4]\n\n# global keyword\ntotal = 0\n\ndef add_to_total(n):\n    global total  # Without this, assignment creates local total\n    total += n\n\nadd_to_total(5)\nadd_to_total(3)\nprint(total)  # 8",
+          "code": "# Classic gotcha: loop variable in closure\nfunctions = []\nfor i in range(5):\n    functions.append(lambda: i)  # All capture same i\n\nresult = [f() for f in functions]\nprint(result)  # [4, 4, 4, 4, 4] - i is 4 at call time\n\n# Fix 1: default argument captures current value\nfunctions = []\nfor i in range(5):\n    functions.append(lambda i=i: i)  # i=i captures current i\n\nprint([f() for f in functions])  # [0, 1, 2, 3, 4]\n\n# Fix 2: factory function\ndef make_fn(i):\n    return lambda: i\n\nfunctions = [make_fn(i) for i in range(5)]\nprint([f() for f in functions])  # [0, 1, 2, 3, 4]\n\n# global keyword\ntotal = 0\n\ndef add_to_total(n):\n    global total  # Without this, assignment creates local total\n    total += n\n\nadd_to_total(5)\nadd_to_total(3)\nprint(total)  # 8",
           "output": "[4, 4, 4, 4, 4]\n[0, 1, 2, 3, 4]\n[0, 1, 2, 3, 4]\n8",
           "explanation": "The loop gotcha: closures capture the variable, not its value. The lambda captures the reference to i, which is 4 when all functions are called."
         }
       ],
       "notes": [
-        "Assignment in a function creates a local variable — that is why nonlocal/global are needed",
+        "Assignment in a function creates a local variable - that is why nonlocal/global are needed",
         "Closures are commonly used for decorators, callbacks, and factory functions",
         "A function is a closure if it has __closure__ is not None",
         "Reading a variable (without assignment) uses LEGB; assigning creates a local"
@@ -1729,9 +1729,9 @@
         "What are free variables and where are they stored?"
       ],
       "interviewTips": [
-        "The LEGB rule must be stated clearly — interviewers check you know the exact order",
-        "The loop closure gotcha is a very common interview question — show both fixes",
-        "Connect closures to decorators — they use the same mechanism"
+        "The LEGB rule must be stated clearly - interviewers check you know the exact order",
+        "The loop closure gotcha is a very common interview question - show both fixes",
+        "Connect closures to decorators - they use the same mechanism"
       ]
     }
   },
@@ -1749,9 +1749,9 @@
       "codeExamples": [
         {
           "title": "classmethod as Alternative Constructor",
-          "code": "from datetime import date\n\nclass Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\n    @classmethod\n    def from_birth_year(cls, name, birth_year):\n        \"\"\"Alternative constructor.\"\"\"\n        age = date.today().year - birth_year\n        return cls(name, age)  # cls is Person (or subclass!)\n\n    @classmethod\n    def from_dict(cls, data):\n        return cls(data['name'], data['age'])\n\n    @staticmethod\n    def validate_age(age):\n        \"\"\"Utility — no need for cls or self.\"\"\"\n        return 0 <= age <= 150\n\n    def __repr__(self):\n        return f'Person(name={self.name!r}, age={self.age})'\n\np1 = Person('Alice', 30)\np2 = Person.from_birth_year('Bob', 1995)\np3 = Person.from_dict({'name': 'Charlie', 'age': 25})\n\nprint(p1, p2, p3)\nprint(Person.validate_age(200))  # False\n\n# classmethod with inheritance\nclass Employee(Person):\n    pass\n\ne = Employee.from_birth_year('Dave', 1990)\nprint(type(e))  # <class 'Employee'> — cls is Employee!",
+          "code": "from datetime import date\n\nclass Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\n    @classmethod\n    def from_birth_year(cls, name, birth_year):\n        \"\"\"Alternative constructor.\"\"\"\n        age = date.today().year - birth_year\n        return cls(name, age)  # cls is Person (or subclass!)\n\n    @classmethod\n    def from_dict(cls, data):\n        return cls(data['name'], data['age'])\n\n    @staticmethod\n    def validate_age(age):\n        \"\"\"Utility - no need for cls or self.\"\"\"\n        return 0 <= age <= 150\n\n    def __repr__(self):\n        return f'Person(name={self.name!r}, age={self.age})'\n\np1 = Person('Alice', 30)\np2 = Person.from_birth_year('Bob', 1995)\np3 = Person.from_dict({'name': 'Charlie', 'age': 25})\n\nprint(p1, p2, p3)\nprint(Person.validate_age(200))  # False\n\n# classmethod with inheritance\nclass Employee(Person):\n    pass\n\ne = Employee.from_birth_year('Dave', 1990)\nprint(type(e))  # <class 'Employee'> - cls is Employee!",
           "output": "Person(name='Alice', age=30) Person(name='Bob', age=...) Person(name='Charlie', age=25)\nFalse\n<class 'Employee'>",
-          "explanation": "cls is the class itself (or subclass). When called on Employee, cls is Employee — classmethod constructors preserve polymorphism."
+          "explanation": "cls is the class itself (or subclass). When called on Employee, cls is Employee - classmethod constructors preserve polymorphism."
         },
         {
           "title": "When to Use Each",
@@ -1762,7 +1762,7 @@
       ],
       "notes": [
         "classmethod is the Pythonic way to create factory/alternative constructors",
-        "staticmethod should be pure functions — if they need cls, make them classmethod",
+        "staticmethod should be pure functions - if they need cls, make them classmethod",
         "Both can be called on the class or instance (self is ignored for classmethod/static)",
         "cls in classmethod enables polymorphism in inheritance hierarchies"
       ],
@@ -1773,7 +1773,7 @@
       ],
       "interviewTips": [
         "The alternative constructor is the most compelling classmethod use case",
-        "Show that cls is the subclass when called on a subclass — that is the polymorphism benefit",
+        "Show that cls is the subclass when called on a subclass - that is the polymorphism benefit",
         "staticmethod is logically grouped with the class but has no class/instance access"
       ]
     }
@@ -1807,7 +1807,7 @@
         "StrEnum (Python 3.11+): members compare equal to strings and lower() by default",
         "Enum aliases: two names with same value are aliases, not separate members",
         "@unique decorator prevents accidental aliases",
-        "Enum members are singletons — identity comparison (is) works: Status.ACTIVE is Status.ACTIVE"
+        "Enum members are singletons - identity comparison (is) works: Status.ACTIVE is Status.ACTIVE"
       ],
       "followUps": [
         "What is the difference between Enum and IntEnum?",
@@ -1816,8 +1816,8 @@
       ],
       "interviewTips": [
         "Enum vs plain constants: type safety and intent clarity are the main benefits",
-        "Show Flag for permission systems — it is the most compelling real-world use case",
-        "Mention that Enum members are singletons — identity comparison works"
+        "Show Flag for permission systems - it is the most compelling real-world use case",
+        "Mention that Enum members are singletons - identity comparison works"
       ]
     }
   },
@@ -1831,7 +1831,7 @@
     "concepts": ["pathlib", "Path", "os.path", "glob", "file operations"],
     "content": {
       "question": "Why is pathlib preferred over os.path for file system operations in Python?",
-      "answer": "pathlib (Python 3.4+) provides an object-oriented path manipulation API that:\n- Works on all platforms (Windows uses backslash, Unix uses forward slash — pathlib handles both)\n- Supports method chaining with / operator\n- Returns Path objects with useful methods\n- Integrates with built-in open(), shutil, etc.\n\nvs os.path:\n- os.path is string-based (fragile concatenation)\n- Less readable: os.path.join(os.path.dirname(file), 'data', 'file.csv')\n- vs pathlib: Path(__file__).parent / 'data' / 'file.csv'",
+      "answer": "pathlib (Python 3.4+) provides an object-oriented path manipulation API that:\n- Works on all platforms (Windows uses backslash, Unix uses forward slash - pathlib handles both)\n- Supports method chaining with / operator\n- Returns Path objects with useful methods\n- Integrates with built-in open(), shutil, etc.\n\nvs os.path:\n- os.path is string-based (fragile concatenation)\n- Less readable: os.path.join(os.path.dirname(file), 'data', 'file.csv')\n- vs pathlib: Path(__file__).parent / 'data' / 'file.csv'",
       "codeExamples": [
         {
           "title": "pathlib Basics",
@@ -1841,7 +1841,7 @@
         },
         {
           "title": "Advanced pathlib Operations",
-          "code": "from pathlib import Path\nimport shutil\n\n# Glob patterns\nbase = Path('project')\nbase.mkdir(exist_ok=True)\n\n# Recursive glob\npython_files = list(base.rglob('*.py'))\ntest_files = list(base.glob('**/test_*.py'))\n\n# Rename and move\noriginal = Path('report.txt')\nnew_name = original.with_name('report_2024.txt')\nnew_ext = original.with_suffix('.md')\n# original.rename(new_name)\n\n# Copy with shutil (pathlib handles paths, shutil does operations)\nsrc = Path('source.txt')\ndst = Path('backup/source.txt')\ndst.parent.mkdir(parents=True, exist_ok=True)\n# shutil.copy2(src, dst)\n\n# Relative paths\ntarget = Path('/home/user/project/data/file.csv')\nbase_path = Path('/home/user/project')\nprint(target.relative_to(base_path))  # data/file.csv\n\n# File info\nif Path('example.txt').exists():\n    stat = Path('example.txt').stat()\n    print(f'Size: {stat.st_size} bytes')\n    import datetime\n    print(f'Modified: {datetime.datetime.fromtimestamp(stat.st_mtime)}')",
+          "code": "from pathlib import Path\nimport shutil\n\n# Glob patterns\nbase = Path('project')\nbase.mkdir(exist_ok=True)\n\n# Recursive glob\npython_files = list(base.rglob('*.py'))\ntest_files = list(base.glob('/test_*.py'))\n\n# Rename and move\noriginal = Path('report.txt')\nnew_name = original.with_name('report_2024.txt')\nnew_ext = original.with_suffix('.md')\n# original.rename(new_name)\n\n# Copy with shutil (pathlib handles paths, shutil does operations)\nsrc = Path('source.txt')\ndst = Path('backup/source.txt')\ndst.parent.mkdir(parents=True, exist_ok=True)\n# shutil.copy2(src, dst)\n\n# Relative paths\ntarget = Path('/home/user/project/data/file.csv')\nbase_path = Path('/home/user/project')\nprint(target.relative_to(base_path))  # data/file.csv\n\n# File info\nif Path('example.txt').exists():\n    stat = Path('example.txt').stat()\n    print(f'Size: {stat.st_size} bytes')\n    import datetime\n    print(f'Modified: {datetime.datetime.fromtimestamp(stat.st_mtime)}')",
           "output": "data/file.csv\n(file stat info)",
           "explanation": "rglob('*.py') recursively finds all .py files. relative_to() computes the path relative to a base. with_suffix() and with_name() cleanly modify paths."
         }
@@ -1850,7 +1850,7 @@
         "Path.home() returns the user's home directory cross-platform",
         "Path.cwd() returns current working directory (like os.getcwd())",
         "pathlib Path objects work directly with open(), json.load(), etc.",
-        "Use shutil for file copy/move operations — pathlib handles path manipulation, not I/O operations"
+        "Use shutil for file copy/move operations - pathlib handles path manipulation, not I/O operations"
       ],
       "followUps": [
         "How do you recursively find all files with a specific extension?",
@@ -1858,7 +1858,7 @@
         "How do you handle Windows vs Unix paths with pathlib?"
       ],
       "interviewTips": [
-        "Show the / operator for path joining — it is the most readable pathlib feature",
+        "Show the / operator for path joining - it is the most readable pathlib feature",
         "Compare to os.path: Path(__file__).parent / 'data' is cleaner than os.path.join",
         "mkdir(parents=True, exist_ok=True) is the idiomatic safe directory creation"
       ]
@@ -1878,9 +1878,9 @@
       "codeExamples": [
         {
           "title": "Basic Logging Setup",
-          "code": "import logging\n\n# Basic configuration (for scripts)\nlogging.basicConfig(\n    level=logging.DEBUG,\n    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',\n    datefmt='%Y-%m-%d %H:%M:%S'\n)\n\n# Module-level logger — use __name__\nlogger = logging.getLogger(__name__)\n\nlogger.debug('Debug message — detailed info')\nlogger.info('Info message — general info')\nlogger.warning('Warning message — unexpected event')\nlogger.error('Error message — serious problem')\nlogger.critical('Critical — program may not continue')\n\n# Log exceptions with traceback\ntry:\n    1 / 0\nexcept ZeroDivisionError:\n    logger.exception('Division failed')  # Includes traceback\n    # Same as: logger.error('msg', exc_info=True)\n\n# Lazy formatting — use % style, not f-strings!\nuser_id = 42\n# GOOD: string only formatted if level is active\nlogger.debug('User %s logged in', user_id)\n# BAD: always formats even if DEBUG is disabled\nlogger.debug(f'User {user_id} logged in')",
-          "output": "2024-01-01 10:00:00 - __main__ - DEBUG - Debug message — detailed info\n2024-01-01 10:00:00 - __main__ - INFO - Info message — general info\n...",
-          "explanation": "logger.exception() logs ERROR level with full traceback. Use % style formatting — the string is only constructed if the log level is active."
+          "code": "import logging\n\n# Basic configuration (for scripts)\nlogging.basicConfig(\n    level=logging.DEBUG,\n    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',\n    datefmt='%Y-%m-%d %H:%M:%S'\n)\n\n# Module-level logger - use __name__\nlogger = logging.getLogger(__name__)\n\nlogger.debug('Debug message - detailed info')\nlogger.info('Info message - general info')\nlogger.warning('Warning message - unexpected event')\nlogger.error('Error message - serious problem')\nlogger.critical('Critical - program may not continue')\n\n# Log exceptions with traceback\ntry:\n    1 / 0\nexcept ZeroDivisionError:\n    logger.exception('Division failed')  # Includes traceback\n    # Same as: logger.error('msg', exc_info=True)\n\n# Lazy formatting - use % style, not f-strings!\nuser_id = 42\n# GOOD: string only formatted if level is active\nlogger.debug('User %s logged in', user_id)\n# BAD: always formats even if DEBUG is disabled\nlogger.debug(f'User {user_id} logged in')",
+          "output": "2024-01-01 10:00:00 - __main__ - DEBUG - Debug message - detailed info\n2024-01-01 10:00:00 - __main__ - INFO - Info message - general info\n...",
+          "explanation": "logger.exception() logs ERROR level with full traceback. Use % style formatting - the string is only constructed if the log level is active."
         },
         {
           "title": "File Handler and Logger Hierarchy",
@@ -1890,7 +1890,7 @@
         }
       ],
       "notes": [
-        "Never use logging.basicConfig in library code — only in application entry points",
+        "Never use logging.basicConfig in library code - only in application entry points",
         "logging.getLogger(__name__) creates a hierarchy matching package structure",
         "Structured logging (JSON) is preferred for production: use python-json-logger library",
         "logging is thread-safe; print() is not"
@@ -1901,9 +1901,9 @@
         "How do you silence a specific third-party library's log output?"
       ],
       "interviewTips": [
-        "% style vs f-string in logging is a classic interview question — know why",
+        "% style vs f-string in logging is a classic interview question - know why",
         "Show the hierarchy: app.database inherits from app which inherits from root",
-        "Mention structured JSON logging for production — shows production engineering awareness"
+        "Mention structured JSON logging for production - shows production engineering awareness"
       ]
     }
   },
@@ -1921,13 +1921,13 @@
       "codeExamples": [
         {
           "title": "All Three Side by Side",
-          "code": "from collections import namedtuple\nfrom typing import NamedTuple\nfrom dataclasses import dataclass\n\n# 1. collections.namedtuple\nPoint1 = namedtuple('Point1', ['x', 'y'])\n\n# 2. typing.NamedTuple — with types and methods\nclass Point2(NamedTuple):\n    x: float\n    y: float\n    label: str = 'point'\n\n    def distance_from_origin(self):\n        return (self.x**2 + self.y**2) ** 0.5\n\n# 3. dataclass\n@dataclass\nclass Point3:\n    x: float\n    y: float\n    label: str = 'point'\n\n    def distance_from_origin(self):\n        return (self.x**2 + self.y**2) ** 0.5\n\np1 = Point1(3.0, 4.0)\np2 = Point2(3.0, 4.0)\np3 = Point3(3.0, 4.0)\n\n# Tuple behavior (namedtuple and NamedTuple)\nprint(isinstance(p1, tuple))  # True\nprint(isinstance(p2, tuple))  # True\nprint(isinstance(p3, tuple))  # False\n\nx, y = p2  # Unpacking works\nprint(x, y)\n\n# Immutability\ntry:\n    p2.x = 99  # AttributeError\nexcept AttributeError:\n    print('NamedTuple is immutable')\n\np3.x = 99  # dataclass is mutable by default\nprint(p3.x)",
+          "code": "from collections import namedtuple\nfrom typing import NamedTuple\nfrom dataclasses import dataclass\n\n# 1. collections.namedtuple\nPoint1 = namedtuple('Point1', ['x', 'y'])\n\n# 2. typing.NamedTuple - with types and methods\nclass Point2(NamedTuple):\n    x: float\n    y: float\n    label: str = 'point'\n\n    def distance_from_origin(self):\n        return (self.x2 + self.y2)  0.5\n\n# 3. dataclass\n@dataclass\nclass Point3:\n    x: float\n    y: float\n    label: str = 'point'\n\n    def distance_from_origin(self):\n        return (self.x2 + self.y2)  0.5\n\np1 = Point1(3.0, 4.0)\np2 = Point2(3.0, 4.0)\np3 = Point3(3.0, 4.0)\n\n# Tuple behavior (namedtuple and NamedTuple)\nprint(isinstance(p1, tuple))  # True\nprint(isinstance(p2, tuple))  # True\nprint(isinstance(p3, tuple))  # False\n\nx, y = p2  # Unpacking works\nprint(x, y)\n\n# Immutability\ntry:\n    p2.x = 99  # AttributeError\nexcept AttributeError:\n    print('NamedTuple is immutable')\n\np3.x = 99  # dataclass is mutable by default\nprint(p3.x)",
           "output": "True\nTrue\nFalse\n3.0 4.0\nNamedTuple is immutable\n99",
-          "explanation": "namedtuple and NamedTuple are tuples — they support unpacking and are immutable. dataclass is a regular class — mutable and not a tuple."
+          "explanation": "namedtuple and NamedTuple are tuples - they support unpacking and are immutable. dataclass is a regular class - mutable and not a tuple."
         },
         {
           "title": "Memory and Performance",
-          "code": "import sys\nfrom collections import namedtuple\nfrom typing import NamedTuple\nfrom dataclasses import dataclass\n\nPoint = namedtuple('Point', ['x', 'y', 'z'])\n\nclass TypedPoint(NamedTuple):\n    x: float; y: float; z: float\n\n@dataclass\nclass DPoint:\n    x: float; y: float; z: float\n\n@dataclass(slots=True)\nclass SPoint:\n    x: float; y: float; z: float\n\np1 = Point(1, 2, 3)\np2 = TypedPoint(1, 2, 3)\np3 = DPoint(1, 2, 3)\np4 = SPoint(1, 2, 3)\n\nprint('namedtuple:', sys.getsizeof(p1))   # 72\nprint('NamedTuple:', sys.getsizeof(p2))   # 72\nprint('dataclass:', sys.getsizeof(p3))    # 48 + dict overhead\nprint('dataclass slots:', sys.getsizeof(p4))  # 56\n\n# Conversion\nprint(dict(p1._asdict()))  # {'x': 1, 'y': 2, 'z': 3}\nprint(p1._replace(z=99))   # Point(x=1, y=2, z=99) — new instance",
+          "code": "import sys\nfrom collections import namedtuple\nfrom typing import NamedTuple\nfrom dataclasses import dataclass\n\nPoint = namedtuple('Point', ['x', 'y', 'z'])\n\nclass TypedPoint(NamedTuple):\n    x: float; y: float; z: float\n\n@dataclass\nclass DPoint:\n    x: float; y: float; z: float\n\n@dataclass(slots=True)\nclass SPoint:\n    x: float; y: float; z: float\n\np1 = Point(1, 2, 3)\np2 = TypedPoint(1, 2, 3)\np3 = DPoint(1, 2, 3)\np4 = SPoint(1, 2, 3)\n\nprint('namedtuple:', sys.getsizeof(p1))   # 72\nprint('NamedTuple:', sys.getsizeof(p2))   # 72\nprint('dataclass:', sys.getsizeof(p3))    # 48 + dict overhead\nprint('dataclass slots:', sys.getsizeof(p4))  # 56\n\n# Conversion\nprint(dict(p1._asdict()))  # {'x': 1, 'y': 2, 'z': 3}\nprint(p1._replace(z=99))   # Point(x=1, y=2, z=99) - new instance",
           "output": "namedtuple: 72\nNamedTuple: 72\ndataclass: 48\ndataclass slots: 56\n{'x': 1, 'y': 2, 'z': 3}\nPoint(x=1, y=2, z=99)",
           "explanation": "_asdict() converts to OrderedDict. _replace() creates a modified copy (like copy() for frozen dataclasses)."
         }
@@ -1944,9 +1944,9 @@
         "How do you convert a namedtuple to a dict?"
       ],
       "interviewTips": [
-        "The tuple subclass distinction is the key difference — namedtuple/NamedTuple support unpacking",
-        "Show _replace() as the immutable update pattern (like frozenset — create new, not mutate)",
-        "Recommend NamedTuple over namedtuple for modern code — cleaner syntax and type hints"
+        "The tuple subclass distinction is the key difference - namedtuple/NamedTuple support unpacking",
+        "Show _replace() as the immutable update pattern (like frozenset - create new, not mutate)",
+        "Recommend NamedTuple over namedtuple for modern code - cleaner syntax and type hints"
       ]
     }
   },
@@ -1966,7 +1966,7 @@
           "title": "Functions are Non-Data Descriptors",
           "code": "# This explains how methods work\nclass MyClass:\n    def greet(self):\n        return f'Hello from {self}'\n\nobj = MyClass()\n\n# greet is a function object (descriptor)\nprint(type(MyClass.__dict__['greet']))  # <class 'function'>\n\n# Accessing via instance triggers __get__ -> bound method\nprint(type(obj.greet))   # <class 'method'>\nprint(obj.greet())        # Hello from <MyClass object>\n\n# Manually: function.__get__(instance, class) returns bound method\nbm = MyClass.__dict__['greet'].__get__(obj, MyClass)\nprint(bm())   # Same as obj.greet()\n\n# Non-data descriptor: instance dict takes priority\nclass NonData:\n    def __get__(self, obj, objtype=None):\n        if obj is None: return self\n        return 'from descriptor'\n\nclass Test:\n    attr = NonData()\n\nt = Test()\nprint(t.attr)           # from descriptor\nt.__dict__['attr'] = 'from instance'  # Override!\nprint(t.attr)           # from instance (instance dict wins)",
           "output": "<class 'function'>\n<class 'method'>\nHello from <MyClass object>\nHello from <MyClass object>\nfrom descriptor\nfrom instance",
-          "explanation": "Functions implement __get__ to return bound methods — this is the descriptor protocol in action. Non-data descriptors (only __get__) can be shadowed by instance dict."
+          "explanation": "Functions implement __get__ to return bound methods - this is the descriptor protocol in action. Non-data descriptors (only __get__) can be shadowed by instance dict."
         },
         {
           "title": "Data Descriptor: Lazy Property",
@@ -2008,7 +2008,7 @@
         {
           "title": "pyproject.toml Structure",
           "code": "# pyproject.toml (modern standard)\n[build-system]\nrequires = [\"setuptools>=68\", \"wheel\"]\nbuild-backend = \"setuptools.backends.legacy:build\"\n\n[project]\nname = \"my-package\"\nversion = \"1.0.0\"\ndescription = \"A sample Python package\"\nreadme = \"README.md\"\nrequires-python = \">=3.10\"\nlicense = {text = \"MIT\"}\nauthors = [\n    {name = \"Alice\", email = \"alice@example.com\"}\n]\ndependencies = [\n    \"requests>=2.28\",\n    \"pydantic>=2.0\",\n]\n\n[project.optional-dependencies]\ndev = [\n    \"pytest>=7.0\",\n    \"black\",\n    \"mypy\",\n    \"ruff\",\n]\n\n[project.scripts]  # CLI entry points\nmy-cli = \"my_package.cli:main\"\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n\n[tool.mypy]\nstrict = true\n\n[tool.ruff]\nline-length = 88",
-          "output": "(configuration file — no output)",
+          "output": "(configuration file - no output)",
           "explanation": "pyproject.toml consolidates all project config. [project.scripts] creates CLI commands. [tool.*] sections configure development tools."
         },
         {
@@ -2019,7 +2019,7 @@
         }
       ],
       "notes": [
-        "uv (by Astral) is the fastest package installer in 2024 — 10-100x faster than pip",
+        "uv (by Astral) is the fastest package installer in 2024 - 10-100x faster than pip",
         "__init__.py is required to make a directory a Python package",
         "PEP 660 enables editable installs (pip install -e .) with pyproject.toml",
         "Semantic versioning: MAJOR.MINOR.PATCH; bump MAJOR for breaking changes"
@@ -2030,9 +2030,9 @@
         "What is the difference between poetry.lock and requirements.txt?"
       ],
       "interviewTips": [
-        "pyproject.toml is the modern standard — mentioning setup.py shows outdated knowledge",
+        "pyproject.toml is the modern standard - mentioning setup.py shows outdated knowledge",
         "Virtual environments are non-negotiable in professional Python development",
-        "uv is rapidly becoming the standard — mentioning it shows current ecosystem awareness"
+        "uv is rapidly becoming the standard - mentioning it shows current ecosystem awareness"
       ]
     }
   },
@@ -2046,23 +2046,23 @@
     "concepts": ["cProfile", "timeit", "line_profiler", "memory_profiler", "Big O"],
     "content": {
       "question": "How do you profile and optimize Python code performance?",
-      "answer": "Profiling workflow: measure first, optimize second. Never guess — premature optimization wastes time.\n\nTools:\n- timeit: measure small code snippets\n- cProfile: function-level call counts and time\n- line_profiler: line-by-line timing (requires @profile decorator)\n- memory_profiler: memory usage per line\n- py-spy: sampling profiler, production-safe\n\nOptimization strategies:\n1. Use built-in functions and C extensions (map, filter, sorted, NumPy)\n2. List comprehensions > loops for simple transformations\n3. Local variable lookup is faster than global/attribute lookup\n4. Avoid creating unnecessary objects in tight loops\n5. Use generators for large sequences (memory efficiency)\n6. Use slots for classes with many instances",
+      "answer": "Profiling workflow: measure first, optimize second. Never guess - premature optimization wastes time.\n\nTools:\n- timeit: measure small code snippets\n- cProfile: function-level call counts and time\n- line_profiler: line-by-line timing (requires @profile decorator)\n- memory_profiler: memory usage per line\n- py-spy: sampling profiler, production-safe\n\nOptimization strategies:\n1. Use built-in functions and C extensions (map, filter, sorted, NumPy)\n2. List comprehensions > loops for simple transformations\n3. Local variable lookup is faster than global/attribute lookup\n4. Avoid creating unnecessary objects in tight loops\n5. Use generators for large sequences (memory efficiency)\n6. Use slots for classes with many instances",
       "codeExamples": [
         {
           "title": "timeit and cProfile",
-          "code": "import timeit\nimport cProfile\nimport pstats\n\n# timeit: benchmark small operations\nprint(timeit.timeit('[x**2 for x in range(1000)]', number=1000))\nprint(timeit.timeit('list(map(lambda x: x**2, range(1000)))', number=1000))\n\n# Compare: list comprehension vs generator for sum\nprint(timeit.timeit('sum(x**2 for x in range(10000))', number=100))\nprint(timeit.timeit('sum([x**2 for x in range(10000)])', number=100))\n\n# cProfile: identify hot spots\ndef fibonacci(n):\n    if n <= 1: return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\n# Profile to file\nwith cProfile.Profile() as pr:\n    fibonacci(30)\n\nstats = pstats.Stats(pr)\nstats.sort_stats('cumulative')  # Sort by cumulative time\nstats.print_stats(10)  # Show top 10 functions\n\n# Quick profile\ncProfile.run('fibonacci(30)', sort='cumulative')",
-          "output": "(timing results — benchmarks)",
+          "code": "import timeit\nimport cProfile\nimport pstats\n\n# timeit: benchmark small operations\nprint(timeit.timeit('[x2 for x in range(1000)]', number=1000))\nprint(timeit.timeit('list(map(lambda x: x2, range(1000)))', number=1000))\n\n# Compare: list comprehension vs generator for sum\nprint(timeit.timeit('sum(x2 for x in range(10000))', number=100))\nprint(timeit.timeit('sum([x2 for x in range(10000)])', number=100))\n\n# cProfile: identify hot spots\ndef fibonacci(n):\n    if n <= 1: return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\n# Profile to file\nwith cProfile.Profile() as pr:\n    fibonacci(30)\n\nstats = pstats.Stats(pr)\nstats.sort_stats('cumulative')  # Sort by cumulative time\nstats.print_stats(10)  # Show top 10 functions\n\n# Quick profile\ncProfile.run('fibonacci(30)', sort='cumulative')",
+          "output": "(timing results - benchmarks)",
           "explanation": "cProfile shows which functions are called most and take most time. Sort by cumulative to find the most expensive call chains."
         },
         {
           "title": "Common Optimizations",
           "code": "import timeit\n\n# 1. Built-in vs loop\nnumbers = list(range(10000))\n\n# SLOW: manual loop\ndef sum_loop(nums):\n    total = 0\n    for n in nums:\n        total += n\n    return total\n\n# FAST: built-in (C implementation)\ndef sum_builtin(nums):\n    return sum(nums)\n\n# 2. Local variable lookup\nimport math\n\n# SLOW: global lookup each iteration\ndef compute_slow(n):\n    result = []\n    for i in range(n):\n        result.append(math.sqrt(i))\n    return result\n\n# FAST: cache locals\ndef compute_fast(n):\n    sqrt = math.sqrt  # Cache global in local\n    append = [].append  # Cache method\n    result = []\n    for i in range(n):\n        result.append(sqrt(i))\n    return result\n\n# 3. String concatenation\n# SLOW: creates new string each time O(n^2)\ndef join_slow(words):\n    result = ''\n    for word in words:\n        result += word + ','\n    return result\n\n# FAST: join O(n)\ndef join_fast(words):\n    return ','.join(words)\n\nwords = ['word'] * 1000\nprint(timeit.timeit(lambda: join_slow(words), number=100))\nprint(timeit.timeit(lambda: join_fast(words), number=100))",
           "output": "(slow: 0.85s, fast: 0.003s)",
-          "explanation": "sum() is a C function — far faster than a Python loop. String + is O(n^2) because strings are immutable. join() is O(n)."
+          "explanation": "sum() is a C function - far faster than a Python loop. String + is O(n^2) because strings are immutable. join() is O(n)."
         }
       ],
       "notes": [
-        "Profile in your actual runtime environment — not a different machine",
+        "Profile in your actual runtime environment - not a different machine",
         "NumPy vectorized operations are 100x faster than Python loops for numerical work",
         "CPython: local variables use LOAD_FAST (array index), globals use LOAD_GLOBAL (dict lookup)",
         "Memory profiling: tracemalloc is built-in; memory_profiler for line-level analysis"
@@ -2073,9 +2073,9 @@
         "When would you use NumPy instead of pure Python for computation?"
       ],
       "interviewTips": [
-        "Profile first, optimize second — state this principle early",
+        "Profile first, optimize second - state this principle early",
         "The string concatenation vs join example is a classic interview question",
-        "Mention NumPy for numerical work — shows awareness of the scientific Python ecosystem"
+        "Mention NumPy for numerical work - shows awareness of the scientific Python ecosystem"
       ]
     }
   },
@@ -2089,7 +2089,7 @@
     "concepts": ["TypeVar", "Generic", "Generics", "Type Safety", "mypy"],
     "content": {
       "question": "What are TypeVar and Generic in Python type hints? How do you write generic functions and classes?",
-      "answer": "TypeVar creates a placeholder type variable that is resolved when a function or class is used.\n\nGeneric functions: the return type relates to the input type (e.g., first(list[int]) -> int).\nGeneric classes: parameterize the class with a type (Stack[int], Queue[str]).\n\nIn Python 3.12+: generic syntax is simplified — def first[T](lst: list[T]) -> T instead of TypeVar.\n\nBound TypeVar: restricts acceptable types to a base class.\nConstrained TypeVar: only the listed types are accepted.",
+      "answer": "TypeVar creates a placeholder type variable that is resolved when a function or class is used.\n\nGeneric functions: the return type relates to the input type (e.g., first(list[int]) -> int).\nGeneric classes: parameterize the class with a type (Stack[int], Queue[str]).\n\nIn Python 3.12+: generic syntax is simplified - def first[T](lst: list[T]) -> T instead of TypeVar.\n\nBound TypeVar: restricts acceptable types to a base class.\nConstrained TypeVar: only the listed types are accepted.",
       "codeExamples": [
         {
           "title": "TypeVar and Generic Functions",
@@ -2099,15 +2099,15 @@
         },
         {
           "title": "Generic Classes",
-          "code": "from typing import TypeVar, Generic, Iterator\n\nT = TypeVar('T')\n\nclass Stack(Generic[T]):\n    def __init__(self) -> None:\n        self._items: list[T] = []\n\n    def push(self, item: T) -> None:\n        self._items.append(item)\n\n    def pop(self) -> T:\n        if not self._items:\n            raise IndexError('Stack is empty')\n        return self._items.pop()\n\n    def peek(self) -> T:\n        return self._items[-1]\n\n    def __len__(self) -> int:\n        return len(self._items)\n\n    def __iter__(self) -> Iterator[T]:\n        return reversed(self._items)\n\n# Type-safe usage\nint_stack: Stack[int] = Stack()\nint_stack.push(1)\nint_stack.push(2)\nprint(int_stack.pop())  # 2 — type checker knows this is int\n\nstr_stack: Stack[str] = Stack()\nstr_stack.push('hello')\nprint(str_stack.peek())  # hello\n\n# Python 3.12+ simplified syntax\n# def first[T](seq: list[T]) -> T: ...\n# class Stack[T]:\n#     def push(self, item: T) -> None: ...",
+          "code": "from typing import TypeVar, Generic, Iterator\n\nT = TypeVar('T')\n\nclass Stack(Generic[T]):\n    def __init__(self) -> None:\n        self._items: list[T] = []\n\n    def push(self, item: T) -> None:\n        self._items.append(item)\n\n    def pop(self) -> T:\n        if not self._items:\n            raise IndexError('Stack is empty')\n        return self._items.pop()\n\n    def peek(self) -> T:\n        return self._items[-1]\n\n    def __len__(self) -> int:\n        return len(self._items)\n\n    def __iter__(self) -> Iterator[T]:\n        return reversed(self._items)\n\n# Type-safe usage\nint_stack: Stack[int] = Stack()\nint_stack.push(1)\nint_stack.push(2)\nprint(int_stack.pop())  # 2 - type checker knows this is int\n\nstr_stack: Stack[str] = Stack()\nstr_stack.push('hello')\nprint(str_stack.peek())  # hello\n\n# Python 3.12+ simplified syntax\n# def first[T](seq: list[T]) -> T: ...\n# class Stack[T]:\n#     def push(self, item: T) -> None: ...",
           "output": "2\nhello",
-          "explanation": "Stack[int] tells the type checker that pop() returns int, not Any. The generic class works for any type — type safety comes from the annotation."
+          "explanation": "Stack[int] tells the type checker that pop() returns int, not Any. The generic class works for any type - type safety comes from the annotation."
         }
       ],
       "notes": [
         "TypeVar name convention: T, S, U, K (key), V (value), E (element)",
-        "Python 3.12+ supports PEP 695: def func[T](x: T) -> T — no TypeVar import needed",
-        "Generic is from typing (3.5-3.8) — in 3.9+, use list[T], dict[K, V] directly",
+        "Python 3.12+ supports PEP 695: def func[T](x: T) -> T - no TypeVar import needed",
+        "Generic is from typing (3.5-3.8) - in 3.9+, use list[T], dict[K, V] directly",
         "mypy and pyright enforce generic type constraints at static analysis time"
       ],
       "followUps": [
@@ -2116,9 +2116,9 @@
         "When would you use Generic[T] in a class?"
       ],
       "interviewTips": [
-        "Show TypeVar solving the 'return type same as input' problem — the canonical use case",
+        "Show TypeVar solving the 'return type same as input' problem - the canonical use case",
         "Generic classes (Stack[int]) demonstrate deep type system understanding",
-        "Mention Python 3.12 simplified syntax — shows you follow Python evolution"
+        "Mention Python 3.12 simplified syntax - shows you follow Python evolution"
       ]
     }
   },
@@ -2136,7 +2136,7 @@
       "codeExamples": [
         {
           "title": "All Formatting Methods",
-          "code": "name = 'Alice'\nage = 30\nprice = 12345.678\n\n# % operator (old style)\nprint('Hello, %s! You are %d years old.' % (name, age))\n\n# str.format()\nprint('Hello, {}! You are {} years old.'.format(name, age))\nprint('Hello, {name}! You are {age}.'.format(name=name, age=age))\n\n# f-strings (Python 3.6+) — preferred\nprint(f'Hello, {name}! You are {age} years old.')\nprint(f'Next year you will be {age + 1}.')  # Expressions!\n\n# Format specification\nprint(f'{price:.2f}')     # 12345.68 (2 decimal places)\nprint(f'{price:,.2f}')    # 12,345.68 (with commas)\nprint(f'{price:e}')       # 1.234568e+04 (scientific)\nprint(f'{name:>20}')      # Right-align, width 20\nprint(f'{name:^20}')      # Center, width 20\nprint(f'{name:<20}|')     # Left-align, width 20\nprint(f'{42:08b}')        # 00101010 (8-bit binary)\nprint(f'{42:#x}')         # 0x2a (hex)\n\n# Debugging with = (Python 3.8+)\nvalue = 42\nprint(f'{value=}')        # value=42",
+          "code": "name = 'Alice'\nage = 30\nprice = 12345.678\n\n# % operator (old style)\nprint('Hello, %s! You are %d years old.' % (name, age))\n\n# str.format()\nprint('Hello, {}! You are {} years old.'.format(name, age))\nprint('Hello, {name}! You are {age}.'.format(name=name, age=age))\n\n# f-strings (Python 3.6+) - preferred\nprint(f'Hello, {name}! You are {age} years old.')\nprint(f'Next year you will be {age + 1}.')  # Expressions!\n\n# Format specification\nprint(f'{price:.2f}')     # 12345.68 (2 decimal places)\nprint(f'{price:,.2f}')    # 12,345.68 (with commas)\nprint(f'{price:e}')       # 1.234568e+04 (scientific)\nprint(f'{name:>20}')      # Right-align, width 20\nprint(f'{name:^20}')      # Center, width 20\nprint(f'{name:<20}|')     # Left-align, width 20\nprint(f'{42:08b}')        # 00101010 (8-bit binary)\nprint(f'{42:#x}')         # 0x2a (hex)\n\n# Debugging with = (Python 3.8+)\nvalue = 42\nprint(f'{value=}')        # value=42",
           "output": "Hello, Alice! You are 30 years old.\nHello, Alice! You are 30 years old.\nHello, Alice! You are 30.\nHello, Alice! You are 30 years old.\nNext year you will be 31.\n12345.68\n12,345.68\n1.234568e+04\n               Alice\n         Alice      \nAlice               |\n00101010\n0x2a\nvalue=42",
           "explanation": "Format specifications control number formatting (precision, commas, scientific), alignment (< > ^), fill character, and number base."
         },
@@ -2144,13 +2144,13 @@
           "title": "Template Strings and Advanced f-strings",
           "code": "from string import Template\n\n# Template: safe for user-provided templates (no code execution)\nt = Template('Hello, $name! You have $count messages.')\nprint(t.substitute(name='Bob', count=5))\nprint(t.safe_substitute(name='Charlie'))  # Missing keys → original placeholder\n\n# f-string expressions\ndata = [1, 2, 3, 4, 5]\nprint(f'Sum: {sum(data)}, Mean: {sum(data)/len(data):.2f}')\n\nimport datetime\nnow = datetime.datetime.now()\nprint(f'Date: {now:%Y-%m-%d %H:%M}')\n\n# Multi-line f-strings\nreport = (\n    f'Name: {name}\\n'\n    f'Age: {age}\\n'\n    f'Price: ${price:,.2f}'\n)\nprint(report)\n\n# Python 3.12: nested f-strings\ncolumns = ['name', 'age', 'email']\nprint(f\"SELECT {', '.join(columns)} FROM users\")\n\n# Performance comparison (f-strings are fastest)\nimport timeit\nprint(timeit.timeit(f'f\"Hello {name}\"', globals=globals(), number=100000))\nprint(timeit.timeit('\"Hello {}\".format(name)', globals=globals(), number=100000))",
           "output": "Hello, Bob! You have 5 messages.\nHello, Charlie! You have $count messages.\nSum: 15, Mean: 3.00\nDate: 2024-01-01 10:00\nName: Alice\nAge: 30\nPrice: $12,345.68",
-          "explanation": "Template.safe_substitute is safer than Template.substitute — missing keys leave the placeholder instead of raising KeyError. f-strings are 30% faster than format()."
+          "explanation": "Template.safe_substitute is safer than Template.substitute - missing keys leave the placeholder instead of raising KeyError. f-strings are 30% faster than format()."
         }
       ],
       "notes": [
-        "Use % style in logging — strings are only formatted if the log level is active",
-        "f-strings evaluate expressions at definition time — cannot be used as templates",
-        "Template strings prevent arbitrary code execution — use for user-provided format strings",
+        "Use % style in logging - strings are only formatted if the log level is active",
+        "f-strings evaluate expressions at definition time - cannot be used as templates",
+        "Template strings prevent arbitrary code execution - use for user-provided format strings",
         "f'{x=}' (Python 3.8+) is invaluable for debugging"
       ],
       "followUps": [
@@ -2159,8 +2159,8 @@
         "What format specifier would you use to display a number as a percentage?"
       ],
       "interviewTips": [
-        "f-strings are the answer for modern code — know the format spec mini-language",
-        "Logging % style is a common interview question — know why it is preferred",
+        "f-strings are the answer for modern code - know the format spec mini-language",
+        "Logging % style is a common interview question - know why it is preferred",
         "f'{value=}' for debugging shows you know modern Python well"
       ]
     }
@@ -2175,11 +2175,11 @@
     "concepts": ["subprocess", "run()", "Popen", "check=True", "Shell Injection"],
     "content": {
       "question": "How do you run external commands in Python with the subprocess module?",
-      "answer": "subprocess (Python 3.5+) is the modern way to run external programs, replacing os.system() and os.popen().\n\nsubprocess.run(): high-level API for simple command execution. Waits for completion.\nsubprocess.Popen(): low-level API for streaming output, async execution.\n\nSecurity: never use shell=True with user input — it enables shell injection. Pass arguments as a list instead.\n\nKey parameters:\n- check=True: raises CalledProcessError on non-zero exit\n- capture_output=True: captures stdout and stderr\n- text=True: decode bytes to string (encoding=sys.stdout.encoding)",
+      "answer": "subprocess (Python 3.5+) is the modern way to run external programs, replacing os.system() and os.popen().\n\nsubprocess.run(): high-level API for simple command execution. Waits for completion.\nsubprocess.Popen(): low-level API for streaming output, async execution.\n\nSecurity: never use shell=True with user input - it enables shell injection. Pass arguments as a list instead.\n\nKey parameters:\n- check=True: raises CalledProcessError on non-zero exit\n- capture_output=True: captures stdout and stderr\n- text=True: decode bytes to string (encoding=sys.stdout.encoding)",
       "codeExamples": [
         {
           "title": "subprocess.run() Patterns",
-          "code": "import subprocess\nimport sys\n\n# Basic run — wait for completion\nresult = subprocess.run(\n    ['ls', '-la'],\n    capture_output=True,\n    text=True,\n    check=True  # Raise on non-zero exit\n)\nprint(result.stdout)\nprint('Return code:', result.returncode)\n\n# Handle errors\ntry:\n    subprocess.run(\n        ['git', 'status'],\n        check=True,\n        capture_output=True,\n        text=True\n    )\nexcept subprocess.CalledProcessError as e:\n    print(f'Command failed: {e.returncode}')\n    print(f'Stderr: {e.stderr}')\nexcept FileNotFoundError:\n    print('git not installed')\n\n# Timeout\ntry:\n    subprocess.run(['sleep', '10'], timeout=2, check=True)\nexcept subprocess.TimeoutExpired:\n    print('Command timed out')\n\n# NEVER do this with user input:\nuser_input = 'safe.txt; rm -rf /'\n# subprocess.run(f'cat {user_input}', shell=True)  # SHELL INJECTION!\n\n# SAFE: pass as list\nsubprocess.run(['cat', 'safe.txt'], check=True)  # Arguments are not interpreted by shell",
+          "code": "import subprocess\nimport sys\n\n# Basic run - wait for completion\nresult = subprocess.run(\n    ['ls', '-la'],\n    capture_output=True,\n    text=True,\n    check=True  # Raise on non-zero exit\n)\nprint(result.stdout)\nprint('Return code:', result.returncode)\n\n# Handle errors\ntry:\n    subprocess.run(\n        ['git', 'status'],\n        check=True,\n        capture_output=True,\n        text=True\n    )\nexcept subprocess.CalledProcessError as e:\n    print(f'Command failed: {e.returncode}')\n    print(f'Stderr: {e.stderr}')\nexcept FileNotFoundError:\n    print('git not installed')\n\n# Timeout\ntry:\n    subprocess.run(['sleep', '10'], timeout=2, check=True)\nexcept subprocess.TimeoutExpired:\n    print('Command timed out')\n\n# NEVER do this with user input:\nuser_input = 'safe.txt; rm -rf /'\n# subprocess.run(f'cat {user_input}', shell=True)  # SHELL INJECTION!\n\n# SAFE: pass as list\nsubprocess.run(['cat', 'safe.txt'], check=True)  # Arguments are not interpreted by shell",
           "output": "(ls output)\nReturn code: 0",
           "explanation": "check=True turns non-zero exit codes into exceptions. capture_output=True = stdout=PIPE, stderr=PIPE. Lists prevent shell injection."
         },
@@ -2191,9 +2191,9 @@
         }
       ],
       "notes": [
-        "Never use shell=True with unsanitized input — use shlex.quote() if shell=True is unavoidable",
+        "Never use shell=True with unsanitized input - use shlex.quote() if shell=True is unavoidable",
         "capture_output=True is shorthand for stdout=PIPE, stderr=PIPE",
-        "Popen is async — use proc.wait() or communicate() to avoid zombies",
+        "Popen is async - use proc.wait() or communicate() to avoid zombies",
         "shlex.split() parses shell-style strings into lists: shlex.split('ls -la /tmp')"
       ],
       "followUps": [
@@ -2202,9 +2202,9 @@
         "How do you stream subprocess output line by line?"
       ],
       "interviewTips": [
-        "Shell injection with shell=True is a security-critical topic — always mention it",
-        "check=True is the best practice — always validate exit codes",
-        "sys.executable for running Python subprocesses — shows portability awareness"
+        "Shell injection with shell=True is a security-critical topic - always mention it",
+        "check=True is the best practice - always validate exit codes",
+        "sys.executable for running Python subprocesses - shows portability awareness"
       ]
     }
   },
@@ -2228,13 +2228,13 @@
         },
         {
           "title": "Arithmetic and Callable",
-          "code": "class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\n    def __repr__(self):\n        return f'Vector({self.x}, {self.y})'\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __radd__(self, other):  # other + self\n        if other == 0:\n            return self\n        return self.__add__(other)\n\n    def __mul__(self, scalar):  # vec * 3\n        return Vector(self.x * scalar, self.y * scalar)\n\n    def __rmul__(self, scalar):  # 3 * vec\n        return self.__mul__(scalar)\n\n    def __abs__(self):\n        return (self.x**2 + self.y**2) ** 0.5\n\n    def __bool__(self):\n        return bool(self.x or self.y)\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\nv1 = Vector(1, 2)\nv2 = Vector(3, 4)\n\nprint(v1 + v2)    # Vector(4, 6)\nprint(v1 * 3)     # Vector(3, 6)\nprint(3 * v1)     # Vector(3, 6)\nprint(abs(v2))    # 5.0\nprint(bool(Vector(0, 0)))  # False\nprint(sum([v1, v2], Vector(0,0)))  # Vector(4, 6)",
+          "code": "class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\n    def __repr__(self):\n        return f'Vector({self.x}, {self.y})'\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __radd__(self, other):  # other + self\n        if other == 0:\n            return self\n        return self.__add__(other)\n\n    def __mul__(self, scalar):  # vec * 3\n        return Vector(self.x * scalar, self.y * scalar)\n\n    def __rmul__(self, scalar):  # 3 * vec\n        return self.__mul__(scalar)\n\n    def __abs__(self):\n        return (self.x2 + self.y2)  0.5\n\n    def __bool__(self):\n        return bool(self.x or self.y)\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\nv1 = Vector(1, 2)\nv2 = Vector(3, 4)\n\nprint(v1 + v2)    # Vector(4, 6)\nprint(v1 * 3)     # Vector(3, 6)\nprint(3 * v1)     # Vector(3, 6)\nprint(abs(v2))    # 5.0\nprint(bool(Vector(0, 0)))  # False\nprint(sum([v1, v2], Vector(0,0)))  # Vector(4, 6)",
           "output": "Vector(4, 6)\nVector(3, 6)\nVector(3, 6)\n5.0\nFalse\nVector(4, 6)",
           "explanation": "__radd__ enables sum() which starts with 0 + v1. __mul__ and __rmul__ enable both vec*3 and 3*vec. __bool__ controls truthiness."
         }
       ],
       "notes": [
-        "Prefer __repr__ over __str__ — repr() should return a valid Python expression if possible",
+        "Prefer __repr__ over __str__ - repr() should return a valid Python expression if possible",
         "__hash__ must be consistent with __eq__: a == b implies hash(a) == hash(b)",
         "If you define __eq__, Python sets __hash__ to None (making instances unhashable)",
         "Use functools.total_ordering to generate all comparison methods from just __eq__ and __lt__"
@@ -2247,7 +2247,7 @@
       "interviewTips": [
         "The Vector class with arithmetic operators is the canonical data model interview example",
         "__radd__ for sum() compatibility is a subtle but impressive detail",
-        "Mention functools.total_ordering — shows you know Python's ergonomics"
+        "Mention functools.total_ordering - shows you know Python's ergonomics"
       ]
     }
   },
@@ -2261,19 +2261,19 @@
     "concepts": ["__init_subclass__", "ABC", "mixin", "multiple inheritance", "super()"],
     "content": {
       "question": "How does super() work in Python with multiple inheritance? What are mixins?",
-      "answer": "Python uses Method Resolution Order (MRO) — a linear ordering of base classes computed by the C3 linearization algorithm.\n\nsuper() follows the MRO — it calls the next class in the MRO, not necessarily the direct parent. This is crucial for cooperative multiple inheritance.\n\nMixins: small, focused classes that add behavior to other classes without being used standalone. They should not define __init__ (or call super().__init__() cooperatively).\n\n__init_subclass__: called whenever a class is subclassed, enabling plugin registries and validation.",
+      "answer": "Python uses Method Resolution Order (MRO) - a linear ordering of base classes computed by the C3 linearization algorithm.\n\nsuper() follows the MRO - it calls the next class in the MRO, not necessarily the direct parent. This is crucial for cooperative multiple inheritance.\n\nMixins: small, focused classes that add behavior to other classes without being used standalone. They should not define __init__ (or call super().__init__() cooperatively).\n\n__init_subclass__: called whenever a class is subclassed, enabling plugin registries and validation.",
       "codeExamples": [
         {
           "title": "MRO and Cooperative super()",
-          "code": "class A:\n    def method(self):\n        print('A.method')\n        super().method()  # Cooperative — passes to next in MRO\n\nclass B(A):\n    def method(self):\n        print('B.method')\n        super().method()\n\nclass C(A):\n    def method(self):\n        print('C.method')\n        super().method()\n\nclass D(B, C):\n    def method(self):\n        print('D.method')\n        super().method()\n\nprint(D.__mro__)  # D -> B -> C -> A -> object\nd = D()\nd.method()\n# D.method -> B.method -> C.method -> A.method\n\n# super() follows MRO, not just the parent\n# B.super() goes to C (next in D's MRO), not A!\n\n# Verify MRO\nfor cls in D.__mro__:\n    print(cls.__name__)",
+          "code": "class A:\n    def method(self):\n        print('A.method')\n        super().method()  # Cooperative - passes to next in MRO\n\nclass B(A):\n    def method(self):\n        print('B.method')\n        super().method()\n\nclass C(A):\n    def method(self):\n        print('C.method')\n        super().method()\n\nclass D(B, C):\n    def method(self):\n        print('D.method')\n        super().method()\n\nprint(D.__mro__)  # D -> B -> C -> A -> object\nd = D()\nd.method()\n# D.method -> B.method -> C.method -> A.method\n\n# super() follows MRO, not just the parent\n# B.super() goes to C (next in D's MRO), not A!\n\n# Verify MRO\nfor cls in D.__mro__:\n    print(cls.__name__)",
           "output": "(<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>)\nD.method\nB.method\nC.method\nA.method\nD\nB\nC\nA\nobject",
-          "explanation": "super() in B calls C, not A — it follows the MRO of the instance (D), not B's own parent. This is cooperative multiple inheritance."
+          "explanation": "super() in B calls C, not A - it follows the MRO of the instance (D), not B's own parent. This is cooperative multiple inheritance."
         },
         {
           "title": "Mixins and __init_subclass__",
-          "code": "# Mixin: no __init__, no standalone use\nclass LoggedMixin:\n    def __getattribute__(self, name):\n        result = super().__getattribute__(name)\n        if callable(result):\n            print(f'Accessing: {name}')\n        return result\n\nclass JSONMixin:\n    def to_json(self):\n        import json\n        return json.dumps(vars(self))\n\n    @classmethod\n    def from_json(cls, data):\n        import json\n        return cls(**json.loads(data))\n\n# Compose with multiple inheritance\nclass User(JSONMixin, LoggedMixin):\n    def __init__(self, name, email):\n        self.name = name\n        self.email = email\n\nu = User('Alice', 'alice@example.com')\nprint(u.to_json())\n\n# __init_subclass__: plugin registry\nclass BasePlugin:\n    _plugins = {}\n\n    def __init_subclass__(cls, plugin_name=None, **kwargs):\n        super().__init_subclass__(**kwargs)\n        if plugin_name:\n            BasePlugin._plugins[plugin_name] = cls\n\nclass EmailPlugin(BasePlugin, plugin_name='email'):\n    def send(self): print('Sending email')\n\nclass SMSPlugin(BasePlugin, plugin_name='sms'):\n    def send(self): print('Sending SMS')\n\nprint(BasePlugin._plugins)\n# {'email': EmailPlugin, 'sms': SMSPlugin}",
+          "code": "# Mixin: no __init__, no standalone use\nclass LoggedMixin:\n    def __getattribute__(self, name):\n        result = super().__getattribute__(name)\n        if callable(result):\n            print(f'Accessing: {name}')\n        return result\n\nclass JSONMixin:\n    def to_json(self):\n        import json\n        return json.dumps(vars(self))\n\n    @classmethod\n    def from_json(cls, data):\n        import json\n        return cls(json.loads(data))\n\n# Compose with multiple inheritance\nclass User(JSONMixin, LoggedMixin):\n    def __init__(self, name, email):\n        self.name = name\n        self.email = email\n\nu = User('Alice', 'alice@example.com')\nprint(u.to_json())\n\n# __init_subclass__: plugin registry\nclass BasePlugin:\n    _plugins = {}\n\n    def __init_subclass__(cls, plugin_name=None, kwargs):\n        super().__init_subclass__(kwargs)\n        if plugin_name:\n            BasePlugin._plugins[plugin_name] = cls\n\nclass EmailPlugin(BasePlugin, plugin_name='email'):\n    def send(self): print('Sending email')\n\nclass SMSPlugin(BasePlugin, plugin_name='sms'):\n    def send(self): print('Sending SMS')\n\nprint(BasePlugin._plugins)\n# {'email': EmailPlugin, 'sms': SMSPlugin}",
           "output": "Accessing: to_json\n{\"name\": \"Alice\", \"email\": \"alice@example.com\"}\n{'email': <class 'EmailPlugin'>, 'sms': <class 'SMSPlugin'>}",
-          "explanation": "__init_subclass__ runs when any subclass is defined — enables automatic plugin registration without explicit registration calls."
+          "explanation": "__init_subclass__ runs when any subclass is defined - enables automatic plugin registration without explicit registration calls."
         }
       ],
       "notes": [
@@ -2288,9 +2288,9 @@
         "When would you use __init_subclass__ over class decorators or metaclasses?"
       ],
       "interviewTips": [
-        "MRO and cooperative super() are advanced topics — great for senior roles",
-        "Show the D -> B -> C -> A order clearly — the surprise that B.super() goes to C",
-        "Mixins with no __init__ are the Pythonic composition pattern — contrast with Java interfaces"
+        "MRO and cooperative super() are advanced topics - great for senior roles",
+        "Show the D -> B -> C -> A order clearly - the surprise that B.super() goes to C",
+        "Mixins with no __init__ are the Pythonic composition pattern - contrast with Java interfaces"
       ]
     }
   }

@@ -87,7 +87,7 @@
         },
         {
           "title": "Basic tsconfig.json structure",
-          "code": "// tsconfig.json\n// {\n//   \"compilerOptions\": {\n//     \"target\": \"ES2020\",\n//     \"module\": \"ESNext\",\n//     \"strict\": true,\n//     \"outDir\": \"./dist\",\n//     \"rootDir\": \"./src\",\n//     \"esModuleInterop\": true,\n//     \"skipLibCheck\": true,\n//     \"forceConsistentCasingInFileNames\": true\n//   },\n//   \"include\": [\"src/**/*\"],\n//   \"exclude\": [\"node_modules\", \"dist\"]\n// }\n\n// With this config, src/index.ts compiles to dist/index.js\nconst version: number = 5;\nconsole.log(`TypeScript version target: ES2020, strict: ${version >= 4}`);",
+          "code": "// tsconfig.json\n// {\n//   \"compilerOptions\": {\n//     \"target\": \"ES2020\",\n//     \"module\": \"ESNext\",\n//     \"strict\": true,\n//     \"outDir\": \"./dist\",\n//     \"rootDir\": \"./src\",\n//     \"esModuleInterop\": true,\n//     \"skipLibCheck\": true,\n//     \"forceConsistentCasingInFileNames\": true\n//   },\n//   \"include\": [\"src//*\"],\n//   \"exclude\": [\"node_modules\", \"dist\"]\n// }\n\n// With this config, src/index.ts compiles to dist/index.js\nconst version: number = 5;\nconsole.log(`TypeScript version target: ES2020, strict: ${version >= 4}`);",
           "output": "TypeScript version target: ES2020, strict: true",
           "explanation": "The tsconfig.json controls compilation behavior. 'strict: true' enables all strict checks and is recommended for new projects. 'outDir' and 'rootDir' control the directory structure of compiled output."
         },

@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
@@ -117,11 +116,6 @@ export default function GSoCProposalStepPage() {
         transition={{ duration: 0.5 }}
         className="mt-6 mb-8"
       >
-        <Link to="/student/opensource/gsoc-proposal" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-5 no-underline">
-          <ArrowLeft className="w-4 h-4" />
-          GSoC Proposal Guide
-        </Link>
-
         {/* Title card */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
           <div className="flex items-start justify-between gap-4 mb-3">
