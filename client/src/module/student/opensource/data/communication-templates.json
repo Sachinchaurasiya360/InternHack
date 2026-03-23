@@ -1,0 +1,175 @@
+{
+  "communicationGuide": [
+    {
+      "step": 1,
+      "id": "claiming-an-issue",
+      "title": "How to Claim an Issue",
+      "description": "You found an issue you want to work on. Now you need to comment on it to let the maintainer know you're interested. Here's exactly what to say - and what NOT to say.",
+      "mentor_guidance": "The way you claim an issue is your first interaction with the project's community. First impressions matter enormously in open source.\n\nI've been a maintainer on several projects, and I can tell you what makes me assign an issue to someone vs. ignore their comment.\n\nWhat makes me say yes:\n- They've clearly read the issue and understood it\n- They have a rough idea of how to approach the fix\n- They've checked if anyone else is already working on it\n- They're polite and professional\n\nWhat makes me say no (or ignore):\n- 'Can I work on this?' with zero context - shows no effort\n- 'Assign this to me' - rude and entitled\n- They haven't read the issue carefully (asking questions already answered in the issue)\n- They have 15 other issues 'assigned' to them and haven't completed any\n\nThe ideal comment shows: you understand the problem, you've thought about the approach, and you're ready to start. It doesn't need to be a detailed implementation plan - just enough to show you've done your homework.\n\nAlso: don't ask for permission to work on something if it's already labeled 'good first issue' or 'help wanted.' Just comment that you're working on it and start. Maintainers are busy - they appreciate initiative over permission-seeking.",
+      "details": [
+        "Before commenting, check if someone else is already working on it. Look at the issue comments for anyone saying 'I'll work on this' and check if there's an open PR linked to the issue. If someone claimed it 2+ weeks ago with no follow-up PR, it's generally fair to ask if they're still working on it.",
+        "Your comment should show you've read and understood the issue. Mention the specific behavior you'll change, the files you think are involved, or the approach you plan to take. This reassures the maintainer that they won't waste time assigning it to someone who disappears.",
+        "Be concise. Maintainers review dozens of issues daily. A 3-sentence comment gets read; a 3-paragraph essay gets skimmed. State what you plan to do, mention your relevant experience (briefly), and ask any clarifying questions.",
+        "If the issue is ambiguous, ask clarifying questions BEFORE you start coding. It's much better to ask 'Should this validation happen on the client or server side?' upfront than to submit a PR and be told 'we wanted the other approach.'",
+        "Don't claim more issues than you can handle. If you have 3 open issues and 0 completed PRs, maintainers will be skeptical of your commitment. Start with one, complete it, then take the next. Build trust through follow-through.",
+        "If you get stuck after claiming an issue, communicate! Post an update: 'I'm still working on this - got stuck on X, exploring Y approach.' Silence makes maintainers think you've abandoned the issue."
+      ],
+      "commands": [
+        { "label": "Good first comment - shows understanding", "code": "Hi! I'd like to work on this issue. \n\nFrom what I understand, the problem is that the email validation \naccepts malformed addresses (like 'user@' without a domain). \n\nI plan to add a regex check in `src/auth/validators.ts` and add \ncorresponding test cases. I've worked with similar validation \nlogic before.\n\nPlease let me know if this approach sounds right!" },
+        { "label": "Claiming with a clarifying question", "code": "Hi, I'm interested in working on this. \n\nI have a question before I start: should the error message be \nshown inline below the input field, or as a toast notification? \nThe current design doesn't seem to have a consistent pattern \nfor form errors.\n\nHappy to go either way - just want to match the project's UX \nconventions." },
+        { "label": "DON'T do this - lazy comment", "code": "# BAD - shows zero effort:\n\"Can I work on this?\"\n\"Please assign this to me\"\n\"I want to do this issue\"" },
+        { "label": "Checking if someone is already working on it", "code": "Hi @previous-commenter - I see you mentioned interest \nin this 3 weeks ago. Are you still working on it? \nIf not, I'd love to pick it up. No pressure either way!" }
+      ],
+      "resources": [
+        { "title": "How to Contribute to Open Source (GitHub Guide)", "url": "https://opensource.guide/how-to-contribute/#communicating-effectively", "type": "article" }
+      ],
+      "tips": [
+        "Don't say 'assign this to me.' Say 'I'd like to work on this - here's my approach.' Entitlement is the fastest way to get ignored.",
+        "If you claim an issue and can't finish it, that's okay - just communicate. Post a comment: 'Stepping away from this - feel free to reassign.' Maintainers respect honesty far more than radio silence.",
+        "Look at the project's recent PRs to see what communication style the community uses. Some projects are casual, others are formal. Match the tone."
+      ]
+    },
+    {
+      "step": 2,
+      "id": "writing-pr-description",
+      "title": "Writing a Pull Request Description",
+      "description": "Your PR description is a cover letter for your code. It tells reviewers what you changed, why, how to test it, and what to pay attention to during review.",
+      "mentor_guidance": "I've reviewed hundreds of pull requests, and the description quality directly correlates with how quickly I review them.\n\nA PR with a great description: I can start reviewing in under a minute because I already understand the context, the approach, and what to look for.\n\nA PR with 'Fixed the thing' as the description: I have to read every line of code, guess at the intent, and figure out what 'the thing' was. This takes 5-10x longer and I'm in a bad mood the entire time.\n\nHere's my template. You don't have to use it exactly, but hitting these points will make every maintainer love you:\n\n1. What - One sentence describing the change\n2. Why - Link the issue, explain the problem\n3. How - Brief explanation of your approach (not a line-by-line walkthrough)\n4. Testing - How you verified it works\n5. Screenshots - Before/after for UI changes\n6. Notes - Anything the reviewer should pay attention to\n\nKeep it concise but complete. A PR description should take 2-3 minutes to write. If it takes longer, your PR might be too large - consider splitting it.",
+      "details": [
+        "Start with the issue link: 'Fixes #123' or 'Closes #456'. This automatically links the PR to the issue and closes the issue when the PR is merged. Put it at the top so the reviewer immediately knows the context.",
+        "The 'What' section is one sentence describing the observable change: 'Adds client-side email validation to the login form' or 'Fixes crash when uploading files larger than 10MB.' Focus on the user-visible effect, not the technical implementation.",
+        "The 'Why' section explains the problem: 'Users could submit invalid emails, causing 500 errors from the auth API. This led to confusion and support tickets.' This helps the reviewer understand the motivation and judge whether the approach is appropriate.",
+        "The 'How' section is a brief technical summary: 'Added a validateEmail() function in validators.ts that checks format using a standard regex. The validation runs onChange and onBlur. Error messages appear inline below the input.' Don't describe every line - just enough for the reviewer to understand the architecture of your change.",
+        "The 'Testing' section describes how you verified correctness: 'Tested with valid emails, invalid emails (missing @, missing domain), empty input, and very long emails. All existing tests pass. Added 3 new test cases.' If you can't add automated tests, explain why and describe your manual testing.",
+        "For UI changes, screenshots or screen recordings are mandatory. Use before/after comparisons. Even a simple phone screenshot of the changed UI saves the reviewer from checking out your branch and running the app. Tools like Loom, CleanShot, or even the browser's built-in screenshot tool work great."
+      ],
+      "commands": [
+        { "label": "Complete PR description template", "code": "## What\nAdds client-side email validation to the login form.\n\n## Why\nFixes #247\n\nCurrently, submitting an invalid email (e.g., 'user@' without \na domain) causes a 500 error from the auth API. Users see a \ngeneric 'Something went wrong' message with no actionable \nfeedback.\n\n## How\n- Added `validateEmail()` in `src/utils/validators.ts`\n- Validation runs on blur and on submit\n- Error message appears inline below the email input\n- Used the same error styling as the existing password \n  validation\n\n## Testing\n- Tested with valid emails, missing @, missing domain, \n  empty input, and 254+ character emails\n- All existing tests pass\n- Added 4 new test cases in `validators.test.ts`\n\n## Screenshots\n[Before/After screenshots here]\n\n## Notes\n- I considered using a library like `validator.js` but \n  decided a simple regex is sufficient for this use case\n- The regex follows RFC 5322 simplified format" },
+        { "label": "Minimal but effective PR description", "code": "Fixes #247\n\nAdds email format validation on the login form. Invalid \nemails now show an inline error instead of causing a 500 \nfrom the API.\n\nTested with valid/invalid/edge-case emails. Added tests." },
+        { "label": "DON'T do this - useless descriptions", "code": "# BAD:\n\"Fixed it\"\n\"Changes as discussed\"\n\"Please review\"\n\"Updated files\"" }
+      ],
+      "resources": [
+        { "title": "How to Write the Perfect Pull Request", "url": "https://github.blog/developer-skills/github/how-to-write-the-perfect-pull-request/", "type": "article" }
+      ],
+      "tips": [
+        "If the project has a PR template (auto-fills when you create the PR), fill out every section. Empty sections tell the reviewer you didn't bother reading the template.",
+        "Link to the issue using GitHub keywords: 'Fixes #123', 'Closes #456', 'Resolves #789'. These keywords trigger automatic issue closing when the PR is merged.",
+        "For large PRs, add a 'How to review' section: 'Start with validators.ts (the core logic), then look at the component changes, and finally the tests.' Guiding the reviewer makes their job easier and speeds up the process."
+      ]
+    },
+    {
+      "step": 3,
+      "id": "responding-to-review",
+      "title": "Responding to Code Review Feedback",
+      "description": "Code review is a conversation, not an exam. Maintainers will request changes, ask questions, and suggest alternatives. Here's how to respond professionally and learn from the process.",
+      "mentor_guidance": "Code review feedback is the most valuable learning opportunity in open source. A senior engineer is spending their limited time reading YOUR code and teaching you how to make it better. That's free mentorship.\n\nBut I won't lie - the first few reviews can sting. You spent hours writing code, and someone just left 15 comments pointing out problems. It's natural to feel defensive.\n\nHere's how to reframe it: the reviewer isn't criticizing you - they're improving the code. They'd leave the same comments on anyone's PR, including their own colleagues'. Review comments are about the code, not about you as a person.\n\nSome guidelines that have served me well:\n\n1. Thank the reviewer. They're a volunteer spending their time on your work. Start with 'Thanks for the detailed review!' and mean it.\n\n2. Don't argue - discuss. If you disagree with a suggestion, explain your reasoning calmly: 'I chose approach A because of X. Would approach B handle the edge case in scenario Y?' This opens a productive dialogue.\n\n3. Ask questions. If you don't understand a comment, ask: 'Could you elaborate on what you mean by X? I want to make sure I address this correctly.'\n\n4. Fix and respond. For each comment, either push a fix or explain why you chose a different approach. Never leave comments unaddressed.\n\n5. Learn from patterns. If the reviewer catches the same issue in multiple places (inconsistent naming, missing error handling), take note. These are patterns to internalize for future contributions.",
+      "details": [
+        "Read all review comments before making changes. Some comments might conflict with others, or a later comment might change the context of an earlier one. Understanding the full picture helps you address everything efficiently in one push.",
+        "For each comment, respond in one of these ways: (1) 'Fixed!' - you agreed and pushed the change, (2) 'Good point, I've updated this to X instead' - you agreed but took a slightly different approach, (3) 'I considered that, but I chose X because Y. What do you think?' - you disagree and want to discuss, (4) 'Could you elaborate? I want to make sure I understand correctly' - you need clarification.",
+        "Push all fixes in a new commit (don't amend during review unless asked). This way, the reviewer can see only the changes you made in response to their feedback, without re-reviewing the entire PR. Some projects ask you to squash before merge - wait until all review rounds are complete.",
+        "If the reviewer suggests a completely different approach, don't take it personally. Ask questions to understand their reasoning: 'I see - the concern is about performance in large datasets. Would approach X address that while keeping the implementation simpler?' This shows you're thinking critically and willing to learn.",
+        "Mark resolved conversations on GitHub (click 'Resolve conversation' after addressing a comment). This helps the reviewer see which feedback has been addressed and which still needs attention. It also shows you're organized and thorough.",
+        "After addressing all feedback, leave a summary comment: 'I've addressed all the review comments: fixed the naming convention, added error handling for the edge case, and added 2 more test cases. Ready for another look!' This tells the reviewer they can re-review."
+      ],
+      "commands": [
+        { "label": "Thanking the reviewer", "code": "Thanks for the thorough review! Really helpful feedback. \nI've addressed each comment below." },
+        { "label": "Agreeing and confirming the fix", "code": "Great catch! Fixed in abc1234. I also updated the \nsimilar pattern in `handleSignup()` since it had the \nsame issue." },
+        { "label": "Respectfully disagreeing with reasoning", "code": "I see your point about using a Map here. I chose an \nobject because this data is always serialized to JSON \n(for caching), and Maps don't serialize cleanly. \n\nWould a plain object with TypeScript's Record<string, T> \ntype be an acceptable middle ground?" },
+        { "label": "Asking for clarification", "code": "Could you elaborate on what you mean by 'extract this \ninto a hook'? Should I create a custom hook in \n`src/hooks/` that encapsulates the validation logic, \nor were you thinking of something simpler like moving \nit to a separate function in the same file?" },
+        { "label": "Summary after addressing all feedback", "code": "All feedback addressed:\n\n- ✅ Renamed `data` → `validatedUserInput` for clarity\n- ✅ Added null check for edge case\n- ✅ Extracted validation into `useEmailValidation` hook\n- ✅ Added test for the empty string edge case\n\nReady for another review when you have a chance!" }
+      ],
+      "resources": [
+        { "title": "Code Review Best Practices (Google Engineering)", "url": "https://google.github.io/eng-practices/review/", "type": "article" }
+      ],
+      "tips": [
+        "Never say 'It works on my machine.' Instead: 'I tested locally and it works - could you help me understand the failure case you're seeing?'",
+        "If a reviewer's tone feels harsh, assume positive intent. Written communication lacks tone cues. Most maintainers are direct (not rude) because they're busy.",
+        "If a review sits unaddressed for more than 48 hours, the reviewer might think you've abandoned the PR. Even a quick 'Working on the feedback - will push updates by tomorrow!' keeps the PR alive."
+      ]
+    },
+    {
+      "step": 4,
+      "id": "writing-bug-reports",
+      "title": "Writing Effective Bug Reports",
+      "description": "A well-written bug report is a contribution in itself. It saves maintainers hours of debugging and helps them fix the issue faster. Most bug reports are terrible - yours won't be.",
+      "mentor_guidance": "Bad bug reports are the bane of every maintainer's existence. 'It doesn't work' tells me nothing. 'The app crashes' tells me almost nothing. I need specifics.\n\nA great bug report answers five questions:\n1. What did you expect to happen?\n2. What actually happened?\n3. How can I reproduce it (step by step)?\n4. What environment are you using (OS, browser, version)?\n5. What have you already tried?\n\nThink of a bug report like telling a doctor about your symptoms. 'I feel bad' is useless. 'I have a sharp pain in my lower right abdomen that started 6 hours ago, gets worse when I press on it, and I have a mild fever' - that's actionable.\n\nHere's the other thing: filing a bug report is a real contribution. You're improving the project by identifying problems. Many open source projects have more bugs than contributors, and a clear, reproducible bug report is worth its weight in gold because it cuts the debugging time in half.\n\nIf you can include a minimal reproducible example (a small code snippet that demonstrates the bug in isolation), you'll be a maintainer's favorite person.",
+      "details": [
+        "The title should be specific and descriptive: 'App crashes when uploading PNG files larger than 5MB on Safari 17' not 'Upload broken' or 'Bug in upload feature'. A good title lets the maintainer triage the issue without reading the body.",
+        "Steps to Reproduce should be numbered and specific enough that a stranger can follow them exactly. Not 'upload a file and it crashes' but: '1. Go to /settings/profile, 2. Click \"Change Avatar\", 3. Select a PNG file that is 6MB or larger, 4. Click \"Upload\", 5. Observe: the page shows a white screen with no error message.'",
+        "Include your environment: OS (Windows 11, macOS 14.2), browser (Chrome 120, Safari 17.2), app version (if applicable), Node.js version, and any relevant configuration. Bugs are often environment-specific, and this information helps the maintainer reproduce it.",
+        "Include error messages, stack traces, and console output. Copy the exact text - don't paraphrase. If there's a browser console error, include it. If there's a server log, include the relevant lines. Screenshots of error states are helpful but should supplement text, not replace it.",
+        "Describe what you expected to happen vs. what actually happened. 'Expected: the avatar should update and show a success toast. Actual: the page goes blank and the browser console shows \"TypeError: Cannot read property 'url' of undefined\".'",
+        "If possible, include a minimal reproducible example. For frontend bugs, this might be a CodeSandbox link. For API bugs, a curl command. For library bugs, a small code snippet. The easier you make it to reproduce, the faster it gets fixed."
+      ],
+      "commands": [
+        { "label": "Bug report template", "code": "## Bug Report\n\n### Description\nApp crashes when uploading PNG files larger than 5MB.\n\n### Steps to Reproduce\n1. Go to /settings/profile\n2. Click \"Change Avatar\"\n3. Select a PNG file > 5MB\n4. Click \"Upload\"\n5. Page goes blank\n\n### Expected Behavior\nAvatar should update and show a success message.\n\n### Actual Behavior\nPage shows white screen. Browser console shows:\n```\nTypeError: Cannot read property 'url' of undefined\n  at AvatarUpload.tsx:47\n```\n\n### Environment\n- OS: macOS 14.2\n- Browser: Chrome 120.0.6099.109\n- App version: 2.3.1\n- Node.js: 20.10.0\n\n### Additional Context\n- Works fine with files < 5MB\n- Works fine with JPEG files of any size\n- First noticed after updating to version 2.3.0" },
+        { "label": "DON'T do this - useless bug report", "code": "# BAD:\n\"Upload is broken\"\n\"It doesn't work\"\n\"The app crashed when I did something\"\n\"Fix this please\"" },
+        { "label": "API bug report with curl example", "code": "## Bug: POST /api/users returns 500 for valid payload\n\n### Minimal Reproduction\n```bash\ncurl -X POST https://api.example.com/users \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"email\": \"valid@example.com\", \"name\": \"Test\"}'\n```\n\nReturns: 500 Internal Server Error\nExpected: 201 Created\n\nServer log shows: \"column 'created_at' cannot be null\"" }
+      ],
+      "resources": [
+        { "title": "How to Write a Good Bug Report (Mozilla)", "url": "https://developer.mozilla.org/en-US/docs/Mozilla/QA/Bug_writing_guidelines", "type": "article" }
+      ],
+      "tips": [
+        "Before filing a bug report, search existing issues to make sure it hasn't already been reported. Duplicate issues waste everyone's time.",
+        "If you found a workaround, include it in the report. Even if it's hacky, it helps the maintainer understand the scope and gives other users a temporary fix.",
+        "A bug report that includes 'I've looked at the code and I think the issue is in X function at line Y' is incredibly helpful. It shows initiative and accelerates the fix."
+      ]
+    },
+    {
+      "step": 5,
+      "id": "proposing-features",
+      "title": "Proposing New Features",
+      "description": "Feature proposals need to convince maintainers that the change is worth the complexity it adds. Show the problem, propose the solution, and explain why it matters.",
+      "mentor_guidance": "Feature proposals are harder than bug reports because you're asking the project to take on new complexity. Every feature has costs: maintenance burden, documentation, testing, potential for new bugs, and increased cognitive load for future contributors.\n\nMaintainers think about this tradeoff constantly. So your proposal needs to answer: 'Is the value worth the cost?'\n\nBefore proposing a feature, check:\n1. Has this been proposed before? Search closed issues.\n2. Is it aligned with the project's goals? Read the project's mission/vision.\n3. Would it benefit many users or just you?\n\nThe strongest feature proposals I've seen follow this structure:\n1. The problem - what pain are users experiencing?\n2. Evidence - how many people have this problem? (Link to related issues, forum posts, or surveys)\n3. The proposal - what specifically do you want to change?\n4. Alternatives - what other solutions did you consider and why is this one better?\n5. Willingness to implement - 'I'm happy to implement this if the approach is approved.'\n\nThat last point is crucial. Feature proposals with implementation offers get approved at a much higher rate because they don't add work to the maintainer's already-full plate.",
+      "details": [
+        "Search existing issues (including closed ones) before proposing. Your feature might have been discussed and rejected for good reasons. If it was rejected, read the reasoning - you might address those concerns in your proposal, or you might realize the rejection was justified.",
+        "Frame the proposal around the problem, not the solution. 'Users struggle to find the right configuration options' is better than 'Add a configuration wizard.' The maintainer might agree with the problem but prefer a different solution (better documentation, sensible defaults, etc.).",
+        "Provide evidence of demand. Link to related issues, forum discussions, Stack Overflow questions, or tweet threads where people express the same need. 'I saw 3 issues and 2 forum threads about this problem' is more persuasive than 'I think this would be useful.'",
+        "Describe alternatives you considered and explain your reasoning. 'I considered adding a CLI flag, but a config file option is more appropriate because X. I also considered making it the default behavior, but that would be a breaking change.' This shows thorough thinking.",
+        "Include a rough scope estimate. Is this a 20-line change or a 2000-line change? Does it require database migrations, API changes, or UI work? Maintainers are more likely to approve small, focused features than massive overhauls.",
+        "Offer to implement it. 'If this approach is approved, I'd be happy to submit a PR' dramatically increases the chance of approval because you're not adding work to the maintainer - you're taking it away."
+      ],
+      "commands": [
+        { "label": "Feature proposal template", "code": "## Feature Request: Email notification preferences\n\n### Problem\nUsers currently receive all email notifications with no \nway to control frequency or categories. Issue #89, #102, \nand #145 all request this functionality. The Discord \nchannel has 7 messages asking about this in the last month.\n\n### Proposed Solution\nAdd a notification preferences page at /settings/notifications \nwhere users can toggle notifications by category \n(comments, mentions, updates) and set frequency \n(instant, daily digest, weekly digest).\n\n### Alternatives Considered\n1. Global mute toggle - too coarse, users want some \n   notifications but not all\n2. Per-project settings - adds too much complexity for v1\n3. Email unsubscribe links - only solves opt-out, not \n   preference management\n\n### Scope\n- New DB table: notification_preferences\n- New API endpoint: PUT /api/users/:id/notifications\n- New UI page with toggle switches\n- Estimated: ~300 lines of code across 5 files\n\n### Implementation\nI'm happy to implement this if the approach is approved. \nI have experience with similar features in my own projects." },
+        { "label": "DON'T do this - vague feature request", "code": "# BAD:\n\"Add dark mode\"\n\"Can you make it faster?\"\n\"This project needs better UI\"\n\"You should add AI features\"" }
+      ],
+      "resources": [
+        { "title": "Writing Great Feature Proposals", "url": "https://opensource.guide/how-to-contribute/#opening-an-issue", "type": "article" }
+      ],
+      "tips": [
+        "If a maintainer says 'not right now' or 'out of scope,' accept it gracefully. You can always fork the project and implement the feature for yourself.",
+        "Start with smaller proposals. Your first feature proposal should be modest - a small UX improvement or a config option. Save the architectural overhauls for after you've built trust.",
+        "If your proposal is approved, don't wait too long to start. Momentum matters. Propose → get approval → submit PR within 1-2 weeks."
+      ]
+    },
+    {
+      "step": 6,
+      "id": "asking-for-help",
+      "title": "Asking for Help Without Being Annoying",
+      "description": "Everyone gets stuck. The key is asking smart questions that show you've tried to solve the problem yourself and give helpers enough context to assist you efficiently.",
+      "mentor_guidance": "Asking for help in open source is a skill. Done well, it leads to mentorship, learning, and faster progress. Done poorly, it leads to being ignored or, worse, being seen as someone who doesn't put in effort.\n\nThe open source community has an unofficial standard for asking questions, heavily influenced by Eric Raymond's classic essay 'How To Ask Questions The Smart Way.' The core principles:\n\n1. Show your work. Before asking, Google the error, read the docs, and try 2-3 approaches. Then say: 'I tried X, Y, and Z. X gave me error A, Y didn't work because B, and Z is close but has issue C.'\n\n2. Be specific. 'It doesn't work' is useless. 'The build fails with error X when I run Y on Z operating system' is actionable.\n\n3. Provide context. Include your OS, version, relevant config, and the exact error output. Don't paraphrase errors - copy-paste the exact text.\n\n4. Use the right channel. Bug reports go in issues. General questions go in discussions (if the project has them) or the community chat (Discord/Slack). Don't open an issue for a usage question.\n\n5. Be patient. Maintainers are volunteers with day jobs. Don't ping them, don't ask 'any update?', and don't cross-post the same question to multiple channels.\n\nThe goal is to minimize the effort required for someone to help you. The easier you make it, the faster you get help.",
+      "details": [
+        "Before asking: search the project's issues (including closed ones), documentation, and FAQ. Search StackOverflow and Google with the exact error message. Try at least 2 approaches to solve the problem yourself. Document what you tried and what happened. This takes 15-30 minutes and solves 80% of problems without needing to ask anyone.",
+        "Choose the right channel. GitHub Issues: for bugs and feature requests. GitHub Discussions: for questions, ideas, and help. Discord/Slack: for quick questions and real-time chat. Stack Overflow: for general programming questions. Don't open a GitHub issue for a question that belongs in Discussions - maintainers may close it.",
+        "Structure your question: (1) What are you trying to do? (2) What did you try? (3) What happened instead? (4) What environment are you using? (5) Relevant code snippets and error messages. This format gives the helper everything they need to diagnose the issue without follow-up questions.",
+        "Include the minimum reproducible example. Strip away everything that's not related to the problem. If your 500-line component has a bug, create a 20-line version that demonstrates the same bug. This effort shows respect for the helper's time and often leads you to the solution yourself.",
+        "Don't DM maintainers asking for help (unless they explicitly invite it). Keep conversations in public channels where others with the same question can benefit from the answer. Public questions build a searchable knowledge base.",
+        "When you get an answer, say thank you and close the loop. If you solved it yourself, post the solution for others. 'Figured it out - the issue was X. For anyone else hitting this: do Y.' This is a real contribution to the project's knowledge base."
+      ],
+      "commands": [
+        { "label": "Good question format", "code": "## Help: Build fails after upgrading to v3.2\n\n### What I'm trying to do\nUpgrade from v3.1 to v3.2 following the migration guide.\n\n### What I tried\n1. Updated package.json to v3.2.0\n2. Ran `npm install`\n3. Ran `npm run build`\n\n### What happened\nBuild fails with:\n```\nTypeError: config.resolve is not a function\n  at webpack.config.js:47\n```\n\n### What I've checked\n- Migration guide doesn't mention config changes\n- Searched issues - #456 is similar but was fixed in v3.1.5\n- Tried deleting node_modules and reinstalling\n- Node v20.10, npm v10.2, macOS 14.2\n\n### My webpack.config.js (relevant section)\n```js\nmodule.exports = {\n  resolve: config.resolve({ ... })\n}\n```" },
+        { "label": "DON'T do this - bad questions", "code": "# BAD:\n\"It doesn't work\"\n\"Help me please\" \n\"I get an error\" (with no error message)\n\"Why isn't this working?\" (with no code)\n\"Urgent!!! Need help ASAP\"" },
+        { "label": "Closing the loop after solving it yourself", "code": "Solved it! The issue was that `config.resolve` changed \nfrom a function to an object in v3.2. \n\nThe fix: change `config.resolve({...})` to \n`{...config.resolve, ...}` in webpack.config.js.\n\nMight be worth mentioning in the migration guide - happy \nto submit a docs PR if that would be helpful!" }
+      ],
+      "resources": [
+        { "title": "How To Ask Questions The Smart Way (Eric Raymond)", "url": "http://www.catb.org/~esr/faqs/smart-questions.html", "type": "article" },
+        { "title": "Don't Ask To Ask", "url": "https://dontasktoask.com/", "type": "article" }
+      ],
+      "tips": [
+        "Never open with 'Can I ask a question?' - just ask it. Similarly, don't say 'Is anyone here who knows about X?' Just describe your problem. See dontasktoask.com.",
+        "If you solve your own problem after posting a question, always post the solution. Future searchers will thank you. The worst thing in tech is finding a forum post with your exact problem that ends with 'nvm fixed it' and no explanation.",
+        "Be patient. Maintainers are volunteers. A response in 24-48 hours is normal. A response in a week is not unusual for smaller projects. Pinging with 'any update?' after 2 hours is annoying."
+      ]
+    }
+  ]
+}

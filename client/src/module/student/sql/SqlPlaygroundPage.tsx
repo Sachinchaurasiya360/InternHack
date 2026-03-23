@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router";
 import {
-  ArrowLeft,
   Database,
   Play,
   RotateCcw,
@@ -44,8 +42,6 @@ const SAMPLE_QUERIES = [
 ];
 
 export default function SqlPlaygroundPage() {
-  const backPath = "/learn/sql";
-
   const [code, setCode] = useState("SELECT name, continent, population\nFROM world\nORDER BY population DESC\nLIMIT 10;");
   const [results, setResults] = useState<QueryResult[]>([]);
   const [schema, setSchema] = useState<TableInfo[]>([]);
@@ -165,12 +161,6 @@ export default function SqlPlaygroundPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <Link
-            to={backPath}
-            className="p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 shadow-sm transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          </Link>
           <div>
             <h1 className="text-xl font-bold text-gray-950 dark:text-white tracking-tight">
               SQL <span className="text-gradient-accent">Playground</span>

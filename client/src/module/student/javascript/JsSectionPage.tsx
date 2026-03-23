@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star } from "lucide-react";
+import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star } from "lucide-react";
 import { sections, lessons } from "./data";
 import type { JsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
@@ -79,21 +79,6 @@ export default function JsSectionPage() {
           }}
         />
       </div>
-
-      {/* Back link */}
-      <motion.div
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Link
-          to={basePath}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-6 no-underline"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          JavaScript Lessons
-        </Link>
-      </motion.div>
 
       {/* Header */}
       <motion.div

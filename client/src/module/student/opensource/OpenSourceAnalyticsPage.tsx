@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   BarChart3,
   AlertCircle,
   Filter,
@@ -274,9 +273,6 @@ export default function OpenSourceAnalyticsPage() {
     <div className="min-h-screen bg-gray-50 pb-16">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
-        <Link to="/student/opensource" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-4">
-          <ArrowLeft className="w-4 h-4" /> Back to Repos
-        </Link>
         <div className="flex items-center gap-3 mb-2">
           <BarChart3 className="w-7 h-7 text-indigo-600" />
           <div>

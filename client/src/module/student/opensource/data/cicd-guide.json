@@ -1,0 +1,190 @@
+{
+  "cicdGuide": [
+    {
+      "step": 1,
+      "id": "what-is-cicd",
+      "title": "What is CI/CD and Why Should You Care?",
+      "description": "CI/CD runs automated checks on every pull request - linting, tests, builds, and more. Understanding it means you'll never be confused by a red X on your PR again.",
+      "mentor_guidance": "You've just opened your first PR. Everything looks great. Then GitHub shows a red X next to your commits with 'CI/CD pipeline failed.' Your heart sinks.\n\nDon't panic. This happens to everyone - including experienced developers. CI/CD failures are NOT personal rejections. They're automated quality checks catching issues before they reach production.\n\nCI stands for Continuous Integration. It means: every time someone pushes code, a machine automatically runs a series of checks - linting, type checking, unit tests, integration tests, and builds. If any check fails, the PR gets a red X. If all pass, it gets a green checkmark.\n\nCD stands for Continuous Deployment. It means: after code is merged, it's automatically deployed to production (or a staging environment). You don't need to worry about CD as a contributor - it's the maintainer's concern.\n\nAs a contributor, you need to understand CI because:\n1. Your PR won't be reviewed until CI passes (most maintainers have this policy)\n2. CI failures give you specific, actionable feedback\n3. Fixing CI issues yourself (instead of asking maintainers) shows competence\n\nThe good news: 95% of CI failures fall into 5 categories, and once you've seen them, they become routine. I'll teach you each one.",
+      "details": [
+        "CI runs in an isolated environment (usually a Docker container on a cloud server) with a clean OS, fresh dependencies, and no cached state. This means: if your code works locally but fails in CI, there's a discrepancy between your local environment and the CI environment - a missing dependency, a hardcoded path, a platform-specific behavior, or an environment variable that exists locally but not in CI.",
+        "The CI configuration lives in the repository, usually in `.github/workflows/` (GitHub Actions), `.gitlab-ci.yml` (GitLab CI), `.circleci/config.yml` (CircleCI), or `Jenkinsfile` (Jenkins). Reading this file tells you exactly what checks run and in what order. It's a script - anyone can read it.",
+        "Common CI steps: (1) Checkout code, (2) Install dependencies (npm install, pip install), (3) Run linter (eslint, flake8, rustfmt), (4) Run type checker (tsc, mypy), (5) Run tests (jest, pytest, go test), (6) Build the project (npm run build, cargo build), (7) Run security checks (npm audit, snyk). Each step must pass for the next to run.",
+        "When CI fails, GitHub shows which specific job failed. Click 'Details' next to the red X to see the full log output. The error is usually near the bottom of the log. Copy the error message and search for it - most CI errors are well-documented.",
+        "CI failures are not the maintainer's problem to fix. If your PR breaks CI, it's your responsibility to investigate and fix it. Pushing a fix commit to your branch automatically re-triggers CI. The maintainer will review only after CI is green.",
+        "Some CI checks are 'required' (PR cannot be merged until they pass) and some are 'optional' or 'informational' (failing won't block merge). The required checks are typically: lint, type check, tests, and build. Optional checks might be: code coverage thresholds, bundle size limits, or security scans."
+      ],
+      "commands": [
+        { "label": "Find the CI configuration file (GitHub Actions)", "code": "ls .github/workflows/\ncat .github/workflows/ci.yml" },
+        { "label": "Find CI config for other platforms", "code": "# GitLab CI\ncat .gitlab-ci.yml\n\n# CircleCI\ncat .circleci/config.yml\n\n# Travis CI\ncat .travis.yml" },
+        { "label": "Run CI checks locally before pushing", "code": "npm run lint && npm run typecheck && npm test && npm run build" },
+        { "label": "Check PR CI status with GitHub CLI", "code": "gh pr checks" }
+      ],
+      "resources": [
+        { "title": "GitHub Actions Documentation", "url": "https://docs.github.com/en/actions", "type": "docs" },
+        { "title": "CI/CD Explained (Atlassian)", "url": "https://www.atlassian.com/continuous-delivery/principles/continuous-integration-vs-delivery-vs-deployment", "type": "article" }
+      ],
+      "tips": [
+        "Always run the project's CI checks locally before pushing. Most projects have scripts for this: `npm run lint`, `npm test`, `npm run build`. Catching failures locally saves you a 5-10 minute round-trip waiting for CI to run remotely.",
+        "If CI passes locally but fails remotely, the difference is usually: Node.js version (check the CI config for the version used), OS differences (CI often runs Linux while you're on Mac/Windows), or missing environment variables.",
+        "Some projects have a `Makefile` or `justfile` with a `ci` or `check` command that runs all CI steps locally in sequence. Check for it - it's the easiest way to replicate the CI pipeline."
+      ]
+    },
+    {
+      "step": 2,
+      "id": "lint-errors",
+      "title": "Fixing Lint Errors",
+      "description": "Linters enforce code style - indentation, naming, import order, unused variables. They're the most common CI failure and the easiest to fix.",
+      "mentor_guidance": "Lint errors are the most frequent CI failure for new contributors. They're also the least scary - lint errors are about style, not logic. Your code works; it just doesn't follow the project's formatting rules.\n\nEvery project has its own code style: tabs vs. spaces, single quotes vs. double quotes, semicolons vs. no semicolons, import order, maximum line length. These rules are enforced by linters like ESLint (JavaScript/TypeScript), Prettier (formatting), flake8/black (Python), rustfmt (Rust), and gofmt (Go).\n\nThe first thing I do on any new project: run the linter on my changes before committing. Always. It takes 2 seconds and prevents the most common CI failure.\n\nMost lint errors are auto-fixable. Running `npx eslint --fix .` or `npx prettier --write .` will automatically reformat your code to match the project's rules. For Python, `black .` does the same. For Rust, `cargo fmt`. For Go, `gofmt -w .`.\n\nSome lint errors require manual fixing - unused imports, unused variables, or naming convention violations. These take a moment of thought but are never complex.\n\nPro tip: configure your editor to auto-format on save. In VS Code, set 'editor.formatOnSave': true and install the project's recommended extensions (usually listed in .vscode/extensions.json). This way, you never commit style violations in the first place.",
+      "details": [
+        "ESLint (JavaScript/TypeScript) is the most common linter in web projects. Configuration lives in `.eslintrc.json`, `.eslintrc.js`, `eslint.config.js`, or the `eslintConfig` field in `package.json`. Rules range from error (must fix) to warning (should fix) to off (ignored). Common errors: unused variables, missing semicolons, wrong quote style, unsorted imports.",
+        "Prettier is a code formatter (not a linter). It handles whitespace, indentation, line length, brackets, and quotes. Configuration lives in `.prettierrc` or `.prettierrc.json`. Many projects use ESLint for logic rules and Prettier for formatting. They work together - ESLint catches code issues, Prettier handles style.",
+        "To fix lint errors automatically: `npx eslint --fix src/` fixes ESLint issues. `npx prettier --write src/` reformats files. Most projects have shortcut scripts: `npm run lint:fix` or `npm run format`. Check the 'scripts' section of package.json.",
+        "For Python projects: `black .` auto-formats code. `flake8` checks style (but doesn't auto-fix). `isort .` fixes import order. `ruff` is a fast, modern alternative that combines linting and formatting. Check the project's setup.cfg, pyproject.toml, or tox.ini for configuration.",
+        "Common lint errors and their fixes: 'no-unused-vars' → remove the variable or prefix with underscore. '@typescript-eslint/no-explicit-any' → add a proper type annotation. 'import/order' → sort imports (usually auto-fixable). 'no-console' → remove console.log statements. 'prefer-const' → change let to const for variables that aren't reassigned.",
+        "Set up your editor to lint as you type. In VS Code: install ESLint extension, enable 'editor.formatOnSave', and set 'editor.defaultFormatter' to the project's formatter (usually Prettier). This catches lint errors the moment you write them, not after you push."
+      ],
+      "commands": [
+        { "label": "Run ESLint to check for errors", "code": "npx eslint src/\n# or use the project's script\nnpm run lint" },
+        { "label": "Auto-fix ESLint errors", "code": "npx eslint --fix src/\n# or\nnpm run lint:fix  # if the script exists" },
+        { "label": "Format with Prettier", "code": "npx prettier --write src/\n# or\nnpm run format" },
+        { "label": "Check formatting without writing (CI mode)", "code": "npx prettier --check src/" },
+        { "label": "Python: format and lint", "code": "black .\nflake8 .\nisort ." },
+        { "label": "VS Code settings for auto-format on save", "code": "// .vscode/settings.json\n{\n  \"editor.formatOnSave\": true,\n  \"editor.defaultFormatter\": \"esbenp.prettier-vscode\",\n  \"editor.codeActionsOnSave\": {\n    \"source.fixAll.eslint\": \"explicit\"\n  }\n}" }
+      ],
+      "resources": [
+        { "title": "ESLint Getting Started", "url": "https://eslint.org/docs/latest/use/getting-started", "type": "docs" },
+        { "title": "Prettier Documentation", "url": "https://prettier.io/docs/en/index.html", "type": "docs" }
+      ],
+      "tips": [
+        "Run `npm run lint:fix && npm run format` before every commit. Make it a habit - it prevents 80% of CI failures.",
+        "If the project has a pre-commit hook (check .husky/ folder or lint-staged in package.json), it will auto-lint before you commit. If a commit is rejected by the hook, just run the fix command and commit again.",
+        "Don't manually fix formatting issues. Always use the auto-fix tools. Manual formatting leads to inconsistencies and wastes time."
+      ]
+    },
+    {
+      "step": 3,
+      "id": "test-failures",
+      "title": "Understanding and Fixing Test Failures",
+      "description": "When tests fail in CI, it means your code broke something - either your new code has a bug, or it changed existing behavior. Here's how to read test output and fix failures.",
+      "mentor_guidance": "Test failures in CI mean one of three things:\n\n1. Your code has a bug. Your implementation doesn't do what it should. The test caught it - good! Fix the bug, not the test.\n\n2. Your code changed existing behavior. You modified a function, and a test that relied on the old behavior now fails. You need to decide: was the old behavior correct (fix your code) or was it outdated (update the test)?\n\n3. Your code is fine but the test environment is different. Timezone differences, OS-specific behavior, or race conditions in async code. These are harder to debug but less common.\n\nThe test output tells you exactly what went wrong. Learn to read it:\n\n```\nFAILED: user.service.test.ts > UserService > should validate email\n  Expected: 'Invalid email format'\n  Received: undefined\n```\n\nThis tells you: the `validateEmail` function should return 'Invalid email format' but instead returned `undefined`. Now you know exactly where to look and what to fix.\n\nHere's my debugging workflow:\n1. Read the test name - it tells you what scenario failed\n2. Read the assertion - it tells you what was expected vs. what happened\n3. Run the test locally to reproduce\n4. Add a console.log in the function being tested\n5. Fix the code (or the test, if the expected behavior changed)\n6. Run the test again to verify\n\nNever change a test to make it pass without understanding why it failed. That's hiding bugs, not fixing them.",
+      "details": [
+        "Test output shows: the test file, the test name (describe/it blocks), the assertion that failed, the expected value, and the received value. In Jest: 'Expected: X, Received: Y'. In pytest: 'AssertionError: assert X == Y'. This comparison is your debugging starting point.",
+        "Run the failing test locally to reproduce: `npx jest user.service.test.ts --verbose` or `python -m pytest tests/test_user.py -v`. The --verbose flag shows individual test results. If the test passes locally but fails in CI, check for environment differences (Node version, OS, timezone, environment variables).",
+        "If YOUR tests fail (tests you wrote for your new code), the bug is in your implementation. Read the test assertion carefully, trace the code path, and find where the actual output diverges from expected. Use console.log or the debugger to inspect intermediate values.",
+        "If EXISTING tests fail (tests that were passing before your changes), you probably changed behavior that other code depends on. Run `git diff` to see your changes, then look at the failing test to understand what behavior it expects. Either: (a) your change has an unintended side effect - fix it, or (b) the behavior should change - update the test and explain in your PR description.",
+        "Flaky tests (tests that sometimes pass and sometimes fail) are usually caused by: race conditions in async code, dependency on execution order, reliance on real time (setTimeout, Date.now()), or external service dependencies. If a test that you didn't change is flaky, note it in your PR: 'Test X is flaky - not related to my changes. See issue #Y.'",
+        "If you added a new feature, you should add tests for it. Most maintainers expect tests in PRs that add functionality. Check the project's test conventions: file naming (*.test.ts vs *.spec.ts), test framework (Jest, Vitest, pytest, go test), and assertion style (expect().toBe() vs assert)."
+      ],
+      "commands": [
+        { "label": "Run all tests", "code": "npm test\n# or\nnpx jest\n# or\npython -m pytest" },
+        { "label": "Run a specific test file with verbose output", "code": "npx jest src/services/user.service.test.ts --verbose" },
+        { "label": "Run tests matching a pattern", "code": "npx jest --testPathPattern='user'\n# or\npython -m pytest tests/ -k 'test_email'" },
+        { "label": "Run tests in watch mode (re-runs on file change)", "code": "npx jest --watch" },
+        { "label": "Run tests with coverage report", "code": "npx jest --coverage" },
+        { "label": "Run only tests that changed (git-aware)", "code": "npx jest --changedSince=main" }
+      ],
+      "resources": [
+        { "title": "Jest Documentation", "url": "https://jestjs.io/docs/getting-started", "type": "docs" },
+        { "title": "Testing Library - Guiding Principles", "url": "https://testing-library.com/docs/guiding-principles", "type": "docs" }
+      ],
+      "tips": [
+        "Run `npx jest --changedSince=main` to run only tests affected by your changes. This is much faster than running the entire test suite and focuses on the tests most likely to fail.",
+        "If a test failure message is confusing, read the test code itself. The test file often has more descriptive variable names and setup code that makes the expected behavior clear.",
+        "Never delete or skip a failing test to make CI pass. If you believe a test is wrong, explain in your PR why the expected behavior should change. Let the maintainer make the final call."
+      ]
+    },
+    {
+      "step": 4,
+      "id": "type-errors",
+      "title": "Fixing TypeScript / Type Check Errors",
+      "description": "TypeScript catches type mismatches, missing properties, and null safety issues at compile time. Type errors in CI mean your code has type inconsistencies that need to be resolved.",
+      "mentor_guidance": "TypeScript errors can be frustrating when you're new to the language, but they're actually saving you from runtime bugs. Every type error caught in CI is a potential production crash prevented.\n\nThe most common TypeScript errors I see from new contributors:\n\n1. Type 'X' is not assignable to type 'Y' - You're passing the wrong type to a function or assigning the wrong type to a variable. Check the function signature or type definition to see what's expected.\n\n2. Property 'X' does not exist on type 'Y' - You're accessing a property that doesn't exist on the type. Check the type definition - maybe the property is named differently, or it's on a nested object.\n\n3. Object is possibly 'undefined' or 'null' - TypeScript's null safety is catching a potential null pointer. You need to handle the case where the value might not exist: use optional chaining (?.), nullish coalescing (??), or an explicit null check.\n\n4. Argument of type 'any' is not assignable - The project has strict TypeScript rules and doesn't allow 'any'. You need to define a proper type.\n\nThe fix is always the same process: read the error message, find the type definition, and make your code match the expected types. Don't use `// @ts-ignore` or `as any` to suppress errors - maintainers will catch these in review and ask you to fix them properly.",
+      "details": [
+        "Run the type checker locally: `npx tsc --noEmit` (TypeScript) or `mypy .` (Python). The --noEmit flag means TypeScript checks types without producing output files. Most projects have a script: `npm run typecheck` or `npm run type-check`.",
+        "'Type X is not assignable to type Y' - the most common error. Read both types carefully. Often it's a small mismatch: string vs. string | undefined, number vs. string, or a missing property on an object type. The fix: either change your value to match the expected type, or update the type definition (if you're the one who defined it).",
+        "'Property X does not exist on type Y' - you're accessing something that's not in the type definition. Check: is the property spelled correctly? Is it on a nested object (need user.profile.name instead of user.name)? Is it optional and you need to handle undefined? Look at the type definition (Cmd/Ctrl+Click on the type name) to see all available properties.",
+        "'Object is possibly undefined' - TypeScript enforces null safety. Before accessing properties on a potentially null value, add a check: `if (user) { user.name }`, or use optional chaining: `user?.name`, or use non-null assertion (only when you're CERTAIN it's not null): `user!.name`. Prefer optional chaining - it's safest.",
+        "'Argument of type any' - the project has `strict: true` or `noImplicitAny: true` in tsconfig.json. You need to define proper types instead of using 'any'. Look at similar code in the project for type patterns. If you're unsure of the type, hover over the value in VS Code - it shows the inferred type.",
+        "If you're adding new types, follow the project's conventions. Some projects define types in a central types.ts file, others co-locate types with their modules, and others use auto-generated types from Prisma/GraphQL schemas. Check existing code for the pattern."
+      ],
+      "commands": [
+        { "label": "Run TypeScript type check", "code": "npx tsc --noEmit\n# or\nnpm run typecheck" },
+        { "label": "Check a specific file for type errors", "code": "npx tsc --noEmit src/services/user.service.ts" },
+        { "label": "Run Python type check with mypy", "code": "mypy src/\n# or\nmypy --strict src/" },
+        { "label": "Check tsconfig.json for strict settings", "code": "cat tsconfig.json | grep -E 'strict|noImplicit'" }
+      ],
+      "resources": [
+        { "title": "TypeScript Handbook - Understanding Errors", "url": "https://www.typescriptlang.org/docs/handbook/2/understanding-errors.html", "type": "docs" },
+        { "title": "TypeScript Cheat Sheet", "url": "https://www.typescriptlang.org/cheatsheets", "type": "docs" }
+      ],
+      "tips": [
+        "Never use `// @ts-ignore` or `as any` to suppress TypeScript errors. It hides bugs and maintainers will reject your PR. Instead, fix the type issue properly.",
+        "VS Code shows TypeScript errors in real-time with red squiggly underlines. If you fix all red underlines in your editor, you'll have zero type errors in CI.",
+        "When you don't know the right type, hover over the value in VS Code - it shows the inferred type. You can also use `typeof variable` in TS to reference the type of an existing value."
+      ]
+    },
+    {
+      "step": 5,
+      "id": "build-errors",
+      "title": "Fixing Build Errors",
+      "description": "Build errors mean the project can't compile your code into a deployable artifact. Common causes: missing imports, syntax errors, or incompatible dependency versions.",
+      "mentor_guidance": "Build errors are the last gate before deployment. If the build fails, the code can't be shipped - period. CI checks this automatically so broken builds never reach production.\n\nBuild errors are different from lint and type errors. Lint errors are about style. Type errors are about type safety. Build errors mean the code fundamentally can't be compiled or bundled.\n\nThe most common build errors I see:\n\n1. Missing imports/exports - You used a function or component but forgot to import it, or you exported it incorrectly.\n2. Syntax errors - A typo, missing bracket, or invalid syntax that the parser can't understand.\n3. Module not found - You're importing a package that isn't installed, or the import path is wrong.\n4. Circular dependencies - Module A imports Module B which imports Module A. The bundler can't resolve the cycle.\n5. Environment-specific issues - Your code uses a Node.js API in browser code, or a browser API in Node.js code.\n\nThe fix process: read the build error message (it usually includes the exact file and line number), find the issue, and fix it. Build errors are almost always straightforward once you read the error carefully.\n\nAlways run the build locally before pushing: `npm run build`. This catches build errors in seconds instead of waiting 5-10 minutes for CI.",
+      "details": [
+        "Run the build locally: `npm run build` (most JS/TS projects), `cargo build` (Rust), `go build ./...` (Go), `python setup.py build` (Python). The build output shows exactly which file and line has the error. Fix it, rebuild, and verify before pushing.",
+        "'Module not found' or 'Cannot find module' - Either the package isn't installed (`npm install package-name`) or the import path is wrong. Check: is the path relative (./utils) or absolute (src/utils)? Is the file extension needed (.ts vs .tsx)? Does the project use path aliases (@/ for src/)? Check tsconfig.json or webpack config for path alias definitions.",
+        "'Cannot find name X' or 'X is not defined' - You're using something without importing it. Add the import statement. In VS Code, hover over the error and click 'Quick Fix' → 'Add import' to auto-add the import.",
+        "Build errors from dependency version mismatches: if CI installs different versions than your local machine (because of lockfile differences), you'll get version-specific errors. Always commit your lockfile (package-lock.json or yarn.lock) and run `npm ci` (not `npm install`) for clean installs.",
+        "For frontend projects, the build process (Vite, webpack, esbuild) bundles your code for browsers. Common issues: importing Node.js modules in browser code (fs, path, crypto), importing large files accidentally, or tree-shaking removing something you need.",
+        "If the build passes locally but fails in CI, check: (1) Node.js version differences (CI might use a different version - check the workflow file), (2) case-sensitive file systems (CI runs Linux where File.ts ≠ file.ts, unlike macOS), (3) missing environment variables that the build depends on."
+      ],
+      "commands": [
+        { "label": "Run the build locally", "code": "npm run build\n# Check for errors in the output" },
+        { "label": "Install exact versions from lockfile (like CI does)", "code": "npm ci\n# This is what CI typically runs, not npm install" },
+        { "label": "Check Node.js version (match CI)", "code": "node --version\n# Compare with the version in .github/workflows/*.yml\n# Look for: node-version: '20' or similar" },
+        { "label": "Find case-sensitivity issues (macOS/Windows)", "code": "# List files Git is tracking - look for duplicates\ngit ls-files | sort -f | uniq -di" },
+        { "label": "Check for circular dependencies", "code": "npx madge --circular src/" }
+      ],
+      "resources": [
+        { "title": "Vite Troubleshooting", "url": "https://vite.dev/guide/troubleshooting", "type": "docs" },
+        { "title": "Understanding npm ci vs npm install", "url": "https://docs.npmjs.com/cli/v9/commands/npm-ci", "type": "docs" }
+      ],
+      "tips": [
+        "Run `npm run build` locally before every push. It takes 10-30 seconds and catches build errors immediately.",
+        "Case sensitivity is a silent killer: macOS and Windows treat 'Component.tsx' and 'component.tsx' as the same file, but Linux (what CI runs) treats them as different files. Always match the exact case in your import statements.",
+        "If you add a new dependency, make sure to commit the updated lockfile (package-lock.json). If the lockfile is out of sync, CI might install different versions than what you tested locally."
+      ]
+    },
+    {
+      "step": 6,
+      "id": "reading-ci-logs",
+      "title": "Reading CI Logs Like a Pro",
+      "description": "CI logs can be hundreds of lines long. Here's how to quickly find the error, understand what went wrong, and fix it without reading the entire log.",
+      "mentor_guidance": "CI logs can feel overwhelming - especially on large projects where the log is 500+ lines of dependency installation, compilation output, and test results. But you don't need to read the whole thing.\n\nHere's my technique for finding the error in any CI log in under 30 seconds:\n\n1. Scroll to the red. GitHub Actions highlights failed steps in red. Click the red step to expand its output.\n\n2. Search for 'error', 'failed', or 'FAIL'. Use Ctrl+F in the browser. The actual error message is usually preceded by one of these words.\n\n3. Read upward from the error. The error message tells you WHAT went wrong. The lines above it tell you WHICH file and WHICH line. Together, they give you everything you need.\n\n4. Ignore the noise. Everything before the error (dependency installation, compilation progress) is irrelevant. Don't read it.\n\nOnce you find the error message, copy it and search Google or the project's issues. Someone has almost certainly encountered the same error before.\n\nThe most efficient debugging loop: read error → search for solution → fix locally → push → wait for CI → repeat if needed. Each round takes about 10 minutes. Most issues are fixed in 1-2 rounds.",
+      "details": [
+        "On GitHub Actions: click the failing check mark → click 'Details' → you'll see the workflow steps. Failed steps have a red X. Click the failed step to expand the log. The error is usually in the last 20-30 lines of the expanded output.",
+        "Use browser search (Ctrl+F) to find keywords: 'error', 'Error', 'FAIL', 'failed', 'ERR!', 'FATAL', 'exception', 'TypeError', 'ReferenceError'. These keywords appear at the point of failure. The surrounding lines provide context: file path, line number, and error description.",
+        "Common CI log patterns: 'FAIL src/services/user.test.ts' (test failure - read the assertion below it). 'error TS2322: Type string is not assignable to type number' (TypeScript error with file and line). 'Module not found: Can't resolve ./utils' (missing import or file). 'eslint: 3 errors' (lint failure - see specific rules below).",
+        "If the error is in a step you didn't expect (like dependency installation), it might be a infrastructure issue, not your code. Check: is the same CI step failing on other PRs? Is there a known outage (check the project's status page or community chat)? If it's only your PR, it might be a dependency you added that has compatibility issues.",
+        "For long-running CI pipelines, some platforms support re-running only the failed jobs (not the entire pipeline). On GitHub Actions, click 'Re-run failed jobs' instead of 'Re-run all jobs.' This saves time when you fix the issue and want to verify.",
+        "Save time by running CI locally. Many projects have a CI script or Makefile target: `make ci` or `npm run ci`. This runs the exact same checks locally, giving you immediate feedback without waiting for the remote CI pipeline."
+      ],
+      "commands": [
+        { "label": "Check CI status from the terminal", "code": "gh pr checks\n# Shows pass/fail status for each CI job" },
+        { "label": "View CI logs from the terminal", "code": "gh run view --log-failed\n# Shows only the output from failed steps" },
+        { "label": "Re-run failed CI jobs", "code": "gh run rerun --failed" },
+        { "label": "List recent CI runs", "code": "gh run list --limit 5" },
+        { "label": "Run all CI checks locally (common patterns)", "code": "# Most JS/TS projects:\nnpm run lint && npm run typecheck && npm test && npm run build\n\n# If there's a Makefile:\nmake ci\n\n# If there's a script:\nnpm run ci" }
+      ],
+      "resources": [
+        { "title": "GitHub Actions - Viewing Workflow Results", "url": "https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/monitoring-workflows/viewing-workflow-run-history", "type": "docs" },
+        { "title": "GitHub CLI - Run Commands", "url": "https://cli.github.com/manual/gh_run", "type": "docs" }
+      ],
+      "tips": [
+        "Install GitHub CLI (`gh`) and use `gh run view --log-failed` to see CI failure logs directly in your terminal. No need to click through the GitHub web UI.",
+        "If CI fails on a step like 'Install dependencies', it's usually not your fault. Check if other PRs are also failing. It might be a temporary npm registry outage or a dependency release with a bug.",
+        "When you fix a CI failure, add a commit message like 'fix: resolve lint error in user.service.ts'. This creates a clear record of what was fixed and why."
+      ]
+    }
+  ]
+}

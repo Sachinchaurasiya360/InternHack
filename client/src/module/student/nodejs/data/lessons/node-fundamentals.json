@@ -79,7 +79,7 @@
         },
         {
           "title": "REPL Features and Commands",
-          "code": "// In the REPL (type 'node' in terminal):\n// > 2 + 2\n// 4\n// > const name = \"Node\"\n// undefined\n// > `Hello ${name}`\n// 'Hello Node'\n// > .help\n// Shows all REPL commands\n// > .exit\n// Exits the REPL\n\n// The _ variable holds the last evaluated result:\n// > 5 * 3\n// 15\n// > _ + 1\n// 16\n\n// You can also evaluate expressions in one shot:\n// node -e \"console.log(2 ** 10)\"\n// 1024\n\nconsole.log(\"REPL special variable _ holds last result\");\nconsole.log(\"Use .help in REPL to see all commands\");",
+          "code": "// In the REPL (type 'node' in terminal):\n// > 2 + 2\n// 4\n// > const name = \"Node\"\n// undefined\n// > `Hello ${name}`\n// 'Hello Node'\n// > .help\n// Shows all REPL commands\n// > .exit\n// Exits the REPL\n\n// The _ variable holds the last evaluated result:\n// > 5 * 3\n// 15\n// > _ + 1\n// 16\n\n// You can also evaluate expressions in one shot:\n// node -e \"console.log(2  10)\"\n// 1024\n\nconsole.log(\"REPL special variable _ holds last result\");\nconsole.log(\"Use .help in REPL to see all commands\");",
           "output": "REPL special variable _ holds last result\nUse .help in REPL to see all commands",
           "explanation": "The REPL is an interactive playground for testing code quickly. The underscore (_) variable always contains the result of the last expression. The -e flag lets you evaluate a JavaScript expression directly from the command line."
         },

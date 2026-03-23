@@ -287,7 +287,7 @@
         {
           "title": "Alignment and Padding",
           "code": "print(f\"{'left':<15}|\")\nprint(f\"{'center':^15}|\")\nprint(f\"{'right':>15}|\")\nprint(f\"{'padded':*^15}|\")",
-          "output": "left           |\n    center     |\n          right|\n****padded*****|",
+          "output": "left           |\n    center     |\n          right|\npadded*|",
           "explanation": "< left-aligns, ^ centers, > right-aligns within the given width. A fill character (like *) can precede the alignment symbol."
         },
         {
@@ -370,7 +370,7 @@
         {
           "title": "Concatenation and Repetition",
           "code": "greeting = \"Hello\" + \" \" + \"World\"\nline = \"-\" * 20\nborder = \"*\" * 3 + \" Title \" + \"*\" * 3\n\nprint(greeting)\nprint(line)\nprint(border)",
-          "output": "Hello World\n--------------------\n*** Title ***",
+          "output": "Hello World\n--------------------\n* Title *",
           "explanation": "The + operator joins strings. The * operator repeats a string. Both create new strings; neither modifies the originals."
         },
         {

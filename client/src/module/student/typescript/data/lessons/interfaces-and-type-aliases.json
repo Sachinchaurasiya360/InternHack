@@ -162,7 +162,7 @@
         },
         {
           "title": "Discriminated unions",
-          "code": "type Shape =\n  | { kind: \"circle\"; radius: number }\n  | { kind: \"rectangle\"; width: number; height: number }\n  | { kind: \"triangle\"; base: number; height: number };\n\nfunction getArea(shape: Shape): number {\n  switch (shape.kind) {\n    case \"circle\":\n      return Math.PI * shape.radius ** 2;\n    case \"rectangle\":\n      return shape.width * shape.height;\n    case \"triangle\":\n      return 0.5 * shape.base * shape.height;\n  }\n}\n\nconsole.log(getArea({ kind: \"circle\", radius: 5 }).toFixed(2));\nconsole.log(getArea({ kind: \"rectangle\", width: 4, height: 6 }));\nconsole.log(getArea({ kind: \"triangle\", base: 3, height: 8 }));",
+          "code": "type Shape =\n  | { kind: \"circle\"; radius: number }\n  | { kind: \"rectangle\"; width: number; height: number }\n  | { kind: \"triangle\"; base: number; height: number };\n\nfunction getArea(shape: Shape): number {\n  switch (shape.kind) {\n    case \"circle\":\n      return Math.PI * shape.radius  2;\n    case \"rectangle\":\n      return shape.width * shape.height;\n    case \"triangle\":\n      return 0.5 * shape.base * shape.height;\n  }\n}\n\nconsole.log(getArea({ kind: \"circle\", radius: 5 }).toFixed(2));\nconsole.log(getArea({ kind: \"rectangle\", width: 4, height: 6 }));\nconsole.log(getArea({ kind: \"triangle\", base: 3, height: 8 }));",
           "output": "78.54\n24\n12",
           "explanation": "The `kind` property is the discriminant. When you check `shape.kind === 'circle'`, TypeScript narrows the type and knows `shape.radius` exists. This pattern provides exhaustive type-safe handling."
         }

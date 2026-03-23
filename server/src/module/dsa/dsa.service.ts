@@ -16,6 +16,12 @@ interface TestCaseResult {
   compileOutput: string | null;
 }
 
+// In-memory cache for aggregation queries that scan all problems (companies/patterns).
+// These change rarely (only when admin seeds new problems), so a 10-min TTL is safe.
+const AGG_CACHE_TTL = 10 * 60 * 1000;
+let companiesCache: { data: { name: string; count: number }[]; expiresAt: number } | null = null;
+let patternsCache: { data: { name: string; count: number }[]; expiresAt: number } | null = null;
+
 export class DsaService {
   async listTopics(studentId?: number, sheet?: string, difficulty?: string[]) {
     // Fetch topics + all problem tags in just 2-3 queries (not N per topic)
@@ -314,6 +320,10 @@ export class DsaService {
   }
 
   async getCompanies() {
+    if (companiesCache && companiesCache.expiresAt > Date.now()) {
+      return companiesCache.data;
+    }
+
     const problems = await prisma.dsaProblem.findMany({
       where: { companies: { isEmpty: false } },
       select: { companies: true },
@@ -326,9 +336,12 @@ export class DsaService {
       }
     }
 
-    return Array.from(countMap.entries())
+    const result = Array.from(countMap.entries())
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
+
+    companiesCache = { data: result, expiresAt: Date.now() + AGG_CACHE_TTL };
+    return result;
   }
 
   async getCompanyProblems(company: string, studentId?: number, page = 1, limit = 50) {
@@ -385,6 +398,10 @@ export class DsaService {
   }
 
   async getPatterns() {
+    if (patternsCache && patternsCache.expiresAt > Date.now()) {
+      return patternsCache.data;
+    }
+
     const problems = await prisma.dsaProblem.findMany({
       where: { tags: { isEmpty: false } },
       select: { tags: true },
@@ -397,9 +414,12 @@ export class DsaService {
       }
     }
 
-    return Array.from(countMap.entries())
+    const result = Array.from(countMap.entries())
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
+
+    patternsCache = { data: result, expiresAt: Date.now() + AGG_CACHE_TTL };
+    return result;
   }
 
   async getPatternProblems(pattern: string, studentId?: number, page = 1, limit = 50) {

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, ArrowLeft, ChevronLeft, ChevronRight, Flame, Target, Zap,
+  Lock, ChevronLeft, ChevronRight, Flame, Target, Zap,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -48,7 +48,6 @@ function CircularProgress({ progress, size = 52 }: { progress: number; size?: nu
 }
 
 export default function DsaTopicsPage() {
-  const navigate = useNavigate();
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
   const [showGate, setShowGate] = useState(false);
@@ -96,10 +95,6 @@ export default function DsaTopicsPage() {
         keywords="DSA practice, data structures, algorithms, leetcode, coding interview, arrays, trees, graphs, dynamic programming"
         canonicalUrl={canonicalUrl("/learn/dsa")}
       />
-
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back
-      </button>
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

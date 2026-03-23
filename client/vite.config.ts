@@ -42,8 +42,10 @@ export default defineConfig({
           if (id.includes('/module/student/html/data'))        return 'learn-data-html';
           if (id.includes('/module/student/nodejs/data'))      return 'learn-data-node';
           if (id.includes('/module/student/django/data'))      return 'learn-data-django';
-          if (id.includes('/module/student/flask/data'))       return 'learn-data-flask';
-          if (id.includes('/module/student/fastapi/data'))     return 'learn-data-fastapi';
+          if (id.includes('/module/student/flask/data'))          return 'learn-data-flask';
+          if (id.includes('/module/student/fastapi/data'))        return 'learn-data-fastapi';
+          if (id.includes('/module/student/interview-prep/data')) return 'learn-data-interview';
+          if (id.includes('/module/student/blockchain/data'))     return 'learn-data-blockchain';
         },
       },
     },

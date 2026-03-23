@@ -49,7 +49,7 @@
       {
         "id": "recursion-power",
         "title": "Power Function",
-        "description": "Write a recursive function called 'power' that takes a base and an exponent (non-negative integer) and returns base raised to the exponent. Do not use the ** operator or pow().",
+        "description": "Write a recursive function called 'power' that takes a base and an exponent (non-negative integer) and returns base raised to the exponent. Do not use the  operator or pow().",
         "starterCode": "def power(base, exp):\n    # Your code here\n    pass\n\nprint(power(2, 10))\nprint(power(3, 0))\nprint(power(5, 3))",
         "solution": "def power(base, exp):\n    if exp == 0:\n        return 1\n    return base * power(base, exp - 1)\n\nprint(power(2, 10))\nprint(power(3, 0))\nprint(power(5, 3))",
         "expectedOutput": "1024\n1\n125",

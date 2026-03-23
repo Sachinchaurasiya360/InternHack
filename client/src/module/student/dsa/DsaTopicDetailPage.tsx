@@ -3,7 +3,7 @@ import { useParams, Link, Navigate } from "react-router";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, CheckCircle2, Circle, ExternalLink,
+  CheckCircle2, Circle, ExternalLink,
   Bookmark, BookmarkCheck, StickyNote, ChevronDown, ChevronLeft, ChevronRight,
   Lightbulb, BookOpen, TrendingUp, Search,
 } from "lucide-react";
@@ -207,11 +207,6 @@ export default function DsaTopicDetailPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-10 mt-6"
       >
-        <Link to="/learn/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
-          <ArrowLeft className="w-4 h-4" />
-          Back to DSA
-        </Link>
-
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
           {topic.name}
         </h1>

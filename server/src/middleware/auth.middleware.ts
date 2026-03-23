@@ -39,12 +39,28 @@ function extractToken(req: Request): string | null {
   return null;
 }
 
-export function optionalAuthMiddleware(req: Request, _res: Response, next: NextFunction): void {
+export async function optionalAuthMiddleware(req: Request, _res: Response, next: NextFunction): Promise<void> {
   const token = extractToken(req);
   if (token) {
     try {
       const decoded = verifyToken(token);
-      req.user = { id: decoded.id, email: decoded.email, role: decoded.role };
+
+      // Verify tokenVersion (cached) — silently discard revoked tokens
+      let dbVersion = getCachedVersion(decoded.id);
+      if (dbVersion === null) {
+        const user = await prisma.user.findUnique({
+          where: { id: decoded.id },
+          select: { tokenVersion: true },
+        });
+        if (user) {
+          dbVersion = user.tokenVersion;
+          setCachedVersion(decoded.id, dbVersion);
+        }
+      }
+
+      if (dbVersion !== null && decoded.tokenVersion === dbVersion) {
+        req.user = { id: decoded.id, email: decoded.email, role: decoded.role };
+      }
     } catch {
       // Token invalid, proceed without user
     }

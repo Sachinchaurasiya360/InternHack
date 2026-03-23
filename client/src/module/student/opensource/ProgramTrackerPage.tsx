@@ -2,9 +2,8 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
-  ArrowLeft, Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter,
+  Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter,
 } from "lucide-react";
-import { Link } from "react-router";
 
 // ─── Data ──────────────────────────────────────────────────────
 interface Program {
@@ -670,12 +669,6 @@ export default function ProgramTrackerPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      {/* Breadcrumb */}
-      <Link to="/student/opensource" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white mb-6 no-underline transition-colors">
-        <ArrowLeft className="w-4 h-4" />
-        Open Source
-      </Link>
-
       {/* Hero */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
         <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />

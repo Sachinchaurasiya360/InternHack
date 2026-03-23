@@ -17,7 +17,7 @@
         },
         {
           "title": "Creating a Superuser",
-          "code": "# Create a superuser for admin access\n# $ python manage.py createsuperuser\n# Username: admin\n# Email: admin@example.com\n# Password: ********\n# Password (again): ********\n# Superuser created successfully.\n\n# Or create programmatically (e.g., in a data migration)\nfrom django.contrib.auth.models import User\n\nUser.objects.create_superuser(\n    username='admin',\n    email='admin@example.com',\n    password='securepassword123',\n)",
+          "code": "# Create a superuser for admin access\n# $ python manage.py createsuperuser\n# Username: admin\n# Email: admin@example.com\n# Password: \n# Password (again): \n# Superuser created successfully.\n\n# Or create programmatically (e.g., in a data migration)\nfrom django.contrib.auth.models import User\n\nUser.objects.create_superuser(\n    username='admin',\n    email='admin@example.com',\n    password='securepassword123',\n)",
           "explanation": "Superusers have all permissions and can access the admin site. Create one with createsuperuser management command or programmatically using create_superuser(). Never commit passwords to version control."
         },
         {

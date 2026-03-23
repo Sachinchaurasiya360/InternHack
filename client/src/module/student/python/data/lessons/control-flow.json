@@ -373,7 +373,7 @@
         },
         {
           "title": "List comprehension basics",
-          "code": "# Transform: square each number\nnumbers = [1, 2, 3, 4, 5]\nsquares = [x**2 for x in numbers]\nprint(f\"Squares: {squares}\")\n\n# Filter: only even numbers\nevens = [x for x in numbers if x % 2 == 0]\nprint(f\"Evens: {evens}\")\n\n# Transform + Filter: square only odd numbers\nodd_squares = [x**2 for x in numbers if x % 2 != 0]\nprint(f\"Odd squares: {odd_squares}\")",
+          "code": "# Transform: square each number\nnumbers = [1, 2, 3, 4, 5]\nsquares = [x2 for x in numbers]\nprint(f\"Squares: {squares}\")\n\n# Filter: only even numbers\nevens = [x for x in numbers if x % 2 == 0]\nprint(f\"Evens: {evens}\")\n\n# Transform + Filter: square only odd numbers\nodd_squares = [x2 for x in numbers if x % 2 != 0]\nprint(f\"Odd squares: {odd_squares}\")",
           "output": "Squares: [1, 4, 9, 16, 25]\nEvens: [2, 4]\nOdd squares: [1, 9, 25]",
           "explanation": "List comprehensions combine mapping and filtering in one line. The if clause is optional and filters which elements are included."
         },
@@ -427,7 +427,7 @@
         "title": "List Comprehension Workout",
         "description": "Given a list of numbers, use list comprehensions to: (1) create a list of squares of even numbers, (2) create a list of strings like 'NxN=result' for each number. Print both lists.",
         "starterCode": "numbers = [1, 2, 3, 4, 5, 6]\n\n# 1. Squares of even numbers using list comprehension\n\n# 2. 'NxN=result' strings for all numbers using list comprehension",
-        "solution": "numbers = [1, 2, 3, 4, 5, 6]\n\neven_squares = [x**2 for x in numbers if x % 2 == 0]\nprint(f\"Even squares: {even_squares}\")\n\nmult_strings = [f\"{x}x{x}={x*x}\" for x in numbers]\nprint(f\"Multiplications: {mult_strings}\")",
+        "solution": "numbers = [1, 2, 3, 4, 5, 6]\n\neven_squares = [x2 for x in numbers if x % 2 == 0]\nprint(f\"Even squares: {even_squares}\")\n\nmult_strings = [f\"{x}x{x}={x*x}\" for x in numbers]\nprint(f\"Multiplications: {mult_strings}\")",
         "expectedOutput": "Even squares: [4, 16, 36]\nMultiplications: ['1x1=1', '2x2=4', '3x3=9', '4x4=16', '5x5=25', '6x6=36']",
         "hints": [
           "For even squares, add an `if x % 2 == 0` filter to the comprehension.",

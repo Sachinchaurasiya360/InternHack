@@ -1,7 +1,8 @@
-import { lazy, Suspense, type ComponentType } from "react";
-import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router";
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useParams, useNavigate } from "react-router";
 import { useAuthStore } from "./lib/auth.store";
 import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
@@ -86,6 +87,15 @@ const FirstPRSectionPage = lazyWithRetry(() => import("./module/student/opensour
 const GSoCProposalPage = lazyWithRetry(() => import("./module/student/opensource/GSoCProposalPage"));
 const GSoCProposalStepPage = lazyWithRetry(() => import("./module/student/opensource/GSoCProposalStepPage"));
 const OpenSourceAnalyticsPage = lazyWithRetry(() => import("./module/student/opensource/OpenSourceAnalyticsPage"));
+const ReadCodebasePage = lazyWithRetry(() => import("./module/student/opensource/ReadCodebasePage"));
+const ReadCodebaseSectionPage = lazyWithRetry(() => import("./module/student/opensource/ReadCodebaseSectionPage"));
+const GitCheatsheetPage = lazyWithRetry(() => import("./module/student/opensource/GitCheatsheetPage"));
+const GitCheatsheetSectionPage = lazyWithRetry(() => import("./module/student/opensource/GitCheatsheetSectionPage"));
+const CommTemplatesPage = lazyWithRetry(() => import("./module/student/opensource/CommTemplatesPage"));
+const CommTemplatesSectionPage = lazyWithRetry(() => import("./module/student/opensource/CommTemplatesSectionPage"));
+const CICDGuidePage = lazyWithRetry(() => import("./module/student/opensource/CICDGuidePage"));
+const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/CICDGuideSectionPage"));
+const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const HackathonCalendarPage = lazyWithRetry(() => import("./module/student/grants/HackathonCalendarPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
@@ -175,6 +185,9 @@ const RolesPage = lazyWithRetry(() => import("./module/recruiter/hr/RolesPage"))
 // InternHack AI pages
 const JobAgentPage = lazyWithRetry(() => import("./module/student/job-agent/JobAgentPage"));
 
+// 404
+const NotFoundPage = lazyWithRetry(() => import("./module/NotFoundPage"));
+
 // Student new feature pages
 const CampusDrivesPage = lazyWithRetry(() => import("./module/student/campus/CampusDrivesPage"));
 const CampusDriveDetailPage = lazyWithRetry(() => import("./module/student/campus/CampusDriveDetailPage"));
@@ -222,9 +235,24 @@ function ProfileRedirect() {
   return <Navigate to={`${base}/profile/${id}`} replace />;
 }
 
+/** Listens for 401 auth:expired events and redirects via React Router instead of window.location */
+function AuthExpiredRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const handler = () => {
+      toast.error("Session expired. Please log in again.");
+      navigate("/login", { replace: true });
+    };
+    window.addEventListener("auth:expired", handler);
+    return () => window.removeEventListener("auth:expired", handler);
+  }, [navigate]);
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <AuthExpiredRedirect />
       <Toaster position="top-right" />
       <ErrorBoundary>
       <Suspense fallback={<LoadingScreen />}>
@@ -370,14 +398,24 @@ function App() {
             <Route path="grants" element={<GrantsPage />} />
             <Route path="grants/tracker" element={<GrantTrackerPage />} />
             <Route path="grants/hackathons" element={<HackathonCalendarPage />} />
-            <Route path="opensource" element={<RepoDiscoveryPage />} />
-            <Route path="opensource/gsoc" element={<GSoCReposPage />} />
-            <Route path="opensource/programs" element={<ProgramTrackerPage />} />
-            <Route path="opensource/first-pr" element={<FirstPRRoadmapPage />} />
-            <Route path="opensource/first-pr/:sectionSlug" element={<FirstPRSectionPage />} />
-            <Route path="opensource/gsoc-proposal" element={<GSoCProposalPage />} />
-            <Route path="opensource/gsoc-proposal/:sectionSlug" element={<GSoCProposalStepPage />} />
-            <Route path="opensource/analytics" element={<OpenSourceAnalyticsPage />} />
+            <Route path="opensource" element={<OpenSourceLayout />}>
+              <Route index element={<RepoDiscoveryPage />} />
+              <Route path="gsoc" element={<GSoCReposPage />} />
+              <Route path="programs" element={<ProgramTrackerPage />} />
+              <Route path="first-pr" element={<FirstPRRoadmapPage />} />
+              <Route path="first-pr/:sectionSlug" element={<FirstPRSectionPage />} />
+              <Route path="gsoc-proposal" element={<GSoCProposalPage />} />
+              <Route path="gsoc-proposal/:sectionSlug" element={<GSoCProposalStepPage />} />
+              <Route path="analytics" element={<OpenSourceAnalyticsPage />} />
+              <Route path="read-codebase" element={<ReadCodebasePage />} />
+              <Route path="read-codebase/:sectionSlug" element={<ReadCodebaseSectionPage />} />
+              <Route path="git-guide" element={<GitCheatsheetPage />} />
+              <Route path="git-guide/:sectionSlug" element={<GitCheatsheetSectionPage />} />
+              <Route path="communication" element={<CommTemplatesPage />} />
+              <Route path="communication/:sectionSlug" element={<CommTemplatesSectionPage />} />
+              <Route path="cicd" element={<CICDGuidePage />} />
+              <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
+            </Route>
             <Route path="ai-agent" element={<JobAgentPage />} />
             <Route path="campus-drives" element={<CampusDrivesPage />} />
             <Route path="campus-drives/:id" element={<CampusDriveDetailPage />} />
@@ -449,6 +487,9 @@ function App() {
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
             <Route path="profile/:id" element={<PublicProfilePage />} />
           </Route>
+
+          {/* 404 catch-all */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
       </ErrorBoundary>

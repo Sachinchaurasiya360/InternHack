@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star } from "lucide-react";
+import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star } from "lucide-react";
 import { sections, lessons } from "./data";
 import type { CssProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
@@ -69,13 +69,6 @@ export default function CssSectionPage() {
         <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
         <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]" style={{ backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
       </div>
-
-      <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
-        <Link to={basePath} className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-6 no-underline">
-          <ArrowLeft className="w-4 h-4" />
-          CSS Lessons
-        </Link>
-      </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center mb-8">
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">{section.title}</h1>

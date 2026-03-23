@@ -1,6 +1,7 @@
 import "dotenv/config";
 import crypto from "crypto";
 import express from "express";
+import compression from "compression";
 
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -120,6 +121,9 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// ── Compression (gzip/brotli) ──
+app.use(compression());
 
 // ── Health check ──
 app.get("/api/health", (_req, res) => {

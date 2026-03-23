@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock, Trophy, Send, RotateCcw } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeTopicDetail } from "../../../lib/types";
@@ -26,16 +26,24 @@ function sanitizeHtml(html: string): string {
     .trim();
 }
 
+interface QuestionResult {
+  correct: boolean;
+  correctAnswer: string;
+  explanation?: string;
+}
+
 export default function AptitudeTopicPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
-  const [revealedQuestions, setRevealedQuestions] = useState<Set<number>>(new Set());
   const [currentQ, setCurrentQ] = useState(0);
   const [timeLeft, setTimeLeft] = useState(600);
   const [timerRunning, setTimerRunning] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
+  const [submittingAll, setSubmittingAll] = useState(false);
+  const [resultsMap, setResultsMap] = useState<Record<number, QuestionResult>>({});
 
   const { data: topic, isLoading } = useQuery({
     queryKey: [...queryKeys.aptitude.topic(slug!), page],
@@ -44,6 +52,7 @@ export default function AptitudeTopicPage() {
     enabled: !!slug,
   });
 
+  // Timer
   useEffect(() => {
     if (!timerRunning || !topic?.questions.length) return;
     const id = setInterval(() => {
@@ -55,28 +64,53 @@ export default function AptitudeTopicPage() {
     return () => clearInterval(id);
   }, [timerRunning, topic?.questions.length]);
 
-  useEffect(() => { setCurrentQ(0); }, [page]);
+  // Reset on page change
+  useEffect(() => {
+    setCurrentQ(0);
+    setSubmitted(false);
+    setResultsMap({});
+    setSelectedAnswers({});
+    setTimeLeft(600);
+    setTimerRunning(true);
+  }, [page]);
 
-  const submitMutation = useMutation({
-    mutationFn: ({ questionId, answer }: { questionId: number; answer: string }) =>
-      api.post<{ correct: boolean; correctAnswer: string; explanation?: string }>(
-        `/aptitude/questions/${questionId}/answer`,
-        { answer }
-      ).then((r) => r.data),
-    onSuccess: (data, { questionId }) => {
-      setRevealedQuestions((prev) => new Set(prev).add(questionId));
-      if (data.correct) toast.success("Correct!");
-      else toast.error(`Wrong! Correct answer: ${data.correctAnswer}`);
+  const handleSubmitAll = async () => {
+    if (!topic || submittingAll || submitted) return;
+    if (!user) { toast.error("Please log in to track your progress"); return; }
+
+    const toSubmit = topic.questions.filter(q => !q.answered && selectedAnswers[q.id]);
+    if (toSubmit.length === 0) {
+      toast.error("Please answer at least one question");
+      return;
+    }
+
+    setSubmittingAll(true);
+    setTimerRunning(false);
+    try {
+      const results = await Promise.all(
+        toSubmit.map(q =>
+          api.post<QuestionResult>(
+            `/aptitude/questions/${q.id}/answer`,
+            { answer: selectedAnswers[q.id] }
+          ).then(r => ({ questionId: q.id, ...r.data }))
+        )
+      );
+
+      const map: Record<number, QuestionResult> = {};
+      results.forEach(r => { map[r.questionId] = r; });
+      setResultsMap(map);
+      setSubmitted(true);
+
+      const correct = results.filter(r => r.correct).length;
+      toast.success(`${correct}/${results.length} correct!`);
+
       queryClient.invalidateQueries({ queryKey: queryKeys.aptitude.topic(slug!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.aptitude.progress() });
-    },
-  });
-
-  const handleSubmit = (questionId: number) => {
-    const answer = selectedAnswers[questionId];
-    if (!answer) { toast.error("Please select an option"); return; }
-    if (!user) { toast.error("Please log in to track your progress"); return; }
-    submitMutation.mutate({ questionId, answer });
+    } catch {
+      toast.error("Failed to submit answers");
+    } finally {
+      setSubmittingAll(false);
+    }
   };
 
   const basePath = "/learn/aptitude";
@@ -95,12 +129,17 @@ export default function AptitudeTopicPage() {
   const totalQ = topic.questions.length;
   const q = topic.questions[currentQ];
   const qNum = (page - 1) * 10 + currentQ + 1;
-  const isRevealed = q?.answered || revealedQuestions.has(q?.id);
   const selectedAnswer = q ? selectedAnswers[q.id] : undefined;
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
   const timeStr = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  const answeredCount = topic.questions.filter((item) => item.answered || revealedQuestions.has(item.id)).length;
+
+  const prevAnsweredCount = topic.questions.filter(item => item.answered).length;
+  const newSelectedCount = topic.questions.filter(item => !item.answered && selectedAnswers[item.id]).length;
+
+  // Results stats
+  const totalNewSubmitted = Object.keys(resultsMap).length;
+  const correctCount = Object.values(resultsMap).filter(r => r.correct).length;
 
   return (
     <div className="relative max-w-4xl mx-auto pb-12">
@@ -129,24 +168,55 @@ export default function AptitudeTopicPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-8 mt-6"
+        className="mb-8"
       >
-        <Link
-          to={`${basePath}/${slug}`}
-          className="inline-flex items-center gap-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm mb-6 no-underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Theory
-        </Link>
         <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-2">
           {topic.name}
         </h1>
         {topic.description && (
-          <p className="text-sm text-gray-500 dark:text-gray-500 max-w-lg mx-auto">{topic.description}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-500 max-w-lg">{topic.description}</p>
         )}
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 tabular-nums">
           Page {topic.page} of {topic.totalPages} &middot; {topic.totalQuestions} total questions
         </p>
       </motion.div>
+
+      {/* Results summary - shown after batch submit */}
+      {submitted && totalNewSubmitted > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 mb-5 shadow-sm"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+              <Trophy className="w-6 h-6 text-amber-500" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 dark:text-white">
+                Score: {correctCount}/{totalNewSubmitted}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {Math.round((correctCount / totalNewSubmitted) * 100)}% accuracy
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setSubmitted(false);
+                setResultsMap({});
+                setSelectedAnswers({});
+                setTimeLeft(600);
+                setTimerRunning(true);
+                setCurrentQ(0);
+              }}
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" /> Retry
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Timer + progress bar */}
       <motion.div
@@ -159,17 +229,21 @@ export default function AptitudeTopicPage() {
           <span className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">
             Question {currentQ + 1} of {totalQ}
           </span>
-          <div className={`flex items-center gap-1.5 text-sm font-mono font-bold tabular-nums ${timeLeft < 60 ? "text-red-500" : "text-gray-600 dark:text-gray-400"}`}>
-            <Clock className="w-4 h-4" />
-            {timeStr}
-          </div>
+          {!submitted ? (
+            <div className={`flex items-center gap-1.5 text-sm font-mono font-bold tabular-nums ${timeLeft < 60 ? "text-red-500" : "text-gray-600 dark:text-gray-400"}`}>
+              <Clock className="w-4 h-4" />
+              {timeStr}
+            </div>
+          ) : (
+            <span className="text-sm font-medium text-green-600 dark:text-green-400">Submitted</span>
+          )}
         </div>
         <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: `${totalQ > 0 ? Math.round((answeredCount / totalQ) * 100) : 0}%` }}
+            animate={{ width: `${totalQ > 0 ? Math.round(((newSelectedCount + prevAnsweredCount) / totalQ) * 100) : 0}%` }}
             transition={{ duration: 0.5 }}
-            className={`h-full rounded-full ${answeredCount === totalQ && totalQ > 0 ? "bg-green-500" : "bg-purple-500"}`}
+            className={`h-full rounded-full ${submitted ? "bg-green-500" : "bg-purple-500"}`}
           />
         </div>
       </motion.div>
@@ -182,19 +256,31 @@ export default function AptitudeTopicPage() {
         className="flex flex-wrap gap-2 mb-5"
       >
         {topic.questions.map((item, idx) => {
-          const isAnswered = item.answered || revealedQuestions.has(item.id);
           const isCurrent = idx === currentQ;
+          const hasResult = resultsMap[item.id];
+          const isPrevAnswered = item.answered;
+          const hasSelection = !!selectedAnswers[item.id];
+
+          let pillClass: string;
+          if (isCurrent) {
+            pillClass = "bg-purple-600 text-white shadow-lg shadow-purple-200 dark:shadow-purple-900/30";
+          } else if (submitted && hasResult) {
+            pillClass = hasResult.correct
+              ? "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800"
+              : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800";
+          } else if (isPrevAnswered) {
+            pillClass = "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800";
+          } else if (hasSelection && !submitted) {
+            pillClass = "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800";
+          } else {
+            pillClass = "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700";
+          }
+
           return (
             <button
               key={item.id}
               onClick={() => setCurrentQ(idx)}
-              className={`w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center transition-all duration-200 ${
-                isCurrent
-                  ? "bg-purple-600 text-white shadow-lg shadow-purple-200 dark:shadow-purple-900/30"
-                  : isAnswered
-                  ? "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800"
-                  : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700"
-              }`}
+              className={`w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center transition-all duration-200 ${pillClass}`}
             >
               {idx + 1}
             </button>
@@ -212,10 +298,12 @@ export default function AptitudeTopicPage() {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className={`bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-6 border ${
-              isRevealed
-                ? q.correct || (q.correctAnswer && selectedAnswer === q.correctAnswer)
+              submitted && resultsMap[q.id]
+                ? resultsMap[q.id].correct
                   ? "border-green-200 dark:border-green-800"
                   : "border-red-200 dark:border-red-800"
+                : q.answered
+                ? "border-green-200 dark:border-green-800"
                 : "border-gray-100 dark:border-gray-800"
             }`}
           >
@@ -252,19 +340,22 @@ export default function AptitudeTopicPage() {
               {(["A", "B", "C", "D", ...(q.optionE ? ["E"] : [])] as const).map((letter) => {
                 const optionText = q[`option${letter}` as keyof typeof q] as string;
                 if (!optionText) return null;
+
                 const isSelected = selectedAnswer === letter;
-                const isCorrectOption = isRevealed && q.correctAnswer === letter;
-                const isWrongSelected = isRevealed && isSelected && q.correctAnswer !== letter;
+                const hasResult = submitted && resultsMap[q.id];
+                const isCorrectOption = (hasResult && resultsMap[q.id].correctAnswer === letter) || (q.answered && q.correctAnswer === letter);
+                const isWrongSelected = hasResult && isSelected && resultsMap[q.id].correctAnswer !== letter;
+                const isDisabled = submitted || q.answered;
 
                 return (
                   <label
                     key={letter}
-                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 border ${
+                    className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 border ${isDisabled ? "cursor-default" : "cursor-pointer"} ${
                       isCorrectOption
                         ? "border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800"
                         : isWrongSelected
                         ? "border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800"
-                        : isSelected
+                        : isSelected && !submitted
                         ? "border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-800"
                         : "border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-gray-200 dark:hover:border-gray-700"
                     }`}
@@ -274,7 +365,7 @@ export default function AptitudeTopicPage() {
                       name={`q-${q.id}`}
                       value={letter}
                       checked={isSelected}
-                      disabled={isRevealed}
+                      disabled={isDisabled}
                       onChange={() => setSelectedAnswers((prev) => ({ ...prev, [q.id]: letter }))}
                       className="accent-purple-600"
                     />
@@ -287,55 +378,59 @@ export default function AptitudeTopicPage() {
               })}
             </div>
 
-            {/* Submit / Explanation */}
-            <div className="ml-11 mt-4">
-              {!isRevealed ? (
-                <button
-                  onClick={() => handleSubmit(q.id)}
-                  disabled={!selectedAnswer || submitMutation.isPending}
-                  className="px-5 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50 rounded-xl transition-colors shadow-sm"
-                >
-                  {submitMutation.isPending ? "Submitting..." : "Check Answer"}
-                </button>
-              ) : q.explanation ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
-                >
-                  <p className="text-xs font-bold text-blue-700 dark:text-blue-400 mb-1.5">Explanation</p>
-                  <div
-                    className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.explanation) }}
-                  />
-                </motion.div>
-              ) : null}
-            </div>
+            {/* Explanation - shown after batch submit or for previously answered */}
+            {((submitted && resultsMap[q.id]?.explanation) || (q.answered && q.explanation)) && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="ml-11 mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
+              >
+                <p className="text-xs font-bold text-blue-700 dark:text-blue-400 mb-1.5">Explanation</p>
+                <div
+                  className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(resultsMap[q.id]?.explanation || q.explanation || "") }}
+                />
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Previous / Next */}
+      {/* Navigation + Submit All */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="flex items-center justify-between mt-5"
+        className="mt-5 space-y-4"
       >
-        <button
-          onClick={() => setCurrentQ((c) => Math.max(0, c - 1))}
-          disabled={currentQ <= 0}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl disabled:opacity-40 hover:border-gray-300 dark:hover:border-gray-700 transition-colors shadow-sm"
-        >
-          <ChevronLeft className="w-4 h-4" /> Previous
-        </button>
-        <button
-          onClick={() => setCurrentQ((c) => Math.min(totalQ - 1, c + 1))}
-          disabled={currentQ >= totalQ - 1}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl disabled:opacity-40 hover:border-gray-300 dark:hover:border-gray-700 transition-colors shadow-sm"
-        >
-          Next <ChevronRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setCurrentQ((c) => Math.max(0, c - 1))}
+            disabled={currentQ <= 0}
+            className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl disabled:opacity-40 hover:border-gray-300 dark:hover:border-gray-700 transition-colors shadow-sm"
+          >
+            <ChevronLeft className="w-4 h-4" /> Previous
+          </button>
+          <button
+            onClick={() => setCurrentQ((c) => Math.min(totalQ - 1, c + 1))}
+            disabled={currentQ >= totalQ - 1}
+            className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl disabled:opacity-40 hover:border-gray-300 dark:hover:border-gray-700 transition-colors shadow-sm"
+          >
+            Next <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Submit All button */}
+        {!submitted && (
+          <button
+            onClick={handleSubmitAll}
+            disabled={submittingAll || newSelectedCount === 0}
+            className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:hover:bg-purple-600 rounded-xl transition-colors shadow-sm"
+          >
+            <Send className="w-4 h-4" />
+            {submittingAll ? "Submitting..." : `Submit All Answers (${newSelectedCount}/${totalQ - prevAnsweredCount})`}
+          </button>
+        )}
       </motion.div>
 
       {/* Page-level pagination */}

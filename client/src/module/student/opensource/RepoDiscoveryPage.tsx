@@ -24,6 +24,9 @@ import {
   Award,
   AlertCircle,
   BarChart3,
+  GitBranch,
+  MessageSquare,
+  Settings,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -76,6 +79,30 @@ const GUIDANCE_CARDS = [
     icon: GraduationCap,
     title: "Program Tracker",
     desc: "Deadlines for GSoC, LFX, MLH, Outreachy & more",
+  },
+  {
+    to: "/student/opensource/read-codebase",
+    icon: BookOpen,
+    title: "Read a Codebase",
+    desc: "Senior engineer's guide to understanding unfamiliar code",
+  },
+  {
+    to: "/student/opensource/git-guide",
+    icon: GitBranch,
+    title: "Git for Open Source",
+    desc: "Fork-to-PR workflow with copy-paste commands",
+  },
+  {
+    to: "/student/opensource/communication",
+    icon: MessageSquare,
+    title: "Communication Templates",
+    desc: "Templates for issues, PRs, reviews & bug reports",
+  },
+  {
+    to: "/student/opensource/cicd",
+    icon: Settings,
+    title: "CI/CD Basics",
+    desc: "Fix lint errors, test failures & build errors",
   },
 ];
 

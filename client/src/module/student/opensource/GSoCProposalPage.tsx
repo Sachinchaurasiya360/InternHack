@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle2, ArrowLeft, Award, ArrowRight,
+  CheckCircle2, Award, ArrowRight,
   Trophy,
 } from "lucide-react";
 import { Link } from "react-router";
@@ -93,11 +93,6 @@ export default function GSoCProposalPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-10 mt-6"
       >
-        <Link to="/student/opensource" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
-          <ArrowLeft className="w-4 h-4" />
-          Open Source
-        </Link>
-
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
           GSoC <span className="text-gradient-accent">Proposal Guide</span>
         </h1>

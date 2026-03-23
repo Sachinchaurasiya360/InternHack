@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
@@ -370,14 +369,6 @@ export default function PythonLessonDetailPage() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mb-6"
       >
-        <Link
-          to={`${basePath}/${sectionSlug}`}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 no-underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {section.title}
-        </Link>
-
         <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center shrink-0">

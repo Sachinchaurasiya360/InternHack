@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -474,17 +473,6 @@ export default function AtsScorePage() {
                     <div className="flex items-start gap-2.5 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-200 dark:border-red-800">
                       <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                       <span>{error}</span>
-                    </div>
-                  )}
-
-                  {atsUsage && (
-                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                      <span>{atsUsage.used}/{atsUsage.limit} used today</span>
-                      {limitReached && (
-                        <Link to="/student/pricing" className="text-violet-600 dark:text-violet-400 font-medium no-underline hover:underline">
-                          Upgrade
-                        </Link>
-                      )}
                     </div>
                   )}
 

@@ -194,8 +194,8 @@
         },
         {
           "title": "Tagged Templates",
-          "code": "function highlight(strings, ...values) {\n  return strings.reduce((result, str, i) => {\n    const value = values[i] !== undefined ? `**${values[i]}**` : '';\n    return result + str + value;\n  }, '');\n}\n\nconst name = 'Alice';\nconst role = 'developer';\nconsole.log(highlight`${name} is a ${role}`);\n\n// Practical: SQL-safe template\nfunction sql(strings, ...values) {\n  const escaped = values.map(v =>\n    typeof v === 'string' ? v.replace(/'/g, \"''\") : v\n  );\n  return strings.reduce((q, str, i) =>\n    q + str + (escaped[i] !== undefined ? `'${escaped[i]}'` : ''), '');\n}\nconsole.log(sql`SELECT * FROM users WHERE name = ${\"O'Brien\"}`);",
-          "output": "**Alice** is a **developer**\nSELECT * FROM users WHERE name = 'O''Brien'",
+          "code": "function highlight(strings, ...values) {\n  return strings.reduce((result, str, i) => {\n    const value = values[i] !== undefined ? `${values[i]}` : '';\n    return result + str + value;\n  }, '');\n}\n\nconst name = 'Alice';\nconst role = 'developer';\nconsole.log(highlight`${name} is a ${role}`);\n\n// Practical: SQL-safe template\nfunction sql(strings, ...values) {\n  const escaped = values.map(v =>\n    typeof v === 'string' ? v.replace(/'/g, \"''\") : v\n  );\n  return strings.reduce((q, str, i) =>\n    q + str + (escaped[i] !== undefined ? `'${escaped[i]}'` : ''), '');\n}\nconsole.log(sql`SELECT * FROM users WHERE name = ${\"O'Brien\"}`);",
+          "output": "Alice is a developer\nSELECT * FROM users WHERE name = 'O''Brien'",
           "explanation": "Tagged templates receive split string parts and interpolated values separately, letting you process them before combining. This is the basis for styled-components and GraphQL gql tags."
         }
       ],
@@ -410,7 +410,7 @@
         }
       ],
       "notes": [
-        "NaN is not equal to anything, including itself — use Number.isNaN() to check",
+        "NaN is not equal to anything, including itself - use Number.isNaN() to check",
         "Objects are compared by reference, not by value, with both == and ===",
         "null == undefined is true, but null === undefined is false"
       ],
@@ -441,7 +441,7 @@
     ],
     "content": {
       "question": "What are arrow functions in JavaScript? How do they differ from regular functions?",
-      "answer": "Arrow functions (=>) are a concise syntax for writing functions introduced in ES6. They differ from regular functions in several key ways:\n\n1. No own \"this\" — arrow functions inherit \"this\" from the enclosing lexical scope\n2. No \"arguments\" object — use rest parameters (...args) instead\n3. Cannot be used as constructors — cannot use \"new\" keyword\n4. No prototype property\n5. Cannot be used as generator functions\n6. Implicit return for single expressions",
+      "answer": "Arrow functions (=>) are a concise syntax for writing functions introduced in ES6. They differ from regular functions in several key ways:\n\n1. No own \"this\" - arrow functions inherit \"this\" from the enclosing lexical scope\n2. No \"arguments\" object - use rest parameters (...args) instead\n3. Cannot be used as constructors - cannot use \"new\" keyword\n4. No prototype property\n5. Cannot be used as generator functions\n6. Implicit return for single expressions",
       "codeExamples": [
         {
           "title": "Syntax Variations",
@@ -458,7 +458,7 @@
       ],
       "notes": [
         "Arrow functions are ideal for callbacks and array methods like map, filter, reduce",
-        "Do NOT use arrow functions as object methods — they won't have the correct \"this\"",
+        "Do NOT use arrow functions as object methods - they won't have the correct \"this\"",
         "Arrow functions cannot be used with call(), apply(), or bind() to change \"this\""
       ],
       "followUps": [
@@ -467,7 +467,7 @@
         "How do arrow functions handle the arguments object?"
       ],
       "interviewTips": [
-        "The \"this\" difference is the most important distinction — always lead with it",
+        "The \"this\" difference is the most important distinction - always lead with it",
         "Give a practical example like setTimeout or array methods",
         "Mention when NOT to use arrow functions (methods, prototypes)"
       ]
@@ -488,7 +488,7 @@
     ],
     "content": {
       "question": "What are template literals in JavaScript? What features do they provide over regular strings?",
-      "answer": "Template literals are string literals enclosed in backticks (`) that provide:\n\n1. String interpolation — embed expressions with ${expression}\n2. Multiline strings — no need for \\n or string concatenation\n3. Tagged templates — process template literals with a function\n4. Raw strings — access raw string content without escape processing",
+      "answer": "Template literals are string literals enclosed in backticks (`) that provide:\n\n1. String interpolation - embed expressions with ${expression}\n2. Multiline strings - no need for \\n or string concatenation\n3. Tagged templates - process template literals with a function\n4. Raw strings - access raw string content without escape processing",
       "codeExamples": [
         {
           "title": "Interpolation & Multiline",
@@ -565,7 +565,7 @@
       "interviewTips": [
         "Emphasize the semantic difference: undefined = unset, null = intentionally empty",
         "The typeof null === \"object\" bug is a classic JS trivia question",
-        "Show the val == null shorthand pattern — it demonstrates practical knowledge"
+        "Show the val == null shorthand pattern - it demonstrates practical knowledge"
       ]
     }
   },
@@ -603,7 +603,7 @@
         "Always wrap JSON.parse() in a try-catch for untrusted input",
         "Use the replacer parameter of stringify to filter or transform values",
         "For deep cloning, prefer structuredClone() over JSON.parse(JSON.stringify())",
-        "JSON keys must be double-quoted strings — single quotes are invalid"
+        "JSON keys must be double-quoted strings - single quotes are invalid"
       ],
       "followUps": [
         "What is the replacer and reviver parameter in JSON methods?",
@@ -612,7 +612,7 @@
       ],
       "interviewTips": [
         "Always mention the types that are lost during serialization",
-        "The deep clone trick is commonly asked — mention structuredClone as the modern alternative",
+        "The deep clone trick is commonly asked - mention structuredClone as the modern alternative",
         "Knowing about replacer/reviver shows advanced understanding"
       ]
     }
@@ -922,7 +922,7 @@
         },
         {
           "title": "Prototype-based Inheritance",
-          "code": "function Shape(color) {\n  this.color = color;\n}\nShape.prototype.describe = function() {\n  return `A ${this.color} ${this.type}`;\n};\n\nfunction Circle(color, radius) {\n  Shape.call(this, color); // Call parent constructor\n  this.type = 'circle';\n  this.radius = radius;\n}\n\n// Set up inheritance chain\nCircle.prototype = Object.create(Shape.prototype);\nCircle.prototype.constructor = Circle;\n\nCircle.prototype.area = function() {\n  return Math.PI * this.radius ** 2;\n};\n\nconst c = new Circle('red', 5);\nconsole.log(c.describe());              // inherited from Shape\nconsole.log(c.area().toFixed(2));       // own method\nconsole.log(c instanceof Circle);       // true\nconsole.log(c instanceof Shape);        // true",
+          "code": "function Shape(color) {\n  this.color = color;\n}\nShape.prototype.describe = function() {\n  return `A ${this.color} ${this.type}`;\n};\n\nfunction Circle(color, radius) {\n  Shape.call(this, color); // Call parent constructor\n  this.type = 'circle';\n  this.radius = radius;\n}\n\n// Set up inheritance chain\nCircle.prototype = Object.create(Shape.prototype);\nCircle.prototype.constructor = Circle;\n\nCircle.prototype.area = function() {\n  return Math.PI * this.radius  2;\n};\n\nconst c = new Circle('red', 5);\nconsole.log(c.describe());              // inherited from Shape\nconsole.log(c.area().toFixed(2));       // own method\nconsole.log(c instanceof Circle);       // true\nconsole.log(c instanceof Shape);        // true",
           "output": "A red circle\n78.54\ntrue\ntrue",
           "explanation": "Shape.call(this, color) borrows the parent constructor. Object.create(Shape.prototype) sets up the chain so Circle instances can access Shape methods."
         }
@@ -1415,7 +1415,7 @@
       ],
       "notes": [
         "Most events bubble, but focus, blur, mouseenter, and mouseleave do not",
-        "Event delegation relies on bubbling — attach one listener to a parent element",
+        "Event delegation relies on bubbling - attach one listener to a parent element",
         "event.target is the clicked element; event.currentTarget is where the listener is attached",
         "Use { once: true } to auto-remove a listener after it fires once"
       ],
@@ -1426,7 +1426,7 @@
       ],
       "interviewTips": [
         "Draw or describe the three phases: capture -> target -> bubble",
-        "The most common follow-up is event delegation — be ready for it",
+        "The most common follow-up is event delegation - be ready for it",
         "Mention practical use: one listener on a list parent instead of each list item"
       ]
     }
@@ -1458,7 +1458,7 @@
           "title": "Functions Returning Functions",
           "code": "// Multiplier factory\nfunction multiplier(factor) {\n  return function(number) {\n    return number * factor;\n  };\n}\n\nconst double = multiplier(2);\nconst triple = multiplier(3);\nconsole.log(double(5));  // 10\nconsole.log(triple(5));  // 15\n\n// Logger with prefix\nfunction createLogger(prefix) {\n  return (message) => console.log(`[${prefix}] ${message}`);\n}\n\nconst info = createLogger(\"INFO\");\nconst error = createLogger(\"ERROR\");\ninfo(\"Server started\");\nerror(\"Connection failed\");",
           "output": "10\n15\n[INFO] Server started\n[ERROR] Connection failed",
-          "explanation": "These are function factories — functions that create and return specialized functions."
+          "explanation": "These are function factories - functions that create and return specialized functions."
         }
       ],
       "notes": [
@@ -1508,7 +1508,7 @@
         }
       ],
       "notes": [
-        "Async/await is syntactic sugar over Promises — it uses Promises under the hood",
+        "Async/await is syntactic sugar over Promises - it uses Promises under the hood",
         "Use Promise.all() for parallel operations instead of sequential await",
         "A forgotten await returns a Promise object instead of the resolved value",
         "Error handling: try/catch for async/await, .catch() for promise chains"
@@ -1521,7 +1521,7 @@
       "interviewTips": [
         "Show the progression: callbacks -> promises -> async/await",
         "Emphasize that async/await is Promises underneath",
-        "Mention Promise.all for parallel execution — it shows performance awareness"
+        "Mention Promise.all for parallel execution - it shows performance awareness"
       ]
     }
   },
@@ -1559,7 +1559,7 @@
         "Symbols are not enumerable with for...in or Object.keys()",
         "Use Object.getOwnPropertySymbols() to access Symbol keys",
         "Symbol.for() creates shared symbols; Symbol() always creates unique ones",
-        "Symbols cannot be implicitly converted to strings — use .toString() or .description"
+        "Symbols cannot be implicitly converted to strings - use .toString() or .description"
       ],
       "followUps": [
         "How do you iterate over Symbol properties of an object?",
@@ -1567,7 +1567,7 @@
         "When would you use Symbols in a real application?"
       ],
       "interviewTips": [
-        "Lead with uniqueness — that is the core feature",
+        "Lead with uniqueness - that is the core feature",
         "The Symbol.iterator example shows practical depth",
         "Compare to # private fields for the \"hidden property\" use case"
       ]
@@ -1599,7 +1599,7 @@
         }
       ],
       "notes": [
-        "Proxy cannot be polyfilled — it requires native VM support",
+        "Proxy cannot be polyfilled - it requires native VM support",
         "Available traps: get, set, has, deleteProperty, apply, construct, and more",
         "Vue 3 uses Proxy for its reactivity system, replacing Vue 2's Object.defineProperty approach",
         "Always use Reflect inside traps to correctly handle inheritance and edge cases"
@@ -1610,9 +1610,9 @@
         "Why should you use Reflect inside Proxy traps?"
       ],
       "interviewTips": [
-        "Mention Vue 3 as a real-world use case — shows practical context",
-        "Explain that Reflect mirrors the proxy traps — Reflect.get === default get behavior",
-        "Note that Proxy is non-polyfillable — important for browser support discussion"
+        "Mention Vue 3 as a real-world use case - shows practical context",
+        "Explain that Reflect mirrors the proxy traps - Reflect.get === default get behavior",
+        "Note that Proxy is non-polyfillable - important for browser support discussion"
       ]
     }
   },
@@ -1626,7 +1626,7 @@
     "concepts": ["WeakMap", "WeakSet", "Garbage Collection", "Memory"],
     "content": {
       "question": "What are WeakMap and WeakSet? How do they differ from Map and Set?",
-      "answer": "WeakMap and WeakSet hold weak references to their keys/values, meaning the garbage collector can collect the referenced objects even if they still appear in the WeakMap/WeakSet.\n\nKey differences from Map/Set:\n- Keys (WeakMap) or values (WeakSet) must be objects\n- Not iterable — no forEach, keys(), values(), or size property\n- Entries are automatically removed when the referenced object is garbage collected\n\nUse cases:\n- WeakMap: storing private data or metadata associated with DOM nodes or class instances without preventing GC\n- WeakSet: tracking objects that have been processed",
+      "answer": "WeakMap and WeakSet hold weak references to their keys/values, meaning the garbage collector can collect the referenced objects even if they still appear in the WeakMap/WeakSet.\n\nKey differences from Map/Set:\n- Keys (WeakMap) or values (WeakSet) must be objects\n- Not iterable - no forEach, keys(), values(), or size property\n- Entries are automatically removed when the referenced object is garbage collected\n\nUse cases:\n- WeakMap: storing private data or metadata associated with DOM nodes or class instances without preventing GC\n- WeakSet: tracking objects that have been processed",
       "codeExamples": [
         {
           "title": "WeakMap for Private Data",
@@ -1645,7 +1645,7 @@
         "WeakMap/WeakSet are not iterable and have no size property",
         "Keys in WeakMap must be objects (not primitives)",
         "They prevent memory leaks when metadata is attached to objects that might be deleted",
-        "JSON.stringify(weakMap) returns '{}' — not serializable"
+        "JSON.stringify(weakMap) returns '{}' - not serializable"
       ],
       "followUps": [
         "When would you use WeakMap instead of a regular Map?",
@@ -1653,9 +1653,9 @@
         "How does WeakRef differ from WeakMap?"
       ],
       "interviewTips": [
-        "Lead with the key distinction: weak references allow GC — that is the whole point",
-        "Show the private data pattern — it is the most practical use case",
-        "Mention that WeakMap is not iterable — this often surprises interviewers"
+        "Lead with the key distinction: weak references allow GC - that is the whole point",
+        "Show the private data pattern - it is the most practical use case",
+        "Mention that WeakMap is not iterable - this often surprises interviewers"
       ]
     }
   },
@@ -1675,7 +1675,7 @@
           "title": "Basic Generator and Infinite Sequence",
           "code": "function* counter(start = 0) {\n  while (true) {\n    yield start++;\n  }\n}\n\nconst gen = counter(1);\nconsole.log(gen.next().value); // 1\nconsole.log(gen.next().value); // 2\nconsole.log(gen.next().value); // 3\n\nfunction take(gen, n) {\n  const result = [];\n  for (const val of gen) {\n    result.push(val);\n    if (result.length >= n) break;\n  }\n  return result;\n}\n\nconsole.log(take(counter(1), 5));",
           "output": "1\n2\n3\n[1, 2, 3, 4, 5]",
-          "explanation": "Generators produce values lazily — the infinite loop never runs out of control because execution pauses at each yield."
+          "explanation": "Generators produce values lazily - the infinite loop never runs out of control because execution pauses at each yield."
         },
         {
           "title": "Two-way Communication and yield*",
@@ -1685,7 +1685,7 @@
         }
       ],
       "notes": [
-        "Generator functions return a generator object when called — the body does not run immediately",
+        "Generator functions return a generator object when called - the body does not run immediately",
         "yield pauses, return ends the generator (done: true)",
         "Generators implement both the Iterable and Iterator protocols",
         "async/await is built on generators and promises under the hood in many transpilers"
@@ -1696,8 +1696,8 @@
         "How do generators relate to async/await?"
       ],
       "interviewTips": [
-        "Explain the pause/resume mechanism first — that is the core concept",
-        "Show the lazy infinite sequence example — it demonstrates practical value clearly",
+        "Explain the pause/resume mechanism first - that is the core concept",
+        "Show the lazy infinite sequence example - it demonstrates practical value clearly",
         "Mention that async generators (async function*) combine both features"
       ]
     }
@@ -1712,7 +1712,7 @@
     "concepts": ["Optional Chaining", "Nullish Coalescing", "?.", "??", "Short-circuit"],
     "content": {
       "question": "Explain optional chaining (?.) and nullish coalescing (??) operators. How do they differ from && and ||?",
-      "answer": "Optional chaining (?.) safely accesses nested properties without throwing if an intermediate value is null or undefined — it short-circuits to undefined.\n\nNullish coalescing (??) returns the right-hand side only when the left-hand side is null or undefined (not when it is 0, false, or empty string).\n\nKey differences:\n- obj?.prop vs obj && obj.prop: ?. is shorter and handles all nullish cases cleanly\n- a ?? b vs a || b: ?? only treats null/undefined as missing; || also treats 0, '', false as falsy",
+      "answer": "Optional chaining (?.) safely accesses nested properties without throwing if an intermediate value is null or undefined - it short-circuits to undefined.\n\nNullish coalescing (??) returns the right-hand side only when the left-hand side is null or undefined (not when it is 0, false, or empty string).\n\nKey differences:\n- obj?.prop vs obj && obj.prop: ?. is shorter and handles all nullish cases cleanly\n- a ?? b vs a || b: ?? only treats null/undefined as missing; || also treats 0, '', false as falsy",
       "codeExamples": [
         {
           "title": "Optional Chaining Patterns",
@@ -1724,13 +1724,13 @@
           "title": "Nullish Coalescing vs Logical OR",
           "code": "const config = { timeout: 0, retries: 3, enabled: false };\n\nconsole.log(config.timeout || 5000);\nconsole.log(config.enabled || true);\n\nconsole.log(config.timeout ?? 5000);\nconsole.log(config.enabled ?? true);\nconsole.log(config.missing ?? 'default');\n\nfunction getPort(options) {\n  return options?.port ?? 3000;\n}\n\nconsole.log(getPort({ port: 0 }));\nconsole.log(getPort({ port: 8080 }));\nconsole.log(getPort(null));",
           "output": "5000\ntrue\n0\nfalse\ndefault\n0\n8080\n3000",
-          "explanation": "?? is safer than || for default values when 0, false, or '' are valid — which is common with numeric and boolean config values."
+          "explanation": "?? is safer than || for default values when 0, false, or '' are valid - which is common with numeric and boolean config values."
         }
       ],
       "notes": [
         "?. short-circuits the entire expression stopping at first null/undefined",
         "??= is the nullish assignment operator: x ??= defaultVal sets x only if null/undefined",
-        "?.() calls a method only if it exists — no error if undefined",
+        "?.() calls a method only if it exists - no error if undefined",
         "Cannot use ?. on the left side of assignment: obj?.prop = value is a SyntaxError"
       ],
       "followUps": [
@@ -1739,9 +1739,9 @@
         "Can you use optional chaining when setting a value?"
       ],
       "interviewTips": [
-        "The ?? vs || distinction is the most common interview trap — lead with numeric/boolean examples",
+        "The ?? vs || distinction is the most common interview trap - lead with numeric/boolean examples",
         "Mention ??= for lazy initialization patterns",
-        "Show ?. on method calls (?.()), not just property access — many candidates miss this"
+        "Show ?. on method calls (?.()), not just property access - many candidates miss this"
       ]
     }
   },
@@ -1784,7 +1784,7 @@
       "interviewTips": [
         "Start with a concrete curry example (add(5)(3)) before explaining the generic implementation",
         "Distinguish currying (one argument at a time) from partial application",
-        "Show pipe in a real data pipeline — it makes the value obvious"
+        "Show pipe in a real data pipeline - it makes the value obvious"
       ]
     }
   },
@@ -1815,8 +1815,8 @@
       ],
       "notes": [
         "JSON.stringify key strategy fails for functions, circular objects, and undefined values",
-        "Memoization is a space-time tradeoff — uses more memory to reduce computation",
-        "Only memoize pure functions — side effects would not re-run on cache hits",
+        "Memoization is a space-time tradeoff - uses more memory to reduce computation",
+        "Only memoize pure functions - side effects would not re-run on cache hits",
         "React.useMemo and React.memo are framework-level memoizations"
       ],
       "followUps": [
@@ -1825,8 +1825,8 @@
         "What is the difference between memoization and caching?"
       ],
       "interviewTips": [
-        "Show the Fibonacci example — it makes the performance impact concrete",
-        "Mention the pure function requirement — impure functions should never be memoized",
+        "Show the Fibonacci example - it makes the performance impact concrete",
+        "Mention the pure function requirement - impure functions should never be memoized",
         "For bonus points, mention LRU (Least Recently Used) cache for bounded memory"
       ]
     }
@@ -1868,7 +1868,7 @@
         "Can you change a non-configurable property descriptor?"
       ],
       "interviewTips": [
-        "Explain defaults difference: assignment vs defineProperty — interviewers test this",
+        "Explain defaults difference: assignment vs defineProperty - interviewers test this",
         "Accessor descriptors are the foundation of Vue 2 reactivity system",
         "Mention Object.freeze() as the high-level API that uses these flags internally"
       ]
@@ -1884,7 +1884,7 @@
     "concepts": ["Deep Clone", "structuredClone", "JSON.parse", "Shallow Copy", "Spread"],
     "content": {
       "question": "What are the different ways to clone objects in JavaScript? What are the limitations of each?",
-      "answer": "Cloning approaches:\n\n1. Spread/Object.assign: shallow copy only — nested objects still share references\n2. JSON.parse(JSON.stringify()): deep clone but loses functions, undefined, Symbol, Date objects (converted to strings), circular references (throws)\n3. structuredClone() (modern): true deep clone, supports Date, Map, Set, ArrayBuffer, RegExp, circular references. Does NOT clone functions or DOM nodes.\n4. Custom recursive clone: complete control but adds complexity\n5. Libraries: lodash cloneDeep, immer (structural sharing)",
+      "answer": "Cloning approaches:\n\n1. Spread/Object.assign: shallow copy only - nested objects still share references\n2. JSON.parse(JSON.stringify()): deep clone but loses functions, undefined, Symbol, Date objects (converted to strings), circular references (throws)\n3. structuredClone() (modern): true deep clone, supports Date, Map, Set, ArrayBuffer, RegExp, circular references. Does NOT clone functions or DOM nodes.\n4. Custom recursive clone: complete control but adds complexity\n5. Libraries: lodash cloneDeep, immer (structural sharing)",
       "codeExamples": [
         {
           "title": "Shallow vs Deep Copy",
@@ -1911,7 +1911,7 @@
         "What is the Structured Clone Algorithm?"
       ],
       "interviewTips": [
-        "JSON.parse/JSON.stringify is still commonly used — know its exact limitations (Date→string, functions lost)",
+        "JSON.parse/JSON.stringify is still commonly used - know its exact limitations (Date→string, functions lost)",
         "Mention structuredClone as the modern recommendation",
         "Shallow vs deep copy confusion is a very common interview topic"
       ]
@@ -1943,7 +1943,7 @@
         }
       ],
       "notes": [
-        "ES modules (import/export) are the modern module pattern — they replace IIFEs",
+        "ES modules (import/export) are the modern module pattern - they replace IIFEs",
         "Node.js EventEmitter is the built-in Observer implementation",
         "Strategy pattern is particularly useful for avoiding large if/else chains",
         "Singleton can make testing difficult due to shared state"
@@ -1954,9 +1954,9 @@
         "When would you prefer the Strategy pattern over polymorphism?"
       ],
       "interviewTips": [
-        "Know which problems each pattern solves — interviewers ask about use cases, not just names",
-        "Observer/EventEmitter is the most practically used JS pattern — implement it from scratch",
-        "ES modules replaced the Module Pattern (IIFE) — acknowledge both"
+        "Know which problems each pattern solves - interviewers ask about use cases, not just names",
+        "Observer/EventEmitter is the most practically used JS pattern - implement it from scratch",
+        "ES modules replaced the Module Pattern (IIFE) - acknowledge both"
       ]
     }
   },
@@ -1975,7 +1975,7 @@
         {
           "title": "Event Listener Leak and Fix",
           "code": "class ComponentFixed {\n  constructor() {\n    this._handler = this.handleResize.bind(this);\n  }\n\n  mount() {\n    window.addEventListener('resize', this._handler);\n  }\n\n  unmount() {\n    window.removeEventListener('resize', this._handler);\n  }\n\n  handleResize() {\n    console.log('Resized');\n  }\n}\n\n// In React: return cleanup from useEffect\n// useEffect(() => {\n//   window.addEventListener('resize', handler);\n//   return () => window.removeEventListener('resize', handler);\n// }, []);",
-          "output": "(illustrative — no output)",
+          "output": "(illustrative - no output)",
           "explanation": "The bound method reference must be stored to remove the same function that was added. Without cleanup, each mount adds another listener."
         },
         {
@@ -1998,8 +1998,8 @@
       ],
       "interviewTips": [
         "List the four main causes: event listeners, timers, detached DOM, and unbounded caches",
-        "Mention Chrome DevTools heap snapshots — shows you know how to debug",
-        "React's useEffect cleanup is a very common interview topic — connect memory leaks to it"
+        "Mention Chrome DevTools heap snapshots - shows you know how to debug",
+        "React's useEffect cleanup is a very common interview topic - connect memory leaks to it"
       ]
     }
   },
@@ -2024,14 +2024,14 @@
         {
           "title": "Error Handling Strategy",
           "code": "async function handleRequest(id) {\n  try {\n    const user = await fetchUser(id);\n    return { success: true, data: user };\n  } catch (e) {\n    if (e instanceof NotFoundError) {\n      return { success: false, message: e.message, statusCode: 404 };\n    }\n    if (e instanceof ValidationError) {\n      return { success: false, field: e.field, statusCode: 400 };\n    }\n    console.error('Unexpected error:', e);\n    throw e;\n  }\n}\n\n// Global unhandled rejections\nprocess.on('unhandledRejection', (reason) => {\n  console.error('Unhandled rejection:', reason);\n  process.exit(1);\n});",
-          "output": "(async — illustrative)",
+          "output": "(async - illustrative)",
           "explanation": "instanceof checks enable specific error handling per type. Unexpected errors should be re-thrown rather than silently swallowed."
         }
       ],
       "notes": [
         "Always set this.name = this.constructor.name for correct error name in stack traces",
         "Object.setPrototypeOf is needed for instanceof to work correctly when transpiling to ES5",
-        "Never catch errors silently — either handle them or re-throw",
+        "Never catch errors silently - either handle them or re-throw",
         "Use centralized error handler in Express via error middleware"
       ],
       "followUps": [
@@ -2041,7 +2041,7 @@
       ],
       "interviewTips": [
         "Know the six built-in error types and what causes each",
-        "Show the custom error class pattern — demonstrates production code awareness",
+        "Show the custom error class pattern - demonstrates production code awareness",
         "Mention process.on('unhandledRejection') for global error handling in Node.js"
       ]
     }
@@ -2062,11 +2062,11 @@
           "title": "WebSocket Client API",
           "code": "const ws = new WebSocket('wss://api.example.com/ws');\n\nws.addEventListener('open', () => {\n  console.log('Connected');\n  ws.send(JSON.stringify({ type: 'join', room: 'general' }));\n});\n\nws.addEventListener('message', (event) => {\n  const data = JSON.parse(event.data);\n  console.log('Received:', data);\n});\n\nws.addEventListener('close', (event) => {\n  console.log(`Disconnected: ${event.code}`);\n  setTimeout(() => reconnect(), 3000);\n});\n\nws.addEventListener('error', (event) => {\n  console.error('WebSocket error:', event);\n});\n\nfunction sendMessage(text) {\n  if (ws.readyState === WebSocket.OPEN) {\n    ws.send(JSON.stringify({ type: 'message', text }));\n  }\n}",
           "output": "Connected\nReceived: { type: 'welcome' }",
-          "explanation": "Always check readyState before sending. Implement reconnection logic for production — WebSockets do not auto-reconnect."
+          "explanation": "Always check readyState before sending. Implement reconnection logic for production - WebSockets do not auto-reconnect."
         },
         {
           "title": "Server-Sent Events (SSE)",
-          "code": "const evtSource = new EventSource('/api/events');\n\nevtSource.addEventListener('update', (e) => {\n  const data = JSON.parse(e.data);\n  console.log('Update:', data);\n});\n\n// EventSource auto-reconnects — no manual logic needed\nevtSource.addEventListener('error', () => {\n  console.log('Reconnecting...');\n});\n\n// SSE vs WebSocket comparison\nconst comparison = [\n  { protocol: 'Polling',   direction: 'Client→Server', latency: 'High',   complexity: 'Low' },\n  { protocol: 'SSE',       direction: 'Server→Client', latency: 'Low',    complexity: 'Low' },\n  { protocol: 'WebSocket', direction: 'Bidirectional', latency: 'Lowest', complexity: 'High' }\n];\nconsole.table(comparison);",
+          "code": "const evtSource = new EventSource('/api/events');\n\nevtSource.addEventListener('update', (e) => {\n  const data = JSON.parse(e.data);\n  console.log('Update:', data);\n});\n\n// EventSource auto-reconnects - no manual logic needed\nevtSource.addEventListener('error', () => {\n  console.log('Reconnecting...');\n});\n\n// SSE vs WebSocket comparison\nconst comparison = [\n  { protocol: 'Polling',   direction: 'Client→Server', latency: 'High',   complexity: 'Low' },\n  { protocol: 'SSE',       direction: 'Server→Client', latency: 'Low',    complexity: 'Low' },\n  { protocol: 'WebSocket', direction: 'Bidirectional', latency: 'Lowest', complexity: 'High' }\n];\nconsole.table(comparison);",
           "output": "(illustrative)",
           "explanation": "SSE is simpler and auto-reconnects but is one-directional. WebSocket enables full bidirectional communication."
         }
@@ -2075,7 +2075,7 @@
         "WebSocket URL uses ws:// or wss:// (TLS); wss is required in production",
         "readyState: CONNECTING(0), OPEN(1), CLOSING(2), CLOSED(3)",
         "Socket.IO wraps WebSockets with fallbacks and room abstractions",
-        "WebSockets do not automatically reconnect — implement exponential backoff"
+        "WebSockets do not automatically reconnect - implement exponential backoff"
       ],
       "followUps": [
         "How do you handle WebSocket reconnection with exponential backoff?",
@@ -2084,7 +2084,7 @@
       ],
       "interviewTips": [
         "Start with the HTTP limitation (request-response) to motivate WebSocket",
-        "Know the three options: polling, SSE, WebSocket — and when to use each",
+        "Know the three options: polling, SSE, WebSocket - and when to use each",
         "Mention Socket.IO for practical knowledge; it shows production awareness"
       ]
     }
@@ -2099,7 +2099,7 @@
     "concepts": ["Named Groups", "Lookahead", "Lookbehind", "Flags", "Non-greedy"],
     "content": {
       "question": "What are advanced RegExp features in JavaScript? Explain named capture groups, lookaheads, and flags.",
-      "answer": "Modern JavaScript RegExp supports:\n\nNamed capture groups: (?<name>pattern) — access matched groups by name\n\nLookahead/Lookbehind: zero-width assertions that match position without consuming characters:\n- Positive lookahead: (?=...) — match only if followed by...\n- Negative lookahead: (?!...) — match only if NOT followed by...\n- Positive lookbehind: (?<=...) — match only if preceded by...\n- Negative lookbehind: (?<!...) — match only if NOT preceded by...\n\nKey flags: g (global), i (case-insensitive), m (multiline), s (dotAll), u (Unicode), d (indices)\n\nNon-greedy: *? and +? match as little as possible",
+      "answer": "Modern JavaScript RegExp supports:\n\nNamed capture groups: (?<name>pattern) - access matched groups by name\n\nLookahead/Lookbehind: zero-width assertions that match position without consuming characters:\n- Positive lookahead: (?=...) - match only if followed by...\n- Negative lookahead: (?!...) - match only if NOT followed by...\n- Positive lookbehind: (?<=...) - match only if preceded by...\n- Negative lookbehind: (?<!...) - match only if NOT preceded by...\n\nKey flags: g (global), i (case-insensitive), m (multiline), s (dotAll), u (Unicode), d (indices)\n\nNon-greedy: *? and +? match as little as possible",
       "codeExamples": [
         {
           "title": "Named Groups and Lookaheads",
@@ -2126,9 +2126,9 @@
         "What does the s flag do in RegExp?"
       ],
       "interviewTips": [
-        "Show named groups with a real example (date parsing) — demonstrates professional regex usage",
+        "Show named groups with a real example (date parsing) - demonstrates professional regex usage",
         "Greedy vs non-greedy HTML parsing example is a classic interview question",
-        "Know the 6 main flags: g, i, m, s, u, d — and what each does"
+        "Know the 6 main flags: g, i, m, s, u, d - and what each does"
       ]
     }
   },
@@ -2142,7 +2142,7 @@
     "concepts": ["Debounce", "Throttle", "requestAnimationFrame", "Web Workers"],
     "content": {
       "question": "What are common JavaScript performance optimization techniques? Explain debouncing and throttling.",
-      "answer": "Key performance techniques:\n\nDebounce: delays execution until a pause in events. Use for search input, window resize — runs once after the user stops.\n\nThrottle: limits execution to at most once per N ms. Use for scroll events, mousemove — ensures consistent rate.\n\nrequestAnimationFrame: schedules visual updates in sync with the browser's repaint cycle (~60fps). Avoids jank.\n\nWeb Workers: runs CPU-intensive code on a background thread, keeping the UI thread responsive.\n\nVirtual scrolling: only renders visible rows.\nCode splitting & lazy loading: load only what is needed.",
+      "answer": "Key performance techniques:\n\nDebounce: delays execution until a pause in events. Use for search input, window resize - runs once after the user stops.\n\nThrottle: limits execution to at most once per N ms. Use for scroll events, mousemove - ensures consistent rate.\n\nrequestAnimationFrame: schedules visual updates in sync with the browser's repaint cycle (~60fps). Avoids jank.\n\nWeb Workers: runs CPU-intensive code on a background thread, keeping the UI thread responsive.\n\nVirtual scrolling: only renders visible rows.\nCode splitting & lazy loading: load only what is needed.",
       "codeExamples": [
         {
           "title": "Debounce and Throttle",
@@ -2160,7 +2160,7 @@
       "notes": [
         "Debounce is for 'wait until quiet', throttle is for 'run at most N times per second'",
         "Avoid layout thrashing: reading layout then writing in a loop causes forced reflows",
-        "Web Workers have no DOM access — communicate via postMessage",
+        "Web Workers have no DOM access - communicate via postMessage",
         "Use will-change: transform CSS for GPU-accelerated animations"
       ],
       "followUps": [
@@ -2169,9 +2169,9 @@
         "How do Web Workers communicate with the main thread?"
       ],
       "interviewTips": [
-        "Implement debounce and throttle from scratch — very common coding interview question",
+        "Implement debounce and throttle from scratch - very common coding interview question",
         "Explain the difference clearly: debounce = delay, throttle = rate limit",
-        "Mention rAF for animations and Web Workers for CPU tasks — shows depth"
+        "Mention rAF for animations and Web Workers for CPU tasks - shows depth"
       ]
     }
   },
@@ -2197,7 +2197,7 @@
           "title": "SQL Builder Pattern",
           "code": "function sql(strings, ...values) {\n  let query = '';\n  const params = [];\n  strings.forEach((str, i) => {\n    query += str;\n    if (i < values.length) {\n      params.push(values[i]);\n      query += `$${params.length}`;\n    }\n  });\n  return { query, params };\n}\n\nconst userId = 42;\nconst role = 'admin';\n\nconst { query, params } = sql`\n  SELECT * FROM users\n  WHERE id = ${userId} AND role = ${role}\n`;\n\nconsole.log(query);\nconsole.log(params);",
           "output": "SELECT * FROM users WHERE id = $1 AND role = $2\n[42, 'admin']",
-          "explanation": "The sql tag creates parameterized queries — values are passed as parameters, not concatenated, preventing SQL injection."
+          "explanation": "The sql tag creates parameterized queries - values are passed as parameters, not concatenated, preventing SQL injection."
         }
       ],
       "notes": [
@@ -2213,8 +2213,8 @@
       ],
       "interviewTips": [
         "The security use case (XSS, SQL injection) is the most compelling real-world example",
-        "Show the tag function signature: (strings, ...values) — interviewers check if you know the API",
-        "Mention styled-components and gql — shows awareness of ecosystem usage"
+        "Show the tag function signature: (strings, ...values) - interviewers check if you know the API",
+        "Mention styled-components and gql - shows awareness of ecosystem usage"
       ]
     }
   },
@@ -2233,13 +2233,13 @@
         {
           "title": "Lazy Loading Images",
           "code": "const imageObserver = new IntersectionObserver(\n  (entries, observer) => {\n    entries.forEach(entry => {\n      if (entry.isIntersecting) {\n        const img = entry.target;\n        img.src = img.dataset.src;\n        img.classList.remove('lazy');\n        observer.unobserve(img);\n      }\n    });\n  },\n  {\n    rootMargin: '100px 0px',\n    threshold: 0\n  }\n);\n\ndocument.querySelectorAll('img[data-src]').forEach(img => {\n  imageObserver.observe(img);\n});\n\n// Infinite scroll\nconst loadMoreObserver = new IntersectionObserver(entries => {\n  if (entries[0].isIntersecting) {\n    loadNextPage();\n  }\n});\n\nloadMoreObserver.observe(document.querySelector('#sentinel'));",
-          "output": "(DOM-based — illustrative)",
+          "output": "(DOM-based - illustrative)",
           "explanation": "rootMargin pre-loads images before they enter view. observer.unobserve() stops watching once the image is loaded."
         },
         {
           "title": "MutationObserver",
           "code": "const observer = new MutationObserver(mutations => {\n  mutations.forEach(mutation => {\n    if (mutation.type === 'childList') {\n      console.log('Children added:', mutation.addedNodes.length);\n    }\n    if (mutation.type === 'attributes') {\n      console.log(`Attribute '${mutation.attributeName}' changed`);\n    }\n  });\n});\n\nobserver.observe(document.querySelector('#content'), {\n  childList: true,\n  attributes: true,\n  subtree: true\n});\n\n// Always disconnect to prevent memory leaks\nobserver.disconnect();\n\n// Detect when a third-party widget loads\nconst chatObserver = new MutationObserver((mutations, obs) => {\n  const chat = document.querySelector('.chat-widget');\n  if (chat) {\n    initListeners(chat);\n    obs.disconnect();\n  }\n});\nchatObserver.observe(document.body, { childList: true, subtree: true });",
-          "output": "(DOM-based — illustrative)",
+          "output": "(DOM-based - illustrative)",
           "explanation": "MutationObserver receives batched MutationRecord objects. disconnect() must be called to stop observation and avoid memory leaks."
         }
       ],
@@ -2256,8 +2256,8 @@
       ],
       "interviewTips": [
         "The performance argument (off main thread) is the main selling point",
-        "Show lazy loading implementation — the most common real-world use case",
-        "MutationObserver shows deep DOM knowledge — a differentiator"
+        "Show lazy loading implementation - the most common real-world use case",
+        "MutationObserver shows deep DOM knowledge - a differentiator"
       ]
     }
   },
@@ -2271,13 +2271,13 @@
     "concepts": ["Async Iterator", "for await...of", "Async Generator", "Streaming"],
     "content": {
       "question": "What are async iterators and async generators in JavaScript? When would you use them?",
-      "answer": "An async iterator implements the async iterator protocol: each call to next() returns a Promise that resolves to { value, done }.\n\nfor await...of loops consume async iterables, awaiting each item.\n\nAsync generators (async function*) combine generators and async/await — they can use both yield and await.\n\nUse cases:\n- Streaming API responses chunk by chunk\n- Paginated API calls (fetch all pages lazily)\n- Processing large files line by line\n- Rate-limited API calls with built-in pausing",
+      "answer": "An async iterator implements the async iterator protocol: each call to next() returns a Promise that resolves to { value, done }.\n\nfor await...of loops consume async iterables, awaiting each item.\n\nAsync generators (async function*) combine generators and async/await - they can use both yield and await.\n\nUse cases:\n- Streaming API responses chunk by chunk\n- Paginated API calls (fetch all pages lazily)\n- Processing large files line by line\n- Rate-limited API calls with built-in pausing",
       "codeExamples": [
         {
           "title": "Async Generator for Paginated API",
           "code": "async function* fetchPaginatedUsers(baseUrl) {\n  let page = 1;\n  let hasMore = true;\n\n  while (hasMore) {\n    const response = await fetch(`${baseUrl}?page=${page}`);\n    const data = await response.json();\n    yield* data.users;\n    hasMore = data.hasNextPage;\n    page++;\n  }\n}\n\nasync function processAllUsers() {\n  for await (const user of fetchPaginatedUsers('/api/users')) {\n    console.log('Processing:', user.name);\n    if (user.name === 'Stop') break;\n  }\n}\n\nconst asyncRange = {\n  from: 1, to: 5,\n  [Symbol.asyncIterator]() {\n    let current = this.from;\n    const last = this.to;\n    return {\n      async next() {\n        await new Promise(r => setTimeout(r, 100));\n        return current <= last\n          ? { value: current++, done: false }\n          : { done: true };\n      }\n    };\n  }\n};\n\n(async () => {\n  const nums = [];\n  for await (const num of asyncRange) nums.push(num);\n  console.log(nums);\n})();",
           "output": "Processing: Alice\n[1, 2, 3, 4, 5]",
-          "explanation": "Async generators pause between yields, awaiting network calls. Break early stops fetching further pages — lazy evaluation."
+          "explanation": "Async generators pause between yields, awaiting network calls. Break early stops fetching further pages - lazy evaluation."
         },
         {
           "title": "Streaming Response",
@@ -2288,9 +2288,9 @@
       ],
       "notes": [
         "Symbol.asyncIterator is to async iteration what Symbol.iterator is to sync iteration",
-        "Node.js streams implement async iteration — files, HTTP requests, etc.",
+        "Node.js streams implement async iteration - files, HTTP requests, etc.",
         "Array.fromAsync() (ES2024) converts an async iterable to an array",
-        "Breaking out of for await...of stops fetching further items — lazy evaluation"
+        "Breaking out of for await...of stops fetching further items - lazy evaluation"
       ],
       "followUps": [
         "What is the difference between Symbol.iterator and Symbol.asyncIterator?",
@@ -2299,8 +2299,8 @@
       ],
       "interviewTips": [
         "Paginated API fetching is the most relatable use case for interviewers",
-        "Connect to ReadableStream (fetch body) — shows practical Web API knowledge",
-        "Mention Node.js streams support async iteration — shows backend awareness"
+        "Connect to ReadableStream (fetch body) - shows practical Web API knowledge",
+        "Mention Node.js streams support async iteration - shows backend awareness"
       ]
     }
   },
@@ -2314,7 +2314,7 @@
     "concepts": ["Object.create", "Mixins", "Object composition", "Prototypal Inheritance"],
     "content": {
       "question": "Explain Object.create(), and mixin patterns in JavaScript.",
-      "answer": "Object.create(proto) creates a new object with the specified prototype, enabling prototypal inheritance without constructors.\n\nMixins extend objects with behavior from multiple sources — a way to compose functionality without deep inheritance chains.\n\nObject.assign(target, ...sources) shallow-copies enumerable own properties from sources into target.\n\nOLOO (Objects Linked to Other Objects) by Kyle Simpson prefers prototypal delegation over class-based inheritance.",
+      "answer": "Object.create(proto) creates a new object with the specified prototype, enabling prototypal inheritance without constructors.\n\nMixins extend objects with behavior from multiple sources - a way to compose functionality without deep inheritance chains.\n\nObject.assign(target, ...sources) shallow-copies enumerable own properties from sources into target.\n\nOLOO (Objects Linked to Other Objects) by Kyle Simpson prefers prototypal delegation over class-based inheritance.",
       "codeExamples": [
         {
           "title": "Object.create and Prototypal Inheritance",
@@ -2330,10 +2330,10 @@
         }
       ],
       "notes": [
-        "Object.assign does shallow copy — nested objects are still shared references",
+        "Object.assign does shallow copy - nested objects are still shared references",
         "Mixins solve multiple inheritance without the diamond problem",
         "Object.create(null) is faster than {} for dictionaries and avoids prototype pollution",
-        "Prefer composition over inheritance — mixins are a flexible composition mechanism"
+        "Prefer composition over inheritance - mixins are a flexible composition mechanism"
       ],
       "followUps": [
         "What is the difference between Object.assign and the spread operator?",
@@ -2341,7 +2341,7 @@
         "What problem does Object.create(null) solve?"
       ],
       "interviewTips": [
-        "Object.create(null) use case — pure dictionaries without prototype pollution",
+        "Object.create(null) use case - pure dictionaries without prototype pollution",
         "Mixin factories are a practical alternative to complex inheritance hierarchies",
         "Connect to 'prefer composition over inheritance' principle"
       ]
@@ -2357,26 +2357,26 @@
     "concepts": ["ES Modules", "CommonJS", "import", "require", "Tree Shaking", "Dynamic Import"],
     "content": {
       "question": "What is the difference between ES Modules and CommonJS? When would you use each?",
-      "answer": "CommonJS (CJS):\n- Used in Node.js historically\n- require() is synchronous and dynamic\n- module.exports and exports object\n- Loaded at runtime\n\nES Modules (ESM):\n- Native browser module standard and modern Node.js\n- import/export syntax\n- Static analysis — imports resolved at parse time\n- Async loading\n- Enables tree shaking\n\nKey differences:\n- ESM is static; CJS is dynamic (require() inside conditions works)\n- ESM has live bindings; CJS exports values by copy\n- ESM has top-level await; CJS does not\n- Node.js requires .mjs or type: module in package.json for ESM",
+      "answer": "CommonJS (CJS):\n- Used in Node.js historically\n- require() is synchronous and dynamic\n- module.exports and exports object\n- Loaded at runtime\n\nES Modules (ESM):\n- Native browser module standard and modern Node.js\n- import/export syntax\n- Static analysis - imports resolved at parse time\n- Async loading\n- Enables tree shaking\n\nKey differences:\n- ESM is static; CJS is dynamic (require() inside conditions works)\n- ESM has live bindings; CJS exports values by copy\n- ESM has top-level await; CJS does not\n- Node.js requires .mjs or type: module in package.json for ESM",
       "codeExamples": [
         {
           "title": "ESM vs CJS Syntax and Live Bindings",
           "code": "// CommonJS\nconst { readFile } = require('fs').promises;\nmodule.exports = { greet: (name) => `Hello ${name}` };\n\n// Dynamic require (only possible in CJS)\nif (process.env.NODE_ENV === 'test') {\n  const mock = require('./mocks');\n}\n\n// ES Modules\nimport { readFile } from 'fs/promises';\nexport const greet = (name) => `Hello ${name}`;\nexport default function main() {}\n\n// Named vs default\nimport defaultExport from './module';\nimport { named } from './module';\nimport * as all from './module';\n\n// Dynamic import (lazy loading)\nconst { heavy } = await import('./heavy-module.js');\n\n// Top-level await (ESM only)\nconst config = await fetch('/config.json').then(r => r.json());\nconsole.log(config.version);",
-          "output": "(illustrative — module syntax)",
-          "explanation": "ESM exports are live bindings — imported values reflect changes. CJS exports are copied values. Dynamic import() enables code splitting."
+          "output": "(illustrative - module syntax)",
+          "explanation": "ESM exports are live bindings - imported values reflect changes. CJS exports are copied values. Dynamic import() enables code splitting."
         },
         {
           "title": "Tree Shaking",
-          "code": "// utils.js with named exports (tree-shakeable)\nexport function formatDate(date) { return date.toISOString(); }\nexport function formatCurrency(n) { return `$${n.toFixed(2)}`; }\nexport function parseQuery(str) { /* ... */ }\n\n// Only formatDate imported — bundler eliminates others\nimport { formatDate } from './utils.js';\n\n// Dynamic import for code splitting\ndocument.querySelector('#loadChart').addEventListener('click', async () => {\n  const { Chart } = await import('./chart.js');\n  new Chart(document.querySelector('#canvas')).render(data);\n});\n\n// Check if in ESM vs CJS (Node.js)\nconst isESM = typeof __dirname === 'undefined';\nconst currentDir = isESM\n  ? new URL('.', import.meta.url).pathname\n  : __dirname;",
+          "code": "// utils.js with named exports (tree-shakeable)\nexport function formatDate(date) { return date.toISOString(); }\nexport function formatCurrency(n) { return `$${n.toFixed(2)}`; }\nexport function parseQuery(str) { /* ... */ }\n\n// Only formatDate imported - bundler eliminates others\nimport { formatDate } from './utils.js';\n\n// Dynamic import for code splitting\ndocument.querySelector('#loadChart').addEventListener('click', async () => {\n  const { Chart } = await import('./chart.js');\n  new Chart(document.querySelector('#canvas')).render(data);\n});\n\n// Check if in ESM vs CJS (Node.js)\nconst isESM = typeof __dirname === 'undefined';\nconst currentDir = isESM\n  ? new URL('.', import.meta.url).pathname\n  : __dirname;",
           "output": "(illustrative)",
-          "explanation": "Named exports are tree-shakeable — bundlers eliminate unused code statically. Dynamic import() enables route-level code splitting."
+          "explanation": "Named exports are tree-shakeable - bundlers eliminate unused code statically. Dynamic import() enables route-level code splitting."
         }
       ],
       "notes": [
         "Node.js supports ESM via .mjs files or 'type': 'module' in package.json",
         "Top-level await is only available in ESM (not CJS)",
         "import.meta.url gives the current module URL in ESM (replaces __filename)",
-        "Default exports are less tree-shakeable — prefer named exports in libraries"
+        "Default exports are less tree-shakeable - prefer named exports in libraries"
       ],
       "followUps": [
         "What is tree shaking and why does it require ES Modules?",
@@ -2384,8 +2384,8 @@
         "How does top-level await work in ESM?"
       ],
       "interviewTips": [
-        "Lead with the static vs dynamic distinction — it enables tree shaking",
-        "Live bindings are a common gotcha — know the difference from CJS copies",
+        "Lead with the static vs dynamic distinction - it enables tree shaking",
+        "Live bindings are a common gotcha - know the difference from CJS copies",
         "Dynamic import() for code splitting shows practical performance awareness"
       ]
     }
@@ -2412,7 +2412,7 @@
           "title": "Promise.race and Promise.any",
           "code": "function timeout(ms) {\n  return new Promise((_, reject) =>\n    setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms)\n  );\n}\n\ntry {\n  const result = await Promise.race([\n    fetch('/api/data').then(r => r.json()),\n    timeout(3000)\n  ]);\n  console.log('Result:', result);\n} catch (e) {\n  console.log(e.message);\n}\n\nconst servers = ['https://s1.api.com', 'https://s2.api.com', 'https://s3.api.com'];\n\ntry {\n  const fastestResponse = await Promise.any(\n    servers.map(url => fetch(url).then(r => r.json()))\n  );\n  console.log('Fastest:', fastestResponse);\n} catch (e) {\n  console.log('All failed:', e.errors);\n}",
           "output": "Timeout after 3000ms\nFastest: {...}",
-          "explanation": "Promise.race is ideal for timeouts. Promise.any is ideal for redundant requests — use whichever server responds first successfully."
+          "explanation": "Promise.race is ideal for timeouts. Promise.any is ideal for redundant requests - use whichever server responds first successfully."
         }
       ],
       "notes": [
@@ -2427,8 +2427,8 @@
         "What does Promise.all([]) return?"
       ],
       "interviewTips": [
-        "The all vs allSettled distinction is the most common question — nail the difference",
-        "Show the timeout pattern with Promise.race — practical and elegant",
+        "The all vs allSettled distinction is the most common question - nail the difference",
+        "Show the timeout pattern with Promise.race - practical and elegant",
         "Know that Promise.any rejects with AggregateError, not a regular Error"
       ]
     }

@@ -145,10 +145,10 @@
         "title": "Shape Hierarchy",
         "description": "Create a base class Shape with a method area() that returns 0. Create two subclasses: Rectangle(width, height) and Circle(radius). Each overrides area(). For Circle, use 3.14159 as pi. Print the area of a 4x6 rectangle and a circle with radius 5, each rounded to 2 decimal places.",
         "starterCode": "# Base class Shape with area() returning 0\n# Rectangle(width, height) overrides area()\n# Circle(radius) overrides area() using pi = 3.14159\n\n# Your code here\n\nrect = Rectangle(4, 6)\ncirc = Circle(5)\nprint(round(rect.area(), 2))\nprint(round(circ.area(), 2))",
-        "solution": "class Shape:\n    def area(self):\n        return 0\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n\n    def area(self):\n        return self.width * self.height\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return 3.14159 * self.radius ** 2\n\nrect = Rectangle(4, 6)\ncirc = Circle(5)\nprint(round(rect.area(), 2))\nprint(round(circ.area(), 2))",
+        "solution": "class Shape:\n    def area(self):\n        return 0\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n\n    def area(self):\n        return self.width * self.height\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return 3.14159 * self.radius  2\n\nrect = Rectangle(4, 6)\ncirc = Circle(5)\nprint(round(rect.area(), 2))\nprint(round(circ.area(), 2))",
         "expectedOutput": "24\n78.54",
         "hints": [
-          "Rectangle.area() returns self.width * self.height. Circle.area() returns 3.14159 * self.radius ** 2.",
+          "Rectangle.area() returns self.width * self.height. Circle.area() returns 3.14159 * self.radius  2.",
           "round(24.0, 2) in Python prints as 24 (no trailing zeros), while round(78.53975, 2) prints as 78.54."
         ],
         "difficulty": "Easy"
@@ -266,7 +266,7 @@
         "title": "Read-Only and Computed Properties",
         "description": "Create a Circle class that takes radius in __init__. Make radius a read-only property. Add computed read-only properties for area (using 3.14159) and circumference (using 2 * 3.14159 * radius). Both should be rounded to 2 decimal places. Demonstrate that setting radius raises an AttributeError by catching the exception and printing 'Cannot set radius'.",
         "starterCode": "# Circle class with read-only radius, area, circumference\n# Use 3.14159 for pi\n# Round area and circumference to 2 decimal places\n\n# Your code here\n\nc = Circle(7)\nprint(c.radius)\nprint(c.area)\nprint(c.circumference)\ntry:\n    c.radius = 10\nexcept AttributeError:\n    print('Cannot set radius')",
-        "solution": "class Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def radius(self):\n        return self._radius\n\n    @property\n    def area(self):\n        return round(3.14159 * self._radius ** 2, 2)\n\n    @property\n    def circumference(self):\n        return round(2 * 3.14159 * self._radius, 2)\n\nc = Circle(7)\nprint(c.radius)\nprint(c.area)\nprint(c.circumference)\ntry:\n    c.radius = 10\nexcept AttributeError:\n    print('Cannot set radius')",
+        "solution": "class Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def radius(self):\n        return self._radius\n\n    @property\n    def area(self):\n        return round(3.14159 * self._radius  2, 2)\n\n    @property\n    def circumference(self):\n        return round(2 * 3.14159 * self._radius, 2)\n\nc = Circle(7)\nprint(c.radius)\nprint(c.area)\nprint(c.circumference)\ntry:\n    c.radius = 10\nexcept AttributeError:\n    print('Cannot set radius')",
         "expectedOutput": "7\n153.94\n43.98\nCannot set radius",
         "hints": [
           "A @property without a corresponding @attr.setter is read-only. Attempting to set it raises an AttributeError.",
@@ -295,7 +295,7 @@
         },
         {
           "title": "Method overriding for polymorphic behavior",
-          "code": "class Shape:\n    def area(self):\n        return 0\n\n    def describe(self):\n        return f'{self.__class__.__name__}: area = {self.area()}'\n\nclass Square(Shape):\n    def __init__(self, side):\n        self.side = side\n\n    def area(self):\n        return self.side ** 2\n\nclass Triangle(Shape):\n    def __init__(self, base, height):\n        self.base = base\n        self.height = height\n\n    def area(self):\n        return 0.5 * self.base * self.height\n\nshapes = [Square(4), Triangle(6, 3)]\nfor s in shapes:\n    print(s.describe())",
+          "code": "class Shape:\n    def area(self):\n        return 0\n\n    def describe(self):\n        return f'{self.__class__.__name__}: area = {self.area()}'\n\nclass Square(Shape):\n    def __init__(self, side):\n        self.side = side\n\n    def area(self):\n        return self.side  2\n\nclass Triangle(Shape):\n    def __init__(self, base, height):\n        self.base = base\n        self.height = height\n\n    def area(self):\n        return 0.5 * self.base * self.height\n\nshapes = [Square(4), Triangle(6, 3)]\nfor s in shapes:\n    print(s.describe())",
           "output": "Square: area = 16\nTriangle: area = 9.0",
           "explanation": "describe() is defined once in Shape and calls self.area(). Because each subclass overrides area(), the same describe() method produces different output depending on the actual type. This is runtime polymorphism."
         },
@@ -314,7 +314,7 @@
       ],
       "notes": [
         "Duck typing means you should program to an interface, not a type. If an object has the methods you need, it works.",
-        "Python does not have method overloading (multiple methods with the same name but different parameter lists) like Java. Use default arguments or *args/**kwargs instead.",
+        "Python does not have method overloading (multiple methods with the same name but different parameter lists) like Java. Use default arguments or *args/kwargs instead.",
         "Operator overloading methods should return new objects rather than modifying self, matching the behavior of built-in types.",
         "The __repr__ method should ideally return a string that could recreate the object, while __str__ should return a human-readable description."
       ],

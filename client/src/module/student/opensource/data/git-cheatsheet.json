@@ -1,0 +1,221 @@
+{
+  "gitCheatsheet": [
+    {
+      "step": 1,
+      "id": "fork-clone-workflow",
+      "title": "Fork, Clone, and Set Up Remotes",
+      "description": "The foundation of every open source contribution. Fork the project, clone your fork locally, and configure upstream so you can stay in sync with the original project.",
+      "mentor_guidance": "Every single open source contribution starts with these exact same steps. Once you've done it 3 times, it becomes muscle memory. But the first time, it feels like a lot - so let me break it down.\n\nYou need to understand three 'locations' where code lives:\n\n1. The original repo (called 'upstream') - owned by the project maintainers. You can NOT push to this directly.\n2. Your fork on GitHub (called 'origin') - your personal copy. You CAN push to this.\n3. Your local clone - on your computer. You write code here.\n\nThe flow is: upstream → (fork) → origin → (clone) → local → (push) → origin → (pull request) → upstream.\n\nHere's the thing nobody tells you: you need to keep your fork in sync with upstream. The original project keeps getting commits from other contributors, and your fork gets stale. If you don't sync, you'll get merge conflicts when you try to submit your PR.\n\nI set up upstream immediately after cloning - before I write a single line of code. That way, syncing is always one command away.",
+      "details": [
+        "Go to the project's GitHub page and click the 'Fork' button in the top-right corner. This creates a copy of the repository under your GitHub account. Your fork is completely independent - you can push, create branches, and experiment without affecting the original project at all.",
+        "Clone YOUR fork (not the original repo) to your computer. Use the SSH URL if you've set up SSH keys: `git clone git@github.com:YOUR-USERNAME/project.git`. This creates a local copy and automatically sets your fork as the 'origin' remote.",
+        "Add the original repository as the 'upstream' remote. This is critical - without it, you can't sync your fork with new changes from the original project. Run: `git remote add upstream git@github.com:ORIGINAL-OWNER/project.git`. Verify with `git remote -v` - you should see both 'origin' (your fork) and 'upstream' (the original).",
+        "Never work directly on the main branch of your fork. Always create a feature branch from an up-to-date main. This keeps your main branch clean and identical to upstream, making syncing and creating new branches painless.",
+        "If you accidentally cloned the original repo instead of your fork, you can fix it: `git remote set-url origin git@github.com:YOUR-USERNAME/project.git` and then add upstream pointing to the original."
+      ],
+      "commands": [
+        { "label": "Clone your fork (SSH)", "code": "git clone git@github.com:YOUR-USERNAME/project.git\ncd project" },
+        { "label": "Clone your fork (HTTPS)", "code": "git clone https://github.com/YOUR-USERNAME/project.git\ncd project" },
+        { "label": "Add the original repo as upstream", "code": "git remote add upstream git@github.com:ORIGINAL-OWNER/project.git" },
+        { "label": "Verify your remotes are set up correctly", "code": "git remote -v\n# Should show:\n# origin    git@github.com:YOUR-USERNAME/project.git (fetch)\n# origin    git@github.com:YOUR-USERNAME/project.git (push)\n# upstream  git@github.com:ORIGINAL-OWNER/project.git (fetch)\n# upstream  git@github.com:ORIGINAL-OWNER/project.git (push)" }
+      ],
+      "resources": [
+        { "title": "GitHub Docs: Fork a Repo", "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo", "type": "docs" }
+      ],
+      "tips": [
+        "Always clone YOUR fork, not the original. A quick check: the URL should have YOUR username, not the project owner's username.",
+        "Set up upstream immediately after cloning - don't wait until you need it. It takes 10 seconds and prevents headaches later.",
+        "Use SSH URLs instead of HTTPS to avoid entering your password on every push. If you see 'Permission denied (publickey)', your SSH keys aren't set up correctly."
+      ]
+    },
+    {
+      "step": 2,
+      "id": "branching-strategy",
+      "title": "Create and Manage Branches",
+      "description": "Branches isolate your work so you can develop features, fix bugs, and experiment without affecting the main codebase. Always work on a feature branch, never on main.",
+      "mentor_guidance": "I've reviewed thousands of PRs, and here's a pattern I see from beginners that makes things harder than they need to be: they work directly on the main branch of their fork.\n\nDon't do this. Here's why:\n\nIf you work on main and open a PR, you can't work on anything else until that PR is merged. Every new commit you push to main goes into the same PR. If the maintainer asks for changes, you can't start a different contribution in parallel.\n\nInstead, create a feature branch for every contribution. Branch names should be descriptive: `fix/login-validation-error`, `feature/add-dark-mode`, `docs/update-readme-examples`. This way:\n- Your main branch stays clean and syncs easily with upstream\n- You can have multiple PRs open simultaneously\n- Each PR contains only the changes relevant to one task\n- If a PR is rejected, you just delete that branch - main is unaffected\n\nThe naming convention matters for readability. When a maintainer sees a branch called `fix/null-pointer-in-checkout`, they immediately know what to expect in the PR.",
+      "details": [
+        "Before creating a branch, sync your main with upstream to ensure you're branching from the latest code. This prevents conflicts and ensures your changes are based on the most recent version of the project.",
+        "Use descriptive branch names with a prefix that indicates the type of change: fix/ for bug fixes, feature/ for new features, docs/ for documentation changes, refactor/ for code restructuring, test/ for adding tests. Examples: fix/user-email-validation, feature/search-autocomplete, docs/api-examples.",
+        "Switch between branches with `git checkout branch-name` or the newer `git switch branch-name`. Use `git branch` to see all local branches and which one you're on (marked with *).",
+        "Delete branches after they're merged. Locally: `git branch -d branch-name`. On GitHub: the PR page has a 'Delete branch' button after merge. Keep your branch list clean - stale branches create confusion.",
+        "If you need to pause work on one branch and start another, commit (or stash) your current changes first. Uncommitted changes follow you to the new branch, which creates confusion. Use `git stash` to temporarily save changes and `git stash pop` to restore them."
+      ],
+      "commands": [
+        { "label": "Sync main with upstream before branching", "code": "git checkout main\ngit fetch upstream\ngit merge upstream/main\ngit push origin main" },
+        { "label": "Create a new feature branch and switch to it", "code": "git checkout -b fix/login-validation-error" },
+        { "label": "List all local branches", "code": "git branch" },
+        { "label": "Switch to an existing branch", "code": "git checkout branch-name\n# or (newer syntax)\ngit switch branch-name" },
+        { "label": "Delete a merged branch", "code": "git branch -d fix/login-validation-error" },
+        { "label": "Stash uncommitted changes temporarily", "code": "git stash\n# ... do other work ...\ngit stash pop  # restore stashed changes" }
+      ],
+      "resources": [
+        { "title": "Git Branching - Basic Branching and Merging", "url": "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging", "type": "docs" }
+      ],
+      "tips": [
+        "One branch = one feature/fix = one PR. Never mix multiple unrelated changes in one branch. This makes reviews easier and lets maintainers merge each change independently.",
+        "If you realize you're on the wrong branch, don't panic. `git stash` your changes, switch to the correct branch, and `git stash pop` to apply them there.",
+        "Use `git branch -a` to see all branches including remote ones. This helps you check if someone else is already working on a similar feature."
+      ]
+    },
+    {
+      "step": 3,
+      "id": "stage-commit",
+      "title": "Stage, Commit, and Write Good Messages",
+      "description": "Staging selects which changes go into a commit. The commit message explains why you made the change. Together, they create a clean, understandable history.",
+      "mentor_guidance": "Commits are the building blocks of your contribution. A PR with clean, well-organized commits tells the reviewer: 'This person knows what they're doing.'\n\nHere's how I think about commits:\n\nEach commit should be a single logical change. Not 'I worked for 3 hours and here's everything I did.' Rather: 'I fixed the email validation bug' (commit 1), 'I added a test for the fix' (commit 2), 'I updated the error message to be more helpful' (commit 3).\n\nThe commit message format that most open source projects follow:\n\n```\ntype: short description (50 chars max)\n\nLonger explanation of why this change is needed,\nwhat it does, and any important context. Wrap at 72 chars.\n\nFixes #123\n```\n\nTypes: fix, feat, docs, test, refactor, style, chore.\n\nThe subject line answers 'what does this commit do?' in imperative mood: 'Fix validation error' not 'Fixed validation error' or 'Fixes validation error.'\n\nThe body answers 'why is this change necessary?' This is where you explain the problem, the approach you took, and any tradeoffs. The reviewer (and future developers) will thank you for this context.\n\nThe footer links to issues. `Fixes #123` tells GitHub to automatically close issue #123 when this commit is merged.",
+      "details": [
+        "Staging is the step between editing files and committing. Use `git add filename` to stage specific files, or `git add -p` to stage individual chunks within a file. Never use `git add .` blindly - review what you're staging first with `git status` and `git diff`.",
+        "Write commit messages in imperative mood: 'Add feature' not 'Added feature'. Think of the commit message as completing the sentence: 'If applied, this commit will ___.' 'If applied, this commit will fix the login validation error.' This convention is used by Git itself and most major open source projects.",
+        "The 50/72 rule: keep the subject line under 50 characters, wrap the body at 72 characters. This ensures readability in `git log`, GitHub, and terminal tools. The subject line should be a concise summary; the body provides context and reasoning.",
+        "Use conventional commit prefixes: feat: (new feature), fix: (bug fix), docs: (documentation), test: (tests), refactor: (code restructuring), style: (formatting), chore: (maintenance tasks like updating dependencies). Many projects enforce this with tools like commitlint.",
+        "Reference issues in your commit message using 'Fixes #123' or 'Closes #456'. GitHub automatically links the commit to the issue and closes the issue when the commit is merged. Use 'Refs #123' if the commit is related to an issue but doesn't fully resolve it.",
+        "Use `git diff --staged` to review exactly what you're about to commit. This is your last chance to catch unintended changes, debug logs, or personal configuration files before they become part of the permanent history."
+      ],
+      "commands": [
+        { "label": "Check what files have changed", "code": "git status" },
+        { "label": "See the actual changes (diff)", "code": "git diff" },
+        { "label": "Stage specific files", "code": "git add src/auth/login.ts src/auth/login.test.ts" },
+        { "label": "Stage changes interactively (pick chunks)", "code": "git add -p" },
+        { "label": "Review staged changes before committing", "code": "git diff --staged" },
+        { "label": "Commit with a good message", "code": "git commit -m \"fix: validate email format before login attempt\n\nPreviously, malformed emails caused a 500 error from the auth API.\nNow we validate the format client-side and show a helpful error.\n\nFixes #247\"" },
+        { "label": "Amend the last commit (if you forgot something)", "code": "git add forgotten-file.ts\ngit commit --amend --no-edit" }
+      ],
+      "resources": [
+        { "title": "How to Write a Git Commit Message (Chris Beams)", "url": "https://cbea.ms/git-commit/", "type": "article" },
+        { "title": "Conventional Commits Spec", "url": "https://www.conventionalcommits.org/en/v1.0.0/", "type": "docs" }
+      ],
+      "tips": [
+        "Use `git add -p` (patch mode) to stage only specific parts of a file. This lets you split your changes into multiple logical commits even if they're in the same file.",
+        "Run `git diff --staged` before every commit. It takes 5 seconds and catches embarrassing mistakes: leftover console.logs, commented-out code, debug variables, and personal config changes.",
+        "If your commit message needs more than one sentence to describe what the commit does, your commit is probably too large. Break it into smaller, focused commits."
+      ]
+    },
+    {
+      "step": 4,
+      "id": "sync-upstream",
+      "title": "Keep Your Fork in Sync with Upstream",
+      "description": "The original project keeps moving forward while you work. Regularly sync your fork to stay up-to-date and avoid painful merge conflicts.",
+      "mentor_guidance": "This is the step that trips up 90% of first-time open source contributors. You fork a project, spend a week writing code, push your PR, and then... conflicts. Everywhere. The project moved on without you.\n\nHere's the thing: a popular open source project might receive 10-50 commits per day. If you fork on Monday and open a PR on Friday, the codebase may have changed significantly in files you also modified.\n\nThe fix is simple: sync your fork regularly. I do it every morning before I start working, and again before I open a PR. It takes 30 seconds and prevents hours of conflict resolution.\n\nThe workflow is:\n1. Fetch the latest from upstream\n2. Merge upstream/main into your local main\n3. Push the updated main to your fork (origin)\n4. If you're on a feature branch, rebase it onto the updated main\n\nRebase vs. merge is a holy war in the Git community. For open source contributions, I recommend rebase because it keeps your commit history clean and linear. Most maintainers prefer this. But if rebase feels scary, merge works fine too - the end result is the same code.",
+      "details": [
+        "Fetch brings the latest commits from upstream to your local machine WITHOUT merging them. It's a safe, read-only operation. `git fetch upstream` downloads new commits but doesn't change your working directory. Think of it as 'check for updates' without installing them.",
+        "After fetching, merge upstream/main into your local main: `git checkout main && git merge upstream/main`. This brings your local main up to date. Then push to your fork: `git push origin main`. Now your fork's main branch matches the original project.",
+        "To update your feature branch with the latest main, use rebase: `git checkout your-branch && git rebase main`. Rebase replays your commits on top of the latest main, creating a clean, linear history. This is what most maintainers expect.",
+        "If rebase causes conflicts, Git will pause and ask you to resolve them. Open the conflicted files, look for <<<<<<< / ======= / >>>>>>> markers, choose the correct code, remove the markers, then `git add <file>` and `git rebase --continue`. If it gets too messy, `git rebase --abort` takes you back to where you started.",
+        "Don't be afraid of conflicts. They just mean two people changed the same lines. You need to decide which version to keep (or combine them). VS Code highlights conflicts beautifully and provides 'Accept Current', 'Accept Incoming', and 'Accept Both' buttons.",
+        "Sync before opening a PR. This ensures your PR doesn't have conflicts and shows the maintainer that your changes are based on the latest code. A PR with conflicts signals 'this contributor might not be familiar with Git workflows.'"
+      ],
+      "commands": [
+        { "label": "Sync your fork's main with upstream (the full workflow)", "code": "git checkout main\ngit fetch upstream\ngit merge upstream/main\ngit push origin main" },
+        { "label": "Update your feature branch with latest main (rebase)", "code": "git checkout your-feature-branch\ngit rebase main" },
+        { "label": "Update your feature branch with latest main (merge alternative)", "code": "git checkout your-feature-branch\ngit merge main" },
+        { "label": "If rebase has conflicts - resolve and continue", "code": "# 1. Fix conflicts in your editor\n# 2. Stage resolved files\ngit add <resolved-file>\n# 3. Continue the rebase\ngit rebase --continue" },
+        { "label": "Abort a messy rebase and start over", "code": "git rebase --abort" },
+        { "label": "Force-push after rebase (ONLY to your feature branch)", "code": "git push --force-with-lease origin your-feature-branch" }
+      ],
+      "resources": [
+        { "title": "GitHub Docs: Syncing a Fork", "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork", "type": "docs" },
+        { "title": "Git Rebase vs Merge (Atlassian)", "url": "https://www.atlassian.com/git/tutorials/merging-vs-rebasing", "type": "article" }
+      ],
+      "tips": [
+        "Sync every morning before you start coding. It's 30 seconds of prevention vs. hours of conflict resolution.",
+        "After rebasing, you need to force-push your feature branch: `git push --force-with-lease`. The --force-with-lease flag is safer than --force because it won't overwrite changes you haven't seen. NEVER force-push to main.",
+        "If merge conflicts feel overwhelming, use VS Code's built-in merge editor - it shows a 3-way diff (base, yours, theirs) and makes conflicts much easier to understand and resolve."
+      ]
+    },
+    {
+      "step": 5,
+      "id": "push-and-pr",
+      "title": "Push and Open a Pull Request",
+      "description": "Push your branch to your fork and create a pull request against the original project. The PR is where your contribution gets reviewed, discussed, and hopefully merged.",
+      "mentor_guidance": "The pull request is your contribution's first impression. I've seen technically excellent code get a poor reception because the PR was poorly described, and I've seen simple fixes get enthusiastic approval because the PR was clear and well-structured.\n\nHere's my PR template that I use for every contribution:\n\nTitle: A clear, concise description of what the PR does. Use the same imperative mood as commit messages: 'Fix email validation on login form' not 'I fixed the email validation.'\n\nDescription:\n- What: What does this PR change?\n- Why: What problem does it solve? Link to the issue.\n- How: Brief explanation of the approach (not a line-by-line walkthrough).\n- Testing: How did you verify it works? What did you test?\n- Screenshots: If it's a UI change, before/after screenshots are mandatory.\n\nBefore opening the PR, run the project's tests locally. Nothing sinks a PR faster than failing CI. Also check: did the linter pass? Are there any TypeScript errors? Did you follow the project's code style?\n\nMaintainers are volunteers. Respect their time by making your PR as easy to review as possible. A clean, well-described PR gets reviewed faster than a messy one.",
+      "details": [
+        "Push your feature branch to your fork: `git push origin your-branch-name`. If this is the first push for this branch, Git will suggest: `git push --set-upstream origin your-branch-name`. After pushing, Git often prints a URL to create the PR directly.",
+        "On GitHub, navigate to your fork or the original repo - GitHub will show a banner: 'your-branch had recent pushes - Compare & pull request.' Click it. If you don't see the banner, go to your fork → Branches → find your branch → click 'New pull request.'",
+        "Write a descriptive PR title and description. The title should complete the sentence: 'This PR will ___.' The description should explain: what the change does, why it's needed (link the issue with 'Fixes #123'), how you implemented it, how you tested it, and any screenshots for UI changes.",
+        "Before submitting, review the 'Files changed' tab on the PR page. This is exactly what the reviewer will see. Check for: leftover debug code, unnecessary whitespace changes, unrelated files, and any changes you didn't intend. Remove anything that's not part of the contribution.",
+        "After opening the PR, watch for CI checks (green checkmarks or red X marks). If CI fails, click the details link to see what went wrong. Common failures: lint errors, test failures, build errors, type checking errors. Fix these immediately - most maintainers won't review a PR with failing CI.",
+        "Be responsive to review feedback. Maintainers may request changes, ask questions, or suggest alternative approaches. Push new commits to address feedback - they automatically appear in the PR. Don't force-push during review unless the maintainer explicitly asks for it, as it makes it harder to see what changed."
+      ],
+      "commands": [
+        { "label": "Push your branch to your fork", "code": "git push origin fix/login-validation-error" },
+        { "label": "Push and set upstream tracking", "code": "git push -u origin fix/login-validation-error" },
+        { "label": "Create a PR from the command line (with GitHub CLI)", "code": "gh pr create --title \"fix: validate email before login\" --body \"Fixes #247\n\n## What\nAdds client-side email validation on the login form.\n\n## Why\nMalformed emails caused 500 errors from the auth API.\n\n## Testing\n- Tested with valid/invalid emails\n- Ran existing test suite\"" },
+        { "label": "Check PR status and CI checks", "code": "gh pr status\ngh pr checks" }
+      ],
+      "resources": [
+        { "title": "GitHub Docs: Creating a Pull Request from a Fork", "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork", "type": "docs" },
+        { "title": "How to Write the Perfect Pull Request", "url": "https://github.blog/developer-skills/github/how-to-write-the-perfect-pull-request/", "type": "article" }
+      ],
+      "tips": [
+        "Install GitHub CLI (`gh`) - it lets you create PRs, check CI status, and manage issues from the terminal. It's a massive productivity boost.",
+        "If the project has a PR template (you'll see it auto-fill when creating the PR), fill out every section. Skipping sections tells the maintainer you didn't read the template.",
+        "After opening the PR, add yourself as a reviewer and do a self-review of the 'Files changed' tab. You'll often catch things you missed before the maintainer sees them."
+      ]
+    },
+    {
+      "step": 6,
+      "id": "handle-conflicts",
+      "title": "Resolve Merge Conflicts Like a Pro",
+      "description": "Merge conflicts happen when two people change the same lines. They're not errors - they're Git asking you to make a decision. Here's how to handle them calmly.",
+      "mentor_guidance": "Merge conflicts are the single biggest source of anxiety for new Git users. I've seen developers completely avoid rebasing, delete their local repo and re-clone, or even abandon PRs because of conflicts.\n\nLet me demystify this: a merge conflict is not an error. It's Git being honest with you. It's saying: 'Two people changed the same lines, and I don't know which version to keep. You need to decide.'\n\nThat's it. It's a decision, not an error.\n\nHere's what a conflict looks like in a file:\n\n```\n<<<<<<< HEAD\nconst greeting = 'Hello, World!';\n=======\nconst greeting = 'Hi there!';\n>>>>>>> feature-branch\n```\n\nEverything between <<<<<<< HEAD and ======= is the current version (usually main). Everything between ======= and >>>>>>> is your version. You need to:\n\n1. Decide which version to keep (or combine them)\n2. Remove the conflict markers (<<<, ===, >>>)\n3. Save the file\n4. Stage it with `git add`\n5. Continue with `git rebase --continue` or `git merge --continue`\n\nVS Code makes this even easier with colored highlights and 'Accept Current Change', 'Accept Incoming Change', 'Accept Both Changes' buttons above each conflict.\n\nAfter resolving a few conflicts, you'll realize they're no big deal. The key is to stay calm, read both versions carefully, and make an informed decision about which code to keep.",
+      "details": [
+        "Conflicts happen during merge or rebase when the same lines were changed in both branches. Git can auto-merge changes to different files or different parts of the same file, but when the same lines are affected, it needs human input.",
+        "Conflict markers: <<<<<<< HEAD marks the start of the current branch's version. ======= separates the two versions. >>>>>>> branch-name marks the end of the incoming branch's version. Your job is to replace the entire block (including markers) with the correct code.",
+        "VS Code highlights conflicts with color and provides one-click buttons: 'Accept Current Change' (keep HEAD), 'Accept Incoming Change' (keep the other branch), 'Accept Both Changes' (keep both, concatenated), or manually edit for a custom resolution. Use 'Accept Both' carefully - it often produces invalid code that needs manual editing.",
+        "After resolving all conflicts in a file, remove the conflict markers (<<<, ===, >>>), save the file, and stage it: `git add <filename>`. Then continue: `git rebase --continue` (if rebasing) or `git merge --continue` (if merging). If there are conflicts in multiple files, resolve them one at a time.",
+        "If a rebase gets too messy, abort and start fresh: `git rebase --abort`. This takes you back to exactly where you were before the rebase. You haven't lost any work. Try again, perhaps with a different approach, or ask for help.",
+        "Prevention is better than cure: sync your fork frequently (daily), keep PRs small and focused, and avoid reformatting files you don't need to change. Most conflicts come from large, stale PRs that touch many files."
+      ],
+      "commands": [
+        { "label": "See which files have conflicts", "code": "git status\n# Conflicted files show as 'both modified'" },
+        { "label": "After resolving conflicts in a file, stage it", "code": "git add <resolved-file>" },
+        { "label": "Continue rebase after resolving conflicts", "code": "git rebase --continue" },
+        { "label": "Continue merge after resolving conflicts", "code": "git merge --continue" },
+        { "label": "Abort and start over if things get messy", "code": "git rebase --abort\n# or\ngit merge --abort" },
+        { "label": "Use VS Code's merge editor for complex conflicts", "code": "# In VS Code, click 'Resolve in Merge Editor'\n# at the top of a conflicted file for a 3-way view" }
+      ],
+      "resources": [
+        { "title": "Git - Resolving Merge Conflicts", "url": "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging#_basic_merge_conflicts", "type": "docs" },
+        { "title": "VS Code Merge Editor Guide", "url": "https://code.visualstudio.com/docs/sourcecontrol/overview#_merge-conflicts", "type": "docs" }
+      ],
+      "tips": [
+        "Stay calm. Conflicts are normal and expected. Even experienced developers get them daily. The worst thing you can do is panic and start deleting things.",
+        "When in doubt about which version to keep, look at the git log for both sides to understand the intent behind each change. If still unsure, ask the maintainer in your PR comments.",
+        "The best way to avoid conflicts: keep your PRs small, sync frequently, and don't reformat files unnecessarily. A PR that changes 10 lines rarely conflicts. A PR that changes 500 lines almost always does."
+      ]
+    },
+    {
+      "step": 7,
+      "id": "advanced-git",
+      "title": "Advanced Git Techniques",
+      "description": "Interactive rebase, cherry-pick, bisect, and other power tools that experienced open source contributors use daily. Learn these when you're ready to level up.",
+      "mentor_guidance": "You don't need these for your first contribution. But once you've made 3-5 PRs, these techniques will make you dramatically more efficient and impressive to maintainers.\n\nInteractive rebase is my most-used advanced feature. It lets you rewrite history: squash 5 messy commits into 1 clean one, reorder commits, edit commit messages, or drop commits entirely. Maintainers often ask: 'Can you squash your commits?' This is how you do it.\n\nCherry-pick lets you take a single commit from one branch and apply it to another. Useful when you fix a bug on your feature branch but the fix is needed on main urgently.\n\nGit bisect is magical. You tell Git 'this commit was good, this commit was bad' and it uses binary search to find the exact commit that introduced the bug. On a project with 1000 commits between good and bad, bisect finds the culprit in about 10 steps.\n\nGit stash is your 'pause button.' Stash your work-in-progress changes, switch to another branch, do something else, switch back, and restore your stashed changes. I use it multiple times per day.\n\nLearn these one at a time, as you need them. Don't try to memorize them all at once.",
+      "details": [
+        "Interactive rebase (`git rebase -i HEAD~5`) opens an editor showing your last 5 commits. You can: 'pick' (keep as-is), 'squash' (combine with previous), 'reword' (edit the message), 'edit' (stop and amend), 'drop' (remove entirely), or reorder commits by moving lines. This is how you clean up messy commit history before opening a PR.",
+        "Cherry-pick (`git cherry-pick <commit-hash>`) takes a single commit and applies it to your current branch. Useful when you need a specific fix from another branch without merging the entire branch. The new commit gets a new hash but has the same changes and message.",
+        "Git bisect automates bug hunting. Run `git bisect start`, then `git bisect bad` (current commit has the bug), then `git bisect good <old-commit-hash>` (this commit didn't have the bug). Git checks out the middle commit and asks 'good or bad?' Keep answering until it finds the exact commit that introduced the bug.",
+        "Git stash saves uncommitted changes temporarily. `git stash` saves and cleans your working directory. `git stash pop` restores the most recent stash. `git stash list` shows all stashes. `git stash drop` removes a stash. Use named stashes with `git stash push -m 'work in progress on feature X'`.",
+        "Squashing commits before PR: if you have 10 messy commits ('wip', 'fix typo', 'try again'), squash them into 1-3 clean commits. Run `git rebase -i HEAD~10`, change 'pick' to 'squash' (or 's') for the commits you want to combine, save, then write a clean commit message for the combined commit.",
+        "The reflog (`git reflog`) is your safety net. It records every change to HEAD - every commit, checkout, rebase, reset. If you accidentally lose commits (through a bad rebase or reset), the reflog lets you find and recover them. It's Git's 'undo history.'"
+      ],
+      "commands": [
+        { "label": "Interactive rebase - clean up last 5 commits", "code": "git rebase -i HEAD~5\n# In the editor, change 'pick' to 'squash' for commits to combine" },
+        { "label": "Cherry-pick a specific commit onto current branch", "code": "git cherry-pick abc1234" },
+        { "label": "Start a bisect session to find a bug", "code": "git bisect start\ngit bisect bad          # current commit has the bug\ngit bisect good abc1234  # this old commit was fine\n# Git checks out middle commits - test and mark each as good/bad\ngit bisect good  # or  git bisect bad\n# Repeat until Git finds the culprit\ngit bisect reset  # when done" },
+        { "label": "Stash changes with a name", "code": "git stash push -m 'halfway through login refactor'" },
+        { "label": "List and restore stashes", "code": "git stash list\ngit stash pop     # restore most recent\ngit stash pop stash@{2}  # restore specific stash" },
+        { "label": "View the reflog (your safety net)", "code": "git reflog\n# Find a lost commit hash, then:\ngit checkout <hash>" }
+      ],
+      "resources": [
+        { "title": "Git Interactive Rebase Guide", "url": "https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History", "type": "docs" },
+        { "title": "Git Bisect Documentation", "url": "https://git-scm.com/docs/git-bisect", "type": "docs" }
+      ],
+      "tips": [
+        "If a maintainer asks you to 'squash your commits,' use interactive rebase: `git rebase -i HEAD~N` where N is the number of commits. Change 'pick' to 'squash' for all but the first, then write a clean combined message.",
+        "The reflog is your panic button. If you ever think you've lost work, run `git reflog` - your commits are almost certainly still there. Git almost never permanently deletes data.",
+        "Learn one advanced technique at a time. Master stash first (you'll use it daily), then interactive rebase (before opening PRs), then cherry-pick and bisect (as needed)."
+      ]
+    }
+  ]
+}
