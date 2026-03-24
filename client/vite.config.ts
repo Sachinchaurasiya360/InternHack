@@ -10,6 +10,15 @@ export default defineConfig({
       loader: { '.keep': 'text' },
     },
   },
+  server: {
+    proxy: {
+      // Proxy sitemap.xml to backend so it works in development
+      '/sitemap.xml': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     chunkSizeWarningLimit: 600,
     rollupOptions: {

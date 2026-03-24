@@ -1,5 +1,7 @@
 import DodoPayments from "dodopayments";
 import { prisma } from "../../database/db.js";
+import { sendEmail } from "../../utils/email.utils.js";
+import { premiumConfirmationEmailHtml } from "../../utils/email-templates.js";
 
 // ── Product IDs (set in Dodo dashboard, referenced by env vars) ──
 const PRODUCT_IDS = {
@@ -192,6 +194,19 @@ export class PaymentService {
       where: { userId, status: "PENDING" },
       data: { dodoSubscriptionId: sub.subscription_id },
     });
+
+    // Send confirmation email
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    });
+    if (user?.email) {
+      sendEmail({
+        to: user.email,
+        subject: "Welcome to InternHack Pro!",
+        html: premiumConfirmationEmailHtml(user.name ?? "there", plan, now, endDate),
+      }).catch((err) => console.error("[Payment] Failed to send confirmation email:", err));
+    }
   }
 
   private async cancelSubscription(subscriptionId: string) {

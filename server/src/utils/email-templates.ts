@@ -207,8 +207,8 @@ export function followUpEmailHtml(name: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How's it going?</title>
 </head>
-<body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
     <!-- Header -->
     <tr>
       <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
@@ -217,43 +217,241 @@ export function followUpEmailHtml(name: string): string {
     </tr>
     <!-- Body -->
     <tr>
-      <td style="padding:28px 24px;">
-        <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}, quick check-in</h2>
-        <p style="margin:0 0 18px;font-size:15px;line-height:1.7;color:#3f3f46;">
-          It's been 10 days since you joined InternHack &mdash; we'd genuinely love to know how the experience has been so far.
+      <td style="background-color:#ffffff;padding:32px 24px;">
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}, quick check-in</h2>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#52525b;">
+          It's been 10 days since you joined. Here's what you might have missed:
         </p>
-        <!-- Checklist -->
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;padding:16px 18px;background-color:#f0fdf4;border-left:3px solid #22c55e;">
-          <tr><td style="padding:3px 0;font-size:14px;font-weight:600;color:#166534;">Have you tried these yet?</td></tr>
-          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Explore the Learning Hub &mdash; 3,300+ DSA problems and 500+ lessons curated by Google, Amazon &amp; Meta engineers</td></tr>
-          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Score your resume with the AI ATS Scorer</td></tr>
-          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Practice SQL with 188 interactive exercises</td></tr>
-          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Generate a cover letter for your dream role</td></tr>
-          <tr><td style="padding:3px 0;font-size:13px;color:#3f3f46;line-height:1.6;">&bull; Get verified skill badges for your profile</td></tr>
-        </table>
-        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#52525b;">
-          We're constantly shipping new stuff to help you land your first (or next) gig. Your feedback helps us build better.
-        </p>
-        <!-- CTA -->
-        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 12px;">
+
+        <!-- Feature cards -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
+          <!-- Row 1 -->
           <tr>
-            <td style="background-color:#18181b;border-radius:6px;">
-              <a href="https://www.internhack.xyz" target="_blank" style="display:inline-block;padding:12px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;width:48%;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">Learning Hub</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">3,300+ DSA problems, 500+ lessons across 12 technologies</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;width:48%;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">AI Resume Tools</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">ATS scorer, cover letter generator, and LaTeX resume builder</p>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height:8px;"></td></tr>
+          <!-- Row 2 -->
+          <tr>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">Open Source</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">First PR guide, GSoC proposal writing, codebase reading, and repo discovery</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">Grants &amp; Hackathons</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">Funding opportunities, hackathon calendar, and project ideas</p>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height:8px;"></td></tr>
+          <!-- Row 3 -->
+          <tr>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">SQL Practice</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">188 interactive exercises running right in your browser</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">Mock Interviews</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">AI-powered practice sessions for technical and behavioral rounds</p>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height:8px;"></td></tr>
+          <!-- Row 4 -->
+          <tr>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">Skill Verification</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">Proctored tests with verified badges for your profile</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">Jobs &amp; Internships</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">Fresh listings updated every 6 hours with one-click apply</p>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height:8px;"></td></tr>
+          <!-- Row 5 -->
+          <tr>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">Company Directory</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">Reviews, tech stacks, salaries, and contacts for top companies</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">YC Companies</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">Browse Y Combinator startups with founder info and hiring status</p>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height:8px;"></td></tr>
+          <!-- Row 6 -->
+          <tr>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">IIT Professors</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">1,500+ IIT professors with email, department, and research areas</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">HR Contacts</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">1,800+ IT HR contacts with email and LinkedIn for direct outreach</p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Separator -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+          <tr><td style="border-top:1px solid #e4e4e7;"></td></tr>
+        </table>
+
+        <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#52525b;text-align:center;">
+          We ship new features every week. Your feedback shapes what we build next.
+        </p>
+
+        <!-- CTA -->
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 16px;">
+          <tr>
+            <td style="background-color:#18181b;border-radius:8px;">
+              <a href="https://www.internhack.xyz" target="_blank" style="display:inline-block;padding:14px 40px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">
                 Jump Back In
               </a>
             </td>
           </tr>
         </table>
+
         <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;">
-          Got ideas or feedback? Just reply to this email &mdash; we read every one.
+          Got ideas or feedback? Just reply to this email - we read every one.
         </p>
       </td>
     </tr>
     <!-- Footer -->
     <tr>
-      <td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;">
         <p style="margin:0 0 6px;font-size:12px;">
-          <a href="https://linkedin.com/company/internhack" style="color:#18181b;text-decoration:none;margin:0 6px;">LinkedIn</a>
+          <a href="https://linkedin.com/company/internhack" style="color:#18181b;text-decoration:none;">LinkedIn</a>
+        </p>
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">
+          &copy; ${new Date().getFullYear()} InternHack. All rights reserved.
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export function premiumConfirmationEmailHtml(
+  name: string,
+  plan: "MONTHLY" | "YEARLY",
+  startDate: Date,
+  endDate: Date,
+): string {
+  const firstName = name.split(" ")[0];
+  const planLabel = plan === "YEARLY" ? "Yearly" : "Monthly";
+  const price = plan === "YEARLY" ? "$48/year" : "$5/month";
+  const fmtStart = startDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const fmtEnd = endDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to InternHack Pro</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <!-- Header -->
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+      </td>
+    </tr>
+    <!-- Body -->
+    <tr>
+      <td style="background-color:#ffffff;padding:32px 24px;">
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">You're Pro now, ${firstName}!</h2>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#52525b;">
+          Your premium subscription is active. Here are your plan details:
+        </p>
+
+        <!-- Plan details card -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;">
+          <tr>
+            <td style="padding:12px 16px;background-color:#fafafa;border-bottom:1px solid #e4e4e7;">
+              <p style="margin:0;font-size:12px;color:#71717a;">Plan</p>
+              <p style="margin:2px 0 0;font-size:15px;font-weight:700;color:#18181b;">Pro ${planLabel} - ${price}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;background-color:#fafafa;border-bottom:1px solid #e4e4e7;">
+              <p style="margin:0;font-size:12px;color:#71717a;">Started</p>
+              <p style="margin:2px 0 0;font-size:14px;color:#18181b;">${fmtStart}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;background-color:#fafafa;">
+              <p style="margin:0;font-size:12px;color:#71717a;">Next billing date</p>
+              <p style="margin:2px 0 0;font-size:14px;color:#18181b;">${fmtEnd}</p>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:0 0 16px;font-size:15px;font-weight:600;color:#18181b;">What you've unlocked:</p>
+
+        <!-- Premium features -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+          <tr>
+            <td style="padding:10px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;width:48%;">
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Unlimited AI Tools</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.4;">ATS scorer, cover letters, resume builder - no daily limits</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:10px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;width:48%;">
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Mock Interviews</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.4;">AI interview sessions with detailed feedback</p>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height:8px;"></td></tr>
+          <tr>
+            <td style="padding:10px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Priority Support</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.4;">Get help faster with priority email support</p>
+            </td>
+            <td style="width:4%;"></td>
+            <td style="padding:10px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Early Access</p>
+              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.4;">First to try new features before they go public</p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- CTA -->
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 16px;">
+          <tr>
+            <td style="background-color:#18181b;border-radius:8px;">
+              <a href="https://www.internhack.xyz" target="_blank" style="display:inline-block;padding:14px 40px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">
+                Start Exploring
+              </a>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;">
+          Questions about your subscription? Just reply to this email.
+        </p>
+      </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;">
+        <p style="margin:0 0 6px;font-size:12px;">
+          <a href="https://linkedin.com/company/internhack" style="color:#18181b;text-decoration:none;">LinkedIn</a>
         </p>
         <p style="margin:0;font-size:11px;color:#a1a1aa;">
           &copy; ${new Date().getFullYear()} InternHack. All rights reserved.

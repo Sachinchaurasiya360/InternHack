@@ -1,8 +1,11 @@
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router";
+import { SITE_URL } from "../lib/seo.utils";
 
 interface SEOProps {
   title?: string;
   description?: string;
+  /** @deprecated Google ignores keywords meta tag since 2009. Kept for compat. */
   keywords?: string;
   canonicalUrl?: string;
   ogImage?: string;
@@ -14,44 +17,44 @@ interface SEOProps {
 const SITE_NAME = "InternHack";
 const DEFAULT_DESCRIPTION =
   "InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect directly with recruiters.";
-const DEFAULT_KEYWORDS =
-  "internship, jobs, career, resume, ATS score, career roadmap, job board, recruiter, student jobs, campus placement, AI resume checker, internship portal, career path, company explorer";
-const DEFAULT_OG_IMAGE = "/og-image.png";
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export function SEO({
   title,
   description = DEFAULT_DESCRIPTION,
-  keywords = DEFAULT_KEYWORDS,
+  keywords: _keywords,
   canonicalUrl,
   ogImage = DEFAULT_OG_IMAGE,
   ogType = "website",
   noIndex = false,
   structuredData,
 }: SEOProps) {
+  const { pathname } = useLocation();
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - AI-Powered Career Platform for Students`;
+  const effectiveCanonical = canonicalUrl || `${SITE_URL}${pathname}`;
+  const absoluteOgImage = ogImage.startsWith("http") ? ogImage : `${SITE_URL}${ogImage}`;
 
   return (
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={ogType} />
-      <meta property="og:image" content={ogImage} />
+      <meta property="og:image" content={absoluteOgImage} />
       <meta property="og:site_name" content={SITE_NAME} />
-      {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+      <meta property="og:url" content={effectiveCanonical} />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image" content={absoluteOgImage} />
 
-      {/* Canonical */}
-      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+      {/* Canonical — always present */}
+      <link rel="canonical" href={effectiveCanonical} />
 
       {/* Robots */}
       {noIndex && <meta name="robots" content="noindex,nofollow" />}
