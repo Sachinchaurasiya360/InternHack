@@ -178,7 +178,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-500 dark:text-gray-500">
             Don't have an account?{" "}
-            <Link to="/register" className="text-black dark:text-white font-medium hover:underline">
+            <Link to={returnTo ? `/register?from=${encodeURIComponent(returnTo)}` : "/register"} className="text-black dark:text-white font-medium hover:underline">
               Sign up
             </Link>
           </p>

@@ -6,16 +6,18 @@ import { FeaturesSection } from "../../components/FeaturesSection"
 import { HowItWorksSection } from "../../components/HowItWorksSection"
 import { PricingSection } from "../../components/PricingSection"
 import { CTASection } from "../../components/CTASection"
+import { FAQSection, FAQ_ITEMS } from "../../components/FAQSection"
 import { SEO } from "../../components/SEO"
 import { canonicalUrl } from "../../lib/seo.utils"
+import { faqSchema } from "../../lib/structured-data"
 
 export default function LandingPage(){
     return(
         <div className="font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <SEO
               description="InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect with recruiters."
-              keywords="internship, jobs, career platform, resume ATS score, career roadmap, student jobs, campus placement, AI resume checker, recruiter dashboard"
               canonicalUrl={canonicalUrl("/")}
+              structuredData={faqSchema(FAQ_ITEMS)}
             />
             <Navbar/>
             <HeroSection/>
@@ -23,6 +25,7 @@ export default function LandingPage(){
             <FeaturesSection/>
             <HowItWorksSection/>
             <PricingSection/>
+            <FAQSection/>
             <CTASection/>
             <Footer/>
         </div>

@@ -23,6 +23,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
+  const returnTo = searchParams.get("from");
   const initialRole = searchParams.get("role") === "RECRUITER" ? "RECRUITER" : "STUDENT";
   const [role, setRole] = useState<"STUDENT" | "RECRUITER">(initialRole);
   const [form, setForm] = useState({
@@ -36,7 +37,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   const redirectAfterAuth = (userRole: string) => {
-    if (userRole === "RECRUITER") {
+    if (returnTo) {
+      navigate(returnTo);
+    } else if (userRole === "RECRUITER") {
       navigate("/recruiters");
     } else {
       navigate("/student/applications");
@@ -255,7 +258,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-gray-500 dark:text-gray-500">
             Already have an account?{" "}
-            <Link to="/login" className="text-black dark:text-white font-medium hover:underline">
+            <Link to={returnTo ? `/login?from=${encodeURIComponent(returnTo)}` : "/login"} className="text-black dark:text-white font-medium hover:underline">
               Sign in
             </Link>
           </p>

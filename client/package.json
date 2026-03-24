@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:seo": "tsc -b && vite build && node scripts/prerender.mjs",
+    "generate:og": "node scripts/generate-og-image.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -54,6 +56,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "puppeteer": "^24.40.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"

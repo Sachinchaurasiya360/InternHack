@@ -51,9 +51,9 @@ export function HeroSection() {
           variants={fadeInUp}
           className="font-display text-3xl sm:text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight text-gray-950 dark:text-white mb-6"
         >
-          Your career starts
+          AI-Powered Internship &
           <br />
-          <span className="text-gradient-accent">with the right tools</span>
+          <span className="text-gradient-accent">Career Platform for Students</span>
         </motion.h1>
 
         <motion.p

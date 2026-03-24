@@ -58,6 +58,7 @@ import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js"
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
+import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
@@ -224,6 +225,7 @@ app.use("/api/hr/onboarding", onboardingRouter);
 app.use("/api/hr/compliance", complianceRouter);
 app.use("/api/hr/workflows", workflowRouter);
 app.use("/api/hr/analytics", hrAnalyticsRouter);
+app.use("/api/email-inbound", emailInboundRouter);
 
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
