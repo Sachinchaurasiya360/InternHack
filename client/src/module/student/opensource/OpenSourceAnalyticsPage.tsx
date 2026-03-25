@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart3,
   AlertCircle,
   Filter,
   X,
+  Maximize2
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
@@ -78,20 +79,75 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   );
 }
 
-// ─── Chart Card ─────────────────────────────────────────────────
-function ChartCard({ title, subtitle, index, children, className = "" }: { title: string; subtitle: string; index: number; children: React.ReactNode; className?: string }) {
+// ─── Chart Modal ────────────────────────────────────────────────
+function ChartModal({ open, onClose, title, subtitle, children }: { open: boolean; onClose: () => void; title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <motion.div
-      custom={index}
-      variants={cardVariant}
-      initial="hidden"
-      animate="visible"
-      className={`bg-white rounded-2xl border border-gray-200 p-6 shadow-sm ${className}`}
-    >
-      <h3 className="text-lg font-semibold text-gray-900 mb-0.5">{title}</h3>
-      <p className="text-xs text-gray-500 mb-4">{subtitle}</p>
-      {children}
-    </motion.div>
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 40 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed inset-3 sm:inset-6 md:inset-12 lg:inset-20 z-50 bg-white rounded-2xl border border-gray-200 shadow-2xl flex flex-col overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+                <p className="text-xs text-gray-500">{subtitle}</p>
+              </div>
+              <button onClick={onClose} className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                <X className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+            <div className="flex-1 p-5 overflow-auto min-h-0">
+              {children}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ─── Chart Card ─────────────────────────────────────────────────
+function ChartCard({ title, subtitle, index, children, expandedChildren, className = "" }: { title: string; subtitle: string; index: number; children: React.ReactNode; expandedChildren?: React.ReactNode; className?: string }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <>
+      <motion.div
+        custom={index}
+        variants={cardVariant}
+        initial="hidden"
+        animate="visible"
+        className={`bg-white rounded-2xl border border-gray-200 p-6 shadow-sm group hover:border-indigo-200 hover:shadow-md transition-all ${className}`}
+      >
+        <div className="flex items-start justify-between mb-0.5">
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <button
+            onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+            className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-indigo-50 flex items-center justify-center transition-colors shrink-0"
+            title="Expand chart"
+          >
+            <Maximize2 className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" />
+          </button>
+        </div>
+        <p className="text-xs text-gray-500 mb-4">{subtitle}</p>
+        {children}
+      </motion.div>
+      <ChartModal open={expanded} onClose={() => setExpanded(false)} title={title} subtitle={subtitle}>
+        {expandedChildren ?? children}
+      </ChartModal>
+    </>
   );
 }
 
@@ -335,7 +391,19 @@ export default function OpenSourceAnalyticsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* 1 - Category Distribution (Pie) */}
-          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={0}>
+          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={0}
+            expandedChildren={
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={categoryData} cx="50%" cy="50%" innerRadius="25%" outerRadius="45%" dataKey="value" paddingAngle={2} stroke="#fff" strokeWidth={2}>
+                    {categoryData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend formatter={(v) => <span className="text-sm text-gray-600">{v}</span>} />
+                </PieChart>
+              </ResponsiveContainer>
+            }
+          >
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={categoryData} cx="50%" cy="50%" innerRadius={60} outerRadius={105} dataKey="value" paddingAngle={2} stroke="#fff" strokeWidth={2}>
@@ -348,7 +416,19 @@ export default function OpenSourceAnalyticsPage() {
           </ChartCard>
 
           {/* 2 - Year-wise Participation Trend (Line) */}
-          <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={1}>
+          <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={1}
+            expandedChildren={
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={yearTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="year" tick={{ fill: "#374151", fontSize: 13 }} />
+                  <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} dot={{ r: 5, fill: "#6366f1" }} activeDot={{ r: 7 }} name="Organizations" />
+                </LineChart>
+              </ResponsiveContainer>
+            }
+          >
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={yearTrendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -361,7 +441,21 @@ export default function OpenSourceAnalyticsPage() {
           </ChartCard>
 
           {/* 3 - Top Technologies (Horizontal Bar) */}
-          <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={2}>
+          <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={2}
+            expandedChildren={
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 13 }} />
+                  <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 13 }} width={100} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="count" radius={[0, 6, 6, 0]}>
+                    {techData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            }
+          >
             <ResponsiveContainer width="100%" height={340}>
               <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -376,7 +470,21 @@ export default function OpenSourceAnalyticsPage() {
           </ChartCard>
 
           {/* 4 - Top Topics */}
-          <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={3}>
+          <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={3}
+            expandedChildren={
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 13 }} />
+                  <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 13 }} width={120} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="count" radius={[0, 6, 6, 0]}>
+                    {topicData.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 4) % CHART_COLORS.length]} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            }
+          >
             <ResponsiveContainer width="100%" height={340}>
               <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -391,7 +499,21 @@ export default function OpenSourceAnalyticsPage() {
           </ChartCard>
 
           {/* 5 - Top Orgs by Projects */}
-          <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={4}>
+          <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={4}
+            expandedChildren={
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topProjectsData} margin={{ left: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" tick={{ fill: "#6b7280", fontSize: 11 }} angle={-35} textAnchor="end" height={80} />
+                  <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="projects" radius={[6, 6, 0, 0]}>
+                    {topProjectsData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            }
+          >
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={topProjectsData} margin={{ left: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -406,7 +528,19 @@ export default function OpenSourceAnalyticsPage() {
           </ChartCard>
 
           {/* 6 - Years Active Distribution */}
-          <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={5}>
+          <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={5}
+            expandedChildren={
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={yearCountData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="yearsActive" tick={{ fill: "#374151", fontSize: 13 }} />
+                  <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="count" fill="#10b981" radius={[6, 6, 0, 0]} name="Organizations" />
+                </BarChart>
+              </ResponsiveContainer>
+            }
+          >
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={yearCountData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />

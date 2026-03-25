@@ -306,6 +306,6 @@ export const adminExternalJobQuerySchema = z.object({
 
 export const switchAIProviderSchema = z.object({
   service: z.enum(["ATS_SCORE", "COVER_LETTER", "RESUME_GEN", "LATEX_CHAT"]),
-  provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL"]),
+  provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"]),
   modelName: z.string().min(1, "Model name is required"),
 });

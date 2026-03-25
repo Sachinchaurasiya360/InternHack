@@ -357,40 +357,51 @@ export class DsaService {
       prisma.dsaProblem.count({ where }),
     ]);
 
-    let solvedIds = new Set<number>();
+    let solvedMap = new Map<number, { notes: string | null }>();
     let bookmarkedIds = new Set<number>();
     if (studentId) {
       const pIds = problems.map((p) => p.id);
       const [progress, bookmarks] = await Promise.all([
         prisma.studentDsaProgress.findMany({
-          where: { studentId, problemId: { in: pIds }, solved: true },
-          select: { problemId: true },
+          where: { studentId, problemId: { in: pIds } },
+          select: { problemId: true, solved: true, notes: true },
         }),
         prisma.dsaBookmark.findMany({
           where: { studentId, problemId: { in: pIds } },
           select: { problemId: true },
         }),
       ]);
-      solvedIds = new Set(progress.map((p) => p.problemId));
+      for (const p of progress) {
+        if (p.solved) solvedMap.set(p.problemId, { notes: p.notes });
+        else if (p.notes) solvedMap.set(p.problemId, { notes: p.notes });
+      }
       bookmarkedIds = new Set(bookmarks.map((b) => b.problemId));
     }
 
     return {
-      problems: problems.map((p) => ({
-        id: p.id,
-        title: p.title,
-        slug: p.slug,
-        difficulty: p.difficulty,
-        leetcodeUrl: p.leetcodeUrl,
-        gfgUrl: p.gfgUrl,
-        tags: p.tags,
-        companies: p.companies,
-        hints: p.hints,
-        sheets: p.sheets,
-        acceptanceRate: p.acceptanceRate,
-        solved: solvedIds.has(p.id),
-        bookmarked: bookmarkedIds.has(p.id),
-      })),
+      problems: problems.map((p) => {
+        const progressData = solvedMap.get(p.id);
+        return {
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          difficulty: p.difficulty,
+          leetcodeUrl: p.leetcodeUrl,
+          gfgUrl: p.gfgUrl,
+          articleUrl: p.articleUrl,
+          videoUrl: p.videoUrl,
+          hackerrankUrl: p.hackerrankUrl,
+          codechefUrl: p.codechefUrl,
+          tags: p.tags,
+          companies: p.companies,
+          hints: p.hints,
+          sheets: p.sheets,
+          acceptanceRate: p.acceptanceRate,
+          solved: !!progressData,
+          notes: progressData?.notes ?? null,
+          bookmarked: bookmarkedIds.has(p.id),
+        };
+      }),
       total,
       totalPages: Math.ceil(total / limit),
       page,

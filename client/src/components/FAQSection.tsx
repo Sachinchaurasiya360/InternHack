@@ -6,22 +6,22 @@ export const FAQ_ITEMS = [
   {
     question: "What is InternHack?",
     answer:
-      "InternHack is an AI-powered career platform built for students. It combines curated internship listings, an AI resume scorer (ATS checker), a LaTeX resume builder, cover letter generator, coding tutorials, DSA practice, aptitude tests, and direct recruiter connections — all in one place.",
+      "InternHack is an AI-powered career platform built for students. It combines curated internship listings, an AI resume scorer (ATS checker), a LaTeX resume builder, cover letter generator, coding tutorials, DSA practice, aptitude tests, and direct recruiter connections  - all in one place.",
   },
   {
     question: "Is InternHack free for students?",
     answer:
-      "Yes — the core platform is completely free. You can browse jobs, score your resume with our AI ATS checker, access coding tutorials (JavaScript, Python, React, SQL, and more), practice DSA problems, and apply to internships at no cost. A Pro plan unlocks advanced AI features like the LaTeX AI chat and unlimited resume generations.",
+      "Yes  - the core platform is completely free. You can browse jobs, score your resume with our AI ATS checker, access coding tutorials (JavaScript, Python, React, SQL, and more), practice DSA problems, and apply to internships at no cost. A Pro plan unlocks advanced AI features like the LaTeX AI chat and unlimited resume generations.",
   },
   {
     question: "What is an ATS resume score and why does it matter?",
     answer:
-      "ATS (Applicant Tracking System) is software that companies use to filter resumes before a human ever sees them. Our AI-powered ATS scorer analyzes your resume against real ATS criteria — formatting, keyword matching, section structure, and readability — and gives you an actionable score so you can fix issues before applying.",
+      "ATS (Applicant Tracking System) is software that companies use to filter resumes before a human ever sees them. Our AI-powered ATS scorer analyzes your resume against real ATS criteria  - formatting, keyword matching, section structure, and readability  - and gives you an actionable score so you can fix issues before applying.",
   },
   {
     question: "How does InternHack's AI resume checker work?",
     answer:
-      "Upload your resume (PDF or DOCX) and optionally paste the job description. Our AI analyzes formatting, keyword relevance, section completeness, and ATS compatibility. You get a detailed score breakdown with specific suggestions to improve each section — all in under 10 seconds.",
+      "Upload your resume (PDF or DOCX) and optionally paste the job description. Our AI analyzes formatting, keyword relevance, section completeness, and ATS compatibility. You get a detailed score breakdown with specific suggestions to improve each section  - all in under 10 seconds.",
   },
   {
     question: "What coding tutorials and learning resources are available?",
@@ -41,7 +41,7 @@ export const FAQ_ITEMS = [
   {
     question: "Does InternHack help with interview preparation?",
     answer:
-      "Yes. We provide 300+ curated interview questions across 10 categories — JavaScript, React, Node.js, TypeScript, Python, SQL, System Design, Behavioral, HTML/CSS, and Git/DevOps. Each question includes detailed answers, code examples, follow-up questions, and interviewer tips.",
+      "Yes. We provide 300+ curated interview questions across 10 categories  - JavaScript, React, Node.js, TypeScript, Python, SQL, System Design, Behavioral, HTML/CSS, and Git/DevOps. Each question includes detailed answers, code examples, follow-up questions, and interviewer tips.",
   },
 ];
 

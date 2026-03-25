@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -137,20 +137,62 @@ export default function CoverLetterPage() {
     }
   };
 
-  const handleDownload = () => {
-    if (!letterRef.current) return;
-    const content = letterRef.current.innerText;
-    const win = window.open("", "_blank");
-    if (!win) return;
-    win.document.write(`<!DOCTYPE html>
-<html><head><title>Cover Letter</title>
-<style>
-  body { font-family: 'Georgia', serif; max-width: 700px; margin: 60px auto; padding: 0 40px; line-height: 1.7; color: #1a1a1a; font-size: 14px; }
-  @media print { body { margin: 40px; } @page { size: A4; margin: 20mm; } }
-</style></head>
-<body><pre style="white-space:pre-wrap;font-family:inherit;">${content}</pre></body></html>`);
-    win.document.close();
-    setTimeout(() => win.print(), 400);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const downloadMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showDownloadMenu) return;
+    const handleClick = (e: MouseEvent) => {
+      if (downloadMenuRef.current && !downloadMenuRef.current.contains(e.target as Node)) {
+        setShowDownloadMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showDownloadMenu]);
+
+  const handleDownloadPdf = async () => {
+    if (!coverLetter) return;
+    setShowDownloadMenu(false);
+    const html2pdf = (await import("html2pdf.js")).default;
+    const container = document.createElement("div");
+    container.style.cssText =
+      "font-family:Georgia,serif;max-width:700px;padding:40px;line-height:1.7;color:#1a1a1a;font-size:14px;white-space:pre-wrap;";
+    container.innerText = coverLetter;
+    document.body.appendChild(container);
+    await html2pdf()
+      .set({
+        margin: 20,
+        filename: "cover-letter.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      })
+      .from(container)
+      .save();
+    document.body.removeChild(container);
+  };
+
+  const handleDownloadDocx = async () => {
+    if (!coverLetter) return;
+    setShowDownloadMenu(false);
+    const { Document, Paragraph, TextRun, Packer } = await import("docx");
+    const { saveAs } = await import("file-saver");
+
+    const paragraphs = coverLetter.split("\n").map(
+      (line) =>
+        new Paragraph({
+          children: [new TextRun({ text: line, font: "Georgia", size: 24 })],
+          spacing: { after: 120 },
+        })
+    );
+
+    const doc = new Document({
+      sections: [{ children: paragraphs }],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "cover-letter.docx");
   };
 
   return (
@@ -525,13 +567,41 @@ export default function CoverLetterPage() {
                         <Copy className="w-3 h-3" />
                         Copy
                       </button>
-                      <button
-                        onClick={handleDownload}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-gray-950 hover:bg-gray-800 rounded-lg transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
-                      >
-                        <Download className="w-3 h-3" />
-                        PDF
-                      </button>
+                      <div className="relative" ref={downloadMenuRef}>
+                        <button
+                          onClick={() => setShowDownloadMenu((v) => !v)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-gray-950 hover:bg-gray-800 rounded-lg transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+                        >
+                          <Download className="w-3 h-3" />
+                          Download
+                        </button>
+                        <AnimatePresence>
+                          {showDownloadMenu && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 4 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden z-20"
+                            >
+                              <button
+                                onClick={handleDownloadPdf}
+                                className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                              >
+                                <FileText className="w-3.5 h-3.5 text-red-500" />
+                                PDF
+                              </button>
+                              <button
+                                onClick={handleDownloadDocx}
+                                className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                              >
+                                <FileText className="w-3.5 h-3.5 text-blue-500" />
+                                DOCX
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </div>
                   </div>
                   {/* Letter content */}

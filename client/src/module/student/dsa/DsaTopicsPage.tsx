@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, ChevronLeft, ChevronRight, Flame, Target, Zap,
+  Lock, ChevronLeft, ChevronRight, Flame, Target, Zap, Search,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -52,6 +52,7 @@ export default function DsaTopicsPage() {
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
   const [showGate, setShowGate] = useState(false);
   const [page, setPage] = useState(1);
+  const [topicSearch, setTopicSearch] = useState("");
 
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
@@ -80,10 +81,14 @@ export default function DsaTopicsPage() {
   const totalProblems = uniqueProblems;
   const totalSolved = topics?.reduce((s, t) => s + t.solvedCount, 0) ?? 0;
   const overallPct = totalProblems > 0 ? Math.round((totalSolved / totalProblems) * 100) : 0;
+  const allTopicsCount = topics?.length ?? 0;
 
-  const totalTopics = topics?.length ?? 0;
+  const searchedTopics = topics?.filter((t) =>
+    !topicSearch || t.name.toLowerCase().includes(topicSearch.toLowerCase())
+  );
+  const totalTopics = searchedTopics?.length ?? 0;
   const totalPages = Math.ceil(totalTopics / TOPICS_PER_PAGE);
-  const paginatedTopics = topics?.slice((page - 1) * TOPICS_PER_PAGE, page * TOPICS_PER_PAGE);
+  const paginatedTopics = searchedTopics?.slice((page - 1) * TOPICS_PER_PAGE, page * TOPICS_PER_PAGE);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -120,7 +125,7 @@ export default function DsaTopicsPage() {
               DSA Practice
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              {totalProblems.toLocaleString()} problems across {totalTopics} topics &middot; Curated by FAANG engineers
+              {totalProblems.toLocaleString()} problems across {allTopicsCount} topics &middot; Curated by FAANG engineers
               {user && totalSolved > 0 && (
                 <span className="text-emerald-600 dark:text-emerald-400 font-medium"> &middot; {totalSolved} solved</span>
               )}
@@ -202,6 +207,18 @@ export default function DsaTopicsPage() {
           </button>
         ))}
       </motion.div>
+
+      {/* Search */}
+      <div className="relative max-w-sm mb-6">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+        <input
+          type="text"
+          placeholder="Search topics..."
+          value={topicSearch}
+          onChange={(e) => { setTopicSearch(e.target.value); setPage(1); }}
+          className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-100 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950/10 dark:focus:ring-white/10 transition-all"
+        />
+      </div>
 
       {/* Topic List */}
       <div className="space-y-2.5">

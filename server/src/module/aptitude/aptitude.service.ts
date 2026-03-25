@@ -212,6 +212,28 @@ export class AptitudeService {
     };
   }
 
+  async resetTopicProgress(studentId: number, slug: string) {
+    const topic = await prisma.aptitudeTopic.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+    if (!topic) throw new Error("Topic not found");
+
+    const questionIds = await prisma.aptitudeQuestion.findMany({
+      where: { topicId: topic.id },
+      select: { id: true },
+    });
+
+    await prisma.studentAptitudeProgress.deleteMany({
+      where: {
+        studentId,
+        questionId: { in: questionIds.map((q) => q.id) },
+      },
+    });
+
+    return { success: true };
+  }
+
   async getProgress(studentId: number) {
     const total = await prisma.aptitudeQuestion.count();
     const progress = await prisma.studentAptitudeProgress.findMany({

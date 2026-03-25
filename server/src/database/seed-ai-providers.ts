@@ -7,6 +7,7 @@ const services: { service: AIServiceType; provider: AIProviderType; modelName: s
   { service: "COVER_LETTER", provider: "GEMINI", modelName: "gemini-2.5-flash-lite" },
   { service: "RESUME_GEN", provider: "GEMINI", modelName: "gemini-2.5-flash-lite" },
   { service: "LATEX_CHAT", provider: "GEMINI", modelName: "gemini-2.5-flash-lite" },
+  { service: "EMAIL_CHAT", provider: "GEMINI", modelName: "gemini-2.5-flash-lite" },
 ];
 
 async function seedAIProviders() {

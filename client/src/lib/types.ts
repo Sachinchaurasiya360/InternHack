@@ -1,5 +1,5 @@
-export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL";
-export type AIServiceType = "ATS_SCORE" | "COVER_LETTER" | "RESUME_GEN" | "LATEX_CHAT";
+export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" | "CLAUDE";
+export type AIServiceType = "ATS_SCORE" | "COVER_LETTER" | "RESUME_GEN" | "LATEX_CHAT" | "EMAIL_CHAT";
 
 export interface AIServiceConfig {
   id: number;
@@ -779,12 +779,17 @@ export interface DsaCompanyProblem {
   difficulty: string;
   leetcodeUrl?: string;
   gfgUrl?: string;
+  articleUrl?: string;
+  videoUrl?: string;
+  hackerrankUrl?: string;
+  codechefUrl?: string;
   tags: string[];
   companies: string[];
   hints: string[];
   sheets: string[];
   acceptanceRate?: string;
   solved: boolean;
+  notes?: string | null;
   bookmarked: boolean;
 }
 

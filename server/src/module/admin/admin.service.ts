@@ -1626,6 +1626,7 @@ export class AdminService {
       GROQ: !!process.env["GROQ_API_KEY"],
       OPENROUTER: !!process.env["OPENROUTER_API_KEY"],
       CODESTRAL: !!process.env["CODESTRAL_API_KEY"],
+      CLAUDE: !!process.env["CLAUDE_API"],
     };
 
     return { configs, envStatus };

@@ -1111,6 +1111,7 @@ enum AIProviderType {
   GROQ
   OPENROUTER
   CODESTRAL
+  CLAUDE
 }
 
 enum AIServiceType {

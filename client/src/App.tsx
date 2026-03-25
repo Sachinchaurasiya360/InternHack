@@ -214,6 +214,14 @@ const AdminBadgesPage = lazyWithRetry(() => import("./module/admin/AdminBadgesPa
 const AdminAIProvidersPage = lazyWithRetry(() => import("./module/admin/ai/AdminAIProvidersPage"));
 const AdminExternalJobsPage = lazyWithRetry(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
 
+function JobBrowseOrRedirect() {
+  const { isAuthenticated, user } = useAuthStore();
+  if (isAuthenticated && user?.role === "STUDENT") {
+    return <Navigate to="/student/jobs" replace />;
+  }
+  return <JobBrowsePage />;
+}
+
 function JobDetailOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
   const { id } = useParams();
@@ -221,6 +229,32 @@ function JobDetailOrRedirect() {
     return <Navigate to={`/student/jobs/${id}`} replace />;
   }
   return <JobDetailPage />;
+}
+
+function CompanyListOrRedirect() {
+  const { isAuthenticated, user } = useAuthStore();
+  if (isAuthenticated && user?.role === "STUDENT") {
+    return <Navigate to="/student/companies" replace />;
+  }
+  return <CompanyListPage />;
+}
+
+function CompanyDetailOrRedirect() {
+  const { isAuthenticated, user } = useAuthStore();
+  const { slug } = useParams();
+  if (isAuthenticated && user?.role === "STUDENT") {
+    return <Navigate to={`/student/companies/${slug}`} replace />;
+  }
+  return <CompanyDetailPage />;
+}
+
+function YCCompanyOrRedirect() {
+  const { isAuthenticated, user } = useAuthStore();
+  const { slug } = useParams();
+  if (isAuthenticated && user?.role === "STUDENT") {
+    return <Navigate to={`/student/yc/${slug}`} replace />;
+  }
+  return <YCCompanyDetailPage />;
 }
 
 function ApplyRedirect() {
@@ -263,16 +297,16 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/jobs" element={<JobBrowsePage />} />
+          <Route path="/jobs" element={<JobBrowseOrRedirect />} />
           <Route path="/jobs/t/:slug" element={<JobLandingPage />} />
           <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
           <Route path="/jobs/ext/:slug" element={<ExternalJobDetailPage />} />
           <Route path="/internships" element={<GovInternshipsPage />} />
           <Route path="/external-jobs" element={<ScrapedJobsPage />} />
           <Route path="/external-jobs/:id" element={<ScrapedJobDetailPage />} />
-          <Route path="/companies" element={<CompanyListPage />} />
-          <Route path="/companies/:slug" element={<CompanyDetailPage />} />
-          <Route path="/yc/:slug" element={<YCCompanyDetailPage />} />
+          <Route path="/companies" element={<CompanyListOrRedirect />} />
+          <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
+          <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
           <Route path="/ats-score" element={<PublicAtsPage />} />
           <Route path="/grants" element={<GrantsPage />} />
           <Route path="/for-recruiters" element={<RecruiterLandingPage />} />

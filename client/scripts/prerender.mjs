@@ -7,9 +7,12 @@
  *
  * Run: node scripts/prerender.mjs
  * (Automatically called via `npm run build:seo`)
+ *
+ * NOTE: Requires a Chromium-capable environment. On hosts that lack system
+ * Chrome libs (Vercel, some CI containers), the script exits gracefully
+ * with code 0 so the build still succeeds — prerendering is simply skipped.
  */
 
-import puppeteer from "puppeteer";
 import { createServer } from "http";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { join, dirname } from "path";
@@ -82,14 +85,34 @@ async function main() {
     process.exit(1);
   }
 
+  // ── Try to import and launch Puppeteer ──────────────────────────
+  let puppeteer;
+  try {
+    puppeteer = (await import("puppeteer")).default;
+  } catch {
+    console.warn("[prerender] puppeteer not installed — skipping prerender.");
+    process.exit(0);
+  }
+
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  } catch (err) {
+    console.warn(
+      `[prerender] Chrome could not launch (missing system libs?). Skipping prerender.\n` +
+      `  → ${err.message.split("\n")[0]}\n` +
+      `  This is expected on Vercel / serverless build containers.\n` +
+      `  Run "npm run build:seo" locally to prerender before deploying.`
+    );
+    process.exit(0); // exit 0 so the build still succeeds
+  }
+
   const PORT = 4173;
   const server = await startServer(PORT);
   console.log(`Static server running on http://localhost:${PORT}`);
-
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
 
   let rendered = 0;
 

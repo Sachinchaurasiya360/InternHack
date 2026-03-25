@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock, Trophy, Send, RotateCcw } from "lucide-react";
 import api from "../../../lib/axios";
@@ -50,6 +50,24 @@ export default function AptitudeTopicPage() {
     queryFn: () =>
       api.get<AptitudeTopicDetail>(`/aptitude/topics/${slug}?page=${page}&limit=10`).then((r) => r.data),
     enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const resetMutation = useMutation({
+    mutationFn: () => api.delete(`/aptitude/topics/${slug}/progress`),
+    onSuccess: () => {
+      setSubmitted(false);
+      setResultsMap({});
+      setSelectedAnswers({});
+      setTimeLeft(600);
+      setTimerRunning(true);
+      setCurrentQ(0);
+      queryClient.invalidateQueries({ queryKey: queryKeys.aptitude.topic(slug!) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.aptitude.progress() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.aptitude.categories() });
+      toast.success("Progress reset! You can retry all questions.");
+    },
+    onError: () => toast.error("Failed to reset progress"),
   });
 
   // Timer
@@ -170,9 +188,21 @@ export default function AptitudeTopicPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8"
       >
-        <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-2">
-          {topic.name}
-        </h1>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white">
+            {topic.name}
+          </h1>
+          {user && prevAnsweredCount > 0 && (
+            <button
+              onClick={() => resetMutation.mutate()}
+              disabled={resetMutation.isPending}
+              className="shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${resetMutation.isPending ? "animate-spin" : ""}`} />
+              {resetMutation.isPending ? "Resetting..." : "Reset Progress"}
+            </button>
+          )}
+        </div>
         {topic.description && (
           <p className="text-sm text-gray-500 dark:text-gray-500 max-w-lg">{topic.description}</p>
         )}

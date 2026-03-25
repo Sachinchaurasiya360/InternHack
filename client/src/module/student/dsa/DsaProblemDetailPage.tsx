@@ -208,18 +208,18 @@ export default function DsaProblemDetailPage() {
 
       <div className="h-[calc(100vh-64px)] flex flex-col bg-white dark:bg-gray-950">
         {/* ── Top bar ── */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-800/80 bg-white dark:bg-gray-950 shrink-0">
-          <div className="flex items-center gap-3">
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md border ${DIFF_BG[problem.difficulty]} ${DIFF_COLORS[problem.difficulty]}`}>
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b border-gray-200 dark:border-gray-800/80 bg-white dark:bg-gray-950 shrink-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md border shrink-0 ${DIFF_BG[problem.difficulty]} ${DIFF_COLORS[problem.difficulty]}`}>
               {problem.difficulty}
             </span>
-            <h1 className="text-sm font-semibold text-gray-900 dark:text-white truncate max-w-xs sm:max-w-lg">
+            <h1 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
               {problem.leetcodeId && <span className="text-gray-400 dark:text-gray-500 mr-1.5">#{problem.leetcodeId}</span>}
               {problem.title}
             </h1>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {user && (
               <>
                 <button

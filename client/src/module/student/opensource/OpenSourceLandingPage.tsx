@@ -20,6 +20,7 @@ import {
   Star,
   GitPullRequest,
   MessagesSquare,
+  Plus,
 } from "lucide-react";
 
 // ─── Features ─────────────────────────────────────────────────
@@ -130,20 +131,40 @@ const steps = [
   },
 ];
 
-// ─── GSoC Orgs (sample) ──────────────────────────────────────
-const gsocOrgs = [
-  { name: "TensorFlow", lang: "Python/C++", domain: "AI / ML" },
-  { name: "CNCF", lang: "Go", domain: "Cloud Native" },
-  { name: "Apache", lang: "Java", domain: "Big Data" },
-  { name: "Mozilla", lang: "Rust/JS", domain: "Web / Browser" },
-  { name: "Kubernetes", lang: "Go", domain: "Infrastructure" },
-  { name: "OpenCV", lang: "C++/Python", domain: "Computer Vision" },
-  { name: "FOSSASIA", lang: "Python/JS", domain: "Community" },
-  { name: "NumFOCUS", lang: "Python", domain: "Data Science" },
-  { name: "Django", lang: "Python", domain: "Web Framework" },
-  { name: "Git", lang: "C", domain: "Developer Tools" },
-  { name: "PostgreSQL", lang: "C/SQL", domain: "Database" },
-  { name: "Jenkins", lang: "Java", domain: "CI/CD" },
+// ─── Hidden-Gem Repos (YC startups + underrated projects) ────
+const hiddenGemRepos = [
+  { name: "Cal.com", lang: "TypeScript", domain: "Scheduling", yc: "W21" },
+  { name: "Infisical", lang: "TypeScript", domain: "Secret Management", yc: "W23" },
+  { name: "Trigger.dev", lang: "TypeScript", domain: "Background Jobs", yc: "W23" },
+  { name: "Formbricks", lang: "TypeScript", domain: "Surveys & Forms", yc: "W23" },
+  { name: "Dub.co", lang: "TypeScript", domain: "Link Management", yc: "S22" },
+  { name: "Papermark", lang: "TypeScript", domain: "Doc Sharing", yc: "S23" },
+  { name: "Unkey", lang: "TypeScript", domain: "API Key Mgmt", yc: "S23" },
+  { name: "OpenStatus", lang: "TypeScript", domain: "Uptime Monitoring", yc: "W24" },
+  { name: "Hatchet", lang: "Go", domain: "Task Orchestration", yc: "W24" },
+  { name: "Hanko", lang: "Go", domain: "Passkey Auth", yc: "W23" },
+  { name: "Tolgee", lang: "Kotlin/TS", domain: "Localization", yc: "S23" },
+  { name: "Novu", lang: "TypeScript", domain: "Notifications", yc: "W22" },
+  { name: "Documenso", lang: "TypeScript", domain: "Doc Signing" },
+  { name: "Lago", lang: "Ruby/TS", domain: "Billing Engine" },
+  { name: "Webstudio", lang: "TypeScript", domain: "Visual Builder" },
+  { name: "Flagsmith", lang: "Python", domain: "Feature Flags" },
+  { name: "Crowd.dev", lang: "TypeScript", domain: "Community Mgmt" },
+  { name: "Keep", lang: "Python", domain: "Alert Management" },
+  { name: "Gitness", lang: "Go", domain: "Code Hosting" },
+  { name: "Briefer", lang: "TypeScript", domain: "Data Notebooks" },
+  { name: "Polar", lang: "Python/TS", domain: "Creator Monetization" },
+  { name: "Twenty", lang: "TypeScript", domain: "CRM" },
+  { name: "Pocketbase", lang: "Go", domain: "Backend-in-a-File" },
+  { name: "Hoppscotch", lang: "TypeScript", domain: "API Testing" },
+  { name: "Amplication", lang: "TypeScript", domain: "Code Generation" },
+  { name: "OpenBB", lang: "Python", domain: "Finance Research" },
+  { name: "Plane", lang: "TypeScript", domain: "Project Mgmt" },
+  { name: "Taipy", lang: "Python", domain: "Data App Builder" },
+  { name: "Activepieces", lang: "TypeScript", domain: "Automation" },
+  { name: "Erxes", lang: "TypeScript", domain: "Business OS" },
+  { name: "Pezzo", lang: "TypeScript", domain: "LLM Ops" },
+  { name: "Khoj", lang: "Python", domain: "AI Assistant" },
 ];
 
 
@@ -297,7 +318,7 @@ export default function OpenSourceLandingPage() {
             className="grid grid-cols-4 gap-8 mt-16 pt-10 border-t border-gray-200 dark:border-gray-700 max-w-lg"
           >
             {[
-              { value: "50+", label: "Curated Repos" },
+              { value: "30+", label: "Hidden Gems" },
               { value: "20+", label: "Programs" },
               { value: "GSoC", label: "Orgs Tracked" },
               { value: "100%", label: "Free to Use" },
@@ -368,7 +389,7 @@ export default function OpenSourceLandingPage() {
         </div>
       </section>
 
-      {/* ── GSoC Organizations ── */}
+      {/* ── Hidden Gem Repos ── */}
       <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -380,35 +401,59 @@ export default function OpenSourceLandingPage() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-6">
               <Star className="w-3 h-3" />
-              GSoC Organizations
+              Hidden Gems
             </div>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
-              Popular <span className="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent">GSoC Orgs</span>
+              Underrated <span className="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent">Open-Source Repos</span>
             </h2>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              Explore organizations that participate in Google Summer of Code. Start contributing early to build a strong proposal.
+              Skip the mega-repos. These YC-backed startups and indie projects welcome first-time contributors and move fast.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {gsocOrgs.map((org, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+            {hiddenGemRepos.map((repo, i) => (
               <motion.div
-                key={org.name}
+                key={repo.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05, duration: 0.4 }}
+                transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4 }}
                 whileHover={{ y: -4 }}
                 className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:border-amber-200 dark:hover:border-amber-700 hover:shadow-lg hover:shadow-amber-100/50 transition-all text-center group"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center mx-auto mb-3 border border-amber-100 group-hover:scale-110 transition-transform">
-                  <span className="text-lg font-bold text-amber-600">{org.name[0]}</span>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 flex items-center justify-center mx-auto mb-3 border border-amber-100 dark:border-amber-800 group-hover:scale-110 transition-transform">
+                  <span className="text-lg font-bold text-amber-600 dark:text-amber-400">{repo.name[0]}</span>
                 </div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{org.name}</h4>
-                <p className="text-[11px] text-gray-400 mb-2">{org.domain}</p>
-                <span className="inline-block px-2 py-0.5 text-[10px] font-medium bg-gray-50 dark:bg-gray-800 text-gray-500 rounded-full">{org.lang}</span>
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1 truncate">{repo.name}</h4>
+                <p className="text-[11px] text-gray-400 mb-2">{repo.domain}</p>
+                <div className="flex items-center justify-center gap-1.5">
+                  <span className="inline-block px-2 py-0.5 text-[10px] font-medium bg-gray-50 dark:bg-gray-800 text-gray-500 rounded-lg">{repo.lang}</span>
+                  {repo.yc && (
+                    <span className="inline-block px-2 py-0.5 text-[10px] font-bold bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-lg">
+                      YC {repo.yc}
+                    </span>
+                  )}
+                </div>
               </motion.div>
             ))}
+
+            {/* Add Your Repo card */}
+            <motion.a
+              href="mailto:mrsachinchaurasiya@gmail.com?subject=Add%20My%20Repo%20to%20InternHack%20Open%20Source&body=Hi%20InternHack%20Team%2C%0A%0AI%27d%20like%20to%20submit%20my%20open-source%20repo%20for%20listing%20on%20the%20platform.%0A%0ARepo%20Name%3A%20%0AGitHub%20URL%3A%20%0ALanguage%3A%20%0AShort%20Description%3A%20%0AWhy%20it%27s%20great%20for%20contributors%3A%20%0A%0AThanks!"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+              whileHover={{ y: -4 }}
+              className="rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 p-5 hover:border-amber-300 dark:hover:border-amber-600 transition-all text-center group flex flex-col items-center justify-center gap-2 no-underline cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-amber-50 dark:group-hover:bg-amber-900/30 transition-colors">
+                <Plus className="w-5 h-5 text-gray-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors" />
+              </div>
+              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Add Your Repo</h4>
+              <p className="text-[11px] text-gray-400">Request to list your project</p>
+            </motion.a>
           </div>
         </div>
       </section>

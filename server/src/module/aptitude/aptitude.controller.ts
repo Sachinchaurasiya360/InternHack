@@ -17,8 +17,8 @@ export class AptitudeController {
   async getTopicQuestions(req: Request, res: Response, next: NextFunction) {
     try {
       const slug = req.params.slug as string;
-      const page = parseInt(String(req.query.page ?? "1")) || 1;
-      const limit = parseInt(String(req.query.limit ?? "10")) || 10;
+      const page = Math.max(1, parseInt(String(req.query.page ?? "1")) || 1);
+      const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? "10")) || 10));
       const studentId = req.user?.id;
       const result = await this.service.getTopicQuestions(slug, page, limit, studentId);
       if (!result) return res.status(404).json({ error: "Topic not found" });
@@ -57,6 +57,17 @@ export class AptitudeController {
       const limit = parseInt(String(req.query.limit ?? "10")) || 10;
       const studentId = req.user?.id;
       const result = await this.service.getCompanyQuestions(name, page, limit, studentId);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async resetTopicProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const slug = req.params.slug as string;
+      const studentId = req.user!.id;
+      const result = await this.service.resetTopicProgress(studentId, slug);
       res.json(result);
     } catch (err) {
       next(err);

@@ -25,6 +25,15 @@ body {
   color: #f3f4f6;
 }
 
+/* Hide scrollbar but keep scrolling */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Glass card utility */
 .glass {
   background: rgba(255, 255, 255, 0.7);

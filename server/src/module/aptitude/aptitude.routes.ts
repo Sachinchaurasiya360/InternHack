@@ -12,6 +12,7 @@ export const aptitudeRouter = Router();
 // Student-protected routes
 aptitudeRouter.post("/questions/:id/answer", authMiddleware, requireRole("STUDENT"), (req, res, next) => controller.submitAnswer(req, res, next));
 aptitudeRouter.get("/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => controller.getProgress(req, res, next));
+aptitudeRouter.delete("/topics/:slug/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => controller.resetTopicProgress(req, res, next));
 
 // Public routes (with optional auth for progress tracking)
 aptitudeRouter.get("/categories", optionalAuthMiddleware, (req, res, next) => controller.getCategories(req, res, next));

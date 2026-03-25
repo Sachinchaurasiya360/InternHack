@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, Building2, ArrowRight, Brain, BookOpen, MessageSquare } from "lucide-react";
+import { CheckCircle2, Building2, ArrowRight, Brain, BookOpen, MessageSquare, Search } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
@@ -41,6 +41,7 @@ function CircularProgress({ progress, size = 52 }: { progress: number; size?: nu
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [topicSearch, setTopicSearch] = useState("");
 
   const { data: categories, isLoading } = useQuery({
     queryKey: queryKeys.aptitude.categories(),
@@ -62,7 +63,8 @@ export default function AptitudeCategoriesPage() {
   const allTopics = categories?.flatMap((cat) =>
     cat.topics.map((t) => ({ ...t, categorySlug: cat.slug, categoryName: cat.name }))
   ) ?? [];
-  const filteredTopics = activeTab === "all" ? allTopics : allTopics.filter((t) => t.categorySlug === activeTab);
+  const filteredTopics = (activeTab === "all" ? allTopics : allTopics.filter((t) => t.categorySlug === activeTab))
+    .filter((t) => !topicSearch || t.name.toLowerCase().includes(topicSearch.toLowerCase()));
 
   if (isLoading) return <LoadingScreen />;
 
@@ -155,7 +157,7 @@ export default function AptitudeCategoriesPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.15 }}
-        className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-1.5 mb-6"
+        className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-1.5 mb-6 overflow-x-auto no-scrollbar"
       >
         {[
           { key: "all", label: "All Topics" },
@@ -164,7 +166,7 @@ export default function AptitudeCategoriesPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            className={`shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
               activeTab === tab.key
                 ? "bg-gray-950 text-white dark:bg-white dark:text-gray-950 shadow-sm"
                 : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -174,6 +176,18 @@ export default function AptitudeCategoriesPage() {
           </button>
         ))}
       </motion.div>
+
+      {/* Search */}
+      <div className="relative max-w-sm mb-6">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+        <input
+          type="text"
+          placeholder="Search topics..."
+          value={topicSearch}
+          onChange={(e) => setTopicSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-100 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950/10 dark:focus:ring-white/10 transition-all"
+        />
+      </div>
 
       {/* Topic List */}
       <div className="space-y-2.5">
