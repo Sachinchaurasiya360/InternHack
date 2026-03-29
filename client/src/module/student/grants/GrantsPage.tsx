@@ -44,7 +44,6 @@ function resolveGrantLogo(logo: string, website: string): string {
 
 const GUIDANCE_CARDS = [
   { to: "/student/grants/tracker", icon: "ClipboardList", title: "Application Tracker", desc: "Track your grant applications, statuses, and deadlines", iconColor: "text-emerald-500 dark:text-emerald-400", hoverBorder: "hover:border-emerald-300 dark:hover:border-emerald-600" },
-  { to: "/student/grants/hackathons", icon: "Calendar", title: "Hackathon Calendar", desc: "Upcoming blockchain hackathons with prizes and details", iconColor: "text-amber-500 dark:text-amber-400", hoverBorder: "hover:border-amber-300 dark:hover:border-amber-600" },
 ];
 
 const STATUS_CONFIG = {

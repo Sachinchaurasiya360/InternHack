@@ -3,16 +3,18 @@ import type { Request, Response } from "express";
 import { prisma } from "../../database/db.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { subscribeSchema, subscriberListQuerySchema, subscriberIdSchema } from "./newsletter.validation.js";
 
 export const newsletterRouter = Router();
 
 // Public - subscribe
 newsletterRouter.post("/subscribe", async (req: Request, res: Response) => {
   try {
-    const { email } = req.body as { email?: string };
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const parsed = subscribeSchema.safeParse(req.body);
+    if (!parsed.success) {
       return res.status(400).json({ message: "Valid email is required" });
     }
+    const { email } = parsed.data;
     const existing = await prisma.newsletterSubscriber.findUnique({ where: { email } });
     if (existing) {
       return res.status(200).json({ message: "Already subscribed" });
@@ -31,8 +33,8 @@ newsletterRouter.get(
   requireRole("ADMIN"),
   async (req: Request, res: Response) => {
     try {
-      const page = Math.max(1, Number(req.query["page"]) || 1);
-      const limit = Math.min(100, Math.max(1, Number(req.query["limit"]) || 50));
+      const qParsed = subscriberListQuerySchema.safeParse(req.query);
+      const { page, limit } = qParsed.success ? qParsed.data : { page: 1, limit: 50 };
       const [subscribers, total] = await Promise.all([
         prisma.newsletterSubscriber.findMany({
           orderBy: { createdAt: "desc" },
@@ -55,7 +57,9 @@ newsletterRouter.delete(
   requireRole("ADMIN"),
   async (req: Request, res: Response) => {
     try {
-      await prisma.newsletterSubscriber.delete({ where: { id: Number(req.params["id"]) } });
+      const idParsed = subscriberIdSchema.safeParse(req.params);
+      if (!idParsed.success) return res.status(400).json({ message: "Invalid subscriber ID" });
+      await prisma.newsletterSubscriber.delete({ where: { id: idParsed.data.id } });
       return res.status(200).json({ message: "Subscriber removed" });
     } catch {
       return res.status(404).json({ message: "Subscriber not found" });

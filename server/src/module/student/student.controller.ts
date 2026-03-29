@@ -3,6 +3,9 @@ import { StudentService } from "./student.service.js";
 import { applyToJobSchema, submitRoundSchema } from "./student.validation.js";
 import { prisma } from "../../database/db.js";
 import { getPlanTier } from "../../config/usage-limits.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("StudentController");
 
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
@@ -115,7 +118,7 @@ export class StudentController {
       const application = await this.studentService.getApplicationStatusByJob(jobId, req.user.id);
       return res.status(200).json({ applied: !!application, application });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get application status by job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -127,7 +130,7 @@ export class StudentController {
       const applications = await this.studentService.getMyApplications(req.user.id);
       return res.status(200).json({ applications });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get applications", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -146,7 +149,7 @@ export class StudentController {
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get application detail", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -166,7 +169,7 @@ export class StudentController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
         if (error.message === "Already withdrawn") return res.status(400).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to withdraw application", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -186,7 +189,7 @@ export class StudentController {
         if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get round info", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -209,7 +212,7 @@ export class StudentController {
         if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to submit round", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

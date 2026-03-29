@@ -1,19 +1,18 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
+import { opensourceListQuerySchema, repoIdSchema } from "./opensource.validation.js";
 
 export const opensourceRouter = Router();
 
 // Public: list repos with optional filters
 opensourceRouter.get("/", async (req, res, next) => {
   try {
-    const page = Math.max(1, parseInt(String(req.query["page"] || "1"), 10));
-    const limit = Math.min(100, Math.max(1, parseInt(String(req.query["limit"] || "20"), 10)));
-    const search = req.query["search"] as string | undefined;
-    const language = req.query["language"] as string | undefined;
-    const difficulty = req.query["difficulty"] as string | undefined;
-    const domain = req.query["domain"] as string | undefined;
-    const sortBy = (req.query["sortBy"] as string) || "stars";
-    const sortOrder = (req.query["sortOrder"] as string) || "desc";
+    const parsed = opensourceListQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
+      return;
+    }
+    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
 
     const where: Record<string, unknown> = {};
     if (language) where["language"] = { equals: language, mode: "insensitive" };
@@ -51,8 +50,9 @@ opensourceRouter.get("/", async (req, res, next) => {
 // Public: get single repo
 opensourceRouter.get("/:id", async (req, res, next) => {
   try {
-    const id = parseInt(String(req.params["id"]), 10);
-    if (isNaN(id)) { res.status(400).json({ message: "Invalid repo ID" }); return; }
+    const parsed = repoIdSchema.safeParse(req.params);
+    if (!parsed.success) { res.status(400).json({ message: "Invalid repo ID" }); return; }
+    const { id } = parsed.data;
 
     const repo = await prisma.opensourceRepo.findUnique({ where: { id } });
     if (!repo) { res.status(404).json({ message: "Repository not found" }); return; }

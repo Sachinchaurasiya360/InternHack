@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Code2, Database, ArrowRight, BookOpen, Brain, FileCode2, Palette, Zap, Coffee, Layers, Server, Terminal, Blocks, GraduationCap } from "lucide-react";
+import { Code2, Database, ArrowRight, BookOpen, Brain, FileCode2, Palette, Zap, Coffee, Layers, Server, Terminal, Blocks, GraduationCap, BarChart3 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 
@@ -163,6 +163,17 @@ const LESSON_TRACKS = [
     stat: "188 Exercises",
   },
   {
+    id: "data-analytics",
+    title: "Data Analytics & Science",
+    description: "NumPy, Pandas, visualization, statistics, EDA, and machine learning basics with Python.",
+    icon: BarChart3,
+    color: "text-teal-500",
+    bgColor: "bg-teal-50 dark:bg-teal-900/30",
+    borderHover: "hover:border-teal-200 dark:hover:border-teal-800",
+    path: "data-analytics",
+    stat: "42 Lessons",
+  },
+  {
     id: "blockchain",
     title: "Blockchain",
     description: "Smart contract projects from beginner to advanced - ERC-20, NFTs, DeFi, DAOs, ZK proofs, and more.",
@@ -224,9 +235,9 @@ export default function LearnHubPage() {
           >
             <Link
               to={`/learn/${track.path}`}
-              className={`group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-6 rounded-2xl border border-gray-100 dark:border-gray-800 ${track.borderHover} hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline`}
+              className={`group flex items-center gap-3 sm:gap-5 bg-white dark:bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 rounded-2xl border border-gray-100 dark:border-gray-800 ${track.borderHover} hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline`}
             >
-              <div className={`w-14 h-14 rounded-xl ${track.bgColor} flex items-center justify-center shrink-0`}>
+              <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-xl ${track.bgColor} flex items-center justify-center shrink-0`}>
                 <track.icon className={`w-7 h-7 ${track.color}`} />
               </div>
               <div className="flex-1 min-w-0">
@@ -248,10 +259,10 @@ export default function LearnHubPage() {
         ))}
       </div>
 
-      {/* Divider */}
-      <div className="my-8 border-t border-gray-200 dark:border-gray-800" />
-
       {/* Lesson tracks */}
+      <h2 className="text-2xl font-bold text-gray-950 dark:text-white mt-12 mb-6">
+        Tutorials &amp; Courses
+      </h2>
       <div className="space-y-4">
         {LESSON_TRACKS.map((track, idx) => (
           <motion.div
@@ -262,9 +273,9 @@ export default function LearnHubPage() {
           >
             <Link
               to={`/learn/${track.path}`}
-              className={`group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-6 rounded-2xl border border-gray-100 dark:border-gray-800 ${track.borderHover} hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline`}
+              className={`group flex items-center gap-3 sm:gap-5 bg-white dark:bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 rounded-2xl border border-gray-100 dark:border-gray-800 ${track.borderHover} hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline`}
             >
-              <div className={`w-14 h-14 rounded-xl ${track.bgColor} flex items-center justify-center shrink-0`}>
+              <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-xl ${track.bgColor} flex items-center justify-center shrink-0`}>
                 <track.icon className={`w-7 h-7 ${track.color}`} />
               </div>
               <div className="flex-1 min-w-0">

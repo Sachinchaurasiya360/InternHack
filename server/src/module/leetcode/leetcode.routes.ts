@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { leetcodeCalendarSchema, leetcodeCalendarQuerySchema } from "./leetcode.validation.js";
 
 const router = Router();
 
@@ -35,13 +36,12 @@ function getLevel(count: number): number {
 // GET /api/leetcode/calendar/:username
 router.get("/calendar/:username", async (req, res) => {
   try {
-    const { username } = req.params;
-    if (!username || username.length > 50) {
-      res.status(400).json({ message: "Invalid username" });
-      return;
-    }
+    const paramsParsed = leetcodeCalendarSchema.safeParse(req.params);
+    if (!paramsParsed.success) { res.status(400).json({ message: "Invalid username" }); return; }
+    const { username } = paramsParsed.data;
 
-    const year = req.query.year ? Number(req.query.year) : new Date().getFullYear();
+    const queryParsed = leetcodeCalendarQuerySchema.safeParse(req.query);
+    const year = queryParsed.success && queryParsed.data.year ? queryParsed.data.year : new Date().getFullYear();
     const cacheKey = `${username}:${year}`;
 
     const cached = cache.get(cacheKey);

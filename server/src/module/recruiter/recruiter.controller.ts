@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { RecruiterService } from "./recruiter.service.js";
+import { createLogger } from "../../utils/logger.js";
 import {
   createRoundSchema,
   updateRoundSchema,
@@ -12,6 +13,8 @@ import {
   updateTalentPoolSchema,
   addPoolMemberSchema,
 } from "./recruiter.validation.js";
+
+const logger = createLogger("RecruiterController");
 
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
@@ -35,7 +38,7 @@ export class RecruiterController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to create round", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -54,7 +57,7 @@ export class RecruiterController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get rounds", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -77,7 +80,7 @@ export class RecruiterController {
         if (error.message === "Job not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to update round", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -97,7 +100,7 @@ export class RecruiterController {
         if (error.message === "Job not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to delete round", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -119,7 +122,7 @@ export class RecruiterController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to reorder rounds", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -141,7 +144,7 @@ export class RecruiterController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get applications", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -160,7 +163,7 @@ export class RecruiterController {
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get application detail", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -182,7 +185,7 @@ export class RecruiterController {
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to update application status", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -202,7 +205,7 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
         if (error.message === "No rounds defined for this job") return res.status(400).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to advance application", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -224,7 +227,7 @@ export class RecruiterController {
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get submission", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -253,7 +256,7 @@ export class RecruiterController {
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to evaluate submission", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -267,7 +270,7 @@ export class RecruiterController {
       const data = await this.recruiterService.getDashboard(req.user.id);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get dashboard", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -282,7 +285,7 @@ export class RecruiterController {
       const data = await this.recruiterService.searchTalent(result.data);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to search talent", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -301,7 +304,7 @@ export class RecruiterController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get job analytics", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -318,7 +321,7 @@ export class RecruiterController {
       const pool = await this.recruiterService.createTalentPool(req.user.id, result.data);
       return res.status(201).json({ message: "Talent pool created successfully", pool });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to create talent pool", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -330,7 +333,7 @@ export class RecruiterController {
       const pools = await this.recruiterService.getTalentPools(req.user.id);
       return res.status(200).json({ pools });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get talent pools", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -349,7 +352,7 @@ export class RecruiterController {
         if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to get talent pool by ID", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -371,7 +374,7 @@ export class RecruiterController {
         if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to update talent pool", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -390,7 +393,7 @@ export class RecruiterController {
         if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to delete talent pool", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -413,7 +416,7 @@ export class RecruiterController {
         if (error.message === "Student not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to add pool member", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -434,7 +437,7 @@ export class RecruiterController {
         if (error.message === "Member not found in pool") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to remove pool member", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

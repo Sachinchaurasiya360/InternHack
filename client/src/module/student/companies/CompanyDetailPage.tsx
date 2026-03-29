@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import {
   Building2, MapPin, Globe, Users, Calendar,
@@ -40,6 +40,8 @@ const SIZE_GRADIENTS: Record<string, string> = {
 export default function CompanyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user, isAuthenticated } = useAuthStore();
+  const location = useLocation();
+  const isInsideLayout = location.pathname.startsWith("/student/");
   const [company, setCompany] = useState<Company | null>(null);
   const [reviews, setReviews] = useState<CompanyReview[]>([]);
   const [sortBy, setSortBy] = useState("latest");
@@ -72,7 +74,7 @@ export default function CompanyDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950">
-        <Navbar />
+        {!isInsideLayout && <Navbar />}
         <LoadingScreen />
       </div>
     );
@@ -81,7 +83,7 @@ export default function CompanyDetailPage() {
   if (!company) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950">
-        <Navbar />
+        {!isInsideLayout && <Navbar />}
         <div className="max-w-4xl mx-auto px-4 py-40 text-center">
           <Building2 className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-400">Company not found</h2>
@@ -117,7 +119,7 @@ export default function CompanyDetailPage() {
           ]),
         ]}
       />
-      <Navbar />
+      {!isInsideLayout && <Navbar />}
 
       {/* Hero Header */}
       <div className="relative pt-24 pb-0 overflow-hidden">
@@ -402,7 +404,7 @@ export default function CompanyDetailPage() {
         </div>
       </div>
 
-      <Footer />
+      {!isInsideLayout && <Footer />}
 
       {/* Modals */}
       {showReviewForm && slug && (

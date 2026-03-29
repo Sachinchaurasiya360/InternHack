@@ -112,7 +112,7 @@ export default function DsaTopicsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 mb-8 mt-2"
+        className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-4 sm:p-8 mb-8 mt-2"
       >
         <div className="flex flex-col sm:flex-row items-center gap-6">
           {/* Progress ring */}
@@ -133,7 +133,7 @@ export default function DsaTopicsPage() {
           </div>
 
           {/* Quick nav */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end">
             {[
               { to: "/learn/dsa/companies", icon: Building2, label: "Companies", color: "text-blue-500 bg-blue-50 dark:bg-blue-900/20" },
               { to: "/learn/dsa/patterns", icon: Puzzle, label: "Patterns", color: "text-purple-500 bg-purple-50 dark:bg-purple-900/20" },
@@ -142,7 +142,7 @@ export default function DsaTopicsPage() {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`flex flex-col items-center gap-1 px-4 py-3 rounded-xl ${link.color} hover:opacity-80 transition-opacity no-underline`}
+                className={`flex flex-col items-center gap-1 px-3 py-2 sm:px-4 sm:py-3 rounded-xl ${link.color} hover:opacity-80 transition-opacity no-underline`}
               >
                 <link.icon className="w-5 h-5" />
                 <span className="text-[10px] font-semibold uppercase tracking-wide opacity-70">{link.label}</span>
@@ -154,7 +154,7 @@ export default function DsaTopicsPage() {
         {/* Difficulty breakdown bar */}
         {user && progress && (
           <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {([
                 { key: "easy" as const, label: "Easy", icon: Zap, color: "text-green-600 dark:text-green-400", bg: "bg-green-500" },
                 { key: "medium" as const, label: "Medium", icon: Target, color: "text-yellow-600 dark:text-yellow-400", bg: "bg-yellow-500" },

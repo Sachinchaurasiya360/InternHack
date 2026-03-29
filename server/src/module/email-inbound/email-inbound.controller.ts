@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import crypto from "crypto";
 import { sendEmail } from "../../utils/email.utils.js";
+import { inboundWebhookSchema } from "./email-inbound.validation.js";
 
 const FORWARD_TO = process.env["INBOUND_FORWARD_TO"] || "mrsachinchaurasiya@gmail.com";
 const WEBHOOK_SECRET = process.env["RESEND_WEBHOOK_SECRET"] || "";
@@ -28,7 +29,12 @@ export async function handleInboundEmail(req: Request, res: Response): Promise<v
       return;
     }
 
-    const { type, data } = req.body;
+    const parsed = inboundWebhookSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid webhook payload" });
+      return;
+    }
+    const { type, data } = parsed.data;
 
     if (type !== "email.received") {
       res.json({ ok: true, skipped: true });

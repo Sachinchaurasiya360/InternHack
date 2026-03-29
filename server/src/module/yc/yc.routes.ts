@@ -2,6 +2,10 @@ import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import type { Request, Response } from "express";
 import * as cheerio from "cheerio";
+import { ycListQuerySchema, ycSlugSchema } from "./yc.validation.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("YCRoutes");
 
 const router = Router();
 
@@ -188,7 +192,7 @@ router.get("/stats", async (_req: Request, res: Response) => {
       statuses: statusRows.map((r) => ({ name: r.status, count: Number(r.count) })),
     });
   } catch (err) {
-    console.error("YC stats error:", err);
+    logger.error("Failed to fetch YC stats", err);
     res.status(500).json({ error: "Failed to fetch stats" });
   }
 });
@@ -196,20 +200,14 @@ router.get("/stats", async (_req: Request, res: Response) => {
 // GET /api/yc/companies - paginated list with filters
 router.get("/companies", async (req: Request, res: Response) => {
   try {
-    const page = Math.max(1, parseInt(req.query["page"] as string) || 1);
-    const limit = Math.min(50, Math.max(1, parseInt(req.query["limit"] as string) || 24));
+    const parsed = ycListQuerySchema.safeParse(req.query);
+    if (!parsed.success) { res.status(400).json({ message: "Invalid query parameters" }); return; }
+    const { page, limit, search, batch, industry, status, isHiring, topCompany } = parsed.data;
     const skip = (page - 1) * limit;
-
-    const search = (req.query["search"] as string) || "";
-    const batch = (req.query["batch"] as string) || "";
-    const industry = (req.query["industry"] as string) || "";
-    const status = (req.query["status"] as string) || "";
-    const isHiring = req.query["isHiring"] as string;
-    const topCompany = req.query["topCompany"] as string;
 
     const where: Record<string, unknown> = {};
 
-    if (search) {
+    if (search && search.length > 0) {
       where["OR"] = [
         { name: { contains: search, mode: "insensitive" } },
         { oneLiner: { contains: search, mode: "insensitive" } },
@@ -217,9 +215,9 @@ router.get("/companies", async (req: Request, res: Response) => {
         { tags: { hasSome: [search.toLowerCase()] } },
       ];
     }
-    if (batch) where["batchShort"] = batch;
-    if (industry) where["industry"] = industry;
-    if (status) where["status"] = status;
+    if (batch && batch.length > 0) where["batchShort"] = batch;
+    if (industry && industry.length > 0) where["industry"] = industry;
+    if (status && status.length > 0) where["status"] = status;
     if (isHiring === "true") where["isHiring"] = true;
     if (topCompany === "true") where["topCompany"] = true;
 
@@ -243,7 +241,7 @@ router.get("/companies", async (req: Request, res: Response) => {
       },
     });
   } catch (err) {
-    console.error("YC companies error:", err);
+    logger.error("Failed to fetch YC companies", err);
     res.status(500).json({ error: "Failed to fetch companies" });
   }
 });
@@ -251,8 +249,10 @@ router.get("/companies", async (req: Request, res: Response) => {
 // GET /api/yc/companies/:slug - single company detail (with on-demand scraping)
 router.get("/companies/:slug", async (req: Request, res: Response) => {
   try {
+    const slugParsed = ycSlugSchema.safeParse(req.params);
+    if (!slugParsed.success) { res.status(400).json({ error: "Invalid slug" }); return; }
     const company = await prisma.ycCompany.findFirst({
-      where: { slug: req.params["slug"] },
+      where: { slug: slugParsed.data.slug },
     });
     if (!company) {
       res.status(404).json({ error: "Company not found" });
@@ -278,7 +278,7 @@ router.get("/companies/:slug", async (req: Request, res: Response) => {
           return;
         }
       } catch (scrapeErr) {
-        console.error(`Scrape failed for ${company.slug}:`, scrapeErr);
+        logger.error(`Scrape failed for ${company.slug}`, scrapeErr);
         // Mark as scraped to avoid retrying immediately
         await prisma.ycCompany
           .update({
@@ -291,7 +291,7 @@ router.get("/companies/:slug", async (req: Request, res: Response) => {
 
     res.json(company);
   } catch (err) {
-    console.error("YC company detail error:", err);
+    logger.error("Failed to fetch YC company detail", err);
     res.status(500).json({ error: "Failed to fetch company" });
   }
 });

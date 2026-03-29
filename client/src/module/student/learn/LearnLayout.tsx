@@ -21,6 +21,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   aptitude: "Aptitude",
   interview: "Interview Prep",
   blockchain: "Blockchain",
+  "data-analytics": "Data Analytics",
   companies: "Companies",
   patterns: "Patterns",
   bookmarks: "Bookmarks",

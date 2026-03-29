@@ -10,14 +10,11 @@ import {
   BookOpen,
   Users,
   Trophy,
-  Globe,
   Code2,
   Rocket,
   GraduationCap,
-  Heart,
   Flame,
   FileCode2,
-  Star,
   GitPullRequest,
   MessagesSquare,
   Plus,
@@ -136,34 +133,14 @@ const hiddenGemRepos = [
   { name: "Cal.com", lang: "TypeScript", domain: "Scheduling", yc: "W21" },
   { name: "Infisical", lang: "TypeScript", domain: "Secret Management", yc: "W23" },
   { name: "Trigger.dev", lang: "TypeScript", domain: "Background Jobs", yc: "W23" },
-  { name: "Formbricks", lang: "TypeScript", domain: "Surveys & Forms", yc: "W23" },
-  { name: "Dub.co", lang: "TypeScript", domain: "Link Management", yc: "S22" },
-  { name: "Papermark", lang: "TypeScript", domain: "Doc Sharing", yc: "S23" },
-  { name: "Unkey", lang: "TypeScript", domain: "API Key Mgmt", yc: "S23" },
-  { name: "OpenStatus", lang: "TypeScript", domain: "Uptime Monitoring", yc: "W24" },
+  { name: "Novu", lang: "TypeScript", domain: "Notifications", yc: "W22" },
   { name: "Hatchet", lang: "Go", domain: "Task Orchestration", yc: "W24" },
   { name: "Hanko", lang: "Go", domain: "Passkey Auth", yc: "W23" },
-  { name: "Tolgee", lang: "Kotlin/TS", domain: "Localization", yc: "S23" },
-  { name: "Novu", lang: "TypeScript", domain: "Notifications", yc: "W22" },
-  { name: "Documenso", lang: "TypeScript", domain: "Doc Signing" },
-  { name: "Lago", lang: "Ruby/TS", domain: "Billing Engine" },
-  { name: "Webstudio", lang: "TypeScript", domain: "Visual Builder" },
-  { name: "Flagsmith", lang: "Python", domain: "Feature Flags" },
-  { name: "Crowd.dev", lang: "TypeScript", domain: "Community Mgmt" },
-  { name: "Keep", lang: "Python", domain: "Alert Management" },
-  { name: "Gitness", lang: "Go", domain: "Code Hosting" },
-  { name: "Briefer", lang: "TypeScript", domain: "Data Notebooks" },
-  { name: "Polar", lang: "Python/TS", domain: "Creator Monetization" },
   { name: "Twenty", lang: "TypeScript", domain: "CRM" },
   { name: "Pocketbase", lang: "Go", domain: "Backend-in-a-File" },
   { name: "Hoppscotch", lang: "TypeScript", domain: "API Testing" },
-  { name: "Amplication", lang: "TypeScript", domain: "Code Generation" },
-  { name: "OpenBB", lang: "Python", domain: "Finance Research" },
+  { name: "Flagsmith", lang: "Python", domain: "Feature Flags" },
   { name: "Plane", lang: "TypeScript", domain: "Project Mgmt" },
-  { name: "Taipy", lang: "Python", domain: "Data App Builder" },
-  { name: "Activepieces", lang: "TypeScript", domain: "Automation" },
-  { name: "Erxes", lang: "TypeScript", domain: "Business OS" },
-  { name: "Pezzo", lang: "TypeScript", domain: "LLM Ops" },
   { name: "Khoj", lang: "Python", domain: "AI Assistant" },
 ];
 
@@ -182,11 +159,7 @@ function StickyProgramsSection() {
       <div ref={containerRef} className="relative h-[200vh]">
         <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
           <div className="max-w-6xl mx-auto w-full px-6 mb-8">
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
-                <Globe className="w-3 h-3" />
-                Programs
-              </div>
+            <div className="text-center mt-6">
               <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-3">
                 Open-Source <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">Programs</span>
               </h2>
@@ -349,11 +322,8 @@ export default function OpenSourceLandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mt-6 mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
-              Core Features
-            </div>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Everything you need to
               <br />
@@ -397,12 +367,8 @@ export default function OpenSourceLandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mt-6 mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-6">
-              <Star className="w-3 h-3" />
-              Hidden Gems
-            </div>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Underrated <span className="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent">Open-Source Repos</span>
             </h2>
@@ -475,11 +441,8 @@ export default function OpenSourceLandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mt-6 mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
-              How it works
-            </div>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Three steps to your
               <br />
@@ -525,12 +488,8 @@ export default function OpenSourceLandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mt-6 mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
-              <Heart className="w-3 h-3" />
-              Why Open Source
-            </div>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Why you should <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-red-600 bg-clip-text text-transparent">contribute</span>
             </h2>

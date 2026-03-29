@@ -1,0 +1,502 @@
+[
+  {
+    "id": "intro-to-ml",
+    "sectionId": "machine-learning-basics",
+    "orderIndex": 0,
+    "title": "Introduction to Machine Learning",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["ML overview", "Supervised vs unsupervised learning", "Training and testing", "Overfitting and underfitting"],
+    "content": {
+      "explanation": "Machine Learning (ML) is a subset of artificial intelligence that enables systems to learn patterns from data and make predictions or decisions without being explicitly programmed for each case. Instead of writing rules by hand, you provide data to an algorithm and let it discover the underlying structure. The core idea is that a model improves its performance on a task as it is exposed to more data.\n\nThere are three main categories of machine learning. Supervised learning uses labeled data where each input has a known output, and the goal is to learn a mapping from inputs to outputs. Examples include predicting house prices (regression) or classifying emails as spam or not (classification). Unsupervised learning works with unlabeled data, seeking to discover hidden patterns such as customer segments (clustering) or reducing the dimensionality of data. Reinforcement learning involves an agent that learns by interacting with an environment and receiving rewards or penalties.\n\nA fundamental concept in ML is the train-test split. You divide your dataset into a training set (typically 70-80%) used to fit the model, and a test set (20-30%) used to evaluate how well the model generalizes to unseen data. This separation is critical because evaluating a model on the same data it was trained on gives an overly optimistic estimate of its true performance.\n\nOverfitting occurs when a model learns the training data too well, including its noise and random fluctuations, resulting in excellent training performance but poor generalization to new data. Underfitting happens when a model is too simple to capture the underlying patterns in the data. The goal is to find the sweet spot where the model captures the true signal without memorizing noise. Techniques like cross-validation, regularization, and early stopping help manage this bias-variance tradeoff.\n\nThe typical ML workflow consists of: (1) data collection and preprocessing, (2) exploratory data analysis, (3) feature engineering, (4) model selection and training, (5) evaluation, and (6) deployment. Each step is crucial, and data scientists often iterate between these steps multiple times before arriving at a satisfactory model.",
+      "codeExamples": [
+        {
+          "title": "Manual Train-Test Split",
+          "code": "import random\n\n# Sample dataset: (feature, label)\ndata = [(1, 2), (2, 4), (3, 6), (4, 8), (5, 10),\n        (6, 12), (7, 14), (8, 16), (9, 18), (10, 20)]\n\n# Shuffle with a fixed seed for reproducibility\nrandom.seed(42)\nshuffled = data.copy()\nrandom.shuffle(shuffled)\n\n# 80/20 split\nsplit_idx = int(len(shuffled) * 0.8)\ntrain = shuffled[:split_idx]\ntest = shuffled[split_idx:]\n\nprint(f\"Total samples: {len(data)}\")\nprint(f\"Training samples: {len(train)}\")\nprint(f\"Test samples: {len(test)}\")\nprint(f\"Train data: {sorted(train)}\")\nprint(f\"Test data: {sorted(test)}\")",
+          "output": "Total samples: 10\nTraining samples: 8\nTest samples: 2\nTrain data: [(3, 6), (4, 8), (5, 10), (6, 12), (7, 14), (8, 16), (9, 18), (10, 20)]\nTest data: [(1, 2), (2, 4)]",
+          "explanation": "We manually implement a train-test split by shuffling the data with a fixed random seed and then slicing it into training (80%) and test (20%) portions. The fixed seed ensures reproducibility."
+        },
+        {
+          "title": "Supervised vs Unsupervised: Conceptual Comparison",
+          "code": "# Supervised learning: we have input-output pairs\nsupervised_data = [\n    {\"size\": 1400, \"bedrooms\": 3, \"price\": 250000},\n    {\"size\": 1600, \"bedrooms\": 3, \"price\": 300000},\n    {\"size\": 1800, \"bedrooms\": 4, \"price\": 350000},\n]\nprint(\"Supervised Learning (Regression):\")\nprint(\"  Input features: size, bedrooms\")\nprint(\"  Target label: price\")\nprint(f\"  Example: size=1400, bedrooms=3 -> price={supervised_data[0]['price']}\")\n\n# Unsupervised learning: no labels, find structure\nunsupervised_data = [\n    {\"age\": 25, \"spending\": 200},\n    {\"age\": 30, \"spending\": 180},\n    {\"age\": 55, \"spending\": 400},\n    {\"age\": 60, \"spending\": 450},\n]\nprint(\"\\nUnsupervised Learning (Clustering):\")\nprint(\"  Features: age, spending\")\nprint(\"  No target label — goal is to discover groups\")\nprint(f\"  Data points: {len(unsupervised_data)}\")",
+          "output": "Supervised Learning (Regression):\n  Input features: size, bedrooms\n  Target label: price\n  Example: size=1400, bedrooms=3 -> price=250000\n\nUnsupervised Learning (Clustering):\n  Features: age, spending\n  No target label — goal is to discover groups\n  Data points: 4",
+          "explanation": "This example contrasts supervised learning (where each data point has a known target value) with unsupervised learning (where we only have features and seek to discover hidden structure like clusters)."
+        },
+        {
+          "title": "Demonstrating Overfitting with Polynomial Memorization",
+          "code": "# Simple demonstration: memorizing vs generalizing\ntrain_data = {1: 3, 2: 5, 3: 7, 4: 9}\ntest_data = {5: 11, 6: 13}\n\n# \"Overfit\" model: memorizes training data exactly (lookup table)\ndef overfit_model(x):\n    return train_data.get(x, 0)  # Returns 0 for unseen data\n\n# \"Good\" model: learns the pattern y = 2x + 1\ndef good_model(x):\n    return 2 * x + 1\n\nprint(\"=== Training Performance ===\")\nfor x, y in train_data.items():\n    print(f\"  x={x}: overfit={overfit_model(x)}, good={good_model(x)}, actual={y}\")\n\nprint(\"\\n=== Test Performance ===\")\nfor x, y in test_data.items():\n    print(f\"  x={x}: overfit={overfit_model(x)}, good={good_model(x)}, actual={y}\")",
+          "output": "=== Training Performance ===\n  x=1: overfit=3, good=3, actual=3\n  x=2: overfit=5, good=5, actual=5\n  x=3: overfit=7, good=7, actual=7\n  x=4: overfit=9, good=9, actual=9\n\n=== Test Performance ===\n  x=5: overfit=0, good=11, actual=11\n  x=6: overfit=0, good=13, actual=13",
+          "explanation": "The overfit model memorizes training data perfectly but fails on unseen test data (returns 0). The good model learns the true pattern (y = 2x + 1) and generalizes correctly. This illustrates why we need a separate test set to evaluate models."
+        },
+        {
+          "title": "Computing Training and Test Error",
+          "code": "# Mean Absolute Error calculation\ndef mean_absolute_error(predictions, actuals):\n    total = sum(abs(p - a) for p, a in zip(predictions, actuals))\n    return total / len(predictions)\n\n# Training data\ntrain_x = [1, 2, 3, 4, 5]\ntrain_y = [2.1, 3.9, 6.2, 7.8, 10.1]\n\n# Test data\ntest_x = [6, 7, 8]\ntest_y = [12.0, 14.1, 15.9]\n\n# Simple model: y = 2x\ntrain_pred = [2 * x for x in train_x]\ntest_pred = [2 * x for x in test_x]\n\ntrain_error = mean_absolute_error(train_pred, train_y)\ntest_error = mean_absolute_error(test_pred, test_y)\n\nprint(f\"Train predictions: {train_pred}\")\nprint(f\"Train actuals:     {train_y}\")\nprint(f\"Train MAE: {train_error:.2f}\")\nprint(f\"\\nTest predictions: {test_pred}\")\nprint(f\"Test actuals:     {test_y}\")\nprint(f\"Test MAE: {test_error:.2f}\")",
+          "output": "Train predictions: [2, 4, 6, 8, 10]\nTrain actuals:     [2.1, 3.9, 6.2, 7.8, 10.1]\nTrain MAE: 0.14\n\nTest predictions: [12, 14, 16]\nTest actuals:     [12.0, 14.1, 15.9]\nTest MAE: 0.07",
+          "explanation": "We calculate Mean Absolute Error (MAE) on both training and test sets. Train MAE: (|2-2.1|+|4-3.9|+|6-6.2|+|8-7.8|+|10-10.1|)/5 = (0.1+0.1+0.2+0.2+0.1)/5 = 0.7/5 = 0.14. Test MAE: (|12-12.0|+|14-14.1|+|16-15.9|)/3 = (0.0+0.1+0.1)/3 = 0.2/3 = 0.067, rounded to 0.07. A large gap between train and test error often signals overfitting."
+        }
+      ],
+      "notes": [
+        "Machine learning is broadly divided into supervised (labeled data), unsupervised (unlabeled data), and reinforcement learning (agent-environment interaction).",
+        "Always split data into train and test sets before building a model. Never evaluate on training data alone.",
+        "Overfitting means the model memorizes training data including noise; underfitting means it fails to capture the underlying pattern.",
+        "Cross-validation (e.g., k-fold) provides a more robust estimate of model performance than a single train-test split.",
+        "The bias-variance tradeoff is central to ML: high bias leads to underfitting, high variance leads to overfitting."
+      ],
+      "commonPitfalls": [
+        "Data leakage: accidentally including test data information during training, leading to falsely high performance metrics.",
+        "Not shuffling data before splitting can introduce bias, especially if the data is sorted by some meaningful criterion.",
+        "Evaluating a model only on training accuracy and concluding it performs well without checking test performance."
+      ],
+      "interviewTips": [
+        "Be ready to explain the bias-variance tradeoff: high bias means the model is too simple (underfitting), high variance means it is too sensitive to training data (overfitting). The goal is to minimize total error.",
+        "Know the difference between supervised, unsupervised, and reinforcement learning with concrete examples for each category.",
+        "Interviewers often ask about cross-validation: explain k-fold CV where data is split into k folds, each used once as test while the rest is used for training, and scores are averaged.",
+        "Be prepared to discuss how you would detect and prevent overfitting: regularization, cross-validation, early stopping, and collecting more data are common strategies."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "intro-to-ml-ex1",
+        "title": "Implement Train-Test Split",
+        "description": "Write a function that splits a list of data points into training and test sets given a split ratio. Use a fixed random seed of 0 for reproducibility.",
+        "starterCode": "import random\n\ndef train_test_split(data, train_ratio=0.8, seed=0):\n    # TODO: Set the random seed\n    # TODO: Shuffle a copy of the data\n    # TODO: Calculate the split index\n    # TODO: Return (train, test) tuple\n    pass\n\n# Test it\ndata = list(range(1, 11))  # [1, 2, 3, ..., 10]\ntrain, test = train_test_split(data, 0.7, seed=0)\nprint(f\"Original: {list(range(1, 11))}\")\nprint(f\"Train ({len(train)}): {sorted(train)}\")\nprint(f\"Test ({len(test)}): {sorted(test)}\")",
+        "solution": "import random\n\ndef train_test_split(data, train_ratio=0.8, seed=0):\n    random.seed(seed)\n    shuffled = data.copy()\n    random.shuffle(shuffled)\n    split_idx = int(len(shuffled) * train_ratio)\n    return shuffled[:split_idx], shuffled[split_idx:]\n\n# Test it\ndata = list(range(1, 11))  # [1, 2, 3, ..., 10]\ntrain, test = train_test_split(data, 0.7, seed=0)\nprint(f\"Original: {list(range(1, 11))}\")\nprint(f\"Train ({len(train)}): {sorted(train)}\")\nprint(f\"Test ({len(test)}): {sorted(test)}\")",
+        "expectedOutput": "Original: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nTrain (7): [2, 3, 4, 5, 6, 8, 9]\nTest (3): [1, 7, 10]",
+        "hints": [
+          "Use random.seed(seed) to set the seed before shuffling.",
+          "Create a copy of the data with data.copy() before shuffling to avoid modifying the original.",
+          "Use int(len(data) * train_ratio) to compute the index where you split the list."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "intro-to-ml-ex2",
+        "title": "Calculate Mean Squared Error",
+        "description": "Implement a function that computes the Mean Squared Error between predicted and actual values. MSE = (1/n) * sum((predicted - actual)^2).",
+        "starterCode": "def mse(predicted, actual):\n    # TODO: Compute the mean squared error\n    # MSE = (1/n) * sum of (predicted_i - actual_i)^2\n    pass\n\npredictions = [2.5, 0.0, 2.0, 8.0]\nactuals = [3.0, -0.5, 2.0, 7.0]\nprint(f\"Predictions: {predictions}\")\nprint(f\"Actuals: {actuals}\")\nprint(f\"MSE: {mse(predictions, actuals):.4f}\")",
+        "solution": "def mse(predicted, actual):\n    n = len(predicted)\n    total = sum((p - a) ** 2 for p, a in zip(predicted, actual))\n    return total / n\n\npredictions = [2.5, 0.0, 2.0, 8.0]\nactuals = [3.0, -0.5, 2.0, 7.0]\nprint(f\"Predictions: {predictions}\")\nprint(f\"Actuals: {actuals}\")\nprint(f\"MSE: {mse(predictions, actuals):.4f}\")",
+        "expectedOutput": "Predictions: [2.5, 0.0, 2.0, 8.0]\nActuals: [3.0, -0.5, 2.0, 7.0]\nMSE: 0.3750",
+        "hints": [
+          "Use zip() to iterate over predicted and actual values simultaneously.",
+          "Square each difference: (p - a) ** 2.",
+          "Sum all squared differences and divide by the number of data points."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "intro-to-ml-ex3",
+        "title": "K-Fold Cross Validation Indices",
+        "description": "Implement a function that generates k-fold cross-validation indices. Given n data points and k folds, return a list of (train_indices, test_indices) tuples.",
+        "starterCode": "def k_fold_indices(n, k):\n    # TODO: Split indices 0..n-1 into k roughly equal folds\n    # TODO: For each fold, return (train_indices, test_indices)\n    pass\n\nfolds = k_fold_indices(10, 5)\nfor i, (train_idx, test_idx) in enumerate(folds):\n    print(f\"Fold {i+1}: train={train_idx}, test={test_idx}\")",
+        "solution": "def k_fold_indices(n, k):\n    indices = list(range(n))\n    fold_size = n // k\n    folds = []\n    for i in range(k):\n        start = i * fold_size\n        end = start + fold_size if i < k - 1 else n\n        test_idx = indices[start:end]\n        train_idx = indices[:start] + indices[end:]\n        folds.append((train_idx, test_idx))\n    return folds\n\nfolds = k_fold_indices(10, 5)\nfor i, (train_idx, test_idx) in enumerate(folds):\n    print(f\"Fold {i+1}: train={train_idx}, test={test_idx}\")",
+        "expectedOutput": "Fold 1: train=[2, 3, 4, 5, 6, 7, 8, 9], test=[0, 1]\nFold 2: train=[0, 1, 4, 5, 6, 7, 8, 9], test=[2, 3]\nFold 3: train=[0, 1, 2, 3, 6, 7, 8, 9], test=[4, 5]\nFold 4: train=[0, 1, 2, 3, 4, 5, 8, 9], test=[6, 7]\nFold 5: train=[0, 1, 2, 3, 4, 5, 6, 7], test=[8, 9]",
+        "hints": [
+          "Divide the indices into k equal-sized groups (folds).",
+          "For each iteration, one fold is the test set and the remaining folds form the training set.",
+          "Use list slicing: indices[start:end] for the test fold, and concatenate the rest for training."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "linear-regression",
+    "sectionId": "machine-learning-basics",
+    "orderIndex": 1,
+    "title": "Linear Regression from Scratch",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Linear regression", "Slope and intercept", "Least squares method", "R-squared", "Cost function"],
+    "content": {
+      "explanation": "Linear regression is one of the most fundamental algorithms in machine learning and statistics. It models the relationship between a dependent variable (y) and one or more independent variables (x) by fitting a straight line through the data. The equation of a simple linear regression line is y = mx + b, where m is the slope (how much y changes for each unit change in x) and b is the y-intercept (the value of y when x is 0).\n\nThe Ordinary Least Squares (OLS) method finds the line that minimizes the sum of squared differences between the actual y values and the predicted y values. The formulas for slope and intercept are derived from calculus: m = sum((xi - x_mean) * (yi - y_mean)) / sum((xi - x_mean)^2), and b = y_mean - m * x_mean. These closed-form solutions make linear regression fast to compute even on large datasets.\n\nR-squared (coefficient of determination) measures how well the regression line fits the data. It is computed as R^2 = 1 - (SS_res / SS_tot), where SS_res is the sum of squared residuals (errors between predictions and actuals) and SS_tot is the total sum of squares (variance in the actual values around their mean). An R^2 of 1.0 means the model perfectly explains all variance; an R^2 of 0.0 means the model is no better than simply predicting the mean.\n\nThe cost function (also called loss function) in linear regression is typically the Mean Squared Error (MSE), which is the average of the squared differences between predictions and actual values. Gradient descent is an iterative optimization algorithm that can also be used to find the optimal slope and intercept by repeatedly adjusting them in the direction that reduces the MSE. While OLS gives an exact solution, gradient descent is more general and scales to problems where closed-form solutions do not exist.\n\nLinear regression assumes a linear relationship between features and target, independence of observations, homoscedasticity (constant variance of residuals), and normally distributed residuals. Violations of these assumptions can lead to unreliable predictions. In practice, you should always visualize residuals and check these assumptions before trusting the model.",
+      "codeExamples": [
+        {
+          "title": "Simple Linear Regression with OLS",
+          "code": "def linear_regression(x, y):\n    n = len(x)\n    x_mean = sum(x) / n\n    y_mean = sum(y) / n\n    \n    numerator = sum((xi - x_mean) * (yi - y_mean) for xi, yi in zip(x, y))\n    denominator = sum((xi - x_mean) ** 2 for xi in x)\n    \n    slope = numerator / denominator\n    intercept = y_mean - slope * x_mean\n    return slope, intercept\n\n# Dataset: hours studied vs exam score\nhours = [1, 2, 3, 4, 5]\nscores = [52, 56, 61, 64, 69]\n\nslope, intercept = linear_regression(hours, scores)\nprint(f\"Slope: {slope:.2f}\")\nprint(f\"Intercept: {intercept:.2f}\")\nprint(f\"Equation: y = {slope:.2f}x + {intercept:.2f}\")\n\n# Predict for 6 hours\nprediction = slope * 6 + intercept\nprint(f\"Predicted score for 6 hours: {prediction:.2f}\")",
+          "output": "Slope: 4.20\nIntercept: 47.80\nEquation: y = 4.20x + 47.80\nPredicted score for 6 hours: 73.00",
+          "explanation": "We compute the slope and intercept using the OLS formulas. x_mean = 3, y_mean = (52+56+61+64+69)/5 = 302/5 = 60.4. Numerator = (-2)(-8.4)+(-1)(-4.4)+(0)(0.6)+(1)(3.6)+(2)(8.6) = 16.8+4.4+0+3.6+17.2 = 42.0. Denominator = 4+1+0+1+4 = 10. Slope = 42/10 = 4.2. Intercept = 60.4 - 4.2*3 = 60.4 - 12.6 = 47.8. Prediction for 6 hours: 4.2*6 + 47.8 = 73.0."
+        },
+        {
+          "title": "Computing R-Squared",
+          "code": "def r_squared(x, y, slope, intercept):\n    y_mean = sum(y) / len(y)\n    ss_tot = sum((yi - y_mean) ** 2 for yi in y)\n    ss_res = sum((yi - (slope * xi + intercept)) ** 2 for xi, yi in zip(x, y))\n    return 1 - (ss_res / ss_tot)\n\nhours = [1, 2, 3, 4, 5]\nscores = [52, 56, 61, 64, 69]\n\n# Using previously computed values\nslope = 4.2\nintercept = 47.8\n\nr2 = r_squared(hours, scores, slope, intercept)\nprint(f\"R-squared: {r2:.4f}\")\nprint(f\"The model explains {r2 * 100:.1f}% of the variance in scores.\")",
+          "output": "R-squared: 0.9955\nThe model explains 99.5% of the variance in scores.",
+          "explanation": "R-squared of 0.9955 means the linear model explains 99.5% of the variation in exam scores based on hours studied. SS_tot = (52-60.4)^2 + (56-60.4)^2 + (61-60.4)^2 + (64-60.4)^2 + (69-60.4)^2 = 70.56+19.36+0.36+12.96+73.96 = 177.2. The exact OLS values slope=4.2, intercept=47.8 give predictions: 52.0, 56.2, 60.4, 64.6, 68.8. SS_res = 0+0.04+0.36+0.36+0.04 = 0.8. R^2 = 1 - 0.8/177.2 = 0.9955."
+        },
+        {
+          "title": "Gradient Descent for Linear Regression",
+          "code": "def gradient_descent(x, y, lr=0.01, epochs=1000):\n    m, b = 0.0, 0.0  # Initialize slope and intercept\n    n = len(x)\n    \n    for epoch in range(epochs):\n        y_pred = [m * xi + b for xi in x]\n        dm = (-2/n) * sum((yi - yp) * xi for xi, yi, yp in zip(x, y, y_pred))\n        db = (-2/n) * sum(yi - yp for yi, yp in zip(y, y_pred))\n        m -= lr * dm\n        b -= lr * db\n    \n    return m, b\n\nx = [1, 2, 3, 4, 5]\ny = [2, 4, 5, 4, 5]\n\nslope, intercept = gradient_descent(x, y, lr=0.01, epochs=1000)\nprint(f\"Slope: {slope:.2f}\")\nprint(f\"Intercept: {intercept:.2f}\")\npredictions = [round(slope * xi + intercept, 2) for xi in x]\nprint(f\"Predictions: {predictions}\")",
+          "output": "Slope: 0.62\nIntercept: 2.14\nPredictions: [2.75, 3.37, 3.99, 4.61, 5.22]",
+          "explanation": "Gradient descent iteratively adjusts the slope and intercept to minimize MSE. Starting from (0, 0), it converges to approximately slope=0.62 and intercept=2.14 after 1000 epochs. The OLS solution for this data is m=0.6 and b=2.2, so gradient descent is very close but not exact due to the finite number of iterations and learning rate."
+        },
+        {
+          "title": "Making Predictions and Computing Residuals",
+          "code": "# Given a fitted model\nslope = 2.5\nintercept = 1.0\n\n# Data points\nx_values = [1, 2, 3, 4, 5]\ny_actual = [3.5, 6.2, 8.0, 10.5, 13.1]\n\n# Predictions and residuals\nprint(\"x | actual | predicted | residual\")\nprint(\"-\" * 40)\nresiduals = []\nfor x, y in zip(x_values, y_actual):\n    y_pred = slope * x + intercept\n    residual = y - y_pred\n    residuals.append(residual)\n    print(f\"{x} | {y:6.1f}  | {y_pred:9.1f} | {residual:+.1f}\")\n\nmse = sum(r ** 2 for r in residuals) / len(residuals)\nprint(f\"\\nMSE: {mse:.2f}\")",
+          "output": "x | actual | predicted | residual\n----------------------------------------\n1 |    3.5  |       3.5 | +0.0\n2 |    6.2  |       6.0 | +0.2\n3 |    8.0  |       8.5 | -0.5\n4 |   10.5  |      11.0 | -0.5\n5 |   13.1  |      13.5 | -0.4\n\nMSE: 0.14",
+          "explanation": "For each data point, we compute the predicted value using y = 2.5x + 1.0, then the residual (actual - predicted). The residuals show the model slightly underpredicts for x=2 and overpredicts for x=3,4,5. MSE = (0^2 + 0.2^2 + 0.5^2 + 0.5^2 + 0.4^2)/5 = (0 + 0.04 + 0.25 + 0.25 + 0.16)/5 = 0.70/5 = 0.14."
+        }
+      ],
+      "notes": [
+        "Linear regression uses the equation y = mx + b where m is the slope and b is the intercept.",
+        "The OLS method minimizes the sum of squared residuals and has a closed-form solution for the optimal m and b.",
+        "R-squared ranges from 0 to 1 (can be negative for very bad models). Higher values indicate better fit.",
+        "Gradient descent is an alternative to OLS that works by iteratively updating parameters in the direction of steepest descent of the cost function.",
+        "Always check residual plots — patterns in residuals suggest the linear model assumption is violated."
+      ],
+      "commonPitfalls": [
+        "Extrapolating far beyond the range of training data — linear relationships often break down at extreme values.",
+        "Confusing correlation with causation: a strong linear relationship does not imply that changes in x cause changes in y.",
+        "Setting the learning rate too high in gradient descent causes divergence; too low means extremely slow convergence."
+      ],
+      "interviewTips": [
+        "Be prepared to derive the OLS formulas: slope = Cov(x,y) / Var(x) and intercept = y_mean - slope * x_mean. Understand that this comes from setting the partial derivatives of the cost function to zero.",
+        "Know the assumptions of linear regression: linearity, independence, homoscedasticity, and normality of residuals. Explain what can go wrong when each is violated.",
+        "Interviewers may ask about multicollinearity in multiple regression — when predictors are highly correlated, the coefficient estimates become unstable.",
+        "Understand the difference between R-squared and adjusted R-squared: adjusted R-squared penalizes adding irrelevant features, making it a better metric for model comparison."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "linear-regression-ex1",
+        "title": "Compute Regression Coefficients",
+        "description": "Implement a function that computes the slope and intercept of a simple linear regression using the OLS method. Test it with the given data.",
+        "starterCode": "def compute_regression(x, y):\n    # TODO: Compute x_mean and y_mean\n    # TODO: Compute slope using OLS formula\n    # TODO: Compute intercept\n    # TODO: Return (slope, intercept)\n    pass\n\nx = [1, 2, 3, 4, 5, 6]\ny = [2, 4, 5, 4, 5, 7]\nslope, intercept = compute_regression(x, y)\nprint(f\"Slope: {slope:.4f}\")\nprint(f\"Intercept: {intercept:.4f}\")",
+        "solution": "def compute_regression(x, y):\n    n = len(x)\n    x_mean = sum(x) / n\n    y_mean = sum(y) / n\n    numerator = sum((xi - x_mean) * (yi - y_mean) for xi, yi in zip(x, y))\n    denominator = sum((xi - x_mean) ** 2 for xi in x)\n    slope = numerator / denominator\n    intercept = y_mean - slope * x_mean\n    return slope, intercept\n\nx = [1, 2, 3, 4, 5, 6]\ny = [2, 4, 5, 4, 5, 7]\nslope, intercept = compute_regression(x, y)\nprint(f\"Slope: {slope:.4f}\")\nprint(f\"Intercept: {intercept:.4f}\")",
+        "expectedOutput": "Slope: 0.7714\nIntercept: 1.8000",
+        "hints": [
+          "x_mean = sum(x) / len(x), y_mean = sum(y) / len(y).",
+          "Numerator of slope: sum((xi - x_mean) * (yi - y_mean)) for all data points.",
+          "Denominator of slope: sum((xi - x_mean)^2) for all data points."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "linear-regression-ex2",
+        "title": "Compute R-Squared",
+        "description": "Write a function that computes R-squared given actual values, predicted values.",
+        "starterCode": "def compute_r_squared(y_actual, y_predicted):\n    # TODO: Compute y_mean\n    # TODO: Compute SS_tot (total sum of squares)\n    # TODO: Compute SS_res (residual sum of squares)\n    # TODO: Return R-squared = 1 - SS_res / SS_tot\n    pass\n\ny_actual = [3, 5, 7, 9, 11]\ny_predicted = [2.8, 5.2, 7.0, 9.1, 11.0]\nr2 = compute_r_squared(y_actual, y_predicted)\nprint(f\"R-squared: {r2:.4f}\")",
+        "solution": "def compute_r_squared(y_actual, y_predicted):\n    y_mean = sum(y_actual) / len(y_actual)\n    ss_tot = sum((yi - y_mean) ** 2 for yi in y_actual)\n    ss_res = sum((yi - yp) ** 2 for yi, yp in zip(y_actual, y_predicted))\n    return 1 - (ss_res / ss_tot)\n\ny_actual = [3, 5, 7, 9, 11]\ny_predicted = [2.8, 5.2, 7.0, 9.1, 11.0]\nr2 = compute_r_squared(y_actual, y_predicted)\nprint(f\"R-squared: {r2:.4f}\")",
+        "expectedOutput": "R-squared: 0.9978",
+        "hints": [
+          "y_mean is the average of all actual y values.",
+          "SS_tot = sum of (actual - mean)^2 for all points.",
+          "SS_res = sum of (actual - predicted)^2 for all points."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "linear-regression-ex3",
+        "title": "Gradient Descent Regression",
+        "description": "Implement linear regression using gradient descent. Start with slope=0, intercept=0, use learning rate 0.01 and 2000 epochs.",
+        "starterCode": "def gradient_descent_regression(x, y, lr=0.01, epochs=2000):\n    # TODO: Initialize m=0, b=0\n    # TODO: For each epoch, compute predictions\n    # TODO: Compute gradients dm and db\n    # TODO: Update m and b\n    # TODO: Return (m, b)\n    pass\n\nx = [1, 2, 3, 4, 5]\ny = [3, 5, 7, 9, 11]\nslope, intercept = gradient_descent_regression(x, y)\nprint(f\"Slope: {slope:.2f}\")\nprint(f\"Intercept: {intercept:.2f}\")\nprint(f\"Prediction for x=6: {slope * 6 + intercept:.2f}\")",
+        "solution": "def gradient_descent_regression(x, y, lr=0.01, epochs=2000):\n    m, b = 0.0, 0.0\n    n = len(x)\n    for _ in range(epochs):\n        y_pred = [m * xi + b for xi in x]\n        dm = (-2/n) * sum((yi - yp) * xi for xi, yi, yp in zip(x, y, y_pred))\n        db = (-2/n) * sum(yi - yp for yi, yp in zip(y, y_pred))\n        m -= lr * dm\n        b -= lr * db\n    return m, b\n\nx = [1, 2, 3, 4, 5]\ny = [3, 5, 7, 9, 11]\nslope, intercept = gradient_descent_regression(x, y)\nprint(f\"Slope: {slope:.2f}\")\nprint(f\"Intercept: {intercept:.2f}\")\nprint(f\"Prediction for x=6: {slope * 6 + intercept:.2f}\")",
+        "expectedOutput": "Slope: 2.00\nIntercept: 1.00\nPrediction for x=6: 13.00",
+        "hints": [
+          "Gradient of MSE with respect to m: dm = (-2/n) * sum((y_i - y_pred_i) * x_i).",
+          "Gradient with respect to b: db = (-2/n) * sum(y_i - y_pred_i).",
+          "Update: m = m - lr * dm, b = b - lr * db. The data is perfectly linear (y = 2x + 1) so it should converge."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "classification-basics",
+    "sectionId": "machine-learning-basics",
+    "orderIndex": 2,
+    "title": "Classification and K-Nearest Neighbors",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Classification", "K-Nearest Neighbors", "Decision boundaries", "Accuracy", "Distance metrics"],
+    "content": {
+      "explanation": "Classification is a supervised learning task where the goal is to predict a categorical label for a given input. Unlike regression, which predicts continuous values, classification assigns inputs to one of several discrete classes. Examples include email spam detection (spam vs not spam), medical diagnosis (disease vs healthy), and image recognition (cat vs dog). Binary classification has two classes, while multi-class classification handles three or more.\n\nK-Nearest Neighbors (KNN) is one of the simplest and most intuitive classification algorithms. It works on a straightforward principle: to classify a new data point, find the K closest data points in the training set (its neighbors) and assign the most common class among those neighbors. The 'K' is a hyperparameter that you choose before training. A small K (like 1) makes the model very sensitive to individual points, while a large K produces smoother decision boundaries but may overlook local patterns.\n\nThe distance metric used in KNN determines how 'closeness' is measured. The most common is Euclidean distance: d = sqrt(sum((x_i - y_i)^2)). Other options include Manhattan distance (sum of absolute differences) and Minkowski distance (generalization of both). The choice of distance metric can significantly affect classification results, especially when features have different scales.\n\nDecision boundaries are the regions in feature space where the predicted class changes. In KNN, these boundaries can be complex and non-linear, adapting to the shape of the data distribution. Unlike parametric models like logistic regression that have fixed functional forms, KNN is non-parametric — it makes no assumptions about the underlying data distribution. However, KNN can be computationally expensive at prediction time since it must compute distances to all training points.\n\nClassification accuracy is measured as the proportion of correctly classified instances out of the total. While accuracy is a good starting point, it can be misleading with imbalanced datasets — for example, if 95% of emails are not spam, a model that always predicts \"not spam\" achieves 95% accuracy but catches zero spam. This is why more nuanced metrics like precision, recall, and F1-score are important.",
+      "codeExamples": [
+        {
+          "title": "Euclidean Distance Calculation",
+          "code": "import math\n\ndef euclidean_distance(point1, point2):\n    return math.sqrt(sum((a - b) ** 2 for a, b in zip(point1, point2)))\n\n# 2D points\nA = (1, 2)\nB = (4, 6)\nC = (1, 5)\n\nprint(f\"Distance A to B: {euclidean_distance(A, B):.2f}\")\nprint(f\"Distance A to C: {euclidean_distance(A, C):.2f}\")\nprint(f\"Distance B to C: {euclidean_distance(B, C):.2f}\")",
+          "output": "Distance A to B: 5.00\nDistance A to C: 3.00\nDistance B to C: 3.16",
+          "explanation": "Euclidean distance from A(1,2) to B(4,6) = sqrt((4-1)^2 + (6-2)^2) = sqrt(9+16) = sqrt(25) = 5.0. From A to C = sqrt(0+9) = 3.0. From B(4,6) to C(1,5) = sqrt(9+1) = sqrt(10) = 3.16."
+        },
+        {
+          "title": "KNN Classifier from Scratch",
+          "code": "import math\nfrom collections import Counter\n\ndef euclidean_distance(p1, p2):\n    return math.sqrt(sum((a - b) ** 2 for a, b in zip(p1, p2)))\n\ndef knn_classify(train_data, train_labels, new_point, k=3):\n    distances = []\n    for i, point in enumerate(train_data):\n        d = euclidean_distance(point, new_point)\n        distances.append((d, train_labels[i]))\n    distances.sort(key=lambda x: x[0])\n    k_nearest = [label for _, label in distances[:k]]\n    vote = Counter(k_nearest).most_common(1)[0][0]\n    return vote\n\n# Training data: (x, y) coordinates with labels\ntrain_data = [(1, 1), (1, 2), (2, 1), (6, 5), (7, 6), (7, 5)]\ntrain_labels = ['A', 'A', 'A', 'B', 'B', 'B']\n\n# Classify new points\ntest_points = [(2, 2), (5, 5), (1, 0)]\nfor point in test_points:\n    label = knn_classify(train_data, train_labels, point, k=3)\n    print(f\"Point {point} -> Class {label}\")",
+          "output": "Point (2, 2) -> Class A\nPoint (5, 5) -> Class B\nPoint (1, 0) -> Class A",
+          "explanation": "For point (2,2) with k=3, the three nearest training points are (1,1), (1,2), and (2,1), all class A. For (5,5), the nearest neighbors are the B-class points. The algorithm simply counts votes among the k nearest neighbors."
+        },
+        {
+          "title": "Computing Classification Accuracy",
+          "code": "def accuracy(y_true, y_pred):\n    correct = sum(1 for t, p in zip(y_true, y_pred) if t == p)\n    return correct / len(y_true)\n\ny_true = ['cat', 'dog', 'cat', 'cat', 'dog', 'dog', 'cat', 'dog', 'cat', 'dog']\ny_pred = ['cat', 'dog', 'cat', 'dog', 'dog', 'cat', 'cat', 'dog', 'cat', 'dog']\n\nacc = accuracy(y_true, y_pred)\nprint(f\"True labels:      {y_true}\")\nprint(f\"Predicted labels: {y_pred}\")\nprint(f\"Accuracy: {acc:.1%}\")\nprint(f\"Correct: {int(acc * len(y_true))}/{len(y_true)}\")",
+          "output": "True labels:      ['cat', 'dog', 'cat', 'cat', 'dog', 'dog', 'cat', 'dog', 'cat', 'dog']\nPredicted labels: ['cat', 'dog', 'cat', 'dog', 'dog', 'cat', 'cat', 'dog', 'cat', 'dog']\nAccuracy: 80.0%\nCorrect: 8/10",
+          "explanation": "Comparing element by element: positions 0,1,2,4,6,7,8,9 are correct (8 out of 10). Positions 3 and 5 are incorrect (cat predicted as dog, and dog predicted as cat). Accuracy = 8/10 = 80%."
+        },
+        {
+          "title": "Effect of K on Classification",
+          "code": "import math\nfrom collections import Counter\n\ndef euclidean_distance(p1, p2):\n    return math.sqrt(sum((a - b) ** 2 for a, b in zip(p1, p2)))\n\ndef knn_classify(train_data, train_labels, new_point, k):\n    distances = []\n    for i, point in enumerate(train_data):\n        d = euclidean_distance(point, new_point)\n        distances.append((d, train_labels[i]))\n    distances.sort(key=lambda x: x[0])\n    k_nearest = [label for _, label in distances[:k]]\n    return Counter(k_nearest).most_common(1)[0][0]\n\ntrain_data = [(0, 0), (1, 0), (0, 1), (3, 3), (4, 3), (3, 4), (2, 2)]\ntrain_labels = ['A', 'A', 'A', 'B', 'B', 'B', 'A']\n\ntest_point = (2.5, 2.5)\nprint(f\"Test point: {test_point}\\n\")\nfor k in [1, 3, 5, 7]:\n    result = knn_classify(train_data, train_labels, test_point, k)\n    print(f\"K={k}: Predicted class = {result}\")",
+          "output": "Test point: (2.5, 2.5)\n\nK=1: Predicted class = B\nK=3: Predicted class = B\nK=5: Predicted class = B\nK=7: Predicted class = A",
+          "explanation": "The same point can be classified differently depending on K. With K=1, the nearest point (3,3) at distance 0.71 is class B. With K=3 and K=5, the nearby B-class points dominate. With K=7, all training points are included and the four A-class points outvote the three B-class points. This demonstrates why K selection is important and should be tuned using validation data."
+        }
+      ],
+      "notes": [
+        "KNN is a lazy learner — it stores the entire training dataset and performs computation only at prediction time.",
+        "Feature scaling is critical for KNN because distance metrics are sensitive to the magnitude of features.",
+        "Choosing the right K value is important: use odd values of K for binary classification to avoid ties.",
+        "KNN can handle non-linear decision boundaries naturally, unlike logistic regression which requires feature engineering for non-linearity.",
+        "Time complexity of KNN prediction is O(n*d) where n is the number of training samples and d is the number of features."
+      ],
+      "commonPitfalls": [
+        "Not normalizing features before computing distances — a feature with values in the thousands will dominate over one with values in single digits.",
+        "Using an even K for binary classification can lead to ties where two classes have equal votes.",
+        "KNN performance degrades in high-dimensional spaces due to the 'curse of dimensionality' — all points become roughly equidistant."
+      ],
+      "interviewTips": [
+        "Be prepared to explain the curse of dimensionality: in high dimensions, Euclidean distance becomes less meaningful because all points tend to be roughly equidistant. This is why dimensionality reduction techniques like PCA are often used before KNN.",
+        "Know when to use KNN vs other classifiers: KNN works well with small datasets and low dimensions but becomes impractical with large datasets due to O(n) prediction time. Decision trees or logistic regression are more efficient for large-scale classification.",
+        "Interviewers may ask about weighted KNN: instead of a simple majority vote, closer neighbors can be given more weight (e.g., weight = 1/distance), which often improves accuracy.",
+        "Understand the difference between parametric models (fixed number of parameters like logistic regression) and non-parametric models (like KNN, where model complexity grows with data size)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "classification-basics-ex1",
+        "title": "Implement Euclidean and Manhattan Distance",
+        "description": "Write functions to compute both Euclidean and Manhattan distances between two points, then compare the distances for a set of point pairs.",
+        "starterCode": "import math\n\ndef euclidean_distance(p1, p2):\n    # TODO: Compute Euclidean distance\n    pass\n\ndef manhattan_distance(p1, p2):\n    # TODO: Compute Manhattan distance (sum of absolute differences)\n    pass\n\npairs = [((0, 0), (3, 4)), ((1, 1), (4, 5)), ((2, 3), (5, 7))]\nfor p1, p2 in pairs:\n    ed = euclidean_distance(p1, p2)\n    md = manhattan_distance(p1, p2)\n    print(f\"{p1} to {p2}: Euclidean={ed:.2f}, Manhattan={md:.2f}\")",
+        "solution": "import math\n\ndef euclidean_distance(p1, p2):\n    return math.sqrt(sum((a - b) ** 2 for a, b in zip(p1, p2)))\n\ndef manhattan_distance(p1, p2):\n    return sum(abs(a - b) for a, b in zip(p1, p2))\n\npairs = [((0, 0), (3, 4)), ((1, 1), (4, 5)), ((2, 3), (5, 7))]\nfor p1, p2 in pairs:\n    ed = euclidean_distance(p1, p2)\n    md = manhattan_distance(p1, p2)\n    print(f\"{p1} to {p2}: Euclidean={ed:.2f}, Manhattan={md:.2f}\")",
+        "expectedOutput": "(0, 0) to (3, 4): Euclidean=5.00, Manhattan=7.00\n(1, 1) to (4, 5): Euclidean=5.00, Manhattan=7.00\n(2, 3) to (5, 7): Euclidean=5.00, Manhattan=7.00",
+        "hints": [
+          "Euclidean distance: sqrt(sum of (a_i - b_i)^2).",
+          "Manhattan distance: sum of |a_i - b_i|.",
+          "Use zip() to iterate over corresponding elements of the two points."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "classification-basics-ex2",
+        "title": "Build a KNN Classifier",
+        "description": "Implement a complete KNN classifier function and use it to classify test points. Use Euclidean distance and k=3.",
+        "starterCode": "import math\nfrom collections import Counter\n\ndef knn_predict(train_X, train_y, test_point, k=3):\n    # TODO: Compute distances from test_point to all training points\n    # TODO: Sort by distance and get k nearest labels\n    # TODO: Return majority vote\n    pass\n\n# Training data\ntrain_X = [(1, 1), (2, 1), (1, 2), (5, 5), (6, 5), (5, 6)]\ntrain_y = [0, 0, 0, 1, 1, 1]\n\n# Test points\ntest_points = [(1.5, 1.5), (5.5, 5.5), (3, 3)]\nfor pt in test_points:\n    pred = knn_predict(train_X, train_y, pt, k=3)\n    print(f\"Point {pt} -> Class {pred}\")",
+        "solution": "import math\nfrom collections import Counter\n\ndef knn_predict(train_X, train_y, test_point, k=3):\n    distances = []\n    for i, point in enumerate(train_X):\n        d = math.sqrt(sum((a - b) ** 2 for a, b in zip(point, test_point)))\n        distances.append((d, train_y[i]))\n    distances.sort(key=lambda x: x[0])\n    k_nearest_labels = [label for _, label in distances[:k]]\n    return Counter(k_nearest_labels).most_common(1)[0][0]\n\n# Training data\ntrain_X = [(1, 1), (2, 1), (1, 2), (5, 5), (6, 5), (5, 6)]\ntrain_y = [0, 0, 0, 1, 1, 1]\n\n# Test points\ntest_points = [(1.5, 1.5), (5.5, 5.5), (3, 3)]\nfor pt in test_points:\n    pred = knn_predict(train_X, train_y, pt, k=3)\n    print(f\"Point {pt} -> Class {pred}\")",
+        "expectedOutput": "Point (1.5, 1.5) -> Class 0\nPoint (5.5, 5.5) -> Class 1\nPoint (3, 3) -> Class 0",
+        "hints": [
+          "Compute Euclidean distance from test_point to each training point.",
+          "Store (distance, label) pairs and sort by distance.",
+          "Use Counter to find the most common label among the k nearest neighbors."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "classification-basics-ex3",
+        "title": "Evaluate KNN Accuracy",
+        "description": "Use the KNN classifier to predict labels for a test set and compute the overall accuracy.",
+        "starterCode": "import math\nfrom collections import Counter\n\ndef knn_predict(train_X, train_y, test_point, k=3):\n    distances = []\n    for i, point in enumerate(train_X):\n        d = math.sqrt(sum((a - b) ** 2 for a, b in zip(point, test_point)))\n        distances.append((d, train_y[i]))\n    distances.sort(key=lambda x: x[0])\n    k_nearest_labels = [label for _, label in distances[:k]]\n    return Counter(k_nearest_labels).most_common(1)[0][0]\n\ndef evaluate_knn(train_X, train_y, test_X, test_y, k=3):\n    # TODO: Predict labels for all test points\n    # TODO: Compute accuracy = correct / total\n    pass\n\ntrain_X = [(0, 0), (1, 0), (0, 1), (1, 1), (5, 5), (6, 5), (5, 6), (6, 6)]\ntrain_y = [0, 0, 0, 0, 1, 1, 1, 1]\ntest_X = [(0.5, 0.5), (5.5, 5.5), (3, 3), (6, 6.5)]\ntest_y = [0, 1, 0, 1]\n\nacc = evaluate_knn(train_X, train_y, test_X, test_y, k=3)\nprint(f\"Test accuracy: {acc:.0%}\")",
+        "solution": "import math\nfrom collections import Counter\n\ndef knn_predict(train_X, train_y, test_point, k=3):\n    distances = []\n    for i, point in enumerate(train_X):\n        d = math.sqrt(sum((a - b) ** 2 for a, b in zip(point, test_point)))\n        distances.append((d, train_y[i]))\n    distances.sort(key=lambda x: x[0])\n    k_nearest_labels = [label for _, label in distances[:k]]\n    return Counter(k_nearest_labels).most_common(1)[0][0]\n\ndef evaluate_knn(train_X, train_y, test_X, test_y, k=3):\n    predictions = [knn_predict(train_X, train_y, pt, k) for pt in test_X]\n    correct = sum(1 for t, p in zip(test_y, predictions) if t == p)\n    return correct / len(test_y)\n\ntrain_X = [(0, 0), (1, 0), (0, 1), (1, 1), (5, 5), (6, 5), (5, 6), (6, 6)]\ntrain_y = [0, 0, 0, 0, 1, 1, 1, 1]\ntest_X = [(0.5, 0.5), (5.5, 5.5), (3, 3), (6, 6.5)]\ntest_y = [0, 1, 0, 1]\n\nacc = evaluate_knn(train_X, train_y, test_X, test_y, k=3)\nprint(f\"Test accuracy: {acc:.0%}\")",
+        "expectedOutput": "Test accuracy: 100%",
+        "hints": [
+          "Use knn_predict for each test point to get predictions.",
+          "Compare each prediction with the actual label.",
+          "Accuracy = number of correct predictions / total number of test points."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "evaluation-metrics",
+    "sectionId": "machine-learning-basics",
+    "orderIndex": 3,
+    "title": "Model Evaluation Metrics",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Accuracy", "Precision", "Recall", "F1 score", "Confusion matrix", "ROC and AUC"],
+    "content": {
+      "explanation": "Evaluating a machine learning model goes far beyond simple accuracy. While accuracy (correct predictions / total predictions) is intuitive, it can be deeply misleading in real-world scenarios. Consider a fraud detection system where only 1% of transactions are fraudulent: a model that always predicts 'not fraud' would achieve 99% accuracy while being completely useless. This is why we need a richer set of evaluation metrics.\n\nThe confusion matrix is the foundation for understanding classification performance. For binary classification, it is a 2x2 matrix with four values: True Positives (TP) — correctly predicted positive, False Positives (FP) — incorrectly predicted positive, True Negatives (TN) — correctly predicted negative, and False Negatives (FN) — incorrectly predicted negative. Every classification metric can be derived from these four numbers.\n\nPrecision answers the question: 'Of all the instances the model predicted as positive, how many were actually positive?' It is computed as TP / (TP + FP). Precision is important when the cost of false positives is high — for example, in spam filtering, marking a legitimate email as spam (false positive) is costly. Recall (also called sensitivity or true positive rate) answers: 'Of all actual positive instances, how many did the model correctly identify?' It is computed as TP / (TP + FN). Recall is critical when missing positive cases is dangerous, such as in cancer screening.\n\nThe F1 score is the harmonic mean of precision and recall: F1 = 2 * (precision * recall) / (precision + recall). It provides a single metric that balances both concerns. The harmonic mean is used instead of the arithmetic mean because it penalizes extreme imbalances — if either precision or recall is very low, the F1 score will also be low. F1 is particularly useful when you need a single number to compare models and the class distribution is imbalanced.\n\nThe ROC (Receiver Operating Characteristic) curve plots the True Positive Rate (recall) against the False Positive Rate (FP / (FP + TN)) at various classification thresholds. The AUC (Area Under the ROC Curve) summarizes this curve as a single number between 0 and 1, where 1.0 represents a perfect classifier and 0.5 represents a random classifier. AUC is threshold-independent, making it useful for comparing models regardless of the specific decision threshold chosen.",
+      "codeExamples": [
+        {
+          "title": "Building a Confusion Matrix",
+          "code": "def confusion_matrix(y_true, y_pred, positive=1):\n    tp = sum(1 for t, p in zip(y_true, y_pred) if t == positive and p == positive)\n    fp = sum(1 for t, p in zip(y_true, y_pred) if t != positive and p == positive)\n    fn = sum(1 for t, p in zip(y_true, y_pred) if t == positive and p != positive)\n    tn = sum(1 for t, p in zip(y_true, y_pred) if t != positive and p != positive)\n    return tp, fp, fn, tn\n\ny_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]\ny_pred = [1, 0, 1, 0, 0, 1, 1, 0, 0, 0]\n\ntp, fp, fn, tn = confusion_matrix(y_true, y_pred)\nprint(\"Confusion Matrix:\")\nprint(f\"                Predicted Pos  Predicted Neg\")\nprint(f\"Actual Pos      TP={tp}           FN={fn}\")\nprint(f\"Actual Neg      FP={fp}           TN={tn}\")\nprint(f\"\\nTotal: {tp+fp+fn+tn} samples\")",
+          "output": "Confusion Matrix:\n                Predicted Pos  Predicted Neg\nActual Pos      TP=3           FN=2\nActual Neg      FP=1           TN=4\n\nTotal: 10 samples",
+          "explanation": "The confusion matrix breaks down predictions into four categories. TP=3 (correctly identified positives), FP=1 (negative sample incorrectly predicted as positive), FN=2 (positive samples missed), TN=4 (correctly identified negatives)."
+        },
+        {
+          "title": "Computing Precision, Recall, and F1",
+          "code": "def compute_metrics(y_true, y_pred, positive=1):\n    tp = sum(1 for t, p in zip(y_true, y_pred) if t == positive and p == positive)\n    fp = sum(1 for t, p in zip(y_true, y_pred) if t != positive and p == positive)\n    fn = sum(1 for t, p in zip(y_true, y_pred) if t == positive and p != positive)\n    \n    precision = tp / (tp + fp) if (tp + fp) > 0 else 0\n    recall = tp / (tp + fn) if (tp + fn) > 0 else 0\n    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0\n    accuracy = sum(1 for t, p in zip(y_true, y_pred) if t == p) / len(y_true)\n    \n    return accuracy, precision, recall, f1\n\ny_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]\ny_pred = [1, 0, 1, 0, 0, 1, 1, 0, 0, 0]\n\nacc, prec, rec, f1 = compute_metrics(y_true, y_pred)\nprint(f\"Accuracy:  {acc:.4f}\")\nprint(f\"Precision: {prec:.4f}\")\nprint(f\"Recall:    {rec:.4f}\")\nprint(f\"F1 Score:  {f1:.4f}\")",
+          "output": "Accuracy:  0.7000\nPrecision: 0.7500\nRecall:    0.6000\nF1 Score:  0.6667",
+          "explanation": "With TP=3, FP=1, FN=2, TN=4: Accuracy = (3+4)/10 = 0.70. Precision = 3/(3+1) = 0.75. Recall = 3/(3+2) = 0.60. F1 = 2*0.75*0.6/(0.75+0.6) = 0.9/1.35 = 0.6667."
+        },
+        {
+          "title": "Precision-Recall Tradeoff Demonstration",
+          "code": "# Simulating different thresholds on model confidence scores\nscores = [0.9, 0.8, 0.7, 0.6, 0.4, 0.35, 0.3, 0.2, 0.15, 0.1]\ny_true = [1, 1, 1, 1, 0, 1, 0, 0, 0, 0]\n\nprint(f\"{'Threshold':>10} {'Precision':>10} {'Recall':>8} {'F1':>8}\")\nprint(\"-\" * 40)\n\nfor threshold in [0.8, 0.5, 0.3]:\n    y_pred = [1 if s >= threshold else 0 for s in scores]\n    tp = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 1)\n    fp = sum(1 for t, p in zip(y_true, y_pred) if t == 0 and p == 1)\n    fn = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 0)\n    \n    prec = tp / (tp + fp) if (tp + fp) > 0 else 0\n    rec = tp / (tp + fn) if (tp + fn) > 0 else 0\n    f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0\n    print(f\"{threshold:>10.1f} {prec:>10.4f} {rec:>8.4f} {f1:>8.4f}\")",
+          "output": " Threshold  Precision   Recall       F1\n----------------------------------------\n       0.8     1.0000   0.4000   0.5714\n       0.5     1.0000   0.8000   0.8889\n       0.3     0.7143   1.0000   0.8333",
+          "explanation": "At threshold 0.8, only the top 2 scores (0.9, 0.8) are predicted positive (both truly positive), so precision is perfect but recall is low (2 of 5 positives caught). At 0.5, five predictions are positive (scores 0.9,0.8,0.7,0.6,0.55 — all are true positives), precision=4/4=1.0, recall=4/5=0.8. At 0.3, seven predictions are positive (5 TP + 2 FP), precision=5/7=0.714, recall=5/5=1.0. This shows the classic tradeoff: lower threshold catches more positives but also more false positives."
+        },
+        {
+          "title": "Multi-Class Confusion Matrix",
+          "code": "from collections import defaultdict\n\ndef multi_class_report(y_true, y_pred):\n    classes = sorted(set(y_true))\n    \n    # Build confusion matrix\n    matrix = defaultdict(lambda: defaultdict(int))\n    for t, p in zip(y_true, y_pred):\n        matrix[t][p] += 1\n    \n    print(\"Confusion Matrix:\")\n    print(f\"{'':>10}\", end=\"\")\n    for c in classes:\n        print(f\"{'Pred_'+c:>10}\", end=\"\")\n    print()\n    for actual in classes:\n        print(f\"{'Act_'+actual:>10}\", end=\"\")\n        for pred in classes:\n            print(f\"{matrix[actual][pred]:>10}\", end=\"\")\n        print()\n    \n    # Per-class accuracy\n    overall_correct = sum(1 for t, p in zip(y_true, y_pred) if t == p)\n    print(f\"\\nOverall Accuracy: {overall_correct}/{len(y_true)} = {overall_correct/len(y_true):.1%}\")\n\ny_true = ['cat', 'dog', 'cat', 'bird', 'dog', 'bird', 'cat', 'dog', 'bird']\ny_pred = ['cat', 'dog', 'dog', 'bird', 'dog', 'cat', 'cat', 'dog', 'bird']\n\nmulti_class_report(y_true, y_pred)",
+          "output": "Confusion Matrix:\n           Pred_bird  Pred_cat  Pred_dog\n  Act_bird         2         1         0\n   Act_cat         0         2         1\n   Act_dog         0         0         3\n\nOverall Accuracy: 7/9 = 77.8%",
+          "explanation": "The multi-class confusion matrix shows how each actual class was predicted. The diagonal (2, 2, 3) represents correct predictions. Off-diagonal elements show misclassifications: one bird was predicted as cat, and one cat was predicted as dog."
+        }
+      ],
+      "notes": [
+        "Accuracy alone is misleading for imbalanced datasets — always check precision, recall, and F1.",
+        "Precision is important when false positives are costly; recall is important when false negatives are costly.",
+        "F1 score is the harmonic mean of precision and recall, providing a balanced single metric.",
+        "The confusion matrix provides the most detailed view of classification performance.",
+        "ROC AUC is threshold-independent and useful for comparing models, but can be misleading with heavily imbalanced data."
+      ],
+      "commonPitfalls": [
+        "Reporting only accuracy on an imbalanced dataset — a model predicting the majority class always can have high accuracy but zero usefulness.",
+        "Forgetting to handle division by zero when computing precision or recall (e.g., when there are no positive predictions or no actual positives).",
+        "Confusing precision and recall — precision is about the quality of positive predictions, recall is about coverage of actual positives."
+      ],
+      "interviewTips": [
+        "The precision-recall tradeoff is a classic interview topic: explain that increasing the classification threshold improves precision but hurts recall, and vice versa. Use a concrete example like spam filtering or medical diagnosis.",
+        "Be ready to explain when to use which metric: use precision when false positives are costly (spam filter), recall when false negatives are costly (cancer detection), and F1 when you need a balance.",
+        "Understand macro vs micro averaging for multi-class problems: macro averages treat all classes equally, micro averages weight by class frequency. Macro is better for imbalanced datasets where small classes matter.",
+        "Know that AUC represents the probability that the model ranks a random positive instance higher than a random negative instance. AUC = 0.5 means random, AUC = 1.0 means perfect ranking."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "evaluation-metrics-ex1",
+        "title": "Implement Precision, Recall, and F1",
+        "description": "Write functions to compute precision, recall, and F1 score from lists of true and predicted labels.",
+        "starterCode": "def precision_recall_f1(y_true, y_pred, positive=1):\n    # TODO: Count TP, FP, FN\n    # TODO: Compute precision, recall, F1\n    # TODO: Return (precision, recall, f1)\n    pass\n\ny_true = [1, 1, 0, 1, 0, 0, 1, 1, 0, 1]\ny_pred = [1, 0, 0, 1, 0, 1, 1, 1, 1, 0]\nprec, rec, f1 = precision_recall_f1(y_true, y_pred)\nprint(f\"Precision: {prec:.4f}\")\nprint(f\"Recall:    {rec:.4f}\")\nprint(f\"F1 Score:  {f1:.4f}\")",
+        "solution": "def precision_recall_f1(y_true, y_pred, positive=1):\n    tp = sum(1 for t, p in zip(y_true, y_pred) if t == positive and p == positive)\n    fp = sum(1 for t, p in zip(y_true, y_pred) if t != positive and p == positive)\n    fn = sum(1 for t, p in zip(y_true, y_pred) if t == positive and p != positive)\n    precision = tp / (tp + fp) if (tp + fp) > 0 else 0\n    recall = tp / (tp + fn) if (tp + fn) > 0 else 0\n    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0\n    return precision, recall, f1\n\ny_true = [1, 1, 0, 1, 0, 0, 1, 1, 0, 1]\ny_pred = [1, 0, 0, 1, 0, 1, 1, 1, 1, 0]\nprec, rec, f1 = precision_recall_f1(y_true, y_pred)\nprint(f\"Precision: {prec:.4f}\")\nprint(f\"Recall:    {rec:.4f}\")\nprint(f\"F1 Score:  {f1:.4f}\")",
+        "expectedOutput": "Precision: 0.6667\nRecall:    0.6667\nF1 Score:  0.6667",
+        "hints": [
+          "TP: both true and predicted are positive. FP: predicted positive but actually negative. FN: actually positive but predicted negative.",
+          "Precision = TP / (TP + FP). Recall = TP / (TP + FN).",
+          "F1 = 2 * precision * recall / (precision + recall)."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "evaluation-metrics-ex2",
+        "title": "Build a Confusion Matrix Function",
+        "description": "Implement a function that builds and displays a confusion matrix for binary classification.",
+        "starterCode": "def build_confusion_matrix(y_true, y_pred):\n    # TODO: Compute TP, FP, FN, TN\n    # TODO: Print formatted confusion matrix\n    pass\n\ny_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0]\ny_pred = [1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0]\nbuild_confusion_matrix(y_true, y_pred)",
+        "solution": "def build_confusion_matrix(y_true, y_pred):\n    tp = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 1)\n    fp = sum(1 for t, p in zip(y_true, y_pred) if t == 0 and p == 1)\n    fn = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 0)\n    tn = sum(1 for t, p in zip(y_true, y_pred) if t == 0 and p == 0)\n    print(\"          Pred:1  Pred:0\")\n    print(f\"True:1    {tp:>5}   {fn:>5}\")\n    print(f\"True:0    {fp:>5}   {tn:>5}\")\n    accuracy = (tp + tn) / len(y_true)\n    print(f\"Accuracy: {accuracy:.2%}\")\n\ny_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0]\ny_pred = [1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0]\nbuild_confusion_matrix(y_true, y_pred)",
+        "expectedOutput": "          Pred:1  Pred:0\nTrue:1        4       2\nTrue:0        2       4\nAccuracy: 66.67%",
+        "hints": [
+          "Count each combination: (true=1, pred=1) for TP, (true=0, pred=1) for FP, etc.",
+          "Use formatted string alignment for clean output.",
+          "Accuracy = (TP + TN) / total samples."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "evaluation-metrics-ex3",
+        "title": "Threshold Analysis",
+        "description": "Given model confidence scores and true labels, compute precision, recall, and F1 at three different thresholds (0.3, 0.5, 0.7) and identify the threshold with the highest F1.",
+        "starterCode": "def threshold_analysis(scores, y_true, thresholds):\n    # TODO: For each threshold, convert scores to predictions\n    # TODO: Compute precision, recall, F1\n    # TODO: Print results and identify best threshold by F1\n    pass\n\nscores = [0.95, 0.85, 0.75, 0.65, 0.55, 0.45, 0.35, 0.25, 0.15, 0.05]\ny_true = [1, 1, 1, 0, 1, 0, 1, 0, 0, 0]\nthresholds = [0.3, 0.5, 0.7]\nthreshold_analysis(scores, y_true, thresholds)",
+        "solution": "def threshold_analysis(scores, y_true, thresholds):\n    best_f1 = -1\n    best_thresh = 0\n    for thresh in thresholds:\n        y_pred = [1 if s >= thresh else 0 for s in scores]\n        tp = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 1)\n        fp = sum(1 for t, p in zip(y_true, y_pred) if t == 0 and p == 1)\n        fn = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 0)\n        prec = tp / (tp + fp) if (tp + fp) > 0 else 0\n        rec = tp / (tp + fn) if (tp + fn) > 0 else 0\n        f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0\n        print(f\"Threshold {thresh}: Precision={prec:.4f}, Recall={rec:.4f}, F1={f1:.4f}\")\n        if f1 > best_f1:\n            best_f1 = f1\n            best_thresh = thresh\n    print(f\"Best threshold by F1: {best_thresh}\")\n\nscores = [0.95, 0.85, 0.75, 0.65, 0.55, 0.45, 0.35, 0.25, 0.15, 0.05]\ny_true = [1, 1, 1, 0, 1, 0, 1, 0, 0, 0]\nthresholds = [0.3, 0.5, 0.7]\nthreshold_analysis(scores, y_true, thresholds)",
+        "expectedOutput": "Threshold 0.3: Precision=0.7143, Recall=1.0000, F1=0.8333\nThreshold 0.5: Precision=0.8000, Recall=0.8000, F1=0.8000\nThreshold 0.7: Precision=1.0000, Recall=0.6000, F1=0.7500\nBest threshold by F1: 0.3",
+        "hints": [
+          "Convert scores to binary predictions: 1 if score >= threshold, else 0.",
+          "For each threshold, compute TP, FP, FN, then precision, recall, F1.",
+          "Track the threshold with the highest F1 score."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "feature-engineering",
+    "sectionId": "machine-learning-basics",
+    "orderIndex": 4,
+    "title": "Feature Engineering and Preprocessing",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Feature scaling", "Encoding categorical variables", "One-hot encoding", "Normalization", "Standardization"],
+    "content": {
+      "explanation": "Feature engineering is arguably the most important step in the machine learning pipeline. It is the process of transforming raw data into features that better represent the underlying problem, enabling algorithms to learn more effectively. As the saying goes in data science: 'garbage in, garbage out.' Even the most sophisticated algorithm will fail if the features fed to it are poorly constructed or improperly preprocessed.\n\nFeature scaling is essential for many ML algorithms, particularly those based on distance calculations (KNN, SVM) or gradient descent (linear regression, neural networks). There are two main approaches: min-max normalization scales features to a fixed range (typically 0 to 1) using the formula (x - min) / (max - min). Standardization (z-score normalization) transforms features to have zero mean and unit variance using (x - mean) / std. Normalization is preferred when the data does not follow a Gaussian distribution, while standardization is better when the data is approximately normal or when algorithms assume standardized input.\n\nCategorical variables (non-numeric data like colors, cities, or product types) must be converted to numeric form before most ML algorithms can use them. Label encoding assigns a unique integer to each category (e.g., red=0, green=1, blue=2), but this can introduce a false ordinal relationship. One-hot encoding creates a binary column for each category, avoiding the ordinal problem. For example, a 'color' column with values [red, green, blue] becomes three columns: is_red, is_green, is_blue, each containing 0 or 1.\n\nBeyond scaling and encoding, feature engineering includes creating new features from existing ones (e.g., extracting day-of-week from a date, computing ratios between columns), handling missing values (imputation with mean, median, or mode), removing or transforming outliers, and polynomial features (creating x^2, x*y terms for non-linear relationships). Domain knowledge is invaluable here — knowing which features are likely to be predictive can dramatically improve model performance.\n\nA critical rule in feature engineering is to fit preprocessing transformations only on the training data and then apply the same transformation to the test data. For example, when standardizing features, you compute the mean and standard deviation from the training set and use those exact values to transform both training and test sets. Computing statistics on the test set would leak information and give an overly optimistic estimate of model performance.",
+      "codeExamples": [
+        {
+          "title": "Min-Max Normalization",
+          "code": "def min_max_normalize(data):\n    min_val = min(data)\n    max_val = max(data)\n    return [(x - min_val) / (max_val - min_val) for x in data]\n\n# Example: normalizing age and salary to [0, 1]\nages = [22, 25, 30, 35, 60]\nsalaries = [30000, 45000, 55000, 70000, 120000]\n\nnorm_ages = min_max_normalize(ages)\nnorm_salaries = min_max_normalize(salaries)\n\nprint(\"Ages:\")\nfor original, normalized in zip(ages, norm_ages):\n    print(f\"  {original:>3} -> {normalized:.4f}\")\n\nprint(\"\\nSalaries:\")\nfor original, normalized in zip(salaries, norm_salaries):\n    print(f\"  {original:>6} -> {normalized:.4f}\")",
+          "output": "Ages:\n   22 -> 0.0000\n   25 -> 0.0789\n   30 -> 0.2105\n   35 -> 0.3421\n   60 -> 1.0000\n\nSalaries:\n   30000 -> 0.0000\n   45000 -> 0.1667\n   55000 -> 0.2778\n   70000 -> 0.4444\n  120000 -> 1.0000",
+          "explanation": "Min-max normalization maps all values to [0, 1]. For ages: range is 60-22=38. (25-22)/38 = 3/38 = 0.0789. For salaries: range is 120000-30000=90000. (45000-30000)/90000 = 15000/90000 = 0.1667. Now both features are on the same scale."
+        },
+        {
+          "title": "Standardization (Z-Score Normalization)",
+          "code": "import math\n\ndef standardize(data):\n    mean = sum(data) / len(data)\n    variance = sum((x - mean) ** 2 for x in data) / len(data)\n    std = math.sqrt(variance)\n    return [(x - mean) / std for x in data], mean, std\n\nvalues = [10, 20, 30, 40, 50]\nstandardized, mean, std = standardize(values)\n\nprint(f\"Original:      {values}\")\nprint(f\"Mean:          {mean:.2f}\")\nprint(f\"Std Dev:       {std:.2f}\")\nprint(f\"Standardized:  [{', '.join(f'{v:.2f}' for v in standardized)}]\")\n\n# Verify: mean of standardized should be ~0, std should be ~1\nnew_mean = sum(standardized) / len(standardized)\nnew_std = math.sqrt(sum((x - new_mean) ** 2 for x in standardized) / len(standardized))\nprint(f\"\\nVerification:\")\nprint(f\"  New mean: {new_mean:.2f}\")\nprint(f\"  New std:  {new_std:.2f}\")",
+          "output": "Original:      [10, 20, 30, 40, 50]\nMean:          30.00\nStd Dev:       14.14\nStandardized:  [-1.41, -0.71, 0.00, 0.71, 1.41]\n\nVerification:\n  New mean: 0.00\n  New std:  1.00",
+          "explanation": "Standardization centers data at mean=0 with std=1. Mean of [10,20,30,40,50] = 30. Variance = (400+100+0+100+400)/5 = 200. Std = sqrt(200) = 14.14. Each value: (x-30)/14.14. So 10 becomes (10-30)/14.14 = -1.41."
+        },
+        {
+          "title": "One-Hot Encoding",
+          "code": "def one_hot_encode(data, column_name):\n    categories = sorted(set(data))\n    encoded = {}\n    for cat in categories:\n        col_name = f\"{column_name}_{cat}\"\n        encoded[col_name] = [1 if val == cat else 0 for val in data]\n    return encoded\n\ncolors = ['red', 'blue', 'green', 'red', 'blue']\nencoded = one_hot_encode(colors, 'color')\n\nprint(\"Original:\", colors)\nprint(\"\\nOne-Hot Encoded:\")\nfor col, values in encoded.items():\n    print(f\"  {col}: {values}\")",
+          "output": "Original: ['red', 'blue', 'green', 'red', 'blue']\n\nOne-Hot Encoded:\n  color_blue: [0, 1, 0, 0, 1]\n  color_green: [0, 0, 1, 0, 0]\n  color_red: [1, 0, 0, 1, 0]",
+          "explanation": "One-hot encoding creates a binary column for each unique category. Each row has exactly one 1 (the active category) and 0s elsewhere. This avoids imposing a false ordinal relationship between categories."
+        },
+        {
+          "title": "Complete Preprocessing Pipeline",
+          "code": "import math\n\ndef preprocess_dataset(train_data, test_data):\n    \"\"\"Standardize numeric features using train statistics.\"\"\"\n    n_features = len(train_data[0])\n    \n    # Compute mean and std from training data only\n    stats = []\n    for j in range(n_features):\n        col = [row[j] for row in train_data]\n        mean = sum(col) / len(col)\n        std = math.sqrt(sum((x - mean) ** 2 for x in col) / len(col))\n        stats.append((mean, std))\n    \n    def transform(data, stats):\n        result = []\n        for row in data:\n            new_row = []\n            for j, val in enumerate(row):\n                mean, std = stats[j]\n                new_row.append(round((val - mean) / std, 4) if std > 0 else 0)\n            result.append(new_row)\n        return result\n    \n    return transform(train_data, stats), transform(test_data, stats)\n\ntrain = [[100, 1], [200, 2], [300, 3], [400, 4]]\ntest = [[150, 1.5], [350, 3.5]]\n\ntrain_scaled, test_scaled = preprocess_dataset(train, test)\n\nprint(\"Train (original -> scaled):\")\nfor orig, scaled in zip(train, train_scaled):\n    print(f\"  {orig} -> {scaled}\")\n\nprint(\"\\nTest (original -> scaled):\")\nfor orig, scaled in zip(test, test_scaled):\n    print(f\"  {orig} -> {scaled}\")",
+          "output": "Train (original -> scaled):\n  [100, 1] -> [-1.3416, -1.3416]\n  [200, 2] -> [-0.4472, -0.4472]\n  [300, 3] -> [0.4472, 0.4472]\n  [400, 4] -> [1.3416, 1.3416]\n\nTest (original -> scaled):\n  [150, 1.5] -> [-0.8944, -0.8944]\n  [350, 3.5] -> [0.8944, 0.8944]",
+          "explanation": "The preprocessing pipeline computes mean and std from training data only (mean=250, std=sqrt(12500)=111.80 for feature 1; mean=2.5, std=sqrt(1.25)=1.118 for feature 2), then applies the same transformation to both train and test sets. This prevents data leakage."
+        }
+      ],
+      "notes": [
+        "Feature scaling is essential for distance-based algorithms (KNN, SVM) and gradient-based optimization.",
+        "Min-max normalization maps values to [0, 1]; standardization transforms to mean=0, std=1.",
+        "Always fit preprocessing on training data and transform both train and test with the same parameters.",
+        "One-hot encoding avoids imposing ordinal relationships on categorical data. Drop one column to avoid multicollinearity in linear models.",
+        "Feature engineering often has a bigger impact on model performance than algorithm selection."
+      ],
+      "commonPitfalls": [
+        "Fitting the scaler on the entire dataset (including test data) before splitting — this is data leakage and inflates performance metrics.",
+        "Using label encoding for nominal categories (like colors) in algorithms that interpret numeric order — the model may wrongly treat 'blue=0' as less than 'red=2'.",
+        "Forgetting to apply the same preprocessing to new data at prediction time — the model expects the same transformations it was trained with."
+      ],
+      "interviewTips": [
+        "Explain the difference between normalization and standardization: normalization is bounded to [0,1] and sensitive to outliers; standardization handles outliers better since it uses mean and std rather than min and max.",
+        "Data leakage is a critical interview topic: always emphasize that preprocessing parameters must be computed from training data only. Give an example of how fitting a scaler on the full dataset before splitting leads to optimistic results.",
+        "Know when to use one-hot encoding vs label encoding: one-hot for nominal categories (no inherent order), label encoding for ordinal categories (e.g., low/medium/high), and target encoding for high-cardinality categories.",
+        "Be prepared to discuss feature selection methods: filter methods (correlation, chi-squared), wrapper methods (recursive feature elimination), and embedded methods (L1 regularization, tree feature importance)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "feature-engineering-ex1",
+        "title": "Implement Min-Max Normalization",
+        "description": "Write a function that normalizes a list of values to the range [0, 1] using min-max normalization.",
+        "starterCode": "def normalize(data):\n    # TODO: Find min and max\n    # TODO: Apply (x - min) / (max - min) to each value\n    pass\n\nvalues = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]\nnormalized = normalize(values)\nprint(f\"Original: {values}\")\nprint(f\"Normalized: [{', '.join(f'{v:.2f}' for v in normalized)}]\")\nprint(f\"Min: {min(normalized):.2f}, Max: {max(normalized):.2f}\")",
+        "solution": "def normalize(data):\n    min_val = min(data)\n    max_val = max(data)\n    return [(x - min_val) / (max_val - min_val) for x in data]\n\nvalues = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]\nnormalized = normalize(values)\nprint(f\"Original: {values}\")\nprint(f\"Normalized: [{', '.join(f'{v:.2f}' for v in normalized)}]\")\nprint(f\"Min: {min(normalized):.2f}, Max: {max(normalized):.2f}\")",
+        "expectedOutput": "Original: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]\nNormalized: [0.00, 0.11, 0.22, 0.33, 0.44, 0.56, 0.67, 0.78, 0.89, 1.00]\nMin: 0.00, Max: 1.00",
+        "hints": [
+          "Find the minimum and maximum values in the data.",
+          "For each value: normalized = (value - min) / (max - min).",
+          "The minimum maps to 0.0 and the maximum maps to 1.0."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "feature-engineering-ex2",
+        "title": "Implement One-Hot Encoding",
+        "description": "Write a function that performs one-hot encoding on a list of categorical values and returns a dictionary mapping each category to its binary vector.",
+        "starterCode": "def one_hot(categories):\n    # TODO: Get unique sorted categories\n    # TODO: Create binary vector for each category\n    # TODO: Return dict of {category: [binary_values]}\n    pass\n\ndata = ['apple', 'banana', 'cherry', 'apple', 'cherry', 'banana']\nencoded = one_hot(data)\nprint(\"Data:\", data)\nprint(\"\\nEncoded:\")\nfor key in sorted(encoded.keys()):\n    print(f\"  {key}: {encoded[key]}\")",
+        "solution": "def one_hot(categories):\n    unique = sorted(set(categories))\n    result = {}\n    for cat in unique:\n        result[cat] = [1 if val == cat else 0 for val in categories]\n    return result\n\ndata = ['apple', 'banana', 'cherry', 'apple', 'cherry', 'banana']\nencoded = one_hot(data)\nprint(\"Data:\", data)\nprint(\"\\nEncoded:\")\nfor key in sorted(encoded.keys()):\n    print(f\"  {key}: {encoded[key]}\")",
+        "expectedOutput": "Data: ['apple', 'banana', 'cherry', 'apple', 'cherry', 'banana']\n\nEncoded:\n  apple: [1, 0, 0, 1, 0, 0]\n  banana: [0, 1, 0, 0, 0, 1]\n  cherry: [0, 0, 1, 0, 1, 0]",
+        "hints": [
+          "Use set() to get unique categories, then sorted() for consistent ordering.",
+          "For each unique category, create a list: 1 where the data matches the category, 0 otherwise.",
+          "Use a list comprehension: [1 if val == cat else 0 for val in categories]."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "feature-engineering-ex3",
+        "title": "Standardize with Train-Only Statistics",
+        "description": "Implement a standardization function that computes mean and std from training data and applies the transformation to both train and test data. Use population std (divide by n, not n-1).",
+        "starterCode": "import math\n\ndef fit_standardizer(train_data):\n    # TODO: Compute mean and std (population) for each feature\n    # TODO: Return stats as list of (mean, std) tuples\n    pass\n\ndef transform(data, stats):\n    # TODO: Apply (x - mean) / std for each feature using provided stats\n    pass\n\ntrain = [[1, 100], [2, 200], [3, 300], [4, 400], [5, 500]]\ntest = [[3, 350], [6, 600]]\n\nstats = fit_standardizer(train)\ntrain_scaled = transform(train, stats)\ntest_scaled = transform(test, stats)\n\nprint(\"Stats (mean, std):\")\nfor i, (m, s) in enumerate(stats):\n    print(f\"  Feature {i}: mean={m:.2f}, std={s:.2f}\")\nprint(f\"\\nTrain scaled: {[[round(v, 2) for v in row] for row in train_scaled]}\")\nprint(f\"Test scaled:  {[[round(v, 2) for v in row] for row in test_scaled]}\")",
+        "solution": "import math\n\ndef fit_standardizer(train_data):\n    n_features = len(train_data[0])\n    stats = []\n    for j in range(n_features):\n        col = [row[j] for row in train_data]\n        mean = sum(col) / len(col)\n        std = math.sqrt(sum((x - mean) ** 2 for x in col) / len(col))\n        stats.append((mean, std))\n    return stats\n\ndef transform(data, stats):\n    result = []\n    for row in data:\n        new_row = []\n        for j, val in enumerate(row):\n            mean, std = stats[j]\n            new_row.append((val - mean) / std if std > 0 else 0)\n        result.append(new_row)\n    return result\n\ntrain = [[1, 100], [2, 200], [3, 300], [4, 400], [5, 500]]\ntest = [[3, 350], [6, 600]]\n\nstats = fit_standardizer(train)\ntrain_scaled = transform(train, stats)\ntest_scaled = transform(test, stats)\n\nprint(\"Stats (mean, std):\")\nfor i, (m, s) in enumerate(stats):\n    print(f\"  Feature {i}: mean={m:.2f}, std={s:.2f}\")\nprint(f\"\\nTrain scaled: {[[round(v, 2) for v in row] for row in train_scaled]}\")\nprint(f\"Test scaled:  {[[round(v, 2) for v in row] for row in test_scaled]}\")",
+        "expectedOutput": "Stats (mean, std):\n  Feature 0: mean=3.00, std=1.41\n  Feature 1: mean=300.00, std=141.42\n\nTrain scaled: [[-1.41, -1.41], [-0.71, -0.71], [0.0, 0.0], [0.71, 0.71], [1.41, 1.41]]\nTest scaled:  [[0.0, 0.35], [2.12, 2.12]]",
+        "hints": [
+          "Compute mean and std for each feature column from training data.",
+          "Population std: sqrt(sum((x - mean)^2) / n), not dividing by n-1.",
+          "Apply the same mean and std to both training and test data."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

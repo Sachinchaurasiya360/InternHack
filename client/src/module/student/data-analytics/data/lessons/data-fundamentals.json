@@ -1,0 +1,487 @@
+[
+  {
+    "id": "what-is-data-analytics",
+    "sectionId": "data-fundamentals",
+    "orderIndex": 0,
+    "title": "What is Data Analytics?",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Data Analytics Overview", "Types of Analytics", "Data-Driven Decisions", "Analytics Workflow"],
+    "content": {
+      "explanation": "Data analytics is the systematic process of examining, cleaning, transforming, and modeling data to discover useful information, draw conclusions, and support decision-making. In today's world, organizations generate massive amounts of data from customer interactions, sensors, financial transactions, social media, and countless other sources. Data analytics provides the tools and techniques to turn this raw data into actionable insights that drive business strategy, scientific discovery, and technological innovation.\n\nThere are four primary types of analytics, each building on the previous one. Descriptive analytics answers the question 'What happened?' by summarizing historical data through reports, dashboards, and visualizations. Diagnostic analytics goes deeper to answer 'Why did it happen?' by identifying patterns, correlations, and root causes. Predictive analytics uses statistical models and machine learning to answer 'What is likely to happen?' by forecasting future trends. Finally, prescriptive analytics recommends 'What should we do?' by suggesting optimal actions based on predicted outcomes.\n\nData-driven decision making is the practice of basing business decisions on data analysis rather than intuition or observation alone. Companies like Netflix use viewing data to decide which shows to produce. Retailers analyze purchase patterns to optimize inventory. Healthcare organizations study patient data to improve treatment outcomes. The key principle is that decisions backed by evidence tend to be more reliable and reproducible than those based on gut feeling.\n\nThe analytics workflow typically follows a structured pipeline: first you define the question or problem, then collect relevant data, clean and prepare it for analysis, perform exploratory analysis, build models or run computations, interpret the results, and finally communicate your findings to stakeholders. Each step is critical, and skipping steps like data cleaning often leads to unreliable results. As a data analyst, you will spend a significant portion of your time on data preparation, which is why mastering the fundamentals is so important.\n\nPython has become the dominant language for data analytics due to its readability, extensive library ecosystem, and strong community support. Before diving into specialized libraries like NumPy and Pandas, it is essential to understand how Python's built-in data structures like lists, dictionaries, and tuples can be used to represent and manipulate data. These fundamentals form the foundation upon which all advanced analytics skills are built.",
+      "codeExamples": [
+        {
+          "title": "Representing Data with Lists",
+          "code": "# Sales data for a week (in thousands)\ndaily_sales = [12.5, 15.3, 9.8, 18.2, 22.1, 25.7, 14.6]\n\n# Basic descriptive analytics\ntotal = sum(daily_sales)\naverage = total / len(daily_sales)\nmaximum = max(daily_sales)\nminimum = min(daily_sales)\n\nprint(\"Weekly Sales Report\")\nprint(\"Total Sales: $\" + str(round(total, 1)) + \"K\")\nprint(\"Average Daily: $\" + str(round(average, 1)) + \"K\")\nprint(\"Best Day: $\" + str(maximum) + \"K\")\nprint(\"Worst Day: $\" + str(minimum) + \"K\")",
+          "output": "Weekly Sales Report\nTotal Sales: $118.2K\nAverage Daily: $16.9K\nBest Day: $25.7K\nWorst Day: $9.8K",
+          "explanation": "This demonstrates descriptive analytics using a simple Python list. We compute summary statistics (total, average, max, min) to understand the sales data. These are the building blocks of any data analysis."
+        },
+        {
+          "title": "Using Dictionaries for Structured Data",
+          "code": "# Student performance data as a list of dictionaries\nstudents = [\n    {\"name\": \"Alice\", \"math\": 92, \"science\": 88, \"english\": 95},\n    {\"name\": \"Bob\", \"math\": 78, \"science\": 85, \"english\": 72},\n    {\"name\": \"Charlie\", \"math\": 95, \"science\": 92, \"english\": 88},\n    {\"name\": \"Diana\", \"math\": 88, \"science\": 76, \"english\": 91},\n]\n\n# Calculate average score per student\nfor student in students:\n    scores = [student[\"math\"], student[\"science\"], student[\"english\"]]\n    avg = sum(scores) / len(scores)\n    print(student[\"name\"] + \": \" + str(round(avg, 1)))",
+          "output": "Alice: 91.7\nBob: 78.3\nCharlie: 91.7\nDiana: 85.0",
+          "explanation": "Dictionaries are perfect for representing structured records with named fields. Each student is a record (row), and each subject is a field (column). This mirrors how data is organized in spreadsheets and databases."
+        },
+        {
+          "title": "Diagnostic Analytics: Finding Patterns",
+          "code": "# Monthly revenue and marketing spend\nmonths = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\"]\nrevenue = [50, 55, 48, 70, 75, 80]\nmarketing_spend = [10, 12, 8, 15, 16, 18]\n\n# Diagnostic: Is there a relationship between marketing and revenue?\nprint(\"Month | Revenue | Marketing | Ratio\")\nprint(\"-\" * 40)\nfor i in range(len(months)):\n    ratio = round(revenue[i] / marketing_spend[i], 1)\n    print(months[i] + \"   | $\" + str(revenue[i]) + \"K    | $\" + str(marketing_spend[i]) + \"K      | \" + str(ratio))\n\n# Average ratio\nratios = [revenue[i] / marketing_spend[i] for i in range(len(months))]\navg_ratio = round(sum(ratios) / len(ratios), 1)\nprint(\"\\nAvg Revenue per Marketing Dollar: $\" + str(avg_ratio) + \"K\")",
+          "output": "Month | Revenue | Marketing | Ratio\n----------------------------------------\nJan   | $50K    | $10K      | 5.0\nFeb   | $55K    | $12K      | 4.6\nMar   | $48K    | $8K      | 6.0\nApr   | $70K    | $15K      | 4.7\nMay   | $75K    | $16K      | 4.7\nJun   | $80K    | $18K      | 4.4\n\nAvg Revenue per Marketing Dollar: $4.9K",
+          "explanation": "Diagnostic analytics helps us understand relationships in data. Here we examine the ratio of revenue to marketing spend across months. A consistent ratio suggests a predictable return on marketing investment."
+        },
+        {
+          "title": "Simple Predictive Estimate",
+          "code": "# Historical quarterly growth rates\nquarters = [\"Q1\", \"Q2\", \"Q3\", \"Q4\"]\nrevenue = [100, 112, 125, 140]\n\n# Calculate growth rates\ngrowth_rates = []\nfor i in range(1, len(revenue)):\n    rate = (revenue[i] - revenue[i-1]) / revenue[i-1] * 100\n    growth_rates.append(rate)\n    print(quarters[i] + \" growth: \" + str(round(rate, 1)) + \"%\")\n\n# Predict next quarter using average growth rate\navg_growth = sum(growth_rates) / len(growth_rates)\npredicted = revenue[-1] * (1 + avg_growth / 100)\nprint(\"\\nAverage Growth Rate: \" + str(round(avg_growth, 1)) + \"%\")\nprint(\"Predicted Q5 Revenue: $\" + str(round(predicted, 1)) + \"K\")",
+          "output": "Q2 growth: 12.0%\nQ3 growth: 11.6%\nQ4 growth: 12.0%\n\nAverage Growth Rate: 11.9%\nPredicted Q5 Revenue: $156.6K",
+          "explanation": "This is a simple predictive analytics example. We calculate historical growth rates and use the average to forecast the next quarter. Real predictive models use more sophisticated statistical techniques, but the core idea is the same: use past patterns to estimate future outcomes."
+        }
+      ],
+      "notes": [
+        "Data analytics is not just about tools and code. The most valuable skill is asking the right questions. A well-framed question guides the entire analysis and determines which techniques are appropriate.",
+        "The four types of analytics (descriptive, diagnostic, predictive, prescriptive) form a maturity model. Most organizations start with descriptive analytics and gradually build toward prescriptive capabilities.",
+        "Python lists and dictionaries are sufficient for small datasets. For larger datasets (thousands to millions of rows), you will need NumPy and Pandas, which are covered in later sections."
+      ],
+      "commonPitfalls": [
+        "Jumping straight into analysis without clearly defining the question you want to answer. This leads to unfocused exploration that wastes time and produces unreliable conclusions.",
+        "Confusing correlation with causation. Just because two variables move together does not mean one causes the other. Always consider alternative explanations.",
+        "Ignoring data quality issues. Analyzing dirty data produces misleading results. Always inspect and clean your data before performing any analysis."
+      ],
+      "interviewTips": [
+        "Be prepared to explain the four types of analytics with real-world examples. Interviewers often ask this to gauge your conceptual understanding.",
+        "When discussing data-driven decisions, mention both the benefits (objectivity, reproducibility) and the limitations (data bias, incomplete data, need for domain expertise)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "what-is-data-analytics-ex1",
+        "title": "Calculate Basic Statistics",
+        "description": "Given a list of daily website visitors, calculate and print the total visitors, the average daily visitors (rounded to 1 decimal), the day with the most visitors, and the day with the fewest visitors.",
+        "starterCode": "# Daily website visitors for a week\nvisitors = [1200, 1450, 980, 1678, 2100, 1890, 1345]\n\n# Calculate total visitors\n# Calculate average daily visitors (round to 1 decimal)\n# Find the maximum visitors in a day\n# Find the minimum visitors in a day\n# Print the results\n",
+        "solution": "visitors = [1200, 1450, 980, 1678, 2100, 1890, 1345]\n\ntotal = sum(visitors)\naverage = round(total / len(visitors), 1)\nmax_visitors = max(visitors)\nmin_visitors = min(visitors)\n\nprint(\"Total: \" + str(total))\nprint(\"Average: \" + str(average))\nprint(\"Max: \" + str(max_visitors))\nprint(\"Min: \" + str(min_visitors))",
+        "expectedOutput": "Total: 10643\nAverage: 1520.4\nMax: 2100\nMin: 980",
+        "hints": [
+          "Use sum() to get the total and len() to get the count for calculating the average",
+          "Use round(value, 1) to round to one decimal place",
+          "Use max() and min() to find the highest and lowest values"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "what-is-data-analytics-ex2",
+        "title": "Analyze Product Sales",
+        "description": "Given a list of product dictionaries, calculate and print each product's total revenue (price * quantity), then find and print the name of the best-selling product by revenue.",
+        "starterCode": "products = [\n    {\"name\": \"Laptop\", \"price\": 999, \"quantity\": 45},\n    {\"name\": \"Phone\", \"price\": 699, \"quantity\": 120},\n    {\"name\": \"Tablet\", \"price\": 449, \"quantity\": 80},\n    {\"name\": \"Watch\", \"price\": 299, \"quantity\": 200},\n]\n\n# Calculate and print each product's revenue\n# Find the product with the highest revenue\n# Print the best seller\n",
+        "solution": "products = [\n    {\"name\": \"Laptop\", \"price\": 999, \"quantity\": 45},\n    {\"name\": \"Phone\", \"price\": 699, \"quantity\": 120},\n    {\"name\": \"Tablet\", \"price\": 449, \"quantity\": 80},\n    {\"name\": \"Watch\", \"price\": 299, \"quantity\": 200},\n]\n\nbest_name = \"\"\nbest_revenue = 0\n\nfor product in products:\n    revenue = product[\"price\"] * product[\"quantity\"]\n    print(product[\"name\"] + \": $\" + str(revenue))\n    if revenue > best_revenue:\n        best_revenue = revenue\n        best_name = product[\"name\"]\n\nprint(\"Best seller: \" + best_name + \" ($\" + str(best_revenue) + \")\")",
+        "expectedOutput": "Laptop: $44955\nPhone: $83880\nTablet: $35920\nWatch: $59800\nBest seller: Phone ($83880)",
+        "hints": [
+          "Revenue for each product is price multiplied by quantity",
+          "Track the best seller by comparing each product's revenue to the current maximum",
+          "Use string concatenation to format the output"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "what-is-data-analytics-ex3",
+        "title": "Growth Rate Calculator",
+        "description": "Given monthly revenue data, calculate the month-over-month growth rate for each month (as a percentage rounded to 1 decimal) and print it. Then print the month with the highest growth.",
+        "starterCode": "months = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\"]\nrevenue = [200, 220, 250, 240, 280]\n\n# Calculate growth rate for each month (starting from Feb)\n# Growth rate = (current - previous) / previous * 100\n# Print each month's growth rate\n# Find and print the month with highest growth\n",
+        "solution": "months = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\"]\nrevenue = [200, 220, 250, 240, 280]\n\nbest_month = \"\"\nbest_growth = -999\n\nfor i in range(1, len(revenue)):\n    growth = round((revenue[i] - revenue[i-1]) / revenue[i-1] * 100, 1)\n    print(months[i] + \": \" + str(growth) + \"%\")\n    if growth > best_growth:\n        best_growth = growth\n        best_month = months[i]\n\nprint(\"Highest growth: \" + best_month + \" (\" + str(best_growth) + \"%)\")",
+        "expectedOutput": "Feb: 10.0%\nMar: 13.6%\nApr: -4.0%\nMay: 16.7%\nHighest growth: May (16.7%)",
+        "hints": [
+          "Growth rate formula: (current - previous) / previous * 100",
+          "Start the loop from index 1 since you need the previous month for comparison",
+          "Use round(value, 1) to round to one decimal place"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "data-types-and-structures",
+    "sectionId": "data-fundamentals",
+    "orderIndex": 1,
+    "title": "Data Types and Structures",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Numeric Data", "Categorical Data", "Ordinal Data", "Text Data", "Structured vs Unstructured Data"],
+    "content": {
+      "explanation": "Understanding data types is one of the most fundamental skills in data analytics. Every dataset you encounter will contain columns or fields with different types of data, and correctly identifying these types determines which analytical techniques, visualizations, and statistical methods you can apply. Treating a categorical variable as numeric, or vice versa, can lead to completely meaningless results.\n\nNumeric data represents quantities and can be further divided into two subcategories. Continuous numeric data can take any value within a range, such as temperature (36.5 degrees), height (175.2 cm), or revenue ($45,230.50). Discrete numeric data can only take specific integer values, such as the number of customers (42), number of defects (3), or number of orders (156). The distinction matters because continuous data is typically analyzed with different statistical methods than discrete data.\n\nCategorical data represents groups or categories without any inherent numerical value or order. Examples include color (red, blue, green), country (India, USA, Japan), or product category (electronics, clothing, food). You cannot meaningfully average or sum categorical values. Instead, you analyze them through frequency counts, proportions, and mode. A special subtype is binary data, which has exactly two categories, such as yes/no, true/false, or male/female.\n\nOrdinal data is a hybrid that has categories with a meaningful order, but the distances between categories are not necessarily equal. Education level (high school, bachelor's, master's, PhD), customer satisfaction (very dissatisfied, dissatisfied, neutral, satisfied, very satisfied), and T-shirt sizes (S, M, L, XL) are all ordinal. You can rank ordinal data and compute median, but calculating a mean is generally not meaningful because the intervals are not uniform.\n\nThe distinction between structured and unstructured data is equally important. Structured data fits neatly into tables with rows and columns, like spreadsheets and relational databases. Unstructured data includes text documents, images, audio, video, and social media posts that do not have a predefined schema. Semi-structured data like JSON and XML falls in between, having some organizational properties but not fitting into rigid tables. In modern analytics, roughly 80% of data generated is unstructured, making text processing and natural language processing increasingly important skills.",
+      "codeExamples": [
+        {
+          "title": "Identifying Data Types",
+          "code": "# Sample dataset as a list of dictionaries\nemployees = [\n    {\"name\": \"Alice\", \"age\": 28, \"department\": \"Engineering\", \"salary\": 75000.50, \"level\": \"Junior\"},\n    {\"name\": \"Bob\", \"age\": 35, \"department\": \"Marketing\", \"salary\": 82000.00, \"level\": \"Senior\"},\n    {\"name\": \"Charlie\", \"age\": 42, \"department\": \"Engineering\", \"salary\": 95000.75, \"level\": \"Lead\"},\n    {\"name\": \"Diana\", \"age\": 31, \"department\": \"Sales\", \"salary\": 68000.25, \"level\": \"Mid\"},\n]\n\n# Classify each field\ndata_types = {\n    \"name\": \"Text (Categorical - Nominal)\",\n    \"age\": \"Numeric (Discrete)\",\n    \"department\": \"Categorical (Nominal)\",\n    \"salary\": \"Numeric (Continuous)\",\n    \"level\": \"Categorical (Ordinal)\",\n}\n\nfor field, dtype in data_types.items():\n    print(field + \": \" + dtype)",
+          "output": "name: Text (Categorical - Nominal)\nage: Numeric (Discrete)\ndepartment: Categorical (Nominal)\nsalary: Numeric (Continuous)\nlevel: Categorical (Ordinal)",
+          "explanation": "Each field in a dataset has a specific data type that determines how it should be analyzed. Name is text/nominal (no order), age is discrete numeric, department is nominal categorical, salary is continuous numeric, and level is ordinal (Junior < Mid < Senior < Lead)."
+        },
+        {
+          "title": "Working with Categorical Data",
+          "code": "# Count frequencies of categorical data\norders = [\n    {\"product\": \"Laptop\", \"region\": \"North\"},\n    {\"product\": \"Phone\", \"region\": \"South\"},\n    {\"product\": \"Laptop\", \"region\": \"North\"},\n    {\"product\": \"Tablet\", \"region\": \"East\"},\n    {\"product\": \"Phone\", \"region\": \"North\"},\n    {\"product\": \"Phone\", \"region\": \"South\"},\n    {\"product\": \"Laptop\", \"region\": \"East\"},\n    {\"product\": \"Tablet\", \"region\": \"South\"},\n]\n\n# Frequency count for products\nproduct_counts = {}\nfor order in orders:\n    product = order[\"product\"]\n    product_counts[product] = product_counts.get(product, 0) + 1\n\nprint(\"Product Frequencies:\")\nfor product, count in sorted(product_counts.items()):\n    print(\"  \" + product + \": \" + str(count))\n\n# Find the mode (most common product)\nmode = max(product_counts, key=product_counts.get)\nprint(\"Most Popular: \" + mode)",
+          "output": "Product Frequencies:\n  Laptop: 3\n  Phone: 3\n  Tablet: 2\nMost Popular: Laptop",
+          "explanation": "For categorical data, frequency counting is the primary analysis technique. We use a dictionary to count occurrences and find the mode (most frequent value). Note that when two items have the same count, max() returns the first one encountered."
+        },
+        {
+          "title": "Ordinal Data Encoding",
+          "code": "# Ordinal data has a meaningful order\neducation_order = {\n    \"High School\": 1,\n    \"Bachelor's\": 2,\n    \"Master's\": 3,\n    \"PhD\": 4,\n}\n\napplicants = [\n    {\"name\": \"Alice\", \"education\": \"Master's\"},\n    {\"name\": \"Bob\", \"education\": \"PhD\"},\n    {\"name\": \"Charlie\", \"education\": \"Bachelor's\"},\n    {\"name\": \"Diana\", \"education\": \"High School\"},\n    {\"name\": \"Eve\", \"education\": \"Master's\"},\n]\n\n# Sort applicants by education level\nsorted_applicants = sorted(applicants, key=lambda x: education_order[x[\"education\"]])\n\nprint(\"Applicants by Education Level:\")\nfor a in sorted_applicants:\n    rank = education_order[a[\"education\"]]\n    print(\"  \" + a[\"name\"] + \" - \" + a[\"education\"] + \" (rank \" + str(rank) + \")\")",
+          "output": "Applicants by Education Level:\n  Diana - High School (rank 1)\n  Charlie - Bachelor's (rank 2)\n  Alice - Master's (rank 3)\n  Eve - Master's (rank 3)\n  Bob - PhD (rank 4)",
+          "explanation": "Ordinal data can be encoded as integers to enable sorting and comparison. The mapping preserves the natural order. This technique is called ordinal encoding and is commonly used in data preprocessing for machine learning."
+        },
+        {
+          "title": "Structured vs Unstructured Data",
+          "code": "# Structured data: fits in a table\nstructured_data = [\n    {\"id\": 1, \"city\": \"Mumbai\", \"temp\": 32.5},\n    {\"id\": 2, \"city\": \"Delhi\", \"temp\": 38.1},\n    {\"id\": 3, \"city\": \"Bangalore\", \"temp\": 27.8},\n]\n\n# Unstructured data: free-form text\nreviews = [\n    \"Great product! Loved the battery life.\",\n    \"Terrible experience. Returned it immediately.\",\n    \"Average quality for the price. Nothing special.\",\n]\n\n# Extracting structure from unstructured data\npositive_words = [\"great\", \"loved\", \"excellent\", \"amazing\"]\nnegative_words = [\"terrible\", \"bad\", \"worst\", \"returned\"]\n\nprint(\"Sentiment Analysis (basic):\")\nfor review in reviews:\n    words = review.lower().split()\n    pos = sum(1 for w in words if w.strip(\".,!\") in positive_words)\n    neg = sum(1 for w in words if w.strip(\".,!\") in negative_words)\n    if pos > neg:\n        sentiment = \"Positive\"\n    elif neg > pos:\n        sentiment = \"Negative\"\n    else:\n        sentiment = \"Neutral\"\n    print(\"  \" + sentiment + \": \" + review[:40] + \"...\")",
+          "output": "Sentiment Analysis (basic):\n  Positive: Great product! Loved the battery life...\n  Negative: Terrible experience. Returned it immedi...\n  Neutral: Average quality for the price. Nothing ...",
+          "explanation": "Structured data is organized in rows and columns with defined types. Unstructured data like text requires additional processing to extract useful information. This basic sentiment analysis converts unstructured reviews into a structured categorical field (Positive/Negative/Neutral)."
+        }
+      ],
+      "notes": [
+        "Always inspect your data types before starting any analysis. Numeric-looking values stored as strings (like zip codes or phone numbers) are actually categorical data, not numeric.",
+        "The choice of data type affects which visualizations are appropriate. Use bar charts for categorical data, histograms for continuous numeric data, and box plots for comparing numeric distributions across categories.",
+        "When encoding ordinal data as numbers, be careful not to imply equal spacing between categories. The difference between 'Junior' and 'Mid' might not be the same as between 'Senior' and 'Lead'."
+      ],
+      "commonPitfalls": [
+        "Treating zip codes, phone numbers, or ID numbers as numeric data. Even though they contain digits, they are categorical identifiers. Calculating the average zip code is meaningless.",
+        "Assuming ordinal encoded values have equal intervals. The fact that you encoded 'Low' as 1, 'Medium' as 2, and 'High' as 3 does not mean Medium is equidistant from Low and High.",
+        "Forgetting that Python dictionaries (before Python 3.7) did not guarantee insertion order. Always use sorted() when order matters for your analysis."
+      ],
+      "interviewTips": [
+        "When asked about data types, structure your answer around the four main categories: numeric (continuous/discrete), categorical (nominal), ordinal, and text. Give clear examples for each.",
+        "A common interview question is 'How would you handle categorical variables in a machine learning model?' Mention one-hot encoding for nominal data and ordinal encoding for ordered categories.",
+        "Be ready to explain the difference between structured, semi-structured, and unstructured data. Interviewers expect you to mention that most real-world data is unstructured and requires preprocessing.",
+        "If asked about data types in Python, know that Python's built-in types (int, float, str, bool) map to analytics types: int/float are numeric, str can be categorical or text, and bool is binary categorical."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "data-types-ex1",
+        "title": "Classify and Summarize Data",
+        "description": "Given a dataset of survey responses, count how many responses fall into each satisfaction category and print the results sorted by satisfaction level (lowest to highest).",
+        "starterCode": "responses = [\n    {\"id\": 1, \"satisfaction\": \"Very Satisfied\"},\n    {\"id\": 2, \"satisfaction\": \"Neutral\"},\n    {\"id\": 3, \"satisfaction\": \"Satisfied\"},\n    {\"id\": 4, \"satisfaction\": \"Dissatisfied\"},\n    {\"id\": 5, \"satisfaction\": \"Very Satisfied\"},\n    {\"id\": 6, \"satisfaction\": \"Satisfied\"},\n    {\"id\": 7, \"satisfaction\": \"Neutral\"},\n    {\"id\": 8, \"satisfaction\": \"Very Satisfied\"},\n    {\"id\": 9, \"satisfaction\": \"Satisfied\"},\n    {\"id\": 10, \"satisfaction\": \"Dissatisfied\"},\n]\n\n# Define the ordinal order\n# Count frequencies of each satisfaction level\n# Print results sorted by ordinal order (lowest to highest)\n",
+        "solution": "responses = [\n    {\"id\": 1, \"satisfaction\": \"Very Satisfied\"},\n    {\"id\": 2, \"satisfaction\": \"Neutral\"},\n    {\"id\": 3, \"satisfaction\": \"Satisfied\"},\n    {\"id\": 4, \"satisfaction\": \"Dissatisfied\"},\n    {\"id\": 5, \"satisfaction\": \"Very Satisfied\"},\n    {\"id\": 6, \"satisfaction\": \"Satisfied\"},\n    {\"id\": 7, \"satisfaction\": \"Neutral\"},\n    {\"id\": 8, \"satisfaction\": \"Very Satisfied\"},\n    {\"id\": 9, \"satisfaction\": \"Satisfied\"},\n    {\"id\": 10, \"satisfaction\": \"Dissatisfied\"},\n]\n\norder = {\"Dissatisfied\": 1, \"Neutral\": 2, \"Satisfied\": 3, \"Very Satisfied\": 4}\n\ncounts = {}\nfor r in responses:\n    level = r[\"satisfaction\"]\n    counts[level] = counts.get(level, 0) + 1\n\nfor level in sorted(counts.keys(), key=lambda x: order[x]):\n    print(level + \": \" + str(counts[level]))",
+        "expectedOutput": "Dissatisfied: 2\nNeutral: 2\nSatisfied: 3\nVery Satisfied: 3",
+        "hints": [
+          "Create a dictionary mapping each satisfaction level to a numeric rank for sorting",
+          "Use dict.get(key, 0) to safely count occurrences",
+          "Use sorted() with a key function that looks up the ordinal rank"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "data-types-ex2",
+        "title": "Separate Numeric and Categorical Fields",
+        "description": "Given a record dictionary, automatically classify each field as 'numeric' or 'categorical' based on its Python type (int/float = numeric, str = categorical, bool = categorical). Print each field with its classification.",
+        "starterCode": "record = {\n    \"name\": \"Alice\",\n    \"age\": 28,\n    \"salary\": 75000.50,\n    \"department\": \"Engineering\",\n    \"is_manager\": False,\n    \"years_experience\": 5,\n}\n\n# Loop through each field\n# Classify as 'numeric' if int or float, 'categorical' otherwise\n# Print field name and classification\n",
+        "solution": "record = {\n    \"name\": \"Alice\",\n    \"age\": 28,\n    \"salary\": 75000.50,\n    \"department\": \"Engineering\",\n    \"is_manager\": False,\n    \"years_experience\": 5,\n}\n\nfor field, value in record.items():\n    if isinstance(value, (int, float)) and not isinstance(value, bool):\n        classification = \"numeric\"\n    else:\n        classification = \"categorical\"\n    print(field + \": \" + classification)",
+        "expectedOutput": "name: categorical\nage: numeric\nsalary: numeric\ndepartment: categorical\nis_manager: categorical\nyears_experience: numeric",
+        "hints": [
+          "Use isinstance(value, (int, float)) to check for numeric types",
+          "In Python, bool is a subclass of int, so check for bool first or exclude it from numeric",
+          "Use not isinstance(value, bool) to ensure booleans are classified as categorical"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "data-types-ex3",
+        "title": "Compute Statistics by Category",
+        "description": "Group employees by department and calculate the average salary for each department. Print each department and its average salary rounded to the nearest integer.",
+        "starterCode": "employees = [\n    {\"name\": \"Alice\", \"dept\": \"Engineering\", \"salary\": 90000},\n    {\"name\": \"Bob\", \"dept\": \"Marketing\", \"salary\": 70000},\n    {\"name\": \"Charlie\", \"dept\": \"Engineering\", \"salary\": 85000},\n    {\"name\": \"Diana\", \"dept\": \"Sales\", \"salary\": 65000},\n    {\"name\": \"Eve\", \"dept\": \"Marketing\", \"salary\": 72000},\n    {\"name\": \"Frank\", \"dept\": \"Engineering\", \"salary\": 95000},\n]\n\n# Group salaries by department\n# Calculate average salary per department\n# Print results sorted by department name\n",
+        "solution": "employees = [\n    {\"name\": \"Alice\", \"dept\": \"Engineering\", \"salary\": 90000},\n    {\"name\": \"Bob\", \"dept\": \"Marketing\", \"salary\": 70000},\n    {\"name\": \"Charlie\", \"dept\": \"Engineering\", \"salary\": 85000},\n    {\"name\": \"Diana\", \"dept\": \"Sales\", \"salary\": 65000},\n    {\"name\": \"Eve\", \"dept\": \"Marketing\", \"salary\": 72000},\n    {\"name\": \"Frank\", \"dept\": \"Engineering\", \"salary\": 95000},\n]\n\ndept_salaries = {}\nfor emp in employees:\n    dept = emp[\"dept\"]\n    if dept not in dept_salaries:\n        dept_salaries[dept] = []\n    dept_salaries[dept].append(emp[\"salary\"])\n\nfor dept in sorted(dept_salaries.keys()):\n    salaries = dept_salaries[dept]\n    avg = round(sum(salaries) / len(salaries))\n    print(dept + \": $\" + str(avg))",
+        "expectedOutput": "Engineering: $90000\nMarketing: $71000\nSales: $65000",
+        "hints": [
+          "Use a dictionary where keys are department names and values are lists of salaries",
+          "Append each employee's salary to the corresponding department list",
+          "Use sum()/len() to calculate the average and round() for rounding"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "csv-and-json",
+    "sectionId": "data-fundamentals",
+    "orderIndex": 2,
+    "title": "CSV and JSON Formats",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["CSV Format", "JSON Format", "Reading and Writing Files", "Data Interchange"],
+    "content": {
+      "explanation": "CSV (Comma-Separated Values) and JSON (JavaScript Object Notation) are two of the most widely used data formats in the world of data analytics. Understanding how to read, write, and convert between these formats is a fundamental skill that you will use in virtually every data project. Both formats are plain text, human-readable, and supported by nearly every programming language and data tool.\n\nCSV is the simplest tabular data format. Each line represents a row, and values within a row are separated by commas (or sometimes tabs, semicolons, or pipes). The first row typically contains column headers. CSV files are compact, easy to generate, and universally supported by spreadsheet applications like Excel and Google Sheets. However, CSV has limitations: it does not support nested or hierarchical data, it has no built-in way to specify data types, and handling commas within data values requires quoting rules that can become tricky.\n\nJSON is a lightweight data interchange format that uses key-value pairs and arrays. It naturally represents hierarchical and nested data structures, making it the preferred format for web APIs, configuration files, and NoSQL databases. Each JSON object is enclosed in curly braces with key-value pairs separated by commas. JSON supports strings, numbers, booleans, null, arrays, and nested objects. Its main advantages over CSV are the ability to represent complex structures and the explicit typing of values.\n\nPython provides built-in modules for both formats: the csv module for reading and writing CSV data, and the json module for working with JSON. The csv module provides csv.reader for reading rows as lists and csv.DictReader for reading rows as dictionaries (using the header row as keys). The json module provides json.loads() to parse a JSON string into Python objects and json.dumps() to convert Python objects into JSON strings. For file operations, json.load() and json.dump() work directly with file objects.\n\nChoosing between CSV and JSON depends on your data structure and use case. Use CSV when your data is flat and tabular with consistent columns across all rows. Use JSON when your data has nested relationships, variable schemas, or when you need to preserve data types. In practice, you will often need to convert between the two formats, so fluency in both is essential for any data analyst.",
+      "codeExamples": [
+        {
+          "title": "Parsing CSV Strings",
+          "code": "import csv\nimport io\n\ncsv_data = \"\"\"name,age,city,salary\nAlice,28,Mumbai,75000\nBob,35,Delhi,82000\nCharlie,42,Bangalore,95000\"\"\"\n\n# Parse CSV using csv.reader\nreader = csv.reader(io.StringIO(csv_data))\nheader = next(reader)\nprint(\"Columns: \" + str(header))\n\nrows = []\nfor row in reader:\n    rows.append(row)\n    print(row)\n\nprint(\"Total rows: \" + str(len(rows)))",
+          "output": "Columns: ['name', 'age', 'city', 'salary']\n['Alice', '28', 'Mumbai', '75000']\n['Bob', '35', 'Delhi', '82000']\n['Charlie', '42', 'Bangalore', '95000']\nTotal rows: 3",
+          "explanation": "csv.reader parses each line into a list of strings. Note that all values are strings, even numbers. You need to explicitly convert types. The first call to next(reader) extracts the header row."
+        },
+        {
+          "title": "CSV with DictReader",
+          "code": "import csv\nimport io\n\ncsv_data = \"\"\"product,price,quantity\nLaptop,999,45\nPhone,699,120\nTablet,449,80\"\"\"\n\n# DictReader uses first row as keys\nreader = csv.DictReader(io.StringIO(csv_data))\n\ntotal_revenue = 0\nfor row in reader:\n    revenue = int(row[\"price\"]) * int(row[\"quantity\"])\n    total_revenue += revenue\n    print(row[\"product\"] + \": $\" + str(revenue))\n\nprint(\"Total Revenue: $\" + str(total_revenue))",
+          "output": "Laptop: $44955\nPhone: $83880\nTablet: $35920\nTotal Revenue: $164755",
+          "explanation": "csv.DictReader automatically uses the header row to create dictionaries for each data row. This makes the code more readable since you access values by column name instead of index. Remember to convert numeric strings to int or float for calculations."
+        },
+        {
+          "title": "Working with JSON Strings",
+          "code": "import json\n\n# JSON string (like what you get from an API)\njson_string = '{\"name\": \"Alice\", \"age\": 28, \"skills\": [\"Python\", \"SQL\", \"Excel\"], \"address\": {\"city\": \"Mumbai\", \"state\": \"Maharashtra\"}}'\n\n# Parse JSON string into Python dict\ndata = json.loads(json_string)\n\nprint(\"Name: \" + data[\"name\"])\nprint(\"Age: \" + str(data[\"age\"]))\nprint(\"Skills: \" + \", \".join(data[\"skills\"]))\nprint(\"City: \" + data[\"address\"][\"city\"])\n\n# Convert Python dict back to JSON string\noutput = json.dumps(data, indent=2)\nprint(\"\\nFormatted JSON:\")\nprint(output)",
+          "output": "Name: Alice\nAge: 28\nSkills: Python, SQL, Excel\nCity: Mumbai\n\nFormatted JSON:\n{\n  \"name\": \"Alice\",\n  \"age\": 28,\n  \"skills\": [\n    \"Python\",\n    \"SQL\",\n    \"Excel\"\n  ],\n  \"address\": {\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\"\n  }\n}",
+          "explanation": "json.loads() converts a JSON string into native Python objects (dicts, lists, strings, numbers). json.dumps() converts back to a JSON string. The indent parameter makes the output human-readable. JSON naturally preserves data types unlike CSV."
+        },
+        {
+          "title": "Converting Between CSV and JSON",
+          "code": "import csv\nimport json\nimport io\n\n# Start with CSV data\ncsv_data = \"\"\"name,age,department\nAlice,28,Engineering\nBob,35,Marketing\nCharlie,42,Sales\"\"\"\n\n# CSV to list of dicts (JSON-ready)\nreader = csv.DictReader(io.StringIO(csv_data))\nrecords = []\nfor row in reader:\n    row[\"age\"] = int(row[\"age\"])\n    records.append(dict(row))\n\n# Convert to JSON\njson_output = json.dumps(records, indent=2)\nprint(\"JSON Output:\")\nprint(json_output)\n\nprint(\"\\nRecord count: \" + str(len(records)))",
+          "output": "JSON Output:\n[\n  {\n    \"name\": \"Alice\",\n    \"age\": 28,\n    \"department\": \"Engineering\"\n  },\n  {\n    \"name\": \"Bob\",\n    \"age\": 35,\n    \"department\": \"Marketing\"\n  },\n  {\n    \"name\": \"Charlie\",\n    \"age\": 42,\n    \"department\": \"Sales\"\n  }\n]\n\nRecord count: 3",
+          "explanation": "A common task is converting CSV to JSON. We use DictReader to get rows as dictionaries, convert numeric fields from strings to integers, and then serialize the list of dictionaries as a JSON array. This is the exact workflow used when ingesting CSV data into APIs or document databases."
+        }
+      ],
+      "notes": [
+        "CSV values are always strings when parsed by Python's csv module. You must explicitly convert numeric fields using int() or float() before performing calculations.",
+        "JSON supports nested data structures natively, which is its biggest advantage over CSV. Use JSON when your data has hierarchical relationships.",
+        "When working with CSV data that contains commas within values (like 'New York, NY'), the values should be enclosed in double quotes. Python's csv module handles this automatically."
+      ],
+      "commonPitfalls": [
+        "Forgetting that csv.reader returns all values as strings. Performing arithmetic on string values like '999' + '45' gives '99945' (string concatenation) instead of 1044 (numeric addition).",
+        "Using json.loads() on a file object instead of a string. Use json.load(file_object) for files and json.loads(string) for strings. The 's' in loads stands for 'string'.",
+        "Not handling special characters in CSV data. Commas, newlines, and double quotes within values can break naive CSV parsing. Always use the csv module instead of splitting by comma."
+      ],
+      "interviewTips": [
+        "Know the difference between json.loads()/json.dumps() and json.load()/json.dump(). The versions with 's' work with strings, while those without work with file objects.",
+        "Be ready to discuss when you would choose CSV over JSON and vice versa. CSV is better for flat tabular data, JSON for nested or hierarchical data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "csv-json-ex1",
+        "title": "Parse CSV and Calculate Statistics",
+        "description": "Parse the given CSV string of student scores. Print each student's name and their average score (rounded to 1 decimal). Then print the overall class average.",
+        "starterCode": "import csv\nimport io\n\ncsv_data = \"\"\"name,math,science,english\nAlice,92,88,95\nBob,78,85,72\nCharlie,95,92,88\nDiana,88,76,91\"\"\"\n\n# Parse the CSV using DictReader\n# Calculate and print each student's average\n# Calculate and print the class average\n",
+        "solution": "import csv\nimport io\n\ncsv_data = \"\"\"name,math,science,english\nAlice,92,88,95\nBob,78,85,72\nCharlie,95,92,88\nDiana,88,76,91\"\"\"\n\nreader = csv.DictReader(io.StringIO(csv_data))\nall_averages = []\n\nfor row in reader:\n    scores = [int(row[\"math\"]), int(row[\"science\"]), int(row[\"english\"])]\n    avg = round(sum(scores) / len(scores), 1)\n    all_averages.append(avg)\n    print(row[\"name\"] + \": \" + str(avg))\n\nclass_avg = round(sum(all_averages) / len(all_averages), 1)\nprint(\"Class Average: \" + str(class_avg))",
+        "expectedOutput": "Alice: 91.7\nBob: 78.3\nCharlie: 91.7\nDiana: 85.0\nClass Average: 86.7",
+        "hints": [
+          "Use csv.DictReader with io.StringIO to parse the string as a CSV",
+          "Convert score values from strings to integers using int()",
+          "Keep track of all student averages to compute the class average at the end"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "csv-json-ex2",
+        "title": "Extract Data from Nested JSON",
+        "description": "Parse the given JSON string containing a list of users with nested address objects. Print each user's name and city, then print how many unique cities are represented.",
+        "starterCode": "import json\n\njson_string = '[{\"name\": \"Alice\", \"address\": {\"city\": \"Mumbai\", \"state\": \"MH\"}}, {\"name\": \"Bob\", \"address\": {\"city\": \"Delhi\", \"state\": \"DL\"}}, {\"name\": \"Charlie\", \"address\": {\"city\": \"Mumbai\", \"state\": \"MH\"}}, {\"name\": \"Diana\", \"address\": {\"city\": \"Bangalore\", \"state\": \"KA\"}}]'\n\n# Parse the JSON string\n# Print each user's name and city\n# Count and print the number of unique cities\n",
+        "solution": "import json\n\njson_string = '[{\"name\": \"Alice\", \"address\": {\"city\": \"Mumbai\", \"state\": \"MH\"}}, {\"name\": \"Bob\", \"address\": {\"city\": \"Delhi\", \"state\": \"DL\"}}, {\"name\": \"Charlie\", \"address\": {\"city\": \"Mumbai\", \"state\": \"MH\"}}, {\"name\": \"Diana\", \"address\": {\"city\": \"Bangalore\", \"state\": \"KA\"}}]'\n\nusers = json.loads(json_string)\ncities = set()\n\nfor user in users:\n    city = user[\"address\"][\"city\"]\n    cities.add(city)\n    print(user[\"name\"] + \" -> \" + city)\n\nprint(\"Unique cities: \" + str(len(cities)))",
+        "expectedOutput": "Alice -> Mumbai\nBob -> Delhi\nCharlie -> Mumbai\nDiana -> Bangalore\nUnique cities: 3",
+        "hints": [
+          "Use json.loads() to parse the JSON string into a Python list of dictionaries",
+          "Access nested values with chained key lookups: user['address']['city']",
+          "Use a set to track unique cities since sets automatically eliminate duplicates"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "csv-json-ex3",
+        "title": "Convert CSV to JSON",
+        "description": "Parse the given CSV data and convert it into a JSON string. Ensure that numeric fields (price and stock) are stored as numbers, not strings. Print the formatted JSON output.",
+        "starterCode": "import csv\nimport json\nimport io\n\ncsv_data = \"\"\"item,price,stock\nKeyboard,49,150\nMouse,29,200\nMonitor,299,45\"\"\"\n\n# Parse CSV with DictReader\n# Convert numeric fields to proper types\n# Convert to JSON and print with indent=2\n",
+        "solution": "import csv\nimport json\nimport io\n\ncsv_data = \"\"\"item,price,stock\nKeyboard,49,150\nMouse,29,200\nMonitor,299,45\"\"\"\n\nreader = csv.DictReader(io.StringIO(csv_data))\nrecords = []\n\nfor row in reader:\n    record = {\n        \"item\": row[\"item\"],\n        \"price\": int(row[\"price\"]),\n        \"stock\": int(row[\"stock\"]),\n    }\n    records.append(record)\n\nprint(json.dumps(records, indent=2))",
+        "expectedOutput": "[\n  {\n    \"item\": \"Keyboard\",\n    \"price\": 49,\n    \"stock\": 150\n  },\n  {\n    \"item\": \"Mouse\",\n    \"price\": 29,\n    \"stock\": 200\n  },\n  {\n    \"item\": \"Monitor\",\n    \"price\": 299,\n    \"stock\": 45\n  }\n]",
+        "hints": [
+          "Use csv.DictReader to parse the CSV into dictionaries",
+          "Convert price and stock from strings to integers using int()",
+          "Use json.dumps() with indent=2 for formatted output"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "data-lifecycle",
+    "sectionId": "data-fundamentals",
+    "orderIndex": 3,
+    "title": "The Data Lifecycle",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Data Collection", "Data Cleaning", "Data Analysis", "Data Visualization", "Data Interpretation"],
+    "content": {
+      "explanation": "The data lifecycle describes the end-to-end journey that data takes from its initial creation or collection through processing, analysis, and finally to actionable insights. Understanding this lifecycle is essential for every data analyst because it provides a structured framework for approaching any analytical project. Skipping stages or performing them out of order almost always leads to unreliable results.\n\nData collection is the first stage where raw data is gathered from various sources. These sources can include databases, APIs, web scraping, surveys, sensors, log files, and manual entry. The quality of your analysis is fundamentally limited by the quality of your data, which is why careful planning at the collection stage is crucial. You need to consider what data is needed, how frequently it should be collected, what format it should be in, and whether there are privacy or ethical considerations.\n\nData cleaning (also called data wrangling or data preprocessing) is often the most time-consuming stage, typically consuming 60 to 80 percent of an analyst's time. This stage involves handling missing values, removing duplicates, fixing inconsistent formatting, correcting data types, dealing with outliers, and standardizing values. For example, a name field might contain 'John Smith', 'john smith', 'JOHN SMITH', and 'Smith, John', all referring to the same person. Cleaning ensures consistency and accuracy before analysis begins.\n\nData analysis is where you apply computational and statistical techniques to extract patterns and insights from the cleaned data. This includes calculating summary statistics, performing aggregations and groupings, identifying trends, testing hypotheses, and building predictive models. The analysis stage should be guided by specific questions or objectives defined at the project's outset. Without clear questions, analysis can become an aimless exploration that produces many numbers but few actionable insights.\n\nData visualization and interpretation are the final stages where you communicate your findings to stakeholders. Visualization involves creating charts, graphs, and dashboards that make patterns visible and accessible to non-technical audiences. Interpretation means translating the statistical findings into business or domain-specific language and recommending actions. A brilliant analysis that cannot be clearly communicated is essentially useless. The goal is always to drive better decisions, not just to produce impressive charts.",
+      "codeExamples": [
+        {
+          "title": "Stage 1: Data Collection",
+          "code": "# Simulating data collection from multiple sources\n\n# Source 1: Sales data (like from a database)\nsales_raw = [\n    {\"date\": \"2024-01-15\", \"product\": \"Laptop\", \"amount\": 999, \"region\": \"North\"},\n    {\"date\": \"2024-01-16\", \"product\": \"Phone\", \"amount\": 699, \"region\": \"South\"},\n    {\"date\": \"2024-01-16\", \"product\": \"Laptop\", \"amount\": 999, \"region\": \"North\"},\n    {\"date\": \"2024-01-17\", \"product\": \"Tablet\", \"amount\": 449, \"region\": \"East\"},\n    {\"date\": \"2024-01-17\", \"product\": \"Phone\", \"amount\": 699, \"region\": \"South\"},\n]\n\n# Source 2: Customer feedback (like from a survey)\nfeedback_raw = [\n    {\"customer_id\": 101, \"rating\": 5, \"comment\": \"Great product!\"},\n    {\"customer_id\": 102, \"rating\": 3, \"comment\": \"\"},\n    {\"customer_id\": 103, \"rating\": 4, \"comment\": \"Fast delivery\"},\n]\n\nprint(\"Collected \" + str(len(sales_raw)) + \" sales records\")\nprint(\"Collected \" + str(len(feedback_raw)) + \" feedback records\")\nprint(\"Sales fields: \" + str(list(sales_raw[0].keys())))\nprint(\"Feedback fields: \" + str(list(feedback_raw[0].keys())))",
+          "output": "Collected 5 sales records\nCollected 3 feedback records\nSales fields: ['date', 'product', 'amount', 'region']\nFeedback fields: ['customer_id', 'rating', 'comment']",
+          "explanation": "In real projects, data comes from multiple sources. Here we simulate two sources: a sales database and a survey system. The first step is always to understand the shape and fields of your raw data."
+        },
+        {
+          "title": "Stage 2: Data Cleaning",
+          "code": "# Raw messy data\nraw_data = [\n    {\"name\": \"Alice\", \"age\": 28, \"salary\": 75000, \"dept\": \"Engineering\"},\n    {\"name\": \"bob\", \"age\": 35, \"salary\": 82000, \"dept\": \"marketing\"},\n    {\"name\": \"CHARLIE\", \"age\": -5, \"salary\": 95000, \"dept\": \"Engineering\"},\n    {\"name\": \"Alice\", \"age\": 28, \"salary\": 75000, \"dept\": \"Engineering\"},\n    {\"name\": \"Diana\", \"age\": 31, \"salary\": None, \"dept\": \"Sales\"},\n    {\"name\": \"Eve\", \"age\": 29, \"salary\": 71000, \"dept\": \"SALES\"},\n]\n\nprint(\"Before cleaning: \" + str(len(raw_data)) + \" records\")\n\n# Step 1: Standardize text fields\nfor record in raw_data:\n    record[\"name\"] = record[\"name\"].strip().title()\n    record[\"dept\"] = record[\"dept\"].strip().title()\n\n# Step 2: Remove duplicates\nseen = set()\ncleaned = []\nfor record in raw_data:\n    key = record[\"name\"] + str(record[\"age\"])\n    if key not in seen:\n        seen.add(key)\n        cleaned.append(record)\n\n# Step 3: Handle invalid values\nfinal = []\nfor record in cleaned:\n    if record[\"age\"] < 0:\n        continue\n    if record[\"salary\"] is None:\n        record[\"salary\"] = 0\n    final.append(record)\n\nprint(\"After cleaning: \" + str(len(final)) + \" records\")\nfor r in final:\n    print(\"  \" + r[\"name\"] + \" | \" + r[\"dept\"] + \" | $\" + str(r[\"salary\"]))",
+          "output": "Before cleaning: 6 records\nAfter cleaning: 4 records\n  Alice | Engineering | $75000\n  Bob | Marketing | $82000\n  Diana | Sales | $0\n  Eve | Sales | $71000",
+          "explanation": "Data cleaning involves multiple steps: standardizing text to consistent case, removing duplicate records, filtering out invalid values (negative age), and handling missing values (None salary replaced with 0). The dataset went from 6 messy records to 4 clean ones."
+        },
+        {
+          "title": "Stage 3: Data Analysis",
+          "code": "# Cleaned sales data\nsales = [\n    {\"product\": \"Laptop\", \"amount\": 999, \"region\": \"North\"},\n    {\"product\": \"Phone\", \"amount\": 699, \"region\": \"South\"},\n    {\"product\": \"Laptop\", \"amount\": 999, \"region\": \"East\"},\n    {\"product\": \"Tablet\", \"amount\": 449, \"region\": \"North\"},\n    {\"product\": \"Phone\", \"amount\": 699, \"region\": \"South\"},\n    {\"product\": \"Laptop\", \"amount\": 999, \"region\": \"North\"},\n    {\"product\": \"Tablet\", \"amount\": 449, \"region\": \"East\"},\n    {\"product\": \"Phone\", \"amount\": 699, \"region\": \"North\"},\n]\n\n# Analysis: Revenue by product\nby_product = {}\nfor sale in sales:\n    p = sale[\"product\"]\n    by_product[p] = by_product.get(p, 0) + sale[\"amount\"]\n\nprint(\"Revenue by Product:\")\nfor product in sorted(by_product, key=by_product.get, reverse=True):\n    print(\"  \" + product + \": $\" + str(by_product[product]))\n\n# Analysis: Revenue by region\nby_region = {}\nfor sale in sales:\n    r = sale[\"region\"]\n    by_region[r] = by_region.get(r, 0) + sale[\"amount\"]\n\nprint(\"\\nRevenue by Region:\")\nfor region in sorted(by_region, key=by_region.get, reverse=True):\n    print(\"  \" + region + \": $\" + str(by_region[region]))",
+          "output": "Revenue by Product:\n  Laptop: $2997\n  Phone: $2097\n  Tablet: $898\n\nRevenue by Region:\n  North: $3146\n  South: $1398\n  East: $1448",
+          "explanation": "The analysis stage aggregates cleaned data to answer specific questions. Here we group by product and by region to understand which products and regions generate the most revenue. This is a fundamental group-by aggregation pattern."
+        },
+        {
+          "title": "Stage 4 & 5: Visualization and Interpretation",
+          "code": "# Simple text-based visualization (bar chart)\ndef text_bar_chart(title, data, max_width=30):\n    print(title)\n    print(\"=\" * (max_width + 20))\n    max_val = max(data.values())\n    for label, value in sorted(data.items(), key=lambda x: x[1], reverse=True):\n        bar_len = int(value / max_val * max_width)\n        bar = \"#\" * bar_len\n        print(\"  \" + label.ljust(12) + bar + \" $\" + str(value))\n    print()\n\nproduct_revenue = {\"Laptop\": 2997, \"Phone\": 2097, \"Tablet\": 898}\nregion_revenue = {\"North\": 3146, \"South\": 1398, \"East\": 1448}\n\ntext_bar_chart(\"Revenue by Product\", product_revenue)\ntext_bar_chart(\"Revenue by Region\", region_revenue)\n\n# Interpretation\nprint(\"Key Insights:\")\nprint(\"1. Laptops generate the most revenue (50% of total)\")\nprint(\"2. North region is the strongest market\")\nprint(\"3. Tablets have the lowest revenue - consider promotions\")",
+          "output": "Revenue by Product\n==================================================\n  Laptop      ############################## $2997\n  Phone       ###################### $2097\n  Tablet      ######### $898\n\nRevenue by Region\n==================================================\n  North       ############################## $3146\n  East        ############## $1448\n  South       ############# $1398\n\nKey Insights:\n1. Laptops generate the most revenue (50% of total)\n2. North region is the strongest market\n3. Tablets have the lowest revenue - consider promotions",
+          "explanation": "Visualization makes data patterns immediately visible. Even with a simple text-based bar chart, you can quickly see relative sizes. The interpretation stage translates visual patterns into actionable business recommendations. In practice, you would use Matplotlib or Seaborn for professional visualizations."
+        }
+      ],
+      "notes": [
+        "The data lifecycle is iterative, not strictly linear. You may discover data quality issues during analysis that send you back to the cleaning stage, or analysis results may prompt additional data collection.",
+        "Data cleaning typically consumes 60-80% of a data analyst's time. Investing in good data cleaning pays off enormously in the reliability of downstream analysis.",
+        "Always document your data pipeline steps. Reproducibility is a core principle of data analytics. If someone else cannot replicate your results, the analysis loses credibility."
+      ],
+      "commonPitfalls": [
+        "Skipping the data cleaning stage because the data 'looks fine' at first glance. Dirty data often hides subtle issues like inconsistent capitalization, trailing spaces, or encoding problems that only surface during analysis.",
+        "Not validating your data after cleaning. Always check record counts, value ranges, and summary statistics before and after cleaning to ensure you did not accidentally remove valid data or introduce errors.",
+        "Presenting raw numbers without context or interpretation. Saying 'Revenue increased by $50K' means nothing without answering 'Is that good or bad? Compared to what? What should we do about it?'"
+      ],
+      "interviewTips": [
+        "When asked about the data lifecycle, walk through all five stages with a concrete example. Interviewers want to see that you understand the full pipeline, not just the analysis step.",
+        "Emphasize that data cleaning is the most time-consuming part. Mention specific cleaning techniques: deduplication, handling missing values (imputation vs. removal), standardization, and outlier detection.",
+        "Be prepared to discuss the concept of 'garbage in, garbage out.' The most sophisticated analysis cannot compensate for poor data quality. Data validation and cleaning are where analysts add the most value.",
+        "If asked about data pipelines, mention ETL (Extract, Transform, Load) as the industry-standard framework for automating the data lifecycle."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "data-lifecycle-ex1",
+        "title": "Clean and Analyze Data",
+        "description": "Given a messy dataset of product orders, clean the data by: (1) standardizing product names to title case, (2) removing records with negative quantities, and (3) calculating total revenue per product. Print the cleaned results.",
+        "starterCode": "orders = [\n    {\"product\": \"laptop\", \"price\": 999, \"qty\": 3},\n    {\"product\": \"PHONE\", \"price\": 699, \"qty\": 5},\n    {\"product\": \"Laptop\", \"price\": 999, \"qty\": -2},\n    {\"product\": \"phone\", \"price\": 699, \"qty\": 3},\n    {\"product\": \"TABLET\", \"price\": 449, \"qty\": 4},\n    {\"product\": \"Tablet\", \"price\": 449, \"qty\": 2},\n]\n\n# Step 1: Standardize product names to title case\n# Step 2: Remove records with negative quantities\n# Step 3: Calculate total revenue per product\n# Print results sorted by product name\n",
+        "solution": "orders = [\n    {\"product\": \"laptop\", \"price\": 999, \"qty\": 3},\n    {\"product\": \"PHONE\", \"price\": 699, \"qty\": 5},\n    {\"product\": \"Laptop\", \"price\": 999, \"qty\": -2},\n    {\"product\": \"phone\", \"price\": 699, \"qty\": 3},\n    {\"product\": \"TABLET\", \"price\": 449, \"qty\": 4},\n    {\"product\": \"Tablet\", \"price\": 449, \"qty\": 2},\n]\n\nrevenue = {}\nfor order in orders:\n    name = order[\"product\"].title()\n    if order[\"qty\"] < 0:\n        continue\n    total = order[\"price\"] * order[\"qty\"]\n    revenue[name] = revenue.get(name, 0) + total\n\nfor product in sorted(revenue.keys()):\n    print(product + \": $\" + str(revenue[product]))",
+        "expectedOutput": "Laptop: $2997\nPhone: $5592\nTablet: $2694",
+        "hints": [
+          "Use .title() to standardize product names to title case",
+          "Use 'continue' to skip records where qty is negative",
+          "Accumulate revenue per product in a dictionary using dict.get()"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "data-lifecycle-ex2",
+        "title": "Mini Data Pipeline",
+        "description": "Build a complete mini pipeline: (1) Collect data from two sources (lists of dicts), (2) merge them by matching on 'id', (3) clean by removing records with missing scores, and (4) print each student's name and total score. Finally print the class average total score.",
+        "starterCode": "# Source 1: Student names\nstudents = [\n    {\"id\": 1, \"name\": \"Alice\"},\n    {\"id\": 2, \"name\": \"Bob\"},\n    {\"id\": 3, \"name\": \"Charlie\"},\n    {\"id\": 4, \"name\": \"Diana\"},\n]\n\n# Source 2: Student scores\nscores = [\n    {\"id\": 1, \"math\": 92, \"science\": 88},\n    {\"id\": 2, \"math\": 78, \"science\": None},\n    {\"id\": 3, \"math\": 95, \"science\": 91},\n    {\"id\": 4, \"math\": 88, \"science\": 84},\n]\n\n# Merge the two sources by id\n# Remove records where any score is None\n# Print each student's name and total score (math + science)\n# Print the class average total score\n",
+        "solution": "students = [\n    {\"id\": 1, \"name\": \"Alice\"},\n    {\"id\": 2, \"name\": \"Bob\"},\n    {\"id\": 3, \"name\": \"Charlie\"},\n    {\"id\": 4, \"name\": \"Diana\"},\n]\n\nscores = [\n    {\"id\": 1, \"math\": 92, \"science\": 88},\n    {\"id\": 2, \"math\": 78, \"science\": None},\n    {\"id\": 3, \"math\": 95, \"science\": 91},\n    {\"id\": 4, \"math\": 88, \"science\": 84},\n]\n\nscore_map = {}\nfor s in scores:\n    score_map[s[\"id\"]] = s\n\ntotals = []\nfor student in students:\n    s = score_map[student[\"id\"]]\n    if s[\"math\"] is None or s[\"science\"] is None:\n        continue\n    total = s[\"math\"] + s[\"science\"]\n    totals.append(total)\n    print(student[\"name\"] + \": \" + str(total))\n\navg = round(sum(totals) / len(totals), 1)\nprint(\"Class Average: \" + str(avg))",
+        "expectedOutput": "Alice: 180\nCharlie: 186\nDiana: 172\nClass Average: 179.3",
+        "hints": [
+          "Create a lookup dictionary mapping student id to their scores for easy merging",
+          "Check if any score value is None before calculating the total",
+          "Keep track of all totals in a list to compute the class average at the end"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "data-lifecycle-ex3",
+        "title": "Text-Based Bar Chart",
+        "description": "Given a dictionary of department headcounts, create a simple text-based horizontal bar chart using '#' characters. Scale the bars so the largest value gets 20 '#' characters. Print each department, its bar, and the count.",
+        "starterCode": "headcount = {\n    \"Engineering\": 45,\n    \"Marketing\": 20,\n    \"Sales\": 35,\n    \"HR\": 10,\n    \"Finance\": 15,\n}\n\n# Find the maximum value for scaling\n# Print each department with a scaled bar of '#' characters\n# The longest bar should be 20 characters\n# Sort by headcount descending\n",
+        "solution": "headcount = {\n    \"Engineering\": 45,\n    \"Marketing\": 20,\n    \"Sales\": 35,\n    \"HR\": 10,\n    \"Finance\": 15,\n}\n\nmax_val = max(headcount.values())\n\nfor dept in sorted(headcount, key=headcount.get, reverse=True):\n    count = headcount[dept]\n    bar_len = int(count / max_val * 20)\n    bar = \"#\" * bar_len\n    print(dept.ljust(15) + bar + \" \" + str(count))",
+        "expectedOutput": "Engineering    #################### 45\nSales          ############### 35\nMarketing      ########  20\nFinance        ###### 15\nHR             #### 10",
+        "hints": [
+          "Find the maximum value using max(headcount.values())",
+          "Scale each bar: bar_length = int(value / max_value * 20)",
+          "Use str.ljust(15) to align department names to a fixed width"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "python-for-data",
+    "sectionId": "data-fundamentals",
+    "orderIndex": 4,
+    "title": "Python for Data",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["List Comprehensions", "Dictionary Operations", "Built-in Functions for Data", "Functional Data Processing"],
+    "content": {
+      "explanation": "Python's built-in features make it an exceptionally powerful language for data manipulation even without external libraries. Before learning NumPy and Pandas, it is essential to master the core Python tools for data processing: list comprehensions, dictionary operations, and built-in functions like map, filter, sorted, zip, and enumerate. These tools form the foundation of data manipulation and will make you more effective even when you move to specialized libraries.\n\nList comprehensions are one of Python's most powerful features for data transformation. They provide a concise way to create new lists by applying an expression to each element of an iterable, optionally filtering elements with a condition. The syntax [expression for item in iterable if condition] replaces what would otherwise be a multi-line loop. List comprehensions are not just syntactic sugar; they are also faster than equivalent for loops because Python optimizes them internally. For data work, they are indispensable for tasks like extracting fields, computing derived values, and filtering records.\n\nDictionary operations in Python go far beyond simple key-value lookups. Dictionary comprehensions ({key_expr: value_expr for item in iterable}) let you build dictionaries from any iterable. The get() method provides safe access with default values. The items(), keys(), and values() methods enable iteration over dictionaries in different ways. For data analytics, dictionaries are the natural choice for grouping, counting, and creating lookup tables. The pattern of accumulating values in a dictionary (group-by) is one of the most common operations in data processing.\n\nPython's built-in functions provide functional programming capabilities that are perfect for data pipelines. The map() function applies a transformation to every element of an iterable. The filter() function selects elements that satisfy a predicate. The sorted() function returns a new sorted list with a customizable key function. The zip() function pairs elements from multiple iterables together, which is invaluable for working with parallel data sequences. The enumerate() function adds an index counter to any iterable, useful for numbered output and positional logic.\n\nCombining these tools lets you build powerful data processing pipelines without any imports. You can chain operations together: filter a dataset, transform the remaining records, group them by a key, and compute aggregates, all in a few readable lines of Python. This functional approach to data manipulation not only produces cleaner code but also maps directly to the operations you will use in Pandas later. Understanding these patterns in pure Python will make the transition to data analysis libraries much smoother.",
+      "codeExamples": [
+        {
+          "title": "List Comprehensions for Data",
+          "code": "# Raw temperature data in Celsius\ntemps_celsius = [22, 35, 18, 40, 28, 15, 33]\n\n# Transform: Convert all to Fahrenheit\ntemps_fahrenheit = [round(c * 9/5 + 32, 1) for c in temps_celsius]\nprint(\"Fahrenheit: \" + str(temps_fahrenheit))\n\n# Filter: Only hot days (above 30C)\nhot_days = [c for c in temps_celsius if c > 30]\nprint(\"Hot days (>30C): \" + str(hot_days))\n\n# Combined: Fahrenheit of hot days only\nhot_fahrenheit = [round(c * 9/5 + 32, 1) for c in temps_celsius if c > 30]\nprint(\"Hot days (F): \" + str(hot_fahrenheit))\n\n# Nested: Flatten a matrix\nmatrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflat = [x for row in matrix for x in row]\nprint(\"Flat: \" + str(flat))",
+          "output": "Fahrenheit: [71.6, 95.0, 64.4, 104.0, 82.4, 59.0, 91.4]\nHot days (>30C): [35, 40, 33]\nHot days (F): [95.0, 104.0, 91.4]\nFlat: [1, 2, 3, 4, 5, 6, 7, 8, 9]",
+          "explanation": "List comprehensions can transform, filter, or do both simultaneously. The syntax reads naturally: 'give me (expression) for each (item) in (iterable) if (condition)'. Nested comprehensions can flatten multi-dimensional data structures."
+        },
+        {
+          "title": "Dictionary Comprehensions and Grouping",
+          "code": "# Sales data\nsales = [\n    {\"rep\": \"Alice\", \"amount\": 500},\n    {\"rep\": \"Bob\", \"amount\": 300},\n    {\"rep\": \"Alice\", \"amount\": 700},\n    {\"rep\": \"Charlie\", \"amount\": 450},\n    {\"rep\": \"Bob\", \"amount\": 600},\n    {\"rep\": \"Alice\", \"amount\": 200},\n]\n\n# Group sales by rep\ngrouped = {}\nfor sale in sales:\n    rep = sale[\"rep\"]\n    if rep not in grouped:\n        grouped[rep] = []\n    grouped[rep].append(sale[\"amount\"])\n\n# Dict comprehension: total per rep\ntotals = {rep: sum(amounts) for rep, amounts in grouped.items()}\nprint(\"Totals: \" + str(totals))\n\n# Dict comprehension: average per rep\naverages = {rep: round(sum(amounts) / len(amounts), 1) for rep, amounts in grouped.items()}\nprint(\"Averages: \" + str(averages))\n\n# Dict comprehension: count per rep\ncounts = {rep: len(amounts) for rep, amounts in grouped.items()}\nprint(\"Counts: \" + str(counts))",
+          "output": "Totals: {'Alice': 1400, 'Bob': 900, 'Charlie': 450}\nAverages: {'Alice': 466.7, 'Bob': 450.0, 'Charlie': 450.0}\nCounts: {'Alice': 3, 'Bob': 2, 'Charlie': 1}",
+          "explanation": "The group-by pattern (accumulate lists in a dict, then aggregate) is fundamental in data analytics. Dictionary comprehensions then let you compute any aggregate (sum, average, count, max, min) in a single expressive line."
+        },
+        {
+          "title": "map, filter, and sorted",
+          "code": "# Employee data\nemployees = [\n    {\"name\": \"Alice\", \"salary\": 75000, \"dept\": \"Engineering\"},\n    {\"name\": \"Bob\", \"salary\": 82000, \"dept\": \"Marketing\"},\n    {\"name\": \"Charlie\", \"salary\": 95000, \"dept\": \"Engineering\"},\n    {\"name\": \"Diana\", \"salary\": 68000, \"dept\": \"Sales\"},\n    {\"name\": \"Eve\", \"salary\": 71000, \"dept\": \"Marketing\"},\n]\n\n# map: Extract just the names\nnames = list(map(lambda e: e[\"name\"], employees))\nprint(\"Names: \" + str(names))\n\n# filter: Only engineers\nengineers = list(filter(lambda e: e[\"dept\"] == \"Engineering\", employees))\nfor eng in engineers:\n    print(\"Engineer: \" + eng[\"name\"] + \" ($\" + str(eng[\"salary\"]) + \")\")\n\n# sorted: By salary descending\nby_salary = sorted(employees, key=lambda e: e[\"salary\"], reverse=True)\nprint(\"\\nBy Salary (highest first):\")\nfor emp in by_salary:\n    print(\"  \" + emp[\"name\"] + \": $\" + str(emp[\"salary\"]))",
+          "output": "Names: ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve']\nEngineer: Alice ($75000)\nEngineer: Charlie ($95000)\n\nBy Salary (highest first):\n  Charlie: $95000\n  Bob: $82000\n  Alice: $75000\n  Eve: $71000\n  Diana: $68000",
+          "explanation": "map() transforms each element, filter() selects elements matching a condition, and sorted() orders elements by a key. These three functions cover the most common data operations: transformation, selection, and ordering."
+        },
+        {
+          "title": "zip and enumerate for Parallel Data",
+          "code": "# Parallel lists (common in data work)\nmonths = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\"]\nrevenue = [45000, 52000, 48000, 61000, 58000]\nexpenses = [30000, 35000, 32000, 38000, 36000]\n\n# zip: Combine parallel sequences\nprint(\"Monthly P&L Report:\")\nfor month, rev, exp in zip(months, revenue, expenses):\n    profit = rev - exp\n    print(\"  \" + month + \": Revenue=$\" + str(rev) + \" Expenses=$\" + str(exp) + \" Profit=$\" + str(profit))\n\n# enumerate: Add ranking with index\nprint(\"\\nRevenue Ranking:\")\nsorted_data = sorted(zip(months, revenue), key=lambda x: x[1], reverse=True)\nfor rank, (month, rev) in enumerate(sorted_data, 1):\n    print(\"  #\" + str(rank) + \" \" + month + \": $\" + str(rev))",
+          "output": "Monthly P&L Report:\n  Jan: Revenue=$45000 Expenses=$30000 Profit=$15000\n  Feb: Revenue=$52000 Expenses=$35000 Profit=$17000\n  Mar: Revenue=$48000 Expenses=$32000 Profit=$16000\n  Apr: Revenue=$61000 Expenses=$38000 Profit=$23000\n  May: Revenue=$58000 Expenses=$36000 Profit=$22000\n\nRevenue Ranking:\n  #1 Apr: $61000\n  #2 May: $58000\n  #3 Feb: $52000\n  #4 Mar: $48000\n  #5 Jan: $45000",
+          "explanation": "zip() is essential when data is stored in parallel lists (one list per column). enumerate() adds positional numbering, which is useful for rankings. Combined with sorted(), these tools create powerful data analysis pipelines."
+        }
+      ],
+      "notes": [
+        "List comprehensions are generally preferred over map() and filter() in modern Python for readability. However, knowing both styles helps when reading code from different projects and when working with more complex functional pipelines.",
+        "The sorted() function always returns a new list and never modifies the original. This immutability is important in data analytics where you want to preserve the original data while creating derived views.",
+        "zip() stops at the shortest iterable. If your parallel lists have different lengths, zip() will silently truncate. Use itertools.zip_longest() if you need to handle uneven lengths."
+      ],
+      "commonPitfalls": [
+        "Modifying a list while iterating over it. Always create a new list (via comprehension or filter) instead of removing elements from the list you are looping through.",
+        "Forgetting that map() and filter() return iterators in Python 3, not lists. Wrap them in list() if you need to access the result multiple times or check its length.",
+        "Using overly complex list comprehensions that span multiple lines and are hard to read. If your comprehension needs more than one condition or transformation, use a regular for loop instead."
+      ],
+      "interviewTips": [
+        "Be ready to rewrite a for loop as a list comprehension and vice versa. This is a common interview exercise that tests your Python fluency.",
+        "Know the time complexity of dictionary operations: average O(1) for get, set, and delete. This is why dicts are the go-to for counting and grouping."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "python-for-data-ex1",
+        "title": "Data Filtering and Transformation",
+        "description": "Given a list of product dictionaries, use list comprehensions to: (1) extract names of products priced above $50, (2) create a new list of dicts with product name and a 10% discounted price (rounded to 2 decimals). Print both results.",
+        "starterCode": "products = [\n    {\"name\": \"Keyboard\", \"price\": 49.99},\n    {\"name\": \"Mouse\", \"price\": 29.99},\n    {\"name\": \"Monitor\", \"price\": 299.99},\n    {\"name\": \"Webcam\", \"price\": 79.99},\n    {\"name\": \"USB Hub\", \"price\": 19.99},\n    {\"name\": \"Headset\", \"price\": 59.99},\n]\n\n# 1. List comprehension: names of products priced above $50\n# 2. List comprehension: discounted products (10% off, rounded to 2 decimals)\n# Print both results\n",
+        "solution": "products = [\n    {\"name\": \"Keyboard\", \"price\": 49.99},\n    {\"name\": \"Mouse\", \"price\": 29.99},\n    {\"name\": \"Monitor\", \"price\": 299.99},\n    {\"name\": \"Webcam\", \"price\": 79.99},\n    {\"name\": \"USB Hub\", \"price\": 19.99},\n    {\"name\": \"Headset\", \"price\": 59.99},\n]\n\nexpensive = [p[\"name\"] for p in products if p[\"price\"] > 50]\nprint(\"Above $50: \" + str(expensive))\n\ndiscounted = [{\"name\": p[\"name\"], \"price\": round(p[\"price\"] * 0.9, 2)} for p in products]\nfor d in discounted:\n    print(d[\"name\"] + \": $\" + str(d[\"price\"]))",
+        "expectedOutput": "Above $50: ['Monitor', 'Webcam', 'Headset']\nKeyboard: $44.99\nMouse: $27.0\nMonitor: $270.0\nWebcam: $72.0\nUSB Hub: $18.0\nHeadset: $54.0",
+        "hints": [
+          "Use [p['name'] for p in products if p['price'] > 50] for filtering by price",
+          "For the discount, multiply price by 0.9 and round to 2 decimal places",
+          "Create new dicts in the comprehension: {'name': p['name'], 'price': round(p['price'] * 0.9, 2)}"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "python-for-data-ex2",
+        "title": "Group By and Aggregate",
+        "description": "Given a list of order dictionaries, group orders by category, then use dictionary comprehensions to compute total revenue and order count per category. Print the results sorted by total revenue descending.",
+        "starterCode": "orders = [\n    {\"item\": \"Laptop\", \"category\": \"Electronics\", \"amount\": 999},\n    {\"item\": \"Shirt\", \"category\": \"Clothing\", \"amount\": 49},\n    {\"item\": \"Phone\", \"category\": \"Electronics\", \"amount\": 699},\n    {\"item\": \"Pants\", \"category\": \"Clothing\", \"amount\": 79},\n    {\"item\": \"Book\", \"category\": \"Books\", \"amount\": 29},\n    {\"item\": \"Tablet\", \"category\": \"Electronics\", \"amount\": 449},\n    {\"item\": \"Novel\", \"category\": \"Books\", \"amount\": 19},\n    {\"item\": \"Jacket\", \"category\": \"Clothing\", \"amount\": 129},\n]\n\n# Group amounts by category\n# Compute total revenue per category\n# Compute order count per category\n# Print sorted by revenue descending\n",
+        "solution": "orders = [\n    {\"item\": \"Laptop\", \"category\": \"Electronics\", \"amount\": 999},\n    {\"item\": \"Shirt\", \"category\": \"Clothing\", \"amount\": 49},\n    {\"item\": \"Phone\", \"category\": \"Electronics\", \"amount\": 699},\n    {\"item\": \"Pants\", \"category\": \"Clothing\", \"amount\": 79},\n    {\"item\": \"Book\", \"category\": \"Books\", \"amount\": 29},\n    {\"item\": \"Tablet\", \"category\": \"Electronics\", \"amount\": 449},\n    {\"item\": \"Novel\", \"category\": \"Books\", \"amount\": 19},\n    {\"item\": \"Jacket\", \"category\": \"Clothing\", \"amount\": 129},\n]\n\ngrouped = {}\nfor order in orders:\n    cat = order[\"category\"]\n    if cat not in grouped:\n        grouped[cat] = []\n    grouped[cat].append(order[\"amount\"])\n\ntotals = {cat: sum(amounts) for cat, amounts in grouped.items()}\ncounts = {cat: len(amounts) for cat, amounts in grouped.items()}\n\nfor cat in sorted(totals, key=totals.get, reverse=True):\n    print(cat + \": $\" + str(totals[cat]) + \" (\" + str(counts[cat]) + \" orders)\")",
+        "expectedOutput": "Electronics: $2147 (3 orders)\nClothing: $257 (3 orders)\nBooks: $48 (2 orders)",
+        "hints": [
+          "First build a grouped dictionary where keys are categories and values are lists of amounts",
+          "Use dictionary comprehensions with sum() for totals and len() for counts",
+          "Use sorted() with a key function to sort by total revenue descending"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "python-for-data-ex3",
+        "title": "Zip and Enumerate Data Report",
+        "description": "Given parallel lists of city names, populations, and areas, use zip to combine them and calculate population density (population / area, rounded to 1 decimal). Use enumerate to print a ranked report sorted by density descending.",
+        "starterCode": "cities = [\"Mumbai\", \"Delhi\", \"Bangalore\", \"Chennai\", \"Pune\"]\npopulations = [20400000, 19000000, 12300000, 10900000, 7400000]\nareas = [603, 1484, 709, 426, 331]\n\n# Use zip to combine the three lists\n# Calculate population density for each city\n# Sort by density descending\n# Use enumerate to print a ranked report\n",
+        "solution": "cities = [\"Mumbai\", \"Delhi\", \"Bangalore\", \"Chennai\", \"Pune\"]\npopulations = [20400000, 19000000, 12300000, 10900000, 7400000]\nareas = [603, 1484, 709, 426, 331]\n\ncity_data = []\nfor city, pop, area in zip(cities, populations, areas):\n    density = round(pop / area, 1)\n    city_data.append((city, pop, area, density))\n\ncity_data.sort(key=lambda x: x[3], reverse=True)\n\nprint(\"Population Density Ranking (per sq km):\")\nfor rank, (city, pop, area, density) in enumerate(city_data, 1):\n    print(\"#\" + str(rank) + \" \" + city + \": \" + str(density) + \" (pop: \" + str(pop) + \", area: \" + str(area) + \")\")",
+        "expectedOutput": "Population Density Ranking (per sq km):\n#1 Mumbai: 33830.8 (pop: 20400000, area: 603)\n#2 Chennai: 25587.0 (pop: 10900000, area: 426)\n#3 Pune: 22356.5 (pop: 7400000, area: 331)\n#4 Bangalore: 17348.4 (pop: 12300000, area: 709)\n#5 Delhi: 12803.8 (pop: 19000000, area: 1484)",
+
+        "hints": [
+          "Use zip(cities, populations, areas) to iterate over all three lists simultaneously",
+          "Density = population / area, rounded to 1 decimal place",
+          "Sort the combined data by density using sort() with a lambda key, then use enumerate(data, 1) for 1-based ranking"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

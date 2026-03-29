@@ -1,26 +1,24 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
+import { gsocListQuerySchema, gsocSlugSchema } from "./gsoc.validation.js";
 
 export const gsocRouter = Router();
 
 // Public: list organizations with filters & pagination
 gsocRouter.get("/organizations", async (req, res, next) => {
   try {
-    const page = Math.max(1, parseInt(String(req.query["page"] || "1"), 10));
-    const limit = Math.min(50, Math.max(1, parseInt(String(req.query["limit"] || "20"), 10)));
-    const search = req.query["search"] as string | undefined;
-    const category = req.query["category"] as string | undefined;
-    const technology = req.query["technology"] as string | undefined;
-    const year = req.query["year"] ? parseInt(String(req.query["year"]), 10) : undefined;
-    const topic = req.query["topic"] as string | undefined;
-    const sortBy = (req.query["sortBy"] as string) || "totalProjects";
-    const sortOrder = (req.query["sortOrder"] as string) || "desc";
+    const parsed = gsocListQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
+      return;
+    }
+    const { page, limit, search, category, technology, year, topic, sortBy, sortOrder } = parsed.data;
 
     const where: Record<string, unknown> = {};
 
     if (category) where["category"] = category;
     if (technology) where["technologies"] = { hasSome: [technology] };
-    if (year && !isNaN(year)) where["yearsParticipated"] = { has: year };
+    if (year) where["yearsParticipated"] = { has: year };
     if (topic) where["topics"] = { hasSome: [topic] };
 
     if (search) {
@@ -33,15 +31,13 @@ gsocRouter.get("/organizations", async (req, res, next) => {
     }
 
     const skip = (page - 1) * limit;
-    const validSortFields = ["totalProjects", "name", "createdAt"];
-    const orderField = validSortFields.includes(sortBy) ? sortBy : "totalProjects";
 
     const [organizations, total] = await Promise.all([
       prisma.gsocOrganization.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { [orderField]: sortOrder === "asc" ? "asc" : "desc" },
+        orderBy: { [sortBy]: sortOrder },
         select: {
           id: true,
           name: true,
@@ -76,8 +72,9 @@ gsocRouter.get("/organizations", async (req, res, next) => {
 // Public: get single organization by slug (with full project data)
 gsocRouter.get("/organizations/:slug", async (req, res, next) => {
   try {
-    const slug = req.params["slug"];
-    const org = await prisma.gsocOrganization.findUnique({ where: { slug } });
+    const parsed = gsocSlugSchema.safeParse(req.params);
+    if (!parsed.success) { res.status(400).json({ message: "Invalid slug" }); return; }
+    const org = await prisma.gsocOrganization.findUnique({ where: { slug: parsed.data.slug } });
     if (!org) {
       res.status(404).json({ message: "Organization not found" });
       return;

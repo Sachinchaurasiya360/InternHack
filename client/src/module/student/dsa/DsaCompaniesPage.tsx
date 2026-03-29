@@ -259,7 +259,7 @@ export default function DsaCompaniesPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-3 gap-4 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
         >
           {[
             { icon: Building2, value: companies.length, label: "Companies", iconColor: "text-indigo-500" },

@@ -1,0 +1,476 @@
+[
+  {
+    "id": "intro-to-numpy",
+    "sectionId": "numpy-essentials",
+    "orderIndex": 0,
+    "title": "Introduction to NumPy",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["NumPy arrays", "ndarray", "np.array()", "dtype", "shape"],
+    "content": {
+      "explanation": "NumPy (Numerical Python) is the foundational library for numerical computing in Python. It provides a powerful N-dimensional array object called ndarray, which is far more efficient than Python's built-in lists for mathematical operations. The core of NumPy is implemented in C and Fortran, which means array operations execute at near-native speed rather than being interpreted line by line like pure Python code. Almost every data science and machine learning library in Python, including Pandas, Scikit-learn, and TensorFlow, is built on top of NumPy arrays.\n\nThe primary object in NumPy is the ndarray (n-dimensional array). You create arrays using np.array() by passing in a Python list or nested list. Unlike Python lists, which can hold mixed types, a NumPy array stores elements of a single data type (dtype). This homogeneity is what allows NumPy to store data in contiguous blocks of memory and perform vectorized operations efficiently. Common dtypes include int64 for integers, float64 for floating-point numbers, and bool for boolean values.\n\nEvery NumPy array has several important attributes. The shape attribute returns a tuple describing the dimensions of the array: for a 1D array of 5 elements, shape is (5,); for a 2D array with 3 rows and 4 columns, shape is (3, 4). The ndim attribute gives the number of dimensions, size gives the total number of elements, and dtype tells you the data type of the elements. Understanding these attributes is essential for debugging shape mismatches and ensuring your data pipelines work correctly.\n\nYou can also create arrays using convenience functions like np.zeros(), np.ones(), np.arange(), and np.linspace(). These are particularly useful when you need to initialize arrays of a specific shape before filling them with computed values. np.zeros((3, 4)) creates a 3x4 array of zeros, np.arange(0, 10, 2) creates an array [0, 2, 4, 6, 8] similar to Python's range(), and np.linspace(0, 1, 5) creates 5 evenly spaced values from 0 to 1 inclusive.\n\nNumPy arrays are mutable, meaning you can change individual elements or slices after creation. However, unlike Python lists, you cannot append elements to an existing array without creating a new one. This is because the array is stored as a fixed block of memory. When you need to combine arrays, you use functions like np.concatenate(), np.vstack(), or np.hstack() which create new arrays from existing ones.",
+      "codeExamples": [
+        {
+          "title": "Creating arrays from Python lists",
+          "code": "import numpy as np\n\n# 1D array from a list\narr1 = np.array([1, 2, 3, 4, 5])\nprint(\"1D array:\", arr1)\nprint(\"Type:\", type(arr1))\n\n# 2D array from nested lists\narr2 = np.array([[1, 2, 3], [4, 5, 6]])\nprint(\"2D array:\")\nprint(arr2)",
+          "output": "1D array: [1 2 3 4 5]\nType: <class 'numpy.ndarray'>\n2D array:\n[[1 2 3]\n [4 5 6]]",
+          "explanation": "np.array() converts a Python list into a NumPy ndarray. A flat list produces a 1D array, and a list of lists produces a 2D array. The type() function confirms the object is an ndarray."
+        },
+        {
+          "title": "Inspecting array properties",
+          "code": "import numpy as np\n\narr = np.array([[10, 20, 30], [40, 50, 60]])\nprint(\"Shape:\", arr.shape)\nprint(\"Dimensions:\", arr.ndim)\nprint(\"Size:\", arr.size)\nprint(\"Dtype:\", arr.dtype)",
+          "output": "Shape: (2, 3)\nDimensions: 2\nSize: 6\nDtype: int64",
+          "explanation": "A 2x3 array has shape (2, 3), 2 dimensions, 6 total elements, and since we passed integers, the dtype is int64 by default."
+        },
+        {
+          "title": "Specifying dtypes and using creation functions",
+          "code": "import numpy as np\n\n# Explicit dtype\nfloat_arr = np.array([1, 2, 3], dtype=np.float64)\nprint(\"Float array:\", float_arr)\nprint(\"Dtype:\", float_arr.dtype)\n\n# Zeros and ones\nzeros = np.zeros((2, 3))\nprint(\"Zeros:\")\nprint(zeros)\n\nones = np.ones(4)\nprint(\"Ones:\", ones)",
+          "output": "Float array: [1. 2. 3.]\nDtype: float64\nZeros:\n[[0. 0. 0.]\n [0. 0. 0.]]\nOnes: [1. 1. 1. 1.]",
+          "explanation": "Passing dtype=np.float64 forces integer values to be stored as floats. np.zeros() and np.ones() create arrays filled with 0.0 or 1.0 respectively, defaulting to float64 dtype."
+        },
+        {
+          "title": "arange and linspace for sequences",
+          "code": "import numpy as np\n\n# arange: like range() but returns ndarray\narr1 = np.arange(0, 10, 2)\nprint(\"arange(0,10,2):\", arr1)\n\n# linspace: evenly spaced values\narr2 = np.linspace(0, 1, 5)\nprint(\"linspace(0,1,5):\", arr2)\n\nprint(\"arange shape:\", arr1.shape)\nprint(\"linspace shape:\", arr2.shape)",
+          "output": "arange(0,10,2): [0 2 4 6 8]\nlinspace(0,1,5): [0.   0.25 0.5  0.75 1.  ]\narange shape: (5,)\nlinspace shape: (5,)",
+          "explanation": "np.arange() works like Python's range() but returns an ndarray. np.linspace() divides an interval into a specified number of evenly spaced points, including both endpoints."
+        }
+      ],
+      "notes": [
+        "NumPy arrays are stored in contiguous memory blocks, making them significantly faster than Python lists for numerical operations.",
+        "All elements in a NumPy array share the same dtype. If you pass mixed types like [1, 2.5, 3], NumPy will upcast all elements to float64.",
+        "The shape attribute is a tuple: (rows, columns) for 2D, (depth, rows, columns) for 3D, and so on.",
+        "Use arr.astype(np.float32) to convert an array to a different dtype without modifying the original."
+      ],
+      "commonPitfalls": [
+        "Forgetting that np.array([1, 2, 3]) creates int64 by default, which causes unexpected behavior when you later try to assign a float value to an element.",
+        "Confusing shape (5,) with shape (5, 1) or (1, 5). A 1D array has shape (n,), not (n, 1). Use reshape if you need a column or row vector.",
+        "Using Python lists in performance-critical loops instead of converting them to NumPy arrays first, losing the speed benefits of vectorized operations."
+      ],
+      "interviewTips": [
+        "Be ready to explain why NumPy arrays are faster than Python lists: contiguous memory layout, fixed dtype, and C-level vectorized operations.",
+        "Know the difference between np.array() (creates a new array) and np.asarray() (returns input as array without copying if it is already an ndarray)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "intro-numpy-ex1",
+        "title": "Create and Inspect Arrays",
+        "description": "Create a 1D NumPy array from the list [10, 20, 30, 40, 50] and a 2D array from [[1, 2], [3, 4], [5, 6]]. Print each array, then print the shape, ndim, and size of the 2D array.",
+        "starterCode": "import numpy as np\n\n# TODO: Create a 1D array from [10, 20, 30, 40, 50]\n# TODO: Create a 2D array from [[1, 2], [3, 4], [5, 6]]\n# TODO: Print both arrays\n# TODO: Print shape, ndim, and size of the 2D array",
+        "solution": "import numpy as np\n\narr1 = np.array([10, 20, 30, 40, 50])\narr2 = np.array([[1, 2], [3, 4], [5, 6]])\n\nprint(\"1D:\", arr1)\nprint(\"2D:\")\nprint(arr2)\nprint(\"Shape:\", arr2.shape)\nprint(\"Ndim:\", arr2.ndim)\nprint(\"Size:\", arr2.size)",
+        "expectedOutput": "1D: [10 20 30 40 50]\n2D:\n[[1 2]\n [3 4]\n [5 6]]\nShape: (3, 2)\nNdim: 2\nSize: 6",
+        "hints": [
+          "Use np.array() and pass in the list or nested list directly.",
+          "Access .shape, .ndim, and .size as attributes, not method calls."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "intro-numpy-ex2",
+        "title": "Array Creation Functions",
+        "description": "Create a 3x3 array of zeros, a 1D array of ones with 5 elements, and an array using arange from 2 to 12 with step 2. Print each array and its dtype.",
+        "starterCode": "import numpy as np\n\n# TODO: Create a 3x3 array of zeros\n# TODO: Create a 1D array of ones with 5 elements\n# TODO: Create an array with arange from 2 to 12, step 2\n# TODO: Print each array and its dtype",
+        "solution": "import numpy as np\n\nzeros = np.zeros((3, 3))\nprint(\"Zeros:\")\nprint(zeros)\nprint(\"Dtype:\", zeros.dtype)\n\nones = np.ones(5)\nprint(\"Ones:\", ones)\nprint(\"Dtype:\", ones.dtype)\n\narr = np.arange(2, 12, 2)\nprint(\"Arange:\", arr)\nprint(\"Dtype:\", arr.dtype)",
+        "expectedOutput": "Zeros:\n[[0. 0. 0.]\n [0. 0. 0.]\n [0. 0. 0.]]\nDtype: float64\nOnes: [1. 1. 1. 1. 1.]\nDtype: float64\nArange: [ 2  4  6  8 10]\nDtype: int64",
+        "hints": [
+          "np.zeros() and np.ones() default to float64 dtype.",
+          "np.arange() with integer arguments produces an int64 array."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "intro-numpy-ex3",
+        "title": "Type Conversion and Linspace",
+        "description": "Create an integer array [1, 2, 3, 4] and convert it to float32 using astype. Also create a linspace array of 4 values from 0 to 10. Print both arrays and their dtypes.",
+        "starterCode": "import numpy as np\n\n# TODO: Create array [1, 2, 3, 4] and convert to float32\n# TODO: Create linspace from 0 to 10 with 4 values\n# TODO: Print both arrays and their dtypes",
+        "solution": "import numpy as np\n\nint_arr = np.array([1, 2, 3, 4])\nfloat_arr = int_arr.astype(np.float32)\nprint(\"Float32 array:\", float_arr)\nprint(\"Dtype:\", float_arr.dtype)\n\nlin = np.linspace(0, 10, 4)\nprint(\"Linspace:\", lin)\nprint(\"Dtype:\", lin.dtype)",
+        "expectedOutput": "Float32 array: [1. 2. 3. 4.]\nDtype: float32\nLinspace: [ 0.          3.33333333  6.66666667 10.        ]\nDtype: float64",
+        "hints": [
+          "Use .astype(np.float32) to convert the dtype of an existing array.",
+          "np.linspace(start, stop, num) divides the range evenly, including both endpoints."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "array-operations",
+    "sectionId": "numpy-essentials",
+    "orderIndex": 1,
+    "title": "Array Operations",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["vectorized operations", "element-wise math", "comparison operators", "universal functions", "aggregation functions"],
+    "content": {
+      "explanation": "One of the most powerful features of NumPy is vectorized operations. Instead of writing explicit loops to perform element-by-element calculations, you apply operations to entire arrays at once. Under the hood, NumPy delegates these operations to optimized C code that processes the data in bulk. This is not just more concise to write; it is typically 10 to 100 times faster than an equivalent Python for loop, especially for large arrays.\n\nElement-wise arithmetic works naturally with NumPy arrays. When you write arr1 + arr2, NumPy adds the corresponding elements of both arrays and returns a new array with the results. The same applies to subtraction (-), multiplication (*), division (/), floor division (//), modulo (%), and exponentiation (**). If the arrays have the same shape, the operation is performed element by element. You can also perform operations between an array and a scalar: arr * 3 multiplies every element by 3.\n\nComparison operators also work element-wise on NumPy arrays, returning boolean arrays. For example, arr > 5 produces an array of True and False values indicating which elements satisfy the condition. These boolean arrays are extremely useful for filtering data, as you can use them as indices to select only the elements that meet your criteria. You can combine conditions using the bitwise operators & (and), | (or), and ~ (not), but you must wrap each condition in parentheses.\n\nNumPy provides a wide collection of universal functions (ufuncs) that operate element-wise on arrays. Mathematical ufuncs include np.sqrt(), np.exp(), np.log(), np.sin(), np.cos(), np.abs(), and np.power(). These functions are optimized and much faster than applying Python's built-in math functions in a loop. Each ufunc returns a new array with the results, leaving the original unchanged unless you use the out parameter to write results in place.\n\nAggregation functions like np.sum(), np.mean(), np.std(), np.min(), and np.max() reduce an array to a single summary value. They can also be called as methods on the array itself (arr.sum(), arr.mean()). A critical parameter is axis: by default, aggregations compute over the entire array, but specifying axis=0 aggregates along rows (column-wise) and axis=1 aggregates along columns (row-wise). Understanding the axis parameter is essential for working with multi-dimensional data.",
+      "codeExamples": [
+        {
+          "title": "Element-wise arithmetic operations",
+          "code": "import numpy as np\n\na = np.array([10, 20, 30, 40])\nb = np.array([1, 2, 3, 4])\n\nprint(\"Add:\", a + b)\nprint(\"Subtract:\", a - b)\nprint(\"Multiply:\", a * b)\nprint(\"Divide:\", a / b)\nprint(\"Scalar multiply:\", a * 2)",
+          "output": "Add: [11 22 33 44]\nSubtract: [ 9 18 27 36]\nMultiply: [ 10  40  90 160]\nDivide: [10. 10. 10. 10.]\nScalar multiply: [20 40 60 80]",
+          "explanation": "Each arithmetic operator applies element by element across both arrays. Division always returns float64 results. Scalar operations broadcast the scalar to match the array shape."
+        },
+        {
+          "title": "Universal functions (ufuncs)",
+          "code": "import numpy as np\n\narr = np.array([1, 4, 9, 16, 25])\n\nprint(\"Sqrt:\", np.sqrt(arr))\nprint(\"Square:\", np.square(arr))\nprint(\"Sum:\", np.sum(arr))\nprint(\"Mean:\", np.mean(arr))",
+          "output": "Sqrt: [1. 2. 3. 4. 5.]\nSquare: [  1  16  81 256 625]\nSum: 55\nMean: 11.0",
+          "explanation": "np.sqrt() and np.square() operate element-wise, returning new arrays. np.sum() and np.mean() are aggregation functions that reduce the array to a single value."
+        },
+        {
+          "title": "Comparison operators and boolean arrays",
+          "code": "import numpy as np\n\narr = np.array([15, 8, 22, 3, 17, 10])\n\nprint(\"Greater than 10:\", arr > 10)\nprint(\"Equal to 8:\", arr == 8)\n\n# Combined conditions\nmask = (arr > 5) & (arr < 20)\nprint(\"Between 5 and 20:\", mask)\nprint(\"Filtered:\", arr[mask])",
+          "output": "Greater than 10: [ True False  True False  True False]\nEqual to 8: [False  True False False False False]\nBetween 5 and 20: [ True  True False False  True  True]\nFiltered: [15  8 17 10]",
+          "explanation": "Comparisons return boolean arrays of the same shape. Combining conditions requires bitwise operators (& for and, | for or) with parentheses around each condition. Boolean indexing selects elements where the mask is True."
+        },
+        {
+          "title": "Vectorized vs loop performance concept",
+          "code": "import numpy as np\n\n# Vectorized operation\narr = np.arange(1, 6)\nresult = arr ** 2 + 2 * arr + 1\nprint(\"Vectorized result:\", result)\n\n# Equivalent loop (slow for large arrays)\nloop_result = []\nfor x in arr:\n    loop_result.append(x ** 2 + 2 * x + 1)\nprint(\"Loop result:\", loop_result)",
+          "output": "Vectorized result: [ 4  9 16 25 36]\nLoop result: [4, 9, 16, 25, 36]",
+          "explanation": "Both approaches produce the same values, but the vectorized version executes entirely in compiled C code while the loop runs in interpreted Python. For an array of 1 million elements, the vectorized version can be 100x faster."
+        }
+      ],
+      "notes": [
+        "Vectorized operations avoid Python's per-element overhead by delegating the entire computation to optimized C routines inside NumPy.",
+        "Division (/) always returns float64 results. Use // for integer floor division.",
+        "Boolean conditions on arrays must use & (and), | (or), ~ (not) instead of Python's 'and', 'or', 'not' keywords, and each condition must be wrapped in parentheses.",
+        "Universal functions (ufuncs) like np.sqrt and np.exp return new arrays by default; the original array is not modified."
+      ],
+      "commonPitfalls": [
+        "Using Python's 'and'/'or' keywords with NumPy boolean arrays instead of bitwise & and | operators, which raises a ValueError about ambiguous truth values.",
+        "Forgetting parentheses around individual conditions when combining them: arr > 5 & arr < 20 is parsed as arr > (5 & arr) < 20 due to operator precedence.",
+        "Assuming in-place modification when using ufuncs. np.sqrt(arr) returns a new array; arr is unchanged unless you write arr = np.sqrt(arr)."
+      ],
+      "interviewTips": [
+        "Explain vectorization: NumPy operations are implemented in C and operate on contiguous memory, avoiding Python's interpreter overhead and per-element type checking.",
+        "Know that vectorized NumPy code is not just cleaner but typically 10-100x faster than equivalent Python loops for large arrays.",
+        "Be able to compare np.sum(arr) vs Python's sum(arr) on a NumPy array -- np.sum is optimized for ndarrays and significantly faster.",
+        "Understand that element-wise operations require arrays of the same shape, or shapes that are compatible under broadcasting rules."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "array-ops-ex1",
+        "title": "Vectorized Computation",
+        "description": "Create an array of values [2, 4, 6, 8, 10]. Using vectorized operations (no loops), compute and print: the array multiplied by 3, the array squared, and the element-wise sum of the original array and its square.",
+        "starterCode": "import numpy as np\n\n# TODO: Create array [2, 4, 6, 8, 10]\n# TODO: Print the array multiplied by 3\n# TODO: Print the array squared\n# TODO: Print element-wise sum of arr and arr squared",
+        "solution": "import numpy as np\n\narr = np.array([2, 4, 6, 8, 10])\nprint(\"Times 3:\", arr * 3)\nprint(\"Squared:\", arr ** 2)\nprint(\"arr + arr^2:\", arr + arr ** 2)",
+        "expectedOutput": "Times 3: [ 6 12 18 24 30]\nSquared: [  4  16  36  64 100]\narr + arr^2: [  6  20  42  72 110]",
+        "hints": [
+          "Use * for scalar multiplication and ** for exponentiation, applied directly to the array.",
+          "arr + arr ** 2 computes arr squared first, then adds the original arr element-wise."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "array-ops-ex2",
+        "title": "Boolean Filtering",
+        "description": "Create the array [12, 5, 23, 8, 17, 3, 19, 11]. Using boolean indexing, print the elements greater than 10, then print the count of elements less than or equal to 10.",
+        "starterCode": "import numpy as np\n\n# TODO: Create the array\n# TODO: Filter and print elements > 10\n# TODO: Count and print elements <= 10",
+        "solution": "import numpy as np\n\narr = np.array([12, 5, 23, 8, 17, 3, 19, 11])\nprint(\"Greater than 10:\", arr[arr > 10])\nprint(\"Count <= 10:\", np.sum(arr <= 10))",
+        "expectedOutput": "Greater than 10: [12 23 17 19 11]\nCount <= 10: 3",
+        "hints": [
+          "arr[arr > 10] uses boolean indexing to select elements where the condition is True.",
+          "A boolean array of True/False can be summed with np.sum() since True counts as 1 and False as 0."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "array-ops-ex3",
+        "title": "Aggregation Functions",
+        "description": "Create the array [15.5, 22.3, 8.7, 31.2, 14.1]. Print the sum, mean, min, and max of the array. Round the mean to 2 decimal places using round().",
+        "starterCode": "import numpy as np\n\n# TODO: Create the array\n# TODO: Print sum, mean (rounded to 2 decimals), min, max",
+        "solution": "import numpy as np\n\narr = np.array([15.5, 22.3, 8.7, 31.2, 14.1])\nprint(\"Sum:\", np.sum(arr))\nprint(\"Mean:\", round(np.mean(arr), 2))\nprint(\"Min:\", np.min(arr))\nprint(\"Max:\", np.max(arr))",
+        "expectedOutput": "Sum: 91.8\nMean: 18.36\nMin: 8.7\nMax: 31.2",
+        "hints": [
+          "Use np.sum(), np.mean(), np.min(), np.max() on the array.",
+          "Wrap np.mean(arr) with round(..., 2) to get 2 decimal places."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "indexing-and-slicing",
+    "sectionId": "numpy-essentials",
+    "orderIndex": 2,
+    "title": "Indexing and Slicing",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["basic indexing", "slicing", "boolean indexing", "fancy indexing"],
+    "content": {
+      "explanation": "Indexing and slicing are fundamental operations for accessing and manipulating data within NumPy arrays. Like Python lists, NumPy arrays use zero-based indexing. For a 1D array, arr[0] retrieves the first element and arr[-1] retrieves the last. However, NumPy extends this concept significantly for multi-dimensional arrays, where you separate indices for each dimension with commas: arr[row, col] for 2D arrays. This comma-separated syntax is more efficient and readable than the chained bracket notation arr[row][col].\n\nSlicing extracts a contiguous subset of an array using the start:stop:step syntax, just like Python lists. For 1D arrays, arr[1:4] returns elements at indices 1, 2, and 3 (the stop index is exclusive). For 2D arrays, you can slice along each dimension independently: arr[0:2, 1:3] selects rows 0 and 1 and columns 1 and 2. A crucial difference from Python lists is that NumPy slices return views, not copies. Modifying a slice modifies the original array. If you need an independent copy, use arr[1:4].copy().\n\nBoolean indexing uses an array of True/False values to select elements. When you write arr[arr > 5], NumPy evaluates arr > 5 to produce a boolean array, then returns only the elements where the boolean value is True. This is one of the most common and powerful patterns in NumPy and Pandas. You can create complex conditions by combining boolean expressions with & (and), | (or), and ~ (not), always wrapping each condition in parentheses due to operator precedence rules.\n\nFancy indexing (also called advanced indexing) lets you access multiple non-contiguous elements by passing an array of indices. For example, arr[[0, 3, 5]] returns the elements at indices 0, 3, and 5. Unlike slicing, fancy indexing always returns a copy, not a view. For 2D arrays, you can pass separate index arrays for rows and columns: arr[[0, 2], [1, 3]] returns the elements at positions (0,1) and (2,3). This is useful for extracting specific elements from scattered positions in a large array.\n\nUnderstanding the distinction between views and copies is critical for avoiding subtle bugs. Slicing creates a view that shares memory with the original array, so changes propagate both ways. Fancy indexing and boolean indexing create copies, so changes to the result do not affect the original. When in doubt, use the .copy() method explicitly to ensure you are working with independent data.",
+      "codeExamples": [
+        {
+          "title": "Basic 1D indexing and slicing",
+          "code": "import numpy as np\n\narr = np.array([10, 20, 30, 40, 50, 60, 70])\n\nprint(\"First:\", arr[0])\nprint(\"Last:\", arr[-1])\nprint(\"Slice [1:4]:\", arr[1:4])\nprint(\"Every other:\", arr[::2])\nprint(\"Reversed:\", arr[::-1])",
+          "output": "First: 10\nLast: 70\nSlice [1:4]: [20 30 40]\nEvery other: [10 30 50 70]\nReversed: [70 60 50 40 30 20 10]",
+          "explanation": "Index 0 gets the first element, -1 gets the last. Slicing [1:4] gets indices 1, 2, 3. Step of 2 skips every other element. Step of -1 reverses the array."
+        },
+        {
+          "title": "2D array indexing",
+          "code": "import numpy as np\n\narr = np.array([[1, 2, 3],\n                [4, 5, 6],\n                [7, 8, 9]])\n\nprint(\"Element [0,2]:\", arr[0, 2])\nprint(\"Row 1:\", arr[1])\nprint(\"Column 0:\", arr[:, 0])\nprint(\"Subarray [0:2, 1:3]:\")\nprint(arr[0:2, 1:3])",
+          "output": "Element [0,2]: 3\nRow 1: [4 5 6]\nColumn 0: [1 4 7]\nSubarray [0:2, 1:3]:\n[[2 3]\n [5 6]]",
+          "explanation": "arr[0, 2] accesses row 0, column 2. arr[1] returns the entire second row. arr[:, 0] selects all rows but only column 0. arr[0:2, 1:3] slices both dimensions to get a 2x2 subarray."
+        },
+        {
+          "title": "Boolean indexing for filtering",
+          "code": "import numpy as np\n\nscores = np.array([85, 42, 91, 67, 73, 55, 98])\n\npassing = scores[scores >= 70]\nprint(\"Passing scores:\", passing)\n\n# Combined condition\nmid_range = scores[(scores >= 50) & (scores <= 80)]\nprint(\"Mid-range (50-80):\", mid_range)\n\n# Count\nprint(\"Failing count:\", np.sum(scores < 70))",
+          "output": "Passing scores: [85 91 73 98]\nMid-range (50-80): [67 73 55]\nFailing count: 3",
+          "explanation": "scores >= 70 creates a boolean mask that selects only passing scores. Combined conditions use & with parentheses. np.sum on a boolean array counts True values."
+        },
+        {
+          "title": "Fancy indexing",
+          "code": "import numpy as np\n\narr = np.array([10, 20, 30, 40, 50, 60])\n\n# Select specific indices\nselected = arr[[0, 2, 5]]\nprint(\"Indices [0,2,5]:\", selected)\n\n# 2D fancy indexing\nmatrix = np.array([[1, 2, 3],\n                   [4, 5, 6],\n                   [7, 8, 9]])\n\nprint(\"Diagonal:\", matrix[[0, 1, 2], [0, 1, 2]])\nprint(\"Corners:\", matrix[[0, 0, 2, 2], [0, 2, 0, 2]])",
+          "output": "Indices [0,2,5]: [10 30 60]\nDiagonal: [1 5 9]\nCorners: [1 3 7 9]",
+          "explanation": "Fancy indexing with a list of indices returns those specific elements. For 2D arrays, passing two index arrays selects elements at the paired positions: (0,0), (1,1), (2,2) for the diagonal."
+        }
+      ],
+      "notes": [
+        "NumPy slicing returns a view (shared memory), not a copy. Use .copy() when you need an independent array.",
+        "For 2D arrays, use arr[row, col] syntax instead of arr[row][col] for clarity and performance.",
+        "Boolean indexing always returns a 1D array of matching elements, regardless of the original array's shape.",
+        "Fancy indexing always returns a copy, unlike basic slicing which returns a view."
+      ],
+      "commonPitfalls": [
+        "Modifying a slice and accidentally changing the original array because slices are views, not copies.",
+        "Forgetting parentheses when combining boolean conditions: arr > 5 & arr < 20 fails because & binds tighter than > and <.",
+        "Using Python's 'and' keyword instead of & for combining boolean array conditions, which raises a ValueError."
+      ],
+      "interviewTips": [
+        "Know the difference between views and copies: slicing creates views, fancy and boolean indexing create copies.",
+        "Be able to explain how boolean indexing works internally: the comparison produces a boolean mask, and True positions are selected."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "indexing-ex1",
+        "title": "2D Array Slicing",
+        "description": "Create a 4x4 array using np.arange(1, 17).reshape(4, 4). Print the element at row 2, column 3. Print the entire third row. Print the second column (all rows). Print the 2x2 subarray from rows 1-2 and columns 1-2.",
+        "starterCode": "import numpy as np\n\n# TODO: Create 4x4 array from 1 to 16\n# TODO: Print element at row 2, column 3\n# TODO: Print entire third row\n# TODO: Print second column\n# TODO: Print 2x2 subarray (rows 1-2, cols 1-2)",
+        "solution": "import numpy as np\n\narr = np.arange(1, 17).reshape(4, 4)\nprint(\"Array:\")\nprint(arr)\nprint(\"Element [2,3]:\", arr[2, 3])\nprint(\"Row 2:\", arr[2])\nprint(\"Column 1:\", arr[:, 1])\nprint(\"Subarray:\")\nprint(arr[1:3, 1:3])",
+        "expectedOutput": "Array:\n[[ 1  2  3  4]\n [ 5  6  7  8]\n [ 9 10 11 12]\n [13 14 15 16]]\nElement [2,3]: 12\nRow 2: [ 9 10 11 12]\nColumn 1: [ 2  6 10 14]\nSubarray:\n[[ 6  7]\n [10 11]]",
+        "hints": [
+          "np.arange(1, 17) creates [1, 2, ..., 16], then .reshape(4, 4) makes it a 4x4 matrix.",
+          "arr[:, 1] means all rows, column index 1. arr[1:3, 1:3] means rows 1-2, columns 1-2."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "indexing-ex2",
+        "title": "Filter with Boolean Indexing",
+        "description": "Create the array [25, 12, 47, 8, 33, 19, 41, 5, 28]. Print elements greater than 20. Print elements that are less than 10 or greater than 40. Print the count of elements between 10 and 30 (inclusive).",
+        "starterCode": "import numpy as np\n\n# TODO: Create the array\n# TODO: Print elements > 20\n# TODO: Print elements < 10 or > 40\n# TODO: Print count of elements between 10 and 30 inclusive",
+        "solution": "import numpy as np\n\narr = np.array([25, 12, 47, 8, 33, 19, 41, 5, 28])\nprint(\"Greater than 20:\", arr[arr > 20])\nprint(\"Less than 10 or greater than 40:\", arr[(arr < 10) | (arr > 40)])\nprint(\"Count 10-30:\", np.sum((arr >= 10) & (arr <= 30)))",
+        "expectedOutput": "Greater than 20: [25 47 33 41 28]\nLess than 10 or greater than 40: [47  8 41  5]\nCount 10-30: 4",
+        "hints": [
+          "Use | for OR conditions and & for AND conditions, with parentheses around each comparison.",
+          "np.sum on a boolean array counts how many True values there are."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "indexing-ex3",
+        "title": "Fancy Indexing Practice",
+        "description": "Create a 3x4 array using np.arange(10, 22).reshape(3, 4). Use fancy indexing to print elements at positions (0,0), (1,2), and (2,3). Then print the first and last rows using fancy indexing with a list of row indices.",
+        "starterCode": "import numpy as np\n\n# TODO: Create 3x4 array from 10 to 21\n# TODO: Print elements at (0,0), (1,2), (2,3) using fancy indexing\n# TODO: Print first and last rows using fancy indexing",
+        "solution": "import numpy as np\n\narr = np.arange(10, 22).reshape(3, 4)\nprint(\"Array:\")\nprint(arr)\nprint(\"Elements at (0,0),(1,2),(2,3):\", arr[[0, 1, 2], [0, 2, 3]])\nprint(\"First and last rows:\")\nprint(arr[[0, 2]])",
+        "expectedOutput": "Array:\n[[10 11 12 13]\n [14 15 16 17]\n [18 19 20 21]]\nElements at (0,0),(1,2),(2,3): [10 16 21]\nFirst and last rows:\n[[10 11 12 13]\n [18 19 20 21]]",
+        "hints": [
+          "arr[[row_indices], [col_indices]] selects elements at paired positions.",
+          "arr[[0, 2]] without a column index selects entire rows 0 and 2."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "reshaping-and-broadcasting",
+    "sectionId": "numpy-essentials",
+    "orderIndex": 3,
+    "title": "Reshaping and Broadcasting",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["reshape", "flatten", "ravel", "broadcasting rules", "axis parameter"],
+    "content": {
+      "explanation": "Reshaping arrays is a routine operation in data science and machine learning. The reshape() method returns a new view of the array with a different shape, as long as the total number of elements stays the same. For example, a 1D array of 12 elements can be reshaped into (2, 6), (3, 4), (4, 3), (6, 2), (2, 2, 3), or any other shape whose dimensions multiply to 12. If the total does not match, NumPy raises a ValueError. You can also use -1 as one of the dimensions, and NumPy will infer the correct size automatically: arr.reshape(3, -1) with 12 elements produces shape (3, 4).\n\nThe flatten() and ravel() methods both convert a multi-dimensional array into a 1D array, but they differ in a critical way. flatten() always returns a copy of the data, meaning modifications to the flattened array do not affect the original. ravel() returns a view whenever possible, so changes to the raveled array will change the original. In performance-sensitive code, ravel() is preferred because it avoids the memory overhead of copying. If you need to guarantee a copy, use flatten() explicitly.\n\nBroadcasting is NumPy's mechanism for performing operations on arrays with different shapes. When two arrays have different shapes, NumPy tries to make them compatible by virtually expanding the smaller array to match the larger one, without actually copying data. The broadcasting rules are: (1) If the arrays have a different number of dimensions, the shape of the smaller array is padded with ones on the left. (2) Arrays with a size of 1 along a particular dimension are stretched to match the other array's size along that dimension. (3) If sizes disagree along any dimension and neither is 1, broadcasting fails with an error.\n\nA common example of broadcasting is adding a 1D array to each row of a 2D array. If you have a (3, 4) matrix and add a (4,) vector, NumPy broadcasts the vector across all 3 rows. Similarly, to add a column vector, you reshape it to (3, 1) so broadcasting stretches it across all 4 columns. This pattern appears constantly in data normalization, where you subtract the mean and divide by the standard deviation along an axis.\n\nThe axis parameter in NumPy functions controls the direction of an operation. For a 2D array with shape (rows, cols), axis=0 means \"operate along rows\" (resulting in one value per column) and axis=1 means \"operate along columns\" (resulting in one value per row). A helpful mnemonic: the axis you specify is the axis that gets collapsed. If you have shape (3, 4) and call np.sum(arr, axis=0), axis 0 (the rows) is collapsed, leaving shape (4,). Calling np.sum(arr, axis=1) collapses axis 1 (the columns), leaving shape (3,).",
+      "codeExamples": [
+        {
+          "title": "Reshaping arrays",
+          "code": "import numpy as np\n\narr = np.arange(1, 13)\nprint(\"Original:\", arr)\nprint(\"Shape:\", arr.shape)\n\nreshaped = arr.reshape(3, 4)\nprint(\"Reshaped (3,4):\")\nprint(reshaped)\n\n# Using -1 to infer a dimension\nauto = arr.reshape(2, -1)\nprint(\"Auto-inferred (2,-1):\")\nprint(auto)",
+          "output": "Original: [ 1  2  3  4  5  6  7  8  9 10 11 12]\nShape: (12,)\nReshaped (3,4):\n[[ 1  2  3  4]\n [ 5  6  7  8]\n [ 9 10 11 12]]\nAuto-inferred (2,-1):\n[[ 1  2  3  4  5  6]\n [ 7  8  9 10 11 12]]",
+          "explanation": "A 12-element 1D array is reshaped into a 3x4 matrix. Using -1 as a dimension lets NumPy compute it automatically: 12 / 2 = 6, so the result is (2, 6)."
+        },
+        {
+          "title": "Flatten vs ravel",
+          "code": "import numpy as np\n\narr = np.array([[1, 2, 3], [4, 5, 6]])\nprint(\"Original:\")\nprint(arr)\n\nflat = arr.flatten()\nrav = arr.ravel()\nprint(\"Flattened:\", flat)\nprint(\"Raveled:\", rav)\n\n# flatten returns a copy, ravel returns a view\nrav[0] = 99\nprint(\"After modifying ravel:\")\nprint(arr)",
+          "output": "Original:\n[[1 2 3]\n [4 5 6]]\nFlattened: [1 2 3 4 5 6]\nRaveled: [1 2 3 4 5 6]\nAfter modifying ravel:\n[[99  2  3]\n [ 4  5  6]]",
+          "explanation": "Both flatten and ravel produce 1D arrays. However, ravel returns a view, so modifying rav[0] to 99 also changes the original array. flatten would not have this effect because it returns an independent copy."
+        },
+        {
+          "title": "Broadcasting: vector + matrix",
+          "code": "import numpy as np\n\nmatrix = np.array([[1, 2, 3],\n                   [4, 5, 6]])\nrow_vector = np.array([10, 20, 30])\n\nresult = matrix + row_vector\nprint(\"Matrix + row vector:\")\nprint(result)\n\ncol_vector = np.array([[100], [200]])\nresult2 = matrix + col_vector\nprint(\"Matrix + col vector:\")\nprint(result2)",
+          "output": "Matrix + row vector:\n[[11 22 33]\n [14 25 36]]\nMatrix + col vector:\n[[101 102 103]\n [204 205 206]]",
+          "explanation": "The row vector (3,) is broadcast across both rows of the (2,3) matrix, adding 10, 20, 30 to each row. The column vector (2,1) is broadcast across all 3 columns, adding 100 to row 0 and 200 to row 1."
+        },
+        {
+          "title": "Axis parameter in aggregations",
+          "code": "import numpy as np\n\narr = np.array([[1, 2, 3],\n                [4, 5, 6]])\n\nprint(\"Array:\")\nprint(arr)\nprint(\"Sum all:\", np.sum(arr))\nprint(\"Sum axis=0 (columns):\", np.sum(arr, axis=0))\nprint(\"Sum axis=1 (rows):\", np.sum(arr, axis=1))\nprint(\"Mean axis=0:\", np.mean(arr, axis=0))\nprint(\"Mean axis=1:\", np.mean(arr, axis=1))",
+          "output": "Array:\n[[1 2 3]\n [4 5 6]]\nSum all: 21\nSum axis=0 (columns): [5 7 9]\nSum axis=1 (rows): [ 6 15]\nMean axis=0: [2.5 3.5 4.5]\nMean axis=1: [2. 5.]",
+          "explanation": "axis=0 collapses rows, producing column sums [1+4, 2+5, 3+6] = [5, 7, 9]. axis=1 collapses columns, producing row sums [1+2+3, 4+5+6] = [6, 15]. Without axis, the operation covers all elements."
+        }
+      ],
+      "notes": [
+        "reshape() returns a view when possible, so no data is copied. The total number of elements must remain the same.",
+        "Use -1 in reshape to let NumPy auto-calculate one dimension: arr.reshape(-1, 3) infers the number of rows.",
+        "Broadcasting works from the trailing (rightmost) dimensions and works backward. Dimensions must be equal or one of them must be 1.",
+        "The axis you specify in an aggregation is the axis that gets collapsed/reduced."
+      ],
+      "commonPitfalls": [
+        "Trying to reshape an array into a shape that does not preserve the total element count, causing a ValueError.",
+        "Assuming ravel() returns a copy and then accidentally modifying the original array through the raveled view.",
+        "Confusing axis=0 (collapse rows, result per column) with axis=1 (collapse columns, result per row)."
+      ],
+      "interviewTips": [
+        "State the three broadcasting rules clearly: (1) pad shorter shape with 1s on the left, (2) stretch dimensions of size 1, (3) fail if dimensions differ and neither is 1.",
+        "Know the difference between reshape, flatten, and ravel: reshape changes shape, flatten always copies to 1D, ravel returns a 1D view when possible.",
+        "Be able to predict the output shape after broadcasting: (3,1) + (1,4) gives (3,4); (2,3) + (3,) gives (2,3); (4,3) + (4,) fails.",
+        "Explain axis=0 vs axis=1 with a concrete example: for a (3,4) array, sum(axis=0) gives shape (4,), sum(axis=1) gives shape (3,)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "reshape-ex1",
+        "title": "Reshape and Flatten",
+        "description": "Create a 1D array from 1 to 12 using arange. Reshape it to (4, 3), print the result. Then flatten it and print the flattened array. Finally reshape the original to (2, 2, 3) and print its shape.",
+        "starterCode": "import numpy as np\n\n# TODO: Create array 1 to 12\n# TODO: Reshape to (4, 3) and print\n# TODO: Flatten and print\n# TODO: Reshape to (2, 2, 3) and print shape",
+        "solution": "import numpy as np\n\narr = np.arange(1, 13)\nreshaped = arr.reshape(4, 3)\nprint(\"Reshaped (4,3):\")\nprint(reshaped)\n\nflat = reshaped.flatten()\nprint(\"Flattened:\", flat)\n\nreshaped_3d = arr.reshape(2, 2, 3)\nprint(\"3D shape:\", reshaped_3d.shape)",
+        "expectedOutput": "Reshaped (4,3):\n[[ 1  2  3]\n [ 4  5  6]\n [ 7  8  9]\n [10 11 12]]\nFlattened: [ 1  2  3  4  5  6  7  8  9 10 11 12]\n3D shape: (2, 2, 3)",
+        "hints": [
+          "np.arange(1, 13) gives [1, 2, ..., 12] which has 12 elements, matching 4*3 and 2*2*3.",
+          "flatten() always returns a 1D copy of the array."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "reshape-ex2",
+        "title": "Broadcasting in Practice",
+        "description": "Create a 3x3 matrix [[1,2,3],[4,5,6],[7,8,9]] and a row vector [10, 20, 30]. Add the row vector to the matrix and print the result. Then create a column vector [[100],[200],[300]] and add it to the matrix, printing the result.",
+        "starterCode": "import numpy as np\n\n# TODO: Create 3x3 matrix and row vector\n# TODO: Add row vector to matrix and print\n# TODO: Create column vector and add to matrix, print",
+        "solution": "import numpy as np\n\nmatrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])\nrow = np.array([10, 20, 30])\n\nprint(\"Matrix + row:\")\nprint(matrix + row)\n\ncol = np.array([[100], [200], [300]])\nprint(\"Matrix + col:\")\nprint(matrix + col)",
+        "expectedOutput": "Matrix + row:\n[[11 22 33]\n [14 25 36]\n [17 28 39]]\nMatrix + col:\n[[101 102 103]\n [204 205 206]\n [307 308 309]]",
+        "hints": [
+          "A (3,) row vector broadcasts across all rows of the (3,3) matrix.",
+          "A (3,1) column vector broadcasts across all columns of the (3,3) matrix."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "reshape-ex3",
+        "title": "Axis Aggregations",
+        "description": "Create the array [[10, 20, 30], [40, 50, 60], [70, 80, 90]]. Print the sum along axis=0, the sum along axis=1, the mean along axis=0, and the max along axis=1.",
+        "starterCode": "import numpy as np\n\n# TODO: Create the 3x3 array\n# TODO: Print sum along axis=0\n# TODO: Print sum along axis=1\n# TODO: Print mean along axis=0\n# TODO: Print max along axis=1",
+        "solution": "import numpy as np\n\narr = np.array([[10, 20, 30], [40, 50, 60], [70, 80, 90]])\nprint(\"Sum axis=0:\", np.sum(arr, axis=0))\nprint(\"Sum axis=1:\", np.sum(arr, axis=1))\nprint(\"Mean axis=0:\", np.mean(arr, axis=0))\nprint(\"Max axis=1:\", np.max(arr, axis=1))",
+        "expectedOutput": "Sum axis=0: [120 150 180]\nSum axis=1: [ 60 150 240]\nMean axis=0: [40. 50. 60.]\nMax axis=1: [30 60 90]",
+        "hints": [
+          "axis=0 collapses rows: column sums are [10+40+70, 20+50+80, 30+60+90] = [120, 150, 180].",
+          "axis=1 collapses columns: row sums are [10+20+30, 40+50+60, 70+80+90] = [60, 150, 240]."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "numpy-aggregations",
+    "sectionId": "numpy-essentials",
+    "orderIndex": 4,
+    "title": "NumPy Aggregations",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["sum", "mean", "std", "min", "max", "argmin", "argmax", "axis parameter"],
+    "content": {
+      "explanation": "Aggregation functions are the workhorses of data analysis in NumPy. They reduce arrays to summary statistics, converting a large collection of numbers into meaningful insights. The most commonly used aggregations are np.sum() for total, np.mean() for average, np.std() for standard deviation, np.min() and np.max() for extremes, and np.argmin() and np.argmax() for the indices of extreme values. Each of these can operate on the entire array or along a specific axis.\n\nnp.sum() and np.mean() are perhaps the most frequently used aggregations. np.sum(arr) adds all elements in the array, while np.mean(arr) computes the arithmetic average. For a 2D array, specifying axis=0 computes column-wise sums or means (one value per column), and axis=1 computes row-wise sums or means (one value per row). The np.median() function computes the middle value of a sorted array, which is more robust to outliers than the mean.\n\nnp.std() computes the standard deviation, a measure of how spread out the values are from the mean. By default, NumPy computes the population standard deviation (dividing by N). If you need the sample standard deviation (dividing by N-1), pass ddof=1: np.std(arr, ddof=1). The related function np.var() computes the variance, which is the square of the standard deviation. These functions are essential for statistical analysis and data normalization.\n\nnp.argmin() and np.argmax() return the index of the minimum and maximum values respectively, rather than the values themselves. This is incredibly useful when you need to find where an extreme value occurs. For a 1D array, they return a single integer index. For multi-dimensional arrays without an axis parameter, they return the index into the flattened array. With an axis parameter, they return an array of indices along that axis. You can use np.unravel_index() to convert a flat index back into a multi-dimensional index.\n\nThe cumulative aggregation functions np.cumsum() and np.cumprod() compute running totals and running products respectively. Unlike sum() which returns a single value, cumsum() returns an array of the same shape where each element is the sum of all preceding elements including itself. For example, cumsum([1, 2, 3, 4]) gives [1, 3, 6, 10]. These are useful for computing cumulative distributions, running averages, and financial metrics like cumulative returns.",
+      "codeExamples": [
+        {
+          "title": "Basic aggregation functions",
+          "code": "import numpy as np\n\narr = np.array([12, 5, 8, 21, 3, 15])\n\nprint(\"Sum:\", np.sum(arr))\nprint(\"Mean:\", np.mean(arr))\nprint(\"Std:\", round(np.std(arr), 4))\nprint(\"Min:\", np.min(arr))\nprint(\"Max:\", np.max(arr))\nprint(\"Median:\", np.median(arr))",
+          "output": "Sum: 64\nMean: 10.666666666666666\nStd: 6.1824\nMin: 3\nMax: 21\nMedian: 10.0",
+          "explanation": "These functions reduce the entire array to a single summary value. The standard deviation is rounded for readability. The median (10.0) is the average of the two middle values (8 and 12) in the sorted array [3, 5, 8, 12, 15, 21]."
+        },
+        {
+          "title": "argmin and argmax",
+          "code": "import numpy as np\n\nscores = np.array([78, 92, 65, 88, 95, 71])\nstudents = [\"Alice\", \"Bob\", \"Charlie\", \"Diana\", \"Eve\", \"Frank\"]\n\nbest_idx = np.argmax(scores)\nworst_idx = np.argmin(scores)\n\nprint(\"Highest score:\", scores[best_idx], \"by\", students[best_idx])\nprint(\"Lowest score:\", scores[worst_idx], \"by\", students[worst_idx])\nprint(\"Best index:\", best_idx)\nprint(\"Worst index:\", worst_idx)",
+          "output": "Highest score: 95 by Eve\nLowest score: 65 by Charlie\nBest index: 4\nWorst index: 2",
+          "explanation": "argmax returns index 4 (Eve's score of 95) and argmin returns index 2 (Charlie's score of 65). These index values can be used to look up corresponding data in parallel arrays or lists."
+        },
+        {
+          "title": "Aggregations along axes in 2D",
+          "code": "import numpy as np\n\ndata = np.array([[10, 20, 30],\n                 [40, 50, 60],\n                 [70, 80, 90]])\n\nprint(\"Column means (axis=0):\", np.mean(data, axis=0))\nprint(\"Row means (axis=1):\", np.mean(data, axis=1))\nprint(\"Column max (axis=0):\", np.max(data, axis=0))\nprint(\"Row min (axis=1):\", np.min(data, axis=1))\nprint(\"Argmax axis=0:\", np.argmax(data, axis=0))\nprint(\"Argmax axis=1:\", np.argmax(data, axis=1))",
+          "output": "Column means (axis=0): [40. 50. 60.]\nRow means (axis=1): [20. 50. 80.]\nColumn max (axis=0): [70 80 90]\nRow min (axis=1): [10 40 70]\nArgmax axis=0: [2 2 2]\nArgmax axis=1: [2 2 2]",
+          "explanation": "Column means (axis=0) are [40, 50, 60] because each column averages to the middle value. Row means (axis=1) are [20, 50, 80]. Argmax along axis=0 returns [2, 2, 2] because row 2 has the maximum in every column."
+        },
+        {
+          "title": "Cumulative sum and product",
+          "code": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5])\n\nprint(\"Cumulative sum:\", np.cumsum(arr))\nprint(\"Cumulative product:\", np.cumprod(arr))\n\n# 2D cumsum along axis\nmatrix = np.array([[1, 2, 3],\n                   [4, 5, 6]])\nprint(\"Cumsum axis=0:\")\nprint(np.cumsum(matrix, axis=0))\nprint(\"Cumsum axis=1:\")\nprint(np.cumsum(matrix, axis=1))",
+          "output": "Cumulative sum: [ 1  3  6 10 15]\nCumulative product: [  1   2   6  24 120]\nCumsum axis=0:\n[[1 2 3]\n [5 7 9]]\nCumsum axis=1:\n[[ 1  3  6]\n [ 4  9 15]]",
+          "explanation": "Cumulative sum builds a running total: [1, 1+2, 1+2+3, ...]. Cumulative product builds a running product: [1, 1*2, 1*2*3, ...] which gives factorials here. Along axis=0, each row accumulates from above; along axis=1, each column accumulates from the left."
+        }
+      ],
+      "notes": [
+        "np.std() computes population standard deviation by default (ddof=0). Use ddof=1 for sample standard deviation.",
+        "argmin/argmax on a multi-dimensional array without axis return the index into the flattened array. Use np.unravel_index to convert to multi-dimensional indices.",
+        "All aggregation functions can be called as array methods too: arr.sum(), arr.mean(), arr.std(), etc.",
+        "np.nansum(), np.nanmean(), and np.nanstd() ignore NaN values, which is critical when working with real-world data that may have missing values."
+      ],
+      "commonPitfalls": [
+        "Using np.std() when you need sample standard deviation but forgetting to set ddof=1, leading to a slightly different result.",
+        "Confusing the return value of argmax (an index) with the actual maximum value. Use arr[np.argmax(arr)] or np.max(arr) to get the value.",
+        "Forgetting that axis=0 collapses rows (gives per-column results) and axis=1 collapses columns (gives per-row results), which feels counterintuitive at first."
+      ],
+      "interviewTips": [
+        "Know the difference between np.argmax and np.max: argmax returns the index, max returns the value.",
+        "Understand when to use ddof=0 (population) vs ddof=1 (sample) for standard deviation calculations."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "aggregations-ex1",
+        "title": "Basic Statistics",
+        "description": "Create the array [45, 67, 23, 89, 12, 78, 56, 34]. Print the sum, mean (rounded to 2 decimals), standard deviation (rounded to 2 decimals), min, and max.",
+        "starterCode": "import numpy as np\n\n# TODO: Create the array\n# TODO: Print sum, mean (2 dec), std (2 dec), min, max",
+        "solution": "import numpy as np\n\narr = np.array([45, 67, 23, 89, 12, 78, 56, 34])\nprint(\"Sum:\", np.sum(arr))\nprint(\"Mean:\", round(np.mean(arr), 2))\nprint(\"Std:\", round(np.std(arr), 2))\nprint(\"Min:\", np.min(arr))\nprint(\"Max:\", np.max(arr))",
+        "expectedOutput": "Sum: 404\nMean: 50.5\nStd: 24.8\nMin: 12\nMax: 89",
+        "hints": [
+          "Use np.sum(), np.mean(), np.std(), np.min(), np.max() on the array.",
+          "Wrap np.mean() and np.std() with round(..., 2) for 2 decimal places."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "aggregations-ex2",
+        "title": "Finding Extremes with argmin/argmax",
+        "description": "Create the array [34, 78, 12, 56, 91, 23]. Print the index and value of the maximum element, and the index and value of the minimum element using argmax and argmin.",
+        "starterCode": "import numpy as np\n\n# TODO: Create the array\n# TODO: Find and print index and value of max\n# TODO: Find and print index and value of min",
+        "solution": "import numpy as np\n\narr = np.array([34, 78, 12, 56, 91, 23])\nmax_idx = np.argmax(arr)\nmin_idx = np.argmin(arr)\nprint(\"Max index:\", max_idx, \"Value:\", arr[max_idx])\nprint(\"Min index:\", min_idx, \"Value:\", arr[min_idx])",
+        "expectedOutput": "Max index: 4 Value: 91\nMin index: 2 Value: 12",
+        "hints": [
+          "np.argmax(arr) returns the index of the largest element.",
+          "Use the index to retrieve the actual value: arr[np.argmax(arr)]."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "aggregations-ex3",
+        "title": "2D Aggregations with Axis",
+        "description": "Create a 3x4 array using np.arange(1, 13).reshape(3, 4). Print the sum along axis=0, the mean along axis=1, the max along axis=0, and the cumulative sum along axis=1.",
+        "starterCode": "import numpy as np\n\n# TODO: Create 3x4 array from 1 to 12\n# TODO: Print sum along axis=0\n# TODO: Print mean along axis=1\n# TODO: Print max along axis=0\n# TODO: Print cumulative sum along axis=1",
+        "solution": "import numpy as np\n\narr = np.arange(1, 13).reshape(3, 4)\nprint(\"Array:\")\nprint(arr)\nprint(\"Sum axis=0:\", np.sum(arr, axis=0))\nprint(\"Mean axis=1:\", np.mean(arr, axis=1))\nprint(\"Max axis=0:\", np.max(arr, axis=0))\nprint(\"Cumsum axis=1:\")\nprint(np.cumsum(arr, axis=1))",
+        "expectedOutput": "Array:\n[[ 1  2  3  4]\n [ 5  6  7  8]\n [ 9 10 11 12]]\nSum axis=0: [15 18 21 24]\nMean axis=1: [ 2.5  6.5 10.5]\nMax axis=0: [ 9 10 11 12]\nCumsum axis=1:\n[[ 1  3  6 10]\n [ 5 11 18 26]\n [ 9 19 30 42]]",
+        "hints": [
+          "axis=0 collapses rows: sum axis=0 gives [1+5+9, 2+6+10, 3+7+11, 4+8+12] = [15, 18, 21, 24].",
+          "axis=1 collapses columns: mean axis=1 gives [(1+2+3+4)/4, (5+6+7+8)/4, (9+10+11+12)/4] = [2.5, 6.5, 10.5]."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

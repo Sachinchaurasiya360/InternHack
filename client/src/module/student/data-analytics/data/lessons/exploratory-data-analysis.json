@@ -1,0 +1,384 @@
+[
+  {
+    "id": "eda-workflow",
+    "sectionId": "exploratory-data-analysis",
+    "orderIndex": 0,
+    "title": "EDA Workflow & Data Profiling",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["EDA process", "data profiling", "summary statistics", "initial exploration"],
+    "content": {
+      "explanation": "Exploratory Data Analysis (EDA) is the critical first step in any data science project. It involves systematically examining datasets to understand their structure, identify patterns, detect anomalies, and form hypotheses before applying formal modeling techniques. A well-executed EDA can save hours of debugging and prevent flawed conclusions later in the analysis pipeline.\n\nThe standard EDA workflow follows a structured sequence: first, load and inspect the data shape and types; second, compute summary statistics to understand distributions; third, check for missing values and data quality issues; fourth, examine relationships between variables; and finally, document findings and form hypotheses. This systematic approach ensures nothing is overlooked and provides a solid foundation for downstream analysis.\n\nPandas provides a powerful suite of profiling tools that make the initial exploration phase efficient. The `info()` method reveals column types and non-null counts at a glance, while `describe()` computes key statistical measures across all numeric columns. The `value_counts()` method is indispensable for understanding categorical distributions, and `shape` gives you the dataset dimensions immediately.\n\nBeyond individual column analysis, a thorough EDA examines relationships between variables through correlation matrices, cross-tabulations, and grouped aggregations. The goal is to build an intuition about the data that guides feature engineering, model selection, and interpretation of results. Seasoned data scientists treat EDA as an iterative process, revisiting earlier steps as new patterns emerge.",
+      "codeExamples": [
+        {
+          "title": "Dataset Shape and Structure Inspection",
+          "code": "import pandas as pd\nimport numpy as np\n\n# Create a sample dataset\ndata = {\n    'name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],\n    'age': [25, 30, 35, 28, 32],\n    'salary': [50000, 65000, 80000, 55000, 72000],\n    'department': ['Engineering', 'Marketing', 'Engineering', 'HR', 'Marketing'],\n    'years_exp': [2, 5, 10, 3, 7]\n}\ndf = pd.DataFrame(data)\n\n# Step 1: Check shape\nprint(f\"Shape: {df.shape}\")\nprint(f\"Rows: {df.shape[0]}, Columns: {df.shape[1]}\")\nprint()\n\n# Step 2: Column types\nprint(\"Column Types:\")\nfor col in df.columns:\n    print(f\"  {col}: {df[col].dtype}\")",
+          "output": "Shape: (5, 5)\nRows: 5, Columns: 5\n\nColumn Types:\n  name: object\n  age: int64\n  salary: int64\n  department: object\n  years_exp: int64",
+          "explanation": "The first step in any EDA is understanding the dataset dimensions and column types. The shape attribute gives you (rows, columns) immediately. Knowing column dtypes helps you determine which columns are numeric vs categorical, guiding your analysis strategy."
+        },
+        {
+          "title": "Summary Statistics with describe()",
+          "code": "import pandas as pd\nimport numpy as np\n\ndata = {\n    'age': [25, 30, 35, 28, 32, 45, 22, 38],\n    'salary': [50000, 65000, 80000, 55000, 72000, 95000, 42000, 78000],\n    'rating': [4.2, 3.8, 4.5, 3.9, 4.1, 4.8, 3.5, 4.3]\n}\ndf = pd.DataFrame(data)\n\nstats = df.describe()\nprint(\"Summary Statistics:\")\nprint(f\"  Mean age: {stats.loc['mean', 'age']:.1f}\")\nprint(f\"  Median salary: {stats.loc['50%', 'salary']:.0f}\")\nprint(f\"  Salary std dev: {stats.loc['std', 'salary']:.0f}\")\nprint(f\"  Min rating: {stats.loc['min', 'rating']:.1f}\")\nprint(f\"  Max rating: {stats.loc['max', 'rating']:.1f}\")\nprint()\n\n# Quick spread check\nfor col in df.columns:\n    iqr = df[col].quantile(0.75) - df[col].quantile(0.25)\n    print(f\"{col} IQR: {iqr:.1f}\")",
+          "output": "Summary Statistics:\n  Mean age: 31.9\n  Median salary: 68500\n  Salary std dev: 17834\n  Min rating: 3.5\n  Max rating: 4.8\n\nage IQR: 8.5\nsalary IQR: 23750.0\nrating IQR: 0.5",
+          "explanation": "The describe() method computes count, mean, std, min, 25th/50th/75th percentiles, and max for all numeric columns. The IQR (interquartile range) is the difference between Q3 and Q1 and measures the spread of the middle 50% of data, which is useful for identifying outliers."
+        },
+        {
+          "title": "Categorical Analysis with value_counts()",
+          "code": "import pandas as pd\n\ndata = {\n    'department': ['Engineering', 'Marketing', 'Engineering', 'HR', 'Marketing',\n                   'Engineering', 'HR', 'Engineering', 'Marketing', 'Finance'],\n    'level': ['Junior', 'Senior', 'Mid', 'Junior', 'Mid',\n              'Senior', 'Mid', 'Junior', 'Senior', 'Junior']\n}\ndf = pd.DataFrame(data)\n\n# Value counts for department\nprint(\"Department Distribution:\")\ncounts = df['department'].value_counts()\nfor dept, count in counts.items():\n    pct = count / len(df) * 100\n    print(f\"  {dept}: {count} ({pct:.0f}%)\")\n\nprint()\n\n# Cross-tabulation\nprint(\"Department x Level:\")\nct = pd.crosstab(df['department'], df['level'])\nfor dept in ct.index:\n    parts = [f\"{lvl}={ct.loc[dept, lvl]}\" for lvl in ct.columns]\n    print(f\"  {dept}: {', '.join(parts)}\")",
+          "output": "Department Distribution:\n  Engineering: 4 (40%)\n  Marketing: 3 (30%)\n  HR: 2 (20%)\n  Finance: 1 (10%)\n\nDepartment x Level:\n  Engineering: Junior=2, Mid=1, Senior=1\n  Finance: Junior=1, Mid=0, Senior=0\n  HR: Junior=1, Mid=1, Senior=0\n  Marketing: Junior=0, Mid=1, Senior=2",
+          "explanation": "value_counts() sorts categories by frequency, making it easy to spot dominant and rare categories. Cross-tabulation reveals how two categorical variables interact, which is essential for understanding relationships in categorical data."
+        },
+        {
+          "title": "Missing Data Assessment",
+          "code": "import pandas as pd\nimport numpy as np\n\ndata = {\n    'name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank'],\n    'age': [25, np.nan, 35, 28, np.nan, 40],\n    'salary': [50000, 65000, np.nan, 55000, 72000, np.nan],\n    'department': ['Eng', 'Mkt', 'Eng', None, 'Mkt', 'HR']\n}\ndf = pd.DataFrame(data)\n\n# Missing value summary\nprint(\"Missing Values Report:\")\nprint(f\"  Total cells: {df.size}\")\nprint(f\"  Missing cells: {df.isnull().sum().sum()}\")\nprint(f\"  Missing percentage: {df.isnull().sum().sum() / df.size * 100:.1f}%\")\nprint()\n\n# Per-column missing\nprint(\"Per Column:\")\nfor col in df.columns:\n    missing = df[col].isnull().sum()\n    pct = missing / len(df) * 100\n    print(f\"  {col}: {missing} missing ({pct:.1f}%)\")\nprint()\n\n# Rows with any missing value\nrows_with_missing = df.isnull().any(axis=1).sum()\nprint(f\"Rows with missing data: {rows_with_missing}/{len(df)}\")",
+          "output": "Missing Values Report:\n  Total cells: 24\n  Missing cells: 5\n  Missing percentage: 20.8%\n\nPer Column:\n  name: 0 missing (0.0%)\n  age: 2 missing (33.3%)\n  salary: 2 missing (33.3%)\n  department: 1 missing (16.7%)\n\nRows with missing data: 4/6",
+          "explanation": "A thorough missing data assessment checks both column-level and row-level missingness. High missing percentages in a column may warrant dropping it entirely, while sporadic missing values might be imputed. Understanding the pattern of missingness (random vs systematic) is crucial for choosing the right handling strategy."
+        }
+      ],
+      "notes": [
+        "Always start EDA by checking shape, dtypes, and head/tail of the dataset before any computation.",
+        "The describe() method only covers numeric columns by default; use describe(include='all') to include categorical columns.",
+        "Missing data patterns matter: MCAR (Missing Completely At Random), MAR (Missing At Random), and MNAR (Missing Not At Random) require different handling strategies.",
+        "Document your EDA findings as you go -- this helps communicate insights to stakeholders and your future self."
+      ],
+      "commonPitfalls": [
+        "Skipping the data type check and assuming all numeric-looking columns are actually stored as numbers. String columns with numeric values will not work with describe().",
+        "Looking only at mean and ignoring median/IQR. Skewed distributions make the mean misleading, and you need the full picture from describe().",
+        "Not checking for duplicate rows early in the analysis, which can inflate counts and bias summary statistics."
+      ],
+      "interviewTips": [
+        "When asked 'How would you approach a new dataset?', describe a systematic EDA workflow: shape, types, summary stats, missing values, distributions, correlations, and then hypothesis formation.",
+        "Interviewers value analysts who check data quality before jumping to modeling. Always mention checking for nulls, duplicates, and type mismatches as your first steps.",
+        "Be ready to explain the difference between describe() output metrics: mean vs median (50%), std vs IQR, and when each is more appropriate for understanding data spread."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "eda-ex-01",
+        "title": "Build a Data Profile Report",
+        "description": "Create a function that takes a dictionary representing a dataset and prints a profile report including: number of records, number of fields, each field's type, and count of missing (None) values per field.",
+        "starterCode": "data = {\n    'name': ['Alice', 'Bob', None, 'Diana'],\n    'age': [25, None, 35, 28],\n    'score': [88.5, 92.0, 76.5, None]\n}\n\n# Your code: build a profile report\n# Print number of records, fields, and per-field info",
+        "solution": "data = {\n    'name': ['Alice', 'Bob', None, 'Diana'],\n    'age': [25, None, 35, 28],\n    'score': [88.5, 92.0, 76.5, None]\n}\n\nnum_records = len(list(data.values())[0])\nnum_fields = len(data)\n\nprint(f\"Records: {num_records}\")\nprint(f\"Fields: {num_fields}\")\nprint()\nfor field, values in data.items():\n    missing = sum(1 for v in values if v is None)\n    non_none = [v for v in values if v is not None]\n    if non_none and isinstance(non_none[0], str):\n        dtype = \"string\"\n    elif non_none and isinstance(non_none[0], float):\n        dtype = \"float\"\n    else:\n        dtype = \"integer\"\n    print(f\"{field}: type={dtype}, missing={missing}\")",
+        "expectedOutput": "Records: 4\nFields: 3\n\nname: type=string, missing=1\nage: type=integer, missing=1\nscore: type=float, missing=1",
+        "hints": [
+          "Use len() on any column's value list to get the number of records.",
+          "Check isinstance() on non-None values to determine the field type.",
+          "Count None values using a list comprehension or sum with a generator expression."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "eda-ex-02",
+        "title": "Compute Summary Statistics from Scratch",
+        "description": "Given a list of numeric values (with possible None entries), compute and print the count of valid values, mean, minimum, maximum, and the range (max - min). Filter out None values before computing.",
+        "starterCode": "values = [23, 45, None, 67, 12, None, 89, 34, 56, 78]\n\n# Your code: compute and print summary statistics\n# Filter out None values first",
+        "solution": "values = [23, 45, None, 67, 12, None, 89, 34, 56, 78]\n\nclean = [v for v in values if v is not None]\ncount = len(clean)\nmean = sum(clean) / count\nmin_val = min(clean)\nmax_val = max(clean)\nval_range = max_val - min_val\n\nprint(f\"Count: {count}\")\nprint(f\"Mean: {mean:.1f}\")\nprint(f\"Min: {min_val}\")\nprint(f\"Max: {max_val}\")\nprint(f\"Range: {val_range}\")",
+        "expectedOutput": "Count: 8\nMean: 50.5\nMin: 12\nMax: 89\nRange: 77",
+        "hints": [
+          "Use a list comprehension to filter out None values: [v for v in values if v is not None].",
+          "The mean is sum divided by count. Use :.1f to format to one decimal place.",
+          "Range is simply max - min."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "eda-ex-03",
+        "title": "Frequency Distribution Analysis",
+        "description": "Given a list of department names, compute the frequency of each department, sort by count descending, and print each department with its count and percentage of total.",
+        "starterCode": "departments = [\n    'Engineering', 'Marketing', 'Engineering', 'HR',\n    'Marketing', 'Engineering', 'Finance', 'HR',\n    'Engineering', 'Marketing', 'Finance', 'Engineering'\n]\n\n# Your code: compute and display frequency distribution",
+        "solution": "departments = [\n    'Engineering', 'Marketing', 'Engineering', 'HR',\n    'Marketing', 'Engineering', 'Finance', 'HR',\n    'Engineering', 'Marketing', 'Finance', 'Engineering'\n]\n\ntotal = len(departments)\ncounts = {}\nfor dept in departments:\n    counts[dept] = counts.get(dept, 0) + 1\n\nsorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)\n\nprint(\"Frequency Distribution:\")\nfor dept, count in sorted_counts:\n    pct = count / total * 100\n    print(f\"  {dept}: {count} ({pct:.1f}%)\") ",
+        "expectedOutput": "Frequency Distribution:\n  Engineering: 5 (41.7%)\n  Marketing: 3 (25.0%)\n  HR: 2 (16.7%)\n  Finance: 2 (16.7%)",
+        "hints": [
+          "Use a dictionary to count occurrences with dict.get(key, 0) + 1.",
+          "Sort the dictionary items by value in descending order using sorted() with a lambda key.",
+          "Calculate percentage as count / total * 100 and format with :.1f for one decimal place."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "outlier-detection",
+    "sectionId": "exploratory-data-analysis",
+    "orderIndex": 1,
+    "title": "Outlier Detection & Handling",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["IQR method", "z-score", "outlier impact", "handling outliers"],
+    "content": {
+      "explanation": "Outliers are data points that significantly deviate from the overall pattern of a dataset. They can arise from measurement errors, data entry mistakes, or represent genuine extreme values in the population. Identifying and appropriately handling outliers is one of the most important steps in data analysis because they can dramatically skew summary statistics, distort model training, and lead to misleading conclusions.\n\nThe Interquartile Range (IQR) method is one of the most widely used approaches for outlier detection. It defines outliers as values that fall below Q1 - 1.5*IQR or above Q3 + 1.5*IQR, where Q1 and Q3 are the 25th and 75th percentiles respectively. This method is robust because it relies on the median-based spread rather than the mean, making it resistant to the very outliers it is trying to detect.\n\nThe z-score method measures how many standard deviations a data point is from the mean. Values with an absolute z-score greater than 3 (or sometimes 2) are typically considered outliers. While simpler to compute, this method is less robust than IQR because the mean and standard deviation themselves are affected by outliers, potentially masking extreme values in heavily skewed data.\n\nHandling outliers requires domain knowledge and careful judgment. Common strategies include removing them (when they are clearly erroneous), capping or winsorizing them (replacing with boundary values), transforming the data (log or square root transforms reduce the effect of extreme values), or using robust statistical methods that are inherently less sensitive to outliers. The choice depends on whether the outliers represent errors or genuine extreme observations.",
+      "codeExamples": [
+        {
+          "title": "IQR Method for Outlier Detection",
+          "code": "import numpy as np\n\ndata = [12, 15, 14, 10, 13, 100, 11, 14, 13, 12, 15, 14, -20, 13, 11]\n\narr = np.array(data)\nq1 = np.percentile(arr, 25)\nq3 = np.percentile(arr, 75)\niqr = q3 - q1\nlower_bound = q1 - 1.5 * iqr\nupper_bound = q3 + 1.5 * iqr\n\nprint(f\"Q1: {q1}, Q3: {q3}, IQR: {iqr}\")\nprint(f\"Lower bound: {lower_bound}\")\nprint(f\"Upper bound: {upper_bound}\")\nprint()\n\noutliers = arr[(arr < lower_bound) | (arr > upper_bound)]\nprint(f\"Outliers found: {outliers.tolist()}\")\nprint(f\"Clean data points: {len(arr) - len(outliers)}\")",
+          "output": "Q1: 12.0, Q3: 14.5, IQR: 2.5\nLower bound: 8.25\nUpper bound: 18.25\n\nOutliers found: [100, -20]\nClean data points: 13",
+          "explanation": "The IQR method identifies 100 and -20 as outliers since they fall outside the [8.25, 18.25] bounds. This approach is robust because Q1, Q3, and IQR are based on percentiles rather than the mean, so existing outliers do not distort the detection thresholds."
+        },
+        {
+          "title": "Z-Score Method for Outlier Detection",
+          "code": "import numpy as np\n\ndata = [45, 47, 50, 52, 48, 200, 46, 51, 49, 47, 50, 48, 53, 46, 51]\n\narr = np.array(data, dtype=float)\nmean = np.mean(arr)\nstd = np.std(arr)\n\nprint(f\"Mean: {mean:.2f}\")\nprint(f\"Std Dev: {std:.2f}\")\nprint()\n\nz_scores = (arr - mean) / std\nthreshold = 3.0\n\nprint(\"Z-scores for each value:\")\nfor val, z in zip(data, z_scores):\n    flag = \" <-- OUTLIER\" if abs(z) > threshold else \"\"\n    if abs(z) > 2.0:\n        print(f\"  {val}: z={z:.2f}{flag}\")\n\noutlier_count = np.sum(np.abs(z_scores) > threshold)\nprint(f\"\\nOutliers (|z| > {threshold}): {outlier_count}\")",
+          "output": "Mean: 58.87\nStd Dev: 38.90\n\nZ-scores for each value:\n  200: z=3.63 <-- OUTLIER\n\nOutliers (|z| > 3.0): 1",
+          "explanation": "The z-score method standardizes each value by subtracting the mean and dividing by the standard deviation. Values beyond 3 standard deviations from the mean are flagged as outliers. Only values with |z| > 2.0 are printed to keep the output focused on potentially problematic data points."
+        },
+        {
+          "title": "Impact of Outliers on Statistics",
+          "code": "import numpy as np\n\n# Dataset with an outlier\nwith_outlier = [25, 28, 30, 27, 26, 29, 31, 28, 200, 27]\nwithout_outlier = [25, 28, 30, 27, 26, 29, 31, 28, 27]\n\nprint(\"With outlier (200):\")\nprint(f\"  Mean: {np.mean(with_outlier):.1f}\")\nprint(f\"  Median: {np.median(with_outlier):.1f}\")\nprint(f\"  Std Dev: {np.std(with_outlier):.1f}\")\nprint()\n\nprint(\"Without outlier:\")\nprint(f\"  Mean: {np.mean(without_outlier):.1f}\")\nprint(f\"  Median: {np.median(without_outlier):.1f}\")\nprint(f\"  Std Dev: {np.std(without_outlier):.1f}\")\nprint()\n\nmean_diff = np.mean(with_outlier) - np.mean(without_outlier)\nprint(f\"Mean shifted by: {mean_diff:.1f}\")\nprint(f\"Median shifted by: {np.median(with_outlier) - np.median(without_outlier):.1f}\")",
+          "output": "With outlier (200):\n  Mean: 45.1\n  Median: 28.0\n  Std Dev: 51.3\n\nWithout outlier:\n  Mean: 27.9\n  Median: 28.0\n  Std Dev: 1.7\n\nMean shifted by: 17.2\nMedian shifted by: 0.0",
+          "explanation": "A single outlier (200) inflated the mean from 27.9 to 45.1 and the standard deviation from 1.7 to 51.3. The median remained at 28.0, demonstrating why the median is considered a robust measure of central tendency. This is why EDA should always report both mean and median."
+        },
+        {
+          "title": "Capping (Winsorizing) Outliers",
+          "code": "import numpy as np\n\ndata = [10, 12, 11, 13, 150, 14, 10, 12, -30, 11, 13, 12]\narr = np.array(data, dtype=float)\n\nq1 = np.percentile(arr, 25)\nq3 = np.percentile(arr, 75)\niqr = q3 - q1\nlower = q1 - 1.5 * iqr\nupper = q3 + 1.5 * iqr\n\nprint(f\"Bounds: [{lower:.1f}, {upper:.1f}]\")\nprint(f\"Before capping: mean={np.mean(arr):.1f}, std={np.std(arr):.1f}\")\n\ncapped = np.clip(arr, lower, upper)\nprint(f\"After capping:  mean={np.mean(capped):.1f}, std={np.std(capped):.1f}\")\nprint()\n\nchanged = np.sum(arr != capped)\nprint(f\"Values capped: {changed}\")",
+          "output": "Bounds: [6.75, 17.0]\nBefore capping: mean=19.8, std=40.3\nAfter capping:  mean=12.0, std=2.2\n\nValues capped: 2",
+          "explanation": "Winsorizing replaces outliers with the nearest boundary value instead of removing them. The value 150 is capped to 17.0 and -30 is capped to 6.75. This preserves the dataset size while eliminating the distorting effect of extreme values, making it a good choice when you cannot afford to lose data points."
+        }
+      ],
+      "notes": [
+        "The 1.5*IQR rule is a convention, not a law. Some analyses use 2.0*IQR or 3.0*IQR for stricter outlier definitions.",
+        "Z-score outlier detection assumes approximately normal data. For heavily skewed distributions, use the IQR method or modified z-scores instead.",
+        "Always investigate outliers before removing them. They may represent the most interesting or valuable data points in your analysis.",
+        "Robust statistics (median, MAD, trimmed mean) are less affected by outliers and should be reported alongside traditional measures."
+      ],
+      "commonPitfalls": [
+        "Blindly removing all outliers without investigating whether they are genuine extreme values or data errors. In financial data, extreme values often represent real market events.",
+        "Using the z-score method on skewed data, where the mean and standard deviation are already distorted by the outliers you are trying to detect.",
+        "Applying the same outlier threshold across all features without considering the distribution characteristics of each individual variable."
+      ],
+      "interviewTips": [
+        "When asked about outlier detection, explain both IQR and z-score methods and clarify when each is appropriate. IQR is more robust; z-score assumes normality.",
+        "Interviewers often ask 'Should you always remove outliers?' The correct answer is no -- investigate first, understand the domain context, and choose the appropriate handling strategy (remove, cap, transform, or keep).",
+        "Be ready to discuss how outliers affect different algorithms differently: linear regression is very sensitive, while tree-based models (Random Forest, XGBoost) are naturally robust to outliers."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "outlier-ex-01",
+        "title": "IQR Outlier Detector",
+        "description": "Given a list of temperatures, use the IQR method to find and print all outliers. Print the Q1, Q3, IQR, bounds, and each outlier value.",
+        "starterCode": "temperatures = [22, 24, 23, 21, 25, 60, 22, 24, 23, -10, 25, 21, 24, 22]\n\n# Your code: detect outliers using IQR method\n# Print Q1, Q3, IQR, bounds, and outlier values",
+        "solution": "temperatures = [22, 24, 23, 21, 25, 60, 22, 24, 23, -10, 25, 21, 24, 22]\n\nsorted_temps = sorted(temperatures)\nn = len(sorted_temps)\n\nmid = n // 2\nif n % 2 == 0:\n    lower_half = sorted_temps[:mid]\n    upper_half = sorted_temps[mid:]\nelse:\n    lower_half = sorted_temps[:mid]\n    upper_half = sorted_temps[mid+1:]\n\ndef median_of(lst):\n    m = len(lst)\n    if m % 2 == 0:\n        return (lst[m//2 - 1] + lst[m//2]) / 2\n    return lst[m//2]\n\nq1 = median_of(lower_half)\nq3 = median_of(upper_half)\niqr = q3 - q1\nlower_bound = q1 - 1.5 * iqr\nupper_bound = q3 + 1.5 * iqr\n\nprint(f\"Q1: {q1}\")\nprint(f\"Q3: {q3}\")\nprint(f\"IQR: {iqr}\")\nprint(f\"Lower bound: {lower_bound}\")\nprint(f\"Upper bound: {upper_bound}\")\n\noutliers = [t for t in temperatures if t < lower_bound or t > upper_bound]\nprint(f\"Outliers: {outliers}\")",
+        "expectedOutput": "Q1: 22\nQ3: 24\nIQR: 2\nLower bound: 19.0\nUpper bound: 27.0\nOutliers: [60, -10]",
+        "hints": [
+          "Sort the data first, then split into lower and upper halves to find Q1 and Q3.",
+          "IQR = Q3 - Q1. Lower bound = Q1 - 1.5*IQR, Upper bound = Q3 + 1.5*IQR.",
+          "Any value below lower_bound or above upper_bound is an outlier."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "outlier-ex-02",
+        "title": "Z-Score Calculator",
+        "description": "Compute the z-score for each value in a dataset and identify values with |z| > 2 as potential outliers. Print each value with its z-score and whether it is an outlier.",
+        "starterCode": "scores = [85, 90, 88, 92, 87, 150, 89, 91, 86, 88]\n\n# Your code: compute z-scores and identify outliers (|z| > 2)",
+        "solution": "scores = [85, 90, 88, 92, 87, 150, 89, 91, 86, 88]\n\nmean = sum(scores) / len(scores)\nvariance = sum((x - mean) ** 2 for x in scores) / len(scores)\nstd = variance ** 0.5\n\nprint(f\"Mean: {mean:.1f}\")\nprint(f\"Std Dev: {std:.1f}\")\nprint()\n\nfor val in scores:\n    z = (val - mean) / std\n    status = \"OUTLIER\" if abs(z) > 2 else \"normal\"\n    print(f\"Value: {val}, z-score: {z:.2f}, {status}\")",
+        "expectedOutput": "Mean: 94.6\nStd Dev: 18.6\n\nValue: 85, z-score: -0.52, normal\nValue: 90, z-score: -0.25, normal\nValue: 88, z-score: -0.36, normal\nValue: 92, z-score: -0.14, normal\nValue: 87, z-score: -0.41, normal\nValue: 150, z-score: 2.98, OUTLIER\nValue: 89, z-score: -0.30, normal\nValue: 91, z-score: -0.19, normal\nValue: 86, z-score: -0.46, normal\nValue: 88, z-score: -0.36, normal",
+        "hints": [
+          "Mean = sum / count. Standard deviation = sqrt(sum of squared differences from mean / count).",
+          "Z-score = (value - mean) / std_dev.",
+          "A value is an outlier if abs(z-score) > 2."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "outlier-ex-03",
+        "title": "Compare Before and After Outlier Removal",
+        "description": "Given a dataset, identify outliers using the IQR method, remove them, and print the mean and median both before and after removal to show the impact.",
+        "starterCode": "data = [50, 52, 48, 51, 49, 300, 50, 53, 47, 51, 48, 52]\n\n# Your code: show statistics before and after removing IQR outliers",
+        "solution": "data = [50, 52, 48, 51, 49, 300, 50, 53, 47, 51, 48, 52]\n\ndef get_median(lst):\n    s = sorted(lst)\n    n = len(s)\n    if n % 2 == 0:\n        return (s[n//2 - 1] + s[n//2]) / 2\n    return s[n//2]\n\ndef get_mean(lst):\n    return sum(lst) / len(lst)\n\nprint(f\"Before removal (n={len(data)}):\")\nprint(f\"  Mean: {get_mean(data):.1f}\")\nprint(f\"  Median: {get_median(data):.1f}\")\n\nsorted_data = sorted(data)\nn = len(sorted_data)\nlower_half = sorted_data[:n//2]\nupper_half = sorted_data[n//2:]\nq1 = get_median(lower_half)\nq3 = get_median(upper_half)\niqr = q3 - q1\nlower_bound = q1 - 1.5 * iqr\nupper_bound = q3 + 1.5 * iqr\n\nclean = [x for x in data if lower_bound <= x <= upper_bound]\n\nprint(f\"\\nAfter removal (n={len(clean)}):\")\nprint(f\"  Mean: {get_mean(clean):.1f}\")\nprint(f\"  Median: {get_median(clean):.1f}\")",
+        "expectedOutput": "Before removal (n=12):\n  Mean: 70.9\n  Median: 50.5\n\nAfter removal (n=11):\n  Mean: 50.1\n  Median: 50.0",
+        "hints": [
+          "First compute mean and median of the original data.",
+          "Use IQR method to identify outliers, then filter them out.",
+          "Compute mean and median again on the clean data and compare."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "feature-analysis",
+    "sectionId": "exploratory-data-analysis",
+    "orderIndex": 2,
+    "title": "Feature Analysis & Distributions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["feature types", "cardinality", "value distributions", "feature importance"],
+    "content": {
+      "explanation": "Feature analysis is the process of examining individual variables in a dataset to understand their characteristics, distributions, and potential usefulness for analysis or modeling. Each feature (column) has properties like data type, cardinality (number of unique values), distribution shape, and relationship strength with other features. Understanding these properties is essential for making informed decisions about feature engineering, selection, and preprocessing.\n\nFeatures are broadly categorized as numeric (continuous or discrete) or categorical (nominal or ordinal). Continuous features like temperature or salary can take any value within a range, while discrete features like number of children take only integer values. Nominal categorical features like color or department have no inherent order, whereas ordinal features like education level or satisfaction rating have a meaningful sequence.\n\nCardinality -- the number of distinct values a feature takes -- has significant implications for analysis and modeling. Low-cardinality categorical features (e.g., gender with 2 values) are easy to encode and analyze. High-cardinality features (e.g., user IDs with millions of values) require special handling such as frequency encoding, target encoding, or hashing. Numeric features with very low cardinality might actually be better treated as categorical.\n\nValue distribution analysis reveals the shape of your data: whether it is normally distributed, skewed, bimodal, or uniform. Skewness and kurtosis are quantitative measures of distribution shape. Positively skewed data (long right tail) is common in financial datasets, while negatively skewed data appears in test scores near maximum. Understanding distributions guides your choice of summary statistics, visualization methods, and machine learning algorithms.",
+      "codeExamples": [
+        {
+          "title": "Feature Type Classification",
+          "code": "import pandas as pd\nimport numpy as np\n\ndata = {\n    'age': [25, 30, 35, 28, 32],\n    'salary': [50000.50, 65000.75, 80000.00, 55000.25, 72000.00],\n    'department': ['Eng', 'Mkt', 'Eng', 'HR', 'Mkt'],\n    'rating': [1, 2, 3, 2, 3],\n    'employee_id': ['E001', 'E002', 'E003', 'E004', 'E005']\n}\ndf = pd.DataFrame(data)\n\nprint(\"Feature Classification:\")\nfor col in df.columns:\n    dtype = df[col].dtype\n    nunique = df[col].nunique()\n    ratio = nunique / len(df)\n    \n    if dtype == 'object':\n        if ratio > 0.8:\n            ftype = \"Identifier (high cardinality)\"\n        else:\n            ftype = \"Categorical (nominal)\"\n    elif dtype in ['int64', 'float64']:\n        if nunique <= 5:\n            ftype = \"Categorical (ordinal/discrete)\"\n        else:\n            ftype = \"Numeric (continuous)\"\n    else:\n        ftype = \"Unknown\"\n    \n    print(f\"  {col}: {ftype} (unique={nunique}, dtype={dtype})\")",
+          "output": "Feature Classification:\n  age: Numeric (continuous) (unique=5, dtype=int64)\n  salary: Numeric (continuous) (unique=5, dtype=float64)\n  department: Categorical (nominal) (unique=3, dtype=object)\n  rating: Categorical (ordinal/discrete) (unique=3, dtype=int64)\n  employee_id: Identifier (high cardinality) (unique=5, dtype=object)",
+          "explanation": "This classifier uses dtype and cardinality ratio to determine feature types. High unique ratio in string columns suggests identifiers. Low unique counts in numeric columns suggest discrete/ordinal features. This classification guides how each feature should be processed and encoded."
+        },
+        {
+          "title": "Cardinality Analysis",
+          "code": "import pandas as pd\n\ndata = {\n    'gender': ['M', 'F', 'M', 'F', 'M', 'F', 'M', 'M', 'F', 'M'],\n    'city': ['NYC', 'LA', 'NYC', 'Chicago', 'LA', 'NYC', 'Boston', 'NYC', 'LA', 'Chicago'],\n    'user_id': ['U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'U7', 'U8', 'U9', 'U10'],\n    'score': [85, 92, 78, 88, 95, 82, 90, 87, 91, 84]\n}\ndf = pd.DataFrame(data)\n\nprint(\"Cardinality Report:\")\nprint(f\"{'Column':<12} {'Unique':>6} {'Total':>6} {'Ratio':>8} {'Level':<15}\")\nprint(\"-\" * 50)\n\nfor col in df.columns:\n    nunique = df[col].nunique()\n    total = len(df)\n    ratio = nunique / total\n    \n    if ratio <= 0.05:\n        level = \"Very Low\"\n    elif ratio <= 0.2:\n        level = \"Low\"\n    elif ratio <= 0.5:\n        level = \"Medium\"\n    elif ratio < 1.0:\n        level = \"High\"\n    else:\n        level = \"Unique (ID)\"\n    \n    print(f\"{col:<12} {nunique:>6} {total:>6} {ratio:>8.2f} {level:<15}\")",
+          "output": "Cardinality Report:\nColumn       Unique  Total    Ratio Level          \n--------------------------------------------------\ngender            2     10     0.20 Low            \ncity              4     10     0.40 Medium         \nuser_id          10     10     1.00 Unique (ID)    \nscore            10     10     1.00 Unique (ID)    ",
+          "explanation": "Cardinality analysis reveals the diversity of values in each column. Features with very low cardinality (like gender) are easy to one-hot encode. Features with cardinality equal to dataset size (like user_id) are identifiers and usually should not be used as model features."
+        },
+        {
+          "title": "Distribution Shape Analysis",
+          "code": "import numpy as np\n\ndef analyze_distribution(name, data):\n    arr = np.array(data, dtype=float)\n    n = len(arr)\n    mean = np.mean(arr)\n    median = np.median(arr)\n    std = np.std(arr)\n    \n    # Skewness (Fisher's formula)\n    skew = np.mean(((arr - mean) / std) ** 3)\n    \n    # Kurtosis (excess)\n    kurt = np.mean(((arr - mean) / std) ** 4) - 3\n    \n    if abs(skew) < 0.5:\n        shape = \"Symmetric\"\n    elif skew > 0:\n        shape = \"Right-skewed\"\n    else:\n        shape = \"Left-skewed\"\n    \n    print(f\"{name}:\")\n    print(f\"  Mean: {mean:.1f}, Median: {median:.1f}\")\n    print(f\"  Skewness: {skew:.2f} ({shape})\")\n    print(f\"  Kurtosis: {kurt:.2f}\")\n\n# Normal-ish data\nnormal = [48, 49, 50, 50, 51, 51, 52, 50, 49, 51]\nanalyze_distribution(\"Normal-ish\", normal)\nprint()\n\n# Right-skewed (income-like)\nright_skew = [30, 35, 40, 42, 45, 50, 55, 80, 120, 200]\nanalyze_distribution(\"Right-skewed\", right_skew)\nprint()\n\n# Left-skewed (test scores near max)\nleft_skew = [60, 85, 88, 90, 92, 93, 94, 95, 96, 97]\nanalyze_distribution(\"Left-skewed\", left_skew)",
+          "output": "Normal-ish:\n  Mean: 50.1, Median: 50.0\n  Skewness: 0.01 (Symmetric)\n  Kurtosis: -0.63\n\nRight-skewed:\n  Mean: 69.7, Median: 47.5\n  Skewness: 1.46 (Right-skewed)\n  Kurtosis: 1.36\n\nLeft-skewed:\n  Mean: 89.0, Median: 92.5\n  Skewness: -1.27 (Left-skewed)\n  Kurtosis: 1.00",
+          "explanation": "Skewness near 0 indicates symmetric data. Positive skewness means a long right tail (mean > median), common in income data. Negative skewness means a long left tail (mean < median), common in exam scores. Kurtosis measures tail heaviness, with 0 being the normal distribution baseline."
+        },
+        {
+          "title": "Feature Correlation Quick Check",
+          "code": "import numpy as np\n\ndef pearson_corr(x, y):\n    x = np.array(x, dtype=float)\n    y = np.array(y, dtype=float)\n    mx, my = np.mean(x), np.mean(y)\n    num = np.sum((x - mx) * (y - my))\n    den = np.sqrt(np.sum((x - mx)**2) * np.sum((y - my)**2))\n    return num / den if den != 0 else 0\n\n# Features\nyears_exp = [1, 2, 3, 5, 7, 10, 12, 15, 18, 20]\nsalary = [35, 42, 48, 55, 65, 78, 85, 92, 98, 105]\nshoe_size = [9, 10, 8, 11, 9, 10, 12, 8, 11, 10]\n\npairs = [\n    (\"years_exp vs salary\", years_exp, salary),\n    (\"years_exp vs shoe_size\", years_exp, shoe_size),\n    (\"salary vs shoe_size\", salary, shoe_size),\n]\n\nprint(\"Correlation Analysis:\")\nfor name, x, y in pairs:\n    r = pearson_corr(x, y)\n    strength = \"Strong\" if abs(r) > 0.7 else \"Moderate\" if abs(r) > 0.4 else \"Weak\"\n    direction = \"positive\" if r > 0 else \"negative\"\n    print(f\"  {name}: r={r:.3f} ({strength} {direction})\")",
+          "output": "Correlation Analysis:\n  years_exp vs salary: r=0.998 (Strong positive)\n  years_exp vs shoe_size: r=0.132 (Weak positive)\n  salary vs shoe_size: r=0.076 (Weak positive)",
+          "explanation": "Pearson correlation ranges from -1 to 1. The near-perfect correlation between years_exp and salary (0.998) suggests a strong linear relationship. Shoe size has negligible correlation with both, confirming it is not a useful predictor. This type of analysis helps identify which features to keep for modeling."
+        }
+      ],
+      "notes": [
+        "Always classify features by type (numeric continuous, numeric discrete, categorical nominal, categorical ordinal) before analysis.",
+        "High-cardinality categorical features (e.g., zip codes, user IDs) need special encoding strategies like target encoding or feature hashing.",
+        "Skewness and kurtosis provide quantitative measures of distribution shape, but always visually inspect distributions when possible.",
+        "Correlation does not imply causation. Two features may be correlated because they share a common underlying cause."
+      ],
+      "commonPitfalls": [
+        "Treating high-cardinality identifiers (like user_id or email) as meaningful features. These will cause overfitting if used in models.",
+        "Assuming all numeric columns are continuous features. A column with values 1-5 might represent a rating (ordinal categorical) rather than a truly numeric quantity.",
+        "Only checking linear correlation (Pearson) and missing nonlinear relationships. Spearman or mutual information can capture nonlinear associations."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "feature-ex-01",
+        "title": "Feature Type Classifier",
+        "description": "Given a dictionary of feature data, classify each feature as 'numeric', 'categorical', or 'identifier' based on its values. A feature is an identifier if all values are unique strings, categorical if it contains strings with repeats, and numeric if it contains numbers.",
+        "starterCode": "features = {\n    'id': ['A1', 'A2', 'A3', 'A4', 'A5'],\n    'age': [25, 30, 35, 28, 32],\n    'dept': ['Eng', 'HR', 'Eng', 'HR', 'Eng'],\n    'score': [88.5, 92.0, 76.5, 85.0, 91.0]\n}\n\n# Your code: classify each feature",
+        "solution": "features = {\n    'id': ['A1', 'A2', 'A3', 'A4', 'A5'],\n    'age': [25, 30, 35, 28, 32],\n    'dept': ['Eng', 'HR', 'Eng', 'HR', 'Eng'],\n    'score': [88.5, 92.0, 76.5, 85.0, 91.0]\n}\n\nfor name, values in features.items():\n    if all(isinstance(v, str) for v in values):\n        if len(set(values)) == len(values):\n            ftype = \"identifier\"\n        else:\n            ftype = \"categorical\"\n    else:\n        ftype = \"numeric\"\n    print(f\"{name}: {ftype}\")",
+        "expectedOutput": "id: identifier\nage: numeric\ndept: categorical\nscore: numeric",
+        "hints": [
+          "Check if all values are strings using isinstance() and all().",
+          "An identifier has all unique string values (len(set(values)) == len(values)).",
+          "If values are not all strings, classify as numeric."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "feature-ex-02",
+        "title": "Skewness Calculator",
+        "description": "Calculate the skewness of a dataset using the formula: skew = mean((x - mean)^3) / std^3. Print the skewness value and classify it as left-skewed, symmetric, or right-skewed.",
+        "starterCode": "data = [10, 15, 20, 25, 30, 35, 40, 80, 120, 200]\n\n# Your code: compute skewness and classify the distribution",
+        "solution": "data = [10, 15, 20, 25, 30, 35, 40, 80, 120, 200]\n\nn = len(data)\nmean = sum(data) / n\nvariance = sum((x - mean) ** 2 for x in data) / n\nstd = variance ** 0.5\n\nskew = sum((x - mean) ** 3 for x in data) / n / (std ** 3)\n\nif abs(skew) < 0.5:\n    shape = \"Symmetric\"\nelif skew > 0:\n    shape = \"Right-skewed\"\nelse:\n    shape = \"Left-skewed\"\n\nprint(f\"Mean: {mean:.1f}\")\nprint(f\"Std Dev: {std:.1f}\")\nprint(f\"Skewness: {skew:.2f}\")\nprint(f\"Distribution: {shape}\")",
+        "expectedOutput": "Mean: 57.5\nStd Dev: 57.3\nSkewness: 1.51\nDistribution: Right-skewed",
+        "hints": [
+          "First compute the mean and standard deviation.",
+          "Skewness = mean of ((x - mean) / std)^3, which simplifies to sum((x-mean)^3)/n / std^3.",
+          "|skew| < 0.5 is symmetric, positive is right-skewed, negative is left-skewed."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "feature-ex-03",
+        "title": "Correlation Matrix Builder",
+        "description": "Compute the Pearson correlation between all pairs of three numeric features and display a simple correlation matrix.",
+        "starterCode": "features = {\n    'hours_studied': [1, 2, 3, 4, 5, 6, 7, 8],\n    'test_score': [52, 58, 65, 70, 78, 82, 90, 95],\n    'sleep_hours': [8, 7, 7, 6, 6, 5, 5, 4]\n}\n\n# Your code: compute and print a correlation matrix",
+        "solution": "features = {\n    'hours_studied': [1, 2, 3, 4, 5, 6, 7, 8],\n    'test_score': [52, 58, 65, 70, 78, 82, 90, 95],\n    'sleep_hours': [8, 7, 7, 6, 6, 5, 5, 4]\n}\n\ndef pearson(x, y):\n    n = len(x)\n    mx = sum(x) / n\n    my = sum(y) / n\n    num = sum((x[i] - mx) * (y[i] - my) for i in range(n))\n    dx = sum((x[i] - mx) ** 2 for i in range(n)) ** 0.5\n    dy = sum((y[i] - my) ** 2 for i in range(n)) ** 0.5\n    return num / (dx * dy) if dx * dy != 0 else 0\n\nnames = list(features.keys())\nvalues = list(features.values())\n\nheader = f\"{'':>16}\" + \"\".join(f\"{n:>16}\" for n in names)\nprint(header)\nfor i, name_i in enumerate(names):\n    row = f\"{name_i:>16}\"\n    for j, name_j in enumerate(names):\n        r = pearson(values[i], values[j])\n        row += f\"{r:>16.3f}\"\n    print(row)",
+        "expectedOutput": "                   hours_studied      test_score     sleep_hours\n   hours_studied           1.000           0.999          -0.980\n      test_score           0.999           1.000          -0.970\n     sleep_hours          -0.980          -0.970           1.000",
+        "hints": [
+          "Pearson correlation: sum((xi-mx)*(yi-my)) / (sqrt(sum((xi-mx)^2)) * sqrt(sum((yi-my)^2))).",
+          "The diagonal of the correlation matrix is always 1.000 (each feature correlates perfectly with itself).",
+          "Use string formatting with :>16 for aligned column output."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "data-quality-assessment",
+    "sectionId": "exploratory-data-analysis",
+    "orderIndex": 3,
+    "title": "Data Quality Assessment",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["completeness", "consistency", "accuracy", "data quality metrics"],
+    "content": {
+      "explanation": "Data quality assessment is the systematic process of evaluating datasets across multiple dimensions to determine their fitness for a specific purpose. Poor data quality is one of the most common reasons analytics projects fail, and studies consistently show that data scientists spend 60-80% of their time cleaning and preparing data. A structured quality assessment framework helps prioritize cleaning efforts and quantify the overall reliability of your dataset.\n\nCompleteness measures the proportion of non-missing values in the dataset. While some missingness is inevitable, the pattern and extent of missing data matter enormously. A column missing 5% of values randomly is very different from one where all missing values come from a specific demographic group. Completeness scores should be computed at both the column level and the row level to understand the full picture.\n\nConsistency checks verify that data values follow expected rules and do not contradict each other. Examples include ensuring that end dates come after start dates, that age values are positive and reasonable, that email addresses follow a valid format, and that related fields agree (e.g., a city matches its stated country). Inconsistencies often indicate data entry errors, system bugs, or integration problems when merging data from multiple sources.\n\nAccuracy refers to how closely data values correspond to reality. While accuracy is harder to assess programmatically than completeness or consistency (since you often do not have ground truth), you can check for values within valid ranges, look for suspicious patterns, and compare against known reference data. Computing a composite data quality score that weights these dimensions helps communicate overall data readiness to stakeholders and track quality improvements over time.",
+      "codeExamples": [
+        {
+          "title": "Completeness Score Calculator",
+          "code": "data = {\n    'name': ['Alice', 'Bob', None, 'Diana', 'Eve'],\n    'email': ['alice@co.com', None, 'charlie@co.com', None, 'eve@co.com'],\n    'age': [25, 30, None, 28, None],\n    'salary': [50000, 65000, 80000, 55000, 72000]\n}\n\nprint(\"Completeness Report:\")\nprint(f\"{'Column':<10} {'Present':>8} {'Missing':>8} {'Score':>8}\")\nprint(\"-\" * 36)\n\ntotal_cells = 0\nmissing_cells = 0\n\nfor col, values in data.items():\n    present = sum(1 for v in values if v is not None)\n    missing = sum(1 for v in values if v is None)\n    score = present / len(values) * 100\n    total_cells += len(values)\n    missing_cells += missing\n    print(f\"{col:<10} {present:>8} {missing:>8} {score:>7.1f}%\")\n\noverall = (total_cells - missing_cells) / total_cells * 100\nprint(\"-\" * 36)\nprint(f\"{'Overall':<10} {total_cells - missing_cells:>8} {missing_cells:>8} {overall:>7.1f}%\")",
+          "output": "Completeness Report:\nColumn      Present  Missing    Score\n------------------------------------\nname              4        1    80.0%\nemail             3        2    60.0%\nage               3        2    60.0%\nsalary            5        0   100.0%\n------------------------------------\nOverall          15        5    75.0%",
+          "explanation": "This report shows completeness at both column and dataset levels. The salary column is fully complete while email and age are only 60% complete. The overall dataset completeness of 75% means one in four cells is missing data, which would need to be addressed before analysis."
+        },
+        {
+          "title": "Consistency Validation Checks",
+          "code": "records = [\n    {'name': 'Alice', 'age': 25, 'start_year': 2020, 'end_year': 2023, 'email': 'alice@company.com'},\n    {'name': 'Bob', 'age': -5, 'start_year': 2019, 'end_year': 2018, 'email': 'bob@co.com'},\n    {'name': 'Charlie', 'age': 200, 'start_year': 2021, 'end_year': 2024, 'email': 'not-an-email'},\n    {'name': 'Diana', 'age': 30, 'start_year': 2018, 'end_year': 2022, 'email': 'diana@corp.com'},\n]\n\ndef validate_record(r):\n    issues = []\n    if r['age'] < 0 or r['age'] > 150:\n        issues.append(f\"invalid age ({r['age']})\")\n    if r['end_year'] < r['start_year']:\n        issues.append(f\"end_year before start_year\")\n    if '@' not in r['email'] or '.' not in r['email'].split('@')[-1]:\n        issues.append(f\"invalid email format\")\n    return issues\n\nprint(\"Consistency Check:\")\ntotal_checks = 0\npassed_checks = 0\n\nfor rec in records:\n    issues = validate_record(rec)\n    checks = 3\n    total_checks += checks\n    passed = checks - len(issues)\n    passed_checks += passed\n    \n    status = \"PASS\" if not issues else \"FAIL\"\n    print(f\"  {rec['name']}: {status}\")\n    for issue in issues:\n        print(f\"    - {issue}\")\n\nprint(f\"\\nConsistency Score: {passed_checks}/{total_checks} ({passed_checks/total_checks*100:.1f}%)\")",
+          "output": "Consistency Check:\n  Alice: PASS\n  Bob: FAIL\n    - invalid age (-5)\n    - end_year before start_year\n  Charlie: FAIL\n    - invalid age (200)\n    - invalid email format\n  Diana: PASS\n\nConsistency Score: 10/12 (83.3%)",
+          "explanation": "Consistency checks validate business rules across fields. Bob has a negative age and an end date before the start date. Charlie has an unrealistic age (200) and an improperly formatted email. These checks are domain-specific and should be designed based on business requirements."
+        },
+        {
+          "title": "Value Range and Validity Checks",
+          "code": "data = {\n    'temperature_c': [22, 25, -300, 30, 28, 999, 24, 27],\n    'percentage': [85, 92, 105, 78, -10, 88, 95, 82],\n    'rating_1_5': [3, 5, 4, 7, 2, 1, 0, 4]\n}\n\nrules = {\n    'temperature_c': (-50, 60),\n    'percentage': (0, 100),\n    'rating_1_5': (1, 5)\n}\n\nprint(\"Value Range Validation:\")\nfor col, values in data.items():\n    low, high = rules[col]\n    valid = sum(1 for v in values if low <= v <= high)\n    invalid = len(values) - valid\n    bad_vals = [v for v in values if v < low or v > high]\n    score = valid / len(values) * 100\n    \n    print(f\"\\n  {col} (valid range: [{low}, {high}]):\")\n    print(f\"    Valid: {valid}/{len(values)} ({score:.0f}%)\")\n    if bad_vals:\n        print(f\"    Invalid values: {bad_vals}\")",
+          "output": "Value Range Validation:\n\n  temperature_c (valid range: [-50, 60]):\n    Valid: 6/8 (75%)\n    Invalid values: [-300, 999]\n\n  percentage (valid range: [0, 100]):\n    Valid: 6/8 (75%)\n    Invalid values: [105, -10]\n\n  rating_1_5 (valid range: [1, 5]):\n    Valid: 6/8 (75%)\n    Invalid values: [7, 0]",
+          "explanation": "Range validation checks whether numeric values fall within physically or logically possible bounds. A temperature of -300C or 999C is clearly erroneous. A percentage above 100 or below 0 violates the definition. These checks catch data entry errors and sensor malfunctions that would corrupt any analysis."
+        },
+        {
+          "title": "Composite Data Quality Score",
+          "code": "data = {\n    'name': ['Alice', 'Bob', None, 'Diana', 'Eve', 'Frank', None, 'Grace'],\n    'age': [25, 30, None, -5, 150, 28, 35, None],\n    'score': [85, 92, 105, 78, 88, None, 95, 82]\n}\n\n# 1. Completeness\ntotal = sum(len(v) for v in data.values())\nmissing = sum(1 for v in data.values() for x in v if x is None)\ncompleteness = (total - missing) / total * 100\n\n# 2. Validity (range checks for numeric fields)\nvalid_checks = 0\nvalid_pass = 0\nrules = {'age': (0, 120), 'score': (0, 100)}\nfor col, (low, high) in rules.items():\n    for v in data[col]:\n        if v is not None:\n            valid_checks += 1\n            if low <= v <= high:\n                valid_pass += 1\nvalidity = valid_pass / valid_checks * 100 if valid_checks > 0 else 100\n\n# 3. Uniqueness (check name field for duplicates)\nnames = [n for n in data['name'] if n is not None]\nuniqueness = len(set(names)) / len(names) * 100 if names else 100\n\n# Composite score (weighted average)\ncomposite = completeness * 0.4 + validity * 0.4 + uniqueness * 0.2\n\nprint(\"Data Quality Scorecard:\")\nprint(f\"  Completeness: {completeness:.1f}%\")\nprint(f\"  Validity:     {validity:.1f}%\")\nprint(f\"  Uniqueness:   {uniqueness:.1f}%\")\nprint(f\"  Composite:    {composite:.1f}%\")\nprint()\nif composite >= 90:\n    print(\"Quality: EXCELLENT\")\nelif composite >= 75:\n    print(\"Quality: GOOD\")\nelif composite >= 60:\n    print(\"Quality: FAIR\")\nelse:\n    print(\"Quality: POOR\")",
+          "output": "Data Quality Scorecard:\n  Completeness: 79.2%\n  Validity:     76.9%\n  Uniqueness:   100.0%\n  Composite:    82.4%\n\nQuality: GOOD",
+          "explanation": "A composite data quality score combines multiple dimensions with business-appropriate weights. Here, completeness and validity are weighted 40% each (most critical for analysis), while uniqueness gets 20%. The overall GOOD rating means the data is usable but needs cleaning in specific areas before production analysis."
+        }
+      ],
+      "notes": [
+        "Data quality is multidimensional: completeness, consistency, accuracy, validity, uniqueness, and timeliness are the standard dimensions.",
+        "Quality thresholds should be defined based on the use case. A recommendation engine may tolerate 10% missing data, but a medical diagnosis system may not.",
+        "Automate data quality checks as part of your data pipeline to catch issues before they affect downstream analysis.",
+        "Always document data quality findings and decisions about how issues were resolved for reproducibility and audit trails."
+      ],
+      "commonPitfalls": [
+        "Only checking for missing values and ignoring other quality dimensions like consistency and validity. A complete but inconsistent dataset is still unreliable.",
+        "Setting arbitrary quality thresholds without considering the specific analysis requirements. Different use cases have different tolerance for imperfect data.",
+        "Not tracking data quality over time. A dataset that was clean at collection may degrade through transformations, merges, or system migrations."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "dq-ex-01",
+        "title": "Completeness Checker",
+        "description": "Write code that computes the completeness percentage for each column and overall in a dataset represented as a dictionary of lists. Print per-column and overall completeness.",
+        "starterCode": "dataset = {\n    'product': ['Laptop', None, 'Phone', 'Tablet', 'Watch'],\n    'price': [999, 599, None, None, 299],\n    'rating': [4.5, 3.8, 4.2, None, 4.0],\n    'stock': [50, 30, 80, 45, 60]\n}\n\n# Your code: compute and print completeness scores",
+        "solution": "dataset = {\n    'product': ['Laptop', None, 'Phone', 'Tablet', 'Watch'],\n    'price': [999, 599, None, None, 299],\n    'rating': [4.5, 3.8, 4.2, None, 4.0],\n    'stock': [50, 30, 80, 45, 60]\n}\n\ntotal_cells = 0\ntotal_present = 0\n\nprint(\"Completeness by Column:\")\nfor col, values in dataset.items():\n    n = len(values)\n    present = sum(1 for v in values if v is not None)\n    total_cells += n\n    total_present += present\n    pct = present / n * 100\n    print(f\"  {col}: {pct:.0f}%\")\n\noverall = total_present / total_cells * 100\nprint(f\"\\nOverall Completeness: {overall:.0f}%\")",
+        "expectedOutput": "Completeness by Column:\n  product: 80%\n  price: 60%\n  rating: 80%\n  stock: 100%\n\nOverall Completeness: 80%",
+        "hints": [
+          "Count non-None values per column using a generator expression with sum().",
+          "Overall completeness is total non-None cells divided by total cells.",
+          "Use :.0f to format percentages as whole numbers."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "dq-ex-02",
+        "title": "Data Validation Rules Engine",
+        "description": "Create a validation engine that checks each record against a set of rules. For each record, print PASS or FAIL with the list of violated rules. At the end, print the overall pass rate.",
+        "starterCode": "records = [\n    {'name': 'Widget A', 'price': 29.99, 'quantity': 100, 'discount': 10},\n    {'name': 'Widget B', 'price': -5.00, 'quantity': 50, 'discount': 80},\n    {'name': 'Widget C', 'price': 49.99, 'quantity': -10, 'discount': 15},\n    {'name': 'Widget D', 'price': 19.99, 'quantity': 200, 'discount': 5},\n]\n\n# Rules:\n# - price must be > 0\n# - quantity must be >= 0\n# - discount must be between 0 and 50 (inclusive)\n\n# Your code: validate each record and compute pass rate",
+        "solution": "records = [\n    {'name': 'Widget A', 'price': 29.99, 'quantity': 100, 'discount': 10},\n    {'name': 'Widget B', 'price': -5.00, 'quantity': 50, 'discount': 80},\n    {'name': 'Widget C', 'price': 49.99, 'quantity': -10, 'discount': 15},\n    {'name': 'Widget D', 'price': 19.99, 'quantity': 200, 'discount': 5},\n]\n\npassed = 0\ntotal = len(records)\n\nprint(\"Validation Results:\")\nfor rec in records:\n    violations = []\n    if rec['price'] <= 0:\n        violations.append(\"price must be > 0\")\n    if rec['quantity'] < 0:\n        violations.append(\"quantity must be >= 0\")\n    if rec['discount'] < 0 or rec['discount'] > 50:\n        violations.append(\"discount must be 0-50\")\n    \n    if not violations:\n        passed += 1\n        print(f\"  {rec['name']}: PASS\")\n    else:\n        print(f\"  {rec['name']}: FAIL\")\n        for v in violations:\n            print(f\"    - {v}\")\n\nprint(f\"\\nPass Rate: {passed}/{total} ({passed/total*100:.0f}%)\")",
+        "expectedOutput": "Validation Results:\n  Widget A: PASS\n  Widget B: FAIL\n    - price must be > 0\n    - discount must be 0-50\n  Widget C: FAIL\n    - quantity must be >= 0\n  Widget D: PASS\n\nPass Rate: 2/4 (50%)",
+        "hints": [
+          "Create an empty violations list for each record and append rule descriptions when checks fail.",
+          "A record passes if its violations list is empty.",
+          "Track the count of passed records for the overall pass rate."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "dq-ex-03",
+        "title": "Composite Quality Score",
+        "description": "Compute a weighted composite data quality score from three dimensions: completeness (weight 0.5), validity (weight 0.3), and uniqueness (weight 0.2). Print each dimension score and the final composite.",
+        "starterCode": "data = {\n    'email': ['a@x.com', 'b@x.com', None, 'invalid', 'c@x.com', 'a@x.com', None, 'd@x.com'],\n    'age': [25, 30, None, -5, 28, 35, 150, 22]\n}\n\n# Rules:\n# Completeness: % of non-None values across all columns\n# Validity: emails must contain '@' and '.'; age must be 0-120 (only check non-None values)\n# Uniqueness: % of unique emails among non-None emails\n\n# Your code: compute each dimension and the composite score",
+        "solution": "data = {\n    'email': ['a@x.com', 'b@x.com', None, 'invalid', 'c@x.com', 'a@x.com', None, 'd@x.com'],\n    'age': [25, 30, None, -5, 28, 35, 150, 22]\n}\n\n# Completeness\ntotal = sum(len(v) for v in data.values())\npresent = sum(1 for v in data.values() for x in v if x is not None)\ncompleteness = present / total * 100\n\n# Validity\nvalid_count = 0\ncheck_count = 0\nfor e in data['email']:\n    if e is not None:\n        check_count += 1\n        if '@' in e and '.' in e.split('@')[-1]:\n            valid_count += 1\nfor a in data['age']:\n    if a is not None:\n        check_count += 1\n        if 0 <= a <= 120:\n            valid_count += 1\nvalidity = valid_count / check_count * 100\n\n# Uniqueness\nemails = [e for e in data['email'] if e is not None]\nuniqueness = len(set(emails)) / len(emails) * 100\n\n# Composite\ncomposite = completeness * 0.5 + validity * 0.3 + uniqueness * 0.2\n\nprint(f\"Completeness: {completeness:.1f}%\")\nprint(f\"Validity: {validity:.1f}%\")\nprint(f\"Uniqueness: {uniqueness:.1f}%\")\nprint(f\"Composite Score: {composite:.1f}%\")",
+        "expectedOutput": "Completeness: 81.2%\nValidity: 76.9%\nUniqueness: 83.3%\nComposite Score: 80.4%",
+        "hints": [
+          "Completeness: count non-None across all columns / total cells.",
+          "Validity: for emails check '@' and '.' in domain; for age check 0 <= age <= 120. Only check non-None values.",
+          "Uniqueness: len(set(emails)) / len(emails) for non-None emails only."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

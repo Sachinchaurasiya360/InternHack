@@ -1,6 +1,9 @@
 import type { Request, Response } from "express";
 import { createJobSchema, updateJobSchema, updateJobStatusSchema, jobQuerySchema } from "./types.validation.js";
 import { JobService } from "./job.service.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("JobController");
 
 export class JobController {
   constructor(private readonly jobService: JobService) {}
@@ -19,7 +22,7 @@ export class JobController {
       const job = await this.jobService.createJob({ ...result.data, recruiterId: req.user.id });
       return res.status(201).json({ message: "Job created successfully", job });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to create job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -30,7 +33,7 @@ export class JobController {
       const data = await this.jobService.getJobs(query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get jobs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -44,7 +47,7 @@ export class JobController {
       const data = await this.jobService.getLandingPageData(slug);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get landing page data", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -63,7 +66,7 @@ export class JobController {
 
       return res.status(200).json({ job });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get job by ID", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -78,7 +81,7 @@ export class JobController {
       const data = await this.jobService.getRecruiterJobs(req.user.id, query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get recruiter jobs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -106,7 +109,7 @@ export class JobController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to update job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -134,7 +137,7 @@ export class JobController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to update job status", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -157,7 +160,7 @@ export class JobController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to delete job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

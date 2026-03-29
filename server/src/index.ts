@@ -31,7 +31,6 @@ import { aptitudeRouter } from "./module/aptitude/aptitude.routes.js";
 import { sqlRouter } from "./module/sql/sql.routes.js";
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
-import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { professorRouter } from "./module/professor/professor.routes.js";
 import { hrContactRouter } from "./module/hr-contact/hr-contact.routes.js";
 import { emailCampaignRouter } from "./module/email-campaign/email-campaign.routes.js";
@@ -39,7 +38,6 @@ import { internshipRouter } from "./module/internship/internship.routes.js";
 import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
-import { universityRouter } from "./module/university/university.routes.js";
 // ── HR Modules ──
 import { rbacRouter } from "./module/rbac/rbac.routes.js";
 import { departmentRouter } from "./module/department/department.routes.js";
@@ -196,7 +194,6 @@ app.use("/api/aptitude", aptitudeRouter);
 app.use("/api/sql", sqlRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
-app.use("/api/hackathons", hackathonRouter);
 app.use("/api/professors", professorRouter);
 app.use("/api/hr-contacts", hrContactRouter);
 app.use("/api/email-campaigns", emailCampaignRouter);
@@ -204,7 +201,6 @@ app.use("/api/internships", internshipRouter);
 app.use("/api/campus-drives", campusDriveRouter);
 app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
-app.use("/api/universities", universityRouter);
 
 // ── InternHack AI Routes ──
 app.use("/api/job-feed", jobFeedRouter);

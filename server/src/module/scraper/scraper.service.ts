@@ -179,8 +179,8 @@ export class ScraperService {
     let created = 0;
     let updated = 0;
 
-    // Process in batches of 50 to avoid oversized transactions
-    const BATCH_SIZE = 50;
+    // Process in batches of 25 to stay within transaction timeout
+    const BATCH_SIZE = 25;
     for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
       const batch = jobs.slice(i, i + BATCH_SIZE);
       const ops: Prisma.PrismaPromise<unknown>[] = [];
@@ -230,7 +230,7 @@ export class ScraperService {
         }
       }
 
-      await prisma.$transaction(ops);
+      await prisma.$transaction(ops, { timeout: 15000 });
     }
 
     return { created, updated };

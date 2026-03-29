@@ -1,0 +1,491 @@
+[
+  {
+    "id": "descriptive-statistics",
+    "sectionId": "statistics-foundations",
+    "orderIndex": 0,
+    "title": "Descriptive Statistics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Mean", "Median", "Mode", "Range", "Variance", "Standard deviation"],
+    "content": {
+      "explanation": "Descriptive statistics are numerical measures that summarize and describe the main features of a dataset. They provide a way to condense large amounts of data into a few meaningful numbers, making it easier to understand patterns, central tendencies, and the spread of data. Descriptive statistics form the bedrock of any data analysis workflow -- before building models or running experiments, you must first understand what your data looks like.\n\nThe three most common measures of central tendency are the mean, median, and mode. The mean (arithmetic average) is calculated by summing all values and dividing by the count. The median is the middle value when data is sorted in order -- if there is an even number of observations, it is the average of the two middle values. The mode is the value that appears most frequently. Each measure has strengths: the mean uses all data points but is sensitive to outliers, the median is robust to outliers, and the mode captures the most common observation.\n\nMeasures of spread (or dispersion) tell you how spread out the data is. The range is the simplest measure: max minus min. Variance measures the average squared deviation from the mean, and standard deviation is its square root. A low standard deviation means data points cluster tightly around the mean, while a high standard deviation indicates wide spread. In Python, the statistics module uses sample variance (dividing by n-1) by default, which is the correct choice for estimating population variance from a sample.\n\nPython's built-in statistics module provides functions like mean(), median(), mode(), variance(), stdev(), and more. For larger datasets or array-based workflows, numpy offers np.mean(), np.median(), np.var(), and np.std(). One critical difference: numpy computes population variance/std by default (ddof=0), while the statistics module computes sample variance/std (dividing by n-1). You can control this in numpy using the ddof parameter.\n\nUnderstanding when to use each statistic is crucial. For symmetric distributions without outliers, the mean is ideal. For skewed data or data with outliers (like income distributions), the median is a better measure of center. The mode is most useful for categorical data or when you need to identify the most common category. In practice, reporting both the mean and median together can reveal skewness in your data.",
+      "codeExamples": [
+        {
+          "title": "Computing Mean, Median, and Mode",
+          "code": "import statistics\n\ndata = [4, 8, 6, 5, 3, 8, 9, 2, 8]\n\nmean_val = statistics.mean(data)\nmedian_val = statistics.median(data)\nmode_val = statistics.mode(data)\n\nprint(f\"Mean: {mean_val}\")\nprint(f\"Median: {median_val}\")\nprint(f\"Mode: {mode_val}\")",
+          "output": "Mean: 5.888888888888889\nMedian: 6\nMode: 8",
+          "explanation": "The mean is 53/9 = 5.889. When sorted [2,3,4,5,6,8,8,8,9], the middle value (5th of 9) is 6. The mode is 8 because it appears three times, more than any other value."
+        },
+        {
+          "title": "Variance and Standard Deviation",
+          "code": "import statistics\n\ndata = [10, 12, 23, 23, 16, 23, 21, 16]\n\nvariance = statistics.variance(data)\nstdev = statistics.stdev(data)\npvariance = statistics.pvariance(data)\npstdev = statistics.pstdev(data)\n\nprint(f\"Sample variance: {variance}\")\nprint(f\"Sample std dev: {round(stdev, 4)}\")\nprint(f\"Population variance: {pvariance}\")\nprint(f\"Population std dev: {round(pstdev, 4)}\")",
+          "output": "Sample variance: 27.428571428571427\nSample std dev: 5.2372\nPopulation variance: 24.0\nPopulation std dev: 4.899",
+          "explanation": "Sample variance divides by n-1 (7), population variance divides by n (8). The mean is 144/8 = 18. Sum of squared deviations = 192. Population variance = 192/8 = 24.0, sample variance = 192/7 = 27.429. Standard deviation is the square root of variance."
+        },
+        {
+          "title": "Range and Quantiles",
+          "code": "import statistics\n\ndata = [15, 20, 35, 40, 50, 55, 60, 70, 80, 95]\n\ndata_range = max(data) - min(data)\nq1 = statistics.quantiles(data, n=4)[0]\nq2 = statistics.quantiles(data, n=4)[1]\nq3 = statistics.quantiles(data, n=4)[2]\niqr = q3 - q1\n\nprint(f\"Range: {data_range}\")\nprint(f\"Q1: {q1}\")\nprint(f\"Q2 (Median): {q2}\")\nprint(f\"Q3: {q3}\")\nprint(f\"IQR: {iqr}\")",
+          "output": "Range: 80\nQ1: 30.0\nQ2 (Median): 52.5\nQ3: 72.5\nIQR: 42.5",
+          "explanation": "The range is 95 - 15 = 80. The quantiles function splits the data into four equal parts. Q1 is the 25th percentile, Q2 is the median, Q3 is the 75th percentile. The interquartile range (IQR) measures the spread of the middle 50% of the data."
+        },
+        {
+          "title": "Using NumPy for Descriptive Statistics",
+          "code": "import numpy as np\n\ndata = np.array([4, 8, 6, 5, 3, 8, 9, 2, 8])\n\nprint(f\"Mean: {np.mean(data)}\")\nprint(f\"Median: {np.median(data)}\")\nprint(f\"Std (population): {round(np.std(data), 4)}\")\nprint(f\"Std (sample): {round(np.std(data, ddof=1), 4)}\")\nprint(f\"Min: {np.min(data)}, Max: {np.max(data)}\")",
+          "output": "Mean: 5.888888888888889\nMedian: 6.0\nStd (population): 2.3779\nStd (sample): 2.5221\nMin: 2, Max: 9",
+          "explanation": "NumPy uses population standard deviation by default (ddof=0). Pass ddof=1 to get sample standard deviation, which matches the statistics module's stdev(). For data analysis, sample std (ddof=1) is typically used when your data is a sample from a larger population."
+        }
+      ],
+      "notes": [
+        "The statistics module's variance() and stdev() compute SAMPLE statistics (n-1 denominator). Use pvariance() and pstdev() for population statistics.",
+        "NumPy's np.var() and np.std() compute POPULATION statistics by default. Pass ddof=1 to get sample statistics.",
+        "The median is resistant to outliers while the mean is not. A dataset like [1, 2, 3, 4, 1000] has mean 202 but median 3.",
+        "For multimodal data, statistics.mode() returns the first mode encountered. Use statistics.multimode() to get all modes."
+      ],
+      "commonPitfalls": [
+        "Confusing population vs sample variance. Use sample variance (n-1) when working with a sample from a larger population, and population variance (n) when you have the entire population.",
+        "Forgetting that numpy defaults to population variance (ddof=0) while the statistics module defaults to sample variance (n-1). This can cause subtle bugs when switching between libraries.",
+        "Using the mean to summarize skewed data. Salary data, for example, is right-skewed -- the median is a better measure of the 'typical' salary."
+      ],
+      "interviewTips": [
+        "When asked 'mean vs median,' explain that mean is sensitive to outliers while median is robust. Give a concrete example: average vs median household income.",
+        "Know the formula: variance = sum of (xi - mean)^2 / (n-1) for sample, / n for population. Standard deviation is the square root of variance.",
+        "If asked about 'five-number summary,' it refers to: minimum, Q1, median, Q3, maximum -- the basis for box plots.",
+        "Be ready to discuss when mode is useful: primarily for categorical data (e.g., most common product purchased) or identifying peaks in distributions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "descriptive-stats-ex1",
+        "title": "Manual Statistics Computation",
+        "description": "Given the dataset [12, 15, 12, 18, 20, 15, 22, 12], compute and print the mean, median, and mode using the statistics module.",
+        "starterCode": "import statistics\n\ndata = [12, 15, 12, 18, 20, 15, 22, 12]\n\n# TODO: Compute mean, median, and mode\n# TODO: Print each on its own line in the format shown",
+        "solution": "import statistics\n\ndata = [12, 15, 12, 18, 20, 15, 22, 12]\n\nmean_val = statistics.mean(data)\nmedian_val = statistics.median(data)\nmode_val = statistics.mode(data)\n\nprint(f\"Mean: {mean_val}\")\nprint(f\"Median: {median_val}\")\nprint(f\"Mode: {mode_val}\")",
+        "expectedOutput": "Mean: 15.75\nMedian: 15.0\nMode: 12",
+        "hints": [
+          "Use statistics.mean(), statistics.median(), and statistics.mode().",
+          "Mean = 126 / 8 = 15.75. Sorted: [12,12,12,15,15,18,20,22], median of even count is average of 4th and 5th values: (15+15)/2 = 15.0.",
+          "Mode is 12 because it appears 3 times."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "descriptive-stats-ex2",
+        "title": "Spread Measures",
+        "description": "For the dataset [5, 10, 15, 20, 25], compute and print the range, sample variance, and sample standard deviation. Round the standard deviation to 2 decimal places.",
+        "starterCode": "import statistics\n\ndata = [5, 10, 15, 20, 25]\n\n# TODO: Compute range (max - min)\n# TODO: Compute sample variance using statistics.variance()\n# TODO: Compute sample standard deviation using statistics.stdev()\n# TODO: Print results as shown in expected output",
+        "solution": "import statistics\n\ndata = [5, 10, 15, 20, 25]\n\ndata_range = max(data) - min(data)\nvar_val = statistics.variance(data)\nstd_val = statistics.stdev(data)\n\nprint(f\"Range: {data_range}\")\nprint(f\"Variance: {var_val}\")\nprint(f\"Std Dev: {round(std_val, 2)}\")",
+        "expectedOutput": "Range: 20\nVariance: 62.5\nStd Dev: 7.91",
+        "hints": [
+          "Range = max - min = 25 - 5 = 20.",
+          "Mean = 75/5 = 15. Squared deviations: 100, 25, 0, 25, 100. Sum = 250. Sample variance = 250/4 = 62.5.",
+          "Standard deviation = sqrt(62.5) = 7.9056... rounded to 7.91."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "descriptive-stats-ex3",
+        "title": "Outlier Impact Analysis",
+        "description": "Given two datasets -- one without an outlier [10, 12, 14, 16, 18] and one with an outlier [10, 12, 14, 16, 100] -- compute and print the mean and median for each to demonstrate outlier sensitivity.",
+        "starterCode": "import statistics\n\nnormal = [10, 12, 14, 16, 18]\nwith_outlier = [10, 12, 14, 16, 100]\n\n# TODO: Compute mean and median for both datasets\n# TODO: Print in the format shown in expected output",
+        "solution": "import statistics\n\nnormal = [10, 12, 14, 16, 18]\nwith_outlier = [10, 12, 14, 16, 100]\n\nprint(f\"Normal - Mean: {statistics.mean(normal)}, Median: {statistics.median(normal)}\")\nprint(f\"Outlier - Mean: {statistics.mean(with_outlier)}, Median: {statistics.median(with_outlier)}\")",
+        "expectedOutput": "Normal - Mean: 14, Median: 14\nOutlier - Mean: 30.4, Median: 14",
+        "hints": [
+          "Normal mean = 70/5 = 14, median = 14 (middle value).",
+          "Outlier mean = 152/5 = 30.4, but median is still 14.",
+          "This shows the median is resistant to outliers while the mean is not."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "probability-basics",
+    "sectionId": "statistics-foundations",
+    "orderIndex": 1,
+    "title": "Probability Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Probability", "Conditional probability", "Bayes theorem", "Independence"],
+    "content": {
+      "explanation": "Probability is the mathematical framework for quantifying uncertainty. It assigns a number between 0 and 1 to events, where 0 means impossible and 1 means certain. In data science, probability underpins everything from statistical inference and hypothesis testing to machine learning algorithms like Naive Bayes and logistic regression. A solid grasp of probability is essential for interpreting model outputs, understanding sampling, and making data-driven decisions.\n\nThe basic probability of an event A is calculated as P(A) = number of favorable outcomes / total number of outcomes. For example, the probability of rolling a 3 on a fair six-sided die is 1/6. The complement rule states P(not A) = 1 - P(A). The addition rule for two events is P(A or B) = P(A) + P(B) - P(A and B), which accounts for the overlap between events. If events are mutually exclusive (they cannot both occur), then P(A and B) = 0 and the formula simplifies to P(A or B) = P(A) + P(B).\n\nConditional probability measures the probability of an event given that another event has already occurred. It is written as P(A|B) and calculated as P(A and B) / P(B). For example, the probability that a card is a king given that it is a face card is P(King|Face card) = P(King and Face card) / P(Face card) = (4/52) / (12/52) = 4/12 = 1/3. Conditional probability is fundamental to understanding how information updates our beliefs.\n\nBayes' theorem provides a way to reverse conditional probabilities. It states: P(A|B) = P(B|A) * P(A) / P(B). This is enormously powerful in practice -- it lets you update the probability of a hypothesis given new evidence. For example, in medical testing, Bayes' theorem helps calculate the probability that a patient actually has a disease given a positive test result, accounting for the test's sensitivity and the disease's prevalence.\n\nTwo events A and B are independent if the occurrence of one does not affect the probability of the other: P(A and B) = P(A) * P(B), or equivalently P(A|B) = P(A). Independence is a crucial concept in statistics -- many statistical tests assume independence of observations. In practice, verifying independence is important: for instance, consecutive stock prices are NOT independent, which is why simple probability models often fail in finance.",
+      "codeExamples": [
+        {
+          "title": "Basic Probability Calculations",
+          "code": "# Probability of events with a standard deck of 52 cards\ntotal_cards = 52\nhearts = 13\nface_cards = 12  # J, Q, K in each of 4 suits\naces = 4\n\np_heart = hearts / total_cards\np_face = face_cards / total_cards\np_ace = aces / total_cards\n\nprint(f\"P(Heart): {round(p_heart, 4)}\")\nprint(f\"P(Face card): {round(p_face, 4)}\")\nprint(f\"P(Ace): {round(p_ace, 4)}\")\nprint(f\"P(Not Ace): {round(1 - p_ace, 4)}\")",
+          "output": "P(Heart): 0.25\nP(Face card): 0.2308\nP(Ace): 0.0769\nP(Not Ace): 0.9231",
+          "explanation": "Basic probability is favorable outcomes divided by total outcomes. P(Heart) = 13/52 = 0.25. The complement rule gives P(Not Ace) = 1 - 4/52 = 48/52 = 0.9231."
+        },
+        {
+          "title": "Addition Rule: P(A or B)",
+          "code": "# P(Heart OR Face card) in a deck of 52\ntotal = 52\nhearts = 13\nface_cards = 12\nheart_face_cards = 3  # J, Q, K of hearts\n\n# P(A or B) = P(A) + P(B) - P(A and B)\np_heart_or_face = (hearts + face_cards - heart_face_cards) / total\n\nprint(f\"Hearts: {hearts}\")\nprint(f\"Face cards: {face_cards}\")\nprint(f\"Heart face cards (overlap): {heart_face_cards}\")\nprint(f\"P(Heart OR Face): {round(p_heart_or_face, 4)}\")",
+          "output": "Hearts: 13\nFace cards: 12\nHeart face cards (overlap): 3\nP(Heart OR Face): 0.4231",
+          "explanation": "There are 13 hearts and 12 face cards, but 3 cards are both (J/Q/K of hearts). Using the addition rule: (13 + 12 - 3)/52 = 22/52 = 0.4231. Without subtracting the overlap, we would double-count those 3 cards."
+        },
+        {
+          "title": "Conditional Probability",
+          "code": "# A bag has 5 red and 3 blue balls\n# Two balls drawn without replacement\n# P(2nd is red | 1st was red)\n\nred = 5\nblue = 3\ntotal = red + blue\n\n# P(1st red)\np_first_red = red / total\n\n# P(2nd red | 1st red) - one red removed\np_second_red_given_first_red = (red - 1) / (total - 1)\n\n# P(both red) = P(1st red) * P(2nd red | 1st red)\np_both_red = p_first_red * p_second_red_given_first_red\n\nprint(f\"P(1st red): {round(p_first_red, 4)}\")\nprint(f\"P(2nd red | 1st red): {round(p_second_red_given_first_red, 4)}\")\nprint(f\"P(both red): {round(p_both_red, 4)}\")",
+          "output": "P(1st red): 0.625\nP(2nd red | 1st red): 0.5714\nP(both red): 0.3571",
+          "explanation": "After drawing a red ball first (5/8), there are 4 red balls left out of 7 total. So P(2nd red | 1st red) = 4/7 = 0.5714. The joint probability is (5/8) * (4/7) = 20/56 = 0.3571."
+        },
+        {
+          "title": "Bayes' Theorem",
+          "code": "# Medical test example\n# Disease prevalence: 1%\n# Test sensitivity (true positive rate): 95%\n# Test specificity (true negative rate): 90%\n\nprevalence = 0.01\nsensitivity = 0.95  # P(positive | disease)\nspecificity = 0.90  # P(negative | no disease)\n\n# P(positive) = P(pos|disease)*P(disease) + P(pos|no disease)*P(no disease)\np_positive = sensitivity * prevalence + (1 - specificity) * (1 - prevalence)\n\n# P(disease | positive) = P(positive | disease) * P(disease) / P(positive)\np_disease_given_positive = (sensitivity * prevalence) / p_positive\n\nprint(f\"P(positive test): {round(p_positive, 4)}\")\nprint(f\"P(disease | positive test): {round(p_disease_given_positive, 4)}\")\nprint(f\"Percentage: {round(p_disease_given_positive * 100, 2)}%\")",
+          "output": "P(positive test): 0.1085\nP(disease | positive test): 0.0876\nPercentage: 8.76%",
+          "explanation": "Despite the test being 95% sensitive, a positive result only means an 8.76% chance of actually having the disease. This is because the disease is rare (1%), so most positive results are false positives. This counterintuitive result is why Bayes' theorem is so important in data science."
+        }
+      ],
+      "notes": [
+        "Probability values always lie between 0 (impossible) and 1 (certain). The sum of probabilities of all possible outcomes equals 1.",
+        "Conditional probability P(A|B) is NOT the same as P(B|A). Confusing these is called the 'prosecutor's fallacy.'",
+        "Independence means P(A and B) = P(A) * P(B). Do not confuse independence with mutual exclusivity -- mutually exclusive events are actually dependent.",
+        "Bayes' theorem is the foundation of Bayesian statistics and the Naive Bayes classifier used in machine learning."
+      ],
+      "commonPitfalls": [
+        "Confusing P(A|B) with P(B|A). The probability of having a disease given a positive test is very different from the probability of testing positive given you have the disease.",
+        "Assuming events are independent without verification. Drawing cards without replacement makes successive draws dependent.",
+        "Forgetting to subtract the intersection in the addition rule: P(A or B) = P(A) + P(B) - P(A and B), not P(A) + P(B)."
+      ],
+      "interviewTips": [
+        "Bayes' theorem questions are extremely common in data science interviews. Practice the medical test scenario -- be able to explain why a positive test does not mean high probability of disease when prevalence is low.",
+        "When asked about independence, give a concrete example: coin flips are independent (previous flips don't affect the next), but drawing cards without replacement is dependent.",
+        "Be ready to explain the Monty Hall problem using conditional probability -- it is a classic interview brain teaser.",
+        "For product/A/B testing interviews, know that independence of user observations is a key assumption. Explain how network effects or shared experiences can violate this."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "probability-basics-ex1",
+        "title": "Dice Probability",
+        "description": "Calculate the probability of rolling a sum of 7 with two fair six-sided dice. There are 36 total outcomes. Count the favorable outcomes and compute the probability.",
+        "starterCode": "# Two fair six-sided dice\ntotal_outcomes = 36\n\n# TODO: Count favorable outcomes that sum to 7\n# Pairs: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1)\n# TODO: Calculate probability\n# TODO: Print the result",
+        "solution": "# Two fair six-sided dice\ntotal_outcomes = 36\n\nfavorable = 6  # (1,6), (2,5), (3,4), (4,3), (5,2), (6,1)\nprobability = favorable / total_outcomes\n\nprint(f\"Favorable outcomes: {favorable}\")\nprint(f\"P(sum = 7): {round(probability, 4)}\")",
+        "expectedOutput": "Favorable outcomes: 6\nP(sum = 7): 0.1667",
+        "hints": [
+          "List all pairs that sum to 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1).",
+          "There are 6 favorable outcomes out of 36 total.",
+          "6/36 = 1/6 = 0.1667 (rounded to 4 decimal places)."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "probability-basics-ex2",
+        "title": "Bayes' Theorem Application",
+        "description": "A spam filter has 98% sensitivity (correctly identifies spam) and 95% specificity (correctly identifies non-spam). If 20% of all emails are spam, compute P(spam | flagged as spam). Print the result as a percentage rounded to 2 decimal places.",
+        "starterCode": "# Spam filter\nprevalence = 0.20     # P(spam)\nsensitivity = 0.98    # P(flagged | spam)\nspecificity = 0.95    # P(not flagged | not spam)\n\n# TODO: Compute P(flagged) using law of total probability\n# TODO: Apply Bayes' theorem to find P(spam | flagged)\n# TODO: Print the result as a percentage",
+        "solution": "# Spam filter\nprevalence = 0.20     # P(spam)\nsensitivity = 0.98    # P(flagged | spam)\nspecificity = 0.95    # P(not flagged | not spam)\n\n# P(flagged) = P(flagged|spam)*P(spam) + P(flagged|not spam)*P(not spam)\np_flagged = sensitivity * prevalence + (1 - specificity) * (1 - prevalence)\n\n# Bayes' theorem\np_spam_given_flagged = (sensitivity * prevalence) / p_flagged\n\nprint(f\"P(spam | flagged): {round(p_spam_given_flagged * 100, 2)}%\")",
+        "expectedOutput": "P(spam | flagged): 83.05%",
+        "hints": [
+          "P(flagged) = P(flagged|spam)*P(spam) + P(flagged|not spam)*P(not spam).",
+          "P(flagged|not spam) = 1 - specificity = 0.05.",
+          "P(flagged) = 0.98*0.20 + 0.05*0.80 = 0.196 + 0.04 = 0.236. Then P(spam|flagged) = 0.196/0.236 = 0.8305."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "probability-basics-ex3",
+        "title": "Independent vs Dependent Events",
+        "description": "A box contains 4 red and 6 blue marbles. Calculate the probability of drawing 2 red marbles: (a) with replacement (independent), and (b) without replacement (dependent). Print both results rounded to 4 decimal places.",
+        "starterCode": "red = 4\nblue = 6\ntotal = red + blue\n\n# TODO: Calculate P(2 red) with replacement (independent)\n# TODO: Calculate P(2 red) without replacement (dependent)\n# TODO: Print both results",
+        "solution": "red = 4\nblue = 6\ntotal = red + blue\n\n# With replacement: events are independent\np_with = (red / total) * (red / total)\n\n# Without replacement: events are dependent\np_without = (red / total) * ((red - 1) / (total - 1))\n\nprint(f\"With replacement: {round(p_with, 4)}\")\nprint(f\"Without replacement: {round(p_without, 4)}\")",
+        "expectedOutput": "With replacement: 0.16\nWithout replacement: 0.1333",
+        "hints": [
+          "With replacement: P = (4/10) * (4/10) = 16/100 = 0.16.",
+          "Without replacement: P = (4/10) * (3/9) = 12/90 = 0.1333.",
+          "With replacement the marble goes back, so probabilities don't change for the second draw."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "distributions",
+    "sectionId": "statistics-foundations",
+    "orderIndex": 2,
+    "title": "Distributions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Normal distribution", "Binomial distribution", "Poisson distribution", "Uniform distribution", "Skewness", "Kurtosis"],
+    "content": {
+      "explanation": "A probability distribution describes how the values of a random variable are distributed. It tells you the probability (or probability density) of each possible outcome. Understanding distributions is fundamental to data science because real-world data often follows known distribution patterns, and many statistical methods assume specific distributions for the data they analyze.\n\nThe normal (Gaussian) distribution is the most important distribution in statistics. It is symmetric and bell-shaped, fully described by two parameters: the mean (center) and standard deviation (spread). The empirical rule states that approximately 68% of data falls within one standard deviation of the mean, 95% within two, and 99.7% within three. The Central Limit Theorem tells us that the sampling distribution of the mean approaches a normal distribution as the sample size grows, regardless of the population's distribution -- which is why the normal distribution appears everywhere in statistics.\n\nThe binomial distribution models the number of successes in n independent trials, each with the same probability p of success. For example, the number of heads in 10 coin flips follows a binomial distribution with n=10 and p=0.5. The Poisson distribution models the number of events occurring in a fixed interval of time or space, given a known average rate. It is commonly used for modeling rare events like customer arrivals, server requests, or equipment failures.\n\nThe uniform distribution assigns equal probability to all outcomes in a range. For a continuous uniform distribution between a and b, each sub-interval of the same length has the same probability. Discrete uniform distributions include fair dice rolls. While simple, the uniform distribution is important as a baseline and is used in random number generation and simulation.\n\nSkewness measures the asymmetry of a distribution. A positively skewed distribution has a long right tail (mean > median), while a negatively skewed distribution has a long left tail (mean < median). Kurtosis measures the 'tailedness' of a distribution -- how much of the data is in the tails. A normal distribution has a kurtosis of 3 (excess kurtosis of 0). High kurtosis (leptokurtic) means heavy tails with more outliers, while low kurtosis (platykurtic) means light tails. Understanding skewness and kurtosis helps you assess whether data meets normality assumptions required by many statistical tests.",
+      "codeExamples": [
+        {
+          "title": "Normal Distribution Properties",
+          "code": "import numpy as np\n\nnp.random.seed(42)\ndata = np.random.normal(loc=100, scale=15, size=10000)\n\nmean = np.mean(data)\nstd = np.std(data, ddof=1)\n\nwithin_1std = np.sum((data >= mean - std) & (data <= mean + std)) / len(data)\nwithin_2std = np.sum((data >= mean - 2*std) & (data <= mean + 2*std)) / len(data)\nwithin_3std = np.sum((data >= mean - 3*std) & (data <= mean + 3*std)) / len(data)\n\nprint(f\"Mean: {round(mean, 2)}\")\nprint(f\"Std Dev: {round(std, 2)}\")\nprint(f\"Within 1 std: {round(within_1std * 100, 1)}%\")\nprint(f\"Within 2 std: {round(within_2std * 100, 1)}%\")\nprint(f\"Within 3 std: {round(within_3std * 100, 1)}%\")",
+          "output": "Mean: 99.77\nStd Dev: 15.07\nWithin 1 std: 68.2%\nWithin 2 std: 95.5%\nWithin 3 std: 99.8%",
+          "explanation": "We generate 10,000 samples from a normal distribution with mean 100 and std 15. The empirical rule is confirmed: approximately 68%, 95%, and 99.7% of values fall within 1, 2, and 3 standard deviations of the mean."
+        },
+        {
+          "title": "Binomial Distribution",
+          "code": "import math\n\ndef binomial_pmf(n, k, p):\n    \"\"\"P(X = k) for binomial distribution\"\"\"\n    comb = math.comb(n, k)\n    return comb * (p ** k) * ((1 - p) ** (n - k))\n\n# 10 coin flips, P(heads) = 0.5\nn, p = 10, 0.5\n\nfor k in range(11):\n    prob = binomial_pmf(n, k, p)\n    if prob >= 0.05:  # Only show significant probabilities\n        print(f\"P(X={k:2d}) = {prob:.4f}\")\n\nmean = n * p\nvariance = n * p * (1 - p)\nprint(f\"\\nMean: {mean}\")\nprint(f\"Variance: {variance}\")",
+          "output": "P(X= 3) = 0.1172\nP(X= 4) = 0.2051\nP(X= 5) = 0.2461\nP(X= 6) = 0.2051\nP(X= 7) = 0.1172\n\nMean: 5.0\nVariance: 2.5",
+          "explanation": "The binomial PMF gives exact probabilities for each count of successes. With n=10 and p=0.5, the distribution is symmetric around 5. The mean is n*p = 5 and variance is n*p*(1-p) = 2.5."
+        },
+        {
+          "title": "Poisson Distribution",
+          "code": "import math\n\ndef poisson_pmf(lam, k):\n    \"\"\"P(X = k) for Poisson distribution\"\"\"\n    return (lam ** k) * math.exp(-lam) / math.factorial(k)\n\n# Average 3 customers per hour\nlam = 3\n\nprint(\"Customers/hour probabilities (lambda=3):\")\nfor k in range(8):\n    prob = poisson_pmf(lam, k)\n    print(f\"P(X={k}) = {prob:.4f}\")\n\nprint(f\"\\nMean = Variance = {lam}\")",
+          "output": "Customers/hour probabilities (lambda=3):\nP(X=0) = 0.0498\nP(X=1) = 0.1494\nP(X=2) = 0.2240\nP(X=3) = 0.2240\nP(X=4) = 0.1680\nP(X=5) = 0.1008\nP(X=6) = 0.0504\nP(X=7) = 0.0216\n\nMean = Variance = 3",
+          "explanation": "The Poisson distribution models events per interval. With lambda=3, the most likely outcomes are 2 or 3 customers per hour. A unique property of the Poisson distribution is that its mean equals its variance."
+        },
+        {
+          "title": "Skewness and Kurtosis",
+          "code": "import numpy as np\n\nnp.random.seed(0)\n\n# Symmetric (normal)\nnormal_data = np.random.normal(0, 1, 10000)\n\n# Right-skewed (exponential)\nskewed_data = np.random.exponential(1, 10000)\n\ndef calc_skewness(data):\n    n = len(data)\n    mean = np.mean(data)\n    std = np.std(data, ddof=1)\n    return (n / ((n-1)*(n-2))) * np.sum(((data - mean) / std) ** 3)\n\ndef calc_kurtosis(data):\n    n = len(data)\n    mean = np.mean(data)\n    std = np.std(data, ddof=1)\n    k4 = np.mean(((data - mean) / std) ** 4)\n    return k4 - 3  # Excess kurtosis\n\nprint(f\"Normal - Skewness: {round(calc_skewness(normal_data), 4)}\")\nprint(f\"Normal - Excess Kurtosis: {round(calc_kurtosis(normal_data), 4)}\")\nprint(f\"Exponential - Skewness: {round(calc_skewness(skewed_data), 4)}\")\nprint(f\"Exponential - Excess Kurtosis: {round(calc_kurtosis(skewed_data), 4)}\")",
+          "output": "Normal - Skewness: 0.0035\nNormal - Excess Kurtosis: -0.0638\nExponential - Skewness: 2.0062\nExponential - Excess Kurtosis: 5.8668",
+          "explanation": "The normal distribution has skewness near 0 (symmetric) and excess kurtosis near 0. The exponential distribution is positively skewed (long right tail) with high excess kurtosis (heavy tail). These metrics help assess the shape of your data distribution."
+        }
+      ],
+      "notes": [
+        "The Central Limit Theorem states that the mean of a sufficiently large number of samples from any distribution will be approximately normally distributed.",
+        "Binomial parameters: n (number of trials) and p (probability of success). Mean = np, Variance = np(1-p).",
+        "Poisson parameter: lambda (average rate). A unique property is that Mean = Variance = lambda.",
+        "Excess kurtosis = kurtosis - 3. Normal distribution has excess kurtosis of 0. Positive excess kurtosis indicates heavy tails."
+      ],
+      "commonPitfalls": [
+        "Assuming data is normally distributed without checking. Always verify with visualizations (histograms, Q-Q plots) or formal tests before applying methods that require normality.",
+        "Confusing the Poisson distribution (count of events in an interval) with the exponential distribution (time between events). They are related but model different things.",
+        "Forgetting that kurtosis has two conventions: regular kurtosis (normal = 3) and excess kurtosis (normal = 0). Always clarify which one you are using."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "distributions-ex1",
+        "title": "Binomial Probability Calculation",
+        "description": "A basketball player has a 70% free throw success rate. Calculate the probability of making exactly 8 out of 10 free throws using the binomial PMF formula.",
+        "starterCode": "import math\n\nn = 10  # trials\nk = 8   # successes\np = 0.7 # probability of success\n\n# TODO: Calculate binomial PMF: C(n,k) * p^k * (1-p)^(n-k)\n# TODO: Print the result rounded to 4 decimal places",
+        "solution": "import math\n\nn = 10  # trials\nk = 8   # successes\np = 0.7 # probability of success\n\ncomb = math.comb(n, k)\nprob = comb * (p ** k) * ((1 - p) ** (n - k))\n\nprint(f\"C({n},{k}) = {comb}\")\nprint(f\"P(X=8) = {round(prob, 4)}\")",
+        "expectedOutput": "C(10,8) = 45\nP(X=8) = 0.2335",
+        "hints": [
+          "C(10,8) = 10! / (8! * 2!) = 45.",
+          "P(X=8) = 45 * 0.7^8 * 0.3^2.",
+          "0.7^8 = 0.05764801, 0.3^2 = 0.09. Result: 45 * 0.05764801 * 0.09 = 0.2335."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "distributions-ex2",
+        "title": "Poisson Probability",
+        "description": "A call center receives an average of 5 calls per minute. Calculate the probability of receiving exactly 3 calls in a given minute, and the probability of receiving 0 calls.",
+        "starterCode": "import math\n\nlam = 5  # average calls per minute\n\n# TODO: Compute P(X=3) and P(X=0) using Poisson PMF\n# PMF: (lambda^k * e^(-lambda)) / k!\n# TODO: Print both probabilities rounded to 4 decimal places",
+        "solution": "import math\n\nlam = 5  # average calls per minute\n\np_3 = (lam ** 3) * math.exp(-lam) / math.factorial(3)\np_0 = (lam ** 0) * math.exp(-lam) / math.factorial(0)\n\nprint(f\"P(X=3) = {round(p_3, 4)}\")\nprint(f\"P(X=0) = {round(p_0, 4)}\")",
+        "expectedOutput": "P(X=3) = 0.1404\nP(X=0) = 0.0067",
+        "hints": [
+          "Poisson PMF: P(X=k) = (lambda^k * e^(-lambda)) / k!",
+          "P(X=3) = (125 * e^(-5)) / 6 = 125 * 0.006738 / 6 = 0.1404.",
+          "P(X=0) = (1 * e^(-5)) / 1 = e^(-5) = 0.0067."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "distributions-ex3",
+        "title": "Distribution Properties",
+        "description": "Given a binomial distribution with n=20 and p=0.4, compute and print the mean, variance, and standard deviation.",
+        "starterCode": "import math\n\nn = 20\np = 0.4\n\n# TODO: Compute mean = n * p\n# TODO: Compute variance = n * p * (1 - p)\n# TODO: Compute std = sqrt(variance)\n# TODO: Print all three values",
+        "solution": "import math\n\nn = 20\np = 0.4\n\nmean = n * p\nvariance = n * p * (1 - p)\nstd = math.sqrt(variance)\n\nprint(f\"Mean: {mean}\")\nprint(f\"Variance: {variance}\")\nprint(f\"Std Dev: {round(std, 4)}\")",
+        "expectedOutput": "Mean: 8.0\nVariance: 4.800000000000001\nStd Dev: 2.1909",
+        "hints": [
+          "Binomial mean = n * p = 20 * 0.4 = 8.0.",
+          "Binomial variance = n * p * (1-p) = 20 * 0.4 * 0.6 = 4.8.",
+          "Standard deviation = sqrt(4.8) = 2.1909."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "correlation-and-covariance",
+    "sectionId": "statistics-foundations",
+    "orderIndex": 3,
+    "title": "Correlation and Covariance",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Pearson correlation", "Spearman rank correlation", "Covariance", "Correlation matrix"],
+    "content": {
+      "explanation": "Correlation and covariance are measures that quantify the relationship between two variables. They are fundamental tools in exploratory data analysis, helping you understand how variables move together -- whether they tend to increase and decrease in tandem, move in opposite directions, or have no discernible linear relationship. In data science, understanding correlations is crucial for feature selection, multicollinearity detection, and generating hypotheses about causal relationships.\n\nCovariance measures the direction of the linear relationship between two variables. A positive covariance means they tend to move in the same direction; a negative covariance means they move in opposite directions. However, covariance is difficult to interpret because its magnitude depends on the units of the variables. A covariance of 1000 between height (cm) and weight (kg) tells you the direction but not the strength of the relationship.\n\nThe Pearson correlation coefficient solves the interpretability problem by normalizing covariance. It divides the covariance by the product of the standard deviations of both variables, producing a value between -1 and +1. A value of +1 means a perfect positive linear relationship, -1 means a perfect negative linear relationship, and 0 means no linear relationship. Pearson correlation is the most commonly used correlation measure, but it only captures linear relationships -- two variables can have a strong nonlinear relationship with a Pearson correlation near 0.\n\nSpearman rank correlation is a non-parametric alternative that measures the monotonic relationship between variables. Instead of using the raw values, it ranks them and computes the Pearson correlation of the ranks. This makes it robust to outliers and able to capture any monotonic relationship, not just linear ones. For example, if y = x^2 for positive x, the Spearman correlation would be 1 (perfectly monotonic) while the Pearson correlation would be less than 1 (not perfectly linear).\n\nA correlation matrix shows the pairwise correlation coefficients between all variables in a dataset. It is a symmetric matrix with 1s on the diagonal (every variable is perfectly correlated with itself). Correlation matrices are invaluable for identifying redundant features (highly correlated variables), spotting potential predictors, and detecting multicollinearity in regression models. In practice, heatmap visualizations of correlation matrices are one of the first things data scientists create during EDA.",
+      "codeExamples": [
+        {
+          "title": "Computing Covariance",
+          "code": "import numpy as np\n\nx = np.array([1, 2, 3, 4, 5])\ny = np.array([2, 4, 5, 4, 5])\n\n# Manual covariance computation\nn = len(x)\nmean_x = np.mean(x)\nmean_y = np.mean(y)\ncov_manual = np.sum((x - mean_x) * (y - mean_y)) / (n - 1)\n\n# NumPy covariance matrix\ncov_matrix = np.cov(x, y)\n\nprint(f\"Mean of x: {mean_x}\")\nprint(f\"Mean of y: {mean_y}\")\nprint(f\"Covariance (manual): {cov_manual}\")\nprint(f\"Covariance (numpy): {cov_matrix[0][1]}\")",
+          "output": "Mean of x: 3.0\nMean of y: 4.0\nCovariance (manual): 1.5\nCovariance (numpy): 1.5",
+          "explanation": "Covariance measures how x and y move together. Deviations from means: x-mean_x = [-2,-1,0,1,2], y-mean_y = [-2,0,1,0,1]. Products sum to 4+0+0+0+2 = 6. Dividing by n-1 = 4 gives 1.5. Positive covariance means they tend to increase together."
+        },
+        {
+          "title": "Pearson Correlation Coefficient",
+          "code": "import numpy as np\n\nx = np.array([1, 2, 3, 4, 5])\ny = np.array([2, 4, 5, 4, 5])\n\n# Manual Pearson correlation\ncov_xy = np.cov(x, y)[0][1]\nstd_x = np.std(x, ddof=1)\nstd_y = np.std(y, ddof=1)\npearson_manual = cov_xy / (std_x * std_y)\n\n# NumPy corrcoef\npearson_np = np.corrcoef(x, y)[0][1]\n\nprint(f\"Std of x: {round(std_x, 4)}\")\nprint(f\"Std of y: {round(std_y, 4)}\")\nprint(f\"Pearson (manual): {round(pearson_manual, 4)}\")\nprint(f\"Pearson (numpy): {round(pearson_np, 4)}\")",
+          "output": "Std of x: 1.5811\nStd of y: 1.2247\nPearson (manual): 0.7746\nPearson (numpy): 0.7746",
+          "explanation": "Pearson correlation = covariance / (std_x * std_y) = 1.5 / (1.5811 * 1.2247) = 0.7746. This indicates a strong positive linear relationship. The value is between -1 and 1, making it much easier to interpret than raw covariance."
+        },
+        {
+          "title": "Spearman Rank Correlation",
+          "code": "import numpy as np\n\ndef spearman_correlation(x, y):\n    \"\"\"Compute Spearman rank correlation manually\"\"\"\n    n = len(x)\n    # Rank the data (average ranks for ties)\n    def rank_data(arr):\n        sorted_indices = np.argsort(arr)\n        ranks = np.empty(n)\n        for i, idx in enumerate(sorted_indices):\n            ranks[idx] = i + 1\n        return ranks\n    \n    rank_x = rank_data(x)\n    rank_y = rank_data(y)\n    \n    # Pearson correlation of ranks\n    return np.corrcoef(rank_x, rank_y)[0][1]\n\nx = np.array([1, 2, 3, 4, 5])\ny = np.array([1, 8, 27, 64, 125])  # y = x^3 (monotonic but nonlinear)\n\npearson = np.corrcoef(x, y)[0][1]\nspearman = spearman_correlation(x, y)\n\nprint(f\"Pearson correlation: {round(pearson, 4)}\")\nprint(f\"Spearman correlation: {round(spearman, 4)}\")",
+          "output": "Pearson correlation: 0.9431\nSpearman correlation: 1.0",
+          "explanation": "The relationship y = x^3 is perfectly monotonic but not perfectly linear. Spearman captures this perfectly (1.0) because the ranks are perfectly aligned. Pearson gives 0.9431 because the raw values do not fall on a straight line. This demonstrates when Spearman is more appropriate."
+        },
+        {
+          "title": "Correlation Matrix",
+          "code": "import numpy as np\n\nnp.random.seed(42)\n\n# Generate correlated data\nn = 1000\nx1 = np.random.normal(0, 1, n)\nx2 = 0.8 * x1 + 0.2 * np.random.normal(0, 1, n)\nx3 = -0.5 * x1 + 0.5 * np.random.normal(0, 1, n)\n\ndata = np.column_stack([x1, x2, x3])\ncorr_matrix = np.corrcoef(data, rowvar=False)\n\nlabels = ['x1', 'x2', 'x3']\nprint(\"Correlation Matrix:\")\nprint(f\"{'':>4}\", end=\"\")\nfor label in labels:\n    print(f\"{label:>8}\", end=\"\")\nprint()\nfor i, label in enumerate(labels):\n    print(f\"{label:>4}\", end=\"\")\n    for j in range(len(labels)):\n        print(f\"{corr_matrix[i][j]:>8.4f}\", end=\"\")\n    print()",
+          "output": "Correlation Matrix:\n          x1      x2      x3\n  x1  1.0000  0.9711 -0.7045\n  x2  0.9711  1.0000 -0.6798\n  x3 -0.7045 -0.6798  1.0000",
+          "explanation": "The correlation matrix reveals that x1 and x2 are strongly positively correlated (0.97) as expected since x2 is derived from x1. x1 and x3 are negatively correlated (-0.70) because x3 has a negative dependency on x1. The diagonal is always 1 (self-correlation)."
+        }
+      ],
+      "notes": [
+        "Pearson correlation measures LINEAR relationships only. A Pearson r near 0 does not mean no relationship -- it means no linear relationship.",
+        "Spearman correlation measures MONOTONIC relationships and is more robust to outliers than Pearson.",
+        "Covariance depends on variable scales, making it hard to compare. Correlation normalizes this to [-1, 1].",
+        "Always visualize your data with scatter plots alongside correlation values. Anscombe's quartet demonstrates that very different datasets can have the same correlation coefficient."
+      ],
+      "commonPitfalls": [
+        "Concluding causation from correlation. A high correlation between ice cream sales and drownings does not mean ice cream causes drowning -- both are caused by hot weather (confounding variable).",
+        "Ignoring nonlinear relationships. Two variables with a perfect quadratic relationship (like y = x^2 over both positive and negative x) can have a Pearson correlation of 0.",
+        "Not checking for outliers before computing Pearson correlation. A single extreme outlier can dramatically inflate or deflate the Pearson r value."
+      ],
+      "interviewTips": [
+        "The 'correlation does not imply causation' principle is one of the most frequently asked topics. Be ready to give concrete examples of spurious correlations and explain confounding variables.",
+        "Know the difference between Pearson and Spearman: Pearson measures linear relationships on raw values, Spearman measures monotonic relationships on ranks. Spearman is more robust to outliers.",
+        "When asked about multicollinearity in regression, explain that highly correlated features (|r| > 0.8) can inflate variance of coefficient estimates and make models unstable.",
+        "Be prepared to discuss Simpson's paradox: a trend that appears in several groups of data can disappear or reverse when the groups are combined."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "correlation-covariance-ex1",
+        "title": "Manual Covariance and Correlation",
+        "description": "Given x = [2, 4, 6, 8] and y = [1, 3, 5, 7], compute the sample covariance and Pearson correlation coefficient using numpy. Print both rounded to 4 decimal places.",
+        "starterCode": "import numpy as np\n\nx = np.array([2, 4, 6, 8])\ny = np.array([1, 3, 5, 7])\n\n# TODO: Compute sample covariance using np.cov()\n# TODO: Compute Pearson correlation using np.corrcoef()\n# TODO: Print both values",
+        "solution": "import numpy as np\n\nx = np.array([2, 4, 6, 8])\ny = np.array([1, 3, 5, 7])\n\ncov = np.cov(x, y)[0][1]\ncorr = np.corrcoef(x, y)[0][1]\n\nprint(f\"Covariance: {round(cov, 4)}\")\nprint(f\"Pearson r: {round(corr, 4)}\")",
+        "expectedOutput": "Covariance: 6.6667\nPearson r: 1.0",
+        "hints": [
+          "np.cov(x, y) returns a 2x2 matrix. The covariance is at [0][1] or [1][0].",
+          "x and y have a perfect linear relationship: y = x - 1. So Pearson r = 1.0.",
+          "Mean of x = 5, mean of y = 4. Deviations: [-3,-1,1,3] and [-3,-1,1,3]. Products sum to 9+1+1+9=20. Cov = 20/3 = 6.6667."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "correlation-covariance-ex2",
+        "title": "Correlation Interpretation",
+        "description": "Given three pairs of variables, compute the Pearson correlation for each and classify the relationship as 'Strong positive', 'Strong negative', or 'No correlation'. Print the correlation and classification for each pair.",
+        "starterCode": "import numpy as np\n\na = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])\nb = np.array([2, 4, 6, 8, 10, 12, 14, 16, 18, 20])  # Perfect positive\nc = np.array([10, 9, 8, 8, 7, 6, 7, 5, 4, 4])        # Negative trend\nd = np.array([5, 3, 8, 1, 9, 2, 7, 4, 6, 10])         # Random\n\n# TODO: Compute Pearson r for (a,b), (a,c), (a,d)\n# TODO: Classify each based on the correlation value\n# TODO: Print results",
+        "solution": "import numpy as np\n\na = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])\nb = np.array([2, 4, 6, 8, 10, 12, 14, 16, 18, 20])  # Perfect positive\nc = np.array([10, 9, 8, 8, 7, 6, 7, 5, 4, 4])        # Negative trend\nd = np.array([5, 3, 8, 1, 9, 2, 7, 4, 6, 10])         # Random\n\nr_ab = np.corrcoef(a, b)[0][1]\nr_ac = np.corrcoef(a, c)[0][1]\nr_ad = np.corrcoef(a, d)[0][1]\n\nprint(f\"r(a,b) = {round(r_ab, 4)} -> Strong positive\")\nprint(f\"r(a,c) = {round(r_ac, 4)} -> Strong negative\")\nprint(f\"r(a,d) = {round(r_ad, 4)} -> No correlation\")",
+        "expectedOutput": "r(a,b) = 1.0 -> Strong positive\nr(a,c) = -0.9696 -> Strong negative\nr(a,d) = 0.3455 -> No correlation",
+        "hints": [
+          "b = 2*a, so the correlation is exactly 1.0 (perfect positive linear relationship).",
+          "c generally decreases as a increases, giving a strong negative correlation of -0.9696.",
+          "d has no clear pattern with a, resulting in a weak correlation of 0.3455."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "correlation-covariance-ex3",
+        "title": "Build a Correlation Matrix",
+        "description": "Given three variables, compute and display the 3x3 correlation matrix with labels. Use np.corrcoef with rowvar=False.",
+        "starterCode": "import numpy as np\n\nnp.random.seed(10)\nheight = np.array([160, 165, 170, 175, 180, 185, 190])\nweight = np.array([55, 60, 68, 72, 80, 85, 92])\nage = np.array([25, 30, 28, 35, 40, 38, 45])\n\n# TODO: Stack into a matrix and compute correlation\n# TODO: Print the correlation between height-weight, height-age, weight-age",
+        "solution": "import numpy as np\n\nnp.random.seed(10)\nheight = np.array([160, 165, 170, 175, 180, 185, 190])\nweight = np.array([55, 60, 68, 72, 80, 85, 92])\nage = np.array([25, 30, 28, 35, 40, 38, 45])\n\ndata = np.column_stack([height, weight, age])\ncorr = np.corrcoef(data, rowvar=False)\n\nprint(f\"Height-Weight: {round(corr[0][1], 4)}\")\nprint(f\"Height-Age: {round(corr[0][2], 4)}\")\nprint(f\"Weight-Age: {round(corr[1][2], 4)}\")",
+        "expectedOutput": "Height-Weight: 0.9982\nHeight-Age: 0.9511\nWeight-Age: 0.9456",
+        "hints": [
+          "Use np.column_stack() to combine the three arrays into a matrix.",
+          "np.corrcoef with rowvar=False treats each column as a variable.",
+          "Height and weight are nearly perfectly correlated (0.9982) as expected."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "hypothesis-testing",
+    "sectionId": "statistics-foundations",
+    "orderIndex": 4,
+    "title": "Hypothesis Testing",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Null hypothesis", "P-value", "Significance level", "T-test", "Chi-square test"],
+    "content": {
+      "explanation": "Hypothesis testing is a systematic framework for making decisions about populations based on sample data. It is one of the most widely used statistical methods in data science, powering everything from A/B tests at tech companies to clinical trials in medicine. The fundamental idea is simple: you start with an assumption (the null hypothesis), collect data, and determine whether the data provides enough evidence to reject that assumption.\n\nThe process begins by formulating two hypotheses. The null hypothesis (H0) represents the status quo or 'no effect' -- for example, 'there is no difference between group A and group B.' The alternative hypothesis (H1 or Ha) is what you want to prove -- for example, 'group A performs better than group B.' The null hypothesis is assumed true until the data provides strong evidence against it. This is analogous to 'innocent until proven guilty' in legal systems.\n\nThe p-value is the probability of observing data as extreme as (or more extreme than) your sample data, assuming the null hypothesis is true. A small p-value means the observed data would be very unlikely under the null hypothesis, suggesting the null hypothesis may be wrong. The significance level (alpha, typically 0.05) is the threshold: if p-value < alpha, you reject the null hypothesis. A p-value of 0.03 means there is only a 3% chance of seeing data this extreme if H0 were true -- which is considered sufficient evidence to reject H0 at the 5% significance level.\n\nThe t-test is used to compare means. A one-sample t-test checks if a sample mean differs from a hypothesized value. A two-sample t-test compares means of two groups. The test computes a t-statistic that measures how many standard errors the sample mean is from the hypothesized mean. The t-statistic is then converted to a p-value using the t-distribution. For large samples (n > 30), the t-distribution approximates the normal distribution.\n\nThe chi-square test is used for categorical data. The chi-square goodness-of-fit test checks if observed frequencies match expected frequencies. The chi-square test of independence checks if two categorical variables are associated. It computes a chi-square statistic by comparing observed and expected counts in a contingency table. Like the t-test, this statistic is converted to a p-value. Type I error (false positive) occurs when you reject a true null hypothesis, and Type II error (false negative) occurs when you fail to reject a false null hypothesis. Balancing these errors is a key consideration in experimental design.",
+      "codeExamples": [
+        {
+          "title": "One-Sample T-Test (Manual)",
+          "code": "import math\nimport statistics\n\n# Sample data: daily website visitors\ndata = [105, 112, 98, 110, 108, 115, 103, 109, 111, 107]\n\n# H0: mean = 100 (old average)\n# H1: mean != 100 (two-tailed)\nmu_0 = 100\nn = len(data)\nsample_mean = statistics.mean(data)\nsample_std = statistics.stdev(data)\nse = sample_std / math.sqrt(n)\nt_stat = (sample_mean - mu_0) / se\n\nprint(f\"Sample mean: {sample_mean}\")\nprint(f\"Sample std: {round(sample_std, 4)}\")\nprint(f\"Standard error: {round(se, 4)}\")\nprint(f\"T-statistic: {round(t_stat, 4)}\")\nprint(f\"Degrees of freedom: {n - 1}\")",
+          "output": "Sample mean: 107.8\nSample std: 4.8717\nStandard error: 1.5406\nT-statistic: 5.0631\nDegrees of freedom: 9",
+          "explanation": "The t-statistic of 5.06 is very large, meaning the sample mean of 107.8 is about 5 standard errors away from the hypothesized mean of 100. With 9 degrees of freedom, this corresponds to a very small p-value (well below 0.05), so we would reject H0 and conclude the mean has changed."
+        },
+        {
+          "title": "Two-Sample T-Test",
+          "code": "import math\nimport statistics\n\n# Group A: control, Group B: treatment\ngroup_a = [78, 82, 85, 80, 76, 79, 83, 81]\ngroup_b = [88, 92, 85, 90, 87, 91, 89, 93]\n\nmean_a = statistics.mean(group_a)\nmean_b = statistics.mean(group_b)\nstd_a = statistics.stdev(group_a)\nstd_b = statistics.stdev(group_b)\nn_a = len(group_a)\nn_b = len(group_b)\n\n# Welch's t-test (unequal variances)\nse = math.sqrt((std_a**2 / n_a) + (std_b**2 / n_b))\nt_stat = (mean_a - mean_b) / se\n\nprint(f\"Group A: mean={mean_a}, std={round(std_a, 4)}\")\nprint(f\"Group B: mean={mean_b}, std={round(std_b, 4)}\")\nprint(f\"Difference: {round(mean_b - mean_a, 4)}\")\nprint(f\"T-statistic: {round(t_stat, 4)}\")",
+          "output": "Group A: mean=80.5, std=2.8785\nGroup B: mean=89.375, std=2.6693\nDifference: 8.875\nT-statistic: -6.3944",
+          "explanation": "The large negative t-statistic (-6.39) indicates a significant difference between the groups. Group B (mean 89.375) performed much better than Group A (mean 80.5). In an A/B test, this would be strong evidence that the treatment had a positive effect."
+        },
+        {
+          "title": "Chi-Square Goodness of Fit",
+          "code": "# Test if a die is fair\n# Observed frequencies from 120 rolls\nobserved = [25, 17, 22, 18, 19, 19]\nexpected = [20, 20, 20, 20, 20, 20]  # Fair die: 120/6 = 20 each\n\n# Chi-square statistic: sum of (O - E)^2 / E\nchi2 = sum((o - e) ** 2 / e for o, e in zip(observed, expected))\ndf = len(observed) - 1  # degrees of freedom\n\nprint(\"Face | Observed | Expected | (O-E)^2/E\")\nfor i in range(6):\n    contrib = (observed[i] - expected[i]) ** 2 / expected[i]\n    print(f\"  {i+1}  |    {observed[i]:2d}    |    {expected[i]}    |   {contrib:.2f}\")\n\nprint(f\"\\nChi-square statistic: {chi2}\")\nprint(f\"Degrees of freedom: {df}\")\nprint(f\"Critical value (alpha=0.05, df=5): 11.07\")\nprint(f\"Reject H0: {chi2 > 11.07}\")",
+          "output": "Face | Observed | Expected | (O-E)^2/E\n  1  |    25    |    20    |   1.25\n  2  |    17    |    20    |   0.45\n  3  |    22    |    20    |   0.20\n  4  |    18    |    20    |   0.20\n  5  |    19    |    20    |   0.05\n  6  |    19    |    20    |   0.05\n\nChi-square statistic: 2.2\nDegrees of freedom: 5\nCritical value (alpha=0.05, df=5): 11.07\nReject H0: False",
+          "explanation": "The chi-square statistic (2.2) is well below the critical value (11.07 for df=5, alpha=0.05). We fail to reject H0: there is not enough evidence to conclude the die is unfair. The observed frequencies are within the range of normal random variation."
+        },
+        {
+          "title": "P-Value Interpretation Framework",
+          "code": "# Framework for interpreting p-values\ndef interpret_p_value(p_value, alpha=0.05):\n    if p_value < 0.001:\n        strength = \"Very strong evidence against H0\"\n    elif p_value < 0.01:\n        strength = \"Strong evidence against H0\"\n    elif p_value < 0.05:\n        strength = \"Moderate evidence against H0\"\n    elif p_value < 0.1:\n        strength = \"Weak evidence against H0\"\n    else:\n        strength = \"No evidence against H0\"\n    \n    decision = \"Reject H0\" if p_value < alpha else \"Fail to reject H0\"\n    return strength, decision\n\ntest_cases = [0.001, 0.008, 0.03, 0.07, 0.45]\n\nfor p in test_cases:\n    strength, decision = interpret_p_value(p)\n    print(f\"p={p:.3f} -> {decision} | {strength}\")",
+          "output": "p=0.001 -> Reject H0 | Very strong evidence against H0\np=0.008 -> Reject H0 | Strong evidence against H0\np=0.030 -> Reject H0 | Moderate evidence against H0\np=0.070 -> Fail to reject H0 | Weak evidence against H0\np=0.450 -> Fail to reject H0 | No evidence against H0",
+          "explanation": "This framework shows how p-values map to evidence strength. Note that 'fail to reject H0' is NOT the same as 'accept H0' -- we simply lack sufficient evidence to reject it. Also, a p-value just above 0.05 (like 0.07) still suggests some evidence against H0 -- the 0.05 cutoff is a convention, not a magic boundary."
+        }
+      ],
+      "notes": [
+        "The p-value is NOT the probability that H0 is true. It is the probability of observing data this extreme if H0 were true.",
+        "'Fail to reject H0' is not the same as 'accept H0.' Absence of evidence is not evidence of absence.",
+        "A statistically significant result (p < 0.05) does not necessarily mean a practically significant result. A tiny effect can be statistically significant with a large enough sample.",
+        "Type I error (alpha): rejecting a true H0. Type II error (beta): failing to reject a false H0. Power = 1 - beta."
+      ],
+      "commonPitfalls": [
+        "P-hacking: running many tests until you find one with p < 0.05. With 20 independent tests at alpha=0.05, you expect 1 false positive. Always correct for multiple comparisons (e.g., Bonferroni correction).",
+        "Confusing statistical significance with practical significance. A drug that lowers blood pressure by 0.1 mmHg might be statistically significant with n=100000 but is practically meaningless.",
+        "Using a t-test when data is not approximately normal and the sample size is small. For small samples from non-normal distributions, use non-parametric tests like the Mann-Whitney U test."
+      ],
+      "interviewTips": [
+        "A/B testing is THE most common hypothesis testing interview topic. Know the full workflow: define metric, calculate sample size, run experiment, check significance, watch for novelty effects and selection bias.",
+        "Be ready to explain p-value in plain language: 'If there were truly no difference between A and B, the p-value is the probability of seeing a difference at least as large as what we observed.'",
+        "Know the difference between one-tailed and two-tailed tests. Two-tailed tests whether the effect goes in either direction; one-tailed tests for a specific direction. Most A/B tests use two-tailed.",
+        "When asked about multiple testing, mention Bonferroni correction (divide alpha by number of tests) and the false discovery rate (FDR) as more powerful alternatives for large numbers of tests."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "hypothesis-testing-ex1",
+        "title": "Compute a T-Statistic",
+        "description": "A sample of exam scores is [72, 85, 78, 90, 68, 82, 88, 76, 79, 83]. Test whether the true mean differs from 75 (H0: mu = 75). Compute the t-statistic and print it rounded to 4 decimal places.",
+        "starterCode": "import math\nimport statistics\n\nscores = [72, 85, 78, 90, 68, 82, 88, 76, 79, 83]\nmu_0 = 75\n\n# TODO: Compute sample mean, sample std, standard error\n# TODO: Compute t-statistic = (sample_mean - mu_0) / standard_error\n# TODO: Print the results",
+        "solution": "import math\nimport statistics\n\nscores = [72, 85, 78, 90, 68, 82, 88, 76, 79, 83]\nmu_0 = 75\n\nn = len(scores)\nsample_mean = statistics.mean(scores)\nsample_std = statistics.stdev(scores)\nse = sample_std / math.sqrt(n)\nt_stat = (sample_mean - mu_0) / se\n\nprint(f\"Sample mean: {sample_mean}\")\nprint(f\"Standard error: {round(se, 4)}\")\nprint(f\"T-statistic: {round(t_stat, 4)}\")",
+        "expectedOutput": "Sample mean: 80.1\nStandard error: 2.1881\nT-statistic: 2.3308",
+        "hints": [
+          "Sample mean = 801/10 = 80.1.",
+          "Compute sample standard deviation with statistics.stdev(), then divide by sqrt(10) for the standard error.",
+          "T-statistic = (80.1 - 75) / SE. A value above 2 with 9 df suggests significance at alpha=0.05."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "hypothesis-testing-ex2",
+        "title": "Chi-Square Test for a Coin",
+        "description": "A coin is flipped 200 times resulting in 115 heads and 85 tails. Perform a chi-square goodness-of-fit test to determine if the coin is fair. The critical value at alpha=0.05 with df=1 is 3.841.",
+        "starterCode": "# Observed: 115 heads, 85 tails\n# Expected for fair coin: 100 heads, 100 tails\n\nobserved = [115, 85]\nexpected = [100, 100]\n\n# TODO: Compute chi-square statistic\n# TODO: Compare with critical value 3.841\n# TODO: Print results and conclusion",
+        "solution": "# Observed: 115 heads, 85 tails\n# Expected for fair coin: 100 heads, 100 tails\n\nobserved = [115, 85]\nexpected = [100, 100]\n\nchi2 = sum((o - e) ** 2 / e for o, e in zip(observed, expected))\ncritical_value = 3.841\n\nprint(f\"Chi-square statistic: {chi2}\")\nprint(f\"Critical value: {critical_value}\")\nprint(f\"Reject H0 (coin is unfair): {chi2 > critical_value}\")",
+        "expectedOutput": "Chi-square statistic: 4.5\nCritical value: 3.841\nReject H0 (coin is unfair): True",
+        "hints": [
+          "Chi-square = (115-100)^2/100 + (85-100)^2/100 = 225/100 + 225/100 = 4.5.",
+          "4.5 > 3.841, so we reject H0 at the 5% significance level.",
+          "The coin appears to be biased toward heads."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "hypothesis-testing-ex3",
+        "title": "A/B Test Analysis",
+        "description": "An A/B test compares two webpage versions. Version A had 45 conversions out of 500 visitors (9%). Version B had 63 conversions out of 500 (12.6%). Compute the pooled proportion, standard error, and z-statistic for the difference in proportions.",
+        "starterCode": "import math\n\n# Version A\nconv_a = 45\nn_a = 500\n\n# Version B\nconv_b = 63\nn_b = 500\n\n# TODO: Compute proportions for A and B\n# TODO: Compute pooled proportion\n# TODO: Compute standard error for difference\n# TODO: Compute z-statistic\n# TODO: Print results",
+        "solution": "import math\n\n# Version A\nconv_a = 45\nn_a = 500\n\n# Version B\nconv_b = 63\nn_b = 500\n\np_a = conv_a / n_a\np_b = conv_b / n_b\np_pool = (conv_a + conv_b) / (n_a + n_b)\n\nse = math.sqrt(p_pool * (1 - p_pool) * (1/n_a + 1/n_b))\nz_stat = (p_b - p_a) / se\n\nprint(f\"Proportion A: {p_a}\")\nprint(f\"Proportion B: {p_b}\")\nprint(f\"Pooled proportion: {p_pool}\")\nprint(f\"Standard error: {round(se, 4)}\")\nprint(f\"Z-statistic: {round(z_stat, 4)}\")",
+        "expectedOutput": "Proportion A: 0.09\nProportion B: 0.126\nPooled proportion: 0.108\nStandard error: 0.0196\nZ-statistic: 1.8339",
+        "hints": [
+          "Pooled proportion = (45 + 63) / (500 + 500) = 108/1000 = 0.108.",
+          "SE = sqrt(p_pool * (1-p_pool) * (1/n_a + 1/n_b)) = sqrt(0.108 * 0.892 * 0.004) = 0.0196.",
+          "Z = (0.126 - 0.09) / 0.0196 = 1.8339. This is below 1.96, so not significant at alpha=0.05."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

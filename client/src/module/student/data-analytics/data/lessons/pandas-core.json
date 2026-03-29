@@ -1,0 +1,485 @@
+[
+  {
+    "id": "intro-to-pandas",
+    "sectionId": "pandas-core",
+    "orderIndex": 0,
+    "title": "Introduction to Pandas",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Pandas Overview", "Series", "DataFrame", "pd.Series()", "pd.DataFrame()"],
+    "content": {
+      "explanation": "Pandas is the most widely used Python library for data manipulation and analysis. Built on top of NumPy, it provides two primary data structures: Series and DataFrame. These structures make it straightforward to load, clean, transform, and analyze data from virtually any source, whether it is a CSV file, a SQL database, an Excel spreadsheet, or a JSON API response. The name \"Pandas\" is derived from \"Panel Data,\" a term used in econometrics for multi-dimensional structured datasets.\n\nA Series is a one-dimensional labeled array capable of holding any data type: integers, floats, strings, or even Python objects. Think of it as a single column in a spreadsheet with an index on the left and values on the right. You create a Series using pd.Series(), passing in a list, a dictionary, or a NumPy array. When you pass a dictionary, the keys become the index labels automatically. Series supports vectorized operations, meaning you can add, subtract, multiply, or apply functions to the entire Series without writing explicit loops.\n\nA DataFrame is a two-dimensional labeled data structure with columns of potentially different types. It is essentially a collection of Series that share the same index. You can think of it as an in-memory spreadsheet or SQL table. DataFrames are created using pd.DataFrame(), which accepts dictionaries of lists, lists of dictionaries, NumPy arrays, or other DataFrames. Each column in a DataFrame is a Series, and you can access individual columns using bracket notation or dot notation.\n\nPandas aligns data automatically by index labels. This means that when you perform operations between two Series or DataFrames, Pandas matches entries by their index labels rather than by their positional order. This is a powerful feature that prevents many common data alignment bugs. If a label exists in one structure but not the other, the result will contain NaN (Not a Number) for that position.\n\nInstalling Pandas is as simple as running pip install pandas. By convention, it is always imported as pd: import pandas as pd. This alias is so universal that any Python data professional will recognize pd immediately. Throughout this course, every code example begins with this import statement.",
+      "codeExamples": [
+        {
+          "title": "Creating a Series from a List",
+          "code": "import pandas as pd\n\n# Create a Series from a list\nfruits = pd.Series(['Apple', 'Banana', 'Cherry', 'Date'])\nprint(fruits)\nprint(\"---\")\nprint(\"Type:\", type(fruits).__name__)",
+          "output": "0     Apple\n1    Banana\n2    Cherry\n3      Date\ndtype: object\n---\nType: Series",
+          "explanation": "When you create a Series from a list, Pandas automatically assigns integer indices starting from 0. The dtype 'object' indicates string data. The Series displays its index on the left and values on the right."
+        },
+        {
+          "title": "Creating a Series from a Dictionary",
+          "code": "import pandas as pd\n\n# Create a Series from a dictionary\nages = pd.Series({'Alice': 25, 'Bob': 30, 'Charlie': 35})\nprint(ages)\nprint(\"---\")\nprint(\"Alice's age:\", ages['Alice'])",
+          "output": "Alice      25\nBob        30\nCharlie    35\ndtype: int64\n---\nAlice's age: 25",
+          "explanation": "When creating a Series from a dictionary, the keys become index labels. You can then access values using these labels with bracket notation, similar to how you access dictionary values."
+        },
+        {
+          "title": "Creating a DataFrame from a Dictionary of Lists",
+          "code": "import pandas as pd\n\n# Create a DataFrame from a dictionary of lists\ndata = {\n    'Name': ['Alice', 'Bob', 'Charlie'],\n    'Age': [25, 30, 35],\n    'City': ['Delhi', 'Mumbai', 'Pune']\n}\ndf = pd.DataFrame(data)\nprint(df)\nprint(\"---\")\nprint(\"Shape:\", df.shape)",
+          "output": "      Name  Age    City\n0    Alice   25   Delhi\n1      Bob   30  Mumbai\n2  Charlie   35    Pune\n---\nShape: (3, 3)",
+          "explanation": "The most common way to create a DataFrame is from a dictionary where keys are column names and values are lists of equal length. The shape attribute returns a tuple of (rows, columns)."
+        },
+        {
+          "title": "Creating a DataFrame from a List of Dictionaries",
+          "code": "import pandas as pd\n\n# Create a DataFrame from a list of dictionaries\nrecords = [\n    {'Product': 'Laptop', 'Price': 50000, 'Quantity': 10},\n    {'Product': 'Mouse', 'Price': 500, 'Quantity': 100},\n    {'Product': 'Keyboard', 'Price': 1500, 'Quantity': 50}\n]\ndf = pd.DataFrame(records)\nprint(df)\nprint(\"---\")\nprint(\"Columns:\", list(df.columns))",
+          "output": "    Product  Price  Quantity\n0    Laptop  50000        10\n1     Mouse    500       100\n2  Keyboard   1500        50\n---\nColumns: ['Product', 'Price', 'Quantity']",
+          "explanation": "Each dictionary in the list becomes a row. The keys become column names. This format is common when working with JSON API responses, where each record is a dictionary."
+        }
+      ],
+      "notes": [
+        "Always import Pandas as pd. This convention is universal in the Python data science community and all documentation and tutorials assume this alias.",
+        "A Series is a single column of data with labels. A DataFrame is a table made up of multiple Series that share the same index.",
+        "When creating a DataFrame from a dictionary, all lists must have the same length. If they differ, Pandas will raise a ValueError."
+      ],
+      "commonPitfalls": [
+        "Confusing a Series with a Python list. A Series has an index, supports label-based access, and aligns by labels during operations. A list has none of these features.",
+        "Forgetting that DataFrame columns created from dictionaries preserve insertion order in Python 3.7+. In older Python versions, dictionary ordering was not guaranteed.",
+        "Using dot notation (df.Name) to access columns with spaces or special characters in their names. Use bracket notation (df['Column Name']) for such columns."
+      ],
+      "interviewTips": [
+        "Be ready to explain the difference between a Series and a DataFrame. A Series is 1D, a DataFrame is 2D. A DataFrame is essentially a dict of Series.",
+        "Know that Pandas is built on NumPy and inherits its vectorized operations. This is why Pandas is fast for numerical computations without explicit Python loops."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "intro-to-pandas-ex1",
+        "title": "Create a Student DataFrame",
+        "description": "Create a DataFrame called 'students' with three columns: 'Name' (Ravi, Priya, Amit), 'Score' (85, 92, 78), and 'Grade' ('B', 'A', 'C'). Print the DataFrame and then print only the 'Score' column.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create a dictionary with Name, Score, and Grade\n# TODO: Create a DataFrame from the dictionary\n# TODO: Print the DataFrame\n# TODO: Print only the Score column\n",
+        "solution": "import pandas as pd\n\ndata = {\n    'Name': ['Ravi', 'Priya', 'Amit'],\n    'Score': [85, 92, 78],\n    'Grade': ['B', 'A', 'C']\n}\nstudents = pd.DataFrame(data)\nprint(students)\nprint(\"---\")\nprint(students['Score'])",
+        "expectedOutput": "    Name  Score Grade\n0   Ravi     85     B\n1  Priya     92     A\n2   Amit     78     C\n---\n0    85\n1    92\n2    78\nName: Score, dtype: int64",
+        "hints": [
+          "Create a dictionary where each key is a column name and each value is a list of data",
+          "Use pd.DataFrame(data) to convert the dictionary into a DataFrame",
+          "Access a column using bracket notation: df['ColumnName']"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "intro-to-pandas-ex2",
+        "title": "Series Arithmetic",
+        "description": "Create two Series: 'prices' with values [100, 200, 300] and 'quantities' with values [5, 3, 8]. Multiply them element-wise to get a 'totals' Series, then print the totals and their sum.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create a Series called 'prices'\n# TODO: Create a Series called 'quantities'\n# TODO: Multiply them to get 'totals'\n# TODO: Print the totals Series\n# TODO: Print the sum of totals\n",
+        "solution": "import pandas as pd\n\nprices = pd.Series([100, 200, 300])\nquantities = pd.Series([5, 3, 8])\ntotals = prices * quantities\nprint(totals)\nprint(\"---\")\nprint(\"Sum:\", totals.sum())",
+        "expectedOutput": "0     500\n1     600\n2    2400\ndtype: int64\n---\nSum: 3500",
+        "hints": [
+          "Use pd.Series([...]) to create each Series from a list",
+          "The * operator performs element-wise multiplication on two Series",
+          "Use the .sum() method to get the total of all values in a Series"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "intro-to-pandas-ex3",
+        "title": "DataFrame from Records",
+        "description": "Create a DataFrame from a list of dictionaries representing three books: {'Title': 'Python 101', 'Pages': 250}, {'Title': 'Data Science', 'Pages': 400}, {'Title': 'ML Basics', 'Pages': 350}. Print the DataFrame and then print the total number of pages.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create a list of book dictionaries\n# TODO: Create a DataFrame\n# TODO: Print the DataFrame\n# TODO: Print the total pages\n",
+        "solution": "import pandas as pd\n\nbooks = [\n    {'Title': 'Python 101', 'Pages': 250},\n    {'Title': 'Data Science', 'Pages': 400},\n    {'Title': 'ML Basics', 'Pages': 350}\n]\ndf = pd.DataFrame(books)\nprint(df)\nprint(\"---\")\nprint(\"Total pages:\", df['Pages'].sum())",
+        "expectedOutput": "          Title  Pages\n0    Python 101    250\n1  Data Science    400\n2     ML Basics    350\n---\nTotal pages: 1000",
+        "hints": [
+          "Each dictionary in the list represents one row in the DataFrame",
+          "The keys of the dictionaries become the column names",
+          "Use df['Pages'].sum() to compute the total of the Pages column"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "dataframe-basics",
+    "sectionId": "pandas-core",
+    "orderIndex": 1,
+    "title": "DataFrame Basics",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["head()", "tail()", "info()", "describe()", "shape", "columns", "dtypes"],
+    "content": {
+      "explanation": "Once you have created a DataFrame, the next step is to inspect and understand its structure and content. Pandas provides a rich set of attributes and methods specifically designed for quick data exploration. These inspection tools are the first thing every data analyst uses when they encounter a new dataset, and mastering them will make you significantly faster at understanding unfamiliar data.\n\nThe head() and tail() methods are your starting point. head(n) returns the first n rows of the DataFrame (default is 5), while tail(n) returns the last n rows. These methods let you quickly glance at the data without printing the entire DataFrame, which could be millions of rows. In practice, you will call df.head() dozens of times during any analysis session to verify that your transformations are producing the expected results.\n\nThe shape attribute returns a tuple of (rows, columns), giving you an immediate sense of the dataset's size. The columns attribute returns an Index object listing all column names, and dtypes returns a Series showing the data type of each column. Together, these three attributes tell you the dimensions, the column names, and the types of data you are working with, all without looking at a single data value.\n\nThe info() method provides a concise summary that combines shape, column names, data types, and non-null counts into a single output. It is particularly useful for spotting missing data: if a column shows fewer non-null values than the total row count, you know there are NaN values in that column. The info() method also shows the memory usage of the DataFrame, which matters when working with large datasets.\n\nThe describe() method generates descriptive statistics for numeric columns by default. It shows count, mean, standard deviation, minimum, 25th percentile, median (50th percentile), 75th percentile, and maximum. For non-numeric columns, you can call describe(include='object') to get count, unique count, top value, and frequency. The describe() method is your quickest path to understanding the distribution and range of values in your dataset.",
+      "codeExamples": [
+        {
+          "title": "Using head() and tail()",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],\n    'Age': [25, 30, 35, 28, 32],\n    'Salary': [50000, 60000, 70000, 55000, 65000]\n})\n\nprint(\"First 3 rows:\")\nprint(df.head(3))\nprint(\"---\")\nprint(\"Last 2 rows:\")\nprint(df.tail(2))",
+          "output": "First 3 rows:\n      Name  Age  Salary\n0    Alice   25   50000\n1      Bob   30   60000\n2  Charlie   35   70000\n---\nLast 2 rows:\n    Name  Age  Salary\n3  Diana   28   55000\n4    Eve   32   65000",
+          "explanation": "head(3) returns the first 3 rows, and tail(2) returns the last 2 rows. These are non-destructive operations that return new DataFrames without modifying the original."
+        },
+        {
+          "title": "Inspecting shape, columns, and dtypes",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Product': ['Laptop', 'Mouse', 'Keyboard'],\n    'Price': [50000.0, 500.0, 1500.0],\n    'InStock': [True, True, False]\n})\n\nprint(\"Shape:\", df.shape)\nprint(\"Columns:\", list(df.columns))\nprint(\"---\")\nprint(df.dtypes)",
+          "output": "Shape: (3, 3)\nColumns: ['Product', 'Price', 'InStock']\n---\nProduct     object\nPrice      float64\nInStock       bool\ndtype: object",
+          "explanation": "shape returns (rows, columns) as a tuple. columns lists all column names. dtypes shows the data type of each column: object for strings, float64 for decimals, and bool for boolean values."
+        },
+        {
+          "title": "Using describe() for Statistics",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Math': [85, 90, 78, 92, 88],\n    'Science': [80, 85, 75, 95, 90],\n    'English': [70, 88, 82, 79, 91]\n})\n\nprint(df.describe())",
+          "output": "            Math  Science  English\ncount   5.000000      5.0  5.00000\nmean   86.600000     85.0  82.00000\nstd     5.412947      7.5   8.09321\nmin    78.000000     75.0  70.00000\n25%    85.000000     80.0  79.00000\n50%    88.000000     85.0  82.00000\n75%    90.000000     90.0  88.00000\nmax    92.000000     95.0  91.00000",
+          "explanation": "describe() automatically computes count, mean, standard deviation, min, 25th/50th/75th percentiles, and max for all numeric columns. This gives you a quick statistical overview of your data."
+        },
+        {
+          "title": "Checking Column Types and Renaming",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'emp_name': ['Alice', 'Bob', 'Charlie'],\n    'emp_age': [25, 30, 35],\n    'emp_dept': ['HR', 'IT', 'Finance']\n})\n\nprint(\"Original columns:\", list(df.columns))\n\n# Rename columns\ndf = df.rename(columns={'emp_name': 'Name', 'emp_age': 'Age', 'emp_dept': 'Department'})\nprint(\"Renamed columns:\", list(df.columns))\nprint(\"---\")\nprint(df)",
+          "output": "Original columns: ['emp_name', 'emp_age', 'emp_dept']\nRenamed columns: ['Name', 'Age', 'Department']\n---\n      Name  Age Department\n0    Alice   25         HR\n1      Bob   30         IT\n2  Charlie   35    Finance",
+          "explanation": "The rename() method accepts a dictionary mapping old column names to new ones. By default it returns a new DataFrame, so we reassign it. You can also pass inplace=True to modify the DataFrame in place."
+        }
+      ],
+      "notes": [
+        "head() and tail() default to 5 rows if no argument is passed. Always use them before printing an entire large DataFrame.",
+        "describe() only includes numeric columns by default. Use describe(include='all') to include non-numeric columns as well.",
+        "The dtypes attribute is crucial for catching type issues early. A column you expect to be numeric might be 'object' if it contains mixed data or missing values represented as strings."
+      ],
+      "commonPitfalls": [
+        "Assuming describe() covers all columns. By default it only shows statistics for numeric columns. Pass include='all' or include='object' to see non-numeric summaries.",
+        "Confusing shape (an attribute, no parentheses) with head() (a method, requires parentheses). Writing df.shape() will raise a TypeError.",
+        "Not checking dtypes after loading data. A numeric column loaded as 'object' will cause errors in mathematical operations."
+      ],
+      "interviewTips": [
+        "When asked 'how would you explore a new dataset,' describe a systematic workflow: df.shape for size, df.head() for a quick look, df.info() for types and nulls, df.describe() for statistics, and df.dtypes for column types.",
+        "Know the difference between info() and describe(). info() shows structural metadata (types, non-null counts, memory). describe() shows statistical summaries (mean, std, percentiles).",
+        "Be prepared to explain what describe() outputs: count is non-null entries, std is standard deviation, and 25%/50%/75% are quartiles. The 50% value is the median."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "dataframe-basics-ex1",
+        "title": "Explore a Sales DataFrame",
+        "description": "Create a DataFrame with columns 'Item' (['Pen', 'Notebook', 'Eraser', 'Ruler', 'Sharpener']), 'Price' ([10, 50, 5, 20, 15]), and 'Sold' ([200, 150, 300, 100, 250]). Print the shape, then print the first 3 rows.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the sales DataFrame\n# TODO: Print the shape\n# TODO: Print the first 3 rows\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Item': ['Pen', 'Notebook', 'Eraser', 'Ruler', 'Sharpener'],\n    'Price': [10, 50, 5, 20, 15],\n    'Sold': [200, 150, 300, 100, 250]\n})\nprint(\"Shape:\", df.shape)\nprint(\"---\")\nprint(df.head(3))",
+        "expectedOutput": "Shape: (5, 3)\n---\n       Item  Price  Sold\n0       Pen     10   200\n1  Notebook     50   150\n2    Eraser      5   300",
+        "hints": [
+          "Create a dictionary with 'Item', 'Price', and 'Sold' as keys",
+          "Use df.shape to get the dimensions as a tuple",
+          "Use df.head(3) to display only the first 3 rows"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "dataframe-basics-ex2",
+        "title": "Column Types and Describe",
+        "description": "Create a DataFrame with columns 'City' (['Delhi', 'Mumbai', 'Pune']), 'Population' ([20000000, 18000000, 7000000]), and 'Area_km2' ([1484.0, 603.4, 331.3]). Print the dtypes, then print the describe() output for the numeric columns.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the cities DataFrame\n# TODO: Print the dtypes\n# TODO: Print describe() output\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'City': ['Delhi', 'Mumbai', 'Pune'],\n    'Population': [20000000, 18000000, 7000000],\n    'Area_km2': [1484.0, 603.4, 331.3]\n})\nprint(df.dtypes)\nprint(\"---\")\nprint(df.describe())",
+        "expectedOutput": "City           object\nPopulation      int64\nArea_km2      float64\ndtype: object\n---\n         Population      Area_km2\ncount  3.000000e+00      3.000000\nmean   1.500000e+07    806.233333\nstd    7.000000e+06    601.053169\nmin    7.000000e+06    331.300000\n25%    1.250000e+07    467.350000\n50%    1.800000e+07    603.400000\n75%    1.900000e+07   1043.700000\nmax    2.000000e+07   1484.000000",
+        "hints": [
+          "Use df.dtypes (no parentheses) to check the data type of each column",
+          "describe() only shows numeric columns by default",
+          "Large numbers may display in scientific notation (e.g., 3.000000e+00 means 3.0)"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "dataframe-basics-ex3",
+        "title": "Rename and Inspect",
+        "description": "Create a DataFrame with columns 'a' ([10, 20, 30]), 'b' ([40, 50, 60]). Rename 'a' to 'X' and 'b' to 'Y'. Print the renamed column names, then print the last 2 rows.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create a DataFrame with columns 'a' and 'b'\n# TODO: Rename columns to 'X' and 'Y'\n# TODO: Print the column names as a list\n# TODO: Print the last 2 rows\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({'a': [10, 20, 30], 'b': [40, 50, 60]})\ndf = df.rename(columns={'a': 'X', 'b': 'Y'})\nprint(\"Columns:\", list(df.columns))\nprint(\"---\")\nprint(df.tail(2))",
+        "expectedOutput": "Columns: ['X', 'Y']\n---\n    X   Y\n1  20  50\n2  30  60",
+        "hints": [
+          "Use df.rename(columns={'old': 'new'}) to rename columns",
+          "Remember to reassign: df = df.rename(...) since rename returns a new DataFrame by default",
+          "Use df.tail(2) to get the last 2 rows"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "indexing-and-selection",
+    "sectionId": "pandas-core",
+    "orderIndex": 2,
+    "title": "Indexing and Selection",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["loc", "iloc", "Column Selection", "Boolean Filtering", "Conditional Indexing"],
+    "content": {
+      "explanation": "Selecting specific rows, columns, or subsets of data is the most fundamental operation you will perform with Pandas. The library provides multiple ways to access data, and understanding the differences between them is critical for writing correct and efficient code. The two primary indexing methods are loc (label-based) and iloc (integer position-based), and mastering both is essential.\n\nThe loc accessor selects data by label. You use it with row labels (index values) and column names. The syntax is df.loc[row_label, column_name] for a single value, df.loc[row_label] for an entire row, or df.loc[:, column_name] for an entire column. When slicing with loc, both the start and stop values are inclusive, which differs from standard Python slicing where the stop is exclusive. For example, df.loc[0:2] includes rows with labels 0, 1, and 2.\n\nThe iloc accessor selects data by integer position, just like Python list indexing. The syntax mirrors loc, but you use integer positions instead of labels: df.iloc[0] for the first row, df.iloc[:, 1] for the second column, df.iloc[0:2] for the first two rows (stop is exclusive, matching Python convention). iloc is useful when you do not know or care about the labels and just want to access data by its position in the DataFrame.\n\nColumn selection is simpler. You can select a single column with df['column_name'] (returns a Series) or df[['col1', 'col2']] (returns a DataFrame with multiple columns). The double bracket syntax is necessary for multiple columns because you are passing a list of column names. You can also use dot notation (df.column_name) for single columns, but this does not work if the column name contains spaces, conflicts with a DataFrame method name, or if you want to assign values.\n\nBoolean filtering (also called conditional indexing or boolean masking) lets you select rows based on conditions. The expression df[df['Age'] > 30] first evaluates df['Age'] > 30, which produces a boolean Series with True/False for each row. This boolean Series is then used to filter the DataFrame, keeping only rows where the condition is True. You can combine conditions using & (and), | (or), and ~ (not), but each condition must be wrapped in parentheses: df[(df['Age'] > 25) & (df['City'] == 'Mumbai')]. This is one of the most powerful and frequently used features in Pandas.",
+      "codeExamples": [
+        {
+          "title": "Label-Based Selection with loc",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana'],\n    'Age': [25, 30, 35, 28],\n    'City': ['Delhi', 'Mumbai', 'Pune', 'Delhi']\n})\n\n# Select a single value\nprint(\"Name at row 1:\", df.loc[1, 'Name'])\n\n# Select a row\nprint(\"---\")\nprint(df.loc[2])\n\n# Select rows 0 to 2, columns Name and City\nprint(\"---\")\nprint(df.loc[0:2, ['Name', 'City']])",
+          "output": "Name at row 1: Bob\n---\nName    Charlie\nAge          35\nCity       Pune\nName: 2, dtype: object\n---\n      Name   City\n0    Alice  Delhi\n1      Bob Mumbai\n2  Charlie   Pune",
+          "explanation": "loc uses label-based indexing. df.loc[1, 'Name'] gets the value at row label 1, column 'Name'. df.loc[2] returns the entire row as a Series. The slice 0:2 with loc is inclusive on both ends, so it returns rows 0, 1, and 2."
+        },
+        {
+          "title": "Position-Based Selection with iloc",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana'],\n    'Age': [25, 30, 35, 28],\n    'City': ['Delhi', 'Mumbai', 'Pune', 'Delhi']\n})\n\n# First row\nprint(\"First row:\")\nprint(df.iloc[0])\n\n# Last two rows, first two columns\nprint(\"---\")\nprint(df.iloc[-2:, :2])",
+          "output": "First row:\nName    Alice\nAge        25\nCity    Delhi\nName: 0, dtype: object\n---\n      Name  Age\n2  Charlie   35\n3    Diana   28",
+          "explanation": "iloc uses integer positions like Python lists. df.iloc[0] gets the first row. df.iloc[-2:, :2] gets the last 2 rows and the first 2 columns. Unlike loc, iloc slicing is exclusive on the stop end."
+        },
+        {
+          "title": "Boolean Filtering",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],\n    'Age': [25, 30, 35, 28, 32],\n    'Salary': [50000, 60000, 70000, 55000, 65000]\n})\n\n# Filter rows where Age > 29\nprint(\"Age > 29:\")\nprint(df[df['Age'] > 29])\n\n# Combine conditions\nprint(\"---\")\nprint(\"Age > 25 AND Salary >= 60000:\")\nprint(df[(df['Age'] > 25) & (df['Salary'] >= 60000)])",
+          "output": "Age > 29:\n      Name  Age  Salary\n1      Bob   30   60000\n2  Charlie   35   70000\n4      Eve   32   65000\n---\nAge > 25 AND Salary >= 60000:\n      Name  Age  Salary\n1      Bob   30   60000\n2  Charlie   35   70000\n4      Eve   32   65000",
+          "explanation": "df['Age'] > 29 creates a boolean Series. Passing it inside df[...] filters rows where the condition is True. Use & for AND and | for OR, with parentheses around each condition."
+        },
+        {
+          "title": "Selecting Multiple Columns",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', 'Charlie'],\n    'Age': [25, 30, 35],\n    'City': ['Delhi', 'Mumbai', 'Pune'],\n    'Salary': [50000, 60000, 70000]\n})\n\n# Single column (returns Series)\nprint(\"Single column type:\", type(df['Name']).__name__)\n\n# Multiple columns (returns DataFrame)\nsubset = df[['Name', 'Salary']]\nprint(\"---\")\nprint(subset)",
+          "output": "Single column type: Series\n---\n      Name  Salary\n0    Alice   50000\n1      Bob   60000\n2  Charlie   70000",
+          "explanation": "Single bracket with a string returns a Series. Double brackets with a list of strings returns a DataFrame. This distinction matters when chaining operations, as some methods work differently on Series vs DataFrame."
+        }
+      ],
+      "notes": [
+        "Use loc for label-based selection and iloc for position-based selection. When in doubt, use loc because it is more explicit and less prone to off-by-one errors.",
+        "Boolean conditions with & (and) and | (or) require parentheses around each condition due to Python operator precedence. Without parentheses, you will get a confusing error.",
+        "Selecting a single column with df['col'] returns a Series. Selecting with df[['col']] (double brackets) returns a DataFrame with one column. The difference matters for downstream operations."
+      ],
+      "commonPitfalls": [
+        "Confusing loc and iloc. loc[0:2] includes row 2 (inclusive stop). iloc[0:2] excludes row 2 (exclusive stop, like Python lists). This is a very common source of bugs.",
+        "Using 'and' or 'or' instead of '&' or '|' for combining boolean conditions. Python's 'and'/'or' keywords do not work element-wise on Series; you must use the bitwise operators.",
+        "Forgetting parentheses around conditions when combining them. df[df['A'] > 5 & df['B'] < 10] will raise an error because & binds more tightly than > and <."
+      ],
+      "interviewTips": [
+        "Be clear about loc vs iloc. loc is label-based (inclusive slicing), iloc is position-based (exclusive slicing). This is a very common interview question.",
+        "Know that boolean indexing creates a copy by default. Modifying the filtered result does not change the original DataFrame unless you use loc to assign back."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "indexing-and-selection-ex1",
+        "title": "Filter High Scorers",
+        "description": "Create a DataFrame with columns 'Student' (['Ravi', 'Priya', 'Amit', 'Neha', 'Suman']), 'Math' ([90, 75, 88, 95, 60]), and 'Science' ([85, 92, 70, 88, 78]). Filter and print only the rows where Math score is greater than 80.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the student scores DataFrame\n# TODO: Filter rows where Math > 80\n# TODO: Print the filtered DataFrame\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Student': ['Ravi', 'Priya', 'Amit', 'Neha', 'Suman'],\n    'Math': [90, 75, 88, 95, 60],\n    'Science': [85, 92, 70, 88, 78]\n})\nprint(df[df['Math'] > 80])",
+        "expectedOutput": "  Student  Math  Science\n0    Ravi    90       85\n2    Amit    88       70\n3    Neha    95       88",
+        "hints": [
+          "Create the boolean mask: df['Math'] > 80",
+          "Pass the mask inside brackets: df[mask]",
+          "The result will only include rows where the condition is True"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "indexing-and-selection-ex2",
+        "title": "loc and iloc Practice",
+        "description": "Create a DataFrame with columns 'City' (['Delhi', 'Mumbai', 'Pune', 'Chennai']), 'State' (['Delhi', 'Maharashtra', 'Maharashtra', 'Tamil Nadu']), and 'Population' ([20000000, 18000000, 7000000, 10000000]). Use loc to select rows 1 to 2 (inclusive) and columns 'City' and 'Population'. Then use iloc to select the last row.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the cities DataFrame\n# TODO: Use loc to select rows 1-2, columns City and Population\n# TODO: Use iloc to select the last row\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'City': ['Delhi', 'Mumbai', 'Pune', 'Chennai'],\n    'State': ['Delhi', 'Maharashtra', 'Maharashtra', 'Tamil Nadu'],\n    'Population': [20000000, 18000000, 7000000, 10000000]\n})\nprint(df.loc[1:2, ['City', 'Population']])\nprint(\"---\")\nprint(df.iloc[-1])",
+        "expectedOutput": "     City  Population\n1  Mumbai    18000000\n2    Pune     7000000\n---\nCity          Chennai\nState      Tamil Nadu\nPopulation   10000000\nName: 3, dtype: object",
+        "hints": [
+          "df.loc[1:2, ['City', 'Population']] selects rows with labels 1 and 2, and only the specified columns",
+          "df.iloc[-1] selects the last row by position, returned as a Series",
+          "Remember: loc slicing is inclusive on both ends"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "indexing-and-selection-ex3",
+        "title": "Combined Conditions",
+        "description": "Create a DataFrame with columns 'Product' (['Laptop', 'Mouse', 'Keyboard', 'Monitor', 'Webcam']), 'Price' ([50000, 500, 1500, 20000, 3000]), and 'Category' (['Electronics', 'Accessories', 'Accessories', 'Electronics', 'Accessories']). Filter products that are in the 'Accessories' category AND have a Price greater than 1000. Print the result.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the products DataFrame\n# TODO: Filter: Category == 'Accessories' AND Price > 1000\n# TODO: Print the result\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Product': ['Laptop', 'Mouse', 'Keyboard', 'Monitor', 'Webcam'],\n    'Price': [50000, 500, 1500, 20000, 3000],\n    'Category': ['Electronics', 'Accessories', 'Accessories', 'Electronics', 'Accessories']\n})\nresult = df[(df['Category'] == 'Accessories') & (df['Price'] > 1000)]\nprint(result)",
+        "expectedOutput": "    Product  Price      Category\n2  Keyboard   1500  Accessories\n4    Webcam   3000  Accessories",
+        "hints": [
+          "Use & to combine two conditions, not 'and'",
+          "Each condition must be in parentheses: (df['Category'] == 'Accessories') & (df['Price'] > 1000)",
+          "The result only includes rows where both conditions are True"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "sorting-and-ranking",
+    "sectionId": "pandas-core",
+    "orderIndex": 3,
+    "title": "Sorting and Ranking",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["sort_values()", "sort_index()", "rank()", "nlargest()", "nsmallest()"],
+    "content": {
+      "explanation": "Sorting and ranking are essential operations for organizing data in a meaningful order. Whether you need to find the top-performing students, rank products by sales, or simply display data alphabetically, Pandas provides powerful and flexible methods to accomplish these tasks efficiently. Understanding sorting is also important for data presentation, reporting, and as a preliminary step before other operations like deduplication or rolling calculations.\n\nThe sort_values() method sorts a DataFrame by one or more columns. By default, it sorts in ascending order. You can pass ascending=False to sort in descending order, or pass a list of booleans when sorting by multiple columns to control the direction for each column independently. For example, df.sort_values(['Department', 'Salary'], ascending=[True, False]) sorts by Department alphabetically and within each department, sorts by Salary from highest to lowest. The method returns a new DataFrame by default; the original remains unchanged.\n\nThe sort_index() method sorts the DataFrame by its index labels rather than by column values. This is useful after operations like groupby or filtering that may shuffle the index order. By default it sorts in ascending order, and you can pass ascending=False for descending. If your DataFrame has a MultiIndex, sort_index() sorts by all levels by default, but you can specify a particular level to sort by.\n\nThe rank() method assigns ranks to values. By default it uses the 'average' method, meaning tied values get the average of their ranks. Other ranking methods include 'min' (all tied values get the lowest rank), 'max' (all tied values get the highest rank), 'first' (tied values are ranked by their order of appearance), and 'dense' (like 'min' but with no gaps in rank values). You can rank in ascending or descending order using the ascending parameter.\n\nThe nlargest(n, column) and nsmallest(n, column) methods are optimized shortcuts for finding the top or bottom n rows by a particular column. They are faster than sorting the entire DataFrame when you only need a few extreme values, because they use a partial sort algorithm internally. These methods are perfect for \"top 10\" or \"bottom 5\" type queries and are commonly used in data analysis reports and dashboards.",
+      "codeExamples": [
+        {
+          "title": "Sorting by a Single Column",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Charlie', 'Alice', 'Eve', 'Bob', 'Diana'],\n    'Score': [85, 92, 78, 95, 88]\n})\n\n# Sort by Score ascending\nprint(\"Ascending:\")\nprint(df.sort_values('Score'))\n\n# Sort by Score descending\nprint(\"---\")\nprint(\"Descending:\")\nprint(df.sort_values('Score', ascending=False))",
+          "output": "Ascending:\n      Name  Score\n2      Eve     78\n0  Charlie     85\n4    Diana     88\n1    Alice     92\n3      Bob     95\n---\nDescending:\n      Name  Score\n3      Bob     95\n1    Alice     92\n4    Diana     88\n0  Charlie     85\n2      Eve     78",
+          "explanation": "sort_values('Score') sorts by the Score column. The original index labels are preserved, which is why the index appears out of order. Use .reset_index(drop=True) if you want a clean 0-based index after sorting."
+        },
+        {
+          "title": "Sorting by Multiple Columns",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Department': ['IT', 'HR', 'IT', 'HR', 'IT'],\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],\n    'Salary': [70000, 50000, 60000, 55000, 65000]\n})\n\n# Sort by Department (asc), then Salary (desc)\nprint(df.sort_values(['Department', 'Salary'], ascending=[True, False]))",
+          "output": "  Department     Name  Salary\n1         HR      Bob   50000\n3         HR    Diana   55000\n0         IT    Alice   70000\n4         IT      Eve   65000\n2         IT  Charlie   60000",
+          "explanation": "When sorting by multiple columns, pass a list of column names and a corresponding list of ascending booleans. HR comes before IT alphabetically, and within each department, salaries are sorted from highest to lowest."
+        },
+        {
+          "title": "Using nlargest() and nsmallest()",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'City': ['Delhi', 'Mumbai', 'Pune', 'Chennai', 'Kolkata'],\n    'Population': [20000000, 18000000, 7000000, 10000000, 15000000]\n})\n\nprint(\"Top 3 by population:\")\nprint(df.nlargest(3, 'Population'))\n\nprint(\"---\")\nprint(\"Bottom 2 by population:\")\nprint(df.nsmallest(2, 'Population'))",
+          "output": "Top 3 by population:\n     City  Population\n0   Delhi    20000000\n1  Mumbai    18000000\n4  Kolkata   15000000\n---\nBottom 2 by population:\n    City  Population\n2   Pune     7000000\n3  Chennai  10000000",
+          "explanation": "nlargest(3, 'Population') returns the 3 rows with the highest population. nsmallest(2, 'Population') returns the 2 rows with the lowest. These are more efficient than sorting the entire DataFrame when you only need a few results."
+        },
+        {
+          "title": "Ranking Values",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Student': ['Alice', 'Bob', 'Charlie', 'Diana'],\n    'Score': [88, 95, 88, 72]\n})\n\ndf['Rank_avg'] = df['Score'].rank(ascending=False, method='average')\ndf['Rank_min'] = df['Score'].rank(ascending=False, method='min')\ndf['Rank_dense'] = df['Score'].rank(ascending=False, method='dense')\nprint(df)",
+          "output": "   Student  Score  Rank_avg  Rank_min  Rank_dense\n0    Alice     88       2.5       2.0         2.0\n1      Bob     95       1.0       1.0         1.0\n2  Charlie     88       2.5       2.0         2.0\n3    Diana     72       4.0       4.0         3.0",
+          "explanation": "With ascending=False, the highest score gets rank 1. Alice and Charlie are tied at 88. With 'average', they both get 2.5 (average of ranks 2 and 3). With 'min', they both get 2. With 'dense', they get 2 and the next rank is 3 (no gap)."
+        }
+      ],
+      "notes": [
+        "sort_values() returns a new DataFrame by default. The original is not modified unless you pass inplace=True or reassign the result.",
+        "nlargest() and nsmallest() are faster than sort_values().head(n) for large DataFrames because they use a partial sort algorithm.",
+        "The rank() method is useful for creating leaderboards and percentile-based features for machine learning."
+      ],
+      "commonPitfalls": [
+        "Forgetting that sort_values() does not modify the DataFrame in place by default. If you write df.sort_values('col') without assigning the result, nothing changes.",
+        "Confusing rank() methods. The 'average' method gives fractional ranks (2.5 for ties), which may not be what you want. Use 'dense' for competition-style ranking without gaps.",
+        "Using sort_values() when you only need the top or bottom few rows. nlargest() and nsmallest() are both faster and more readable for this use case."
+      ],
+      "interviewTips": [
+        "Know the difference between sort_values() and sort_index(). sort_values sorts by column data, sort_index sorts by the row index labels.",
+        "Be prepared to explain ranking methods. In competitive programming contexts, 'dense' ranking is often expected (1, 2, 2, 3 instead of 1, 2, 2, 4)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "sorting-and-ranking-ex1",
+        "title": "Sort Employees by Salary",
+        "description": "Create a DataFrame with columns 'Name' (['Alice', 'Bob', 'Charlie', 'Diana']), 'Department' (['IT', 'HR', 'IT', 'HR']), and 'Salary' ([70000, 50000, 60000, 55000]). Sort by Salary in descending order and print the result.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the employees DataFrame\n# TODO: Sort by Salary descending\n# TODO: Print the sorted DataFrame\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana'],\n    'Department': ['IT', 'HR', 'IT', 'HR'],\n    'Salary': [70000, 50000, 60000, 55000]\n})\nprint(df.sort_values('Salary', ascending=False))",
+        "expectedOutput": "      Name Department  Salary\n0    Alice         IT   70000\n2  Charlie         IT   60000\n3    Diana         HR   55000\n1      Bob         HR   50000",
+        "hints": [
+          "Use df.sort_values('Salary', ascending=False) for descending order",
+          "The original index is preserved after sorting",
+          "sort_values returns a new DataFrame; it does not modify the original"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sorting-and-ranking-ex2",
+        "title": "Top 3 Products by Revenue",
+        "description": "Create a DataFrame with columns 'Product' (['A', 'B', 'C', 'D', 'E']), 'Price' ([100, 250, 50, 300, 150]), and 'UnitsSold' ([500, 200, 800, 100, 400]). Add a 'Revenue' column (Price * UnitsSold), then use nlargest to find the top 3 products by Revenue. Print only the top 3.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the products DataFrame\n# TODO: Calculate Revenue column\n# TODO: Find and print the top 3 by Revenue\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Product': ['A', 'B', 'C', 'D', 'E'],\n    'Price': [100, 250, 50, 300, 150],\n    'UnitsSold': [500, 200, 800, 100, 400]\n})\ndf['Revenue'] = df['Price'] * df['UnitsSold']\nprint(df.nlargest(3, 'Revenue'))",
+        "expectedOutput": "  Product  Price  UnitsSold  Revenue\n4       E    150        400    60000\n0       A    100        500    50000\n1       B    250        200    50000",
+        "hints": [
+          "Create the Revenue column: df['Revenue'] = df['Price'] * df['UnitsSold']",
+          "Use df.nlargest(3, 'Revenue') to get the top 3 rows by Revenue",
+          "nlargest preserves the original index and handles ties by keeping the first occurrence"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "sorting-and-ranking-ex3",
+        "title": "Rank Students by Score",
+        "description": "Create a DataFrame with columns 'Student' (['Ravi', 'Priya', 'Amit', 'Neha']) and 'Score' ([85, 92, 85, 78]). Add a 'Rank' column using dense ranking in descending order (highest score = rank 1). Print the result.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the students DataFrame\n# TODO: Add a Rank column using dense ranking (descending)\n# TODO: Print the DataFrame\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Student': ['Ravi', 'Priya', 'Amit', 'Neha'],\n    'Score': [85, 92, 85, 78]\n})\ndf['Rank'] = df['Score'].rank(ascending=False, method='dense').astype(int)\nprint(df)",
+        "expectedOutput": "  Student  Score  Rank\n0    Ravi     85     2\n1   Priya     92     1\n2    Amit     85     2\n3    Neha     78     3",
+        "hints": [
+          "Use df['Score'].rank(ascending=False, method='dense') for dense descending ranking",
+          "Dense ranking means no gaps: if two students share rank 2, the next rank is 3 (not 4)",
+          "Use .astype(int) to convert ranks from float to integer for cleaner output"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "groupby-and-aggregation",
+    "sectionId": "pandas-core",
+    "orderIndex": 4,
+    "title": "GroupBy and Aggregation",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["groupby()", "agg()", "transform()", "apply()", "Pivot Table Basics"],
+    "content": {
+      "explanation": "The groupby operation is one of the most powerful features in Pandas and is fundamental to data analysis. It implements the split-apply-combine paradigm: first, the data is split into groups based on one or more keys; then, a function is applied to each group independently; finally, the results are combined into a new data structure. This pattern covers a vast range of analytical tasks, from computing summary statistics per category to creating complex derived features.\n\nThe basic syntax is df.groupby('column'). This returns a GroupBy object, which is lazy: it does not compute anything until you call an aggregation method on it. Common aggregation methods include sum(), mean(), count(), min(), max(), std(), first(), and last(). For example, df.groupby('Department')['Salary'].mean() groups the data by Department, selects the Salary column, and computes the average salary for each department. The result is a Series with Department values as the index.\n\nThe agg() method (short for aggregate) provides maximum flexibility by letting you apply multiple aggregation functions at once or apply different functions to different columns. You can pass a list of functions: df.groupby('Department')['Salary'].agg(['mean', 'max', 'count']). Or you can pass a dictionary to apply different aggregations to different columns: df.groupby('Department').agg({'Salary': 'mean', 'Age': 'max'}). You can even use custom lambda functions or named aggregations for clean column names.\n\nThe transform() method is different from agg() in an important way: while agg() reduces each group to a single value (like mean), transform() returns a result that is the same size as the input. This is incredibly useful for adding group-level statistics back to the original DataFrame. For example, df.groupby('Department')['Salary'].transform('mean') returns a Series with the same length as the original DataFrame, where each value is replaced by the mean salary of that row's department. This pattern is commonly used to create features like \"percentage of group total\" or \"deviation from group mean.\"\n\nThe pivot_table() function creates a spreadsheet-style pivot table from a DataFrame. It is essentially a more convenient interface to groupby with reshaping. You specify values (the data to aggregate), index (the rows), columns (the columns), and aggfunc (the aggregation function). For example, pd.pivot_table(df, values='Sales', index='Region', columns='Product', aggfunc='sum') creates a table with regions as rows, products as columns, and summed sales as values. Pivot tables are powerful for creating summary reports and cross-tabulations.",
+      "codeExamples": [
+        {
+          "title": "Basic GroupBy Aggregation",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Department': ['IT', 'HR', 'IT', 'HR', 'IT'],\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],\n    'Salary': [70000, 50000, 60000, 55000, 65000]\n})\n\nprint(\"Mean salary by department:\")\nprint(df.groupby('Department')['Salary'].mean())\n\nprint(\"---\")\nprint(\"Count per department:\")\nprint(df.groupby('Department')['Name'].count())",
+          "output": "Mean salary by department:\nDepartment\nHR    52500.0\nIT    65000.0\nName: Salary, dtype: float64\n---\nCount per department:\nDepartment\nHR    2\nIT    3\nName: Name, dtype: int64",
+          "explanation": "groupby('Department') splits the data into HR and IT groups. Calling mean() on the Salary column computes the average for each group. The result is a Series indexed by Department."
+        },
+        {
+          "title": "Multiple Aggregations with agg()",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Category': ['A', 'B', 'A', 'B', 'A'],\n    'Value': [10, 20, 30, 40, 50],\n    'Quantity': [5, 3, 8, 2, 7]\n})\n\n# Multiple aggregations on one column\nprint(\"Aggregations on Value:\")\nprint(df.groupby('Category')['Value'].agg(['sum', 'mean', 'max']))\n\nprint(\"---\")\n# Different aggregations for different columns\nprint(\"Mixed aggregations:\")\nprint(df.groupby('Category').agg({'Value': 'sum', 'Quantity': 'mean'}))",
+          "output": "Aggregations on Value:\n          sum  mean  max\nCategory                 \nA          90  30.0   50\nB          60  30.0   40\n---\nMixed aggregations:\n          Value  Quantity\nCategory                 \nA            90       6.666667\nB            60       2.500000",
+          "explanation": "agg() with a list applies multiple functions to the same column. agg() with a dictionary applies different functions to different columns. This is powerful for creating summary tables with exactly the statistics you need."
+        },
+        {
+          "title": "Using transform() for Group-Level Features",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Department': ['IT', 'HR', 'IT', 'HR', 'IT'],\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],\n    'Salary': [70000, 50000, 60000, 55000, 65000]\n})\n\n# Add department mean as a new column\ndf['Dept_Mean'] = df.groupby('Department')['Salary'].transform('mean')\ndf['Dept_Mean'] = df['Dept_Mean'].astype(int)\nprint(df)",
+          "output": "  Department     Name  Salary  Dept_Mean\n0         IT    Alice   70000      65000\n1         HR      Bob   50000      52500\n2         IT  Charlie   60000      65000\n3         HR    Diana   55000      52500\n4         IT      Eve   65000      65000",
+          "explanation": "transform('mean') computes the group mean but returns a value for every row. IT employees all get 65000 (the IT mean) and HR employees all get 52500 (the HR mean). This is useful for comparing individual values to their group average."
+        },
+        {
+          "title": "Pivot Table Basics",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Region': ['North', 'South', 'North', 'South', 'North', 'South'],\n    'Product': ['A', 'A', 'B', 'B', 'A', 'B'],\n    'Sales': [100, 150, 200, 120, 130, 180]\n})\n\npivot = pd.pivot_table(df, values='Sales', index='Region',\n                        columns='Product', aggfunc='sum')\nprint(pivot)",
+          "output": "Product      A    B\nRegion             \nNorth    230  200\nSouth    150  300",
+          "explanation": "The pivot table groups by Region (rows) and Product (columns), summing the Sales values. North region sold 230 units of Product A (100+130) and 200 of Product B. This is the same as a groupby with two keys followed by an unstack."
+        }
+      ],
+      "notes": [
+        "groupby() is lazy. It does not compute anything until you call an aggregation method like sum(), mean(), or agg().",
+        "The result of a groupby aggregation has the group keys as the index. Use .reset_index() to convert them back to regular columns.",
+        "transform() preserves the original DataFrame's shape, while agg() reduces each group to a single row. Choose based on whether you need a summary table or a new column."
+      ],
+      "commonPitfalls": [
+        "Forgetting to select a column before aggregating. df.groupby('Dept').mean() applies mean to ALL numeric columns, which may include columns like employee ID where the mean is meaningless.",
+        "Confusing agg() and transform(). agg() returns one row per group (smaller result). transform() returns one value per original row (same-size result). Using the wrong one gives unexpected shapes.",
+        "Not resetting the index after groupby. The group keys become the index, which can cause issues in subsequent operations. Use .reset_index() if you need a flat DataFrame."
+      ],
+      "interviewTips": [
+        "Explain the split-apply-combine paradigm clearly: groupby splits data into groups, an aggregation function is applied to each group, and results are combined. This is the conceptual foundation of groupby.",
+        "Know when to use agg() vs transform() vs apply(). agg() for summary statistics (one row per group), transform() for broadcasting group values back (same number of rows), apply() for custom functions that may change shape.",
+        "Be ready to discuss groupby performance. GroupBy operations are optimized in Pandas using hash tables for grouping. For very large datasets, the initial grouping step can be memory-intensive, and using categorical dtypes for group keys significantly improves performance.",
+        "Understand that pivot_table is syntactic sugar over groupby + unstack. They produce the same result, but pivot_table has a more intuitive interface for cross-tabulations."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "groupby-and-aggregation-ex1",
+        "title": "Sales by Category",
+        "description": "Create a DataFrame with columns 'Category' (['Electronics', 'Clothing', 'Electronics', 'Clothing', 'Electronics']), 'Product' (['Laptop', 'Shirt', 'Mouse', 'Jeans', 'Keyboard']), and 'Revenue' ([50000, 2000, 500, 3000, 1500]). Group by Category, compute the sum and mean of Revenue, and print the result.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the sales DataFrame\n# TODO: Group by Category and compute sum and mean of Revenue\n# TODO: Print the result\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Category': ['Electronics', 'Clothing', 'Electronics', 'Clothing', 'Electronics'],\n    'Product': ['Laptop', 'Shirt', 'Mouse', 'Jeans', 'Keyboard'],\n    'Revenue': [50000, 2000, 500, 3000, 1500]\n})\nprint(df.groupby('Category')['Revenue'].agg(['sum', 'mean']))",
+        "expectedOutput": "               sum          mean\nCategory                        \nClothing      5000  2500.000000\nElectronics  52000  17333.333333",
+        "hints": [
+          "Use df.groupby('Category')['Revenue'] to group and select the Revenue column",
+          "Pass a list of function names to agg(): .agg(['sum', 'mean'])",
+          "The result will have Category as the index and sum/mean as columns"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "groupby-and-aggregation-ex2",
+        "title": "Add Group Mean Column",
+        "description": "Create a DataFrame with columns 'Team' (['A', 'A', 'B', 'B', 'A']), 'Player' (['P1', 'P2', 'P3', 'P4', 'P5']), and 'Points' ([20, 35, 15, 25, 30]). Use transform to add a 'Team_Avg' column showing each team's average points. Print the DataFrame.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the teams DataFrame\n# TODO: Add Team_Avg column using transform\n# TODO: Print the result\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Team': ['A', 'A', 'B', 'B', 'A'],\n    'Player': ['P1', 'P2', 'P3', 'P4', 'P5'],\n    'Points': [20, 35, 15, 25, 30]\n})\ndf['Team_Avg'] = df.groupby('Team')['Points'].transform('mean')\nprint(df)",
+        "expectedOutput": "  Team Player  Points   Team_Avg\n0    A     P1      20  28.333333\n1    A     P2      35  28.333333\n2    B     P3      15  20.000000\n3    B     P4      25  20.000000\n4    A     P5      30  28.333333",
+        "hints": [
+          "Use df.groupby('Team')['Points'].transform('mean') to get group means for each row",
+          "transform returns a Series with the same length as the original DataFrame",
+          "Team A's average is (20+35+30)/3 = 28.33, Team B's average is (15+25)/2 = 20.0"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "groupby-and-aggregation-ex3",
+        "title": "Pivot Table Summary",
+        "description": "Create a DataFrame with columns 'Quarter' (['Q1', 'Q1', 'Q2', 'Q2', 'Q1', 'Q2']), 'Product' (['X', 'Y', 'X', 'Y', 'Y', 'X']), and 'Sales' ([100, 200, 150, 250, 180, 120]). Create a pivot table with Quarter as rows, Product as columns, and sum of Sales as values. Print the pivot table.",
+        "starterCode": "import pandas as pd\n\n# TODO: Create the sales DataFrame\n# TODO: Create a pivot table\n# TODO: Print the pivot table\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Quarter': ['Q1', 'Q1', 'Q2', 'Q2', 'Q1', 'Q2'],\n    'Product': ['X', 'Y', 'X', 'Y', 'Y', 'X'],\n    'Sales': [100, 200, 150, 250, 180, 120]\n})\npivot = pd.pivot_table(df, values='Sales', index='Quarter',\n                        columns='Product', aggfunc='sum')\nprint(pivot)",
+        "expectedOutput": "Product    X    Y\nQuarter          \nQ1       100  380\nQ2       270  250",
+        "hints": [
+          "Use pd.pivot_table() with values='Sales', index='Quarter', columns='Product'",
+          "Set aggfunc='sum' to sum the sales for each Quarter-Product combination",
+          "Q1 Product Y = 200 + 180 = 380, Q2 Product X = 150 + 120 = 270"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

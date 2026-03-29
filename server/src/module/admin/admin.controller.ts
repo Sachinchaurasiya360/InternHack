@@ -1,6 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import type { AdminService } from "./admin.service.js";
 import { setTokenCookie } from "../../utils/cookie.utils.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("AdminController");
 import {
   adminLoginSchema,
   createAdminSchema,
@@ -62,7 +65,7 @@ export class AdminController {
         if (error.message === "Invalid email or password") return res.status(401).json({ message: error.message });
         if (error.message === "Account is deactivated" || error.message === "Admin account is inactive") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Login failed", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -81,7 +84,7 @@ export class AdminController {
         if (error.message === "Only SUPER_ADMIN can create admins") return res.status(403).json({ message: error.message });
         if (error.message === "Email already registered") return res.status(409).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to create admin", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -93,7 +96,7 @@ export class AdminController {
       const data = await this.adminService.getPlatformDashboard();
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get platform dashboard", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -106,7 +109,7 @@ export class AdminController {
       const data = await this.adminService.getUsers(query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get users", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -120,7 +123,7 @@ export class AdminController {
       return res.status(200).json({ user });
     } catch (error) {
       if (error instanceof Error && error.message === "User not found") return res.status(404).json({ message: error.message });
-      console.error(error);
+      logger.error("Failed to get user by ID", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -142,7 +145,7 @@ export class AdminController {
         if (error.message === "User not found") return res.status(404).json({ message: error.message });
         if (error.message === "Cannot modify your own status") return res.status(400).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to update user status", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -162,7 +165,7 @@ export class AdminController {
         if (error.message === "Cannot delete yourself") return res.status(400).json({ message: error.message });
         if (error.message === "Only SUPER_ADMIN can delete admin users") return res.status(403).json({ message: error.message });
       }
-      console.error(error);
+      logger.error("Failed to delete user", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -175,7 +178,7 @@ export class AdminController {
       const data = await this.adminService.getAdminJobs(query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get admin jobs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -194,7 +197,7 @@ export class AdminController {
       return res.status(200).json({ message: "Job status updated", job });
     } catch (error) {
       if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      console.error(error);
+      logger.error("Failed to update admin job status", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -210,7 +213,7 @@ export class AdminController {
       return res.status(200).json({ message: "Job deleted successfully" });
     } catch (error) {
       if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      console.error(error);
+      logger.error("Failed to delete admin job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -223,7 +226,7 @@ export class AdminController {
       const data = await this.adminService.getActivityLogs(query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get activity logs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -236,7 +239,7 @@ export class AdminController {
       const data = await this.adminService.getErrorLogs(query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get error logs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -949,7 +952,7 @@ export class AdminController {
       const job = await this.adminService.createExternalJob(result.data);
       return res.status(201).json({ message: "External job created", job });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to create external job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -960,7 +963,7 @@ export class AdminController {
       const data = await this.adminService.listExternalJobs(query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to list external jobs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -975,7 +978,7 @@ export class AdminController {
       return res.status(200).json({ message: "External job updated", job });
     } catch (error) {
       if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      console.error(error);
+      logger.error("Failed to update external job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -988,7 +991,7 @@ export class AdminController {
       return res.status(200).json({ message: "External job deleted" });
     } catch (error) {
       if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      console.error(error);
+      logger.error("Failed to delete external job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -999,7 +1002,7 @@ export class AdminController {
       const data = await this.adminService.getPublicExternalJobs(query);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get public external jobs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -1014,7 +1017,7 @@ export class AdminController {
 
       return res.status(200).json({ job });
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to get external job by slug", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

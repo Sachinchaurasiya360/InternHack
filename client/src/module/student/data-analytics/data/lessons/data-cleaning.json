@@ -1,0 +1,388 @@
+[
+  {
+    "id": "handling-missing-data",
+    "sectionId": "data-cleaning",
+    "orderIndex": 0,
+    "title": "Handling Missing Data",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["NaN", "isnull", "dropna", "fillna", "interpolate"],
+    "content": {
+      "explanation": "Missing data is one of the most common problems you will encounter in real-world datasets. Values can be absent for many reasons: a sensor malfunction, a user skipping a form field, a failed API call, or data corruption during transfer. In pandas, missing values are represented by NaN (Not a Number) from NumPy, or by Python's None. Understanding how to detect, analyze, and handle missing data is a critical skill for any data analyst or scientist, because the strategy you choose directly affects the quality and reliability of your analysis.\n\nDetecting missing values is the first step. Pandas provides isnull() (and its alias isna()) to create a Boolean mask that is True wherever a value is missing. You can chain this with sum() to count missing values per column, or with any() to check whether any column contains nulls. The info() method also gives a quick overview showing the count of non-null entries per column. Before deciding how to handle missing data, you should always understand the pattern: are values missing completely at random (MCAR), missing at random (MAR), or missing not at random (MNAR)? This classification guides your imputation strategy.\n\nThe simplest approach is to remove rows or columns containing missing values using dropna(). By default, dropna() removes any row that has at least one NaN. You can pass axis=1 to drop columns instead, how='all' to drop only rows where every value is NaN, or thresh=N to keep rows that have at least N non-null values. Dropping data is appropriate when the percentage of missing values is very small (typically less than 5%) and the missingness is random, but it can introduce bias if the missing data is systematic.\n\nA more nuanced approach is imputation with fillna(). You can fill missing values with a constant, the column mean, median, mode, or a forward/backward fill strategy (method='ffill' or method='bfill'). Forward fill propagates the last valid observation forward, which is especially useful for time series data. For numeric columns with a natural ordering, the interpolate() method can estimate missing values by fitting between known data points using linear or polynomial interpolation. The choice between mean, median, and mode depends on the distribution: use median for skewed data, mean for normally distributed data, and mode for categorical columns.\n\nIn practice, you will often use different strategies for different columns within the same DataFrame. Categorical columns might be filled with the mode or a placeholder like 'Unknown', while numeric columns might use the median. For time series, forward fill or interpolation preserves temporal patterns better than a global statistic. Always document your imputation strategy and consider its impact on downstream analysis, especially variance and correlations, which can be artificially reduced by naive imputation.",
+      "codeExamples": [
+        {
+          "title": "Detecting Missing Values",
+          "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', None, 'Diana'],\n    'Age': [25, np.nan, 30, np.nan],\n    'Salary': [50000, 60000, np.nan, 70000]\n})\n\nprint(\"DataFrame:\")\nprint(df)\nprint(\"\\nMissing values per column:\")\nprint(df.isnull().sum())\nprint(\"\\nTotal missing values:\", df.isnull().sum().sum())",
+          "output": "DataFrame:\n    Name   Age   Salary\n0  Alice  25.0  50000.0\n1    Bob   NaN  60000.0\n2   None  30.0      NaN\n3  Diana   NaN  70000.0\n\nMissing values per column:\nName      1\nAge       2\nSalary    1\ndtype: int64\n\nTotal missing values: 4",
+          "explanation": "isnull() returns a DataFrame of booleans. Chaining with sum() counts True values per column. Calling sum() again on the result gives the grand total of missing values across the entire DataFrame."
+        },
+        {
+          "title": "Dropping Missing Values with dropna()",
+          "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'A': [1, np.nan, 3, 4],\n    'B': [np.nan, 2, 3, 4],\n    'C': [1, 2, np.nan, 4]\n})\n\nprint(\"Original:\")\nprint(df)\nprint(\"\\nDrop rows with any NaN:\")\nprint(df.dropna())\nprint(\"\\nDrop rows where all values are NaN:\")\nprint(df.dropna(how='all'))\nprint(\"\\nKeep rows with at least 2 non-null values:\")\nprint(df.dropna(thresh=2))",
+          "output": "Original:\n     A    B    C\n0  1.0  NaN  1.0\n1  NaN  2.0  2.0\n2  3.0  3.0  NaN\n3  4.0  4.0  4.0\n\nDrop rows with any NaN:\n     A    B    C\n3  4.0  4.0  4.0\n\nDrop rows where all values are NaN:\n     A    B    C\n0  1.0  NaN  1.0\n1  NaN  2.0  2.0\n2  3.0  3.0  NaN\n3  4.0  4.0  4.0\n\nKeep rows with at least 2 non-null values:\n     A    B    C\n0  1.0  NaN  1.0\n1  NaN  2.0  2.0\n2  3.0  3.0  NaN\n3  4.0  4.0  4.0",
+          "explanation": "dropna() with default parameters removes any row containing at least one NaN. The how='all' parameter only drops rows where every single value is missing. The thresh parameter provides fine-grained control by requiring a minimum number of non-null values to keep a row."
+        },
+        {
+          "title": "Filling Missing Values with fillna()",
+          "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'Temperature': [22.0, np.nan, 25.0, np.nan, 28.0],\n    'City': ['Delhi', None, 'Mumbai', 'Delhi', None]\n})\n\nprint(\"Original:\")\nprint(df)\n\n# Fill numeric column with median\nmedian_temp = df['Temperature'].median()\ndf['Temperature'] = df['Temperature'].fillna(median_temp)\n\n# Fill categorical column with mode\nmode_city = df['City'].mode()[0]\ndf['City'] = df['City'].fillna(mode_city)\n\nprint(\"\\nAfter fillna:\")\nprint(df)",
+          "output": "Original:\n   Temperature   City\n0         22.0  Delhi\n1          NaN   None\n2         25.0  Mumbai\n3          NaN  Delhi\n4         28.0   None\n\nAfter fillna:\n   Temperature    City\n0         22.0   Delhi\n1         25.0   Delhi\n2         25.0  Mumbai\n3         25.0   Delhi\n4         28.0   Delhi",
+          "explanation": "Numeric columns are filled with the median (25.0), which is robust to outliers. Categorical columns are filled with the mode (most frequent value), which is 'Delhi'. Using different strategies per column type is standard practice in data cleaning."
+        },
+        {
+          "title": "Forward Fill and Interpolation",
+          "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'Day': [1, 2, 3, 4, 5, 6],\n    'Value': [10.0, np.nan, np.nan, 40.0, np.nan, 60.0]\n})\n\nprint(\"Original:\")\nprint(df['Value'].tolist())\n\nprint(\"\\nForward fill:\")\nprint(df['Value'].ffill().tolist())\n\nprint(\"\\nLinear interpolation:\")\nprint(df['Value'].interpolate().tolist())",
+          "output": "Original:\n[10.0, nan, nan, 40.0, nan, 60.0]\n\nForward fill:\n[10.0, 10.0, 10.0, 40.0, 40.0, 60.0]\n\nLinear interpolation:\n[10.0, 20.0, 30.0, 40.0, 50.0, 60.0]",
+          "explanation": "Forward fill (ffill) carries the last known value forward, producing flat segments. Linear interpolation estimates values by drawing a straight line between known points, giving a smoother and often more accurate result for time series and sequential data."
+        }
+      ],
+      "notes": [
+        "Always investigate the pattern of missingness before choosing a strategy. Use df.isnull().sum() and visualizations like missingno heatmaps to understand which columns and rows are affected.",
+        "dropna() returns a new DataFrame by default. Use inplace=True or reassign to modify the original. The same applies to fillna().",
+        "For production pipelines, use scikit-learn's SimpleImputer or KNNImputer so that the imputation parameters (mean, median) are computed only on training data and applied consistently to test data."
+      ],
+      "commonPitfalls": [
+        "Filling all numeric columns with the mean without checking the distribution. If data is skewed, the mean is pulled toward outliers and the median is a better choice.",
+        "Using dropna() on a large dataset without checking how many rows it removes. You might lose 50% or more of your data if multiple columns have missing values in different rows.",
+        "Forgetting that fillna() with a method like ffill will not fill NaN values at the very beginning of a Series because there is no prior value to propagate."
+      ],
+      "interviewTips": [
+        "When asked about handling missing data, always mention the three types of missingness: MCAR (Missing Completely At Random), MAR (Missing At Random), and MNAR (Missing Not At Random). Explain that the type determines which strategy is appropriate.",
+        "A strong answer covers multiple strategies: deletion (dropna), simple imputation (fillna with mean/median/mode), forward/backward fill for time series, and advanced methods like KNN imputation or iterative imputation for complex datasets.",
+        "Be prepared to discuss the trade-offs: dropping rows is simple but loses information; mean imputation reduces variance; forward fill assumes stability. Mention that you would choose based on the data context and validate the impact on model performance."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "handling-missing-data-ex1",
+        "title": "Count and Report Missing Data",
+        "description": "Create a DataFrame with columns 'Product', 'Price', and 'Rating'. Include some NaN values. Print the total number of missing values per column and the percentage of missing values for the entire DataFrame.",
+        "starterCode": "import pandas as pd\nimport numpy as np\n\n# TODO: Create DataFrame with missing values\n# Columns: Product, Price, Rating\n# TODO: Print missing values per column\n# TODO: Print total missing percentage\n",
+        "solution": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'Product': ['Laptop', 'Phone', None, 'Tablet'],\n    'Price': [999.0, np.nan, 599.0, np.nan],\n    'Rating': [4.5, 4.0, np.nan, 3.5]\n})\n\nprint(\"Missing per column:\")\nprint(df.isnull().sum())\n\ntotal_cells = df.size\ntotal_missing = df.isnull().sum().sum()\npct = round(total_missing / total_cells * 100, 1)\nprint(f\"\\nMissing percentage: {pct}%\")",
+        "expectedOutput": "Missing per column:\nProduct    1\nPrice      2\nRating     1\ndtype: int64\n\nMissing percentage: 33.3%",
+        "hints": [
+          "Use np.nan for numeric missing values and None for string missing values",
+          "df.size gives the total number of cells (rows x columns)",
+          "Divide total missing by total cells and multiply by 100 for the percentage"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "handling-missing-data-ex2",
+        "title": "Impute with Column-Specific Strategies",
+        "description": "Given a DataFrame with 'Category' (string), 'Value' (float), and 'Count' (int) columns, fill missing Category values with 'Unknown', missing Value with the column median, and missing Count with 0. Print the result.",
+        "starterCode": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'Category': ['A', None, 'B', None, 'A'],\n    'Value': [10.0, 20.0, np.nan, 40.0, np.nan],\n    'Count': [5, np.nan, 3, np.nan, 1]\n})\n\n# TODO: Fill Category with 'Unknown'\n# TODO: Fill Value with median\n# TODO: Fill Count with 0\n# TODO: Print the cleaned DataFrame\n",
+        "solution": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'Category': ['A', None, 'B', None, 'A'],\n    'Value': [10.0, 20.0, np.nan, 40.0, np.nan],\n    'Count': [5, np.nan, 3, np.nan, 1]\n})\n\ndf['Category'] = df['Category'].fillna('Unknown')\ndf['Value'] = df['Value'].fillna(df['Value'].median())\ndf['Count'] = df['Count'].fillna(0)\n\nprint(df)",
+        "expectedOutput": "  Category  Value  Count\n0        A   10.0    5.0\n1  Unknown   20.0    0.0\n2        B   20.0    3.0\n3  Unknown   40.0    0.0\n4        A   20.0    1.0",
+        "hints": [
+          "Use fillna('Unknown') for the Category column",
+          "The median of [10.0, 20.0, 40.0] (non-null values) is 20.0",
+          "fillna(0) replaces NaN with zero for the Count column"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "handling-missing-data-ex3",
+        "title": "Compare Dropna vs Fillna",
+        "description": "Create a DataFrame with some missing values. Print the number of rows after using dropna(), then print the number of rows after using fillna(0) on the original DataFrame instead. Show that fillna preserves all rows.",
+        "starterCode": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'X': [1, np.nan, 3, 4, np.nan],\n    'Y': [np.nan, 2, 3, np.nan, 5]\n})\n\n# TODO: Print rows after dropna\n# TODO: Print rows after fillna(0)\n",
+        "solution": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'X': [1, np.nan, 3, 4, np.nan],\n    'Y': [np.nan, 2, 3, np.nan, 5]\n})\n\nprint(f\"Original rows: {len(df)}\")\nprint(f\"After dropna: {len(df.dropna())}\")\nprint(f\"After fillna(0): {len(df.fillna(0))}\")",
+        "expectedOutput": "Original rows: 5\nAfter dropna: 2\nAfter fillna(0): 5",
+        "hints": [
+          "dropna() removes rows 0, 1, 3, and 4 because each has at least one NaN",
+          "Only rows 2 (X=3, Y=3) survives dropna since both values are present",
+          "fillna(0) replaces all NaN with 0 but keeps every row"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "duplicates-and-type-conversion",
+    "sectionId": "data-cleaning",
+    "orderIndex": 1,
+    "title": "Duplicates & Type Conversion",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["duplicated", "drop_duplicates", "astype", "pd.to_numeric", "pd.to_datetime"],
+    "content": {
+      "explanation": "Duplicate rows are another common data quality issue. They can arise from multiple data imports, flawed ETL pipelines, accidental double-submissions in web forms, or merging overlapping datasets. Duplicates inflate counts, skew averages, and can cause misleading results in analysis. Pandas provides the duplicated() method to detect duplicates and drop_duplicates() to remove them, both of which offer fine-grained control over which columns to consider and which occurrence to keep.\n\nThe duplicated() method returns a Boolean Series that is True for rows that are duplicates of an earlier row. By default, it considers all columns and marks the first occurrence as False (not a duplicate) while subsequent identical rows are marked True. You can pass a subset parameter to check for duplicates based on specific columns only, which is useful when rows might have different values in non-key columns but represent the same entity. The keep parameter controls which duplicate is considered the 'original': 'first' (default), 'last', or False (mark all duplicates as True).\n\nOnce detected, drop_duplicates() removes duplicate rows. It accepts the same subset and keep parameters as duplicated(). A common pattern is to first examine duplicates with df[df.duplicated(keep=False)] to see all rows involved, then decide which to keep. For example, if you have duplicate customer records with slightly different timestamps, you might want to keep the most recent entry using keep='last' after sorting by date. Always verify the count of removed rows to ensure you are not over- or under-removing data.\n\nType conversion is equally important for data cleaning. Data loaded from CSV files, web APIs, or databases often arrives with incorrect types: numbers stored as strings, dates as plain text, or boolean-like values as integers. Pandas provides astype() for straightforward conversions, pd.to_numeric() for robust string-to-number conversion with error handling, and pd.to_datetime() for parsing dates from a variety of string formats. Using the correct types reduces memory usage, enables proper sorting and filtering, and is required for mathematical operations and time-based analysis.\n\nThe pd.to_numeric() function is particularly useful because it provides an errors parameter. Setting errors='coerce' converts unparsable values to NaN rather than raising an exception, which lets you clean dirty numeric columns in a single step. Similarly, pd.to_datetime() can parse dates from strings like '2024-01-15', 'Jan 15, 2024', or '15/01/2024' and supports a format parameter for ambiguous patterns. After conversion, you gain access to the dt accessor for extracting year, month, day, day of week, and other components.",
+      "codeExamples": [
+        {
+          "title": "Detecting and Removing Duplicates",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob', 'Alice', 'Charlie', 'Bob'],\n    'Score': [85, 90, 85, 78, 90]\n})\n\nprint(\"Original:\")\nprint(df)\nprint(\"\\nDuplicate mask:\")\nprint(df.duplicated().tolist())\nprint(\"\\nAfter drop_duplicates:\")\nprint(df.drop_duplicates().reset_index(drop=True))",
+          "output": "Original:\n      Name  Score\n0    Alice     85\n1      Bob     90\n2    Alice     85\n3  Charlie     78\n4      Bob     90\n\nDuplicate mask:\n[False, False, True, False, True]\n\nAfter drop_duplicates:\n      Name  Score\n0    Alice     85\n1      Bob     90\n2  Charlie     78",
+          "explanation": "duplicated() marks rows 2 and 4 as True because they are exact copies of earlier rows. drop_duplicates() removes them, keeping only the first occurrence of each unique row. reset_index(drop=True) re-numbers the index cleanly."
+        },
+        {
+          "title": "Subset-Based Duplicate Detection",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Email': ['a@test.com', 'b@test.com', 'a@test.com', 'c@test.com'],\n    'Name': ['Alice', 'Bob', 'Alice V2', 'Charlie'],\n    'SignupDate': ['2024-01-01', '2024-01-02', '2024-01-05', '2024-01-03']\n})\n\nprint(\"Duplicates by Email:\")\nprint(df[df.duplicated(subset=['Email'], keep=False)])\n\nprint(\"\\nKeep last signup per Email:\")\nresult = df.drop_duplicates(subset=['Email'], keep='last').reset_index(drop=True)\nprint(result)",
+          "output": "Duplicates by Email:\n        Email      Name  SignupDate\n0  a@test.com     Alice  2024-01-01\n2  a@test.com  Alice V2  2024-01-05\n\nKeep last signup per Email:\n        Email     Name  SignupDate\n0  b@test.com      Bob  2024-01-02\n1  a@test.com  Alice V2  2024-01-05\n2  c@test.com  Charlie  2024-01-03",
+          "explanation": "Using subset=['Email'] checks only the Email column for duplicates, ignoring differences in Name and SignupDate. With keep=False both duplicates are shown. With keep='last', the later entry is preserved, which is useful when you want the most recent record."
+        },
+        {
+          "title": "Type Conversion with astype and pd.to_numeric",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Price': ['10.5', '20.3', 'N/A', '15.0'],\n    'Quantity': ['3', '5', '2', '8']\n})\n\nprint(\"Original types:\")\nprint(df.dtypes)\n\n# Convert Quantity with astype\ndf['Quantity'] = df['Quantity'].astype(int)\n\n# Convert Price with to_numeric (handles errors)\ndf['Price'] = pd.to_numeric(df['Price'], errors='coerce')\n\nprint(\"\\nConverted types:\")\nprint(df.dtypes)\nprint(\"\\nDataFrame:\")\nprint(df)",
+          "output": "Original types:\nPrice       object\nQuantity    object\ndtype: object\n\nConverted types:\nPrice       float64\nQuantity      int64\ndtype: object\n\nDataFrame:\n   Price  Quantity\n0   10.5         3\n1   20.3         5\n2    NaN         2\n3   15.0         8",
+          "explanation": "astype(int) works when all values are valid integers. pd.to_numeric with errors='coerce' safely converts 'N/A' to NaN instead of raising a ValueError, making it ideal for dirty data with mixed types."
+        },
+        {
+          "title": "Parsing Dates with pd.to_datetime",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Date': ['2024-01-15', '2024-02-20', '2024-03-10'],\n    'Event': ['Launch', 'Update', 'Release']\n})\n\ndf['Date'] = pd.to_datetime(df['Date'])\n\nprint(\"Types:\")\nprint(df.dtypes)\nprint(\"\\nExtracted months:\")\nprint(df['Date'].dt.month.tolist())\nprint(\"\\nDay names:\")\nprint(df['Date'].dt.day_name().tolist())",
+          "output": "Types:\nDate     datetime64[ns]\nEvent            object\ndtype: object\n\nExtracted months:\n[1, 2, 3]\n\nDay names:\n['Monday', 'Tuesday', 'Sunday']",
+          "explanation": "pd.to_datetime() parses ISO format strings into proper datetime objects. Once converted, the dt accessor enables extracting components like month, day_name(), year, and performing date arithmetic such as computing time differences."
+        }
+      ],
+      "notes": [
+        "Always check for duplicates early in your data cleaning pipeline. Use df.duplicated().sum() for a quick count before deciding on a strategy.",
+        "When using astype(), ensure all values in the column are convertible. Use pd.to_numeric() or pd.to_datetime() with errors='coerce' when the data might contain invalid entries.",
+        "Converting object columns to categorical with astype('category') can significantly reduce memory usage for columns with a small number of unique values."
+      ],
+      "commonPitfalls": [
+        "Using drop_duplicates() without specifying subset when you only want to deduplicate by key columns. This might keep rows that differ in irrelevant columns and miss actual duplicates.",
+        "Calling astype(int) on a column that contains NaN values. NaN is a float concept in NumPy, so you must use pd.Int64Dtype() (nullable integer) or handle NaN values first.",
+        "Forgetting that pd.to_datetime() defaults to American date format (month/day/year) for ambiguous dates. Use dayfirst=True or specify the format parameter to avoid silent misinterpretation."
+      ],
+      "interviewTips": [
+        "Mention that duplicated() and drop_duplicates() both accept subset and keep parameters, and explain when you would use keep='first' vs keep='last' vs False.",
+        "Discuss how to handle type conversion errors gracefully using errors='coerce' in pd.to_numeric() and pd.to_datetime(), which converts invalid values to NaN rather than crashing."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "duplicates-type-ex1",
+        "title": "Remove Exact Duplicates",
+        "description": "Create a DataFrame with some duplicate rows. Print the number of duplicates found, remove them, and print the cleaned DataFrame.",
+        "starterCode": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Item': ['Pen', 'Book', 'Pen', 'Eraser', 'Book'],\n    'Price': [5, 50, 5, 10, 50]\n})\n\n# TODO: Print count of duplicate rows\n# TODO: Remove duplicates and print result\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Item': ['Pen', 'Book', 'Pen', 'Eraser', 'Book'],\n    'Price': [5, 50, 5, 10, 50]\n})\n\nprint(f\"Duplicates found: {df.duplicated().sum()}\")\ndf_clean = df.drop_duplicates().reset_index(drop=True)\nprint(df_clean)",
+        "expectedOutput": "Duplicates found: 2\n    Item  Price\n0    Pen      5\n1   Book     50\n2  Eraser     10",
+        "hints": [
+          "df.duplicated().sum() counts the total number of duplicate rows",
+          "drop_duplicates() keeps the first occurrence by default",
+          "Use reset_index(drop=True) to get a clean 0-based index"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "duplicates-type-ex2",
+        "title": "Convert Mixed-Type Column to Numeric",
+        "description": "Given a DataFrame with a 'Revenue' column containing string numbers and some invalid entries, convert the column to numeric (coercing errors to NaN), then print the mean of the valid values rounded to 1 decimal place.",
+        "starterCode": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Company': ['Alpha', 'Beta', 'Gamma', 'Delta'],\n    'Revenue': ['1000', '2500', 'N/A', '1500']\n})\n\n# TODO: Convert Revenue to numeric with error coercion\n# TODO: Print the mean of valid Revenue values (rounded to 1 decimal)\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Company': ['Alpha', 'Beta', 'Gamma', 'Delta'],\n    'Revenue': ['1000', '2500', 'N/A', '1500']\n})\n\ndf['Revenue'] = pd.to_numeric(df['Revenue'], errors='coerce')\nprint(f\"Mean Revenue: {round(df['Revenue'].mean(), 1)}\")",
+        "expectedOutput": "Mean Revenue: 1666.7",
+        "hints": [
+          "pd.to_numeric() with errors='coerce' turns 'N/A' into NaN",
+          "mean() automatically skips NaN values",
+          "The mean of 1000, 2500, and 1500 is 5000/3 = 1666.666..."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "duplicates-type-ex3",
+        "title": "Parse Dates and Extract Components",
+        "description": "Convert a string date column to datetime, then create new columns for Year and Month (as integers). Print the resulting DataFrame.",
+        "starterCode": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Event': ['Conference', 'Workshop', 'Meetup'],\n    'Date': ['2024-03-15', '2024-07-22', '2024-11-05']\n})\n\n# TODO: Convert Date to datetime\n# TODO: Add Year and Month columns\n# TODO: Print the DataFrame\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Event': ['Conference', 'Workshop', 'Meetup'],\n    'Date': ['2024-03-15', '2024-07-22', '2024-11-05']\n})\n\ndf['Date'] = pd.to_datetime(df['Date'])\ndf['Year'] = df['Date'].dt.year\ndf['Month'] = df['Date'].dt.month\n\nprint(df)",
+        "expectedOutput": "        Event       Date  Year  Month\n0  Conference 2024-03-15  2024      3\n1    Workshop 2024-07-22  2024      7\n2      Meetup 2024-11-05  2024     11",
+        "hints": [
+          "pd.to_datetime() parses ISO format dates automatically",
+          "Use the dt accessor to extract year and month as integers",
+          "dt.year returns the year, dt.month returns the month number (1-12)"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "merging-and-joining",
+    "sectionId": "data-cleaning",
+    "orderIndex": 2,
+    "title": "Merging & Joining DataFrames",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["merge", "join", "concat", "inner join", "outer join", "left join", "right join"],
+    "content": {
+      "explanation": "Real-world data rarely lives in a single table. Customer information might be in one dataset, orders in another, and product details in a third. Combining these datasets is a fundamental operation in data analysis, and pandas provides several powerful tools for this: merge() for SQL-style joins, join() for index-based combining, and concat() for stacking DataFrames vertically or horizontally. Understanding how and when to use each is essential for any data analyst.\n\nThe merge() function is the most versatile tool for combining DataFrames. It works like SQL JOIN operations: you specify one or more key columns that exist in both DataFrames, and merge finds matching rows. The how parameter controls the join type: 'inner' (default) returns only rows with matching keys in both DataFrames, 'left' returns all rows from the left DataFrame plus matches from the right, 'right' returns all rows from the right DataFrame plus matches from the left, and 'outer' returns all rows from both DataFrames with NaN where matches are missing. The on parameter specifies the join column when both DataFrames share the same column name; use left_on and right_on when the key columns have different names.\n\nThe concat() function is used to stack DataFrames either vertically (axis=0, the default) or horizontally (axis=1). Vertical concatenation is like SQL UNION ALL: it appends rows from one DataFrame below another. This is useful when you have monthly data files with the same columns that need to be combined into a single dataset. Horizontal concatenation aligns DataFrames side by side based on their index. The ignore_index parameter resets the index in the result, which is almost always what you want when stacking vertically.\n\nThe join() method is a convenience wrapper around merge() that joins on the index by default. It is most commonly used when your DataFrames already have meaningful indexes (like customer IDs or dates). While join() is more concise for index-based operations, merge() with the on parameter is more explicit and generally preferred in production code because it makes the join keys obvious to anyone reading the code.\n\nUnderstanding join types is critical for avoiding data loss or unexpected row duplication. An inner join can silently drop rows that do not match, which might mean losing important data. A left join preserves all rows from the primary DataFrame but introduces NaN where the secondary DataFrame has no match. An outer join keeps everything but may produce many NaN values. A common mistake is performing a merge that produces more rows than expected due to many-to-many relationships, so always check the shape of the result after merging. The validate parameter ('one_to_one', 'one_to_many', 'many_to_one') can catch unexpected duplicates during the merge.",
+      "codeExamples": [
+        {
+          "title": "Inner and Left Merge",
+          "code": "import pandas as pd\n\nemployees = pd.DataFrame({\n    'EmpId': [1, 2, 3, 4],\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana']\n})\n\nsalaries = pd.DataFrame({\n    'EmpId': [1, 2, 5],\n    'Salary': [70000, 80000, 90000]\n})\n\nprint(\"Inner merge:\")\ninner = pd.merge(employees, salaries, on='EmpId', how='inner')\nprint(inner)\n\nprint(\"\\nLeft merge:\")\nleft = pd.merge(employees, salaries, on='EmpId', how='left')\nprint(left)",
+          "output": "Inner merge:\n   EmpId   Name  Salary\n0      1  Alice   70000\n1      2    Bob   80000\n\nLeft merge:\n   EmpId     Name   Salary\n0      1    Alice  70000.0\n1      2      Bob  80000.0\n2      3  Charlie      NaN\n3      4    Diana      NaN",
+          "explanation": "Inner merge keeps only employees 1 and 2, where both tables have matching EmpId. Left merge keeps all 4 employees, filling in NaN for salary where no match exists. Employee 5 from the salaries table is excluded because it is not in the left (employees) table."
+        },
+        {
+          "title": "Outer and Right Merge",
+          "code": "import pandas as pd\n\ndf1 = pd.DataFrame({'Key': ['A', 'B', 'C'], 'Val1': [1, 2, 3]})\ndf2 = pd.DataFrame({'Key': ['B', 'C', 'D'], 'Val2': [20, 30, 40]})\n\nprint(\"Outer merge:\")\nouter = pd.merge(df1, df2, on='Key', how='outer')\nprint(outer)\n\nprint(\"\\nRight merge:\")\nright = pd.merge(df1, df2, on='Key', how='right')\nprint(right)",
+          "output": "Outer merge:\n  Key  Val1  Val2\n0   A   1.0   NaN\n1   B   2.0  20.0\n2   C   3.0  30.0\n3   D   NaN  40.0\n\nRight merge:\n  Key  Val1  Val2\n0   B   2.0    20\n1   C   3.0    30\n2   D   NaN    40",
+          "explanation": "Outer merge includes all keys from both DataFrames (A, B, C, D) with NaN where a key is missing from one side. Right merge keeps all keys from df2 (B, C, D) and drops key A which only exists in df1."
+        },
+        {
+          "title": "Concatenating DataFrames Vertically",
+          "code": "import pandas as pd\n\njan = pd.DataFrame({'Month': ['Jan', 'Jan'], 'Sales': [100, 150]})\nfeb = pd.DataFrame({'Month': ['Feb', 'Feb'], 'Sales': [200, 180]})\nmar = pd.DataFrame({'Month': ['Mar'], 'Sales': [220]})\n\ncombined = pd.concat([jan, feb, mar], ignore_index=True)\nprint(combined)\nprint(f\"\\nTotal rows: {len(combined)}\")",
+          "output": "  Month  Sales\n0   Jan    100\n1   Jan    150\n2   Feb    200\n3   Feb    180\n4   Mar    220\n\nTotal rows: 5",
+          "explanation": "concat() with axis=0 (default) stacks DataFrames vertically. ignore_index=True resets the index to 0, 1, 2, ... instead of preserving the original indexes. This is the standard way to combine monthly or chunked data files."
+        },
+        {
+          "title": "Merge with Different Column Names",
+          "code": "import pandas as pd\n\norders = pd.DataFrame({\n    'OrderId': [101, 102, 103],\n    'CustomerId': [1, 2, 1],\n    'Amount': [250, 450, 300]\n})\n\ncustomers = pd.DataFrame({\n    'CustId': [1, 2, 3],\n    'Name': ['Alice', 'Bob', 'Charlie']\n})\n\nresult = pd.merge(orders, customers, left_on='CustomerId', right_on='CustId')\nresult = result.drop(columns=['CustId'])\nprint(result)",
+          "output": "   OrderId  CustomerId  Amount   Name\n0      101           1     250  Alice\n1      102           2     450    Bob\n2      103           1     300  Alice",
+          "explanation": "When join key columns have different names, use left_on and right_on. After merging, both key columns appear in the result, so we drop the redundant 'CustId' column. Customer 3 (Charlie) is excluded because no orders reference them (inner join by default)."
+        }
+      ],
+      "notes": [
+        "Always check the shape of your DataFrame before and after a merge. An unexpected increase in rows usually indicates a many-to-many join that needs investigation.",
+        "Use the validate parameter in merge() ('one_to_one', 'one_to_many', 'many_to_one', 'many_to_many') to catch unexpected duplicates and ensure data integrity.",
+        "When concatenating DataFrames, always use ignore_index=True if the original indexes are not meaningful. Duplicate indexes can cause confusing behavior in subsequent operations."
+      ],
+      "commonPitfalls": [
+        "Performing an inner merge when you intended a left merge, silently losing rows from the left DataFrame that have no match in the right DataFrame.",
+        "Merging on columns with different data types (e.g., int vs string). Pandas may silently produce no matches. Always ensure key columns have the same dtype before merging.",
+        "Using concat() without ignore_index=True, resulting in duplicate index values that cause issues with loc-based indexing and can produce unexpected results during subsequent operations."
+      ],
+      "interviewTips": [
+        "Draw parallels to SQL: inner merge = INNER JOIN, left merge = LEFT JOIN, outer merge = FULL OUTER JOIN, concat with axis=0 = UNION ALL. Interviewers often expect you to map pandas operations to SQL equivalents.",
+        "When discussing joins, mention the importance of checking for many-to-many relationships and using the validate parameter. This shows awareness of data quality issues that arise in production pipelines.",
+        "Be prepared to explain when you would use merge() vs concat() vs join(). merge() is for combining on shared columns, concat() is for stacking rows or columns, and join() is a shortcut for index-based merging."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "merging-joining-ex1",
+        "title": "Inner Merge Two DataFrames",
+        "description": "Merge a students DataFrame with a grades DataFrame on 'StudentId' using an inner join. Print the result showing only students who have grades.",
+        "starterCode": "import pandas as pd\n\nstudents = pd.DataFrame({\n    'StudentId': [1, 2, 3, 4],\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana']\n})\n\ngrades = pd.DataFrame({\n    'StudentId': [1, 3, 5],\n    'Grade': ['A', 'B', 'A']\n})\n\n# TODO: Inner merge students with grades on StudentId\n# TODO: Print the result\n",
+        "solution": "import pandas as pd\n\nstudents = pd.DataFrame({\n    'StudentId': [1, 2, 3, 4],\n    'Name': ['Alice', 'Bob', 'Charlie', 'Diana']\n})\n\ngrades = pd.DataFrame({\n    'StudentId': [1, 3, 5],\n    'Grade': ['A', 'B', 'A']\n})\n\nresult = pd.merge(students, grades, on='StudentId', how='inner')\nprint(result)",
+        "expectedOutput": "   StudentId     Name Grade\n0          1    Alice     A\n1          3  Charlie     B",
+        "hints": [
+          "pd.merge() defaults to inner join, but you can pass how='inner' explicitly",
+          "Only StudentIds 1 and 3 exist in both DataFrames",
+          "StudentId 5 from grades is excluded because it is not in the students table"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "merging-joining-ex2",
+        "title": "Left Merge and Fill Missing Values",
+        "description": "Perform a left merge of products with reviews on 'ProductId'. Fill any missing ReviewScore with 0. Print the result.",
+        "starterCode": "import pandas as pd\n\nproducts = pd.DataFrame({\n    'ProductId': [1, 2, 3],\n    'Name': ['Laptop', 'Phone', 'Tablet']\n})\n\nreviews = pd.DataFrame({\n    'ProductId': [1, 3],\n    'ReviewScore': [4.5, 3.8]\n})\n\n# TODO: Left merge products with reviews\n# TODO: Fill missing ReviewScore with 0\n# TODO: Print result\n",
+        "solution": "import pandas as pd\n\nproducts = pd.DataFrame({\n    'ProductId': [1, 2, 3],\n    'Name': ['Laptop', 'Phone', 'Tablet']\n})\n\nreviews = pd.DataFrame({\n    'ProductId': [1, 3],\n    'ReviewScore': [4.5, 3.8]\n})\n\nresult = pd.merge(products, reviews, on='ProductId', how='left')\nresult['ReviewScore'] = result['ReviewScore'].fillna(0)\nprint(result)",
+        "expectedOutput": "   ProductId    Name  ReviewScore\n0          1  Laptop          4.5\n1          2   Phone          0.0\n2          3  Tablet          3.8",
+        "hints": [
+          "Left merge keeps all rows from the products DataFrame",
+          "Phone (ProductId 2) has no review, so ReviewScore will be NaN after merge",
+          "Use fillna(0) on the ReviewScore column to replace NaN with 0"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "merging-joining-ex3",
+        "title": "Concatenate and Analyze",
+        "description": "Concatenate three quarterly sales DataFrames vertically, reset the index, and print the total sales amount.",
+        "starterCode": "import pandas as pd\n\nq1 = pd.DataFrame({'Quarter': ['Q1', 'Q1'], 'Sales': [300, 450]})\nq2 = pd.DataFrame({'Quarter': ['Q2', 'Q2'], 'Sales': [500, 380]})\nq3 = pd.DataFrame({'Quarter': ['Q3'], 'Sales': [600]})\n\n# TODO: Concatenate all quarters with ignore_index=True\n# TODO: Print the combined DataFrame\n# TODO: Print total sales\n",
+        "solution": "import pandas as pd\n\nq1 = pd.DataFrame({'Quarter': ['Q1', 'Q1'], 'Sales': [300, 450]})\nq2 = pd.DataFrame({'Quarter': ['Q2', 'Q2'], 'Sales': [500, 380]})\nq3 = pd.DataFrame({'Quarter': ['Q3'], 'Sales': [600]})\n\ncombined = pd.concat([q1, q2, q3], ignore_index=True)\nprint(combined)\nprint(f\"\\nTotal sales: {combined['Sales'].sum()}\")",
+        "expectedOutput": "  Quarter  Sales\n0      Q1    300\n1      Q1    450\n2      Q2    500\n3      Q2    380\n4      Q3    600\n\nTotal sales: 2230",
+        "hints": [
+          "pd.concat() takes a list of DataFrames as the first argument",
+          "ignore_index=True creates a fresh 0-based index",
+          "Use the sum() method on the Sales column for the total"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "reshaping-data",
+    "sectionId": "data-cleaning",
+    "orderIndex": 3,
+    "title": "Reshaping Data",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["melt", "pivot", "pivot_table", "stack", "unstack"],
+    "content": {
+      "explanation": "Reshaping data means transforming its layout between wide format and long format. In wide format, each variable or category gets its own column (e.g., separate columns for Math, Science, English scores). In long format, there is a single column for the variable name and another for the value (e.g., a 'Subject' column and a 'Score' column, with one row per student-subject combination). Different analyses and visualization tools require different formats, so being able to convert between them is a core data wrangling skill.\n\nThe melt() function converts wide format to long format. It takes a DataFrame with many columns and 'unpivots' it into fewer columns. You specify id_vars (columns to keep as-is), value_vars (columns to unpivot), and optionally var_name and value_name to control the names of the new columns. Melt is extremely useful when you receive data where categories are spread across columns (e.g., sales by month with a column for each month) and you need to normalize it for analysis or storage in a relational database.\n\nThe pivot() function does the reverse: it converts long format to wide format. You specify the index (row identifiers), columns (values that become column headers), and values (the data to fill the cells). Pivot requires that the combination of index and columns is unique; if there are duplicates, you must use pivot_table() instead. pivot_table() aggregates duplicate values using a function like mean, sum, or count, making it much more robust and similar to Excel pivot tables.\n\nThe stack() and unstack() methods work with MultiIndex DataFrames. stack() moves the innermost column level into the row index (wide to long), while unstack() moves the innermost row index level into columns (long to wide). These are most commonly used after a groupby() operation that produces a MultiIndex result, or when you need to restructure hierarchical data. For example, after grouping sales by both region and quarter, you might unstack the quarter level to get a wide table with one column per quarter.\n\nChoosing the right format depends on your goal. Long format is preferred for most statistical analyses, machine learning pipelines, and libraries like seaborn that expect tidy data (one observation per row). Wide format is better for human readability, side-by-side comparison, and certain summary reports. A common workflow is to receive data in wide format, melt it to long format for analysis and visualization, perform computations, and then pivot it back to wide format for a final presentation or export.",
+      "codeExamples": [
+        {
+          "title": "Melt: Wide to Long Format",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Student': ['Alice', 'Bob'],\n    'Math': [90, 85],\n    'Science': [88, 92],\n    'English': [95, 78]\n})\n\nprint(\"Wide format:\")\nprint(df)\n\nlong = pd.melt(df, id_vars=['Student'], value_vars=['Math', 'Science', 'English'],\n               var_name='Subject', value_name='Score')\nprint(\"\\nLong format:\")\nprint(long)",
+          "output": "Wide format:\n  Student  Math  Science  English\n0   Alice    90       88       95\n1     Bob    85       92       78\n\nLong format:\n  Student  Subject  Score\n0   Alice     Math     90\n1     Bob     Math     85\n2   Alice  Science     88\n3     Bob  Science     92\n4   Alice  English     95\n5     Bob  English     78",
+          "explanation": "melt() unpivots the three subject columns into a single 'Subject' column and a 'Score' column. Each student now has three rows (one per subject) instead of three columns. The id_vars parameter keeps the Student column as a row identifier."
+        },
+        {
+          "title": "Pivot: Long to Wide Format",
+          "code": "import pandas as pd\n\nlong_df = pd.DataFrame({\n    'City': ['Delhi', 'Delhi', 'Mumbai', 'Mumbai'],\n    'Quarter': ['Q1', 'Q2', 'Q1', 'Q2'],\n    'Revenue': [100, 150, 200, 250]\n})\n\nprint(\"Long format:\")\nprint(long_df)\n\nwide = long_df.pivot(index='City', columns='Quarter', values='Revenue')\nprint(\"\\nWide format:\")\nprint(wide)",
+          "output": "Long format:\n     City Quarter  Revenue\n0   Delhi      Q1      100\n1   Delhi      Q2      150\n2  Mumbai      Q1      200\n3  Mumbai      Q2      250\n\nWide format:\nQuarter   Q1   Q2\nCity              \nDelhi    100  150\nMumbai   200  250",
+          "explanation": "pivot() transforms the long DataFrame so that each unique Quarter value becomes its own column. The City column becomes the index. This only works when each City-Quarter combination is unique; otherwise use pivot_table()."
+        },
+        {
+          "title": "Pivot Table with Aggregation",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Region': ['East', 'East', 'West', 'West', 'East', 'West'],\n    'Product': ['A', 'B', 'A', 'B', 'A', 'A'],\n    'Sales': [100, 200, 150, 300, 120, 180]\n})\n\nprint(\"Original data:\")\nprint(df)\n\ntable = pd.pivot_table(df, values='Sales', index='Region',\n                        columns='Product', aggfunc='sum')\nprint(\"\\nPivot table (sum):\")\nprint(table)",
+          "output": "Original data:\n  Region Product  Sales\n0   East       A    100\n1   East       B    200\n2   West       A    150\n3   West       B    300\n4   East       A    120\n5   West       A    180\n\nPivot table (sum):\nProduct    A    B\nRegion           \nEast     220  200\nWest     330  300",
+          "explanation": "Unlike pivot(), pivot_table() handles duplicate combinations by aggregating them. East-A appears twice (100+120=220) and West-A appears twice (150+180=330). The aggfunc parameter supports 'sum', 'mean', 'count', 'min', 'max', and custom functions."
+        },
+        {
+          "title": "Stack and Unstack",
+          "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'City': ['Delhi', 'Delhi', 'Mumbai', 'Mumbai'],\n    'Year': [2023, 2024, 2023, 2024],\n    'Population': [20, 21, 22, 23]\n})\n\n# Set MultiIndex\ndf_indexed = df.set_index(['City', 'Year'])\nprint(\"MultiIndex DataFrame:\")\nprint(df_indexed)\n\n# Unstack: move Year from rows to columns\nprint(\"\\nUnstacked (wide):\")\nprint(df_indexed.unstack())\n\n# Stack it back: move columns back to rows\nprint(\"\\nStacked (long):\")\nprint(df_indexed.unstack().stack())",
+          "output": "MultiIndex DataFrame:\n              Population\nCity   Year             \nDelhi  2023          20\n       2024          21\nMumbai 2023          22\n       2024          23\n\nUnstacked (wide):\n       Population     \nYear         2023 2024\nCity                   \nDelhi          20   21\nMumbai         22   23\n\nStacked (long):\n              Population\nCity   Year             \nDelhi  2023          20\n       2024          21\nMumbai 2023          22\n       2024          23",
+          "explanation": "unstack() takes the innermost row index level (Year) and converts it to column headers, creating a wide format. stack() reverses the operation, moving column levels back into the row index. These methods are useful for reshaping MultiIndex results from groupby operations."
+        }
+      ],
+      "notes": [
+        "Use melt() when you need to normalize wide data for analysis or when a plotting library requires long (tidy) format. Most seaborn plotting functions expect long format.",
+        "pivot() requires unique index-column pairs. If your data has duplicates, use pivot_table() with an appropriate aggregation function to avoid ValueError.",
+        "stack() and unstack() are most useful after groupby() operations that produce MultiIndex DataFrames. They complement reset_index() as ways to reshape hierarchical results."
+      ],
+      "commonPitfalls": [
+        "Using pivot() when the index-column combination is not unique. This raises a ValueError. Always check for duplicates first with df.duplicated(subset=[index_col, column_col]).any(), or use pivot_table() instead.",
+        "Forgetting to specify id_vars in melt(), which causes all columns to be unpivoted. Always explicitly list the columns you want to keep as identifiers.",
+        "Confusing stack/unstack direction. stack() moves columns into the index (making data longer), while unstack() moves the index into columns (making data wider). Think of 'stack' as stacking rows on top of each other."
+      ],
+      "interviewTips": [
+        "Explain the difference between wide and long (tidy) format. Wide format has one column per variable; long format has one row per observation. Tidy data principles (each row is an observation, each column is a variable) favor long format.",
+        "Know when to use pivot() vs pivot_table(). pivot() is a pure reshape with no aggregation; pivot_table() adds aggregation and handles duplicates. Compare pivot_table() to Excel pivot tables or SQL GROUP BY combined with CASE WHEN."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "reshaping-data-ex1",
+        "title": "Melt a Wide DataFrame",
+        "description": "Given a wide DataFrame with monthly sales columns, convert it to long format with 'Month' and 'Sales' columns using melt(). Print the result.",
+        "starterCode": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Store': ['Alpha', 'Beta'],\n    'Jan': [500, 600],\n    'Feb': [550, 620],\n    'Mar': [580, 650]\n})\n\n# TODO: Melt the DataFrame to long format\n# Use 'Store' as id_vars, 'Month' as var_name, 'Sales' as value_name\n# TODO: Print the result\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Store': ['Alpha', 'Beta'],\n    'Jan': [500, 600],\n    'Feb': [550, 620],\n    'Mar': [580, 650]\n})\n\nlong = pd.melt(df, id_vars=['Store'], value_vars=['Jan', 'Feb', 'Mar'],\n               var_name='Month', value_name='Sales')\nprint(long)",
+        "expectedOutput": "  Store Month  Sales\n0  Alpha   Jan    500\n1   Beta   Jan    600\n2  Alpha   Feb    550\n3   Beta   Feb    620\n4  Alpha   Mar    580\n5   Beta   Mar    650",
+        "hints": [
+          "id_vars=['Store'] keeps the Store column as a row identifier",
+          "value_vars lists the columns to unpivot: Jan, Feb, Mar",
+          "var_name and value_name control the names of the new columns"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "reshaping-data-ex2",
+        "title": "Pivot Table with Aggregation",
+        "description": "Create a pivot table from sales data that shows the total sales per Region (rows) and Product (columns). Print the resulting pivot table.",
+        "starterCode": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Region': ['North', 'North', 'South', 'South', 'North'],\n    'Product': ['X', 'Y', 'X', 'Y', 'X'],\n    'Sales': [100, 200, 150, 250, 50]\n})\n\n# TODO: Create pivot table with sum aggregation\n# Index: Region, Columns: Product, Values: Sales\n# TODO: Print the pivot table\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Region': ['North', 'North', 'South', 'South', 'North'],\n    'Product': ['X', 'Y', 'X', 'Y', 'X'],\n    'Sales': [100, 200, 150, 250, 50]\n})\n\ntable = pd.pivot_table(df, values='Sales', index='Region',\n                        columns='Product', aggfunc='sum')\nprint(table)",
+        "expectedOutput": "Product    X    Y\nRegion           \nNorth    150  200\nSouth    150  250",
+        "hints": [
+          "North-X appears twice (100+50=150), so you need pivot_table with aggfunc='sum'",
+          "pivot_table() handles duplicate index-column combinations automatically",
+          "The result has Region as rows and Product as columns"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "reshaping-data-ex3",
+        "title": "Round-Trip: Melt then Pivot",
+        "description": "Start with a wide DataFrame, melt it to long format, then pivot it back to wide format. Verify the round-trip produces the same layout by printing both the original and the final result.",
+        "starterCode": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob'],\n    'Math': [90, 80],\n    'Science': [85, 95]\n})\n\n# TODO: Print the original DataFrame\n# TODO: Melt to long format\n# TODO: Pivot back to wide format\n# TODO: Print the final result\n",
+        "solution": "import pandas as pd\n\ndf = pd.DataFrame({\n    'Name': ['Alice', 'Bob'],\n    'Math': [90, 80],\n    'Science': [85, 95]\n})\n\nprint(\"Original:\")\nprint(df)\n\nlong = pd.melt(df, id_vars=['Name'], var_name='Subject', value_name='Score')\nwide = long.pivot(index='Name', columns='Subject', values='Score').reset_index()\nwide.columns.name = None\n\nprint(\"\\nAfter melt then pivot:\")\nprint(wide)",
+        "expectedOutput": "Original:\n   Name  Math  Science\n0  Alice    90       85\n1    Bob    80       95\n\nAfter melt then pivot:\n   Name  Math  Science\n0  Alice    90       85\n1    Bob    80       95",
+        "hints": [
+          "Melt with id_vars=['Name'] to keep Name as identifier",
+          "Pivot with index='Name', columns='Subject', values='Score' to reverse the melt",
+          "Use reset_index() and set columns.name = None to clean up the output format"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

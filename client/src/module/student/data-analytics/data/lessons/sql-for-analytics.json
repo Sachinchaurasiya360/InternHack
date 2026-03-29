@@ -1,0 +1,482 @@
+[
+  {
+    "id": "sql-fundamentals",
+    "sectionId": "sql-for-analytics",
+    "orderIndex": 0,
+    "title": "SQL Fundamentals",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["SELECT", "WHERE", "ORDER BY", "LIMIT", "basic queries"],
+    "content": {
+      "explanation": "SQL (Structured Query Language) is the universal language for interacting with relational databases, and it is an absolutely essential skill for data analytics. Whether you are extracting data for analysis, building dashboards, or creating data pipelines, SQL will be your primary tool for querying structured data. Understanding SQL fundamentals provides the foundation for more advanced analytical techniques.\n\nThe SELECT statement is the workhorse of SQL. It retrieves data from one or more tables, allowing you to specify which columns to include, filter rows with WHERE clauses, sort results with ORDER BY, and limit output with LIMIT. The basic syntax follows a logical flow: SELECT what you want, FROM where it lives, WHERE conditions must be met, ORDER BY how to sort, and LIMIT how many rows to return.\n\nThe WHERE clause supports a rich set of comparison operators (=, !=, <, >, <=, >=), logical operators (AND, OR, NOT), pattern matching (LIKE with % and _ wildcards), range checks (BETWEEN), and set membership (IN). Mastering these filtering tools allows you to extract precisely the subset of data needed for any analysis task.\n\nSince SQL cannot run directly in a browser environment, we will learn SQL concepts by expressing queries as Python strings and simulating the operations using Python data structures. This approach reinforces both SQL syntax knowledge and the underlying logic of relational operations, which translates directly to working with pandas DataFrames and actual database systems.",
+      "codeExamples": [
+        {
+          "title": "Basic SELECT Queries in SQL Syntax",
+          "code": "# SQL queries expressed as Python strings for learning\n\n# 1. Select all columns\nquery1 = \"SELECT * FROM employees;\"\nprint(f\"Query: {query1}\")\nprint(\"Purpose: Retrieve all rows and columns from the employees table\")\nprint()\n\n# 2. Select specific columns\nquery2 = \"SELECT name, salary FROM employees WHERE department = 'Engineering';\"\nprint(f\"Query: {query2}\")\nprint(\"Purpose: Get names and salaries of engineers only\")\nprint()\n\n# 3. Sorting and limiting\nquery3 = \"SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 3;\"\nprint(f\"Query: {query3}\")\nprint(\"Purpose: Get top 3 highest-paid employees\")",
+          "output": "Query: SELECT * FROM employees;\nPurpose: Retrieve all rows and columns from the employees table\n\nQuery: SELECT name, salary FROM employees WHERE department = 'Engineering';\nPurpose: Get names and salaries of engineers only\n\nQuery: SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 3;\nPurpose: Get top 3 highest-paid employees",
+          "explanation": "These three queries demonstrate the fundamental SQL pattern: SELECT chooses columns, FROM specifies the table, WHERE filters rows, ORDER BY sorts results, and LIMIT caps the output. Understanding this flow is the foundation for all SQL work."
+        },
+        {
+          "title": "Simulating SELECT with Python",
+          "code": "# Simulating a database table as a list of dictionaries\nemployees = [\n    {'id': 1, 'name': 'Alice', 'department': 'Engineering', 'salary': 95000},\n    {'id': 2, 'name': 'Bob', 'department': 'Marketing', 'salary': 72000},\n    {'id': 3, 'name': 'Charlie', 'department': 'Engineering', 'salary': 105000},\n    {'id': 4, 'name': 'Diana', 'department': 'HR', 'salary': 68000},\n    {'id': 5, 'name': 'Eve', 'department': 'Engineering', 'salary': 88000},\n]\n\n# SQL: SELECT name, salary FROM employees WHERE department = 'Engineering'\n# Python equivalent:\nprint(\"Engineers:\")\nresult = [\n    {'name': e['name'], 'salary': e['salary']}\n    for e in employees\n    if e['department'] == 'Engineering'\n]\nfor row in result:\n    print(f\"  {row['name']}: ${row['salary']:,}\")\n\nprint()\n\n# SQL: SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 2\nprint(\"Top 2 by salary:\")\nsorted_emps = sorted(employees, key=lambda e: e['salary'], reverse=True)[:2]\nfor e in sorted_emps:\n    print(f\"  {e['name']}: ${e['salary']:,}\")",
+          "output": "Engineers:\n  Alice: $95,000\n  Charlie: $105,000\n  Eve: $88,000\n\nTop 2 by salary:\n  Charlie: $105,000\n  Alice: $95,000",
+          "explanation": "List comprehensions with conditional filtering mirror SQL WHERE clauses. Python's sorted() with a key function and slice mirrors ORDER BY with LIMIT. This correspondence helps you translate SQL logic to Python and vice versa."
+        },
+        {
+          "title": "WHERE Clause Operators in Python",
+          "code": "products = [\n    {'name': 'Laptop', 'price': 999, 'category': 'Electronics', 'stock': 50},\n    {'name': 'Book', 'price': 15, 'category': 'Education', 'stock': 200},\n    {'name': 'Phone', 'price': 699, 'category': 'Electronics', 'stock': 0},\n    {'name': 'Desk', 'price': 250, 'category': 'Furniture', 'stock': 30},\n    {'name': 'Monitor', 'price': 450, 'category': 'Electronics', 'stock': 75},\n    {'name': 'Chair', 'price': 180, 'category': 'Furniture', 'stock': 0},\n]\n\n# SQL: WHERE price BETWEEN 100 AND 500\nprint(\"BETWEEN 100 AND 500:\")\nfor p in products:\n    if 100 <= p['price'] <= 500:\n        print(f\"  {p['name']}: ${p['price']}\")\n\nprint()\n\n# SQL: WHERE category IN ('Electronics', 'Furniture') AND stock > 0\nprint(\"IN ('Electronics','Furniture') AND stock > 0:\")\nallowed = {'Electronics', 'Furniture'}\nfor p in products:\n    if p['category'] in allowed and p['stock'] > 0:\n        print(f\"  {p['name']}: {p['category']}, stock={p['stock']}\")\n\nprint()\n\n# SQL: WHERE name LIKE '%o%' (contains 'o')\nprint(\"LIKE '%o%' (name contains 'o'):\")\nfor p in products:\n    if 'o' in p['name'].lower():\n        print(f\"  {p['name']}\")",
+          "output": "BETWEEN 100 AND 500:\n  Desk: $250\n  Monitor: $450\n  Chair: $180\n\nIN ('Electronics','Furniture') AND stock > 0:\n  Laptop: Electronics, stock=50\n  Desk: Furniture, stock=30\n  Monitor: Electronics, stock=75\n\nLIKE '%o%' (name contains 'o'):\n  Book\n  Phone\n  Monitor",
+          "explanation": "SQL's BETWEEN maps to Python's chained comparison (a <= x <= b). The IN operator maps to Python's set/list membership check. LIKE with wildcards maps to string methods like 'in' for contains, startswith() for prefix matching, and endswith() for suffix matching."
+        },
+        {
+          "title": "Building SQL Query Strings Dynamically",
+          "code": "def build_select_query(table, columns='*', where=None, order_by=None, limit=None):\n    query = f\"SELECT {columns} FROM {table}\"\n    if where:\n        query += f\" WHERE {where}\"\n    if order_by:\n        query += f\" ORDER BY {order_by}\"\n    if limit:\n        query += f\" LIMIT {limit}\"\n    return query + \";\"\n\n# Generate common analytics queries\nqueries = [\n    build_select_query('sales', 'product, revenue', 'revenue > 1000', 'revenue DESC', 10),\n    build_select_query('users', 'COUNT(*)', \"created_at >= '2024-01-01'\"),\n    build_select_query('orders', '*', \"status = 'pending'\", 'created_at ASC'),\n    build_select_query('products', 'name, price', 'category = \\'Electronics\\'', 'price DESC', 5),\n]\n\nprint(\"Generated SQL Queries:\")\nfor i, q in enumerate(queries, 1):\n    print(f\"\\n{i}. {q}\")",
+          "output": "Generated SQL Queries:\n\n1. SELECT product, revenue FROM sales WHERE revenue > 1000 ORDER BY revenue DESC LIMIT 10;\n\n2. SELECT COUNT(*) FROM users WHERE created_at >= '2024-01-01';\n\n3. SELECT * FROM orders WHERE status = 'pending' ORDER BY created_at ASC;\n\n4. SELECT name, price FROM products WHERE category = 'Electronics' ORDER BY price DESC LIMIT 5;",
+          "explanation": "Building SQL queries programmatically is a common task in analytics tools and data pipelines. This builder function follows the standard SQL clause order: SELECT, FROM, WHERE, ORDER BY, LIMIT. Note: in production, always use parameterized queries to prevent SQL injection."
+        }
+      ],
+      "notes": [
+        "SQL keywords (SELECT, FROM, WHERE) are case-insensitive, but the convention is to write them in uppercase for readability.",
+        "The execution order of SQL clauses differs from their written order: FROM -> WHERE -> SELECT -> ORDER BY -> LIMIT.",
+        "NULL in SQL is not equal to anything, including itself. Use IS NULL or IS NOT NULL instead of = NULL.",
+        "Single quotes are used for string literals in SQL ('value'), while double quotes are for identifiers (\"column name\" with spaces)."
+      ],
+      "commonPitfalls": [
+        "Using = instead of IS NULL when checking for null values. In SQL, NULL = NULL evaluates to NULL (not TRUE), so always use IS NULL.",
+        "Forgetting that LIKE patterns are case-sensitive in most databases. Use ILIKE (PostgreSQL) or LOWER() for case-insensitive matching.",
+        "Not understanding that LIMIT without ORDER BY returns an arbitrary subset. Always pair LIMIT with ORDER BY for deterministic results."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "sql-fund-ex-01",
+        "title": "Write SQL Queries for Employee Analysis",
+        "description": "Given an employees table with columns (id, name, department, salary, hire_year), write and print three SQL query strings: (1) all employees in Engineering, (2) employees hired after 2020 sorted by salary descending, (3) top 5 highest paid employees.",
+        "starterCode": "# Write and print three SQL query strings\n# Table: employees (id, name, department, salary, hire_year)\n\n# Query 1: All employees in Engineering department\nquery1 = \"\"\n\n# Query 2: Employees hired after 2020, sorted by salary descending\nquery2 = \"\"\n\n# Query 3: Top 5 highest paid employees\nquery3 = \"\"\n\n# Print all queries\nprint(\"Query 1:\", query1)\nprint(\"Query 2:\", query2)\nprint(\"Query 3:\", query3)",
+        "solution": "# Write and print three SQL query strings\n# Table: employees (id, name, department, salary, hire_year)\n\n# Query 1: All employees in Engineering department\nquery1 = \"SELECT * FROM employees WHERE department = 'Engineering';\"\n\n# Query 2: Employees hired after 2020, sorted by salary descending\nquery2 = \"SELECT * FROM employees WHERE hire_year > 2020 ORDER BY salary DESC;\"\n\n# Query 3: Top 5 highest paid employees\nquery3 = \"SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 5;\"\n\n# Print all queries\nprint(\"Query 1:\", query1)\nprint(\"Query 2:\", query2)\nprint(\"Query 3:\", query3)",
+        "expectedOutput": "Query 1: SELECT * FROM employees WHERE department = 'Engineering';\nQuery 2: SELECT * FROM employees WHERE hire_year > 2020 ORDER BY salary DESC;\nQuery 3: SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 5;",
+        "hints": [
+          "Use single quotes around string values in SQL: WHERE department = 'Engineering'.",
+          "ORDER BY column DESC sorts in descending order.",
+          "LIMIT 5 restricts the result to 5 rows."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sql-fund-ex-02",
+        "title": "Simulate SQL WHERE Filtering in Python",
+        "description": "Given a list of product dictionaries, simulate three SQL queries using Python: (1) products with price > 100, (2) products in the 'Electronics' category with stock > 0, (3) the cheapest product overall. Print results for each query.",
+        "starterCode": "products = [\n    {'name': 'Laptop', 'price': 999, 'category': 'Electronics', 'stock': 50},\n    {'name': 'Book', 'price': 15, 'category': 'Education', 'stock': 200},\n    {'name': 'Phone', 'price': 699, 'category': 'Electronics', 'stock': 0},\n    {'name': 'Desk', 'price': 250, 'category': 'Furniture', 'stock': 30},\n    {'name': 'Pen', 'price': 3, 'category': 'Education', 'stock': 500},\n]\n\n# Simulate: SELECT name, price FROM products WHERE price > 100\n# Simulate: SELECT name FROM products WHERE category = 'Electronics' AND stock > 0\n# Simulate: SELECT name, price FROM products ORDER BY price ASC LIMIT 1",
+        "solution": "products = [\n    {'name': 'Laptop', 'price': 999, 'category': 'Electronics', 'stock': 50},\n    {'name': 'Book', 'price': 15, 'category': 'Education', 'stock': 200},\n    {'name': 'Phone', 'price': 699, 'category': 'Electronics', 'stock': 0},\n    {'name': 'Desk', 'price': 250, 'category': 'Furniture', 'stock': 30},\n    {'name': 'Pen', 'price': 3, 'category': 'Education', 'stock': 500},\n]\n\n# Query 1: WHERE price > 100\nprint(\"Products with price > 100:\")\nfor p in products:\n    if p['price'] > 100:\n        print(f\"  {p['name']}: ${p['price']}\")\n\nprint()\n\n# Query 2: WHERE category = 'Electronics' AND stock > 0\nprint(\"Electronics in stock:\")\nfor p in products:\n    if p['category'] == 'Electronics' and p['stock'] > 0:\n        print(f\"  {p['name']}\")\n\nprint()\n\n# Query 3: ORDER BY price ASC LIMIT 1\ncheapest = sorted(products, key=lambda p: p['price'])[0]\nprint(f\"Cheapest: {cheapest['name']} (${cheapest['price']})\")",
+        "expectedOutput": "Products with price > 100:\n  Laptop: $999\n  Phone: $699\n  Desk: $250\n\nElectronics in stock:\n  Laptop\n\nCheapest: Pen ($3)",
+        "hints": [
+          "Use a for loop with if conditions to simulate WHERE clauses.",
+          "Combine conditions with 'and' in Python (equivalent to SQL AND).",
+          "Use sorted() with key=lambda and index [0] for the cheapest item."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sql-fund-ex-03",
+        "title": "SQL Query Builder Function",
+        "description": "Create a function that builds SQL SELECT queries from parameters. It should accept table name, columns (default '*'), an optional WHERE clause, optional ORDER BY, and optional LIMIT. Test it by generating and printing 3 different queries.",
+        "starterCode": "# Create a build_query function and generate 3 queries:\n# 1. Select all from 'orders' where status = 'shipped'\n# 2. Select name, email from 'customers' ordered by name, limit 10\n# 3. Select product, SUM(quantity) from 'order_items' where price > 50",
+        "solution": "def build_query(table, columns='*', where=None, order_by=None, limit=None):\n    sql = f\"SELECT {columns} FROM {table}\"\n    if where:\n        sql += f\" WHERE {where}\"\n    if order_by:\n        sql += f\" ORDER BY {order_by}\"\n    if limit:\n        sql += f\" LIMIT {limit}\"\n    return sql + \";\"\n\nq1 = build_query('orders', '*', \"status = 'shipped'\")\nq2 = build_query('customers', 'name, email', order_by='name ASC', limit=10)\nq3 = build_query('order_items', 'product, SUM(quantity)', 'price > 50')\n\nprint(\"Query 1:\", q1)\nprint(\"Query 2:\", q2)\nprint(\"Query 3:\", q3)",
+        "expectedOutput": "Query 1: SELECT * FROM orders WHERE status = 'shipped';\nQuery 2: SELECT name, email FROM customers ORDER BY name ASC LIMIT 10;\nQuery 3: SELECT product, SUM(quantity) FROM order_items WHERE price > 50;",
+        "hints": [
+          "Use f-strings to build the SQL string progressively.",
+          "Check each optional parameter with 'if param:' before appending.",
+          "Always end the query with a semicolon."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "joins-and-subqueries",
+    "sectionId": "sql-for-analytics",
+    "orderIndex": 1,
+    "title": "Joins & Subqueries",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "subqueries", "EXISTS"],
+    "content": {
+      "explanation": "Joins are the mechanism by which SQL combines rows from two or more tables based on a related column, and they are fundamental to working with normalized relational databases. In real-world analytics, data is almost never stored in a single table -- customer information, orders, products, and transactions are typically split across multiple tables for efficiency and data integrity. Understanding joins is therefore essential for any data analyst.\n\nAn INNER JOIN returns only the rows where there is a match in both tables. If a customer has no orders, they will not appear in the result of an inner join between customers and orders. A LEFT JOIN returns all rows from the left table and matching rows from the right table, filling in NULL where there is no match. This is crucial for analytics scenarios like finding customers who have never placed an order. A RIGHT JOIN is the mirror image, keeping all rows from the right table.\n\nSubqueries (also called nested queries) are SELECT statements embedded within another SQL statement. They can appear in the WHERE clause (for filtering based on aggregated or computed values), in the FROM clause (as derived tables), or in the SELECT clause (as scalar subqueries). The EXISTS operator checks whether a subquery returns any rows, which is often more efficient than IN for large datasets.\n\nUnderstanding the performance implications of different join types and subquery patterns is important for working with large datasets. INNER JOINs are generally the fastest because they produce the smallest result sets. Correlated subqueries (which reference the outer query) execute once per row and can be slow, while non-correlated subqueries execute once and are cached. In many cases, joins can replace subqueries with better performance.",
+      "codeExamples": [
+        {
+          "title": "INNER JOIN Simulation in Python",
+          "code": "# Simulating tables\ncustomers = [\n    {'id': 1, 'name': 'Alice'},\n    {'id': 2, 'name': 'Bob'},\n    {'id': 3, 'name': 'Charlie'},\n    {'id': 4, 'name': 'Diana'},\n]\n\norders = [\n    {'order_id': 101, 'customer_id': 1, 'amount': 250},\n    {'order_id': 102, 'customer_id': 1, 'amount': 150},\n    {'order_id': 103, 'customer_id': 2, 'amount': 300},\n    {'order_id': 104, 'customer_id': 5, 'amount': 100},  # customer_id 5 doesn't exist\n]\n\n# SQL: SELECT c.name, o.order_id, o.amount\n#      FROM customers c INNER JOIN orders o ON c.id = o.customer_id\nprint(\"SQL: SELECT c.name, o.order_id, o.amount\")\nprint(\"     FROM customers c INNER JOIN orders o ON c.id = o.customer_id\")\nprint()\n\nprint(\"INNER JOIN Result:\")\ncust_map = {c['id']: c for c in customers}\nfor o in orders:\n    if o['customer_id'] in cust_map:\n        c = cust_map[o['customer_id']]\n        print(f\"  {c['name']}: Order #{o['order_id']}, ${o['amount']}\")\n\nprint(f\"\\nNote: Diana (no orders) and Order #104 (no matching customer) excluded\")",
+          "output": "SQL: SELECT c.name, o.order_id, o.amount\n     FROM customers c INNER JOIN orders o ON c.id = o.customer_id\n\nINNER JOIN Result:\n  Alice: Order #101, $250\n  Alice: Order #102, $150\n  Bob: Order #103, $300\n\nNote: Diana (no orders) and Order #104 (no matching customer) excluded",
+          "explanation": "INNER JOIN only includes rows where the join key exists in both tables. Diana (customer with no orders) and Order #104 (order with no matching customer) are both excluded. This is the most common join type and produces the intersection of matched rows."
+        },
+        {
+          "title": "LEFT JOIN Simulation -- Finding Missing Matches",
+          "code": "customers = [\n    {'id': 1, 'name': 'Alice'},\n    {'id': 2, 'name': 'Bob'},\n    {'id': 3, 'name': 'Charlie'},\n    {'id': 4, 'name': 'Diana'},\n]\n\norders = [\n    {'order_id': 101, 'customer_id': 1, 'amount': 250},\n    {'order_id': 102, 'customer_id': 1, 'amount': 150},\n    {'order_id': 103, 'customer_id': 2, 'amount': 300},\n]\n\n# SQL: SELECT c.name, o.order_id, o.amount\n#      FROM customers c LEFT JOIN orders o ON c.id = o.customer_id\nprint(\"LEFT JOIN Result:\")\n\n# Build order lookup\norder_map = {}\nfor o in orders:\n    order_map.setdefault(o['customer_id'], []).append(o)\n\nfor c in customers:\n    cid = c['id']\n    if cid in order_map:\n        for o in order_map[cid]:\n            print(f\"  {c['name']}: Order #{o['order_id']}, ${o['amount']}\")\n    else:\n        print(f\"  {c['name']}: NULL (no orders)\")\n\nprint()\n\n# Common analytics pattern: find customers with NO orders\n# SQL: SELECT name FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.order_id IS NULL\nprint(\"Customers with no orders:\")\norder_cust_ids = {o['customer_id'] for o in orders}\nfor c in customers:\n    if c['id'] not in order_cust_ids:\n        print(f\"  {c['name']}\")",
+          "output": "LEFT JOIN Result:\n  Alice: Order #101, $250\n  Alice: Order #102, $150\n  Bob: Order #103, $300\n  Charlie: NULL (no orders)\n  Diana: NULL (no orders)\n\nCustomers with no orders:\n  Charlie\n  Diana",
+          "explanation": "LEFT JOIN keeps all rows from the left table (customers) even when there is no match in the right table (orders). Unmatched rows get NULL for the right table columns. The pattern of LEFT JOIN + WHERE right.key IS NULL is the standard way to find records with no corresponding match."
+        },
+        {
+          "title": "Subquery Patterns in SQL",
+          "code": "# Simulating subquery patterns with Python\n\nemployees = [\n    {'name': 'Alice', 'dept': 'Engineering', 'salary': 95000},\n    {'name': 'Bob', 'dept': 'Marketing', 'salary': 72000},\n    {'name': 'Charlie', 'dept': 'Engineering', 'salary': 105000},\n    {'name': 'Diana', 'dept': 'HR', 'salary': 68000},\n    {'name': 'Eve', 'dept': 'Marketing', 'salary': 78000},\n    {'name': 'Frank', 'dept': 'Engineering', 'salary': 88000},\n]\n\n# Subquery 1: WHERE salary > (SELECT AVG(salary) FROM employees)\navg_salary = sum(e['salary'] for e in employees) / len(employees)\nprint(f\"Average salary: ${avg_salary:,.0f}\")\nprint(\"\\nEmployees above average (subquery pattern):\")\nfor e in employees:\n    if e['salary'] > avg_salary:\n        print(f\"  {e['name']}: ${e['salary']:,}\")\n\nprint()\n\n# Subquery 2: WHERE dept IN (SELECT dept FROM employees GROUP BY dept HAVING COUNT(*) > 1)\ndept_counts = {}\nfor e in employees:\n    dept_counts[e['dept']] = dept_counts.get(e['dept'], 0) + 1\nmulti_depts = {d for d, c in dept_counts.items() if c > 1}\n\nprint(f\"Departments with >1 employee: {sorted(multi_depts)}\")\nprint(\"Employees in those departments:\")\nfor e in employees:\n    if e['dept'] in multi_depts:\n        print(f\"  {e['name']} ({e['dept']})\")",
+          "output": "Average salary: $84,333\n\nEmployees above average (subquery pattern):\n  Alice: $95,000\n  Charlie: $105,000\n  Frank: $88,000\n\nDepartments with >1 employee: ['Engineering', 'Marketing']\nEmployees in those departments:\n  Alice (Engineering)\n  Bob (Marketing)\n  Charlie (Engineering)\n  Eve (Marketing)\n  Frank (Engineering)",
+          "explanation": "Subquery pattern 1 filters employees whose salary exceeds the overall average, which requires computing the average first (the subquery) then using it as a filter. Pattern 2 uses a subquery with GROUP BY and HAVING to find departments meeting a condition, then filters employees by those departments."
+        },
+        {
+          "title": "EXISTS vs IN Pattern",
+          "code": "# Simulating EXISTS vs IN with Python\n\ncustomers = [\n    {'id': 1, 'name': 'Alice', 'city': 'NYC'},\n    {'id': 2, 'name': 'Bob', 'city': 'LA'},\n    {'id': 3, 'name': 'Charlie', 'city': 'NYC'},\n    {'id': 4, 'name': 'Diana', 'city': 'Chicago'},\n]\n\norders = [\n    {'customer_id': 1, 'product': 'Laptop'},\n    {'customer_id': 1, 'product': 'Mouse'},\n    {'customer_id': 3, 'product': 'Keyboard'},\n]\n\n# SQL with IN:\n# SELECT name FROM customers WHERE id IN (SELECT customer_id FROM orders)\nprint(\"Using IN pattern:\")\norder_cust_ids = {o['customer_id'] for o in orders}\nfor c in customers:\n    if c['id'] in order_cust_ids:\n        print(f\"  {c['name']} has orders\")\n\nprint()\n\n# SQL with EXISTS:\n# SELECT name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id)\nprint(\"Using EXISTS pattern:\")\nfor c in customers:\n    exists = any(o['customer_id'] == c['id'] for o in orders)\n    if exists:\n        print(f\"  {c['name']} has orders\")\n\nprint()\n\n# NOT EXISTS: customers without orders\nprint(\"NOT EXISTS (no orders):\")\nfor c in customers:\n    not_exists = not any(o['customer_id'] == c['id'] for o in orders)\n    if not_exists:\n        print(f\"  {c['name']}\")",
+          "output": "Using IN pattern:\n  Alice has orders\n  Charlie has orders\n\nUsing EXISTS pattern:\n  Alice has orders\n  Charlie has orders\n\nNOT EXISTS (no orders):\n  Bob\n  Diana",
+          "explanation": "IN collects all matching IDs from the subquery into a set, then checks membership. EXISTS checks row-by-row whether the subquery returns any result. Both give the same answer, but EXISTS is often faster with large datasets because it short-circuits after finding the first match. NOT EXISTS is the standard pattern for anti-joins."
+        }
+      ],
+      "notes": [
+        "INNER JOIN is the default join type in most SQL dialects. If you write just JOIN, it means INNER JOIN.",
+        "LEFT JOIN is the most commonly used outer join in analytics. RIGHT JOIN can always be rewritten as a LEFT JOIN by swapping table order.",
+        "CROSS JOIN produces the Cartesian product (every combination of rows from both tables). Use it deliberately and sparingly.",
+        "Self-joins (joining a table to itself) are useful for comparing rows within the same table, like finding employees with the same manager."
+      ],
+      "commonPitfalls": [
+        "Accidentally creating a Cartesian product by forgetting the ON clause in a JOIN. This multiplies row counts and can crash your query on large tables.",
+        "Using IN with a subquery that returns NULL values. IN does not match NULL, so rows may be unexpectedly excluded. Use EXISTS instead when NULLs are possible.",
+        "Not understanding that LEFT JOIN + WHERE on the right table columns (other than IS NULL) effectively converts it to an INNER JOIN, negating the LEFT JOIN's purpose."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between INNER, LEFT, RIGHT, and FULL OUTER joins with a Venn diagram analogy. Interviewers frequently ask this as a warm-up question.",
+        "Know the pattern: LEFT JOIN + WHERE right_table.key IS NULL to find unmatched records. This is one of the most common interview SQL patterns.",
+        "When asked about subquery vs JOIN performance, explain that JOINs are generally faster because the optimizer can choose the best execution plan, while correlated subqueries execute once per row."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "join-ex-01",
+        "title": "Simulate INNER JOIN",
+        "description": "Given two lists representing 'students' and 'enrollments' tables, perform an INNER JOIN on student_id and print each student's name with their enrolled course.",
+        "starterCode": "students = [\n    {'id': 1, 'name': 'Alice'},\n    {'id': 2, 'name': 'Bob'},\n    {'id': 3, 'name': 'Charlie'},\n]\n\nenrollments = [\n    {'student_id': 1, 'course': 'Math'},\n    {'student_id': 1, 'course': 'Physics'},\n    {'student_id': 2, 'course': 'Chemistry'},\n    {'student_id': 4, 'course': 'Biology'},\n]\n\n# Simulate: SELECT s.name, e.course FROM students s INNER JOIN enrollments e ON s.id = e.student_id",
+        "solution": "students = [\n    {'id': 1, 'name': 'Alice'},\n    {'id': 2, 'name': 'Bob'},\n    {'id': 3, 'name': 'Charlie'},\n]\n\nenrollments = [\n    {'student_id': 1, 'course': 'Math'},\n    {'student_id': 1, 'course': 'Physics'},\n    {'student_id': 2, 'course': 'Chemistry'},\n    {'student_id': 4, 'course': 'Biology'},\n]\n\nstudent_map = {s['id']: s['name'] for s in students}\n\nprint(\"INNER JOIN Result:\")\nfor e in enrollments:\n    if e['student_id'] in student_map:\n        print(f\"  {student_map[e['student_id']]}: {e['course']}\")",
+        "expectedOutput": "INNER JOIN Result:\n  Alice: Math\n  Alice: Physics\n  Bob: Chemistry",
+        "hints": [
+          "Build a dictionary mapping student id to name for fast lookup.",
+          "Iterate over enrollments and check if student_id exists in the map.",
+          "Charlie has no enrollments and enrollment #4 has no matching student -- both excluded in INNER JOIN."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "join-ex-02",
+        "title": "LEFT JOIN -- Find Unmatched Records",
+        "description": "Simulate a LEFT JOIN between departments and employees. Print all departments with their employee count, including departments with zero employees. Then print which departments have no employees.",
+        "starterCode": "departments = [\n    {'id': 1, 'name': 'Engineering'},\n    {'id': 2, 'name': 'Marketing'},\n    {'id': 3, 'name': 'Research'},\n    {'id': 4, 'name': 'Legal'},\n]\n\nemployees = [\n    {'name': 'Alice', 'dept_id': 1},\n    {'name': 'Bob', 'dept_id': 1},\n    {'name': 'Charlie', 'dept_id': 2},\n    {'name': 'Diana', 'dept_id': 1},\n    {'name': 'Eve', 'dept_id': 2},\n]\n\n# Simulate LEFT JOIN and find departments with no employees",
+        "solution": "departments = [\n    {'id': 1, 'name': 'Engineering'},\n    {'id': 2, 'name': 'Marketing'},\n    {'id': 3, 'name': 'Research'},\n    {'id': 4, 'name': 'Legal'},\n]\n\nemployees = [\n    {'name': 'Alice', 'dept_id': 1},\n    {'name': 'Bob', 'dept_id': 1},\n    {'name': 'Charlie', 'dept_id': 2},\n    {'name': 'Diana', 'dept_id': 1},\n    {'name': 'Eve', 'dept_id': 2},\n]\n\ndept_emp_count = {}\nfor e in employees:\n    dept_emp_count[e['dept_id']] = dept_emp_count.get(e['dept_id'], 0) + 1\n\nprint(\"LEFT JOIN - Department Employee Counts:\")\nempty_depts = []\nfor d in departments:\n    count = dept_emp_count.get(d['id'], 0)\n    print(f\"  {d['name']}: {count} employees\")\n    if count == 0:\n        empty_depts.append(d['name'])\n\nprint(f\"\\nDepartments with no employees: {', '.join(empty_depts)}\")",
+        "expectedOutput": "LEFT JOIN - Department Employee Counts:\n  Engineering: 3 employees\n  Marketing: 2 employees\n  Research: 0 employees\n  Legal: 0 employees\n\nDepartments with no employees: Research, Legal",
+        "hints": [
+          "Build a count dictionary from employees, keyed by dept_id.",
+          "Iterate over all departments and use .get(id, 0) to handle departments with no employees.",
+          "Track departments where count is 0 to find the unmatched records."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "join-ex-03",
+        "title": "Subquery Pattern -- Above Average Filter",
+        "description": "Given a list of sales records, find all salespeople whose total sales exceed the average total sales across all salespeople. First compute each person's total, then the average of totals, then filter and print those above average.",
+        "starterCode": "sales = [\n    {'person': 'Alice', 'amount': 500},\n    {'person': 'Alice', 'amount': 300},\n    {'person': 'Bob', 'amount': 200},\n    {'person': 'Bob', 'amount': 100},\n    {'person': 'Charlie', 'amount': 800},\n    {'person': 'Diana', 'amount': 150},\n    {'person': 'Diana', 'amount': 250},\n]\n\n# Subquery pattern:\n# SELECT person, total FROM (SELECT person, SUM(amount) as total FROM sales GROUP BY person)\n# WHERE total > (SELECT AVG(total) FROM ...)",
+        "solution": "sales = [\n    {'person': 'Alice', 'amount': 500},\n    {'person': 'Alice', 'amount': 300},\n    {'person': 'Bob', 'amount': 200},\n    {'person': 'Bob', 'amount': 100},\n    {'person': 'Charlie', 'amount': 800},\n    {'person': 'Diana', 'amount': 150},\n    {'person': 'Diana', 'amount': 250},\n]\n\n# Inner query: GROUP BY person, SUM(amount)\ntotals = {}\nfor s in sales:\n    totals[s['person']] = totals.get(s['person'], 0) + s['amount']\n\n# Subquery: AVG of totals\navg_total = sum(totals.values()) / len(totals)\n\nprint(\"Per-person totals:\")\nfor person, total in sorted(totals.items()):\n    print(f\"  {person}: ${total}\")\n\nprint(f\"\\nAverage total: ${avg_total:.0f}\")\n\nprint(\"\\nAbove average salespeople:\")\nfor person, total in sorted(totals.items()):\n    if total > avg_total:\n        print(f\"  {person}: ${total}\")",
+        "expectedOutput": "Per-person totals:\n  Alice: $800\n  Bob: $300\n  Charlie: $800\n  Diana: $400\n\nAverage total: $575\n\nAbove average salespeople:\n  Alice: $800\n  Charlie: $800",
+        "hints": [
+          "First aggregate sales by person using a dictionary.",
+          "Compute the average of all person totals (the subquery).",
+          "Filter for persons whose total exceeds the average."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "aggregation-functions",
+    "sectionId": "sql-for-analytics",
+    "orderIndex": 2,
+    "title": "Aggregation Functions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["COUNT", "SUM", "AVG", "GROUP BY", "HAVING"],
+    "content": {
+      "explanation": "Aggregation functions are the backbone of analytical SQL. They collapse multiple rows into a single summary value, allowing you to answer questions like 'How much total revenue did each product generate?' or 'Which department has the highest average salary?' Understanding aggregation is critical because most business questions require summarizing data rather than looking at individual records.\n\nThe five core aggregation functions are COUNT (number of rows), SUM (total of numeric values), AVG (arithmetic mean), MIN (smallest value), and MAX (largest value). COUNT(*) counts all rows including those with NULLs, while COUNT(column) counts only non-NULL values in that column. This distinction is important for accurate analytics, especially when dealing with datasets that have missing values.\n\nGROUP BY is the clause that transforms aggregation from whole-table summaries to per-group summaries. When you write GROUP BY department, the database partitions all rows by department and applies the aggregation function independently within each partition. Every column in the SELECT that is not inside an aggregation function must appear in the GROUP BY clause -- this is a fundamental rule that trips up many beginners.\n\nHAVING is the post-aggregation filter. While WHERE filters individual rows before aggregation, HAVING filters groups after aggregation. For example, 'find departments where the average salary exceeds 80000' requires HAVING because the average does not exist until after the GROUP BY computation. The execution order is: FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY.",
+      "codeExamples": [
+        {
+          "title": "Core Aggregation Functions",
+          "code": "# Simulating aggregate functions on a sales dataset\nsales = [\n    {'product': 'Laptop', 'quantity': 5, 'revenue': 4995},\n    {'product': 'Phone', 'quantity': 12, 'revenue': 8388},\n    {'product': 'Tablet', 'quantity': 8, 'revenue': 3192},\n    {'product': 'Laptop', 'quantity': 3, 'revenue': 2997},\n    {'product': 'Phone', 'quantity': 7, 'revenue': 4893},\n    {'product': 'Laptop', 'quantity': 2, 'revenue': 1998},\n]\n\n# SQL: SELECT COUNT(*), SUM(revenue), AVG(revenue), MIN(revenue), MAX(revenue) FROM sales\nrevenues = [s['revenue'] for s in sales]\n\nprint(\"Aggregate Functions (all rows):\")\nprint(f\"  COUNT: {len(revenues)}\")\nprint(f\"  SUM:   ${sum(revenues):,}\")\nprint(f\"  AVG:   ${sum(revenues)/len(revenues):,.0f}\")\nprint(f\"  MIN:   ${min(revenues):,}\")\nprint(f\"  MAX:   ${max(revenues):,}\")",
+          "output": "Aggregate Functions (all rows):\n  COUNT: 6\n  SUM:   $26,463\n  AVG:   $4,411\n  MIN:   $1,998\n  MAX:   $8,388",
+          "explanation": "These five functions summarize the entire revenue column into single values. COUNT gives the number of transactions, SUM the total revenue, AVG the average per transaction, and MIN/MAX the range. In SQL, these would be written as SELECT COUNT(*), SUM(revenue), AVG(revenue), MIN(revenue), MAX(revenue) FROM sales."
+        },
+        {
+          "title": "GROUP BY Simulation",
+          "code": "sales = [\n    {'product': 'Laptop', 'quantity': 5, 'revenue': 4995},\n    {'product': 'Phone', 'quantity': 12, 'revenue': 8388},\n    {'product': 'Tablet', 'quantity': 8, 'revenue': 3192},\n    {'product': 'Laptop', 'quantity': 3, 'revenue': 2997},\n    {'product': 'Phone', 'quantity': 7, 'revenue': 4893},\n    {'product': 'Laptop', 'quantity': 2, 'revenue': 1998},\n]\n\n# SQL: SELECT product, COUNT(*) as num_sales, SUM(revenue) as total_rev, AVG(revenue) as avg_rev\n#      FROM sales GROUP BY product ORDER BY total_rev DESC\n\ngroups = {}\nfor s in sales:\n    p = s['product']\n    if p not in groups:\n        groups[p] = []\n    groups[p].append(s['revenue'])\n\nprint(\"GROUP BY product:\")\nprint(f\"{'Product':<10} {'Count':>6} {'Total Rev':>10} {'Avg Rev':>10}\")\nprint(\"-\" * 38)\n\nresults = []\nfor product, revs in groups.items():\n    results.append((product, len(revs), sum(revs), sum(revs)/len(revs)))\n\nresults.sort(key=lambda x: x[2], reverse=True)\n\nfor product, count, total, avg in results:\n    print(f\"{product:<10} {count:>6} {total:>10,} {avg:>10,.0f}\")",
+          "output": "GROUP BY product:\nProduct     Count  Total Rev    Avg Rev\n--------------------------------------\nPhone           2     13,281      6,641\nLaptop          3      9,990      3,330\nTablet          1      3,192      3,192",
+          "explanation": "GROUP BY partitions the data by product, then applies aggregation functions within each group. Phones have the highest total revenue despite fewer transactions than Laptops. This pattern is the workhorse of analytical SQL -- virtually every business report uses GROUP BY."
+        },
+        {
+          "title": "HAVING Filter on Aggregated Results",
+          "code": "employees = [\n    {'name': 'Alice', 'dept': 'Engineering', 'salary': 95000},\n    {'name': 'Bob', 'dept': 'Marketing', 'salary': 72000},\n    {'name': 'Charlie', 'dept': 'Engineering', 'salary': 105000},\n    {'name': 'Diana', 'dept': 'HR', 'salary': 68000},\n    {'name': 'Eve', 'dept': 'Marketing', 'salary': 78000},\n    {'name': 'Frank', 'dept': 'Engineering', 'salary': 88000},\n    {'name': 'Grace', 'dept': 'HR', 'salary': 65000},\n]\n\n# SQL: SELECT dept, COUNT(*) as cnt, AVG(salary) as avg_sal\n#      FROM employees GROUP BY dept HAVING COUNT(*) >= 2 AND AVG(salary) > 70000\n\ngroups = {}\nfor e in employees:\n    groups.setdefault(e['dept'], []).append(e['salary'])\n\nprint(\"All departments:\")\nfor dept, salaries in sorted(groups.items()):\n    print(f\"  {dept}: count={len(salaries)}, avg=${sum(salaries)/len(salaries):,.0f}\")\n\nprint(\"\\nHAVING COUNT(*) >= 2 AND AVG(salary) > 70000:\")\nfor dept, salaries in sorted(groups.items()):\n    count = len(salaries)\n    avg = sum(salaries) / count\n    if count >= 2 and avg > 70000:\n        print(f\"  {dept}: count={count}, avg=${avg:,.0f}\")",
+          "output": "All departments:\n  Engineering: count=3, avg=$96,000\n  HR: count=2, avg=$66,500\n  Marketing: count=2, avg=$75,000\n\nHAVING COUNT(*) >= 2 AND AVG(salary) > 70000:\n  Engineering: count=3, avg=$96,000\n  Marketing: count=2, avg=$75,000",
+          "explanation": "HAVING filters groups after aggregation. HR is excluded because its average salary ($66,500) does not exceed $70,000, even though it has 2 employees. WHERE filters rows before grouping; HAVING filters groups after. This distinction is one of the most tested SQL concepts in interviews."
+        },
+        {
+          "title": "COUNT Variations: *, column, DISTINCT",
+          "code": "orders = [\n    {'id': 1, 'customer': 'Alice', 'product': 'Laptop', 'coupon': 'SAVE10'},\n    {'id': 2, 'customer': 'Alice', 'product': 'Mouse', 'coupon': None},\n    {'id': 3, 'customer': 'Bob', 'product': 'Laptop', 'coupon': 'SAVE10'},\n    {'id': 4, 'customer': 'Charlie', 'product': 'Keyboard', 'coupon': None},\n    {'id': 5, 'customer': 'Alice', 'product': 'Monitor', 'coupon': 'SAVE20'},\n]\n\n# COUNT(*) -- counts all rows\ncount_star = len(orders)\n\n# COUNT(coupon) -- counts non-NULL coupon values\ncount_coupon = sum(1 for o in orders if o['coupon'] is not None)\n\n# COUNT(DISTINCT customer) -- counts unique customers\ncount_distinct_cust = len(set(o['customer'] for o in orders))\n\n# COUNT(DISTINCT product) -- counts unique products\ncount_distinct_prod = len(set(o['product'] for o in orders))\n\nprint(\"COUNT Variations:\")\nprint(f\"  COUNT(*)                = {count_star}\")\nprint(f\"  COUNT(coupon)           = {count_coupon}\")\nprint(f\"  COUNT(DISTINCT customer) = {count_distinct_cust}\")\nprint(f\"  COUNT(DISTINCT product)  = {count_distinct_prod}\")",
+          "output": "COUNT Variations:\n  COUNT(*)                = 5\n  COUNT(coupon)           = 3\n  COUNT(DISTINCT customer) = 3\n  COUNT(DISTINCT product)  = 4",
+          "explanation": "COUNT(*) counts all 5 rows. COUNT(coupon) counts only 3 because 2 orders have NULL coupons. COUNT(DISTINCT customer) gives 3 unique customers (Alice appears 3 times but counts once). Understanding these variations is essential for accurate metrics in analytics dashboards."
+        }
+      ],
+      "notes": [
+        "Every non-aggregated column in SELECT must appear in GROUP BY. Violating this rule causes an error in most databases (MySQL is an exception with its permissive mode).",
+        "WHERE filters rows before GROUP BY; HAVING filters groups after GROUP BY. Use WHERE for row-level conditions and HAVING for aggregate conditions.",
+        "COUNT(*) includes NULL rows; COUNT(column) excludes NULLs. Use the appropriate version based on whether you want to count all records or only populated values.",
+        "GROUP BY can use multiple columns: GROUP BY dept, year creates a group for each unique (dept, year) combination."
+      ],
+      "commonPitfalls": [
+        "Putting aggregate conditions in WHERE instead of HAVING. For example, WHERE AVG(salary) > 50000 is invalid because AVG is not computed until after GROUP BY.",
+        "Using SELECT columns that are not in GROUP BY and not aggregated. This is a logical error even in databases that allow it (like MySQL), because the returned value is arbitrary.",
+        "Confusing COUNT(*) with COUNT(column_name). COUNT(*) always gives the total rows, while COUNT(column) may give fewer if NULLs exist."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "agg-ex-01",
+        "title": "Department Statistics",
+        "description": "Given a list of employee records, compute per-department statistics: employee count, total salary, and average salary. Sort by total salary descending and print a formatted table.",
+        "starterCode": "employees = [\n    {'name': 'Alice', 'dept': 'Engineering', 'salary': 95000},\n    {'name': 'Bob', 'dept': 'Marketing', 'salary': 72000},\n    {'name': 'Charlie', 'dept': 'Engineering', 'salary': 105000},\n    {'name': 'Diana', 'dept': 'HR', 'salary': 68000},\n    {'name': 'Eve', 'dept': 'Marketing', 'salary': 78000},\n    {'name': 'Frank', 'dept': 'Engineering', 'salary': 88000},\n]\n\n# Simulate: SELECT dept, COUNT(*), SUM(salary), AVG(salary) FROM employees\n# GROUP BY dept ORDER BY SUM(salary) DESC",
+        "solution": "employees = [\n    {'name': 'Alice', 'dept': 'Engineering', 'salary': 95000},\n    {'name': 'Bob', 'dept': 'Marketing', 'salary': 72000},\n    {'name': 'Charlie', 'dept': 'Engineering', 'salary': 105000},\n    {'name': 'Diana', 'dept': 'HR', 'salary': 68000},\n    {'name': 'Eve', 'dept': 'Marketing', 'salary': 78000},\n    {'name': 'Frank', 'dept': 'Engineering', 'salary': 88000},\n]\n\ngroups = {}\nfor e in employees:\n    groups.setdefault(e['dept'], []).append(e['salary'])\n\nresults = []\nfor dept, salaries in groups.items():\n    results.append((dept, len(salaries), sum(salaries), sum(salaries)//len(salaries)))\n\nresults.sort(key=lambda x: x[2], reverse=True)\n\nprint(f\"{'Dept':<15} {'Count':>5} {'Total':>10} {'Avg':>8}\")\nprint('-' * 40)\nfor dept, count, total, avg in results:\n    total_s = f'${total:,}'\n    avg_s = f'${avg:,}'\n    print(f'{dept:<15} {count:>5} {total_s:>10} {avg_s:>8}')",
+        "expectedOutput": "Dept            Count      Total      Avg\n----------------------------------------\nEngineering         3   $288,000  $96,000\nMarketing           2   $150,000  $75,000\nHR                  1    $68,000  $68,000",
+        "hints": [
+          "Group salaries by department using a dictionary with setdefault.",
+          "Compute count (len), sum, and avg for each group.",
+          "Sort by total salary descending using sorted() with a lambda key."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "agg-ex-02",
+        "title": "HAVING Filter Simulation",
+        "description": "From a list of product sales, compute total sales per product. Then apply a HAVING-style filter: only show products with total sales greater than 500 AND more than 2 transactions. Print matching products.",
+        "starterCode": "transactions = [\n    {'product': 'A', 'amount': 200},\n    {'product': 'B', 'amount': 150},\n    {'product': 'A', 'amount': 300},\n    {'product': 'C', 'amount': 100},\n    {'product': 'B', 'amount': 250},\n    {'product': 'A', 'amount': 175},\n    {'product': 'C', 'amount': 200},\n    {'product': 'B', 'amount': 300},\n    {'product': 'D', 'amount': 600},\n]\n\n# Simulate: SELECT product, COUNT(*), SUM(amount) FROM transactions\n# GROUP BY product HAVING SUM(amount) > 500 AND COUNT(*) > 2",
+        "solution": "transactions = [\n    {'product': 'A', 'amount': 200},\n    {'product': 'B', 'amount': 150},\n    {'product': 'A', 'amount': 300},\n    {'product': 'C', 'amount': 100},\n    {'product': 'B', 'amount': 250},\n    {'product': 'A', 'amount': 175},\n    {'product': 'C', 'amount': 200},\n    {'product': 'B', 'amount': 300},\n    {'product': 'D', 'amount': 600},\n]\n\ngroups = {}\nfor t in transactions:\n    groups.setdefault(t['product'], []).append(t['amount'])\n\nprint(\"All products:\")\nfor prod in sorted(groups):\n    amounts = groups[prod]\n    print(f\"  {prod}: count={len(amounts)}, total=${sum(amounts)}\")\n\nprint(\"\\nHAVING total > 500 AND count > 2:\")\nfor prod in sorted(groups):\n    amounts = groups[prod]\n    if sum(amounts) > 500 and len(amounts) > 2:\n        print(f\"  {prod}: count={len(amounts)}, total=${sum(amounts)}\")",
+        "expectedOutput": "All products:\n  A: count=3, total=$675\n  B: count=3, total=$700\n  C: count=2, total=$300\n  D: count=1, total=$600\n\nHAVING total > 500 AND count > 2:\n  A: count=3, total=$675\n  B: count=3, total=$700",
+        "hints": [
+          "Group amounts by product using setdefault.",
+          "After computing aggregates, apply the HAVING conditions: sum > 500 AND count > 2.",
+          "C is excluded (count=2, not > 2) and D is excluded (count=1, not > 2)."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "agg-ex-03",
+        "title": "Multi-Level Aggregation Report",
+        "description": "Given sales data with region and product, produce a report showing: (1) per-region totals, (2) per-product totals, and (3) the grand total. This simulates multiple GROUP BY queries against the same data.",
+        "starterCode": "sales = [\n    {'region': 'North', 'product': 'Widget', 'revenue': 1200},\n    {'region': 'North', 'product': 'Gadget', 'revenue': 800},\n    {'region': 'South', 'product': 'Widget', 'revenue': 950},\n    {'region': 'South', 'product': 'Gadget', 'revenue': 1100},\n    {'region': 'North', 'product': 'Widget', 'revenue': 600},\n    {'region': 'South', 'product': 'Widget', 'revenue': 750},\n]\n\n# Produce: By Region totals, By Product totals, Grand total",
+        "solution": "sales = [\n    {'region': 'North', 'product': 'Widget', 'revenue': 1200},\n    {'region': 'North', 'product': 'Gadget', 'revenue': 800},\n    {'region': 'South', 'product': 'Widget', 'revenue': 950},\n    {'region': 'South', 'product': 'Gadget', 'revenue': 1100},\n    {'region': 'North', 'product': 'Widget', 'revenue': 600},\n    {'region': 'South', 'product': 'Widget', 'revenue': 750},\n]\n\n# By Region\nby_region = {}\nfor s in sales:\n    by_region[s['region']] = by_region.get(s['region'], 0) + s['revenue']\n\nprint(\"By Region:\")\nfor region in sorted(by_region):\n    print(f\"  {region}: ${by_region[region]:,}\")\n\nprint()\n\n# By Product\nby_product = {}\nfor s in sales:\n    by_product[s['product']] = by_product.get(s['product'], 0) + s['revenue']\n\nprint(\"By Product:\")\nfor product in sorted(by_product):\n    print(f\"  {product}: ${by_product[product]:,}\")\n\nprint()\n\n# Grand Total\ngrand_total = sum(s['revenue'] for s in sales)\nprint(f\"Grand Total: ${grand_total:,}\")",
+        "expectedOutput": "By Region:\n  North: $2,600\n  South: $2,800\n\nBy Product:\n  Gadget: $1,900\n  Widget: $3,500\n\nGrand Total: $5,400",
+        "hints": [
+          "Use separate dictionaries for each GROUP BY dimension.",
+          "For region totals, accumulate revenue by region key.",
+          "Grand total is the sum of all revenue values without any grouping."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "window-functions",
+    "sectionId": "sql-for-analytics",
+    "orderIndex": 3,
+    "title": "Window Functions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["ROW_NUMBER", "RANK", "DENSE_RANK", "LAG", "LEAD", "OVER", "PARTITION BY"],
+    "content": {
+      "explanation": "Window functions are one of the most powerful features in SQL for analytics, and they fundamentally change how you can analyze data. Unlike regular aggregation functions that collapse rows into groups, window functions perform calculations across a set of rows (the 'window') while preserving every individual row in the output. This makes them perfect for tasks like ranking, running totals, moving averages, and comparing each row to a group aggregate.\n\nThe OVER clause defines the window for the function. PARTITION BY divides rows into groups (similar to GROUP BY but without collapsing), and ORDER BY determines the sequence within each partition. For example, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) assigns a rank within each department based on salary, with every row retaining its original detail.\n\nThe ranking functions ROW_NUMBER, RANK, and DENSE_RANK differ in how they handle ties. ROW_NUMBER always assigns unique sequential numbers regardless of ties. RANK assigns the same number to ties but leaves gaps (1, 2, 2, 4). DENSE_RANK assigns the same number to ties without gaps (1, 2, 2, 3). Choosing the right function depends on your business requirements.\n\nLAG and LEAD are offset functions that access values from previous or subsequent rows respectively. LAG(column, n) looks back n rows, while LEAD(column, n) looks ahead n rows. These are invaluable for time-series analysis: calculating day-over-day changes, identifying trends, and comparing current values to historical ones. Combined with PARTITION BY, they enable sophisticated per-group temporal analysis.",
+      "codeExamples": [
+        {
+          "title": "ROW_NUMBER, RANK, and DENSE_RANK",
+          "code": "# Simulating window ranking functions\nscores = [\n    {'name': 'Alice', 'score': 95},\n    {'name': 'Bob', 'score': 88},\n    {'name': 'Charlie', 'score': 95},\n    {'name': 'Diana', 'score': 82},\n    {'name': 'Eve', 'score': 88},\n    {'name': 'Frank', 'score': 78},\n]\n\n# Sort by score descending\nsorted_scores = sorted(scores, key=lambda x: x['score'], reverse=True)\n\nprint(f\"{'Name':<10} {'Score':>6} {'ROW_NUM':>8} {'RANK':>6} {'D_RANK':>7}\")\nprint(\"-\" * 39)\n\nrow_num = 0\nprev_score = None\nrank_val = 0\ndense_val = 0\n\nfor i, s in enumerate(sorted_scores):\n    row_num = i + 1\n    if s['score'] != prev_score:\n        rank_val = i + 1\n        dense_val += 1\n    prev_score = s['score']\n    print(f\"{s['name']:<10} {s['score']:>6} {row_num:>8} {rank_val:>6} {dense_val:>7}\")",
+          "output": "Name        Score  ROW_NUM   RANK  D_RANK\n---------------------------------------\nAlice          95        1      1       1\nCharlie        95        2      1       1\nBob            88        3      3       2\nEve            88        4      3       2\nDiana          82        5      5       3\nFrank          78        6      6       4",
+          "explanation": "ROW_NUMBER always increments (1,2,3,4,5,6). RANK gives ties the same value but skips numbers (1,1,3,3,5,6 -- no 2 or 4). DENSE_RANK gives ties the same value without gaps (1,1,2,2,3,4). Alice and Charlie tie at 95, getting the same RANK (1) and DENSE_RANK (1) but different ROW_NUMBERs."
+        },
+        {
+          "title": "PARTITION BY with Ranking",
+          "code": "# SQL: ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC)\nemployees = [\n    {'name': 'Alice', 'dept': 'Engineering', 'salary': 105000},\n    {'name': 'Bob', 'dept': 'Engineering', 'salary': 95000},\n    {'name': 'Charlie', 'dept': 'Engineering', 'salary': 88000},\n    {'name': 'Diana', 'dept': 'Marketing', 'salary': 82000},\n    {'name': 'Eve', 'dept': 'Marketing', 'salary': 78000},\n    {'name': 'Frank', 'dept': 'HR', 'salary': 72000},\n]\n\n# Group by department\ndepts = {}\nfor e in employees:\n    depts.setdefault(e['dept'], []).append(e)\n\nprint(\"Ranked within each department:\")\nprint(f\"{'Name':<10} {'Dept':<15} {'Salary':>8} {'Rank':>5}\")\nprint(\"-\" * 40)\n\nfor dept in sorted(depts):\n    dept_emps = sorted(depts[dept], key=lambda x: x['salary'], reverse=True)\n    for rank, e in enumerate(dept_emps, 1):\n        print(f\"{e['name']:<10} {e['dept']:<15} ${e['salary']:>7,} {rank:>5}\")",
+          "output": "Ranked within each department:\nName       Dept              Salary  Rank\n----------------------------------------\nAlice      Engineering       $105,000     1\nBob        Engineering        $95,000     2\nCharlie    Engineering        $88,000     3\nDiana      Marketing          $82,000     1\nEve        Marketing          $78,000     2\nFrank      HR                 $72,000     1",
+          "explanation": "PARTITION BY restarts the ranking within each group. Alice is #1 in Engineering, Diana is #1 in Marketing, and Frank is #1 in HR. This is the standard pattern for finding the top-N within each category, such as 'top 3 products per region' or 'highest scorer per class'."
+        },
+        {
+          "title": "LAG and LEAD for Time-Series Comparison",
+          "code": "# Simulating LAG and LEAD for month-over-month analysis\nmonthly_revenue = [\n    {'month': 'Jan', 'revenue': 10000},\n    {'month': 'Feb', 'revenue': 12000},\n    {'month': 'Mar', 'revenue': 11500},\n    {'month': 'Apr', 'revenue': 15000},\n    {'month': 'May', 'revenue': 14000},\n    {'month': 'Jun', 'revenue': 18000},\n]\n\nprint(f\"{'Month':<6} {'Revenue':>8} {'Prev':>8} {'Next':>8} {'MoM Change':>11}\")\nprint(\"-\" * 45)\n\nfor i, row in enumerate(monthly_revenue):\n    prev_rev = monthly_revenue[i-1]['revenue'] if i > 0 else None\n    next_rev = monthly_revenue[i+1]['revenue'] if i < len(monthly_revenue)-1 else None\n    \n    if prev_rev is not None:\n        change = (row['revenue'] - prev_rev) / prev_rev * 100\n        change_str = f\"{change:>+.1f}%\"\n    else:\n        change_str = \"N/A\"\n    \n    prev_str = f\"${prev_rev:,}\" if prev_rev else \"NULL\"\n    next_str = f\"${next_rev:,}\" if next_rev else \"NULL\"\n    \n    print(f\"{row['month']:<6} ${row['revenue']:>7,} {prev_str:>8} {next_str:>8} {change_str:>11}\")",
+          "output": "Month  Revenue     Prev     Next  MoM Change\n---------------------------------------------\nJan    $10,000     NULL  $12,000         N/A\nFeb    $12,000  $10,000  $11,500      +20.0%\nMar    $11,500  $12,000  $15,000       -4.2%\nApr    $15,000  $11,500  $14,000      +30.4%\nMay    $14,000  $15,000  $18,000       -6.7%\nJun    $18,000  $14,000     NULL      +28.6%",
+          "explanation": "LAG gives the previous row's value (Prev column), LEAD gives the next row's value (Next column). The first row has no LAG (NULL) and the last has no LEAD (NULL). The MoM (month-over-month) change uses LAG to compute percentage growth, which is one of the most common analytics calculations."
+        },
+        {
+          "title": "Running Total (Cumulative Sum)",
+          "code": "# SQL: SUM(revenue) OVER (ORDER BY month) as running_total\ndaily_sales = [\n    {'day': 'Mon', 'sales': 120},\n    {'day': 'Tue', 'sales': 95},\n    {'day': 'Wed', 'sales': 180},\n    {'day': 'Thu', 'sales': 60},\n    {'day': 'Fri', 'sales': 210},\n]\n\nprint(f\"{'Day':<5} {'Sales':>6} {'Running Total':>14} {'% of Week':>10}\")\nprint(\"-\" * 37)\n\ntotal_week = sum(d['sales'] for d in daily_sales)\nrunning_total = 0\n\nfor d in daily_sales:\n    running_total += d['sales']\n    pct = running_total / total_week * 100\n    print(f\"{d['day']:<5} ${d['sales']:>5} ${running_total:>13} {pct:>9.1f}%\")\n\nprint(f\"\\nWeek Total: ${total_week}\")",
+          "output": "Day   Sales  Running Total  % of Week\n-------------------------------------\nMon    $120          $120      18.0%\nTue     $95          $215      32.3%\nWed    $180          $395      59.4%\nThu     $60          $455      68.4%\nFri    $210          $665     100.0%\n\nWeek Total: $665",
+          "explanation": "The running total accumulates sales as we move through the days. In SQL, SUM(sales) OVER (ORDER BY day_order) creates this cumulative sum. The percentage column shows what fraction of the weekly total has been achieved by each day -- useful for tracking progress toward targets."
+        }
+      ],
+      "notes": [
+        "Window functions are computed after WHERE, GROUP BY, and HAVING, but before ORDER BY and LIMIT.",
+        "PARTITION BY is optional. Without it, the window spans the entire result set.",
+        "Frame specifications (ROWS BETWEEN ... AND ...) control exactly which rows the window includes. The default for ORDER BY is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.",
+        "You can use multiple window functions in a single query, each with its own OVER clause."
+      ],
+      "commonPitfalls": [
+        "Confusing window functions with GROUP BY. Window functions preserve all rows; GROUP BY collapses them. If you need both detail and summary, use window functions.",
+        "Mixing up RANK and DENSE_RANK. RANK leaves gaps after ties (1,1,3), DENSE_RANK does not (1,1,2). Choose based on whether 'position 2' should mean 'second distinct value' or 'second position'.",
+        "Forgetting that LAG and LEAD return NULL at the boundaries. Always handle the first/last row cases with COALESCE or conditional logic."
+      ],
+      "interviewTips": [
+        "Window functions are one of the most frequently tested advanced SQL topics. Be prepared to explain ROW_NUMBER vs RANK vs DENSE_RANK with a concrete example showing ties.",
+        "A classic interview pattern is 'find the top N per group'. The answer is: use ROW_NUMBER() OVER (PARTITION BY group ORDER BY value DESC), then filter WHERE row_num <= N in an outer query.",
+        "Know how to calculate running totals and period-over-period changes with window functions. These are fundamental business analytics calculations that come up in virtually every data analyst interview."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "win-ex-01",
+        "title": "Implement Three Ranking Functions",
+        "description": "Given a list of student scores, compute ROW_NUMBER, RANK, and DENSE_RANK for each student sorted by score descending. Print a formatted table showing all three rankings.",
+        "starterCode": "students = [\n    {'name': 'Alice', 'score': 92},\n    {'name': 'Bob', 'score': 85},\n    {'name': 'Charlie', 'score': 92},\n    {'name': 'Diana', 'score': 78},\n    {'name': 'Eve', 'score': 85},\n]\n\n# Compute ROW_NUMBER, RANK, and DENSE_RANK ordered by score DESC",
+        "solution": "students = [\n    {'name': 'Alice', 'score': 92},\n    {'name': 'Bob', 'score': 85},\n    {'name': 'Charlie', 'score': 92},\n    {'name': 'Diana', 'score': 78},\n    {'name': 'Eve', 'score': 85},\n]\n\nsorted_students = sorted(students, key=lambda x: x['score'], reverse=True)\n\nprint(f\"{'Name':<10} {'Score':>6} {'ROW#':>5} {'RANK':>5} {'DENSE':>6}\")\nprint(\"-\" * 34)\n\nprev_score = None\nrank = 0\ndense = 0\n\nfor i, s in enumerate(sorted_students):\n    row_num = i + 1\n    if s['score'] != prev_score:\n        rank = i + 1\n        dense += 1\n    prev_score = s['score']\n    print(f\"{s['name']:<10} {s['score']:>6} {row_num:>5} {rank:>5} {dense:>6}\")",
+        "expectedOutput": "Name        Score  ROW#  RANK  DENSE\n----------------------------------\nAlice          92     1     1      1\nCharlie        92     2     1      1\nBob            85     3     3      2\nEve            85     4     3      2\nDiana          78     5     5      3",
+        "hints": [
+          "Sort students by score descending first.",
+          "ROW_NUMBER always increments by 1.",
+          "RANK uses the position index (i+1) but only updates when the score changes. DENSE_RANK increments by 1 only when the score changes."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "win-ex-02",
+        "title": "Top N Per Group",
+        "description": "Given employee records with department and salary, find the top 2 highest-paid employees in each department. Use the PARTITION BY + ROW_NUMBER pattern.",
+        "starterCode": "employees = [\n    {'name': 'Alice', 'dept': 'Engineering', 'salary': 105000},\n    {'name': 'Bob', 'dept': 'Engineering', 'salary': 95000},\n    {'name': 'Charlie', 'dept': 'Engineering', 'salary': 88000},\n    {'name': 'Diana', 'dept': 'Sales', 'salary': 82000},\n    {'name': 'Eve', 'dept': 'Sales', 'salary': 78000},\n    {'name': 'Frank', 'dept': 'Sales', 'salary': 85000},\n]\n\n# Find top 2 per department (PARTITION BY dept ORDER BY salary DESC, WHERE rn <= 2)",
+        "solution": "employees = [\n    {'name': 'Alice', 'dept': 'Engineering', 'salary': 105000},\n    {'name': 'Bob', 'dept': 'Engineering', 'salary': 95000},\n    {'name': 'Charlie', 'dept': 'Engineering', 'salary': 88000},\n    {'name': 'Diana', 'dept': 'Sales', 'salary': 82000},\n    {'name': 'Eve', 'dept': 'Sales', 'salary': 78000},\n    {'name': 'Frank', 'dept': 'Sales', 'salary': 85000},\n]\n\n# Partition by department\ndepts = {}\nfor e in employees:\n    depts.setdefault(e['dept'], []).append(e)\n\nprint(\"Top 2 per department:\")\nfor dept in sorted(depts):\n    ranked = sorted(depts[dept], key=lambda x: x['salary'], reverse=True)\n    print(f\"\\n  {dept}:\")\n    for i, e in enumerate(ranked[:2]):\n        print(f\"    {i+1}. {e['name']}: ${e['salary']:,}\")",
+        "expectedOutput": "Top 2 per department:\n\n  Engineering:\n    1. Alice: $105,000\n    2. Bob: $95,000\n\n  Sales:\n    1. Frank: $85,000\n    2. Diana: $82,000",
+        "hints": [
+          "Group employees by department using a dictionary.",
+          "Sort each department's employees by salary descending.",
+          "Take only the first 2 ([:2]) from each sorted group -- this simulates WHERE row_number <= 2."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "win-ex-03",
+        "title": "LAG-Based Period-Over-Period Change",
+        "description": "Given quarterly revenue data, compute the quarter-over-quarter change (absolute and percentage) using the LAG pattern. Print each quarter with its revenue, previous quarter revenue, and the change.",
+        "starterCode": "quarters = [\n    {'quarter': 'Q1 2024', 'revenue': 50000},\n    {'quarter': 'Q2 2024', 'revenue': 62000},\n    {'quarter': 'Q3 2024', 'revenue': 58000},\n    {'quarter': 'Q4 2024', 'revenue': 75000},\n]\n\n# Compute LAG(revenue), absolute change, and percentage change",
+        "solution": "quarters = [\n    {'quarter': 'Q1 2024', 'revenue': 50000},\n    {'quarter': 'Q2 2024', 'revenue': 62000},\n    {'quarter': 'Q3 2024', 'revenue': 58000},\n    {'quarter': 'Q4 2024', 'revenue': 75000},\n]\n\nprint(f\"{'Quarter':<10} {'Revenue':>8} {'Prev':>8} {'Change':>8} {'Pct':>7}\")\nprint('-' * 43)\n\nfor i, q in enumerate(quarters):\n    rev = q['revenue']\n    rev_s = f'${rev:,}'\n    if i == 0:\n        print(f\"{q['quarter']:<10} {rev_s:>8} {'N/A':>8} {'N/A':>8} {'N/A':>7}\")\n    else:\n        prev = quarters[i-1]['revenue']\n        change = rev - prev\n        pct = change / prev * 100\n        prev_s = f'${prev:,}'\n        change_s = f'+${change:,}' if change >= 0 else f'-${abs(change):,}'\n        pct_s = f'{pct:+.1f}%'\n        print(f\"{q['quarter']:<10} {rev_s:>8} {prev_s:>8} {change_s:>8} {pct_s:>7}\")",
+        "expectedOutput": "Quarter     Revenue     Prev   Change     Pct\n-------------------------------------------\nQ1 2024     $50,000      N/A      N/A     N/A\nQ2 2024     $62,000  $50,000 +$12,000  +24.0%\nQ3 2024     $58,000  $62,000  -$4,000   -6.5%\nQ4 2024     $75,000  $58,000 +$17,000  +29.3%",
+        "hints": [
+          "The first row has no previous value (LAG returns NULL), so display N/A.",
+          "For subsequent rows, access quarters[i-1] for the LAG value.",
+          "Change = current - previous. Percentage = change / previous * 100."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "ctes-and-analytical-patterns",
+    "sectionId": "sql-for-analytics",
+    "orderIndex": 4,
+    "title": "CTEs & Analytical Patterns",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["CTEs", "recursive queries", "running totals", "year-over-year"],
+    "content": {
+      "explanation": "Common Table Expressions (CTEs) are named temporary result sets defined using the WITH clause that exist only for the duration of a single query. They are one of the most important features for writing clean, maintainable, and debuggable analytical SQL. Instead of nesting subqueries inside subqueries (which quickly becomes unreadable), CTEs let you break complex queries into logical, named steps that can reference each other.\n\nA CTE is defined as WITH cte_name AS (SELECT ...) followed by a main query that references cte_name. You can chain multiple CTEs separated by commas, where later CTEs can reference earlier ones. This creates a readable pipeline: first compute aggregates, then filter, then join with other data, then format the output. Each step has a meaningful name that documents its purpose.\n\nRecursive CTEs are a special form that reference themselves, creating iterative computation within SQL. They consist of a base case (anchor member) and a recursive step that unions with the previous iteration. Common use cases include traversing hierarchical data (org charts, category trees), generating date sequences, and computing iterative calculations. The recursion terminates when the recursive step returns no new rows.\n\nAnalytical patterns like year-over-year comparison, running totals, moving averages, and cohort analysis all benefit enormously from CTEs. By separating the data preparation steps from the final calculation, CTEs make these complex patterns manageable. For example, a year-over-year comparison might use one CTE for current year data, another for previous year data, and a final query that joins them to compute growth rates.",
+      "codeExamples": [
+        {
+          "title": "CTE Pattern: Step-by-Step Analysis",
+          "code": "# Simulating a CTE pipeline in Python\n# SQL equivalent:\n# WITH monthly_totals AS (\n#   SELECT month, SUM(revenue) as total FROM sales GROUP BY month\n# ),\n# with_rankings AS (\n#   SELECT *, RANK() OVER (ORDER BY total DESC) as rank FROM monthly_totals\n# )\n# SELECT * FROM with_rankings WHERE rank <= 3;\n\nsales = [\n    {'month': 'Jan', 'product': 'A', 'revenue': 5000},\n    {'month': 'Jan', 'product': 'B', 'revenue': 3000},\n    {'month': 'Feb', 'product': 'A', 'revenue': 7000},\n    {'month': 'Feb', 'product': 'B', 'revenue': 2000},\n    {'month': 'Mar', 'product': 'A', 'revenue': 4000},\n    {'month': 'Mar', 'product': 'B', 'revenue': 6000},\n    {'month': 'Apr', 'product': 'A', 'revenue': 8000},\n    {'month': 'Apr', 'product': 'B', 'revenue': 4000},\n]\n\n# CTE 1: monthly_totals\nmonthly_totals = {}\nfor s in sales:\n    monthly_totals[s['month']] = monthly_totals.get(s['month'], 0) + s['revenue']\n\nprint(\"CTE 1 - monthly_totals:\")\nfor m, t in monthly_totals.items():\n    print(f\"  {m}: ${t:,}\")\n\n# CTE 2: with_rankings\nranked = sorted(monthly_totals.items(), key=lambda x: x[1], reverse=True)\n\nprint(\"\\nCTE 2 - with_rankings (top 3):\")\nfor rank, (month, total) in enumerate(ranked[:3], 1):\n    print(f\"  Rank {rank}: {month} = ${total:,}\")",
+          "output": "CTE 1 - monthly_totals:\n  Jan: $8,000\n  Feb: $9,000\n  Mar: $10,000\n  Apr: $12,000\n\nCTE 2 - with_rankings (top 3):\n  Rank 1: Apr = $12,000\n  Rank 2: Mar = $10,000\n  Rank 3: Feb = $9,000",
+          "explanation": "This demonstrates the CTE pipeline pattern: first CTE aggregates sales by month, second CTE ranks them. The final query filters to top 3. Each CTE is a named, reusable step that makes the logic clear and debuggable. In a real database, this executes as a single optimized query."
+        },
+        {
+          "title": "Year-Over-Year Comparison Pattern",
+          "code": "# SQL pattern:\n# WITH current_year AS (SELECT ... WHERE year = 2024),\n#      previous_year AS (SELECT ... WHERE year = 2023)\n# SELECT c.month, c.revenue, p.revenue as prev, growth_pct\n# FROM current_year c JOIN previous_year p ON c.month = p.month\n\nrevenue_data = [\n    {'year': 2023, 'quarter': 'Q1', 'revenue': 100000},\n    {'year': 2023, 'quarter': 'Q2', 'revenue': 120000},\n    {'year': 2023, 'quarter': 'Q3', 'revenue': 110000},\n    {'year': 2023, 'quarter': 'Q4', 'revenue': 140000},\n    {'year': 2024, 'quarter': 'Q1', 'revenue': 115000},\n    {'year': 2024, 'quarter': 'Q2', 'revenue': 135000},\n    {'year': 2024, 'quarter': 'Q3', 'revenue': 125000},\n    {'year': 2024, 'quarter': 'Q4', 'revenue': 160000},\n]\n\n# CTE: Split by year\ncurr = {r['quarter']: r['revenue'] for r in revenue_data if r['year'] == 2024}\nprev = {r['quarter']: r['revenue'] for r in revenue_data if r['year'] == 2023}\n\nprint(\"Year-over-Year Comparison:\")\nprint(f\"{'Quarter':<8} {'2023':>10} {'2024':>10} {'Growth':>8}\")\nprint(\"-\" * 38)\n\nfor q in ['Q1', 'Q2', 'Q3', 'Q4']:\n    p_rev = prev[q]\n    c_rev = curr[q]\n    growth = (c_rev - p_rev) / p_rev * 100\n    print(f\"{q:<8} ${p_rev:>9,} ${c_rev:>9,} {growth:>+7.1f}%\")\n\ntotal_prev = sum(prev.values())\ntotal_curr = sum(curr.values())\ntotal_growth = (total_curr - total_prev) / total_prev * 100\nprint(\"-\" * 38)\nprint(f\"{'Total':<8} ${total_prev:>9,} ${total_curr:>9,} {total_growth:>+7.1f}%\")",
+          "output": "Year-over-Year Comparison:\nQuarter        2023       2024   Growth\n--------------------------------------\nQ1         $100,000   $115,000  +15.0%\nQ2         $120,000   $135,000  +12.5%\nQ3         $110,000   $125,000  +13.6%\nQ4         $140,000   $160,000  +14.3%\n--------------------------------------\nTotal      $470,000   $535,000  +13.8%",
+          "explanation": "The YoY pattern uses two CTEs to separate current and previous year data, then joins them on the time dimension (quarter). Growth is computed as (current - previous) / previous * 100. This pattern is the standard approach for any period-over-period comparison in business analytics."
+        },
+        {
+          "title": "Running Total and Moving Average",
+          "code": "# Simulating cumulative and moving window calculations\nweekly_data = [\n    {'week': 1, 'sales': 120},\n    {'week': 2, 'sales': 150},\n    {'week': 3, 'sales': 90},\n    {'week': 4, 'sales': 200},\n    {'week': 5, 'sales': 170},\n    {'week': 6, 'sales': 130},\n]\n\nwindow_size = 3\nprint(f\"{'Week':>5} {'Sales':>6} {'Running':>9} {'3wk Avg':>8}\")\nprint(\"-\" * 30)\n\nrunning = 0\nfor i, w in enumerate(weekly_data):\n    running += w['sales']\n    \n    # Moving average (last 3 weeks)\n    start = max(0, i - window_size + 1)\n    window = [weekly_data[j]['sales'] for j in range(start, i + 1)]\n    moving_avg = sum(window) / len(window)\n    \n    print(f\"{w['week']:>5} ${w['sales']:>5} ${running:>8} ${moving_avg:>7.0f}\")",
+          "output": "Week  Sales   Running  3wk Avg\n------------------------------\n    1  $120     $120    $120\n    2  $150     $270    $135\n    3   $90     $360    $120\n    4  $200     $560    $147\n    5  $170     $730    $153\n    6  $130     $860    $167",
+          "explanation": "The running total (SUM OVER ORDER BY) accumulates all previous values. The 3-week moving average (AVG OVER ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) smooths out weekly fluctuations. Weeks 1-2 use fewer than 3 values since there is not enough history yet. These are essential time-series analytics patterns."
+        },
+        {
+          "title": "CTE SQL Syntax Examples",
+          "code": "# Demonstrating CTE SQL syntax patterns\n\nprint(\"Pattern 1: Simple CTE\")\nprint(\"\"\"\nWITH active_users AS (\n    SELECT user_id, COUNT(*) as login_count\n    FROM logins\n    WHERE login_date >= '2024-01-01'\n    GROUP BY user_id\n    HAVING COUNT(*) >= 5\n)\nSELECT u.name, a.login_count\nFROM users u\nJOIN active_users a ON u.id = a.user_id\nORDER BY a.login_count DESC;\n\"\"\")\n\nprint(\"Pattern 2: Chained CTEs\")\nprint(\"\"\"\nWITH monthly_sales AS (\n    SELECT DATE_TRUNC('month', sale_date) as month,\n           SUM(amount) as total\n    FROM sales\n    GROUP BY 1\n),\nwith_growth AS (\n    SELECT month, total,\n           LAG(total) OVER (ORDER BY month) as prev_total,\n           total - LAG(total) OVER (ORDER BY month) as growth\n    FROM monthly_sales\n)\nSELECT month, total, prev_total,\n       ROUND(growth * 100.0 / prev_total, 1) as growth_pct\nFROM with_growth\nWHERE prev_total IS NOT NULL;\n\"\"\")",
+          "output": "Pattern 1: Simple CTE\n\nWITH active_users AS (\n    SELECT user_id, COUNT(*) as login_count\n    FROM logins\n    WHERE login_date >= '2024-01-01'\n    GROUP BY user_id\n    HAVING COUNT(*) >= 5\n)\nSELECT u.name, a.login_count\nFROM users u\nJOIN active_users a ON u.id = a.user_id\nORDER BY a.login_count DESC;\n\n\nPattern 2: Chained CTEs\n\nWITH monthly_sales AS (\n    SELECT DATE_TRUNC('month', sale_date) as month,\n           SUM(amount) as total\n    FROM sales\n    GROUP BY 1\n),\nwith_growth AS (\n    SELECT month, total,\n           LAG(total) OVER (ORDER BY month) as prev_total,\n           total - LAG(total) OVER (ORDER BY month) as growth\n    FROM monthly_sales\n)\nSELECT month, total, prev_total,\n       ROUND(growth * 100.0 / prev_total, 1) as growth_pct\nFROM with_growth\nWHERE prev_total IS NOT NULL;\n",
+          "explanation": "Pattern 1 shows a simple CTE that finds active users (5+ logins), then joins with the users table for names. Pattern 2 chains two CTEs: the first computes monthly totals, the second adds LAG-based growth, and the final query filters and formats. These patterns are the foundation of production analytics queries."
+        }
+      ],
+      "notes": [
+        "CTEs exist only for the duration of the single query they are part of. They are not stored like views or temporary tables.",
+        "Multiple CTEs are separated by commas after a single WITH keyword: WITH cte1 AS (...), cte2 AS (...) SELECT ...",
+        "A CTE can reference any CTE defined before it in the same WITH clause, enabling pipeline-style data transformations.",
+        "Most databases optimize CTEs as inline subqueries. PostgreSQL materializes CTEs by default (which can be slower), but you can use WITH cte AS NOT MATERIALIZED (...) to change this behavior."
+      ],
+      "commonPitfalls": [
+        "Overusing CTEs for simple queries where a single SELECT would suffice. CTEs add readability for complex queries but add unnecessary verbosity for simple ones.",
+        "Not realizing that recursive CTEs need a UNION ALL between the anchor member and the recursive member, plus a termination condition to prevent infinite loops.",
+        "Assuming CTEs are materialized (computed once and cached). In most databases, CTEs may be inlined and computed multiple times if referenced more than once. Use MATERIALIZED hint if you need caching."
+      ],
+      "interviewTips": [
+        "CTEs demonstrate that you can write clean, production-quality SQL. Interviewers prefer CTE-based solutions over deeply nested subqueries because they are easier to read and debug.",
+        "Be ready to write a year-over-year or month-over-month comparison query using CTEs. This is one of the most common analytical SQL interview questions for data analyst and data scientist roles.",
+        "Know when to use CTEs vs subqueries vs temporary tables: CTEs for readability within a single query, temp tables for reuse across multiple queries, and subqueries for simple one-off filters."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cte-ex-01",
+        "title": "Multi-Step CTE Pipeline",
+        "description": "Simulate a 3-step CTE pipeline: (1) compute total orders per customer, (2) classify customers as 'High' (>3 orders), 'Medium' (2-3), or 'Low' (1), (3) count customers in each segment. Print results at each step.",
+        "starterCode": "orders = [\n    {'customer': 'Alice', 'amount': 100},\n    {'customer': 'Alice', 'amount': 200},\n    {'customer': 'Alice', 'amount': 150},\n    {'customer': 'Alice', 'amount': 300},\n    {'customer': 'Bob', 'amount': 250},\n    {'customer': 'Bob', 'amount': 175},\n    {'customer': 'Charlie', 'amount': 400},\n    {'customer': 'Diana', 'amount': 120},\n    {'customer': 'Diana', 'amount': 180},\n    {'customer': 'Diana', 'amount': 220},\n]\n\n# Step 1: customer_orders (customer, order_count, total_amount)\n# Step 2: customer_segments (customer, segment)\n# Step 3: segment_counts (segment, count)",
+        "solution": "orders = [\n    {'customer': 'Alice', 'amount': 100},\n    {'customer': 'Alice', 'amount': 200},\n    {'customer': 'Alice', 'amount': 150},\n    {'customer': 'Alice', 'amount': 300},\n    {'customer': 'Bob', 'amount': 250},\n    {'customer': 'Bob', 'amount': 175},\n    {'customer': 'Charlie', 'amount': 400},\n    {'customer': 'Diana', 'amount': 120},\n    {'customer': 'Diana', 'amount': 180},\n    {'customer': 'Diana', 'amount': 220},\n]\n\n# CTE 1: customer_orders\ncustomer_orders = {}\nfor o in orders:\n    c = o['customer']\n    if c not in customer_orders:\n        customer_orders[c] = {'count': 0, 'total': 0}\n    customer_orders[c]['count'] += 1\n    customer_orders[c]['total'] += o['amount']\n\nprint(\"Step 1 - customer_orders:\")\nfor cust in sorted(customer_orders):\n    data = customer_orders[cust]\n    print(f\"  {cust}: {data['count']} orders, ${data['total']}\")\n\n# CTE 2: customer_segments\nprint(\"\\nStep 2 - customer_segments:\")\nsegments = {}\nfor cust, data in sorted(customer_orders.items()):\n    count = data['count']\n    if count > 3:\n        seg = 'High'\n    elif count >= 2:\n        seg = 'Medium'\n    else:\n        seg = 'Low'\n    segments[cust] = seg\n    print(f\"  {cust}: {seg}\")\n\n# CTE 3: segment_counts\nprint(\"\\nStep 3 - segment_counts:\")\nseg_counts = {}\nfor seg in segments.values():\n    seg_counts[seg] = seg_counts.get(seg, 0) + 1\nfor seg in ['High', 'Medium', 'Low']:\n    print(f\"  {seg}: {seg_counts.get(seg, 0)} customers\")",
+        "expectedOutput": "Step 1 - customer_orders:\n  Alice: 4 orders, $750\n  Bob: 2 orders, $425\n  Charlie: 1 orders, $400\n  Diana: 3 orders, $520\n\nStep 2 - customer_segments:\n  Alice: High\n  Bob: Medium\n  Charlie: Low\n  Diana: Medium\n\nStep 3 - segment_counts:\n  High: 1 customers\n  Medium: 2 customers\n  Low: 1 customers",
+        "hints": [
+          "Step 1: aggregate orders by customer to get count and total.",
+          "Step 2: classify based on order count thresholds (>3=High, 2-3=Medium, 1=Low).",
+          "Step 3: count customers in each segment using a dictionary."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "cte-ex-02",
+        "title": "Year-Over-Year Growth Report",
+        "description": "Given monthly revenue data for 2023 and 2024, compute the year-over-year growth for each month that has data in both years. Print month, 2023 revenue, 2024 revenue, and growth percentage.",
+        "starterCode": "revenue = [\n    {'year': 2023, 'month': 'Jan', 'revenue': 40000},\n    {'year': 2023, 'month': 'Feb', 'revenue': 45000},\n    {'year': 2023, 'month': 'Mar', 'revenue': 50000},\n    {'year': 2024, 'month': 'Jan', 'revenue': 48000},\n    {'year': 2024, 'month': 'Feb', 'revenue': 52000},\n    {'year': 2024, 'month': 'Mar', 'revenue': 55000},\n]\n\n# CTE pattern: split by year, join on month, compute growth",
+        "solution": "revenue = [\n    {'year': 2023, 'month': 'Jan', 'revenue': 40000},\n    {'year': 2023, 'month': 'Feb', 'revenue': 45000},\n    {'year': 2023, 'month': 'Mar', 'revenue': 50000},\n    {'year': 2024, 'month': 'Jan', 'revenue': 48000},\n    {'year': 2024, 'month': 'Feb', 'revenue': 52000},\n    {'year': 2024, 'month': 'Mar', 'revenue': 55000},\n]\n\n# CTE 1: current_year\ncurr = {r['month']: r['revenue'] for r in revenue if r['year'] == 2024}\n\n# CTE 2: previous_year\nprev = {r['month']: r['revenue'] for r in revenue if r['year'] == 2023}\n\n# Join and compute\nprint(\"Year-over-Year Growth:\")\nprint(f\"{'Month':<6} {'2023':>8} {'2024':>8} {'Growth':>8}\")\nprint('-' * 32)\n\nfor month in ['Jan', 'Feb', 'Mar']:\n    p = prev[month]\n    c = curr[month]\n    growth = (c - p) / p * 100\n    p_s = f'${p:,}'\n    c_s = f'${c:,}'\n    print(f'{month:<6} {p_s:>8} {c_s:>8} {growth:>+7.1f}%')",
+        "expectedOutput": "Year-over-Year Growth:\nMonth      2023     2024   Growth\n--------------------------------\nJan     $40,000  $48,000   +20.0%\nFeb     $45,000  $52,000   +15.6%\nMar     $50,000  $55,000   +10.0%",
+        "hints": [
+          "Create two dictionaries: one for 2023 data and one for 2024 data, keyed by month.",
+          "Iterate over the months and compute growth as (current - previous) / previous * 100.",
+          "Use + sign prefix for positive growth values."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cte-ex-03",
+        "title": "Running Total with Percentage Progress",
+        "description": "Given a list of daily donations toward a fundraising goal of $5000, compute the running total and percentage toward the goal for each day. Print when the goal is reached (if at all).",
+        "starterCode": "donations = [\n    {'day': 'Mon', 'amount': 800},\n    {'day': 'Tue', 'amount': 1200},\n    {'day': 'Wed', 'amount': 600},\n    {'day': 'Thu', 'amount': 1500},\n    {'day': 'Fri', 'amount': 1100},\n]\ngoal = 5000\n\n# Compute running total and progress toward goal",
+        "solution": "donations = [\n    {'day': 'Mon', 'amount': 800},\n    {'day': 'Tue', 'amount': 1200},\n    {'day': 'Wed', 'amount': 600},\n    {'day': 'Thu', 'amount': 1500},\n    {'day': 'Fri', 'amount': 1100},\n]\ngoal = 5000\n\nprint(f'Fundraising Goal: ${goal:,}')\nprint(f\"{'Day':<5} {'Amount':>8} {'Running':>8} {'Progress':>9}\")\nprint('-' * 32)\n\nrunning = 0\ngoal_reached = None\n\nfor d in donations:\n    running += d['amount']\n    pct = min(running / goal * 100, 100)\n    amt_s = f'${d[\"amount\"]:,}'\n    run_s = f'${running:,}'\n    marker = ' << GOAL!' if running >= goal and goal_reached is None else ''\n    if running >= goal and goal_reached is None:\n        goal_reached = d['day']\n    print(f\"{d['day']:<5} {amt_s:>8} {run_s:>8} {pct:>8.1f}%{marker}\")\n\nif goal_reached:\n    print(f'\\nGoal reached on {goal_reached}!')\nelse:\n    print(f'\\nGoal not yet reached. ${goal - running:,} remaining.')",
+        "expectedOutput": "Fundraising Goal: $5,000\nDay     Amount  Running  Progress\n--------------------------------\nMon       $800     $800     16.0%\nTue     $1,200   $2,000     40.0%\nWed       $600   $2,600     52.0%\nThu     $1,500   $4,100     82.0%\nFri     $1,100   $5,200    100.0% << GOAL!\n\nGoal reached on Fri!",
+        "hints": [
+          "Accumulate the running total by adding each day's amount to a cumulative variable.",
+          "Compute progress as running_total / goal * 100, capped at 100%.",
+          "Track the first day when running total meets or exceeds the goal."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

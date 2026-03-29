@@ -20,7 +20,7 @@ const features: { title: string; desc: string; icon: LucideIcon; href: string }[
     title: "Career Roadmaps",
     desc: "Guided learning paths across 8+ tracks with skill checkpoints.",
     icon: Map,
-    href: "/careers",
+    href: "/learn",
   },
   {
     title: "Company Explorer",
@@ -65,9 +65,9 @@ export function FeaturesSection() {
           className="text-center mb-14"
         >
           <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
-            Built for students who
+            Your career toolkit,
             <br />
-            <span className="text-gradient-accent">mean business</span>
+            <span className="text-gradient-accent">all in one place</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
             Every tool you need to go from resume to offer letter.

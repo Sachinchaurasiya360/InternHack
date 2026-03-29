@@ -97,7 +97,6 @@ const CICDGuidePage = lazyWithRetry(() => import("./module/student/opensource/CI
 const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/CICDGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
-const HackathonCalendarPage = lazyWithRetry(() => import("./module/student/grants/HackathonCalendarPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
@@ -143,6 +142,9 @@ const PythonLessonDetailPage = lazyWithRetry(() => import("./module/student/pyth
 const BlockchainLessonsPage = lazyWithRetry(() => import("./module/student/blockchain/BlockchainLessonsPage"));
 const BlockchainSectionPage = lazyWithRetry(() => import("./module/student/blockchain/BlockchainSectionPage"));
 const BlockchainLessonDetailPage = lazyWithRetry(() => import("./module/student/blockchain/BlockchainLessonDetailPage"));
+const DataAnalyticsLessonsPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsLessonsPage"));
+const DataAnalyticsSectionPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsSectionPage"));
+const DataAnalyticsLessonDetailPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsLessonDetailPage"));
 
 // Recruiter auth pages
 const RecruiterLoginPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterLoginPage"));
@@ -209,7 +211,6 @@ const AdminBlogEditor = lazyWithRetry(() => import("./module/admin/blog/AdminBlo
 const AdminDsaPage = lazyWithRetry(() => import("./module/admin/dsa/AdminDsaPage"));
 const AdminAptitudePage = lazyWithRetry(() => import("./module/admin/aptitude/AdminAptitudePage"));
 const AdminSkillTestsPage = lazyWithRetry(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
-const AdminHackathonsPage = lazyWithRetry(() => import("./module/admin/hackathons/AdminHackathonsPage"));
 const AdminBadgesPage = lazyWithRetry(() => import("./module/admin/AdminBadgesPage"));
 const AdminAIProvidersPage = lazyWithRetry(() => import("./module/admin/ai/AdminAIProvidersPage"));
 const AdminExternalJobsPage = lazyWithRetry(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
@@ -372,6 +373,9 @@ function App() {
             <Route path="blockchain" element={<BlockchainLessonsPage />} />
             <Route path="blockchain/:sectionSlug" element={<BlockchainSectionPage />} />
             <Route path="blockchain/:sectionSlug/:lessonId" element={<BlockchainLessonDetailPage />} />
+            <Route path="data-analytics" element={<DataAnalyticsLessonsPage />} />
+            <Route path="data-analytics/:sectionSlug" element={<DataAnalyticsSectionPage />} />
+            <Route path="data-analytics/:sectionSlug/:lessonId" element={<DataAnalyticsLessonDetailPage />} />
             <Route path="interview" element={<InterviewLessonsPage />} />
             <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
             <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
@@ -431,7 +435,6 @@ function App() {
             <Route path="companies/add" element={<AddCompanyPage />} />
             <Route path="grants" element={<GrantsPage />} />
             <Route path="grants/tracker" element={<GrantTrackerPage />} />
-            <Route path="grants/hackathons" element={<HackathonCalendarPage />} />
             <Route path="opensource" element={<OpenSourceLayout />}>
               <Route index element={<RepoDiscoveryPage />} />
               <Route path="gsoc" element={<GSoCReposPage />} />
@@ -512,7 +515,6 @@ function App() {
             <Route path="dsa" element={<AdminDsaPage />} />
             <Route path="aptitude" element={<AdminAptitudePage />} />
             <Route path="skill-tests" element={<AdminSkillTestsPage />} />
-            <Route path="hackathons" element={<AdminHackathonsPage />} />
             <Route path="badges" element={<AdminBadgesPage />} />
             <Route path="ai-providers" element={<AdminAIProvidersPage />} />
             <Route path="external-jobs" element={<AdminExternalJobsPage />} />
