@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, type ComponentType } from "react";
-import { BrowserRouter, Navigate, Route, Routes, useParams, useNavigate } from "react-router";
+import { Navigate, Route, Routes, useParams, useNavigate } from "react-router";
 import { useAuthStore } from "./lib/auth.store";
 import toast, { Toaster } from "./components/ui/toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -285,7 +285,7 @@ function AuthExpiredRedirect() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>
@@ -528,7 +528,7 @@ function App() {
         </Routes>
       </Suspense>
       </ErrorBoundary>
-    </BrowserRouter>
+    </>
   );
 }
 
