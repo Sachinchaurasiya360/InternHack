@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import type { Pagination, JobStatus } from "../../../lib/types";
 
 interface AdminJob {
@@ -168,29 +169,12 @@ export default function AdminJobsListPage() {
         )}
 
         {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800">
-            <span className="text-sm text-gray-400">
-              Showing {(pagination.page - 1) * pagination.limit + 1}-{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => fetchJobs(pagination.page - 1)}
-                disabled={pagination.page <= 1}
-                className="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => fetchJobs(pagination.page + 1)}
-                disabled={pagination.page >= pagination.totalPages}
-                className="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
+        <PaginationControls
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          onPageChange={fetchJobs}
+          showingInfo={{ total: pagination.total, limit: pagination.limit }}
+        />
       </div>
     </div>
   );

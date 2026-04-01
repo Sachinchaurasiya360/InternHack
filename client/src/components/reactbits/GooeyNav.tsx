@@ -138,7 +138,7 @@ export default function GooeyNav({
       >
         {/* Active pill background */}
         <div
-          className="absolute top-0 h-full rounded-lg bg-gray-950/10 dark:bg-white/15 transition-all duration-300 ease-out"
+          className="absolute top-0 h-full rounded-lg bg-gray-950/8 dark:bg-white/15 transition-all duration-300 ease-out"
           style={{
             left: pillStyle.left,
             width: pillStyle.width,
@@ -155,7 +155,7 @@ export default function GooeyNav({
             className={`relative z-10 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
               activeIndex === i
                 ? "text-gray-950 dark:text-white"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-200"
+                : "text-gray-500 hover:text-gray-950 dark:text-white/50 dark:hover:text-white"
             }`}
           >
             {item.label}

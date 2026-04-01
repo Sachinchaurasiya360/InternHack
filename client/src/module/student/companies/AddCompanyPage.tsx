@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Building2, Loader2, Plus, X } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 
 export default function AddCompanyPage() {

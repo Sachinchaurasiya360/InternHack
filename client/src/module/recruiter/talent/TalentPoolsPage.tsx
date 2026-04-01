@@ -10,7 +10,7 @@ import {
   FolderOpen,
   ChevronRight,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { TalentPool } from "../../../lib/types";

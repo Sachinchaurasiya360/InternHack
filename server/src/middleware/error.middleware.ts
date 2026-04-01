@@ -16,25 +16,43 @@ function sanitizeBody(body: unknown): Prisma.InputJsonValue | null {
   return sanitized as Prisma.InputJsonValue;
 }
 
-function logErrorToDb(req: Request, statusCode: number, message: string): void {
+function formatRawError(err: Error): string {
+  const parts: string[] = [];
+  parts.push(`${err.name}: ${err.message}`);
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    parts.push(`Code: ${err.code}`);
+    if (err.meta) parts.push(`Meta: ${JSON.stringify(err.meta)}`);
+  }
+
+  if (err.stack) {
+    const stackLines = err.stack.split("\n").slice(1, 6).map((l) => l.trim());
+    parts.push(stackLines.join("\n"));
+  }
+
+  return parts.join("\n");
+}
+
+function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?: Error): void {
   prisma.errorLog.create({
     data: {
       method: req.method,
       path: req.originalUrl || req.url,
       statusCode,
       message,
+      rawError: rawErr ? formatRawError(rawErr) : null,
       userId: (req as unknown as { user?: { id: number } }).user?.id ?? null,
       ipAddress: (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.ip || null,
       userAgent: req.headers["user-agent"] || null,
       requestBody: sanitizeBody(req.body),
     },
-  }).catch((err) => {
-    console.error("[ErrorLog] Failed to write:", err);
+  }).catch((dbErr) => {
+    console.error("[ErrorLog] Failed to write:", dbErr);
   });
 }
 
-function respond(req: Request, res: Response, statusCode: number, message: string): void {
-  logErrorToDb(req, statusCode, message);
+function respond(req: Request, res: Response, statusCode: number, message: string, rawErr?: Error): void {
+  logErrorToDb(req, statusCode, message, rawErr);
   res.status(statusCode).json({ message });
 }
 
@@ -42,12 +60,12 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
   // Prisma known request errors → proper HTTP status codes
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
-      case "P2002": respond(req, res, 409, "A record with this value already exists"); return;
-      case "P2025": respond(req, res, 404, "Resource not found"); return;
-      case "P2003": respond(req, res, 400, "Related resource not found"); return;
+      case "P2002": respond(req, res, 409, "A record with this value already exists", err); return;
+      case "P2025": respond(req, res, 404, "Resource not found", err); return;
+      case "P2003": respond(req, res, 400, "Related resource not found", err); return;
       default:
         console.error("Prisma error:", err.code, err.message);
-        respond(req, res, 500, "Database error");
+        respond(req, res, 500, "Database error", err);
         return;
     }
   }
@@ -55,7 +73,7 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
   // Prisma validation errors
   if (err instanceof Prisma.PrismaClientValidationError) {
     console.error("Prisma validation error:", err.message);
-    respond(req, res, 400, "Invalid data provided");
+    respond(req, res, 400, "Invalid data provided", err);
     return;
   }
 
@@ -63,7 +81,7 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
   if (err.message === "File type not allowed" ||
       err.message === "Only PDF and Word documents are allowed" ||
       err.message === "Only JPEG, PNG, and WebP images are allowed") {
-    respond(req, res, 400, err.message);
+    respond(req, res, 400, err.message, err);
     return;
   }
 
@@ -89,12 +107,12 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
 
   const status = clientErrors[err.message];
   if (status) {
-    respond(req, res, status, err.message);
+    respond(req, res, status, err.message, err);
     return;
   }
 
   // Unknown errors - don't leak details in production
   const isDev = process.env["NODE_ENV"] === "development";
   console.error("Unhandled error:", isDev ? err.stack : err.message);
-  respond(req, res, 500, isDev ? err.message : "Internal Server Error");
+  respond(req, res, 500, isDev ? err.message : "Internal Server Error", err);
 }

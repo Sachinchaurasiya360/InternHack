@@ -4,3 +4,10 @@ node_modules
 
 /generated/prisma
 
+companies
+
+problems
+codejeet-data.ts
+codejeet-data.json
+process-codejeet.ts
+seed*.ts

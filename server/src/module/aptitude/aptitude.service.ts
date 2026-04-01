@@ -1,4 +1,7 @@
 import { prisma } from "../../database/db.js";
+import { MilestoneService } from "../milestone/milestone.service.js";
+
+const milestoneService = new MilestoneService();
 
 export class AptitudeService {
   async getCategories(studentId?: number) {
@@ -134,6 +137,15 @@ export class AptitudeService {
       create: { studentId, questionId, answered: true, correct: isCorrect },
       update: { answered: true, correct: isCorrect },
     });
+
+    // Fire-and-forget milestone check
+    const totalAnswered = await prisma.studentAptitudeProgress.count({
+      where: { studentId },
+    });
+    const totalQuestions = await prisma.aptitudeQuestion.count();
+    milestoneService
+      .checkAptitudeMilestone(studentId, totalAnswered, totalQuestions)
+      .catch(() => {});
 
     return {
       correct: isCorrect,

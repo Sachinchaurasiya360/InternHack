@@ -324,6 +324,21 @@ export function followUpEmailHtml(name: string): string {
           </tr>
         </table>
 
+        <!-- Community CTA -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0 16px;">
+          <tr>
+            <td style="padding:16px 18px;background-color:#dcfce7;border:1px solid #bbf7d0;border-radius:8px;text-align:center;">
+              <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#166534;">Join our community</p>
+              <p style="margin:0 0 12px;font-size:13px;color:#15803d;line-height:1.5;">
+                Connect with fellow students and professionals. We talk about jobs, internships, open source, and career growth.
+              </p>
+              <a href="https://chat.whatsapp.com/KiemP3l6QFKHadtfGehpF1" target="_blank" style="display:inline-block;padding:10px 28px;background-color:#25d366;border-radius:6px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">
+                Join WhatsApp Group
+              </a>
+            </td>
+          </tr>
+        </table>
+
         <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;">
           Got ideas or feedback? Just reply to this email - we read every one.
         </p>
@@ -515,6 +530,65 @@ export function resetPasswordEmailHtml(name: string, otp: string): string {
       </td>
     </tr>
     <!-- Footer -->
+    <tr>
+      <td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">
+          &copy; ${new Date().getFullYear()} InternHack. All rights reserved.
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export function milestoneEmailHtml(
+  name: string,
+  title: string,
+  message: string,
+  ctaText: string = "Keep Going",
+  ctaUrl: string = "https://internhack.in/learn"
+): string {
+  const firstName = name.split(" ")[0];
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:32px 24px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+          <tr>
+            <td style="text-align:center;padding:20px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:12px;">
+              <p style="margin:0 0 4px;font-size:40px;line-height:1;">&#127942;</p>
+              <h2 style="margin:0 0 6px;font-size:24px;font-weight:800;color:#3730a3;">${title}</h2>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:0 0 8px;font-size:17px;font-weight:700;color:#18181b;">Hey ${firstName},</p>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#3f3f46;">${message}</p>
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+          <tr>
+            <td style="background-color:#4f46e5;border-radius:8px;">
+              <a href="${ctaUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">${ctaText}</a>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#71717a;text-align:center;">
+          You're building real momentum. Most people never get this far &mdash; keep stacking wins.
+        </p>
+      </td>
+    </tr>
     <tr>
       <td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
         <p style="margin:0;font-size:11px;color:#a1a1aa;">

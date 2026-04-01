@@ -10,7 +10,7 @@ import {
   Eye,
   Pencil,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import type { BlogPost, BlogCategory } from "../../blog/components/BlogCard";

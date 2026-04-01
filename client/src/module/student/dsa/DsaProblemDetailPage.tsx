@@ -8,7 +8,7 @@ import {
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowRight,
   History, Terminal, Lock, Crown, Code2,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary } from "../../../lib/types";

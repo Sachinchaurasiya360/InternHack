@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import { useAuthStore } from "../../../lib/auth.store";

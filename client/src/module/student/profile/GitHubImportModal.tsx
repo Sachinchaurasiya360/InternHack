@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Github, Loader2, Check, AlertCircle } from "lucide-react";
 import api from "../../../lib/axios";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import type { ProjectItem } from "../../../lib/types";
 
 interface GitHubImportData {

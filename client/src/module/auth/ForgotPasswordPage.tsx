@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../lib/axios";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";

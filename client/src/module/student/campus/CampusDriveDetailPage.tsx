@@ -5,7 +5,7 @@ import {
   ArrowLeft, Building2, Calendar, Users, Clock, GraduationCap,
   BookOpen, TrendingUp, CheckCircle, Loader2,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CampusDrive, CampusDriveRegistration } from "../../../lib/types";

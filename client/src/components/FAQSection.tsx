@@ -49,15 +49,29 @@ export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-20 sm:py-28 bg-white dark:bg-gray-900">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-950 dark:text-white tracking-tight text-center mb-4">
-          Frequently Asked Questions
-        </h2>
-        <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto">
-          Everything you need to know about InternHack and how it helps students
-          land their dream internship.
-        </p>
+    <section className="relative py-20 sm:py-28 bg-white dark:bg-[#030303] overflow-hidden">
+      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-rose-500/5 blur-3xl dark:block hidden" />
+
+      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-center mb-4">
+            <span className="bg-clip-text text-transparent bg-linear-to-b from-gray-900 to-gray-900/80 dark:from-white dark:to-white/80">
+              Frequently Asked
+            </span>{" "}
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-600 via-gray-900 to-rose-600 dark:from-indigo-300 dark:via-white/90 dark:to-rose-300">
+              Questions
+            </span>
+          </h2>
+          <p className="text-gray-500 dark:text-white/40 text-center mb-12 max-w-xl mx-auto">
+            Everything you need to know about InternHack and how it helps students
+            land their dream internship.
+          </p>
+        </motion.div>
 
         <div className="space-y-3">
           {FAQ_ITEMS.map((item, i) => {
@@ -65,11 +79,11 @@ export function FAQSection() {
             return (
               <div
                 key={i}
-                className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                className="border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left bg-gray-50 dark:bg-white/3 hover:bg-gray-100 dark:hover:bg-white/6 transition-colors"
                 >
                   <span className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                     {item.question}
@@ -79,7 +93,7 @@ export function FAQSection() {
                     transition={{ duration: 0.2 }}
                     className="shrink-0"
                   >
-                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                    <ChevronDown className="w-5 h-5 text-gray-400 dark:text-white/40" />
                   </motion.span>
                 </button>
                 <AnimatePresence initial={false}>
@@ -90,7 +104,7 @@ export function FAQSection() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                     >
-                      <div className="px-5 py-4 text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-gray-200 dark:border-gray-700">
+                      <div className="px-5 py-4 text-gray-600 dark:text-white/50 text-sm leading-relaxed border-t border-gray-200 dark:border-white/10">
                         {item.answer}
                       </div>
                     </motion.div>

@@ -11,7 +11,7 @@ interface ThemeState {
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem("theme");
   if (stored === "light" || stored === "dark") return stored;
-  return "light";
+  return "dark";
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({

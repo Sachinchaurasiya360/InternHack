@@ -13,7 +13,7 @@ import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
 import { BadgesSection } from "../badges/BadgesSection";

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
 import { AssessmentTestView } from "./AssessmentTestView";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, CustomFieldDefinition, AssessmentQuestion } from "../../../lib/types";

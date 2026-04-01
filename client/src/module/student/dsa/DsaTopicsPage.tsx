@@ -4,8 +4,9 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, ChevronLeft, ChevronRight, Flame, Target, Zap, Search,
+  Lock, Flame, Target, Zap, Search,
 } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopicsResponse, DsaProgress } from "../../../lib/types";
@@ -321,30 +322,11 @@ export default function DsaTopicsPage() {
         )}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 mt-8">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Prev
-          </button>
-          <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums">
-            {page} / {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            Next
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+      <PaginationControls
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
 
       <LoginGate open={showGate} onClose={() => setShowGate(false)} />
     </div>

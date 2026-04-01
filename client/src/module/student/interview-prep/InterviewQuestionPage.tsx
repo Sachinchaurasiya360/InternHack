@@ -17,6 +17,7 @@ import type { InterviewProgress, CodeExample } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { reportMilestone } from "../../../lib/milestone.utils";
 
 const FREE_LIMIT = 5;
 
@@ -115,7 +116,14 @@ export default function InterviewQuestionPage() {
     if (!questionId) return;
     const newVal = toggleProgress(questionId);
     setCompleted(newVal);
-  }, [questionId]);
+    if (newVal && isAuthenticated && sectionSlug) {
+      const progress = getLocalProgress();
+      const allDone = sectionQuestions.every(
+        (q) => progress[q.id]?.completed
+      );
+      if (allDone) reportMilestone("INTERVIEW_SECTION_COMPLETE", sectionSlug);
+    }
+  }, [questionId, isAuthenticated, sectionSlug, sectionQuestions]);
 
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
   if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {

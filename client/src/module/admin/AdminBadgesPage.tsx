@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+import { PaginationControls } from "../../components/ui/PaginationControls";
 import {
   Award,
   Plus,
@@ -8,15 +9,13 @@ import {
   Trash2,
   X,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
   Search,
   Filter,
   Users,
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../lib/axios";
 import { queryKeys } from "../../lib/query-keys";
 import type { Badge, BadgeCategory, Pagination } from "../../lib/types";
@@ -401,58 +400,12 @@ export default function AdminBadgesPage() {
       )}
 
       {/* Pagination */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-xs text-gray-500">
-            Page {pagination.page} of {pagination.totalPages}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="p-2 rounded-lg bg-gray-900 border border-gray-800 text-gray-400 hover:text-white hover:border-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-              .filter((p) => {
-                if (pagination.totalPages <= 7) return true;
-                if (p === 1 || p === pagination.totalPages) return true;
-                return Math.abs(p - page) <= 1;
-              })
-              .reduce<(number | "ellipsis")[]>((acc, p, i, arr) => {
-                if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push("ellipsis");
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((item, i) =>
-                item === "ellipsis" ? (
-                  <span key={`e-${i}`} className="px-1 text-gray-600">
-                    ...
-                  </span>
-                ) : (
-                  <button
-                    key={item}
-                    onClick={() => setPage(item as number)}
-                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                      page === item
-                        ? "bg-indigo-600 text-white"
-                        : "bg-gray-900 border border-gray-800 text-gray-400 hover:text-white hover:border-gray-700"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ),
-              )}
-            <button
-              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-              disabled={page >= pagination.totalPages}
-              className="p-2 rounded-lg bg-gray-900 border border-gray-800 text-gray-400 hover:text-white hover:border-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      {pagination && (
+        <PaginationControls
+          currentPage={page}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+        />
       )}
 
       {/* Create / Edit Modal */}

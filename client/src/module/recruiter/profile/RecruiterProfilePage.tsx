@@ -7,7 +7,7 @@ import {
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 
 interface RecruiterProfile {
