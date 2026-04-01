@@ -8,7 +8,7 @@ import {
   StickyNote, ChevronDown, Lightbulb,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { DsaCompany, DsaPaginatedProblems, DsaCompanyProblem } from "../../../lib/types";

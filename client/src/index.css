@@ -7,6 +7,42 @@
   --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-primary: var(--fg);
+  --color-primary-foreground: var(--bg);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--fg);
+  --color-muted: var(--secondary);
+  --color-muted-foreground: var(--muted-fg);
+  --color-accent: var(--secondary);
+  --color-accent-foreground: var(--fg);
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border-clr);
+  --color-input: var(--border-clr);
+  --color-ring: var(--fg);
+  --color-card: var(--bg);
+  --color-card-foreground: var(--fg);
+}
+
+:root {
+  --bg: #ffffff;
+  --fg: #030712;
+  --secondary: #f3f4f6;
+  --muted-fg: #6b7280;
+  --border-clr: #e5e7eb;
+}
+
+.dark {
+  --bg: #030712;
+  --fg: #f9fafb;
+  --secondary: #1f2937;
+  --muted-fg: #9ca3af;
+  --border-clr: #374151;
+}
+
 /* Smooth theme transitions */
 html {
   transition: color-scheme 0.3s;
@@ -88,6 +124,19 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Luma spin loader */
+@keyframes loaderAnim {
+  0% { inset: 0 35px 35px 0; }
+  12.5% { inset: 0 35px 0 0; }
+  25% { inset: 35px 35px 0 0; }
+  37.5% { inset: 35px 0 0 0; }
+  50% { inset: 35px 0 0 35px; }
+  62.5% { inset: 0 0 0 35px; }
+  75% { inset: 0 0 35px 35px; }
+  87.5% { inset: 0 0 35px 0; }
+  100% { inset: 0 35px 35px 0; }
 }
 
 /* Proctored test — lock down the page */

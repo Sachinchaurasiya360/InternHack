@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Loader2, Send } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import StarRating from "./StarRating";
 import api from "../../../lib/axios";
 

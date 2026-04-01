@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageSquare, Check, X, Star } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import type { CompanyReview, Pagination } from "../../../lib/types";
 
@@ -116,17 +117,12 @@ export default function AdminReviewsPage() {
         </div>
       )}
 
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6">
-          {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
-            <button key={p} onClick={() => setPage(p)}
-              className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                p === pagination.page ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-              }`}>
-              {p}
-            </button>
-          ))}
-        </div>
+      {pagination && (
+        <PaginationControls
+          currentPage={page}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+        />
       )}
     </div>
   );

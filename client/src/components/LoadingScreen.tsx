@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { LumaSpin } from "./ui/luma-spin";
 
 const QUOTES = [
   { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
@@ -33,10 +34,7 @@ export function LoadingScreen({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className={`flex flex-col items-center justify-center ${compact ? "py-16" : "min-h-[60vh]"} gap-5 px-4 animate-in fade-in duration-500`}>
-      <div className="relative">
-        <div className="w-10 h-10 rounded-full border-3 border-indigo-100 dark:border-indigo-900/40" />
-        <div className="absolute inset-0 w-10 h-10 rounded-full border-3 border-transparent border-t-indigo-600 dark:border-t-indigo-400 animate-spin" />
-      </div>
+      <LumaSpin />
       <div className="max-w-sm text-center space-y-1.5">
         <p className="text-sm italic text-gray-500 dark:text-gray-400 leading-relaxed">
           "{quote.text}"

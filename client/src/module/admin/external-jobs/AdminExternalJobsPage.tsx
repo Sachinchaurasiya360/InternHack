@@ -1,8 +1,9 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, ExternalLink, X, Loader2, Link2, Braces } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 
 interface AdminJob {
   id: number;
@@ -299,22 +300,12 @@ export default function AdminExternalJobsPage() {
       )}
 
       {/* Pagination */}
-      {data && data.totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
-          {Array.from({ length: data.totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i + 1)}
-              className={`px-3 py-1 text-sm rounded-lg ${
-                page === i + 1
-                  ? "bg-black dark:bg-white text-white dark:text-gray-950"
-                  : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+      {data && (
+        <PaginationControls
+          currentPage={page}
+          totalPages={data.totalPages}
+          onPageChange={setPage}
+        />
       )}
     </div>
   );

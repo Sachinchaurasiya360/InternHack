@@ -77,6 +77,7 @@ model user {
   jobPreference         userJobPreference?        @relation("UserJobPreferences")
   jobMatches            jobMatch[]                @relation("UserJobMatches")
   agentConversations    jobAgentConversation[]    @relation("UserAgentConversations")
+  milestoneEmails       milestoneEmail[]          @relation("StudentMilestoneEmails")
 
   @@index([role])
   @@index([role, isActive])
@@ -1204,6 +1205,7 @@ model errorLog {
   path        String
   statusCode  Int
   message     String
+  rawError    String?
   userId      Int?
   ipAddress   String?
   userAgent   String?
@@ -1212,4 +1214,16 @@ model errorLog {
 
   @@index([statusCode])
   @@index([createdAt])
+}
+
+model milestoneEmail {
+  id            Int      @id @default(autoincrement())
+  studentId     Int
+  milestoneType String
+  milestoneKey  String
+  sentAt        DateTime @default(now())
+  student       user     @relation("StudentMilestoneEmails", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, milestoneType, milestoneKey])
+  @@index([studentId])
 }

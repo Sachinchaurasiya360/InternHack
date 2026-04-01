@@ -1,8 +1,7 @@
 import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useParams, useNavigate } from "react-router";
 import { useAuthStore } from "./lib/auth.store";
-import { Toaster } from "react-hot-toast";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "./components/ui/toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
@@ -288,7 +287,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthExpiredRedirect />
-      <Toaster position="top-right" />
+      <Toaster />
       <ErrorBoundary>
       <Suspense fallback={<LoadingScreen />}>
         <Routes>

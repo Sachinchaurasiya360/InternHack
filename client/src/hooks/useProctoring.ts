@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */

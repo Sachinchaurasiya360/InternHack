@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Brain, Plus, Pencil, Trash2, ChevronDown, ChevronRight, Save, X, Loader2 } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 
@@ -295,13 +296,11 @@ export default function AdminAptitudePage() {
           </div>
         )}
 
-        {qTotal > 20 && (
-          <div className="flex justify-center gap-2 mt-4">
-            <button disabled={qPage <= 1} onClick={() => fetchQuestions(selectedTopic.id, qPage - 1)} className="px-3 py-1.5 bg-gray-800 text-gray-300 rounded-lg disabled:opacity-50 text-sm">Prev</button>
-            <span className="text-sm text-gray-400 py-1.5">Page {qPage} of {Math.ceil(qTotal / 20)}</span>
-            <button disabled={qPage >= Math.ceil(qTotal / 20)} onClick={() => fetchQuestions(selectedTopic.id, qPage + 1)} className="px-3 py-1.5 bg-gray-800 text-gray-300 rounded-lg disabled:opacity-50 text-sm">Next</button>
-          </div>
-        )}
+        <PaginationControls
+          currentPage={qPage}
+          totalPages={Math.ceil(qTotal / 20)}
+          onPageChange={(p) => fetchQuestions(selectedTopic.id, p)}
+        />
       </div>
     );
   }

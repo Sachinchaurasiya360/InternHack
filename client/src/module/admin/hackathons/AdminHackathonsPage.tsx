@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Trophy, Plus, Pencil, Trash2, Save, X, Loader2, Search } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 
 interface Hackathon {
@@ -324,13 +325,11 @@ export default function AdminHackathonsPage() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 hover:bg-gray-700 disabled:opacity-40 transition-colors">Prev</button>
-              <span className="text-sm text-gray-400">Page {page} of {totalPages}</span>
-              <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 hover:bg-gray-700 disabled:opacity-40 transition-colors">Next</button>
-            </div>
-          )}
+          <PaginationControls
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </>
       )}
     </div>

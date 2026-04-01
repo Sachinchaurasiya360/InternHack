@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Link, useSearchParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -14,8 +15,6 @@ import {
   Rocket,
   ExternalLink,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Lock,
   GraduationCap,
   Mail,
@@ -853,53 +852,13 @@ export default function CompanyListPage() {
                 )}
 
                 {/* Pagination */}
-                {pagination && pagination.totalPages > 1 && (() => {
-                  const current = pagination.page;
-                  const total = pagination.totalPages;
-                  const pages: (number | "...")[] = [];
-                  pages.push(1);
-                  if (current > 3) pages.push("...");
-                  for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
-                    pages.push(i);
-                  }
-                  if (current < total - 2) pages.push("...");
-                  if (total > 1) pages.push(total);
-                  return (
-                    <div className="flex items-center justify-center gap-1.5 mt-8">
-                      <button
-                        onClick={() => updateParam("page", String(current - 1))}
-                        disabled={current <= 1}
-                        className="px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
-                      >
-                        <ChevronLeft className="w-4 h-4" /> Prev
-                      </button>
-                      {pages.map((p, i) =>
-                        p === "..." ? (
-                          <span key={`dots-${i}`} className="px-2 text-gray-400">...</span>
-                        ) : (
-                          <button
-                            key={p}
-                            onClick={() => updateParam("page", String(p))}
-                            className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                              p === current
-                                ? "bg-black dark:bg-white text-white dark:text-gray-950"
-                                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                            }`}
-                          >
-                            {p}
-                          </button>
-                        ),
-                      )}
-                      <button
-                        onClick={() => updateParam("page", String(current + 1))}
-                        disabled={current >= total}
-                        className="px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
-                      >
-                        Next <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  );
-                })()}
+                {pagination && (
+                  <PaginationControls
+                    currentPage={pagination.page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={(p) => updateParam("page", String(p))}
+                  />
+                )}
               </>
             )}
           </>
@@ -1037,26 +996,12 @@ export default function CompanyListPage() {
                 </div>
 
                 {/* YC Pagination */}
-                {ycPagination && ycPagination.totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-3 mt-8">
-                    <button
-                      onClick={() => setYcPage((p) => Math.max(1, p - 1))}
-                      disabled={ycPage <= 1}
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4" /> Prev
-                    </button>
-                    <span className="text-sm text-gray-500 dark:text-gray-500">
-                      Page {ycPagination.page} of {ycPagination.totalPages}
-                    </span>
-                    <button
-                      onClick={() => setYcPage((p) => Math.min(ycPagination.totalPages, p + 1))}
-                      disabled={ycPage >= ycPagination.totalPages}
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                {ycPagination && (
+                  <PaginationControls
+                    currentPage={ycPage}
+                    totalPages={ycPagination.totalPages}
+                    onPageChange={setYcPage}
+                  />
                 )}
               </>
             )}
@@ -1215,26 +1160,12 @@ export default function CompanyListPage() {
                 )}
 
                 {/* Professor Pagination */}
-                {profPagination && profPagination.totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-3 mt-8">
-                    <button
-                      onClick={() => setProfPage((p) => Math.max(1, p - 1))}
-                      disabled={profPage <= 1}
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4" /> Prev
-                    </button>
-                    <span className="text-sm text-gray-500 dark:text-gray-500">
-                      Page {profPagination.page} of {profPagination.totalPages}
-                    </span>
-                    <button
-                      onClick={() => setProfPage((p) => Math.min(profPagination.totalPages, p + 1))}
-                      disabled={profPage >= profPagination.totalPages}
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                {profPagination && (
+                  <PaginationControls
+                    currentPage={profPage}
+                    totalPages={profPagination.totalPages}
+                    onPageChange={setProfPage}
+                  />
                 )}
               </>
             )}
@@ -1351,26 +1282,12 @@ export default function CompanyListPage() {
                   </div>
                 )}
 
-                {hrPagination && hrPagination.totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-3 mt-8">
-                    <button
-                      onClick={() => setHrPage((p) => Math.max(1, p - 1))}
-                      disabled={hrPage <= 1}
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4" /> Prev
-                    </button>
-                    <span className="text-sm text-gray-500 dark:text-gray-500">
-                      Page {hrPagination.page} of {hrPagination.totalPages}
-                    </span>
-                    <button
-                      onClick={() => setHrPage((p) => Math.min(hrPagination.totalPages, p + 1))}
-                      disabled={hrPage >= hrPagination.totalPages}
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                {hrPagination && (
+                  <PaginationControls
+                    currentPage={hrPage}
+                    totalPages={hrPagination.totalPages}
+                    onPageChange={setHrPage}
+                  />
                 )}
               </>
             )}

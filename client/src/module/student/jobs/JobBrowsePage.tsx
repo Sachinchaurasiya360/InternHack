@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Search, MapPin, IndianRupee, Clock, X, Landmark, ChevronRight } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -290,7 +291,9 @@ export default function JobBrowsePage() {
                         <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
                         <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><IndianRupee className="w-3 h-3 text-emerald-400" />{job.salary}</span>
                         {job.deadline && (
-                          <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><Clock className="w-3 h-3 text-amber-400" />{new Date(job.deadline).toLocaleDateString()}</span>
+                          new Date(job.deadline) < new Date()
+                            ? <span className="flex items-center gap-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-lg font-medium"><Clock className="w-3 h-3" />Expired</span>
+                            : <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><Clock className="w-3 h-3 text-amber-400" />{new Date(job.deadline).toLocaleDateString()}</span>
                         )}
                       </div>
                       {job.tags.length > 0 && (
@@ -306,26 +309,12 @@ export default function JobBrowsePage() {
               </div>
             </div>
 
-            {data?.pagination && data.pagination.totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-10">
-                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-                  className="px-5 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl disabled:opacity-30 hover:border-gray-300 dark:hover:border-gray-600 transition-colors dark:text-gray-300 shadow-sm">Previous</button>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(data.pagination.totalPages, 5) }, (_, i) => {
-                    const p = i + 1;
-                    return (
-                      <button key={p} onClick={() => setPage(p)}
-                        className={`w-10 h-10 rounded-xl text-sm font-medium transition-all ${
-                          page === p
-                            ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-md"
-                            : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                        }`}>{p}</button>
-                    );
-                  })}
-                </div>
-                <button onClick={() => setPage(Math.min(data.pagination.totalPages, page + 1))} disabled={page === data.pagination.totalPages}
-                  className="px-5 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl disabled:opacity-30 hover:border-gray-300 dark:hover:border-gray-600 transition-colors dark:text-gray-300 shadow-sm">Next</button>
-              </div>
+            {data?.pagination && (
+              <PaginationControls
+                currentPage={page}
+                totalPages={data.pagination.totalPages}
+                onPageChange={setPage}
+              />
             )}
           </>
         )}

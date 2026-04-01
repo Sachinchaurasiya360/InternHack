@@ -119,13 +119,9 @@ export default function JobLandingPage() {
                     </span>
                   )}
                   {job.deadline && (
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" />{" "}
-                      {new Date(job.deadline).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
+                    new Date(job.deadline) < new Date()
+                      ? <span className="flex items-center gap-1 text-red-500 font-medium"><Clock className="w-3.5 h-3.5" /> Expired</span>
+                      : <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {new Date(job.deadline).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
                   )}
                 </div>
                 {job.tags?.length > 0 && (

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Phone, Building2, Briefcase, FileText, ScanSearch, MapPin, GraduationCap, Globe, ExternalLink, Crown, Shield, Award, Star, MessageCircle, CheckCircle, XCircle } from "lucide-react";
 import api from "../../../lib/axios";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 
 interface ProjectItem {
   id: string;

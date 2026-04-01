@@ -10,7 +10,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 
 const COMPANY_LOGOS: Record<string, string> = {
   "TCS": "https://companieslogo.com/img/orig/TCS.NS_BIG-89c50e39.png?t=1740792736",

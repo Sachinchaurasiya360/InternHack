@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Search, AlertTriangle } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, AlertTriangle } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import type { ErrorLog, Pagination } from "../../../lib/types";
 
 export default function ErrorLogsPage() {
@@ -120,30 +121,12 @@ export default function ErrorLogsPage() {
         )}
 
         {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800">
-            <span className="text-sm text-gray-400">
-              Showing {(pagination.page - 1) * pagination.limit + 1}-
-              {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => fetchLogs(pagination.page - 1)}
-                disabled={pagination.page <= 1}
-                className="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => fetchLogs(pagination.page + 1)}
-                disabled={pagination.page >= pagination.totalPages}
-                className="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
+        <PaginationControls
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          onPageChange={fetchLogs}
+          showingInfo={{ total: pagination.total, limit: pagination.limit }}
+        />
       </div>
     </div>
   );
@@ -216,6 +199,14 @@ function ErrorRow({
                   <p className="text-gray-500 text-xs mb-1">User Agent</p>
                   <p className="text-gray-300 text-xs truncate">{log.userAgent || "-"}</p>
                 </div>
+                {log.rawError && (
+                  <div className="md:col-span-2">
+                    <p className="text-gray-500 text-xs mb-1">Raw Error</p>
+                    <pre className="text-red-300 text-xs bg-red-950/30 border border-red-900/30 rounded-lg p-3 overflow-x-auto max-h-48 whitespace-pre-wrap">
+                      {log.rawError}
+                    </pre>
+                  </div>
+                )}
                 {log.requestBody && Object.keys(log.requestBody).length > 0 && (
                   <div className="md:col-span-2">
                     <p className="text-gray-500 text-xs mb-1">Request Body</p>

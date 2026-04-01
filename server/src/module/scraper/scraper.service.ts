@@ -179,11 +179,11 @@ export class ScraperService {
     let created = 0;
     let updated = 0;
 
-    // Process in batches of 25 to stay within transaction timeout
-    const BATCH_SIZE = 25;
+    // Process in parallel batches — no transaction needed since ops are independent upserts
+    const BATCH_SIZE = 15;
     for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
       const batch = jobs.slice(i, i + BATCH_SIZE);
-      const ops: Prisma.PrismaPromise<unknown>[] = [];
+      const ops: Promise<unknown>[] = [];
 
       for (const job of batch) {
         const existingId = existingMap.get(job.sourceId);
@@ -230,7 +230,7 @@ export class ScraperService {
         }
       }
 
-      await prisma.$transaction(ops, { timeout: 15000 });
+      await Promise.all(ops);
     }
 
     return { created, updated };

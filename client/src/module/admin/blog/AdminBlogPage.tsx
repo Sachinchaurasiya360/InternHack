@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import {
@@ -11,12 +12,10 @@ import {
   Eye,
   Pencil,
   Trash2,
-  ChevronLeft,
-  ChevronRight,
   Globe,
   FilePen,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -268,34 +267,13 @@ export default function AdminBlogPage() {
       )}
 
       {/* Pagination */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6">
-          <span className="text-sm text-gray-500">
-            Showing {(pagination.page - 1) * pagination.limit + 1}-
-            {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm text-gray-400 bg-gray-900 border border-gray-700 hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Prev
-            </button>
-            <span className="text-sm text-gray-400 px-2">
-              {pagination.page} / {pagination.totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-              disabled={page >= pagination.totalPages}
-              className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm text-gray-400 bg-gray-900 border border-gray-700 hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      {pagination && (
+        <PaginationControls
+          currentPage={page}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          showingInfo={{ total: pagination.total, limit: pagination.limit }}
+        />
       )}
     </div>
   );

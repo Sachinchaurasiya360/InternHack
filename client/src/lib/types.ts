@@ -401,6 +401,7 @@ export interface ErrorLog {
   path: string;
   statusCode: number;
   message: string;
+  rawError: string | null;
   userId: number | null;
   ipAddress: string | null;
   userAgent: string | null;

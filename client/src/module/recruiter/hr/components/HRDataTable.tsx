@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PaginationControls } from "../../../../components/ui/PaginationControls";
 
 export interface Column<T> {
   header: string;
@@ -66,29 +66,14 @@ export default function HRDataTable<T extends object>({
         </table>
       </div>
 
-      {onPageChange && totalPages > 1 && (
-        <div className="flex items-center justify-between pt-4 px-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {total !== undefined ? `${total} total` : `Page ${page} of ${totalPages}`}
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onPageChange(page - 1)}
-              disabled={page <= 1}
-              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-xs font-medium text-gray-700 dark:text-gray-300 px-2">{page} / {totalPages}</span>
-            <button
-              onClick={() => onPageChange(page + 1)}
-              disabled={page >= totalPages}
-              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      {onPageChange && (
+        <PaginationControls
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          showingInfo={total !== undefined ? { total, limit: Math.max(1, data.length) } : undefined}
+          className="mt-4"
+        />
       )}
     </div>
   );

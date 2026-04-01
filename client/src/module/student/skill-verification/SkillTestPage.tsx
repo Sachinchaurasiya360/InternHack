@@ -18,7 +18,7 @@ import {
   Shield,
 } from "lucide-react";
 import api from "../../../lib/axios";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import type { SkillTestWithQuestions, SkillTestSubmitResult } from "../../../lib/types";
 import { useProctoring } from "../../../hooks/useProctoring";
 import ProctoringCamera from "../../../components/ProctoringCamera";

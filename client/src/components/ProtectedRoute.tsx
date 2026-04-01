@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Navigate, useLocation } from "react-router";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import { useAuthStore } from "../lib/auth.store";
 import type { UserRole } from "../lib/types";
 

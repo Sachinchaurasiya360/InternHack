@@ -54,8 +54,10 @@ export function FeaturesSection() {
   const [hero, ...rest] = features;
 
   return (
-    <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="relative py-24 md:py-32 bg-white dark:bg-[#030303] overflow-hidden">
+      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-rose-500/5 blur-3xl dark:block hidden" />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -64,12 +66,16 @@ export function FeaturesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
-            Your career toolkit,
+          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+            <span className="bg-clip-text text-transparent bg-linear-to-b from-gray-900 to-gray-900/80 dark:from-white dark:to-white/80">
+              Your career toolkit,
+            </span>
             <br />
-            <span className="text-gradient-accent">all in one place</span>
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-600 via-gray-900 to-rose-600 dark:from-indigo-300 dark:via-white/90 dark:to-rose-300">
+              all in one place
+            </span>
           </h2>
-          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
+          <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto">
             Every tool you need to go from resume to offer letter.
           </p>
         </motion.div>
@@ -88,7 +94,7 @@ export function FeaturesSection() {
               <motion.div
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.25 }}
-                className="relative rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 p-6 md:p-8 transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50 overflow-hidden"
+                className="relative rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/3 p-6 md:p-8 transition-all duration-300 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-white/5 overflow-hidden"
               >
                 {/* Subtle dot texture */}
                 <div
@@ -108,11 +114,11 @@ export function FeaturesSection() {
                     <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white mb-1">
                       {hero.title}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                    <p className="text-sm text-gray-500 dark:text-white/50 leading-relaxed max-w-lg">
                       {hero.desc}
                     </p>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-gray-500 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors shrink-0">
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-white/40 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors shrink-0">
                     Learn more
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
@@ -128,7 +134,7 @@ export function FeaturesSection() {
                 <motion.div
                   whileHover={{ y: -4 }}
                   transition={{ duration: 0.25 }}
-                  className="relative h-full rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 p-6 transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50"
+                  className="relative h-full rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/3 p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-white/5"
                 >
                   <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center mb-4">
                     <f.icon className="w-5 h-5 text-white dark:text-gray-950" />
@@ -136,10 +142,10 @@ export function FeaturesSection() {
                   <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">
                     {f.title}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
+                  <p className="text-sm text-gray-500 dark:text-white/50 leading-relaxed mb-4">
                     {f.desc}
                   </p>
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-gray-500 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-white/40 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
                     Learn more
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>

@@ -25,6 +25,7 @@ import PythonConsoleOutput from "./components/PythonConsoleOutput";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { reportMilestone } from "../../../lib/milestone.utils";
 
 const FREE_LIMIT = 5;
 
@@ -318,7 +319,14 @@ export default function PythonLessonDetailPage() {
     if (!lessonId) return;
     const newVal = toggleProgress(lessonId);
     setCompleted(newVal);
-  }, [lessonId]);
+    if (newVal && isAuthenticated && sectionSlug) {
+      const progress = getLocalProgress();
+      const allDone = sectionLessons.every(
+        (l) => progress[l.id]?.completed
+      );
+      if (allDone) reportMilestone("COURSE_COMPLETE", "python");
+    }
+  }, [lessonId, isAuthenticated, sectionSlug, sectionLessons]);
 
   // Redirect if section is locked
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);

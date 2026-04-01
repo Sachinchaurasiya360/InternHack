@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Loader2, UserPlus } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 
 interface AddContactModalProps {

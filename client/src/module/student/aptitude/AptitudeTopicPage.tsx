@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock, Trophy, Send, RotateCcw } from "lucide-react";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeTopicDetail } from "../../../lib/types";
@@ -10,7 +11,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import toast from "react-hot-toast";
+import toast from "@/components/ui/toast";
 
 function sanitizeHtml(html: string): string {
   return html
@@ -464,32 +465,14 @@ export default function AptitudeTopicPage() {
       </motion.div>
 
       {/* Page-level pagination */}
-      {topic.totalPages > 1 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.35 }}
-          className="flex items-center justify-center gap-3 mt-8 pt-5 border-t border-gray-100 dark:border-gray-800"
-        >
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl disabled:opacity-40 hover:border-gray-300 dark:hover:border-gray-700 transition-colors shadow-sm"
-          >
-            <ChevronLeft className="w-4 h-4" /> Prev Page
-          </button>
-          <span className="text-sm font-medium text-gray-500 dark:text-gray-400 tabular-nums">
-            Page {page} / {topic.totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(topic.totalPages, p + 1))}
-            disabled={page >= topic.totalPages}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl disabled:opacity-40 hover:border-gray-300 dark:hover:border-gray-700 transition-colors shadow-sm"
-          >
-            Next Page <ChevronRight className="w-4 h-4" />
-          </button>
-        </motion.div>
-      )}
+      <div className="mt-8 pt-5 border-t border-gray-100 dark:border-gray-800">
+        <PaginationControls
+          currentPage={page}
+          totalPages={topic.totalPages}
+          onPageChange={setPage}
+          className="mt-0"
+        />
+      </div>
     </div>
   );
 }
