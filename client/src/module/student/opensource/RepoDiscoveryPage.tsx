@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -27,12 +27,16 @@ import {
   GitBranch,
   MessageSquare,
   Settings,
+  Plus,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { SEO } from "../../../components/SEO";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination } from "../../../lib/types";
+import type { OpenSourceRepo, Pagination, RepoDomain, RepoDifficulty } from "../../../lib/types";
+import { useAuthStore } from "../../../lib/auth.store";
 import {
   REPO_DOMAINS,
   DIFFICULTY_OPTIONS,
@@ -134,6 +138,164 @@ function RepoCardSkeleton() {
   );
 }
 
+// ─── Suggest Repo Modal ─────────────────────────────────────────
+interface SuggestRepoForm {
+  name: string;
+  owner: string;
+  description: string;
+  language: string;
+  url: string;
+  domain: RepoDomain;
+  difficulty: RepoDifficulty;
+  techStack: string;
+  tags: string;
+  reason: string;
+}
+
+const INITIAL_FORM: SuggestRepoForm = {
+  name: "", owner: "", description: "", language: "", url: "",
+  domain: "WEB", difficulty: "BEGINNER", techStack: "", tags: "", reason: "",
+};
+
+function SuggestRepoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [form, setForm] = useState<SuggestRepoForm>(INITIAL_FORM);
+  const [success, setSuccess] = useState(false);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (data: SuggestRepoForm) => {
+      const payload = {
+        ...data,
+        techStack: data.techStack.split(",").map((s) => s.trim()).filter(Boolean),
+        tags: data.tags.split(",").map((s) => s.trim()).filter(Boolean),
+      };
+      return api.post("/opensource/requests", payload);
+    },
+    onSuccess: () => {
+      setSuccess(true);
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.myRequests() });
+      setTimeout(() => { setSuccess(false); setForm(INITIAL_FORM); onClose(); }, 2000);
+    },
+  });
+
+  const set = (key: keyof SuggestRepoForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  const inputCls = "w-full px-3 py-2.5 rounded-xl text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all";
+
+  if (!open) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: "spring", duration: 0.4 }}
+        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Suggest a Repository</h2>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+
+        {success ? (
+          <div className="px-6 py-12 text-center">
+            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Request Submitted!</h3>
+            <p className="text-sm text-gray-500">You'll receive an email once it's reviewed.</p>
+          </div>
+        ) : (
+          <form
+            className="px-6 py-5 space-y-4"
+            onSubmit={(e) => { e.preventDefault(); mutation.mutate(form); }}
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Owner / Org *</label>
+                <input required className={inputCls} placeholder="e.g. facebook" value={form.owner} onChange={set("owner")} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Repo Name *</label>
+                <input required className={inputCls} placeholder="e.g. react" value={form.name} onChange={set("name")} />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">GitHub URL *</label>
+              <input required type="url" className={inputCls} placeholder="https://github.com/owner/repo" value={form.url} onChange={set("url")} />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Description *</label>
+              <textarea required rows={2} className={inputCls} placeholder="What does this project do?" value={form.description} onChange={set("description")} />
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Language *</label>
+                <input required className={inputCls} placeholder="TypeScript" value={form.language} onChange={set("language")} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Domain</label>
+                <select className={inputCls} value={form.domain} onChange={set("domain")}>
+                  {REPO_DOMAINS.filter((d) => d.key !== "ALL").map((d) => (
+                    <option key={d.key} value={d.key}>{d.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Difficulty</label>
+                <select className={inputCls} value={form.difficulty} onChange={set("difficulty")}>
+                  {DIFFICULTY_OPTIONS.filter((d) => d.key !== "ALL").map((d) => (
+                    <option key={d.key} value={d.key}>{d.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Tech Stack <span className="text-gray-400">(comma-separated)</span></label>
+              <input className={inputCls} placeholder="React, Node.js, PostgreSQL" value={form.techStack} onChange={set("techStack")} />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Tags <span className="text-gray-400">(comma-separated)</span></label>
+              <input className={inputCls} placeholder="backend, api, self-hosted" value={form.tags} onChange={set("tags")} />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Why should this repo be listed? *</label>
+              <textarea required rows={2} className={inputCls} placeholder="Great for beginners, active community..." value={form.reason} onChange={set("reason")} />
+            </div>
+
+            {mutation.isError && (
+              <p className="text-sm text-red-500">
+                {(mutation.error as any)?.response?.data?.message || "Failed to submit. Please try again."}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={mutation.isPending}
+              className="w-full py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+            >
+              {mutation.isPending ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Request"}
+            </button>
+          </form>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ─── Component ──────────────────────────────────────────────────
 export default function RepoDiscoveryPage() {
   const [search, setSearch] = useState("");
@@ -143,6 +305,8 @@ export default function RepoDiscoveryPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
   const [page, setPage] = useState(1);
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const { user } = useAuthStore();
 
   // Build query params
   const queryParams = useMemo(() => {
@@ -467,6 +631,34 @@ export default function RepoDiscoveryPage() {
         {/* Cards grid */}
         {!isLoading && !isError && repos.length > 0 && (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Suggest a Repo card */}
+            {page === 1 && (
+              <motion.div
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -4 }}
+                className="h-full"
+              >
+                <button
+                  onClick={() => {
+                    if (!user) { window.location.href = "/login"; return; }
+                    setShowSuggestModal(true);
+                  }}
+                  className="group relative flex flex-col items-center justify-center h-full w-full min-h-[220px] text-center bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 hover:shadow-lg hover:shadow-purple-100/50 dark:hover:shadow-purple-900/20 transition-all duration-300 cursor-pointer p-6"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Plus className="w-7 h-7 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Suggest a Repository</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed max-w-[200px]">
+                    Know a great open-source project? Submit it for review.
+                  </p>
+                </button>
+              </motion.div>
+            )}
+
             <AnimatePresence mode="popLayout">
               {repos.map((repo, i) => (
                 <motion.div
@@ -571,6 +763,11 @@ export default function RepoDiscoveryPage() {
           />
         )}
       </div>
+
+      {/* Suggest Repo Modal */}
+      <AnimatePresence>
+        <SuggestRepoModal open={showSuggestModal} onClose={() => setShowSuggestModal(false)} />
+      </AnimatePresence>
 
       {/* Detail Modal */}
       <AnimatePresence>

@@ -6,6 +6,7 @@ import api from "../../../lib/axios";
 import { hrKeys } from "./hr-query-keys";
 import HRStatsCard from "./components/HRStatsCard";
 import type { HRDashboardData } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 export default function HRDashboardPage() {
   const { data, isLoading } = useQuery({
@@ -60,6 +61,7 @@ export default function HRDashboardPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="HR Dashboard" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">HR Dashboard</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Overview of your organization's HR metrics</p>

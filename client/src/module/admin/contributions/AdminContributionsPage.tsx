@@ -6,6 +6,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import type { CompanyContribution, Pagination } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 const TYPE_LABELS: Record<string, string> = {
   NEW_COMPANY: "New Company",
@@ -59,6 +60,7 @@ export default function AdminContributionsPage() {
 
   return (
     <div>
+      <SEO title="Manage Contributions" noIndex />
       <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
         <GitPullRequest className="w-6 h-6" /> Contributions
       </h1>

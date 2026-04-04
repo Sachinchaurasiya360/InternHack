@@ -22,6 +22,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
 import type { BlogPost } from "../../blog/components/BlogCard";
 import { CATEGORY_LABELS } from "../../blog/components/BlogCard";
+import { SEO } from "../../../components/SEO";
 
 type StatusFilter = "ALL" | "DRAFT" | "PUBLISHED";
 
@@ -105,6 +106,7 @@ export default function AdminBlogPage() {
 
   return (
     <div>
+      <SEO title="Manage Blog" noIndex />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">

@@ -1,3 +1,4 @@
+import React from "react";
 import { BotMessageSquare, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { AgentJobCard } from "./AgentJobCard";
@@ -31,7 +32,7 @@ function formatContent(text: string) {
   });
 }
 
-export function AgentMessage({ role, content, jobs }: Props) {
+export const AgentMessage = React.memo(function AgentMessage({ role, content, jobs }: Props) {
   const { user } = useAuthStore();
   const isUser = role === "user";
 
@@ -85,4 +86,4 @@ export function AgentMessage({ role, content, jobs }: Props) {
       </div>
     </motion.div>
   );
-}
+});

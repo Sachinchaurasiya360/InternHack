@@ -3,6 +3,7 @@ import { Brain, Plus, Pencil, Trash2, ChevronDown, ChevronRight, Save, X, Loader
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
+import { SEO } from "../../../components/SEO";
 
 interface AptitudeQuestion {
   id?: number;
@@ -382,6 +383,7 @@ export default function AdminAptitudePage() {
   // Category list view
   return (
     <div>
+      <SEO title="Manage Aptitude" noIndex />
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Brain className="w-6 h-6 text-indigo-400" />

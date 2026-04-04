@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import api from "../../lib/axios";
 import { LoadingScreen } from "../../components/LoadingScreen";
+import { SEO } from "../../components/SEO";
+import { Button } from "../../components/ui/button";
 
 interface DashboardData {
   totalJobs: number;
@@ -82,6 +84,7 @@ export default function RecruiterDashboard() {
 
   return (
     <div className="-m-8">
+      <SEO title="Recruiter Dashboard" noIndex />
       {/* ── Hero Header ── */}
       <div className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950">
         {/* Gradient orbs */}
@@ -338,13 +341,12 @@ export default function RecruiterDashboard() {
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                   No applications yet.
                 </p>
-                <Link
-                  to="/recruiters/jobs/create"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
-                >
-                  Create a Job
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <Button asChild variant="mono" size="md">
+                  <Link to="/recruiters/jobs/create" className="no-underline">
+                    Create a Job
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </Button>
               </div>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-800">

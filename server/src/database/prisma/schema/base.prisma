@@ -78,6 +78,8 @@ model user {
   jobMatches            jobMatch[]                @relation("UserJobMatches")
   agentConversations    jobAgentConversation[]    @relation("UserAgentConversations")
   milestoneEmails       milestoneEmail[]          @relation("StudentMilestoneEmails")
+  externalApplications  externalJobApplication[] @relation("StudentExternalApplications")
+  repoRequests          repoRequest[]            @relation("UserRepoRequests")
 
   @@index([role])
   @@index([role, isActive])
@@ -403,6 +405,29 @@ model opensourceRepo {
   @@index([domain])
   @@index([difficulty])
   @@index([language])
+}
+
+model repoRequest {
+  id          Int                @id @default(autoincrement())
+  name        String
+  owner       String
+  description String
+  language    String
+  url         String
+  domain      RepoDomain         @default(WEB)
+  difficulty  RepoDifficulty     @default(BEGINNER)
+  techStack   String[]           @default([])
+  tags        String[]           @default([])
+  reason      String
+  status      RepoRequestStatus  @default(PENDING)
+  adminNote   String?
+  userId      Int
+  user        user               @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([status])
+  @@index([userId])
 }
 
 model blogPost {
@@ -924,21 +949,35 @@ model aiRequestLog {
 }
 
 model adminJob {
-  id          Int      @id @default(autoincrement())
-  company     String?
-  role        String?
-  description String?
-  salary      String?
-  location    String?
-  applyLink   String?
-  tags        String[] @default([])
-  expiresAt   DateTime
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  slug        String?  @unique
+  id           Int                       @id @default(autoincrement())
+  company      String?
+  role         String?
+  description  String?
+  salary       String?
+  location     String?
+  applyLink    String?
+  tags         String[]                  @default([])
+  expiresAt    DateTime
+  isActive     Boolean                   @default(true)
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  slug         String?                   @unique
+  applications externalJobApplication[]  @relation("AdminJobApplications")
 
   @@index([isActive, expiresAt])
+}
+
+model externalJobApplication {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  adminJobId Int
+  createdAt  DateTime @default(now())
+  student    user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
+  adminJob   adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, adminJobId])
+  @@index([studentId])
+  @@index([adminJobId])
 }
 
 model itHrContact {
@@ -1139,6 +1178,12 @@ enum RepoDifficulty {
   BEGINNER
   INTERMEDIATE
   ADVANCED
+}
+
+enum RepoRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum RepoDomain {

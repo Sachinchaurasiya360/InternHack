@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Code2, Plus, Pencil, Trash2, Save, X, Loader2, Search } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
+import { SEO } from "../../../components/SEO";
 
 interface DsaTopic {
   id: number;
@@ -116,6 +117,7 @@ export default function AdminDsaPage() {
 
   return (
     <div>
+      <SEO title="Manage DSA" noIndex />
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Code2 className="w-6 h-6 text-indigo-400" />

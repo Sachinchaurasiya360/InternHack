@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "../../components/ui/PaginationControls";
+import { Button } from "../../components/ui/button";
 import {
   Award,
   Plus,
@@ -19,6 +20,7 @@ import toast from "@/components/ui/toast";
 import api from "../../lib/axios";
 import { queryKeys } from "../../lib/query-keys";
 import type { Badge, BadgeCategory, Pagination } from "../../lib/types";
+import { SEO } from "../../components/SEO";
 
 // ── Constants ──
 
@@ -228,6 +230,7 @@ export default function AdminBadgesPage() {
 
   return (
     <div>
+      <SEO title="Manage Badges" noIndex />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -239,13 +242,10 @@ export default function AdminBadgesPage() {
             {pagination ? `${pagination.total} badge${pagination.total !== 1 ? "s" : ""}` : "Loading..."}
           </p>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors"
-        >
+        <Button onClick={openCreate} variant="primary" size="md">
           <Plus className="w-4 h-4" />
           New Badge
-        </button>
+        </Button>
       </div>
 
       {/* Filters */}
@@ -560,22 +560,20 @@ export default function AdminBadgesPage() {
 
               {/* Modal footer */}
               <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-800">
-                <button
-                  onClick={closeModal}
-                  className="px-4 py-2 bg-gray-800 text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
-                >
+                <Button onClick={closeModal} variant="secondary" size="md">
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleSubmit}
                   disabled={isSaving || !form.name.trim()}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  variant="primary"
+                  size="md"
                 >
                   {isSaving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : null}
                   {editingId ? "Save Changes" : "Create Badge"}
-                </button>
+                </Button>
               </div>
             </motion.div>
           </motion.div>

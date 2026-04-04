@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { EvaluationForm } from "./EvaluationForm";
 import type { Application, VerifiedSkill } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function ApplicationDetail() {
   const { applicationId } = useParams();
@@ -54,6 +55,7 @@ export default function ApplicationDetail() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <SEO title="Application Detail" noIndex />
       <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>

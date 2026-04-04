@@ -36,6 +36,7 @@ export default function JobBrowsePage() {
   const [debouncedLocation, setDebouncedLocation] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
+  const [extPage, setExtPage] = useState(1);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Debounce search & location inputs
@@ -67,11 +68,12 @@ export default function JobBrowsePage() {
   });
 
   const { data: extData } = useQuery({
-    queryKey: ["public-external-jobs"],
+    queryKey: ["public-external-jobs", extPage],
     queryFn: async () => {
-      const res = await api.get("/external-jobs?limit=6");
-      return res.data as { jobs: ExternalJob[] };
+      const res = await api.get(`/external-jobs?page=${extPage}&limit=12`);
+      return res.data as { jobs: ExternalJob[]; total: number; totalPages: number; page: number };
     },
+    placeholderData: keepPreviousData,
   });
 
   const toggleTag = (tag: string) => {
@@ -79,6 +81,7 @@ export default function JobBrowsePage() {
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
     setPage(1);
+    setExtPage(1);
   };
 
   const clearAll = () => {
@@ -86,6 +89,7 @@ export default function JobBrowsePage() {
     setLocationFilter("");
     setSelectedTags([]);
     setPage(1);
+    setExtPage(1);
   };
 
   const hasFilters = search || locationFilter || selectedTags.length > 0;
@@ -254,6 +258,13 @@ export default function JobBrowsePage() {
                 </motion.div>
               ))}
             </div>
+            {extData && extData.totalPages > 1 && (
+              <PaginationControls
+                currentPage={extPage}
+                totalPages={extData.totalPages}
+                onPageChange={setExtPage}
+              />
+            )}
           </motion.div>
         )}
 

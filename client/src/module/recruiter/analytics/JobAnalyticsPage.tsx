@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router";
 import { ArrowLeft, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import api from "../../../lib/axios";
+import { SEO } from "../../../components/SEO";
 
 interface AnalyticsData {
   jobId: number;
@@ -40,6 +41,7 @@ export default function JobAnalyticsPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <SEO title="Job Analytics" noIndex />
       <Link to="/recruiters/jobs" className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline">
         <ArrowLeft className="w-4 h-4" /> Back to Jobs
       </Link>

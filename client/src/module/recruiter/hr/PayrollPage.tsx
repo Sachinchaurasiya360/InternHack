@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { PayrollRecord, ContractorPayment } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 export default function PayrollPage() {
   const queryClient = useQueryClient();
@@ -75,6 +76,7 @@ export default function PayrollPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Payroll" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payroll</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage payroll runs and records</p>

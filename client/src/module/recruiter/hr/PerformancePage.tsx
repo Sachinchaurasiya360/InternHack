@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { PerformanceReview, ReviewCycle, HRReviewStatus } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 const CYCLES: ReviewCycle[] = ["QUARTERLY", "HALF_YEARLY", "ANNUAL"];
 const REVIEW_STATUSES: HRReviewStatus[] = ["DRAFT", "SELF_REVIEW", "MANAGER_REVIEW", "CALIBRATION", "COMPLETED"];
@@ -73,6 +74,7 @@ export default function PerformancePage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Performance" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Performance Reviews</h1>

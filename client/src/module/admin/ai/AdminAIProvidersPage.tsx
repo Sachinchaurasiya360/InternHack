@@ -5,6 +5,7 @@ import { Cpu, Check, AlertCircle, BarChart3, Clock, Zap } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AIProviderType, AIServiceType, AIServiceConfig, AIRequestStats } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 const SERVICE_LABELS: Record<AIServiceType, string> = {
   ATS_SCORE: "ATS Resume Scoring",
@@ -65,6 +66,7 @@ export default function AdminAIProvidersPage() {
 
   return (
     <div>
+      <SEO title="AI Providers" noIndex />
       <div className="flex items-center gap-3 mb-6">
         <Cpu className="w-6 h-6 text-indigo-400" />
         <h1 className="text-2xl font-bold text-white">AI Providers</h1>

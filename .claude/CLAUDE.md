@@ -16,7 +16,7 @@ InternHack is a full-stack internship/career platform for students with AI-power
 - **Server:** Express 5 + TypeScript 5 + Prisma 7 + PostgreSQL
 - **AI:** Google Gemini (`gemini-2.5-flash-lite`)
 - **Auth:** JWT in `Authorization: Bearer <token>` header; Zustand auth store on client
-- **Payments:** Razorpay
+- **Payments:** dodo payment
 - **Storage:** AWS S3 with local fallback
 
 ## Code Style Rules
@@ -79,6 +79,29 @@ Config in `server/src/config/usage-limits.ts`.
 - Model: `gemini-2.5-flash-lite`
 - For structured responses with LaTeX content, use XML tags (`<reply>`, `<latex>`) instead of JSON
 - Always handle parse failures with fallbacks
+
+### Button Component
+Use the reusable `Button` from `client/src/components/ui/button.tsx` (CVA-based) for all new buttons.
+- Variants: `primary`, `secondary`, `mono`, `ghost`, `danger`
+- Modes: `button` (default), `icon`, `link`
+- Sizes: `sm`, `md`, `lg`
+- Supports `asChild` (Radix Slot) for composing with `<Link>` or other elements
+- Import: `import { Button } from "../../components/ui/button"`
+
+### SEO on Internal Pages
+All admin and recruiter pages must include `<SEO title="Page Title" noIndex />`. Public pages use full SEO props.
+
+### File Upload Validation
+`DynamicFieldRenderer.tsx` validates file uploads client-side (size ≤ 5 MB, allowed types). Follow this pattern for any new file upload UI.
+
+### React.memo Convention
+Wrap list-rendered child components (cards, badges, list items) with `React.memo` when they receive stable props and don't have internal state that changes frequently. Use named function form:
+```tsx
+export const MyCard = React.memo(function MyCard({ data }: Props) { ... });
+```
+
+### Repo Request Approval Flow
+Students can suggest repos via `POST /api/opensource/requests`. Admin reviews at `/admin/repo-requests`. On approval, the repo is auto-created and the student gets an email. Routes are in `opensource.routes.ts` — `/requests/*` routes must appear BEFORE `/:id` to avoid route conflicts.
 
 ## Do NOT
 - Create Prisma migrations without confirming — run from `server/src/database/`

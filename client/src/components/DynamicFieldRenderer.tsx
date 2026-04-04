@@ -147,25 +147,42 @@ function renderField(
         </div>
       );
 
-    case "FILE_UPLOAD":
+    case "FILE_UPLOAD": {
+      const maxSize = field.validation?.maxFileSize || 5 * 1024 * 1024; // default 5MB
+      const allowedTypes = field.validation?.allowedTypes;
       return (
         <div>
           <input
             type="file"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) {
-                onChange(file.name);
-                onFileSelect?.(file);
+              if (!file) return;
+              if (file.size > maxSize) {
+                onChange(`Error: File exceeds ${Math.round(maxSize / 1024 / 1024)}MB limit`);
+                e.target.value = "";
+                return;
               }
+              if (allowedTypes?.length && !allowedTypes.some((t) => file.type === t || file.name.endsWith(t))) {
+                onChange(`Error: Only ${allowedTypes.join(", ")} files allowed`);
+                e.target.value = "";
+                return;
+              }
+              onChange(file.name);
+              onFileSelect?.(file);
             }}
             disabled={disabled}
             className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white dark:file:bg-white dark:file:text-gray-950 hover:file:bg-gray-700 dark:hover:file:bg-gray-200 file:cursor-pointer"
-            accept={field.validation?.allowedTypes?.join(",")}
+            accept={allowedTypes?.join(",")}
           />
-          {typeof value === "string" && value && <p className="mt-1 text-sm text-gray-500">Selected: {value}</p>}
+          {typeof value === "string" && value && (
+            <p className={`mt-1 text-sm ${value.startsWith("Error:") ? "text-red-500" : "text-gray-500"}`}>
+              {value.startsWith("Error:") ? value : `Selected: ${value}`}
+            </p>
+          )}
+          <p className="mt-0.5 text-xs text-gray-400">Max {Math.round(maxSize / 1024 / 1024)}MB</p>
         </div>
       );
+    }
 
     default:
       return (

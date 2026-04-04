@@ -6,6 +6,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import api, { SERVER_URL } from "../../../lib/axios";
 import type { Company, Pagination } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function AdminCompaniesPage() {
   const [companies, setCompanies] = useState<(Company & { createdBy?: { name: string; email: string }; _count?: { reviews: number; contacts: number } })[]>([]);
@@ -51,6 +52,7 @@ export default function AdminCompaniesPage() {
 
   return (
     <div>
+      <SEO title="Manage Companies" noIndex />
       <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
         <Building2 className="w-6 h-6" /> Manage Companies
       </h1>

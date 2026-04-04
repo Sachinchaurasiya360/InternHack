@@ -173,7 +173,7 @@ export default function OpenSourceAnalyticsPage() {
     queryFn: async () => {
       const all: GSoCOrganization[] = [];
       let page = 1;
-      const limit = 100;
+      const limit = 50;
       while (true) {
         const res = await api.get("/gsoc/organizations", { params: { limit, page } });
         const batch = res.data.organizations as GSoCOrganization[];

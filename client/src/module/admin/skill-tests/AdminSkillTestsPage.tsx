@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { BadgeCheck, Plus, Pencil, Trash2, ChevronDown, ChevronRight, Save, X, Loader2 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
+import { SEO } from "../../../components/SEO";
 
 interface SkillTestQuestion {
   question: string;
@@ -243,6 +244,7 @@ export default function AdminSkillTestsPage() {
 
   return (
     <div>
+      <SEO title="Manage Skill Tests" noIndex />
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <BadgeCheck className="w-6 h-6 text-indigo-400" />

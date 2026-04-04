@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { OnboardingChecklist } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 export default function OnboardingPage() {
   const queryClient = useQueryClient();
@@ -46,6 +47,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Onboarding" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Onboarding</h1>

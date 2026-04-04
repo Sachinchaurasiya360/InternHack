@@ -107,14 +107,20 @@ const allowedOrigins = new Set(
 );
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && allowedOrigins.has(origin)) {
+  const isIngestRoute = req.path === "/api/external-jobs/ingest";
+
+  if (isIngestRoute) {
+    // Allow any origin to POST jobs via API key
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Vary", "Origin");
+  } else if (origin && allowedOrigins.has(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Vary", "Origin");
   }
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization,X-API-Key");
     res.setHeader("Access-Control-Max-Age", "86400");
     res.status(204).end();
     return;
@@ -227,6 +233,8 @@ app.use("/api/milestones", milestoneRouter);
 
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
+// Public ingest endpoint — external websites POST jobs here with API key
+app.post("/api/external-jobs/ingest", (req, res) => publicAdminController.ingestExternalJob(req, res));
 app.get("/api/external-jobs/:slug", (req, res) => publicAdminController.getPublicExternalJobBySlug(req, res));
 app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
 

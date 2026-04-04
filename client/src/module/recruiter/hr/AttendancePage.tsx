@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { AttendanceRecord, AttendanceStatus } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 const STATUS_OPTIONS: AttendanceStatus[] = ["PRESENT", "ABSENT", "HALF_DAY", "ON_LEAVE", "HOLIDAY", "WEEKEND", "WORK_FROM_HOME"];
 
@@ -62,6 +63,7 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Attendance" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Attendance</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Track and manage employee attendance</p>

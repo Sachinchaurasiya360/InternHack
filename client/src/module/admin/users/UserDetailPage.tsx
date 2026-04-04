@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Phone, Building2, Briefcase, FileText, ScanSearch, MapPin, GraduationCap, Globe, ExternalLink, Crown, Shield, Award, Star, MessageCircle, CheckCircle, XCircle } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
+import { SEO } from "../../../components/SEO";
 
 interface ProjectItem {
   id: string;
@@ -123,6 +124,7 @@ export default function UserDetailPage() {
 
   return (
     <div>
+      <SEO title="User Detail" noIndex />
       <button onClick={() => navigate("/admin/users")} className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Back to Users

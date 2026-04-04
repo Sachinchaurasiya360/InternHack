@@ -9,6 +9,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
+import { SEO } from "../../../components/SEO";
 
 interface RecruiterProfile {
   name: string;
@@ -137,6 +138,7 @@ export default function RecruiterProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <SEO title="Recruiter Profile" noIndex />
       <div className="flex items-center justify-between mb-6 mt-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Profile</h1>
         <motion.button

@@ -1,3 +1,5 @@
+import React from "react";
+
 const STATUS_COLORS: Record<string, string> = {
   // Employment
   ACTIVE: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -54,11 +56,13 @@ const STATUS_COLORS: Record<string, string> = {
   PAUSED: "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
 };
 
-export default function HRStatusBadge({ status }: { status: string }) {
+const HRStatusBadge = React.memo(function HRStatusBadge({ status }: { status: string }) {
   const cls = STATUS_COLORS[status] || "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400";
   return (
     <span className={`inline-flex px-2.5 py-0.5 rounded-lg text-[11px] font-semibold tracking-wide ${cls}`}>
       {status.replace(/_/g, " ")}
     </span>
   );
-}
+});
+
+export default HRStatusBadge;

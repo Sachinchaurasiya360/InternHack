@@ -6,6 +6,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import type { AdminUser, Pagination } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function UsersListPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -64,6 +65,7 @@ export default function UsersListPage() {
 
   return (
     <div>
+      <SEO title="Manage Users" noIndex />
       <h1 className="text-2xl font-bold text-white mb-6">User Management</h1>
 
       {/* Filters */}

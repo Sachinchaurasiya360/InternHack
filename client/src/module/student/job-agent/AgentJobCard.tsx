@@ -1,3 +1,4 @@
+import React from "react";
 import { MapPin, IndianRupee, ExternalLink, Wifi, Building2, Monitor } from "lucide-react";
 import type { JobFeedMatch } from "../../../lib/types";
 
@@ -11,7 +12,7 @@ const WORK_MODE_CONFIG: Record<string, { label: string; icon: typeof Wifi; color
   ONSITE: { label: "On-site", icon: Building2, color: "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20" },
 };
 
-export function AgentJobCard({ job }: Props) {
+export const AgentJobCard = React.memo(function AgentJobCard({ job }: Props) {
   const workMode = job.workMode ? WORK_MODE_CONFIG[job.workMode] : null;
 
   return (
@@ -81,4 +82,4 @@ export function AgentJobCard({ job }: Props) {
       )}
     </div>
   );
-}
+});

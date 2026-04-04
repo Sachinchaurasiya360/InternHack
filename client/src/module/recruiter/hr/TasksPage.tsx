@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { HRTask, TaskPriority, TaskStatus } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 const PRIORITY_OPTIONS: TaskPriority[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
 const STATUS_OPTIONS: TaskStatus[] = ["TODO", "IN_PROGRESS", "IN_REVIEW", "DONE", "CANCELLED"];
@@ -71,6 +72,7 @@ export default function TasksPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Tasks" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">HR Tasks</h1>

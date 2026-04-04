@@ -59,7 +59,7 @@ InternHack/
 | `seed-aptitude.ts` | Seeds aptitude categories, topics, and questions |
 | `seed-badges.ts` | Seeds badge definitions |
 | `seed-dsa.ts` | Seeds DSA topics and problems |
-| `seed-opensource.ts` | Seeds open source repo records |
+| `seed-opensource.ts` | Seeds open source repo records (InternHack repo only) |
 | `seed-skill-tests.ts` | Seeds skill test definitions and questions |
 | `seed-hackathons.ts` | Seeds hackathon records |
 | `seed-internships.ts` | Seeds government/public-sector internships |
@@ -107,7 +107,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `yc` | `/api/yc` | YC company directory with on-demand Cheerio scraping of founders |
 | `blog` | `/api/blog` | Blog posts — public read, admin CRUD + publish/feature |
 | `gsoc` | `/api/gsoc` | GSoC organization directory with filtering |
-| `opensource` | `/api/opensource` | Open source repo directory with filtering |
+| `opensource` | `/api/opensource` | Open source repo directory with filtering + repo request/approval flow |
 | `aptitude` | `/api/aptitude` | Aptitude quiz system — categories, topics, companies, progress |
 | `dsa` | `/api/dsa` | DSA problem tracker — topics, bookmarks, notes, patterns, companies |
 | `hackathon` | `/api/hackathons` | Hackathon listings (public read) |
@@ -153,7 +153,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `cookie.utils.ts` | `setTokenCookie()`, `clearTokenCookie()` — httpOnly JWT cookies |
 | `file-validation.utils.ts` | `validateFileContent()` — checks magic bytes against MIME types |
 | `email.utils.ts` | `sendEmail()` — transactional email via Resend SDK |
-| `email-templates.ts` | `welcomeEmailHtml(name)` — HTML email templates |
+| `email-templates.ts` | `welcomeEmailHtml(name)`, `repoRequestSubmittedHtml()`, `repoRequestApprovedHtml()` — HTML email templates |
 
 ---
 
@@ -183,6 +183,8 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 
 | Component | Use |
 |---|---|
+| `ui/button.tsx` | Reusable Button (CVA variants: primary, secondary, mono, ghost, danger; modes: button, icon, link; `asChild` support) |
+| `ui/textarea.tsx` | Textarea component |
 | `Navbar.tsx`, `Footer.tsx` | Shared layout |
 | `StudentSidebar.tsx` | Collapsible sidebar with `useStudentSidebar()` hook |
 | `ProtectedRoute.tsx` | Route guard by role |
@@ -296,7 +298,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | File | Purpose |
 |---|---|
 | `OpenSourceLandingPage.tsx` | Open source hub |
-| `RepoDiscoveryPage.tsx` | Browse repos with filters |
+| `RepoDiscoveryPage.tsx` | Browse repos with filters + "Suggest a Repository" modal |
 | `GSoCReposPage.tsx` | Browse GSoC orgs from DB |
 | `FirstPRRoadmapPage.tsx` | First PR guide overview |
 | `FirstPRSectionPage.tsx` | Step-by-step first PR section |
@@ -367,6 +369,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `aptitude/AdminAptitudePage.tsx` | Aptitude CRUD |
 | `skill-tests/AdminSkillTestsPage.tsx` | Skill test CRUD |
 | `hackathons/AdminHackathonsPage.tsx` | Hackathon CRUD |
+| `repo-requests/AdminRepoRequestsPage.tsx` | Review/approve/reject student repo suggestions |
 
 #### Blog — `src/module/blog/`
 | File | Purpose |
@@ -436,6 +439,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `dsa`, `aptitude`, `skill-tests` | Learning content CRUD |
 | `hackathons`, `badges` | Event/badge CRUD |
 | `blog`, `blog/editor`, `blog/editor/:id` | Blog management |
+| `repo-requests` | Repo request review/approval |
 
 ---
 

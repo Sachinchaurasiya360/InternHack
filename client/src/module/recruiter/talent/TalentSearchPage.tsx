@@ -13,6 +13,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
 import TalentCard, { type TalentResult } from "./TalentCard";
+import { SEO } from "../../../components/SEO";
 
 interface TalentFilters {
   search: string;
@@ -114,6 +115,7 @@ export default function TalentSearchPage() {
 
   return (
     <div className="-m-8">
+      <SEO title="Talent Search" noIndex />
       {/* ── Hero Header ── */}
       <div className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950">
         {/* Gradient orbs */}

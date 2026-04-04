@@ -5,6 +5,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import type { Pagination, JobStatus } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 interface AdminJob {
   id: number;
@@ -74,6 +75,7 @@ export default function AdminJobsListPage() {
 
   return (
     <div>
+      <SEO title="Manage Jobs" noIndex />
       <h1 className="text-2xl font-bold text-white mb-6">Job Management</h1>
 
       {/* Filters */}

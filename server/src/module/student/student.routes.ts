@@ -20,6 +20,10 @@ studentRouter.get("/applications", (req, res) => studentController.getMyApplicat
 studentRouter.get("/applications/:applicationId", (req, res) => studentController.getApplicationDetail(req, res));
 studentRouter.delete("/applications/:applicationId", (req, res) => studentController.withdrawApplication(req, res));
 
+// External job applications
+studentRouter.post("/external-jobs/:adminJobId/apply", (req, res) => studentController.applyToExternalJob(req, res));
+studentRouter.get("/external-jobs/:adminJobId/status", (req, res) => studentController.getExternalApplicationStatus(req, res));
+
 // Round submissions
 studentRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => studentController.getRoundInfo(req, res));
 studentRouter.post("/applications/:applicationId/rounds/:roundId/submit", (req, res) => studentController.submitRound(req, res));

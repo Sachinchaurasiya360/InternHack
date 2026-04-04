@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { HRInterview, InterviewType } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 const INTERVIEW_TYPES: InterviewType[] = ["PHONE", "VIDEO", "IN_PERSON", "PANEL", "TECHNICAL", "HR"];
 
@@ -53,6 +54,7 @@ export default function InterviewsPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Interviews" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Interviews</h1>

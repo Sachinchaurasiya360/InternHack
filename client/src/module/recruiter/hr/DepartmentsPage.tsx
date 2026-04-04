@@ -7,6 +7,7 @@ import { hrKeys } from "./hr-query-keys";
 import HRModal from "./components/HRModal";
 import HREmptyState from "./components/HREmptyState";
 import type { HRDepartment } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 export default function DepartmentsPage() {
   const queryClient = useQueryClient();
@@ -79,6 +80,7 @@ export default function DepartmentsPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Departments" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Departments</h1>

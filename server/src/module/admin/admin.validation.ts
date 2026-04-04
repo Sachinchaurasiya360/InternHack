@@ -292,6 +292,27 @@ export const createAdminJobSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
+export const ingestExternalJobSchema = z.object({
+  company: z.string().max(200).optional(),
+  role: z.string().max(200).optional(),
+  title: z.string().max(200).optional(),
+  position: z.string().max(200).optional(),
+  description: z.string().max(5000).optional(),
+  desc: z.string().max(5000).optional(),
+  about: z.string().max(5000).optional(),
+  salary: z.string().max(100).optional(),
+  stipend: z.string().max(100).optional(),
+  compensation: z.string().max(100).optional(),
+  ctc: z.string().max(100).optional(),
+  location: z.string().max(200).optional(),
+  city: z.string().max(200).optional(),
+  applyLink: z.string().url().optional().or(z.literal("")),
+  apply_link: z.string().url().optional().or(z.literal("")),
+  url: z.string().url().optional().or(z.literal("")),
+  link: z.string().url().optional().or(z.literal("")),
+  tags: z.union([z.array(z.string()), z.string()]).optional(),
+});
+
 export const updateAdminJobSchema = createAdminJobSchema.partial().extend({
   isActive: z.boolean().optional(),
 });

@@ -651,6 +651,29 @@ export interface OpenSourceRepo {
   updatedAt: string;
 }
 
+// Repo Requests
+export type RepoRequestStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface RepoRequest {
+  id: number;
+  name: string;
+  owner: string;
+  description: string;
+  language: string;
+  url: string;
+  domain: RepoDomain;
+  difficulty: RepoDifficulty;
+  techStack: string[];
+  tags: string[];
+  reason: string;
+  status: RepoRequestStatus;
+  adminNote?: string | null;
+  userId: number;
+  user?: { id: number; name: string; email: string; profilePic?: string | null };
+  createdAt: string;
+  updatedAt: string;
+}
+
 // DSA Practice
 export interface DsaTopic {
   id: number;

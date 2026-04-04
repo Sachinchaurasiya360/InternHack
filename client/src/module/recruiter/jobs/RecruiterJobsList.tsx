@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Plus, Users, BarChart3, Edit, Trash2 } from "lucide-react";
 import api from "../../../lib/axios";
 import type { Job } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function RecruiterJobsList() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -41,6 +42,7 @@ export default function RecruiterJobsList() {
 
   return (
     <div>
+      <SEO title="My Job Listings" noIndex />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Jobs</h1>
         <Link

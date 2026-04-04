@@ -13,6 +13,7 @@ import {
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { SEO } from "../../../components/SEO";
 import type { TalentPool } from "../../../lib/types";
 
 export default function TalentPoolsPage() {
@@ -67,6 +68,7 @@ export default function TalentPoolsPage() {
 
   return (
     <div>
+      <SEO title="Talent Pools" noIndex />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
