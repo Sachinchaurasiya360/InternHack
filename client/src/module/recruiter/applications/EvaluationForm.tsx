@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../../../lib/axios";
 import type { EvaluationCriterion } from "../../../lib/types";
+import toast from "@/components/ui/toast";
 
 interface EvaluationFormProps {
   applicationId: number;
@@ -25,7 +26,7 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
       });
       onComplete();
     } catch {
-      alert("Failed to save evaluation");
+      toast.error("Failed to save evaluation");
     } finally {
       setLoading(false);
     }
