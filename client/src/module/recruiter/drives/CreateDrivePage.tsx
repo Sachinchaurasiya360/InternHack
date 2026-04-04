@@ -8,6 +8,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { CampusDrive } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 interface DriveFormData {
   title: string;
@@ -149,6 +150,7 @@ export default function CreateDrivePage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <SEO title="Create Drive" noIndex />
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 transition-colors"

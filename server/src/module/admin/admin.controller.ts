@@ -45,6 +45,7 @@ import {
   createAdminJobSchema,
   updateAdminJobSchema,
   adminExternalJobQuerySchema,
+  ingestExternalJobSchema,
 } from "./admin.validation.js";
 
 export class AdminController {
@@ -1018,6 +1019,56 @@ export class AdminController {
       return res.status(200).json({ job });
     } catch (error) {
       logger.error("Failed to get external job by slug", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async ingestExternalJob(req: Request, res: Response) {
+    try {
+      const apiKey = req.headers["x-api-key"];
+      const expectedKey = process.env["EXTERNAL_JOB_API_KEY"];
+      if (!expectedKey || apiKey !== expectedKey) {
+        return res.status(401).json({ message: "Invalid or missing API key" });
+      }
+
+      const result = ingestExternalJobSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      }
+
+      const d = result.data;
+      const role = d.role || d.title || d.position;
+      const description = d.description || d.desc || d.about;
+      const salary = d.salary || d.stipend || d.compensation || d.ctc;
+      const location = d.location || d.city;
+      const applyLink = d.applyLink || d.apply_link || d.url || d.link;
+      const tags = Array.isArray(d.tags) ? d.tags : d.tags ? d.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : [];
+      const normalized: Parameters<typeof this.adminService.createExternalJob>[0] = { tags };
+      if (d.company) normalized.company = d.company;
+      if (role) normalized.role = role;
+      if (description) normalized.description = description;
+      if (salary) normalized.salary = salary;
+      if (location) normalized.location = location;
+      if (applyLink) normalized.applyLink = applyLink;
+
+      const job = await this.adminService.createExternalJob(normalized);
+      const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
+      const jobUrl = `${clientUrl}/jobs/ext/${job.slug}`;
+
+      return res.status(201).json({
+        success: true,
+        message: "Job listed successfully",
+        jobUrl,
+        job: {
+          id: job.id,
+          slug: job.slug,
+          company: job.company,
+          role: job.role,
+          expiresAt: job.expiresAt,
+        },
+      });
+    } catch (error) {
+      logger.error("Failed to ingest external job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

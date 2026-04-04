@@ -10,6 +10,7 @@ import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import HRDataTable, { type Column } from "./components/HRDataTable";
 import type { HREmployee, EmploymentStatus, EmploymentType, HRDepartment } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 const STATUS_OPTIONS: EmploymentStatus[] = ["ONBOARDING", "ACTIVE", "ON_LEAVE", "ON_PROBATION", "NOTICE_PERIOD", "EXITED", "ALUMNI"];
 const TYPE_OPTIONS: EmploymentType[] = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERN", "FREELANCER"];
@@ -86,6 +87,7 @@ export default function EmployeesPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Employees" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Employees</h1>

@@ -1,8 +1,8 @@
 # InternHack
 
-**Prepare. Practice. Placed.** — A full-stack career platform connecting students with job opportunities, guided career roadmaps, AI-powered resume tools, and recruiter dashboards.
+**Prepare. Practice. Placed.** — An open-source, full-stack career platform that helps students land jobs through AI-powered tools, structured learning, and recruiter dashboards.
 
-Live at [internhack.xyz](https://www.internhack.xyz)
+Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ---
 
@@ -10,11 +10,14 @@ Live at [internhack.xyz](https://www.internhack.xyz)
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 19, Vite 7, TailwindCSS 4, Framer Motion |
+| Frontend | React 18, Vite 7, TailwindCSS 4, React Router 7, Framer Motion, Zustand, React Query |
 | Backend | Express 5, TypeScript 5, Prisma 7 |
 | Database | PostgreSQL |
-| AI | Google Gemini API |
-| Auth | JWT + Google OAuth (Identity Services) |
+| AI | Google Gemini (`gemini-2.5-flash`) |
+| Auth | JWT + Google OAuth |
+| Payments | Dodo Payments |
+| Storage | AWS S3 (with local fallback) |
+| Email | Resend |
 
 ---
 
@@ -22,36 +25,37 @@ Live at [internhack.xyz](https://www.internhack.xyz)
 
 ### For Students
 
-- **Job Board** — Browse curated job listings posted by recruiters with search, filters, and one-click applications.
-- **External Jobs** — Aggregated job listings scraped from top platforms, auto-refreshed every 6 hours via cron.
-- **Career Roadmaps** — 8+ guided career paths (Full-Stack, Frontend, Backend, Data Science, DevOps, UI/UX, Mobile, Cybersecurity) with phases, skills, resources, and tools. Enroll and track progress with skill checkboxes.
-- **ATS Resume Scoring** — Upload a resume and job description. Gemini AI scores the match, highlights keyword gaps, and provides actionable improvement suggestions.
-- **Application Tracking** — Track every application status from applied through multi-round hiring to offer/rejection.
-- **Company Explorer** — Browse companies on the platform with reviews, ratings, contacts, and open positions.
-- **Google Sign-In** — One-click authentication via Google OAuth.
+- **Job Board** — Browse recruiter-posted jobs with search, filters, tags, and one-click apply
+- **External Jobs** — Curated listings from external sources, updated regularly
+- **AI Job Agent** — Chat-based AI assistant that finds jobs matching your profile and skills
+- **ATS Resume Scorer** — Upload resume + JD, get an AI-powered match score with keyword gap analysis
+- **Cover Letter Generator** — AI-generated cover letters tailored to specific job postings
+- **AI Resume Builder** — Generate professional LaTeX resumes with AI assistance
+- **Mock Interviews** — Practice with AI-driven interview simulations
+- **Learning Hub** — 3,300+ DSA problems, SQL practice, aptitude questions, and 500+ lessons across 12 technologies
+- **Skill Tests** — Timed assessments with auto-grading and verified skill badges
+- **Career Roadmaps** — Guided paths for Full-Stack, Frontend, Backend, Data Science, DevOps, and more
+- **Company Explorer** — Reviews, ratings, salaries, HR contacts, and open positions
+- **Application Tracker** — Track applications from applied through hiring rounds to offer
+- **Open Source Guide** — Step-by-step guides for reading codebases and contributing to OSS
 
 ### For Recruiters
 
-- **Recruiter Dashboard** — Overview of posted jobs, total applications, and hiring pipeline at a glance.
-- **Job Management** — Create, edit, publish, close, and archive job listings with dynamic custom fields.
-- **Multi-Round Hiring** — Configure custom interview rounds (Coding, DSA, HR, System Design, etc.) with per-round submissions and evaluations.
-- **Application Review** — View applicants, filter by status, advance/reject candidates through rounds, and mark final hiring decisions.
-- **Resume Screening** — Review uploaded resumes and ATS compatibility scores for each applicant.
+- **Dashboard** — Overview of posted jobs, applications, and hiring pipeline
+- **Job Management** — Create jobs with custom fields, multiple interview rounds, and auto-assessments
+- **Multi-Round Hiring** — Coding, DSA, HR, system design rounds with per-round evaluations
+- **Application Review** — Filter applicants, advance/reject through rounds, ATS scores per resume
+- **Talent Pools** — Save and organize promising candidates
+- **Campus Drives** — Manage campus recruitment drives
 
 ### For Admins
 
-- **Platform Dashboard** — Real-time stats: total students, recruiters, jobs, applications, hiring counts.
-- **User Management** — View, activate/deactivate, and delete user accounts.
-- **Job Moderation** — Approve, reject, or remove job listings.
-- **Company Management** — Add, approve, edit, and delete companies. Manage reviews and user contributions.
-- **Activity Logs** — Full audit trail of admin actions across the platform.
-
-### Platform-Wide
-
-- **Google OAuth** — Seamless sign-in/sign-up with Google across all roles.
-- **Automated Job Scraping** — Cron-based scraper fetches external jobs on a configurable schedule (default: every 6 hours).
-- **Responsive Design** — Mobile-first UI with glassmorphism navbar, animated sections, and dark-themed footer.
-- **Newsletter Subscribe** — Email subscription form in the footer.
+- **Platform Dashboard** — Real-time stats across the platform
+- **User & Job Management** — Moderate users, jobs, companies, reviews
+- **External Job Management** — Post and manage curated external job listings
+- **AI Provider Management** — Switch between AI providers (Gemini, Groq, Claude, etc.)
+- **Content Management** — DSA problems, aptitude questions, skill tests, hackathons, blog
+- **Activity & Error Logs** — Full audit trail
 
 ---
 
@@ -59,63 +63,168 @@ Live at [internhack.xyz](https://www.internhack.xyz)
 
 ### Prerequisites
 
-- Node.js 18+
-- PostgreSQL database
-- Google Cloud Console project (for OAuth + Gemini API)
+- **Node.js** 18+
+- **PostgreSQL** database (local or hosted — [Neon](https://neon.tech), [Supabase](https://supabase.com), etc.)
+- **Google Cloud Console** project (for OAuth client ID)
+- **Gemini API Key** ([Get one free](https://aistudio.google.com/apikey))
 
-### Environment Variables
-
-**Server** (`server/.env`):
-
-```
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
-JWT_SECRET=your-jwt-secret
-GOOGLE_CLIENT_ID=your-google-client-id
-GEMINI_API_KEY=your-gemini-api-key
-SCRAPER_CRON=0 */6 * * *
-PORT=3000
-```
-
-**Client** (`client/.env`):
-
-```
-VITE_GOOGLE_CLIENT_ID=your-google-client-id
-VITE_API_URL=http://localhost:3000/api
-```
-
-### Installation
+### 1. Clone the repo
 
 ```bash
-# Install server dependencies
-cd server && npm install
-
-# Generate Prisma client & push schema
-npx prisma generate
-npx prisma db push
-
-# Seed career roadmaps
-npm run seed
-
-# Start dev server
-npm run dev
+git clone https://github.com/Sachinchaurasiya360/InternHack.git
+cd InternHack
 ```
 
-```bash
-# Install client dependencies (in a separate terminal)
-cd client && npm install
-
-# Start dev client
-npm run dev
-```
-
-### Production Build
+### 2. Set up environment variables
 
 ```bash
 # Server
-cd server && npm run build && npm start
+cp server/.env.example server/.env
+# Fill in your values (see Environment Variables section below)
 
 # Client
-cd client && npm run build
+cp client/.env.example client/.env
+# Fill in VITE_GOOGLE_CLIENT_ID
+```
+
+### 3. Install dependencies
+
+```bash
+# Server
+cd server && npm install
+
+# Client (separate terminal)
+cd client && npm install
+```
+
+### 4. Set up the database
+
+```bash
+# From the server/src/database/ directory (prisma.config.ts lives here)
+cd server/src/database
+
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to your database
+npx prisma db push
+```
+
+### 5. Seed initial data (optional)
+
+```bash
+# From server/
+cd server
+
+# Seed admin account (set ADMIN_EMAIL and ADMIN_PASSWORD in .env first)
+npm run seed:admin
+
+# Seed all sample data (DSA, aptitude, companies, etc.)
+npm run seed:all
+```
+
+### 6. Start development servers
+
+```bash
+# Terminal 1 — Server (runs on port 3000)
+cd server && npm run dev
+
+# Terminal 2 — Client (runs on port 5173)
+cd client && npm run dev
+```
+
+Open **http://localhost:5173** and you're in!
+
+---
+
+## Environment Variables
+
+### Server (`server/.env`)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `JWT_SECRET` | Yes | Random secret for JWT signing (64+ chars recommended) |
+| `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID |
+| `GEMINI_API_KEY` | Yes | Google Gemini API key (free tier available) |
+| `ALLOWED_ORIGINS` | Yes | Comma-separated allowed CORS origins |
+| `VITE_API_URL` | No | API base URL (default: `http://localhost:3000/api`) |
+| `AWS_REGION` | No | AWS region for S3 uploads |
+| `AWS_ACCESS_KEY_ID` | No | AWS access key (falls back to local storage) |
+| `AWS_SECRET_ACCESS_KEY` | No | AWS secret key |
+| `AWS_S3_BUCKET` | No | S3 bucket name |
+| `RESEND_API_KEY` | No | Resend API key for emails |
+| `EMAIL_FROM` | No | From address for outgoing emails |
+| `DODO_PAYMENTS_API_KEY` | No | Dodo Payments key (for premium subscriptions) |
+| `DODO_PAYMENTS_WEBHOOK_KEY` | No | Dodo webhook verification key |
+| `GROQ_API_KEY` | No | Groq API key (alternative AI provider) |
+| `OPENROUTER_API_KEY` | No | OpenRouter key (alternative AI provider) |
+| `CODESTRAL_API_KEY` | No | Codestral/Mistral key (alternative AI provider) |
+| `CLAUDE_API` | No | Anthropic Claude API key (alternative AI provider) |
+| `JUDGE0_RAPIDAPI_KEY_1` | No | Judge0 key for code execution |
+| `EXTERNAL_JOB_API_KEY` | No | API key for external job ingest endpoint |
+
+> Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. Other services degrade gracefully.
+
+### Client (`client/.env`)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `VITE_GOOGLE_CLIENT_ID` | Yes | Same Google OAuth client ID as server |
+| `VITE_DODO_MODE` | No | `test_mode` or `live` (default: `test_mode`) |
+
+---
+
+## Project Structure
+
+```
+InternHack/
+├── client/                   # React frontend (Vite)
+│   ├── src/
+│   │   ├── components/       # Shared UI components
+│   │   ├── lib/              # Utilities, stores, types, axios config
+│   │   └── module/           # Feature modules
+│   │       ├── auth/         # Login, register, OAuth
+│   │       ├── student/      # Student dashboard, jobs, applications, learning
+│   │       ├── recruiter/    # Recruiter dashboard, job management
+│   │       └── admin/        # Admin panel, moderation
+│   └── public/               # Static assets
+│
+├── server/                   # Express backend
+│   ├── src/
+│   │   ├── module/           # Feature modules (routes → controller → service)
+│   │   │   ├── auth/         # Authentication
+│   │   │   ├── student/      # Student APIs
+│   │   │   ├── job/          # Job CRUD
+│   │   │   ├── recruiter/    # Recruiter APIs
+│   │   │   ├── admin/        # Admin APIs
+│   │   │   ├── ats/          # ATS resume scoring
+│   │   │   ├── job-agent/    # AI chat agent
+│   │   │   ├── company/      # Company explorer
+│   │   │   ├── dsa/          # DSA problems
+│   │   │   ├── aptitude/     # Aptitude questions
+│   │   │   └── ...           # More modules
+│   │   ├── middleware/       # Auth, role, rate-limit, usage-limit
+│   │   ├── database/        # Prisma schema, seeds, config
+│   │   ├── utils/            # Email, logger, S3, templates
+│   │   └── index.ts          # Express app entry point
+│   └── package.json
+│
+└── .claude/                  # AI assistant context
+    ├── CLAUDE.md             # Project instructions
+    └── REPO_MAP.md           # Detailed module map
+```
+
+### Module Pattern (Server)
+
+Every backend feature follows: **routes** → **controller** → **service**
+
+```
+module/
+├── <name>.routes.ts        # Express router, middleware chain
+├── <name>.controller.ts    # Request/response handling
+├── <name>.service.ts       # Business logic, DB queries
+└── <name>.validation.ts    # Zod schemas for input validation
 ```
 
 ---
@@ -124,18 +233,50 @@ cd client && npm run build
 
 | Prefix | Module | Auth |
 |--------|--------|------|
-| `/api/auth` | Login, Register, Google OAuth | Public |
-| `/api/jobs` | Job browsing and applications | Public / Student |
-| `/api/recruiter` | Recruiter job management | Recruiter |
-| `/api/student` | Applications, ATS, career progress | Student |
-| `/api/careers` | Career roadmaps, enrollment, skill tracking | Public / Student |
-| `/api/companies` | Company browsing, reviews, contributions | Public / Student |
-| `/api/scraped-jobs` | External aggregated jobs | Public |
+| `/api/auth` | Login, Register, Google OAuth, OTP | Public |
+| `/api/jobs` | Job browsing and search | Public |
+| `/api/student` | Applications, profile, external job apply | Student |
+| `/api/recruiter` | Job management, hiring rounds, candidates | Recruiter |
+| `/api/admin` | Platform management, moderation | Admin |
 | `/api/ats` | ATS resume scoring | Student |
-| `/api/upload` | File uploads (resumes) | Authenticated |
-| `/api/admin` | Platform management | Admin |
-| `/api/stats` | Public platform stats | Public |
+| `/api/job-agent` | AI chat for job discovery | Student |
+| `/api/companies` | Company explorer, reviews | Public / Student |
+| `/api/dsa` | DSA problems and progress | Public / Student |
+| `/api/aptitude` | Aptitude questions and progress | Public / Student |
+| `/api/external-jobs` | Curated external listings | Public |
+| `/api/upload` | File uploads (resumes, images) | Authenticated |
+| `/api/payments` | Subscription checkout, webhooks | Student |
+| `/api/blog` | Blog posts | Public / Admin |
 
+---
 
+## Production Build
 
+```bash
+# Server
+cd server && npm run build && npm start
 
+# Client
+cd client && npm run build
+# Outputs to client/dist/ — serve with any static host
+```
+
+---
+
+## Contributing
+
+We welcome contributions! See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide on:
+- Setting up your development environment
+- Understanding the codebase architecture
+- Making your first pull request
+- Code style and conventions
+
+---
+
+## License
+
+This project is open source. See [LICENSE](LICENSE) for details.
+
+---
+
+Built with care by the InternHack team.

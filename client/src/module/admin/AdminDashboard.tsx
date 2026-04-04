@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { SEO } from "../../components/SEO";
 import { LoadingScreen } from "../../components/LoadingScreen";
 import { motion } from "framer-motion";
 import { Users, Building2, Briefcase, TrendingUp, FileText, Award } from "lucide-react";
@@ -30,6 +31,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
+      <SEO title="Admin Dashboard" noIndex />
       <h1 className="text-xl sm:text-2xl font-bold text-white mb-6">Platform Dashboard</h1>
 
       {/* Stats Grid */}

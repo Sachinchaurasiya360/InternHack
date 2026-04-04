@@ -600,3 +600,68 @@ export function milestoneEmailHtml(
 </body>
 </html>`;
 }
+
+export function repoRequestSubmittedHtml(name: string, repoName: string, repoOwner: string): string {
+  const firstName = name.split(" ")[0];
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+    </td></tr>
+    <tr><td style="padding:28px 24px;">
+      <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}!</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+        We've received your request to add <strong>${repoOwner}/${repoName}</strong> to our open source repository directory.
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+        <tr><td style="padding:16px 18px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:8px;">
+          <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#3730a3;">What happens next?</p>
+          <p style="margin:0;font-size:13px;color:#4338ca;line-height:1.5;">
+            Our team will review your submission and verify the repository. You'll receive an email once it's approved and listed on the platform.
+          </p>
+        </td></tr>
+      </table>
+      <p style="margin:0;font-size:13px;color:#71717a;">Thank you for helping grow our open source community!</p>
+    </td></tr>
+    <tr><td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+export function repoRequestApprovedHtml(name: string, repoName: string, repoOwner: string): string {
+  const firstName = name.split(" ")[0];
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+    </td></tr>
+    <tr><td style="padding:28px 24px;">
+      <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Great news, ${firstName}!</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+        Your repository suggestion <strong>${repoOwner}/${repoName}</strong> has been approved and is now listed on InternHack's open source directory.
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+        <tr><td style="text-align:center;padding:16px;">
+          <a href="https://www.internhack.xyz/student/opensource" style="display:inline-block;padding:12px 28px;background-color:#0a0a0a;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">
+            View Repository
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:0;font-size:13px;color:#71717a;">Thanks for contributing to the community!</p>
+    </td></tr>
+    <tr><td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}

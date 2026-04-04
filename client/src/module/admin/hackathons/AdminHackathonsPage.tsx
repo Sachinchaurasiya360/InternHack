@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Trophy, Plus, Pencil, Trash2, Save, X, Loader2, Search } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
+import { SEO } from "../../../components/SEO";
 
 interface Hackathon {
   id: number;
@@ -153,6 +154,7 @@ export default function AdminHackathonsPage() {
 
   return (
     <div>
+      <SEO title="Manage Hackathons" noIndex />
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Trophy className="w-6 h-6 text-amber-400" />

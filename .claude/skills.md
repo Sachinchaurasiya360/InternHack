@@ -51,12 +51,24 @@ First-letter initial in neutral box, NOT generic icon:
 </p>
 ```
 
-### Buttons
-- Primary: `bg-indigo-600 text-white rounded-xl hover:bg-indigo-700`
-- Secondary: `bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100`
-- Danger: `text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20`
-- Disabled: `disabled:opacity-50 disabled:cursor-not-allowed`
-- Text size: `text-xs font-medium` (toolbar), `text-sm font-semibold` (main actions)
+### Buttons — Use `<Button>` Component
+Import from `components/ui/button.tsx` (CVA-based). Do NOT use raw `<button>` with inline Tailwind for new code.
+
+```tsx
+import { Button } from "../../components/ui/button";
+
+<Button variant="primary">Save</Button>           // indigo filled
+<Button variant="secondary">Cancel</Button>       // gray outlined
+<Button variant="mono">Action</Button>             // dark filled
+<Button variant="ghost" mode="icon"><X /></Button>  // icon-only
+<Button variant="danger">Delete</Button>           // red filled
+<Button asChild variant="mono"><Link to="/path">Go</Link></Button> // with router Link
+```
+
+- Variants: `primary`, `secondary`, `mono`, `ghost`, `danger`
+- Modes: `button` (default), `icon` (square, no padding text), `link` (inline text button)
+- Sizes: `sm`, `md`, `lg`
+- `asChild` uses Radix Slot to merge props onto child element (e.g. `<Link>`)
 
 ### Toolbar pattern
 ```tsx
@@ -117,6 +129,21 @@ if (err && typeof err === "object" && "response" in err) {
   msg = resp.response?.data?.message ?? "Something went wrong";
 }
 ```
+
+### React.memo for list items
+Wrap list-rendered child components with `React.memo` when they receive stable props:
+```tsx
+export const MyCard = React.memo(function MyCard({ data }: Props) {
+  return <div>...</div>;
+});
+```
+Only apply to components that: (1) are rendered in `.map()` lists, (2) receive primitive or stable object props, (3) don't have frequently-changing internal state.
+
+### SEO on internal pages
+All admin and recruiter pages must have `<SEO title="..." noIndex />`. Public-facing pages use full SEO props (title, description, keywords).
+
+### File upload validation
+Client-side file uploads must validate size (default 5 MB) and allowed MIME types before sending. See `DynamicFieldRenderer.tsx` FILE_UPLOAD case for the pattern.
 
 ### AI response parsing (LaTeX chat)
 - Prompt AI with XML tags (`<reply>`, `<latex>`) — NOT JSON (LaTeX backslashes break JSON)

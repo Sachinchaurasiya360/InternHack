@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import type { HREmployee, EmploymentStatus } from "./hr-types";
 import { useState } from "react";
 import HRModal from "./components/HRModal";
+import { SEO } from "../../../components/SEO";
 
 const STATUS_OPTIONS: EmploymentStatus[] = ["ONBOARDING", "ACTIVE", "ON_LEAVE", "ON_PROBATION", "NOTICE_PERIOD", "EXITED", "ALUMNI"];
 
@@ -64,6 +65,7 @@ export default function EmployeeDetailPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Employee Detail" noIndex />
       <Link to="/recruiters/hr/employees" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 no-underline transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Employees
       </Link>

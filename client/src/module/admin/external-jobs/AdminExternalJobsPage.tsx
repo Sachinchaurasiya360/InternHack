@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, ExternalLink, X, Loader2, Link2, Braces } from "l
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
+import { SEO } from "../../../components/SEO";
 
 interface AdminJob {
   id: number;
@@ -141,6 +142,7 @@ export default function AdminExternalJobsPage() {
 
   return (
     <div>
+      <SEO title="External Jobs" noIndex />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">External Jobs</h1>
         <button

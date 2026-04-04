@@ -7,6 +7,7 @@ import { hrKeys } from "./hr-query-keys";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { ComplianceDocument } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 export default function CompliancePage() {
   const queryClient = useQueryClient();
@@ -50,6 +51,7 @@ export default function CompliancePage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Compliance" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Compliance</h1>

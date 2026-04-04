@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Search, Filter } from "lucide-react";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
@@ -63,6 +64,7 @@ export default function ApplicationsList() {
 
   return (
     <div>
+      <SEO title="Applications" noIndex />
       <Link to="/recruiters/jobs" className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline">
         <ArrowLeft className="w-4 h-4" /> Back to Jobs
       </Link>

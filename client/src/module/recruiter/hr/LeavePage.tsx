@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { LeaveRequest, LeavePolicy, Holiday, LeaveType, LeaveBalance } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 const LEAVE_TYPES: LeaveType[] = ["CASUAL", "SICK", "EARNED", "MATERNITY", "PATERNITY", "COMPENSATORY", "UNPAID", "BEREAVEMENT"];
 
@@ -99,6 +100,7 @@ export default function LeavePage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Leave Management" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Leave Management</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage leave requests, balances, and policies</p>

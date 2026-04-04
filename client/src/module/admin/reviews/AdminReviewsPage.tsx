@@ -6,6 +6,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import type { CompanyReview, Pagination } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<CompanyReview[]>([]);
@@ -44,6 +45,7 @@ export default function AdminReviewsPage() {
 
   return (
     <div>
+      <SEO title="Manage Reviews" noIndex />
       <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
         <MessageSquare className="w-6 h-6" /> Moderate Reviews
       </h1>

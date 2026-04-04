@@ -13,6 +13,7 @@ import {
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CampusDrive, Pagination } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 12 },
@@ -69,6 +70,7 @@ export default function DrivesListPage() {
 
   return (
     <div>
+      <SEO title="Campus Drives" noIndex />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Campus Drives

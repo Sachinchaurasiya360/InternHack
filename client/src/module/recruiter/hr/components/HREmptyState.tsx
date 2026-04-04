@@ -1,3 +1,4 @@
+import React from "react";
 import type { LucideIcon } from "lucide-react";
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
   onAction?: () => void;
 }
 
-export default function HREmptyState({ icon: Icon, title, description, actionLabel, onAction }: Props) {
+const HREmptyState = React.memo(function HREmptyState({ icon: Icon, title, description, actionLabel, onAction }: Props) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
       <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
@@ -26,4 +27,6 @@ export default function HREmptyState({ icon: Icon, title, description, actionLab
       )}
     </div>
   );
-}
+});
+
+export default HREmptyState;

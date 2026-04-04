@@ -10,7 +10,7 @@ const linkClass =
 
 const SOCIAL_LINKS = {
   email: "mailto:mrsachinchaurasiya@gmail.com",
-  twitter: "https://x.com/internhack_xyz",
+  twitter: "https://x.com/sachindev69",
   linkedin: "https://www.linkedin.com/company/internhack",
 };
 
@@ -170,11 +170,11 @@ export function Footer() {
             {/* Request a Feature */}
             <div className="mt-6">
               <a
-                href="mailto:mrsachinchaurasiya@gmail.com?subject=Feature%20Request%20at%20InternHack"
+                href="mailto:mrsachinchaurasiya@gmail.com?subject=Bug20%Report%20at%20InternHack"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all no-underline"
               >
                 <MessageSquarePlus className="w-4 h-4" />
-                Request a Feature
+                Report a Bug
               </a>
             </div>
           </div>

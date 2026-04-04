@@ -13,6 +13,7 @@ import {
   X,
   StickyNote,
 } from "lucide-react";
+import { SEO } from "../../../components/SEO";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -164,6 +165,7 @@ export default function TalentPoolDetailPage() {
 
   return (
     <div>
+      <SEO title="Talent Pool Detail" noIndex />
       {/* Back Link */}
       <Link
         to="/recruiters/talent-pools"

@@ -7,6 +7,7 @@ import {
   useQueryClient,
   keepPreviousData,
 } from "@tanstack/react-query";
+import { SEO } from "../../../components/SEO";
 import {
   ArrowLeft,
   Trash2,
@@ -203,6 +204,7 @@ export default function DriveDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <SEO title="Drive Detail" noIndex />
       <button
         onClick={() => navigate("/recruiters/campus-drives")}
         className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 transition-colors"

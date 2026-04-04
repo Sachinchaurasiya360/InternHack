@@ -7,6 +7,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { DynamicFieldBuilder } from "../../../components/DynamicFieldBuilder";
 import { RoundsManager } from "../rounds/RoundsManager";
 import type { CustomFieldDefinition } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 interface RoundInput {
   name: string;
@@ -91,6 +92,7 @@ export default function CreateJobPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <SEO title="Create Job" noIndex />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create Job Posting</h1>
 
       {/* Step Indicator */}

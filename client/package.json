@@ -1,13 +1,11 @@
 {
   "name": "client",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:seo": "tsc -b && vite build && node scripts/prerender.mjs",
-    "generate:og": "node scripts/generate-og-image.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

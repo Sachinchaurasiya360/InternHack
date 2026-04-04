@@ -4,6 +4,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import api from "../../../lib/axios";
 import { DynamicFieldBuilder } from "../../../components/DynamicFieldBuilder";
 import type { CustomFieldDefinition } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function EditJobPage() {
   const { id } = useParams();
@@ -67,6 +68,7 @@ export default function EditJobPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      <SEO title="Edit Job" noIndex />
       <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>

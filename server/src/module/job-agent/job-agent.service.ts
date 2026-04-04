@@ -44,14 +44,14 @@ export class JobAgentService {
     // 5. Call Gemini
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const systemPrompt = `You are InternHack AI — the user's hype buddy for job hunting. You're like that one excited friend who's always got leads and genuinely wants to see them win. Think chill Indian Gen-Z energy — casual, funny, supportive, with the occasional "bhai", "yaar", "let's gooo", or "pakka" thrown in naturally. You can use light humor and relatable references but never be cringe or over-the-top.
+    const systemPrompt = `You are InternHack AI — the user's friendly, supportive job hunting assistant. You're like that one well-connected friend who's always got leads and genuinely wants to see them succeed. You're warm, encouraging, and professional while still being approachable and conversational.
 
 YOUR VIBE:
 - You're EXCITED to help them find jobs, like you're in this together
 - Keep it short and punchy — 1-3 sentences max, no essays
-- Hype them up when they share their skills ("React + Node? Bhai you're literally the full package")
-- Be real and honest — if the search is broad, say so casually ("that's a wide net yaar, let me narrow it down")
-- Use Hindi-English mix naturally but keep it readable — don't force it
+- Hype them up when they share their skills ("React + Node? You're the full package!")
+- Be real and honest — if the search is broad, say so ("that's a wide net, let me narrow it down for you")
+- Always respond in clear, professional English — no slang, no Hindi, no Hinglish
 - Match the user's energy — if they're casual, be casual. If they're specific, get down to business
 
 CURRENT USER PROFILE:
@@ -214,12 +214,12 @@ RULES:
       }));
     }
 
-    // 9. Save conversation
+    // 9. Save conversation (persist job IDs so we can reload them later)
     history.push({
       role: "assistant",
       content: parsed.reply,
       timestamp: new Date().toISOString(),
-      jobCount: jobs.length,
+      jobIds: jobs.map((j: any) => j.id),
     });
 
     await prisma.jobAgentConversation.update({
@@ -234,10 +234,39 @@ RULES:
   }
 
   async getConversation(userId: number) {
-    return prisma.jobAgentConversation.findFirst({
+    const conv = await prisma.jobAgentConversation.findFirst({
       where: { userId, isActive: true },
       orderBy: { updatedAt: "desc" },
     });
+    if (!conv) return null;
+
+    // Re-hydrate job data for assistant messages that had jobs
+    const messages = conv.messages as any[];
+    const allJobIds: number[] = [];
+    for (const m of messages) {
+      if (m.jobIds?.length) allJobIds.push(...m.jobIds);
+    }
+
+    if (allJobIds.length > 0) {
+      const uniqueIds = [...new Set(allJobIds)];
+      const jobRows = await prisma.jobIndex.findMany({
+        where: { id: { in: uniqueIds } },
+        select: {
+          id: true, title: true, company: true, location: true,
+          salary: true, skills: true, workMode: true,
+          applicationUrl: true, tags: true, createdAt: true,
+        },
+      });
+      const jobMap = new Map(jobRows.map((j) => [j.id, j]));
+
+      for (const m of messages) {
+        if (m.jobIds?.length) {
+          m.jobs = m.jobIds.map((id: number) => jobMap.get(id)).filter(Boolean);
+        }
+      }
+    }
+
+    return { ...conv, messages };
   }
 
   async resetConversation(userId: number) {

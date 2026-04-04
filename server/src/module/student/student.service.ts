@@ -1,6 +1,8 @@
 import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
 import { BadgeService } from "../badge/badge.service.js";
+import { sendEmail } from "../../utils/email.utils.js";
+import { milestoneEmailHtml } from "../../utils/email-templates.js";
 
 const badgeService = new BadgeService();
 
@@ -57,6 +59,8 @@ export class StudentService {
 
       // Check for first_application badge (fire-and-forget)
       badgeService.checkAndAwardBadges(studentId, "first_application").catch(() => {});
+      // Check 10-application milestone (fire-and-forget)
+      this.checkApplicationMilestone(studentId).catch(() => {});
 
       return application;
     } catch (err) {
@@ -96,6 +100,79 @@ export class StudentService {
         _count: { select: { roundSubmissions: true } },
       },
     });
+  }
+
+  async getMyExternalApplications(studentId: number) {
+    return prisma.externalJobApplication.findMany({
+      where: { studentId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        adminJob: {
+          select: {
+            id: true, slug: true, company: true, role: true,
+            location: true, salary: true, tags: true, applyLink: true,
+          },
+        },
+      },
+    });
+  }
+
+  async applyToExternalJob(studentId: number, adminJobId: number) {
+    const job = await prisma.adminJob.findUnique({ where: { id: adminJobId } });
+    if (!job) throw new Error("External job not found");
+    if (!job.isActive || job.expiresAt < new Date()) throw new Error("This job has expired");
+
+    try {
+      const application = await prisma.externalJobApplication.create({
+        data: { studentId, adminJobId },
+        include: {
+          adminJob: {
+            select: { id: true, slug: true, company: true, role: true },
+          },
+        },
+      });
+      // Check 10-application milestone (fire-and-forget)
+      this.checkApplicationMilestone(studentId).catch(() => {});
+      return application;
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+        throw new Error("Already applied to this job");
+      }
+      throw e;
+    }
+  }
+
+  async getExternalApplicationStatus(studentId: number, adminJobId: number) {
+    return prisma.externalJobApplication.findUnique({
+      where: { studentId_adminJobId: { studentId, adminJobId } },
+      select: { id: true, createdAt: true },
+    });
+  }
+
+  private async checkApplicationMilestone(studentId: number) {
+    const [regular, external] = await Promise.all([
+      prisma.application.count({ where: { studentId } }),
+      prisma.externalJobApplication.count({ where: { studentId } }),
+    ]);
+    const total = regular + external;
+    if (total === 10) {
+      const user = await prisma.user.findUnique({
+        where: { id: studentId },
+        select: { name: true, email: true },
+      });
+      if (user) {
+        const html = milestoneEmailHtml(
+          user.name,
+          "10 Applications Sent!",
+          "You've applied to 10 jobs on InternHack — that's serious commitment. " +
+          "Consistency is the #1 predictor of landing an offer. Keep the momentum going, " +
+          "explore new roles, and don't forget to sharpen your resume with our AI ATS scorer.",
+          "Browse More Jobs",
+          "https://www.internhack.xyz/jobs",
+        );
+        sendEmail({ to: user.email, subject: "You hit 10 applications! Keep it up", html }).catch(() => {});
+      }
+    }
   }
 
   async getApplicationDetail(applicationId: number, studentId: number) {

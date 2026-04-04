@@ -48,13 +48,13 @@ const testimonials = [
     text: "The DSA and SQL practice modules are incredibly well-structured. I cleared every online assessment I attempted after using them.",
     image: "https://media.licdn.com/dms/image/v2/D4D03AQEU8zWynlzkNQ/profile-displayphoto-shrink_400_400/B4DZR4Q1c.HUAg-/0/1737184492850?e=1776902400&v=beta&t=_1LCG9d2qMbg0odiFkVpRZwL0AmtsB8ZJFC_esmiVzk",
     name: "Rohan Patil",
-    role: "Prof., Vishwaniketan",
+    role: "Prof.Vishwaniketan",
   },
   {
     text: "As a recruiter, the HRMS tools streamlined our entire hiring pipeline. We reduced our time-to-hire by almost 40%.",
-    image: "https://randomuser.me/api/portraits/women/52.jpg",
+    image: "https://randomuser.me/api/portraits/women/32.jpg",
     name: "Meera Iyer",
-    role: "HR Lead, Zoho",
+    role: "HR , Zoho",
   },
 ];
 

@@ -14,6 +14,7 @@ import toast from "@/components/ui/toast";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import type { BlogPost, BlogCategory } from "../../blog/components/BlogCard";
+import { SEO } from "../../../components/SEO";
 
 const CATEGORY_OPTIONS: { value: BlogCategory; label: string }[] = [
   { value: "CAREER_ADVICE", label: "Career Advice" },
@@ -231,6 +232,7 @@ export default function AdminBlogEditor() {
 
   return (
     <div>
+      <SEO title="Blog Editor" noIndex />
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">

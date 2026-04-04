@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "../../components/SEO";
 import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { Shield, Eye, EyeOff } from "lucide-react";
@@ -32,6 +33,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
+      <SEO title="Admin Login" noIndex />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

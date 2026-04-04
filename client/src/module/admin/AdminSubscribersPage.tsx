@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Trash2, Users } from "lucide-react";
+import { SEO } from "../../components/SEO";
 import { PaginationControls } from "../../components/ui/PaginationControls";
+import { Button } from "../../components/ui/button";
 import api from "../../lib/axios";
 
 interface Subscriber {
@@ -47,6 +49,7 @@ export default function AdminSubscribersPage() {
 
   return (
     <div>
+      <SEO title="Newsletter Subscribers" noIndex />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Newsletter Subscribers</h1>
         <div className="flex items-center gap-2 px-4 py-2 bg-indigo-900/40 text-indigo-400 rounded-lg text-sm font-medium">
@@ -100,13 +103,16 @@ export default function AdminSubscribersPage() {
                     })}
                   </div>
                   <div className="col-span-2 text-right">
-                    <button
+                    <Button
                       onClick={() => handleDelete(sub.id)}
-                      className="p-2 rounded-lg text-gray-500 hover:bg-red-900/30 hover:text-red-400 transition-colors"
+                      variant="ghost"
+                      mode="icon"
+                      size="md"
                       title="Remove subscriber"
+                      className="text-gray-500 hover:bg-red-900/30 hover:text-red-400"
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </motion.div>
               ))}

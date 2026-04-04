@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
@@ -9,7 +10,7 @@ interface Props {
   index?: number;
 }
 
-export default function HRStatsCard({ icon: Icon, label, value, color = "text-indigo-600 dark:text-indigo-400", index = 0 }: Props) {
+const HRStatsCard = React.memo(function HRStatsCard({ icon: Icon, label, value, color = "text-indigo-600 dark:text-indigo-400", index = 0 }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -28,4 +29,6 @@ export default function HRStatsCard({ icon: Icon, label, value, color = "text-in
       </div>
     </motion.div>
   );
-}
+});
+
+export default HRStatsCard;

@@ -1,12 +1,14 @@
 import { useParams, Link, useNavigate, useLocation } from "react-router";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, IndianRupee, Building2, CalendarDays, Tag, ExternalLink } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, MapPin, IndianRupee, Building2, CalendarDays, Tag, ExternalLink, Check, Loader2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { queryKeys } from "../../../lib/query-keys";
 
 interface ExternalJob {
   id: number;
@@ -30,6 +32,9 @@ export default function ExternalJobDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const queryClient = useQueryClient();
+  const [applied, setApplied] = useState(false);
+
   const { data: job, isLoading, error } = useQuery({
     queryKey: ["external-job", slug],
     queryFn: async () => {
@@ -39,6 +44,36 @@ export default function ExternalJobDetailPage() {
     enabled: !!slug,
     retry: false,
   });
+
+  // Check if already applied
+  useQuery({
+    queryKey: ["external-job-status", job?.id],
+    queryFn: async () => {
+      const res = await api.get(`/student/external-jobs/${job!.id}/status`);
+      if (res.data.applied) setApplied(true);
+      return res.data;
+    },
+    enabled: !!job && isAuthenticated,
+  });
+
+  const applyMutation = useMutation({
+    mutationFn: async (jobId: number) => {
+      await api.post(`/student/external-jobs/${jobId}/apply`);
+    },
+    onSuccess: () => {
+      setApplied(true);
+      queryClient.invalidateQueries({ queryKey: queryKeys.applications.mine() });
+    },
+  });
+
+  const handleApply = (jobData: ExternalJob) => {
+    if (!applied) {
+      applyMutation.mutate(jobData.id);
+    }
+    if (jobData.applyLink) {
+      window.open(jobData.applyLink, "_blank", "noopener,noreferrer");
+    }
+  };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -137,10 +172,23 @@ export default function ExternalJobDetailPage() {
             {/* Apply Button */}
             {job.applyLink && (
               isAuthenticated ? (
-                <a href={job.applyLink} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors no-underline">
-                  <ExternalLink className="w-4 h-4" /> Apply Now
-                </a>
+                <button
+                  onClick={() => handleApply(job)}
+                  disabled={applyMutation.isPending}
+                  className={`inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-xl transition-colors ${
+                    applied
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                  }`}
+                >
+                  {applyMutation.isPending ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Applying...</>
+                  ) : applied ? (
+                    <><Check className="w-4 h-4" /> Applied — View Posting <ExternalLink className="w-3.5 h-3.5" /></>
+                  ) : (
+                    <><ExternalLink className="w-4 h-4" /> Apply Now</>
+                  )}
+                </button>
               ) : (
                 <button
                   onClick={() => navigate(`/login?from=${encodeURIComponent(location.pathname)}`)}

@@ -27,7 +27,7 @@ function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 w-72 rounded-xl border border-white/10 bg-gray-950 text-white shadow-xl shadow-black/40",
+          "z-50 w-72 rounded-xl border border-gray-200 bg-white text-gray-950 shadow-xl shadow-black/10 dark:border-white/10 dark:bg-gray-950 dark:text-white dark:shadow-black/40",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -45,7 +45,7 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "flex w-full flex-col gap-1 rounded-t-xl border-b border-white/10 px-3 py-2",
+        "flex w-full flex-col gap-1 rounded-t-xl border-b border-gray-200 dark:border-white/10 px-3 py-2",
         className
       )}
       {...props}
@@ -54,7 +54,7 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function PopoverTitle({ className, ...props }: React.ComponentProps<"p">) {
-  return <p className={cn("text-white font-medium", className)} {...props} />;
+  return <p className={cn("text-gray-950 dark:text-white font-medium", className)} {...props} />;
 }
 
 function PopoverDescription({
@@ -62,7 +62,7 @@ function PopoverDescription({
   ...props
 }: React.ComponentProps<"p">) {
   return (
-    <p className={cn("text-white/50 text-sm", className)} {...props} />
+    <p className={cn("text-gray-500 dark:text-white/50 text-sm", className)} {...props} />
   );
 }
 
@@ -70,7 +70,7 @@ function PopoverFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "mt-auto grid w-full gap-2 rounded-b-xl border-t border-white/10 px-3 py-2",
+        "mt-auto grid w-full gap-2 rounded-b-xl border-t border-gray-200 dark:border-white/10 px-3 py-2",
         className
       )}
       {...props}

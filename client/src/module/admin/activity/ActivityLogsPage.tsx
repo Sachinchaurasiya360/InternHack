@@ -5,6 +5,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import type { ErrorLog, Pagination } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 
 export default function ErrorLogsPage() {
   const [logs, setLogs] = useState<ErrorLog[]>([]);
@@ -43,6 +44,7 @@ export default function ErrorLogsPage() {
 
   return (
     <div>
+      <SEO title="Activity Logs" noIndex />
       <div className="flex items-center gap-3 mb-6">
         <AlertTriangle className="w-6 h-6 text-red-400" />
         <h1 className="text-2xl font-bold text-white">Error Logs</h1>

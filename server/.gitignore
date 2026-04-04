@@ -5,3 +5,5 @@ dist
 .env
 uploads
 intern-hack.pem
+
+plan.md

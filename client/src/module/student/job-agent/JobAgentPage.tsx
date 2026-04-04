@@ -1,8 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Send,
   RotateCcw,
   BotMessageSquare,
   Briefcase,
@@ -10,8 +9,10 @@ import {
   Code2,
   Zap,
   Crown,
+  ArrowUpIcon,
 } from "lucide-react";
 import { Link } from "react-router";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -34,6 +35,38 @@ const QUICK_PROMPTS = [
   { icon: Zap, text: "Show me DevOps opportunities", color: "text-purple-500" },
 ];
 
+function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; maxHeight?: number }) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const adjustHeight = useCallback(
+    (reset?: boolean) => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      if (reset) {
+        textarea.style.height = `${minHeight}px`;
+        return;
+      }
+      textarea.style.height = `${minHeight}px`;
+      const newHeight = Math.max(minHeight, Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY));
+      textarea.style.height = `${newHeight}px`;
+    },
+    [minHeight, maxHeight],
+  );
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) textarea.style.height = `${minHeight}px`;
+  }, [minHeight]);
+
+  useEffect(() => {
+    const handleResize = () => adjustHeight();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [adjustHeight]);
+
+  return { textareaRef, adjustHeight };
+}
+
 export default function JobAgentPage() {
   const { user } = useAuthStore();
   const isPremium =
@@ -46,7 +79,7 @@ export default function JobAgentPage() {
   const [hitFreeLimit, setHitFreeLimit] = useState(false);
   const hasChattedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
 
   const userMsgCount = messages.filter((m) => m.role === "user").length;
 
@@ -65,12 +98,12 @@ export default function JobAgentPage() {
   useEffect(() => {
     if (conversation?.messages?.length && !hasChattedRef.current) {
       setMessages(
-        conversation.messages.map((m) => ({
+        conversation.messages.map((m: any) => ({
           role: m.role,
           content: m.content,
+          jobs: m.jobs?.length ? m.jobs : undefined,
         })),
       );
-      // Restore free-limit state from persisted conversation
       if (!isPremium) {
         const userMsgs = conversation.messages.filter((m) => m.role === "user").length;
         if (userMsgs >= FREE_LIMIT) setHitFreeLimit(true);
@@ -130,8 +163,16 @@ export default function JobAgentPage() {
     const msg = (text ?? input).trim();
     if (!msg || chatMut.isPending) return;
     setInput("");
+    adjustHeight(true);
     setMessages((prev) => [...prev, { role: "user", content: msg }]);
     chatMut.mutate(msg);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   const isEmpty = messages.length === 0;
@@ -139,35 +180,8 @@ export default function JobAgentPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto">
-      {/* Top bar — minimal, only controls */}
-      {messages.length > 0 && (
-        <div className="flex items-center justify-end px-6 py-2 border-b border-gray-100 dark:border-gray-800/60">
-          <div className="flex items-center gap-2">
-            {!isPremium && (
-              <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                {Math.min(userMsgCount, FREE_LIMIT)}/{FREE_LIMIT} free
-              </span>
-            )}
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              onClick={() => resetMut.mutate()}
-              disabled={resetMut.isPending}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              title="New conversation"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              New chat
-            </motion.button>
-          </div>
-        </div>
-      )}
-
       {/* Messages area */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 sm:px-6 py-6"
-      >
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
         <AnimatePresence mode="wait">
           {isEmpty ? (
             <motion.div
@@ -200,7 +214,10 @@ export default function JobAgentPage() {
               </p>
               {!isPremium && (
                 <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
-                  {FREE_LIMIT} free messages — <Link to="/student/checkout" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 no-underline font-medium">upgrade for unlimited</Link>
+                  {FREE_LIMIT} free messages —{" "}
+                  <Link to="/student/checkout" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 no-underline font-medium">
+                    upgrade for unlimited
+                  </Link>
                 </p>
               )}
 
@@ -221,23 +238,17 @@ export default function JobAgentPage() {
               </div>
             </motion.div>
           ) : (
-            <motion.div
-              key="messages"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-5"
-            >
+            <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
               {messages.map((msg, i) => (
                 <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
               ))}
-
               {chatMut.isPending && <ThinkingIndicator />}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Upgrade banner for free users who hit the limit */}
+      {/* Upgrade banner */}
       {hitFreeLimit && !isPremium && (
         <div className="px-4 sm:px-6 py-3 bg-violet-50 dark:bg-violet-950/30 border-t border-violet-100 dark:border-violet-900/50">
           <div className="flex items-center justify-between">
@@ -255,26 +266,77 @@ export default function JobAgentPage() {
         </div>
       )}
 
-      {/* Input bar */}
-      <div className="px-4 sm:px-6 py-3 border-t border-gray-100 dark:border-gray-800/60 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm">
-        <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl px-4 py-1.5 focus-within:border-gray-400 dark:focus-within:border-gray-600 focus-within:ring-2 focus-within:ring-gray-950/10 dark:focus-within:ring-white/10 transition-all">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            placeholder={hitFreeLimit ? "Upgrade to continue chatting..." : chatMut.isPending ? "Thinking..." : "Ask me about jobs..."}
-            className="flex-1 bg-transparent border-0 text-sm focus:outline-none dark:text-white dark:placeholder-gray-500 py-2"
-            disabled={inputDisabled}
-          />
-          <button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || inputDisabled}
-            className="p-2 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 disabled:opacity-30 hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+      {/* V0-style input bar */}
+      <div className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-gray-950">
+        <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 focus-within:border-gray-400 dark:focus-within:border-gray-600 focus-within:ring-2 focus-within:ring-gray-950/10 dark:focus-within:ring-white/10 transition-all shadow-sm">
+          <div className="overflow-y-auto">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                adjustHeight();
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                hitFreeLimit
+                  ? "Upgrade to continue chatting..."
+                  : chatMut.isPending
+                    ? "Thinking..."
+                    : "Ask me about jobs..."
+              }
+              disabled={inputDisabled}
+              className={cn(
+                "w-full px-4 py-3",
+                "resize-none",
+                "bg-transparent",
+                "border-none",
+                "text-gray-950 dark:text-white text-sm",
+                "focus:outline-none",
+                "focus-visible:ring-0 focus-visible:ring-offset-0",
+                "placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:text-sm",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
+              )}
+              style={{ overflow: "hidden", minHeight: "44px" }}
+            />
+          </div>
+
+          <div className="flex items-center justify-between px-3 pb-3">
+            <div className="flex items-center gap-2">
+              {!isPremium && (
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 px-1">
+                  {Math.min(userMsgCount, FREE_LIMIT)}/{FREE_LIMIT} free
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {messages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => resetMut.mutate()}
+                  disabled={resetMut.isPending}
+                  className="px-2.5 py-1.5 rounded-lg text-xs text-gray-400 dark:text-gray-500 transition-colors border border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-1"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  New chat
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => handleSend()}
+                disabled={!input.trim() || inputDisabled}
+                className={cn(
+                  "p-2 rounded-xl text-sm transition-all",
+                  input.trim() && !inputDisabled
+                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-sm"
+                    : "text-gray-300 dark:text-gray-600",
+                )}
+              >
+                <ArrowUpIcon className="w-4 h-4" />
+                <span className="sr-only">Send</span>
+              </button>
+            </div>
+          </div>
         </div>
         <p className="text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2">
           Powered by AI — results may vary. Always verify job details.

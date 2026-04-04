@@ -8,6 +8,7 @@ import HRStatusBadge from "./components/HRStatusBadge";
 import HREmptyState from "./components/HREmptyState";
 import HRModal from "./components/HRModal";
 import type { WorkflowDefinition, WorkflowInstance } from "./hr-types";
+import { SEO } from "../../../components/SEO";
 
 export default function WorkflowsPage() {
   const queryClient = useQueryClient();
@@ -59,6 +60,7 @@ export default function WorkflowsPage() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Workflows" noIndex />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Workflows</h1>

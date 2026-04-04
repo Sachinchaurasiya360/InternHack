@@ -95,6 +95,10 @@ export default function AdminLayout() {
           <ExternalLink className="w-4 h-4" />
           External Jobs
         </NavLink>
+        <NavLink to="/admin/repo-requests" className={linkClass} onClick={() => setSidebarOpen(false)}>
+          <GitPullRequest className="w-4 h-4" />
+          Repo Requests
+        </NavLink>
         <NavLink to="/admin/blog" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <BookOpen className="w-4 h-4" />
           Blog
