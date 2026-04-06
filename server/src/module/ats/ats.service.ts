@@ -12,6 +12,10 @@ import type { Prisma } from "@prisma/client";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// If the same student re-scores the same resume + job context within this
+// window, return the prior AtsScore row instead of re-calling Gemini.
+const SCORE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
 export class AtsService {
 
   async scoreResume(studentId: number, input: ScoreResumeInput) {
@@ -28,6 +32,20 @@ export class AtsService {
     if (!isOwned) {
       throw new Error("Resume does not belong to this user");
     }
+
+    // Cache hit: identical (resumeUrl, jobTitle, jobDescription) from the same
+    // student within the TTL — return the prior row without burning AI quota.
+    const cached = await prisma.atsScore.findFirst({
+      where: {
+        studentId,
+        resumeUrl: input.resumeUrl,
+        jobTitle: input.jobTitle ?? null,
+        jobDescription: input.jobDescription ?? null,
+        createdAt: { gte: new Date(Date.now() - SCORE_CACHE_TTL_MS) },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (cached) return cached;
 
     const resumeText = await this.extractPdfText(input.resumeUrl);
 

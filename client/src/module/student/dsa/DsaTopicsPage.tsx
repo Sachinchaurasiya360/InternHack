@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
@@ -15,38 +15,12 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
+import { CircularProgress } from "../../../components/ui/CircularProgress";
 
 const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
 
 type DifficultyTab = "all" | "easy" | "medium-hard";
-
-function CircularProgress({ progress, size = 52 }: { progress: number; size?: number }) {
-  const r = (size - 6) / 2;
-  const circ = 2 * Math.PI * r;
-  const offset = circ - (progress / 100) * circ;
-
-  return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg className="-rotate-90" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" className="stroke-gray-100 dark:stroke-gray-800" strokeWidth="4" />
-        <circle
-          cx={size / 2} cy={size / 2} r={r}
-          fill="none"
-          className={progress === 100 ? "stroke-emerald-500" : "stroke-indigo-500"}
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeDasharray={`${circ}`}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 0.6s ease" }}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-300">
-        {progress}%
-      </span>
-    </div>
-  );
-}
 
 export default function DsaTopicsPage() {
   const { user } = useAuthStore();
@@ -54,16 +28,29 @@ export default function DsaTopicsPage() {
   const [showGate, setShowGate] = useState(false);
   const [page, setPage] = useState(1);
   const [topicSearch, setTopicSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(topicSearch.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [topicSearch]);
 
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
     activeTab === "medium-hard" ? "Medium,Hard" :
     undefined;
 
+  const filterKey = `${difficultyParam ?? ""}|${debouncedSearch}`;
   const { data: topicsData, isLoading } = useQuery({
-    queryKey: queryKeys.dsa.topics(difficultyParam),
+    queryKey: queryKeys.dsa.topics(filterKey),
     queryFn: () => {
-      const params = difficultyParam ? `?difficulty=${difficultyParam}` : "";
+      const qs = new URLSearchParams();
+      if (difficultyParam) qs.set("difficulty", difficultyParam);
+      if (debouncedSearch) qs.set("search", debouncedSearch);
+      const params = qs.toString() ? `?${qs.toString()}` : "";
       return api.get<DsaTopicsResponse>(`/dsa/topics${params}`).then((r) => r.data);
     },
     placeholderData: keepPreviousData,
@@ -80,16 +67,17 @@ export default function DsaTopicsPage() {
   });
 
   const totalProblems = uniqueProblems;
-  const totalSolved = topics?.reduce((s, t) => s + t.solvedCount, 0) ?? 0;
+  // Clamp solved to [0, totalProblems] so transient count mismatches between
+  // per-topic solvedCount (which may double-count problems tagged with multiple topics)
+  // and uniqueProblems can never produce a >100% or negative overall percentage.
+  const rawSolved = topics?.reduce((s, t) => s + t.solvedCount, 0) ?? 0;
+  const totalSolved = Math.max(0, Math.min(rawSolved, totalProblems));
   const overallPct = totalProblems > 0 ? Math.round((totalSolved / totalProblems) * 100) : 0;
   const allTopicsCount = topics?.length ?? 0;
 
-  const searchedTopics = topics?.filter((t) =>
-    !topicSearch || t.name.toLowerCase().includes(topicSearch.toLowerCase())
-  );
-  const totalTopics = searchedTopics?.length ?? 0;
+  const totalTopics = topics?.length ?? 0;
   const totalPages = Math.ceil(totalTopics / TOPICS_PER_PAGE);
-  const paginatedTopics = searchedTopics?.slice((page - 1) * TOPICS_PER_PAGE, page * TOPICS_PER_PAGE);
+  const paginatedTopics = topics?.slice((page - 1) * TOPICS_PER_PAGE, page * TOPICS_PER_PAGE);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -216,7 +204,7 @@ export default function DsaTopicsPage() {
           type="text"
           placeholder="Search topics..."
           value={topicSearch}
-          onChange={(e) => { setTopicSearch(e.target.value); setPage(1); }}
+          onChange={(e) => setTopicSearch(e.target.value)}
           className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-100 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950/10 dark:focus:ring-white/10 transition-all"
         />
       </div>
@@ -225,7 +213,7 @@ export default function DsaTopicsPage() {
       <div className="space-y-2.5">
         {paginatedTopics?.map((topic, idx) => {
           const pct = topic.problemCount > 0
-            ? Math.round((topic.solvedCount / topic.problemCount) * 100)
+            ? Math.min(100, Math.max(0, Math.round((topic.solvedCount / topic.problemCount) * 100)))
             : 0;
           const isComplete = pct === 100;
           const isLocked = topic.orderIndex >= FREE_LIMIT && !user;

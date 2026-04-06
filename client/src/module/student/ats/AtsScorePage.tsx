@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
@@ -46,6 +48,48 @@ const CATEGORY_ICONS: Record<string, typeof BarChart2> = {
 
 type ResultTab = "suggestions" | "breakdown" | "keywords";
 
+// Score tiers — single source of truth for thresholds + colors used by ScoreCircle
+// and any consumer that needs to colorize an ATS score.
+interface ScoreTier {
+  min: number;
+  label: string;
+  stroke: string;
+  glow: string;
+  text: string;
+  badge: string;
+}
+const SCORE_TIERS: ScoreTier[] = [
+  {
+    min: 70,
+    label: "Excellent",
+    stroke: "#22c55e",
+    glow: "rgba(34,197,94,0.15)",
+    text: "text-green-600 dark:text-green-400",
+    badge: "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800",
+  },
+  {
+    min: 40,
+    label: "Needs Work",
+    stroke: "#eab308",
+    glow: "rgba(234,179,8,0.15)",
+    text: "text-yellow-600 dark:text-yellow-400",
+    badge: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800",
+  },
+  {
+    min: 0,
+    label: "Poor",
+    stroke: "#ef4444",
+    glow: "rgba(239,68,68,0.15)",
+    text: "text-red-600 dark:text-red-400",
+    badge: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800",
+  },
+];
+const getScoreTier = (score: number): ScoreTier =>
+  SCORE_TIERS.find((t) => score >= t.min) ?? SCORE_TIERS[SCORE_TIERS.length - 1]!;
+
+const JD_MAX_CHARS = 5000;
+const JD_WARN_CHARS = 4500;
+
 const ANALYSIS_STEPS = [
   { icon: Upload, label: "Uploading resume" },
   { icon: FileText, label: "Parsing document" },
@@ -71,28 +115,8 @@ function ScoreCircle({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
 
-  const strokeColor =
-    score >= 70 ? "#22c55e" : score >= 40 ? "#eab308" : "#ef4444";
-  const glowColor =
-    score >= 70
-      ? "rgba(34,197,94,0.15)"
-      : score >= 40
-        ? "rgba(234,179,8,0.15)"
-        : "rgba(239,68,68,0.15)";
-  const textColor =
-    score >= 70
-      ? "text-green-600 dark:text-green-400"
-      : score >= 40
-        ? "text-yellow-600 dark:text-yellow-400"
-        : "text-red-600 dark:text-red-400";
-  const badgeCls =
-    score >= 70
-      ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-      : score >= 40
-        ? "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800"
-        : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800";
-  const label =
-    score >= 70 ? "Excellent" : score >= 40 ? "Needs Work" : "Poor";
+  const tier = getScoreTier(score);
+  const { stroke: strokeColor, glow: glowColor, text: textColor, badge: badgeCls, label } = tier;
 
   return (
     <div className="flex flex-col items-center shrink-0">
@@ -158,8 +182,6 @@ export default function AtsScorePage() {
   const [resumeUrl, setResumeUrl] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [, setUploading] = useState(false);
   const [result, setResult] = useState<AtsScore | null>(null);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -180,6 +202,42 @@ export default function AtsScorePage() {
   const [analyzedFileName, setAnalyzedFileName] = useState("");
   const [analyzedFileSize, setAnalyzedFileSize] = useState(0);
 
+  const analyzeMutation = useMutation({
+    mutationFn: async (): Promise<AtsScore> => {
+      let url = resumeUrl;
+      if (file && !resumeUrl) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const uploadRes = await api.post("/upload/profile-resume", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        url = uploadRes.data.file.url;
+        setResumeUrl(url);
+      }
+      if (!url) throw new Error("Please upload a resume PDF first.");
+      const body: Record<string, string> = { resumeUrl: url };
+      if (jobTitle.trim()) body["jobTitle"] = jobTitle.trim();
+      if (jobDescription.trim()) body["jobDescription"] = jobDescription.trim();
+      const res = await api.post("/ats/score", body);
+      return res.data.score as AtsScore;
+    },
+    onSuccess: (score) => {
+      setResult(score);
+      setCurrentStep(ANALYSIS_STEPS.length - 1);
+      setAnalysisComplete(true);
+      queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+    },
+    onError: (err: unknown) => {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        (err instanceof Error ? err.message : "Failed to analyze resume. Please try again.");
+      setError(msg);
+      toast.error(msg);
+    },
+  });
+
+  const loading = analyzeMutation.isPending;
+
   useEffect(() => {
     if (!loading) {
       if (currentStep >= 0) setAnalysisComplete(true);
@@ -193,13 +251,6 @@ export default function AtsScorePage() {
     }
     return () => timers.forEach(clearTimeout);
   }, [loading]);
-
-  useEffect(() => {
-    if (result && loading === false) {
-      setCurrentStep(ANALYSIS_STEPS.length - 1);
-      setAnalysisComplete(true);
-    }
-  }, [result, loading]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -217,20 +268,24 @@ export default function AtsScorePage() {
     e.preventDefault();
     setIsDragging(false);
     const dropped = e.dataTransfer.files[0];
-    if (dropped && dropped.type === "application/pdf") {
-      setFile(dropped);
-      setResumeUrl("");
-      setResult(null);
-      setError("");
-      setCurrentStep(-1);
-      setAnalysisComplete(false);
+    if (!dropped) return;
+    if (dropped.type !== "application/pdf") {
+      const msg = "Only PDF files are supported. Please drop a .pdf resume.";
+      setError(msg);
+      toast.error(msg);
+      return;
     }
+    setFile(dropped);
+    setResumeUrl("");
+    setResult(null);
+    setError("");
+    setCurrentStep(-1);
+    setAnalysisComplete(false);
   };
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = () => {
     setError("");
     setResult(null);
-    setLoading(true);
     setActiveTab("suggestions");
     setAnalysisComplete(false);
     setCurrentStep(0);
@@ -238,39 +293,7 @@ export default function AtsScorePage() {
       setAnalyzedFileName(file.name);
       setAnalyzedFileSize(file.size);
     }
-    try {
-      let url = resumeUrl;
-      if (file && !resumeUrl) {
-        setUploading(true);
-        const formData = new FormData();
-        formData.append("file", file);
-        const uploadRes = await api.post("/upload/profile-resume", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        url = uploadRes.data.file.url;
-        setResumeUrl(url);
-        setUploading(false);
-      }
-      if (!url) {
-        setError("Please upload a resume PDF first.");
-        setLoading(false);
-        return;
-      }
-      const body: Record<string, string> = { resumeUrl: url };
-      if (jobTitle.trim()) body["jobTitle"] = jobTitle.trim();
-      if (jobDescription.trim()) body["jobDescription"] = jobDescription.trim();
-      const res = await api.post("/ats/score", body);
-      setResult(res.data.score);
-      queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
-    } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message || "Failed to analyze resume. Please try again.";
-      setError(msg);
-    } finally {
-      setLoading(false);
-      setUploading(false);
-    }
+    analyzeMutation.mutate();
   };
 
   const resetAll = () => {
@@ -459,13 +482,33 @@ export default function AtsScorePage() {
                         placeholder="e.g. Frontend Developer"
                         className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-400 dark:focus:ring-white/10 dark:focus:border-gray-500 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
                       />
-                      <textarea
-                        value={jobDescription}
-                        onChange={(e) => setJobDescription(e.target.value)}
-                        placeholder="Paste the job description for tailored keyword analysis..."
-                        rows={5}
-                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-400 dark:focus:ring-white/10 dark:focus:border-gray-500 transition-all resize-none placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
-                      />
+                      <div>
+                        <textarea
+                          value={jobDescription}
+                          onChange={(e) => {
+                            const next = e.target.value.slice(0, JD_MAX_CHARS);
+                            if (e.target.value.length > JD_MAX_CHARS) {
+                              toast.error(`Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`);
+                            }
+                            setJobDescription(next);
+                          }}
+                          maxLength={JD_MAX_CHARS}
+                          placeholder="Paste the job description for tailored keyword analysis..."
+                          rows={5}
+                          className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-400 dark:focus:ring-white/10 dark:focus:border-gray-500 transition-all resize-none placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
+                          aria-describedby="jd-char-count"
+                        />
+                        <div
+                          id="jd-char-count"
+                          className={`mt-1 text-right text-[11px] font-medium tabular-nums ${
+                            jobDescription.length >= JD_WARN_CHARS
+                              ? "text-amber-600 dark:text-amber-400"
+                              : "text-gray-400 dark:text-gray-500"
+                          }`}
+                        >
+                          {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -493,6 +536,17 @@ export default function AtsScorePage() {
                       </>
                     )}
                   </button>
+                  {limitReached && (
+                    <p className="text-center text-xs text-gray-500 dark:text-gray-400">
+                      You've hit today's free limit.{" "}
+                      <Link
+                        to="/student/checkout"
+                        className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                      >
+                        Upgrade for more <ArrowRight className="inline w-3 h-3" />
+                      </Link>
+                    </p>
+                  )}
                 </motion.div>
               ) : (
                 <motion.div
@@ -802,6 +856,9 @@ export default function AtsScorePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
                   className="space-y-4"
+                  role="region"
+                  aria-live="polite"
+                  aria-label={`ATS analysis complete. Overall score ${result.overallScore} out of 100.`}
                 >
                   {/* Score Header Card */}
                   <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">

@@ -17,6 +17,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { JobAgentMessage, JobAgentResponse, JobFeedMatch } from "../../../lib/types";
+import { SEO } from "../../../components/SEO";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 
@@ -180,6 +181,7 @@ export default function JobAgentPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto">
+      <SEO title="InternHack AI" noIndex />
       {/* Messages area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
         <AnimatePresence mode="wait">

@@ -96,8 +96,9 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `ats` | `/api/ats` | AI resume scoring, score history, cover letters, AI LaTeX chat, JD optimization, resume generation |
 | `latex` | `/api/latex` | Compile LaTeX to PDF (local pdflatex → online API fallback), supporting files |
 | `company` | `/api/companies` | Company directory, reviews, contacts, contributions |
-| `college` | `/api/colleges` | College discovery, search/filter, courses, placements, reviews, cutoffs |
 | `scraper` | `/api/scraped-jobs` | External job aggregation, cron-based scraping |
+
+> **Note:** There is no `college` module. `seed-colleges.ts` loads AICTE data, but no CRUD module, routes, or client pages exist. College is only referenced as a string field on student profiles.
 | `admin` | `/api/admin` | Full platform management — users, jobs, companies, colleges, repos, DSA, aptitude, skill-tests, hackathons, blog, badges |
 | `upload` | `/api/upload` | S3 uploads with local fallback |
 | `newsletter` | `/api/newsletter` | Email subscription management |

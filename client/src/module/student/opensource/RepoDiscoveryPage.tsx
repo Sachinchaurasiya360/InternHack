@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -17,284 +17,24 @@ import {
   Flame,
   ArrowRight,
   BookOpen,
-  Trophy,
-  GraduationCap,
-  GitPullRequest,
-  ChevronRight,
-  Award,
   AlertCircle,
   BarChart3,
-  GitBranch,
-  MessageSquare,
-  Settings,
   Plus,
-  Loader2,
-  CheckCircle2,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination, RepoDomain, RepoDifficulty } from "../../../lib/types";
+import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
-import {
-  REPO_DOMAINS,
-  DIFFICULTY_OPTIONS,
-  SORT_OPTIONS,
-  LANGUAGE_COLORS,
-} from "./reposData";
+import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
+import { formatCount, difficultyBadge } from "./_shared/repo-utils";
+import { RepoCard, RepoCardSkeleton } from "./RepoCard";
+import { GuidanceCards } from "./GuidanceCards";
+import { SuggestRepoModal } from "./SuggestRepoModal";
 
-// ─── Helpers ────────────────────────────────────────────────────
-function formatCount(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`;
-  return String(n);
-}
 
-function difficultyBadge(d: OpenSourceRepo["difficulty"]) {
-  const map = {
-    BEGINNER: { label: "Beginner", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:ring-emerald-700" },
-    INTERMEDIATE: { label: "Intermediate", cls: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-700" },
-    ADVANCED: { label: "Advanced", cls: "bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-900/30 dark:text-rose-400 dark:ring-rose-700" },
-  };
-  return map[d];
-}
-
-// ─── Guidance Cards Data ─────────────────────────────────────────
-const GUIDANCE_CARDS = [
-  {
-    to: "/student/opensource/first-pr",
-    icon: GitPullRequest,
-    title: "Your First Contribution",
-    desc: "10-step guide from zero to your first merged pull request",
-  },
-  {
-    to: "/student/opensource/gsoc",
-    icon: Trophy,
-    title: "GSoC Repos",
-    desc: "Organizations accepted into Google Summer of Code",
-  },
-  {
-    to: "/student/opensource/gsoc-proposal",
-    icon: Award,
-    title: "GSoC Proposal Guide",
-    desc: "Write a winning proposal in 8 steps",
-  },
-  {
-    to: "/student/opensource/programs",
-    icon: GraduationCap,
-    title: "Program Tracker",
-    desc: "Deadlines for GSoC, LFX, MLH, Outreachy & more",
-  },
-  {
-    to: "/student/opensource/read-codebase",
-    icon: BookOpen,
-    title: "Read a Codebase",
-    desc: "Senior engineer's guide to understanding unfamiliar code",
-  },
-  {
-    to: "/student/opensource/git-guide",
-    icon: GitBranch,
-    title: "Git for Open Source",
-    desc: "Fork-to-PR workflow with copy-paste commands",
-  },
-  {
-    to: "/student/opensource/communication",
-    icon: MessageSquare,
-    title: "Communication Templates",
-    desc: "Templates for issues, PRs, reviews & bug reports",
-  },
-  {
-    to: "/student/opensource/cicd",
-    icon: Settings,
-    title: "CI/CD Basics",
-    desc: "Fix lint errors, test failures & build errors",
-  },
-];
-
-// ─── Skeleton Card ───────────────────────────────────────────────
-function RepoCardSkeleton() {
-  return (
-    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 animate-pulse">
-      <div className="flex items-start gap-3 mb-3">
-        <div className="h-10 w-10 rounded-xl bg-gray-100 dark:bg-gray-800" />
-        <div className="flex-1">
-          <div className="h-4 w-3/4 rounded bg-gray-100 dark:bg-gray-800 mb-2" />
-          <div className="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-800" />
-        </div>
-      </div>
-      <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-800 mb-2" />
-      <div className="h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-800 mb-4" />
-      <div className="flex gap-1.5 mb-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-5 w-14 rounded-md bg-gray-100 dark:bg-gray-800" />
-        ))}
-      </div>
-      <div className="flex gap-4 pt-3 border-t border-gray-100 dark:border-gray-800">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-3 w-12 rounded bg-gray-100 dark:bg-gray-800" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Suggest Repo Modal ─────────────────────────────────────────
-interface SuggestRepoForm {
-  name: string;
-  owner: string;
-  description: string;
-  language: string;
-  url: string;
-  domain: RepoDomain;
-  difficulty: RepoDifficulty;
-  techStack: string;
-  tags: string;
-  reason: string;
-}
-
-const INITIAL_FORM: SuggestRepoForm = {
-  name: "", owner: "", description: "", language: "", url: "",
-  domain: "WEB", difficulty: "BEGINNER", techStack: "", tags: "", reason: "",
-};
-
-function SuggestRepoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [form, setForm] = useState<SuggestRepoForm>(INITIAL_FORM);
-  const [success, setSuccess] = useState(false);
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: async (data: SuggestRepoForm) => {
-      const payload = {
-        ...data,
-        techStack: data.techStack.split(",").map((s) => s.trim()).filter(Boolean),
-        tags: data.tags.split(",").map((s) => s.trim()).filter(Boolean),
-      };
-      return api.post("/opensource/requests", payload);
-    },
-    onSuccess: () => {
-      setSuccess(true);
-      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.myRequests() });
-      setTimeout(() => { setSuccess(false); setForm(INITIAL_FORM); onClose(); }, 2000);
-    },
-  });
-
-  const set = (key: keyof SuggestRepoForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-    setForm((f) => ({ ...f, [key]: e.target.value }));
-
-  const inputCls = "w-full px-3 py-2.5 rounded-xl text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all";
-
-  if (!open) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ type: "spring", duration: 0.4 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Suggest a Repository</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
-            <X className="w-4 h-4 text-gray-500" />
-          </button>
-        </div>
-
-        {success ? (
-          <div className="px-6 py-12 text-center">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Request Submitted!</h3>
-            <p className="text-sm text-gray-500">You'll receive an email once it's reviewed.</p>
-          </div>
-        ) : (
-          <form
-            className="px-6 py-5 space-y-4"
-            onSubmit={(e) => { e.preventDefault(); mutation.mutate(form); }}
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Owner / Org *</label>
-                <input required className={inputCls} placeholder="e.g. facebook" value={form.owner} onChange={set("owner")} />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Repo Name *</label>
-                <input required className={inputCls} placeholder="e.g. react" value={form.name} onChange={set("name")} />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">GitHub URL *</label>
-              <input required type="url" className={inputCls} placeholder="https://github.com/owner/repo" value={form.url} onChange={set("url")} />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Description *</label>
-              <textarea required rows={2} className={inputCls} placeholder="What does this project do?" value={form.description} onChange={set("description")} />
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Language *</label>
-                <input required className={inputCls} placeholder="TypeScript" value={form.language} onChange={set("language")} />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Domain</label>
-                <select className={inputCls} value={form.domain} onChange={set("domain")}>
-                  {REPO_DOMAINS.filter((d) => d.key !== "ALL").map((d) => (
-                    <option key={d.key} value={d.key}>{d.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Difficulty</label>
-                <select className={inputCls} value={form.difficulty} onChange={set("difficulty")}>
-                  {DIFFICULTY_OPTIONS.filter((d) => d.key !== "ALL").map((d) => (
-                    <option key={d.key} value={d.key}>{d.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Tech Stack <span className="text-gray-400">(comma-separated)</span></label>
-              <input className={inputCls} placeholder="React, Node.js, PostgreSQL" value={form.techStack} onChange={set("techStack")} />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Tags <span className="text-gray-400">(comma-separated)</span></label>
-              <input className={inputCls} placeholder="backend, api, self-hosted" value={form.tags} onChange={set("tags")} />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Why should this repo be listed? *</label>
-              <textarea required rows={2} className={inputCls} placeholder="Great for beginners, active community..." value={form.reason} onChange={set("reason")} />
-            </div>
-
-            {mutation.isError && (
-              <p className="text-sm text-red-500">
-                {(mutation.error as any)?.response?.data?.message || "Failed to submit. Please try again."}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={mutation.isPending}
-              className="w-full py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-            >
-              {mutation.isPending ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : "Submit Request"}
-            </button>
-          </form>
-        )}
-      </motion.div>
-    </motion.div>
-  );
-}
 
 // ─── Component ──────────────────────────────────────────────────
 export default function RepoDiscoveryPage() {
@@ -357,7 +97,12 @@ export default function RepoDiscoveryPage() {
 
   return (
     <div className="min-h-screen">
-      <SEO title="Open Source - InternHack" description="Discover beginner-friendly open-source projects and make your first contribution" />
+      <SEO
+        title="Open Source Projects - Find Beginner-Friendly Repos"
+        description="Discover beginner-friendly open-source projects, track trending repos, and make your first contribution. Curated by engineers for students."
+        keywords="open source, first contribution, good first issue, github, beginner friendly, GSoC, hacktoberfest"
+        canonicalUrl={canonicalUrl("/student/opensource")}
+      />
 
       {/* Hero */}
       <section className="relative overflow-hidden pt-4 pb-16 px-6">
@@ -454,30 +199,7 @@ export default function RepoDiscoveryPage() {
         </motion.div>
 
         {/* Guidance Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-10">
-          {GUIDANCE_CARDS.map((card, i) => (
-            <motion.div
-              key={card.to}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
-            >
-              <Link
-                to={card.to}
-                className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900 transition-all duration-300 no-underline"
-              >
-                <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
-                  <card.icon className="w-4.5 h-4.5 text-white dark:text-gray-950" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-950 dark:text-white truncate">{card.title}</p>
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{card.desc}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors shrink-0" />
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+        <GuidanceCards />
 
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -646,13 +368,13 @@ export default function RepoDiscoveryPage() {
                     if (!user) { window.location.href = "/login"; return; }
                     setShowSuggestModal(true);
                   }}
-                  className="group relative flex flex-col items-center justify-center h-full w-full min-h-[220px] text-center bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 hover:shadow-lg hover:shadow-purple-100/50 dark:hover:shadow-purple-900/20 transition-all duration-300 cursor-pointer p-6"
+                  className="group relative flex flex-col items-center justify-center h-full w-full min-h-55 text-center bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 hover:shadow-lg hover:shadow-purple-100/50 dark:hover:shadow-purple-900/20 transition-all duration-300 cursor-pointer p-6"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Plus className="w-7 h-7 text-purple-600 dark:text-purple-400" />
                   </div>
                   <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Suggest a Repository</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed max-w-[200px]">
+                  <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed max-w-50">
                     Know a great open-source project? Submit it for review.
                   </p>
                 </button>
@@ -661,94 +383,7 @@ export default function RepoDiscoveryPage() {
 
             <AnimatePresence mode="popLayout">
               {repos.map((repo, i) => (
-                <motion.div
-                  layout
-                  key={repo.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ delay: i * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -4 }}
-                  className="h-full"
-                >
-                  <button
-                    onClick={() => setSelectedRepo(repo)}
-                    className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900 transition-all duration-300 cursor-pointer"
-                  >
-                    {repo.trending && (
-                      <div className="absolute -top-2.5 right-4 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
-                        <Flame size={10} />
-                        Trending
-                      </div>
-                    )}
-
-                    <div className="flex flex-col flex-1 p-6">
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 text-sm font-bold text-gray-500 dark:text-gray-400">
-                            {repo.owner[0].toUpperCase()}
-                          </div>
-                          <span className="text-xs font-medium text-gray-500 dark:text-gray-500">{repo.owner}</span>
-                        </div>
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ${difficultyBadge(repo.difficulty).cls}`}>
-                          {difficultyBadge(repo.difficulty).label}
-                        </span>
-                      </div>
-
-                      {/* Name */}
-                      <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 leading-snug group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-                        {repo.name}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="text-sm text-gray-500 dark:text-gray-500 line-clamp-2 leading-relaxed mb-4 flex-1">
-                        {repo.description}
-                      </p>
-
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-600 dark:text-gray-400">
-                          <span
-                            className="inline-block h-2 w-2 rounded-full"
-                            style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? "#888" }}
-                          />
-                          {repo.language}
-                        </span>
-                        {repo.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-800 text-[10px] text-gray-500 dark:text-gray-400"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Bottom stats + CTA */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
-                        <div className="flex items-center gap-3 text-xs text-gray-400">
-                          <span className="flex items-center gap-1">
-                            <Star size={13} className="text-amber-500" />
-                            {formatCount(repo.stars)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <GitFork size={13} className="text-cyan-500" />
-                            {formatCount(repo.forks)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <CircleDot size={13} className="text-emerald-500" />
-                            {formatCount(repo.openIssues)}
-                          </span>
-                        </div>
-                        <span className="flex items-center gap-1 text-sm font-medium text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                          Details
-                          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                </motion.div>
+                <RepoCard key={repo.id} repo={repo} index={i} onSelect={setSelectedRepo} />
               ))}
             </AnimatePresence>
           </div>

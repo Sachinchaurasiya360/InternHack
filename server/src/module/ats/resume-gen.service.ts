@@ -1,11 +1,42 @@
+import { createHash } from "crypto";
 import type { GenerateResumeInput, UserProfile } from "./resume-gen.validation.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
+
+// In-memory LRU-ish cache: identical prompt hash ⇒ reuse prior LaTeX output
+// instead of re-billing Gemini. Process-local; fine for a single node.
+interface CacheEntry { latex: string; expires: number }
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CACHE_MAX = 200;
+const resumeCache = new Map<string, CacheEntry>();
+
+function cacheGet(key: string): string | null {
+  const hit = resumeCache.get(key);
+  if (!hit) return null;
+  if (hit.expires < Date.now()) { resumeCache.delete(key); return null; }
+  // Refresh LRU position
+  resumeCache.delete(key);
+  resumeCache.set(key, hit);
+  return hit.latex;
+}
+function cacheSet(key: string, latex: string): void {
+  if (resumeCache.size >= CACHE_MAX) {
+    const oldest = resumeCache.keys().next().value;
+    if (oldest) resumeCache.delete(oldest);
+  }
+  resumeCache.set(key, { latex, expires: Date.now() + CACHE_TTL_MS });
+}
 
 export class ResumeGenService {
   async generate(input: GenerateResumeInput, profile?: UserProfile, userId?: number): Promise<string> {
     const provider = getProviderForService("RESUME_GEN");
     const prompt = this.buildPrompt(input, profile);
+
+    // Hash the full prompt so identical (input + profile snapshot) hits cache.
+    const cacheKey = createHash("sha256").update(prompt).digest("hex");
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
+
     const response = await provider.generateText(prompt);
     logAIRequest("RESUME_GEN", response, true, undefined, userId);
     let text = response.text.trim();
@@ -15,6 +46,7 @@ export class ResumeGenService {
       text = text.replace(/^```(?:latex|tex)?\n?/, "").replace(/\n?```$/, "");
     }
 
+    cacheSet(cacheKey, text);
     return text;
   }
 

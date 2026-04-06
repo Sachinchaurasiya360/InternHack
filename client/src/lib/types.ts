@@ -181,6 +181,21 @@ export interface Pagination {
   totalPages: number;
 }
 
+export interface ExternalJob {
+  id: number;
+  slug: string | null;
+  company: string | null;
+  role: string | null;
+  description: string | null;
+  salary: string | null;
+  currency: string | null;
+  location: string | null;
+  applyLink: string | null;
+  tags: string[];
+  expiresAt?: string;
+  createdAt?: string;
+}
+
 // Scraped Jobs
 export type ScrapedJobStatus = "ACTIVE" | "EXPIRED" | "REMOVED";
 

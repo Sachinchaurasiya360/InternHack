@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams, useNavigate } from "react-router";
+import toast from "@/components/ui/toast";
 import { motion } from "framer-motion";
 import {
   Download,
@@ -126,6 +127,7 @@ export default function LatexResumeEditor() {
   const [fileListCollapsed, setFileListCollapsed] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
   const isPremium =
     (user?.subscriptionPlan === "MONTHLY" || user?.subscriptionPlan === "YEARLY") &&
     user?.subscriptionStatus === "ACTIVE";
@@ -281,7 +283,7 @@ export default function LatexResumeEditor() {
 
   return (
     <div className="relative max-w-360 mx-auto pb-12">
-      <SEO title="LaTeX Resume Editor" />
+      <SEO title="LaTeX Resume Editor" noIndex />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -423,8 +425,15 @@ export default function LatexResumeEditor() {
               </button>
 
               <button
-                onClick={() => setChatOpen(!chatOpen)}
-                title="AI Assistant"
+                onClick={() => {
+                  if (!isPremium) {
+                    toast.error("AI Assistant is a Premium feature. Upgrade to unlock.");
+                    navigate("/student/checkout");
+                    return;
+                  }
+                  setChatOpen(!chatOpen);
+                }}
+                title={isPremium ? "AI Assistant" : "AI Assistant — Premium only"}
                 className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
                   chatOpen
                     ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
@@ -766,8 +775,8 @@ export default function LatexResumeEditor() {
         </div>
       </motion.div>
 
-      {/* AI Chat Panel */}
-      {chatOpen && (
+      {/* AI Chat Panel — Premium only; click handler already blocks free users */}
+      {chatOpen && isPremium && (
         <LatexChatPanel
           code={code}
           onApplyCode={handleApplyCode}

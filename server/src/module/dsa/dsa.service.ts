@@ -23,7 +23,7 @@ let companiesCache: { data: { name: string; count: number }[]; expiresAt: number
 let patternsCache: { data: { name: string; count: number }[]; expiresAt: number } | null = null;
 
 export class DsaService {
-  async listTopics(studentId?: number, sheet?: string, difficulty?: string[]) {
+  async listTopics(studentId?: number, sheet?: string, difficulty?: string[], search?: string) {
     // Fetch topics + all problem tags in just 2-3 queries (not N per topic)
     const baseWhere: Record<string, unknown> = {};
     if (sheet) baseWhere.sheets = { has: sheet };
@@ -63,10 +63,21 @@ export class DsaService {
       }
     }
 
+    const needle = search?.trim().toLowerCase();
+    const filteredTopics = topics
+      .filter((t) => (countMap.get(t.slug) || 0) >= 10)
+      .filter((t) => !needle || t.name.toLowerCase().includes(needle));
+
+    // uniqueProblems should reflect the problems covered by the *returned* topics
+    // so the client can compute a consistent overall percentage regardless of filters.
+    const returnedProblemIds = new Set<number>();
+    for (const t of filteredTopics) {
+      for (const pid of problemIdsByTopic.get(t.slug) || []) returnedProblemIds.add(pid);
+    }
+
     return {
-      uniqueProblems: problems.length,
-      topics: topics
-        .filter((t) => (countMap.get(t.slug) || 0) >= 10)
+      uniqueProblems: returnedProblemIds.size,
+      topics: filteredTopics
         .map((t) => ({
           id: t.id,
           name: t.name,

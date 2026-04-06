@@ -2,11 +2,12 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowRight, Clock, Search, Filter, FileText, CheckCircle, Trophy, ExternalLink } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 
 interface ExternalApplication {
@@ -37,12 +38,180 @@ const fadeInUp = {
 
 const STATUS_FILTERS = ["ALL", "APPLIED", "IN_PROGRESS", "SHORTLISTED", "HIRED", "REJECTED", "WITHDRAWN"] as const;
 
+const ApplicationCard = React.memo(function ApplicationCard({
+  app,
+  index,
+  onWithdraw,
+}: {
+  app: Application;
+  index: number;
+  onWithdraw: (id: number) => void;
+}) {
+  return (
+    <motion.div
+      custom={index}
+      variants={fadeInUp}
+      initial="hidden"
+      animate="visible"
+      className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 overflow-hidden"
+    >
+      <div className="p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div className="w-11 h-11 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 text-white dark:text-gray-950 text-sm font-bold">
+            {app.job?.company?.charAt(0) || "C"}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <Link to={`/student/applications/${app.id}`} className="no-underline">
+                  <h3 className="text-base font-semibold text-gray-950 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
+                    {app.job?.title}
+                  </h3>
+                </Link>
+                <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-500">
+                  <span className="flex items-center gap-1 truncate">
+                    <Building2 className="w-3.5 h-3.5 shrink-0" />{app.job?.company}
+                  </span>
+                  <span className="flex items-center gap-1 truncate">
+                    <MapPin className="w-3.5 h-3.5 shrink-0" />{app.job?.location}
+                  </span>
+                </div>
+              </div>
+
+              <span className={`px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${getStatusColor(app.status)}`}>
+                {app.status.replace("_", " ")}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
+              <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" />
+                  Applied {new Date(app.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                </span>
+                {app.roundSubmissions && app.roundSubmissions.length > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <div className="flex gap-0.5">
+                      {app.roundSubmissions.map((s, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-2 h-2 rounded-full ${s.status === "COMPLETED" ? "bg-emerald-500" : "bg-gray-200 dark:bg-gray-700"}`}
+                        />
+                      ))}
+                    </div>
+                    {app.roundSubmissions.filter((s) => s.status === "COMPLETED").length}/{app.roundSubmissions.length} rounds
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {app.status !== "WITHDRAWN" && app.status !== "REJECTED" && app.status !== "HIRED" && (
+                  <Button onClick={() => onWithdraw(app.id)}
+                    variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
+                    Withdraw
+                  </Button>
+                )}
+                <Button asChild variant="secondary" size="sm">
+                  <Link to={`/student/applications/${app.id}`} className="no-underline">
+                    View <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
+  app,
+  index,
+}: {
+  app: ExternalApplication;
+  index: number;
+}) {
+  return (
+    <motion.div
+      custom={index}
+      variants={fadeInUp}
+      initial="hidden"
+      animate="visible"
+      className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 overflow-hidden"
+    >
+      <div className="p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div className="w-11 h-11 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 text-white dark:text-gray-950 text-sm font-bold">
+            {app.adminJob.company?.charAt(0) || "C"}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <Link to={app.adminJob.slug ? `/jobs/ext/${app.adminJob.slug}` : "#"} className="no-underline">
+                  <h3 className="text-base font-semibold text-gray-950 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
+                    {app.adminJob.role || "Open Role"}
+                  </h3>
+                </Link>
+                <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-500">
+                  <span className="flex items-center gap-1 truncate">
+                    <Building2 className="w-3.5 h-3.5 shrink-0" />{app.adminJob.company || "Company"}
+                  </span>
+                  {app.adminJob.location && (
+                    <span className="flex items-center gap-1 truncate">
+                      <MapPin className="w-3.5 h-3.5 shrink-0" />{app.adminJob.location}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
+                  APPLIED
+                </span>
+                <span className="px-2 py-1 rounded-lg text-[10px] font-medium bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">
+                  External
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
+              <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                <Clock className="w-3.5 h-3.5" />
+                Applied {new Date(app.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+              </span>
+
+              <div className="flex items-center gap-2">
+                {app.adminJob.applyLink && (
+                  <a href={app.adminJob.applyLink} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors no-underline font-medium">
+                    View Posting <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const { data, isLoading: loading } = useQuery({
+  // Debounce search input so filter recomputation doesn't run on every keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 200);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
     queryFn: () => api.get("/student/applications").then((res) => res.data as { applications: Application[]; externalApplications: ExternalApplication[] }),
   });
@@ -53,23 +222,23 @@ export default function MyApplicationsPage() {
   const filtered = useMemo(() => {
     let list = applications;
     if (activeFilter !== "ALL") list = list.filter((a) => a.status === activeFilter);
-    if (search.trim()) {
-      const q = search.toLowerCase();
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase();
       list = list.filter((a) =>
         a.job?.title?.toLowerCase().includes(q) || a.job?.company?.toLowerCase().includes(q)
       );
     }
     return list;
-  }, [applications, activeFilter, search]);
+  }, [applications, activeFilter, debouncedSearch]);
 
   const filteredExternal = useMemo(() => {
     if (activeFilter !== "ALL" && activeFilter !== "APPLIED") return [];
-    if (!search.trim()) return externalApplications;
-    const q = search.toLowerCase();
+    if (!debouncedSearch.trim()) return externalApplications;
+    const q = debouncedSearch.toLowerCase();
     return externalApplications.filter((a) =>
       a.adminJob.role?.toLowerCase().includes(q) || a.adminJob.company?.toLowerCase().includes(q)
     );
-  }, [externalApplications, activeFilter, search]);
+  }, [externalApplications, activeFilter, debouncedSearch]);
 
   const totalAll = applications.length + externalApplications.length;
 
@@ -81,7 +250,7 @@ export default function MyApplicationsPage() {
     return counts;
   }, [applications, externalApplications, totalAll]);
 
-  const handleWithdraw = async (id: number) => {
+  const handleWithdraw = useCallback(async (id: number) => {
     if (!confirm("Are you sure you want to withdraw this application?")) return;
     try {
       await api.delete(`/student/applications/${id}`);
@@ -91,12 +260,13 @@ export default function MyApplicationsPage() {
     } catch {
       alert("Failed to withdraw");
     }
-  };
+  }, [queryClient]);
 
-  if (loading) return <LoadingScreen />;
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div className="relative pb-12">
+      <SEO title="My Applications" noIndex />
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
@@ -233,151 +403,12 @@ export default function MyApplicationsPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((app, i) => (
-            <motion.div
-              key={app.id}
-              custom={i}
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 overflow-hidden"
-            >
-              <div className="p-5 sm:p-6">
-                <div className="flex items-start gap-4">
-                  {/* Company initial avatar */}
-                  <div className="w-11 h-11 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 text-white dark:text-gray-950 text-sm font-bold">
-                    {app.job?.company?.charAt(0) || "C"}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <Link to={`/student/applications/${app.id}`} className="no-underline">
-                          <h3 className="text-base font-semibold text-gray-950 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
-                            {app.job?.title}
-                          </h3>
-                        </Link>
-                        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-500">
-                          <span className="flex items-center gap-1 truncate">
-                            <Building2 className="w-3.5 h-3.5 shrink-0" />{app.job?.company}
-                          </span>
-                          <span className="flex items-center gap-1 truncate">
-                            <MapPin className="w-3.5 h-3.5 shrink-0" />{app.job?.location}
-                          </span>
-                        </div>
-                      </div>
-
-                      <span className={`px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${getStatusColor(app.status)}`}>
-                        {app.status.replace("_", " ")}
-                      </span>
-                    </div>
-
-                    {/* Bottom row */}
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
-                      <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          Applied {new Date(app.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                        </span>
-                        {app.roundSubmissions && app.roundSubmissions.length > 0 && (
-                          <span className="flex items-center gap-1.5">
-                            <div className="flex gap-0.5">
-                              {app.roundSubmissions.map((s, idx) => (
-                                <div
-                                  key={idx}
-                                  className={`w-2 h-2 rounded-full ${s.status === "COMPLETED" ? "bg-emerald-500" : "bg-gray-200 dark:bg-gray-700"}`}
-                                />
-                              ))}
-                            </div>
-                            {app.roundSubmissions.filter((s) => s.status === "COMPLETED").length}/{app.roundSubmissions.length} rounds
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {app.status !== "WITHDRAWN" && app.status !== "REJECTED" && app.status !== "HIRED" && (
-                          <Button onClick={() => handleWithdraw(app.id)}
-                            variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
-                            Withdraw
-                          </Button>
-                        )}
-                        <Button asChild variant="secondary" size="sm">
-                          <Link to={`/student/applications/${app.id}`} className="no-underline">
-                            View <ArrowRight className="w-3 h-3" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <ApplicationCard key={app.id} app={app} index={i} onWithdraw={handleWithdraw} />
           ))}
 
           {/* External Job Applications */}
           {filteredExternal.map((app, i) => (
-            <motion.div
-              key={`ext-${app.id}`}
-              custom={filtered.length + i}
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 overflow-hidden"
-            >
-              <div className="p-5 sm:p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 text-white dark:text-gray-950 text-sm font-bold">
-                    {app.adminJob.company?.charAt(0) || "C"}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <Link to={app.adminJob.slug ? `/jobs/ext/${app.adminJob.slug}` : "#"} className="no-underline">
-                          <h3 className="text-base font-semibold text-gray-950 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
-                            {app.adminJob.role || "Open Role"}
-                          </h3>
-                        </Link>
-                        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-500">
-                          <span className="flex items-center gap-1 truncate">
-                            <Building2 className="w-3.5 h-3.5 shrink-0" />{app.adminJob.company || "Company"}
-                          </span>
-                          {app.adminJob.location && (
-                            <span className="flex items-center gap-1 truncate">
-                              <MapPin className="w-3.5 h-3.5 shrink-0" />{app.adminJob.location}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
-                          APPLIED
-                        </span>
-                        <span className="px-2 py-1 rounded-lg text-[10px] font-medium bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">
-                          External
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
-                      <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-                        <Clock className="w-3.5 h-3.5" />
-                        Applied {new Date(app.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                      </span>
-
-                      <div className="flex items-center gap-2">
-                        {app.adminJob.applyLink && (
-                          <a href={app.adminJob.applyLink} target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors no-underline font-medium">
-                            View Posting <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <ExternalApplicationCard key={`ext-${app.id}`} app={app} index={filtered.length + i} />
           ))}
         </div>
       )}

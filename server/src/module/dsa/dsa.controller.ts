@@ -9,7 +9,8 @@ export class DsaController {
       const studentId = req.user?.id;
       const sheet = req.query.sheet as string | undefined;
       const difficulty = req.query.difficulty ? (req.query.difficulty as string).split(",") : undefined;
-      const topics = await this.dsaService.listTopics(studentId, sheet, difficulty);
+      const search = req.query.search ? String(req.query.search) : undefined;
+      const topics = await this.dsaService.listTopics(studentId, sheet, difficulty, search);
       res.json(topics);
     } catch (err) {
       next(err);

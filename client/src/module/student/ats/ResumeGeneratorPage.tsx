@@ -36,6 +36,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { queryKeys } from "../../../lib/query-keys";
 import type { UsageStats } from "../../../lib/types";
 import AtsToolsNav from "./AtsToolsNav";
+import { inputCls, labelCls } from "./_shared/form-styles";
 
 const GENERATION_STEPS = [
   { icon: FileText, label: "Reading your profile" },
@@ -44,9 +45,10 @@ const GENERATION_STEPS = [
   { icon: CheckCircle, label: "Finalizing" },
 ];
 
-const inputCls =
-  "w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white";
-const labelCls = "block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1.5";
+const JD_MIN_CHARS = 50;
+const JD_MAX_CHARS = 5000;
+const KEY_SKILLS_MAX_CHARS = 1000;
+
 
 export default function ResumeGeneratorPage() {
   const queryClient = useQueryClient();
@@ -106,8 +108,13 @@ export default function ResumeGeneratorPage() {
   const hasProfileData = profileSummary && profileSummary.length > 0;
 
   const handleGenerate = async () => {
-    if (jobDescription.trim().length > 0 && jobDescription.trim().length < 50) {
-      toast.error("Job description must be at least 50 characters");
+    const jdLen = jobDescription.trim().length;
+    if (jdLen > 0 && jdLen < JD_MIN_CHARS) {
+      toast.error(`Job description must be at least ${JD_MIN_CHARS} characters`);
+      return;
+    }
+    if (keySkills.length > KEY_SKILLS_MAX_CHARS) {
+      toast.error(`Key skills must be under ${KEY_SKILLS_MAX_CHARS.toLocaleString()} characters`);
       return;
     }
 
@@ -124,7 +131,7 @@ export default function ResumeGeneratorPage() {
         jobDescription: jobDescription.trim() || undefined,
         jobTitle: jobTitle.trim() || undefined,
         keySkills: keySkills.trim() || undefined,
-        useProfile,
+        useProfile: useProfile && !!hasProfileData,
       });
       setLatexCode(data.latex);
       setPhase("editor");
@@ -136,7 +143,6 @@ export default function ResumeGeneratorPage() {
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
         "Failed to generate resume. Please try again.";
       setError(msg);
-      toast.error(msg);
     } finally {
       clearInterval(stepInterval);
       setLoading(false);
@@ -154,32 +160,42 @@ export default function ResumeGeneratorPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleCompile = async () => {
-    setCompiling(true);
-    setPreviewError(null);
+  // Shared LaTeX compile helper — returns the PDF Blob or throws an Error
+  // whose message already includes any server-provided details.
+  const compileLatex = async (source: string): Promise<Blob> => {
     try {
-      const res = await api.post("/latex/compile", { source: latexCode }, { responseType: "blob" });
-      if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
-      const url = URL.createObjectURL(res.data as Blob);
-      prevBlobUrl.current = url;
-      setPdfUrl(url);
+      const res = await api.post("/latex/compile", { source }, { responseType: "blob" });
+      return res.data as Blob;
     } catch (err: unknown) {
       let msg = "Compilation failed. Please check your LaTeX syntax.";
       let details = "";
       if (err && typeof err === "object" && "response" in err) {
-        const resp = err as { response?: { data?: Blob; status?: number } };
+        const resp = err as { response?: { data?: Blob } };
         if (resp.response?.data instanceof Blob) {
           try {
-            const text = await resp.response.data.text();
-            const parsed = JSON.parse(text);
+            const parsed = JSON.parse(await resp.response.data.text());
             msg = parsed.message || msg;
             details = parsed.details || "";
           } catch {
-            // ignore parse error
+            // non-JSON error body — keep default msg
           }
         }
       }
-      setPreviewError(details ? `${msg}\n\n${details}` : msg);
+      throw new Error(details ? `${msg}\n\n${details}` : msg);
+    }
+  };
+
+  const handleCompile = async () => {
+    setCompiling(true);
+    setPreviewError(null);
+    try {
+      const blob = await compileLatex(latexCode);
+      if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
+      const url = URL.createObjectURL(blob);
+      prevBlobUrl.current = url;
+      setPdfUrl(url);
+    } catch (err) {
+      setPreviewError(err instanceof Error ? err.message : "Compilation failed.");
     } finally {
       setCompiling(false);
     }
@@ -188,28 +204,21 @@ export default function ResumeGeneratorPage() {
   const handleDownloadPdf = async () => {
     setCompiling(true);
     try {
-      const res = await api.post("/latex/compile", { source: latexCode }, { responseType: "blob" });
-      const url = URL.createObjectURL(res.data as Blob);
+      const blob = await compileLatex(latexCode);
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = "resume.pdf";
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
-    } catch (err: unknown) {
-      let msg = "Compilation failed. Please check your LaTeX syntax.";
-      if (err && typeof err === "object" && "response" in err) {
-        const resp = err as { response?: { data?: Blob; status?: number } };
-        if (resp.response?.data instanceof Blob) {
-          try {
-            const text = await resp.response.data.text();
-            const parsed = JSON.parse(text);
-            msg = parsed.message || msg;
-          } catch {
-            // ignore
-          }
-        }
-      }
-      setPreviewError(msg);
+      // Defer cleanup so the browser has time to start the download before
+      // the blob URL is revoked. Synchronous revoke can cancel it.
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 1000);
+    } catch (err) {
+      setPreviewError(err instanceof Error ? err.message : "Compilation failed.");
     } finally {
       setCompiling(false);
     }
@@ -223,7 +232,7 @@ export default function ResumeGeneratorPage() {
 
   return (
     <div className="relative max-w-360 mx-auto pb-12 px-4 sm:px-6">
-      <SEO title="AI Resume Generator - InternHack" description="Generate a professional LaTeX resume with AI" />
+      <SEO title="AI Resume Generator - InternHack" description="Generate a professional LaTeX resume with AI" noIndex />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -292,15 +301,28 @@ export default function ResumeGeneratorPage() {
                       <label className={labelCls}>Job Description</label>
                       <textarea
                         className={`${inputCls} min-h-35 resize-y`}
-                        placeholder="Paste the job description to tailor your resume (optional, min 50 chars)..."
+                        placeholder={`Paste the job description to tailor your resume (optional, min ${JD_MIN_CHARS} chars)...`}
                         value={jobDescription}
-                        onChange={(e) => setJobDescription(e.target.value)}
+                        maxLength={JD_MAX_CHARS}
+                        onChange={(e) => {
+                          const next = e.target.value.slice(0, JD_MAX_CHARS);
+                          if (e.target.value.length > JD_MAX_CHARS) {
+                            toast.error(`Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`);
+                          }
+                          setJobDescription(next);
+                        }}
+                        aria-describedby="jd-count"
                       />
-                      {jobDescription.length > 0 && jobDescription.length < 50 && (
-                        <p className="text-[10px] text-amber-500 mt-1">
-                          {jobDescription.length}/50 characters minimum
+                      <div id="jd-count" className="flex items-center justify-between mt-1">
+                        <p className={`text-[10px] ${jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS ? "text-amber-500" : "text-gray-400 dark:text-gray-500"}`}>
+                          {jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS
+                            ? `${jobDescription.length}/${JD_MIN_CHARS} characters minimum`
+                            : `Min ${JD_MIN_CHARS} characters`}
                         </p>
-                      )}
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums">
+                          {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
+                        </p>
+                      </div>
                     </div>
 
                     <div>
@@ -312,48 +334,72 @@ export default function ResumeGeneratorPage() {
                         className={`${inputCls} min-h-20 resize-y`}
                         placeholder="3 years React/Node.js, built scalable microservices, led team of 4..."
                         value={keySkills}
-                        onChange={(e) => setKeySkills(e.target.value)}
+                        maxLength={KEY_SKILLS_MAX_CHARS}
+                        onChange={(e) => {
+                          const next = e.target.value.slice(0, KEY_SKILLS_MAX_CHARS);
+                          if (e.target.value.length > KEY_SKILLS_MAX_CHARS) {
+                            toast.error(`Key skills capped at ${KEY_SKILLS_MAX_CHARS.toLocaleString()} characters.`);
+                          }
+                          setKeySkills(next);
+                        }}
+                        aria-describedby="skills-count"
                       />
+                      <div
+                        id="skills-count"
+                        className={`mt-1 text-right text-[10px] tabular-nums ${
+                          keySkills.length >= KEY_SKILLS_MAX_CHARS * 0.9
+                            ? "text-amber-500"
+                            : "text-gray-400 dark:text-gray-500"
+                        }`}
+                      >
+                        {keySkills.length.toLocaleString()} / {KEY_SKILLS_MAX_CHARS.toLocaleString()}
+                      </div>
                     </div>
 
                     {/* Use My Profile Toggle */}
                     <div>
                       <button
                         type="button"
-                        onClick={() => {
-                          if (!hasProfileData) {
-                            toast.error("Complete your profile first to use this feature");
-                            return;
-                          }
-                          setUseProfile(!useProfile);
-                        }}
+                        disabled={!hasProfileData}
+                        aria-disabled={!hasProfileData}
+                        onClick={() => setUseProfile(!useProfile)}
                         className={`w-full flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all text-left ${
-                          useProfile
-                            ? "border-violet-500 bg-violet-50/50 dark:bg-violet-900/20"
-                            : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                          !hasProfileData
+                            ? "border-gray-200 dark:border-gray-700 opacity-60 cursor-not-allowed"
+                            : useProfile
+                              ? "border-violet-500 bg-violet-50/50 dark:bg-violet-900/20"
+                              : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                         }`}
                       >
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                          useProfile ? "bg-violet-100 dark:bg-violet-900/40" : "bg-gray-100 dark:bg-gray-800"
+                          useProfile && hasProfileData ? "bg-violet-100 dark:bg-violet-900/40" : "bg-gray-100 dark:bg-gray-800"
                         }`}>
-                          <User className={`w-4 h-4 ${useProfile ? "text-violet-600 dark:text-violet-400" : "text-gray-400 dark:text-gray-500"}`} />
+                          <User className={`w-4 h-4 ${useProfile && hasProfileData ? "text-violet-600 dark:text-violet-400" : "text-gray-400 dark:text-gray-500"}`} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-semibold ${useProfile ? "text-violet-700 dark:text-violet-400" : "text-gray-700 dark:text-gray-300"}`}>
+                          <p className={`text-xs font-semibold ${useProfile && hasProfileData ? "text-violet-700 dark:text-violet-400" : "text-gray-700 dark:text-gray-300"}`}>
                             Use My Profile
                           </p>
                           <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
-                            {hasProfileData ? "Auto-fill with your skills, projects & achievements" : "Complete your profile to enable this"}
+                            {hasProfileData ? "Auto-fill with your skills, projects & achievements" : "Profile is empty — nothing to auto-fill"}
                           </p>
                         </div>
                         <div className={`w-9 h-5 rounded-full relative transition-colors ${
-                          useProfile ? "bg-violet-500" : "bg-gray-200 dark:bg-gray-700"
+                          useProfile && hasProfileData ? "bg-violet-500" : "bg-gray-200 dark:bg-gray-700"
                         }`}>
                           <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
-                            useProfile ? "left-4.5" : "left-0.5"
+                            useProfile && hasProfileData ? "left-4.5" : "left-0.5"
                           }`} />
                         </div>
                       </button>
+                      {!hasProfileData && (
+                        <Link
+                          to="/student/profile"
+                          className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                        >
+                          Complete your profile <ChevronRight className="w-3 h-3" />
+                        </Link>
+                      )}
 
                       <AnimatePresence>
                         {useProfile && hasProfileData && (
@@ -474,7 +520,12 @@ export default function ResumeGeneratorPage() {
                         </div>
                       </div>
 
-                      <div className="space-y-1">
+                      {/* Screen-reader announcement for the active step */}
+                      <p className="sr-only" aria-live="polite" aria-atomic="true">
+                        {`Step ${String(currentStep + 1)} of ${String(GENERATION_STEPS.length)}: ${GENERATION_STEPS[currentStep]?.label ?? ""}`}
+                      </p>
+
+                      <div className="space-y-1" role="list" aria-label="Resume generation progress">
                         {GENERATION_STEPS.map((step, i) => {
                           const Icon = step.icon;
                           const isActive = i === currentStep;

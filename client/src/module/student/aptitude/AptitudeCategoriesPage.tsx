@@ -10,33 +10,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-
-function CircularProgress({ progress, size = 52 }: { progress: number; size?: number }) {
-  const r = (size - 6) / 2;
-  const circ = 2 * Math.PI * r;
-  const offset = circ - (progress / 100) * circ;
-
-  return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg className="-rotate-90" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" className="stroke-gray-100 dark:stroke-gray-800" strokeWidth="4" />
-        <circle
-          cx={size / 2} cy={size / 2} r={r}
-          fill="none"
-          className={progress === 100 ? "stroke-emerald-500" : "stroke-purple-500"}
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeDasharray={`${circ}`}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 0.6s ease" }}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-300">
-        {progress}%
-      </span>
-    </div>
-  );
-}
+import { CircularProgress } from "../../../components/ui/CircularProgress";
 
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
@@ -93,7 +67,7 @@ export default function AptitudeCategoriesPage() {
         <div className="flex flex-col sm:flex-row items-center gap-6">
           {/* Progress ring */}
           {user && (
-            <CircularProgress progress={overallPct} size={80} />
+            <CircularProgress progress={overallPct} size={80} progressClassName="stroke-purple-500" />
           )}
 
           <div className="flex-1 text-center sm:text-left">
@@ -210,7 +184,7 @@ export default function AptitudeCategoriesPage() {
               >
                 {/* Progress or number */}
                 {user ? (
-                  <CircularProgress progress={pct} size={44} />
+                  <CircularProgress progress={pct} size={44} progressClassName="stroke-purple-500" />
                 ) : (
                   <div className="w-11 h-11 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
                     <span className="text-sm font-bold text-gray-400 dark:text-gray-500">{idx + 1}</span>

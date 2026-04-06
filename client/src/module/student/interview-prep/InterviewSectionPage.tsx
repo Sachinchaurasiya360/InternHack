@@ -8,11 +8,17 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
-const FREE_LIMIT = 5;
-
 function getLocalProgress(): InterviewProgress {
   try {
-    return JSON.parse(localStorage.getItem("interview-progress") || "{}");
+    const raw = JSON.parse(localStorage.getItem("interview-progress") || "{}");
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+    const out: InterviewProgress = {};
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
+        out[k] = { completed: (v as { completed: boolean }).completed };
+      }
+    }
+    return out;
   } catch {
     return {};
   }
@@ -40,9 +46,8 @@ export default function InterviewSectionPage() {
   const progress: InterviewProgress = getLocalProgress();
 
   const section = sections.find((s) => s.id === sectionSlug);
-  const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
 
-  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
+  if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
   }
 

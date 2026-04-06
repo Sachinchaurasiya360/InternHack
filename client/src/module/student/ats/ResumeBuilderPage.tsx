@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -19,8 +19,11 @@ import {
   Palette,
   ScanSearch,
   CheckCircle,
+  UserPlus,
 } from "lucide-react";
+import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
+import { useAuthStore } from "../../../lib/auth.store";
 import type {
   ResumeData,
   TemplateId,
@@ -32,6 +35,7 @@ import type {
 import { defaultResumeData } from "./resume-builder/types";
 import { TEMPLATES, getTemplate } from "./resume-builder/templates";
 import AtsToolsNav from "./AtsToolsNav";
+import { inputCls, labelCls } from "./_shared/form-styles";
 
 const STORAGE_KEY = "internhack-resume-data";
 const TEMPLATE_KEY = "internhack-resume-template";
@@ -113,9 +117,6 @@ function FormSection({
 }
 
 // ── Small helpers ──────────────────────────────────────────────────
-const inputCls =
-  "w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white";
-const labelCls = "block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1";
 const btnAddCls =
   "flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 mt-2";
 const btnRemoveCls =
@@ -136,6 +137,208 @@ const TEMPLATE_COLORS: Record<string, { dot: string; bg: string; border: string 
 
 // Tool nav handled by shared AtsToolsNav
 
+// ── Memoized list-row components ──────────────────────────────────
+// Each row re-renders only when its item data changes because update/remove
+// callbacks are stable (useCallback in the parent) and the item itself is
+// referentially swapped only when its fields change.
+
+const ExperienceRow = React.memo(function ExperienceRow({
+  exp,
+  onUpdate,
+  onRemove,
+}: {
+  exp: WorkExperience;
+  onUpdate: (id: string, field: keyof WorkExperience, value: unknown) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+    >
+      <button onClick={() => onRemove(exp.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className={labelCls}>Job Title</label>
+          <input className={inputCls} placeholder="Software Engineer" value={exp.title} onChange={(e) => onUpdate(exp.id, "title", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Company</label>
+          <input className={inputCls} placeholder="Google" value={exp.company} onChange={(e) => onUpdate(exp.id, "company", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Start Date</label>
+          <input className={inputCls} placeholder="Jan 2022" value={exp.startDate} onChange={(e) => onUpdate(exp.id, "startDate", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>End Date</label>
+          <input
+            className={inputCls}
+            placeholder="Present"
+            value={exp.current ? "Present" : exp.endDate}
+            disabled={exp.current}
+            onChange={(e) => onUpdate(exp.id, "endDate", e.target.value)}
+          />
+        </div>
+      </div>
+      <label className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={exp.current}
+          onChange={(e) => onUpdate(exp.id, "current", e.target.checked)}
+          className="rounded border-gray-300 dark:border-gray-600"
+        />
+        I currently work here
+      </label>
+      <div>
+        <label className={labelCls}>Description (one bullet per line)</label>
+        <textarea
+          className={`${inputCls} min-h-15 resize-y`}
+          placeholder="- Led development of microservices architecture&#10;- Improved API response time by 40%"
+          value={exp.description}
+          onChange={(e) => onUpdate(exp.id, "description", e.target.value)}
+        />
+      </div>
+    </motion.div>
+  );
+});
+
+const EducationRow = React.memo(function EducationRow({
+  edu,
+  onUpdate,
+  onRemove,
+}: {
+  edu: Education;
+  onUpdate: (id: string, field: keyof Education, value: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+    >
+      <button onClick={() => onRemove(edu.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="col-span-2">
+          <label className={labelCls}>Institution</label>
+          <input className={inputCls} placeholder="Stanford University" value={edu.institution} onChange={(e) => onUpdate(edu.id, "institution", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Degree</label>
+          <input className={inputCls} placeholder="B.Tech" value={edu.degree} onChange={(e) => onUpdate(edu.id, "degree", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Field of Study</label>
+          <input className={inputCls} placeholder="Computer Science" value={edu.field} onChange={(e) => onUpdate(edu.id, "field", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Start Date</label>
+          <input className={inputCls} placeholder="Aug 2019" value={edu.startDate} onChange={(e) => onUpdate(edu.id, "startDate", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>End Date</label>
+          <input className={inputCls} placeholder="May 2023" value={edu.endDate} onChange={(e) => onUpdate(edu.id, "endDate", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>GPA (optional)</label>
+          <input className={inputCls} placeholder="3.8/4.0" value={edu.gpa} onChange={(e) => onUpdate(edu.id, "gpa", e.target.value)} />
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+const ProjectRow = React.memo(function ProjectRow({
+  proj,
+  onUpdate,
+  onRemove,
+}: {
+  proj: Project;
+  onUpdate: (id: string, field: keyof Project, value: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+    >
+      <button onClick={() => onRemove(proj.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className={labelCls}>Project Name</label>
+          <input className={inputCls} placeholder="E-Commerce Platform" value={proj.name} onChange={(e) => onUpdate(proj.id, "name", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Link (optional)</label>
+          <input className={inputCls} placeholder="github.com/..." value={proj.link} onChange={(e) => onUpdate(proj.id, "link", e.target.value)} />
+        </div>
+        <div className="col-span-2">
+          <label className={labelCls}>Tech Stack</label>
+          <input className={inputCls} placeholder="React, Node.js, PostgreSQL" value={proj.techStack} onChange={(e) => onUpdate(proj.id, "techStack", e.target.value)} />
+        </div>
+        <div className="col-span-2">
+          <label className={labelCls}>Description</label>
+          <textarea
+            className={`${inputCls} min-h-12.5 resize-y`}
+            placeholder="Built a full-stack e-commerce platform with..."
+            value={proj.description}
+            onChange={(e) => onUpdate(proj.id, "description", e.target.value)}
+          />
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+const CertificationRow = React.memo(function CertificationRow({
+  cert,
+  onUpdate,
+  onRemove,
+}: {
+  cert: Certification;
+  onUpdate: (id: string, field: keyof Certification, value: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+    >
+      <button onClick={() => onRemove(cert.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="col-span-2">
+          <label className={labelCls}>Certification Name</label>
+          <input className={inputCls} placeholder="AWS Solutions Architect" value={cert.name} onChange={(e) => onUpdate(cert.id, "name", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Issuer</label>
+          <input className={inputCls} placeholder="Amazon Web Services" value={cert.issuer} onChange={(e) => onUpdate(cert.id, "issuer", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Date</label>
+          <input className={inputCls} placeholder="Mar 2024" value={cert.date} onChange={(e) => onUpdate(cert.id, "date", e.target.value)} />
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
 // ── Main Page ──────────────────────────────────────────────────────
 export default function ResumeBuilderPage() {
   const [data, setData] = useState<ResumeData>(loadSaved);
@@ -152,14 +355,97 @@ export default function ResumeBuilderPage() {
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
   const [skillInput, setSkillInput] = useState("");
   const printRef = useRef<HTMLDivElement>(null);
+  const user = useAuthStore((s) => s.user);
 
-  // Persist
+  // Persist — debounced so we're not serializing the full resume on every keystroke.
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const t = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }, 500);
+    return () => clearTimeout(t);
   }, [data]);
   useEffect(() => {
     localStorage.setItem(TEMPLATE_KEY, selectedTemplate);
   }, [selectedTemplate]);
+
+  const importFromProfile = () => {
+    if (!user) {
+      toast.error("You must be signed in to import your profile.");
+      return;
+    }
+    const hasAny =
+      !!user.name ||
+      !!user.email ||
+      (user.skills?.length ?? 0) > 0 ||
+      (user.projects?.length ?? 0) > 0 ||
+      !!user.college ||
+      !!user.company;
+    if (!hasAny) {
+      toast.error("Your profile is empty. Complete it first, then import.");
+      return;
+    }
+
+    const confirmed = confirm(
+      "Import your InternHack profile into the builder? This will overwrite current fields that have a profile equivalent."
+    );
+    if (!confirmed) return;
+
+    setData((d) => ({
+      ...d,
+      personalInfo: {
+        ...d.personalInfo,
+        fullName: user.name || d.personalInfo.fullName,
+        email: user.email || d.personalInfo.email,
+        phone: user.contactNo || d.personalInfo.phone,
+        location: user.location || d.personalInfo.location,
+        linkedIn: user.linkedinUrl || d.personalInfo.linkedIn,
+        portfolio: user.portfolioUrl || user.githubUrl || d.personalInfo.portfolio,
+      },
+      summary: user.bio || d.summary,
+      experience: user.company
+        ? [
+            {
+              id: uid(),
+              company: user.company,
+              title: user.designation || "",
+              startDate: "",
+              endDate: "",
+              current: true,
+              description: "",
+            },
+            ...d.experience,
+          ]
+        : d.experience,
+      education: user.college
+        ? [
+            {
+              id: uid(),
+              institution: user.college,
+              degree: "",
+              field: "",
+              startDate: "",
+              endDate: user.graduationYear ? String(user.graduationYear) : "",
+              gpa: "",
+            },
+            ...d.education,
+          ]
+        : d.education,
+      skills: user.skills && user.skills.length > 0
+        ? Array.from(new Set([...d.skills, ...user.skills]))
+        : d.skills,
+      projects: [
+        ...(user.projects ?? []).map<Project>((p) => ({
+          id: uid(),
+          name: p.title,
+          description: p.description,
+          techStack: p.techStack.join(", "),
+          link: p.liveUrl || p.repoUrl || "",
+        })),
+        ...d.projects,
+      ],
+    }));
+    toast.success("Profile imported into the builder.");
+  };
 
   const toggle = (key: string) =>
     setOpenSections((s) => ({ ...s, [key]: !s[key] }));
@@ -172,38 +458,38 @@ export default function ResumeBuilderPage() {
     setData((d) => ({ ...d, summary: value }));
 
   // Experience
-  const addExperience = () =>
+  const addExperience = useCallback(() =>
     setData((d) => ({
       ...d,
       experience: [
         ...d.experience,
         { id: uid(), company: "", title: "", startDate: "", endDate: "", current: false, description: "" },
       ],
-    }));
-  const updateExperience = (id: string, field: keyof WorkExperience, value: unknown) =>
+    })), []);
+  const updateExperience = useCallback((id: string, field: keyof WorkExperience, value: unknown) =>
     setData((d) => ({
       ...d,
       experience: d.experience.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-    }));
-  const removeExperience = (id: string) =>
-    setData((d) => ({ ...d, experience: d.experience.filter((e) => e.id !== id) }));
+    })), []);
+  const removeExperience = useCallback((id: string) =>
+    setData((d) => ({ ...d, experience: d.experience.filter((e) => e.id !== id) })), []);
 
   // Education
-  const addEducation = () =>
+  const addEducation = useCallback(() =>
     setData((d) => ({
       ...d,
       education: [
         ...d.education,
         { id: uid(), institution: "", degree: "", field: "", startDate: "", endDate: "", gpa: "" },
       ],
-    }));
-  const updateEducation = (id: string, field: keyof Education, value: string) =>
+    })), []);
+  const updateEducation = useCallback((id: string, field: keyof Education, value: string) =>
     setData((d) => ({
       ...d,
       education: d.education.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
-    }));
-  const removeEducation = (id: string) =>
-    setData((d) => ({ ...d, education: d.education.filter((e) => e.id !== id) }));
+    })), []);
+  const removeEducation = useCallback((id: string) =>
+    setData((d) => ({ ...d, education: d.education.filter((e) => e.id !== id) })), []);
 
   // Skills
   const addSkill = () => {
@@ -216,38 +502,38 @@ export default function ResumeBuilderPage() {
     setData((d) => ({ ...d, skills: d.skills.filter((s) => s !== skill) }));
 
   // Projects
-  const addProject = () =>
+  const addProject = useCallback(() =>
     setData((d) => ({
       ...d,
       projects: [
         ...d.projects,
         { id: uid(), name: "", description: "", techStack: "", link: "" },
       ],
-    }));
-  const updateProject = (id: string, field: keyof Project, value: string) =>
+    })), []);
+  const updateProject = useCallback((id: string, field: keyof Project, value: string) =>
     setData((d) => ({
       ...d,
       projects: d.projects.map((p) => (p.id === id ? { ...p, [field]: value } : p)),
-    }));
-  const removeProject = (id: string) =>
-    setData((d) => ({ ...d, projects: d.projects.filter((p) => p.id !== id) }));
+    })), []);
+  const removeProject = useCallback((id: string) =>
+    setData((d) => ({ ...d, projects: d.projects.filter((p) => p.id !== id) })), []);
 
   // Certifications
-  const addCertification = () =>
+  const addCertification = useCallback(() =>
     setData((d) => ({
       ...d,
       certifications: [
         ...d.certifications,
         { id: uid(), name: "", issuer: "", date: "" },
       ],
-    }));
-  const updateCertification = (id: string, field: keyof Certification, value: string) =>
+    })), []);
+  const updateCertification = useCallback((id: string, field: keyof Certification, value: string) =>
     setData((d) => ({
       ...d,
       certifications: d.certifications.map((c) => (c.id === id ? { ...c, [field]: value } : c)),
-    }));
-  const removeCertification = (id: string) =>
-    setData((d) => ({ ...d, certifications: d.certifications.filter((c) => c.id !== id) }));
+    })), []);
+  const removeCertification = useCallback((id: string) =>
+    setData((d) => ({ ...d, certifications: d.certifications.filter((c) => c.id !== id) })), []);
 
   // PDF Download
   const handleDownload = () => {
@@ -273,7 +559,7 @@ export default function ResumeBuilderPage() {
 
   return (
     <>
-      <SEO title="Resume Builder - InternHack" description="Build your ATS-optimized resume with professional templates" />
+      <SEO title="Resume Builder - InternHack" description="Build your ATS-optimized resume with professional templates" noIndex />
 
       <div className="relative max-w-[1440px] mx-auto pb-12">
         {/* Atmospheric background */}
@@ -379,6 +665,28 @@ export default function ResumeBuilderPage() {
                 mobileView === "preview" ? "hidden md:block" : ""
               }`}
             >
+              {/* Import from InternHack profile */}
+              <motion.button
+                type="button"
+                onClick={importFromProfile}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.18 }}
+                className="w-full flex items-center gap-3 p-3.5 rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-800/60 bg-violet-50/40 dark:bg-violet-900/10 hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all text-left"
+              >
+                <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0">
+                  <UserPlus className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-violet-700 dark:text-violet-300">
+                    Import from InternHack profile
+                  </p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
+                    Prefill name, contact, education, skills &amp; projects from your profile
+                  </p>
+                </div>
+              </motion.button>
+
               {/* Personal Info */}
               <FormSection
                 title="Personal Information"
@@ -441,59 +749,7 @@ export default function ResumeBuilderPage() {
               >
                 <AnimatePresence>
                   {data.experience.map((exp) => (
-                    <motion.div
-                      key={exp.id}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
-                    >
-                      <button onClick={() => removeExperience(exp.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className={labelCls}>Job Title</label>
-                          <input className={inputCls} placeholder="Software Engineer" value={exp.title} onChange={(e) => updateExperience(exp.id, "title", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Company</label>
-                          <input className={inputCls} placeholder="Google" value={exp.company} onChange={(e) => updateExperience(exp.id, "company", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Start Date</label>
-                          <input className={inputCls} placeholder="Jan 2022" value={exp.startDate} onChange={(e) => updateExperience(exp.id, "startDate", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>End Date</label>
-                          <input
-                            className={inputCls}
-                            placeholder="Present"
-                            value={exp.current ? "Present" : exp.endDate}
-                            disabled={exp.current}
-                            onChange={(e) => updateExperience(exp.id, "endDate", e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <label className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={exp.current}
-                          onChange={(e) => updateExperience(exp.id, "current", e.target.checked)}
-                          className="rounded border-gray-300 dark:border-gray-600"
-                        />
-                        I currently work here
-                      </label>
-                      <div>
-                        <label className={labelCls}>Description (one bullet per line)</label>
-                        <textarea
-                          className={`${inputCls} min-h-[60px] resize-y`}
-                          placeholder="- Led development of microservices architecture&#10;- Improved API response time by 40%"
-                          value={exp.description}
-                          onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
-                        />
-                      </div>
-                    </motion.div>
+                    <ExperienceRow key={exp.id} exp={exp} onUpdate={updateExperience} onRemove={removeExperience} />
                   ))}
                 </AnimatePresence>
                 <button onClick={addExperience} className={btnAddCls}>
@@ -511,43 +767,7 @@ export default function ResumeBuilderPage() {
               >
                 <AnimatePresence>
                   {data.education.map((edu) => (
-                    <motion.div
-                      key={edu.id}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
-                    >
-                      <button onClick={() => removeEducation(edu.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="col-span-2">
-                          <label className={labelCls}>Institution</label>
-                          <input className={inputCls} placeholder="Stanford University" value={edu.institution} onChange={(e) => updateEducation(edu.id, "institution", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Degree</label>
-                          <input className={inputCls} placeholder="B.Tech" value={edu.degree} onChange={(e) => updateEducation(edu.id, "degree", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Field of Study</label>
-                          <input className={inputCls} placeholder="Computer Science" value={edu.field} onChange={(e) => updateEducation(edu.id, "field", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Start Date</label>
-                          <input className={inputCls} placeholder="Aug 2019" value={edu.startDate} onChange={(e) => updateEducation(edu.id, "startDate", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>End Date</label>
-                          <input className={inputCls} placeholder="May 2023" value={edu.endDate} onChange={(e) => updateEducation(edu.id, "endDate", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>GPA (optional)</label>
-                          <input className={inputCls} placeholder="3.8/4.0" value={edu.gpa} onChange={(e) => updateEducation(edu.id, "gpa", e.target.value)} />
-                        </div>
-                      </div>
-                    </motion.div>
+                    <EducationRow key={edu.id} edu={edu} onUpdate={updateEducation} onRemove={removeEducation} />
                   ))}
                 </AnimatePresence>
                 <button onClick={addEducation} className={btnAddCls}>
@@ -610,40 +830,7 @@ export default function ResumeBuilderPage() {
               >
                 <AnimatePresence>
                   {data.projects.map((proj) => (
-                    <motion.div
-                      key={proj.id}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
-                    >
-                      <button onClick={() => removeProject(proj.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className={labelCls}>Project Name</label>
-                          <input className={inputCls} placeholder="E-Commerce Platform" value={proj.name} onChange={(e) => updateProject(proj.id, "name", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Link (optional)</label>
-                          <input className={inputCls} placeholder="github.com/..." value={proj.link} onChange={(e) => updateProject(proj.id, "link", e.target.value)} />
-                        </div>
-                        <div className="col-span-2">
-                          <label className={labelCls}>Tech Stack</label>
-                          <input className={inputCls} placeholder="React, Node.js, PostgreSQL" value={proj.techStack} onChange={(e) => updateProject(proj.id, "techStack", e.target.value)} />
-                        </div>
-                        <div className="col-span-2">
-                          <label className={labelCls}>Description</label>
-                          <textarea
-                            className={`${inputCls} min-h-[50px] resize-y`}
-                            placeholder="Built a full-stack e-commerce platform with..."
-                            value={proj.description}
-                            onChange={(e) => updateProject(proj.id, "description", e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </motion.div>
+                    <ProjectRow key={proj.id} proj={proj} onUpdate={updateProject} onRemove={removeProject} />
                   ))}
                 </AnimatePresence>
                 <button onClick={addProject} className={btnAddCls}>
@@ -661,31 +848,7 @@ export default function ResumeBuilderPage() {
               >
                 <AnimatePresence>
                   {data.certifications.map((cert) => (
-                    <motion.div
-                      key={cert.id}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
-                    >
-                      <button onClick={() => removeCertification(cert.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="col-span-2">
-                          <label className={labelCls}>Certification Name</label>
-                          <input className={inputCls} placeholder="AWS Solutions Architect" value={cert.name} onChange={(e) => updateCertification(cert.id, "name", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Issuer</label>
-                          <input className={inputCls} placeholder="Amazon Web Services" value={cert.issuer} onChange={(e) => updateCertification(cert.id, "issuer", e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Date</label>
-                          <input className={inputCls} placeholder="Mar 2024" value={cert.date} onChange={(e) => updateCertification(cert.id, "date", e.target.value)} />
-                        </div>
-                      </div>
-                    </motion.div>
+                    <CertificationRow key={cert.id} cert={cert} onUpdate={updateCertification} onRemove={removeCertification} />
                   ))}
                 </AnimatePresence>
                 <button onClick={addCertification} className={btnAddCls}>

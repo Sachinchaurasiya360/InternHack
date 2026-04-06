@@ -4,6 +4,7 @@ export interface InterviewSection {
   description: string;
   orderIndex: number;
   level: "Beginner" | "Intermediate" | "Advanced";
+  freeTier: boolean;
 }
 
 export interface CodeExample {

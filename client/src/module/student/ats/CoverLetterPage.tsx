@@ -121,7 +121,6 @@ export default function CoverLetterPage() {
         (err as { response?: { data?: { message?: string } } })?.response?.data
           ?.message || "Failed to generate cover letter. Please try again.";
       setError(msg);
-      toast.error(msg);
     } finally {
       clearInterval(stepInterval);
       setLoading(false);
@@ -197,7 +196,7 @@ export default function CoverLetterPage() {
 
   return (
     <div className="relative max-w-6xl mx-auto pb-12">
-      <SEO title="Cover Letter Builder - InternHack" description="Generate AI-powered cover letters tailored to any job" />
+      <SEO title="Cover Letter Builder - InternHack" description="Generate AI-powered cover letters tailored to any job" noIndex />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

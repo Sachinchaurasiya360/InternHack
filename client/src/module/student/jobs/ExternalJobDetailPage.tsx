@@ -9,20 +9,7 @@ import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { queryKeys } from "../../../lib/query-keys";
-
-interface ExternalJob {
-  id: number;
-  slug: string;
-  company: string | null;
-  role: string | null;
-  description: string | null;
-  salary: string | null;
-  location: string | null;
-  applyLink: string | null;
-  tags: string[];
-  expiresAt: string;
-  createdAt: string;
-}
+import type { ExternalJob } from "../../../lib/types";
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
@@ -94,7 +81,9 @@ export default function ExternalJobDetailPage() {
     );
   }
 
-  const daysLeft = Math.ceil((new Date(job.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const daysLeft = job.expiresAt
+    ? Math.ceil((new Date(job.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
 
   return (
     <>
@@ -141,10 +130,12 @@ export default function ExternalJobDetailPage() {
                     <Building2 className="w-4 h-4" /> {job.company}
                   </span>
                 )}
-                <span className="flex items-center gap-1.5">
-                  <CalendarDays className="w-4 h-4" />
-                  {daysLeft > 0 ? `${daysLeft} days left` : "Expires soon"}
-                </span>
+                {daysLeft !== null && (
+                  <span className="flex items-center gap-1.5">
+                    <CalendarDays className="w-4 h-4" />
+                    {daysLeft > 0 ? `${daysLeft} days left` : "Expires soon"}
+                  </span>
+                )}
               </div>
             </div>
 

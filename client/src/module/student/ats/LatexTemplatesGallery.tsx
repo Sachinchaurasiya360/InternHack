@@ -181,7 +181,7 @@ export default function LatexTemplatesGallery() {
 
   return (
     <div className="relative max-w-360 mx-auto pb-12">
-      <SEO title="LaTeX Resume Templates" description="Browse professional LaTeX resume templates and open them in the editor" />
+      <SEO title="LaTeX Resume Templates" description="Browse professional LaTeX resume templates and open them in the editor" noIndex />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

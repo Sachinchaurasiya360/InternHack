@@ -4,6 +4,10 @@ Thanks for your interest in contributing! InternHack is a full-stack career plat
 
 This guide walks you through everything from setting up the project to submitting your first PR.
 
+> 💬 **Join our WhatsApp community:** [Contributors Group](https://chat.whatsapp.com/DeUn3AeowvAJedw60Mt1EN)
+>
+> Hop in to discuss ideas, ask for guidance on a PR, get unstuck, share what you're working on, or just get to know the other contributors. Whether you're picking up your first `good first issue` or shipping a major feature, it's the fastest way to get a response and meet the people building InternHack with you.
+
 ---
 
 ## Table of Contents

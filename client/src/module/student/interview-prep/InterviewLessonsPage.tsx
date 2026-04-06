@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Lock } from "lucide-react";
@@ -8,12 +8,21 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
+import { CircularProgress } from "../../../components/ui/CircularProgress";
 
-const FREE_LIMIT = 5;
+const STORAGE_KEY = "interview-progress";
 
 function getLocalProgress(): InterviewProgress {
   try {
-    return JSON.parse(localStorage.getItem("interview-progress") || "{}");
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+    const out: InterviewProgress = {};
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
+        out[k] = { completed: (v as { completed: boolean }).completed };
+      }
+    }
+    return out;
   } catch {
     return {};
   }
@@ -25,38 +34,29 @@ const LEVEL_COLOR: Record<string, string> = {
   Advanced: "text-red-600 dark:text-red-400",
 };
 
-function CircularProgress({ progress }: { progress: number }) {
-  const r = 28;
-  const circ = 2 * Math.PI * r;
-  const offset = circ - (progress / 100) * circ;
-
-  return (
-    <div className="relative w-16 h-16 shrink-0">
-      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="#f3f4f6" className="dark:stroke-gray-700" strokeWidth="5" />
-        <circle
-          cx="32" cy="32" r={r}
-          fill="none"
-          className="stroke-violet-500"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeDasharray={`${circ}`}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 0.6s ease" }}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-800 dark:text-gray-200">
-        {progress}%
-      </span>
-    </div>
-  );
-}
-
 export default function InterviewLessonsPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [showGate, setShowGate] = useState(false);
+  const [progress, setProgress] = useState<InterviewProgress>(() => getLocalProgress());
 
-  const progress: InterviewProgress = getLocalProgress();
+  const refreshProgress = useCallback(() => setProgress(getLocalProgress()), []);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY || e.key === null) refreshProgress();
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refreshProgress();
+    };
+    window.addEventListener("storage", onStorage);
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", refreshProgress);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", refreshProgress);
+    };
+  }, [refreshProgress]);
 
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
@@ -140,7 +140,7 @@ export default function InterviewLessonsPage() {
           const pct = section.total > 0 ? Math.round((section.completed / section.total) * 100) : 0;
           const basePath = "/learn/interview";
           const isComplete = pct === 100 && section.total > 0;
-          const isLocked = idx >= FREE_LIMIT && !isAuthenticated;
+          const isLocked = !section.freeTier && !isAuthenticated;
 
           return (
             <motion.div
@@ -174,7 +174,14 @@ export default function InterviewLessonsPage() {
                   to={`${basePath}/${section.id}`}
                   className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
                 >
-                  <CircularProgress progress={pct} />
+                  <CircularProgress
+                    progress={pct}
+                    size={64}
+                    strokeWidth={5}
+                    progressClassName="stroke-violet-500"
+                    trackClassName="stroke-gray-100 dark:stroke-gray-700"
+                    labelClassName="text-sm font-bold text-gray-800 dark:text-gray-200"
+                  />
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">

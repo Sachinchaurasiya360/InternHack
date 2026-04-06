@@ -7,6 +7,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Closures, hoisting, event loop, prototypes, promises, and tricky output questions.",
     orderIndex: 0,
     level: "Intermediate",
+    freeTier: true,
   },
   {
     id: "react-interview",
@@ -14,6 +15,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Hooks, virtual DOM, reconciliation, state management, performance, and component patterns.",
     orderIndex: 1,
     level: "Intermediate",
+    freeTier: true,
   },
   {
     id: "nodejs-interview",
@@ -21,6 +23,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Event loop, streams, clustering, middleware, REST API design, and error handling.",
     orderIndex: 2,
     level: "Intermediate",
+    freeTier: true,
   },
   {
     id: "typescript-interview",
@@ -28,6 +31,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Type system, generics, utility types, type guards, declaration merging, and advanced patterns.",
     orderIndex: 3,
     level: "Intermediate",
+    freeTier: true,
   },
   {
     id: "python-interview",
@@ -35,6 +39,7 @@ export const interviewSections: InterviewSection[] = [
     description: "GIL, decorators, generators, metaclasses, memory management, and Pythonic patterns.",
     orderIndex: 4,
     level: "Intermediate",
+    freeTier: true,
   },
   {
     id: "sql-database-interview",
@@ -42,6 +47,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Joins, indexing, normalization, transactions, query optimization, and schema design.",
     orderIndex: 5,
     level: "Intermediate",
+    freeTier: false,
   },
   {
     id: "system-design-interview",
@@ -49,6 +55,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Load balancing, caching, databases, microservices, scaling, and common design problems.",
     orderIndex: 6,
     level: "Advanced",
+    freeTier: false,
   },
   {
     id: "behavioral-interview",
@@ -56,6 +63,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Tell me about yourself, strengths/weaknesses, conflict resolution, leadership, and STAR method.",
     orderIndex: 7,
     level: "Beginner",
+    freeTier: false,
   },
   {
     id: "html-css-interview",
@@ -63,6 +71,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Semantic HTML, box model, flexbox, grid, specificity, accessibility, and responsive design.",
     orderIndex: 8,
     level: "Beginner",
+    freeTier: false,
   },
   {
     id: "git-devops-interview",
@@ -70,6 +79,7 @@ export const interviewSections: InterviewSection[] = [
     description: "Git branching, merge vs rebase, CI/CD, Docker basics, and deployment strategies.",
     orderIndex: 9,
     level: "Intermediate",
+    freeTier: false,
   },
   {
     id: "fastapi-interview",
@@ -77,5 +87,6 @@ export const interviewSections: InterviewSection[] = [
     description: "Path operations, Pydantic models, dependency injection, async routes, authentication, and OpenAPI docs.",
     orderIndex: 10,
     level: "Intermediate",
+    freeTier: false,
   },
 ];
