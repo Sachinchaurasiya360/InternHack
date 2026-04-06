@@ -85,6 +85,7 @@ export default function ResumeGeneratorPage() {
   const [compiling, setCompiling] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const prevBlobUrl = useRef<string | null>(null);
+  const hasAutoCompiled = useRef(false);
 
   const user = useAuthStore((s) => s.user);
 
@@ -121,6 +122,7 @@ export default function ResumeGeneratorPage() {
     setLoading(true);
     setError("");
     setCurrentStep(0);
+    hasAutoCompiled.current = false;
 
     const stepInterval = setInterval(() => {
       setCurrentStep((s) => (s < GENERATION_STEPS.length - 1 ? s + 1 : s));
@@ -162,43 +164,61 @@ export default function ResumeGeneratorPage() {
 
   // Shared LaTeX compile helper — returns the PDF Blob or throws an Error
   // whose message already includes any server-provided details.
-  const compileLatex = async (source: string): Promise<Blob> => {
-    try {
-      const res = await api.post("/latex/compile", { source }, { responseType: "blob" });
-      return res.data as Blob;
-    } catch (err: unknown) {
-      let msg = "Compilation failed. Please check your LaTeX syntax.";
-      let details = "";
-      if (err && typeof err === "object" && "response" in err) {
-        const resp = err as { response?: { data?: Blob } };
-        if (resp.response?.data instanceof Blob) {
-          try {
-            const parsed = JSON.parse(await resp.response.data.text());
-            msg = parsed.message || msg;
-            details = parsed.details || "";
-          } catch {
-            // non-JSON error body — keep default msg
+  const compileLatex = useCallback(
+    async (source: string): Promise<Blob> => {
+      try {
+        const res = await api.post("/latex/compile", { source }, { responseType: "blob" });
+        return res.data as Blob;
+      } catch (err: unknown) {
+        let msg = "Compilation failed. Please check your LaTeX syntax.";
+        let details = "";
+        if (err && typeof err === "object" && "response" in err) {
+          const resp = err as { response?: { data?: Blob } };
+          if (resp.response?.data instanceof Blob) {
+            try {
+              const parsed = JSON.parse(await resp.response.data.text());
+              msg = parsed.message || msg;
+              details = parsed.details || "";
+            } catch {
+              // non-JSON error body — keep default msg
+            }
           }
         }
+        throw new Error(details ? `${msg}\n\n${details}` : msg);
       }
-      throw new Error(details ? `${msg}\n\n${details}` : msg);
-    }
-  };
+    },
+    [],
+  );
+
+  const updatePreview = useCallback(
+    async (source: string) => {
+      setCompiling(true);
+      setPreviewError(null);
+      try {
+        const blob = await compileLatex(source);
+        if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
+        const url = URL.createObjectURL(blob);
+        prevBlobUrl.current = url;
+        setPdfUrl(url);
+      } catch (err) {
+        setPdfUrl(null);
+        setPreviewError(err instanceof Error ? err.message : "Compilation failed.");
+      } finally {
+        setCompiling(false);
+      }
+    },
+    [compileLatex],
+  );
+
+  useEffect(() => {
+    if (phase !== "editor" || !latexCode || hasAutoCompiled.current) return;
+
+    hasAutoCompiled.current = true;
+    void updatePreview(latexCode);
+  }, [phase, latexCode, updatePreview]);
 
   const handleCompile = async () => {
-    setCompiling(true);
-    setPreviewError(null);
-    try {
-      const blob = await compileLatex(latexCode);
-      if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
-      const url = URL.createObjectURL(blob);
-      prevBlobUrl.current = url;
-      setPdfUrl(url);
-    } catch (err) {
-      setPreviewError(err instanceof Error ? err.message : "Compilation failed.");
-    } finally {
-      setCompiling(false);
-    }
+    await updatePreview(latexCode);
   };
 
   const handleDownloadPdf = async () => {
@@ -225,6 +245,7 @@ export default function ResumeGeneratorPage() {
   };
 
   const handleBackToForm = () => {
+    hasAutoCompiled.current = false;
     setPhase("form");
     setPdfUrl(null);
     setPreviewError(null);
