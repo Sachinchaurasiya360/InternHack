@@ -32,6 +32,26 @@ export default function ExternalJobDetailPage() {
     retry: false,
   });
 
+  const { data: similarJobs = [] } = useQuery({
+    queryKey: ["external-job-similar", job?.id],
+    queryFn: async () => {
+      const res = await api.get(`/external-jobs`, { params: { limit: 20 } });
+      const all = (res.data.jobs || []) as ExternalJob[];
+      const currentTags = new Set((job!.tags || []).map((t) => t.toLowerCase()));
+      return all
+        .filter((j) => j.id !== job!.id)
+        .map((j) => {
+          const shared = (j.tags || []).filter((t) => currentTags.has(t.toLowerCase())).length;
+          const sameCompany = j.company && job!.company && j.company.toLowerCase() === job!.company.toLowerCase() ? 1 : 0;
+          return { job: j, score: shared * 2 + sameCompany };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4)
+        .map((x) => x.job);
+    },
+    enabled: !!job,
+  });
+
   // Check if already applied
   useQuery({
     queryKey: ["external-job-status", job?.id],
@@ -189,6 +209,39 @@ export default function ExternalJobDetailPage() {
               )
             )}
           </motion.div>
+
+          {similarJobs.length > 0 && (
+            <motion.div variants={fadeUp} className="mt-8">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Similar Jobs</h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {similarJobs.map((s) => (
+                  <Link
+                    key={s.id}
+                    to={`/jobs/ext/${s.slug}`}
+                    className="block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors no-underline"
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-base font-bold text-gray-600 dark:text-gray-300 shrink-0">
+                        {(s.company || "?")[0]?.toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{s.role || "Untitled Role"}</h3>
+                        {s.company && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{s.company}</p>}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400">
+                      {s.location && (
+                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {s.location}</span>
+                      )}
+                      {s.salary && (
+                        <span className="flex items-center gap-1"><IndianRupee className="w-3 h-3" /> {s.salary}</span>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </>

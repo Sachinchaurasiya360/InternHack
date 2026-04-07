@@ -323,6 +323,19 @@ export const adminExternalJobQuerySchema = z.object({
   search: z.string().optional(),
 });
 
+// ==================== BROADCAST EMAIL ====================
+
+export const broadcastEmailSchema = z.object({
+  subject: z.string().min(1).max(200),
+  body: z.string().min(1).max(20000),
+  filter: z.object({
+    role: z.enum(["STUDENT", "RECRUITER", "ADMIN", "ALL"]).default("ALL"),
+    isVerified: z.boolean().optional(),
+    subscriptionPlan: z.enum(["FREE", "MONTHLY", "YEARLY", "ALL"]).default("ALL"),
+  }).default({ role: "ALL", subscriptionPlan: "ALL" }),
+  testEmail: z.string().email().optional(),
+});
+
 // ==================== AI PROVIDER MANAGEMENT ====================
 
 export const switchAIProviderSchema = z.object({

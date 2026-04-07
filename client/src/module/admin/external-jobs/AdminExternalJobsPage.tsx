@@ -233,7 +233,62 @@ export default function AdminExternalJobsPage() {
       ) : !data?.jobs.length ? (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">No external jobs yet</div>
       ) : (
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <>
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-3">
+          {data.jobs.map((job) => {
+            const expired = isExpired(job.expiresAt);
+            return (
+              <div key={job.id} className={`bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 ${expired ? "opacity-60" : ""}`}>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{job.company || "-"}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{job.role || "-"}</p>
+                  </div>
+                  <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-md font-medium ${
+                    expired
+                      ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400"
+                      : "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400"
+                  }`}>
+                    {expired ? "Expired" : "Active"}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                  {job.salary && <span>{job.salary}</span>}
+                  <span>Expires {new Date(job.expiresAt).toLocaleDateString()}</span>
+                </div>
+                <div className="flex items-center gap-1 border-t border-gray-100 dark:border-gray-800 pt-2 -mx-1">
+                  {job.slug && (
+                    <button
+                      onClick={() => {
+                        const link = `${window.location.origin}/jobs/ext/${job.slug}`;
+                        navigator.clipboard.writeText(link).then(() => toast.success("Link copied!"));
+                      }}
+                      className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-indigo-600"
+                    >
+                      <Link2 className="w-4 h-4" /> Copy
+                    </button>
+                  )}
+                  {job.applyLink && (
+                    <a href={job.applyLink} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-blue-600">
+                      <ExternalLink className="w-4 h-4" /> Open
+                    </a>
+                  )}
+                  <button onClick={() => openEdit(job)} className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-black dark:hover:text-white">
+                    <Pencil className="w-4 h-4" /> Edit
+                  </button>
+                  <button onClick={() => { if (confirm("Delete this job?")) deleteMutation.mutate(job.id); }}
+                    className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-red-600">
+                    <Trash2 className="w-4 h-4" /> Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden md:block bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 dark:border-gray-800 text-left">
@@ -299,6 +354,7 @@ export default function AdminExternalJobsPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {/* Pagination */}

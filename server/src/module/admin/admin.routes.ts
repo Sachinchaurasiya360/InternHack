@@ -113,6 +113,9 @@ adminRouter.post("/external-jobs", (req, res) => adminController.createExternalJ
 adminRouter.put("/external-jobs/:id", (req, res) => adminController.updateExternalJob(req, res));
 adminRouter.delete("/external-jobs/:id", (req, res) => adminController.deleteExternalJob(req, res));
 
+// Broadcast Email
+adminRouter.post("/broadcast-email", (req, res) => adminController.sendBroadcastEmail(req, res));
+
 // AI Provider Management
 adminRouter.get("/ai/config", (req, res, next) => adminController.getAIServiceConfigs(req, res, next));
 adminRouter.put("/ai/switch", (req, res, next) => adminController.switchAIProvider(req, res, next));

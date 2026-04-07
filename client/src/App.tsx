@@ -214,6 +214,7 @@ const AdminBadgesPage = lazyWithRetry(() => import("./module/admin/AdminBadgesPa
 const AdminAIProvidersPage = lazyWithRetry(() => import("./module/admin/ai/AdminAIProvidersPage"));
 const AdminExternalJobsPage = lazyWithRetry(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
 const AdminRepoRequestsPage = lazyWithRetry(() => import("./module/admin/repo-requests/AdminRepoRequestsPage"));
+const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broadcast/AdminBroadcastEmailPage"));
 
 function JobBrowseOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -519,6 +520,7 @@ function App() {
             <Route path="ai-providers" element={<AdminAIProvidersPage />} />
             <Route path="external-jobs" element={<AdminExternalJobsPage />} />
             <Route path="repo-requests" element={<AdminRepoRequestsPage />} />
+            <Route path="broadcast-email" element={<AdminBroadcastEmailPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />

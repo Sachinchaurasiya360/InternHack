@@ -176,6 +176,63 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               >
                 {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
+              {isAuthenticated && (
+                <Popover modal>
+                  <PopoverTrigger asChild>
+                    <button className="h-9 w-9 rounded-full cursor-pointer border-0 p-0 bg-transparent">
+                      <Avatar className="h-9 w-9">
+                        {user?.profilePic && (
+                          <AvatarImage src={user.profilePic} alt={user?.name ?? ""} />
+                        )}
+                        <AvatarFallback>
+                          {user?.name?.charAt(0).toUpperCase() ?? "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" sideOffset={8} className="w-60">
+                    <PopoverHeader>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          {user?.profilePic && (
+                            <AvatarImage src={user.profilePic} alt={user?.name ?? ""} />
+                          )}
+                          <AvatarFallback>
+                            {user?.name?.charAt(0).toUpperCase() ?? "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <PopoverTitle className="text-sm truncate">{user?.name}</PopoverTitle>
+                          <PopoverDescription className="text-xs truncate">{user?.email}</PopoverDescription>
+                        </div>
+                      </div>
+                    </PopoverHeader>
+                    <PopoverBody className="space-y-1 px-2 py-1.5">
+                      <Link to={dashboardLink} className="no-underline">
+                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-950 hover:bg-black/5 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/10 rounded-lg transition-colors text-left cursor-pointer bg-transparent border-0">
+                          <LayoutDashboard className="w-4 h-4" />
+                          Dashboard
+                        </button>
+                      </Link>
+                      <Link to={profileLink} className="no-underline">
+                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-950 hover:bg-black/5 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/10 rounded-lg transition-colors text-left cursor-pointer bg-transparent border-0">
+                          <Settings className="w-4 h-4" />
+                          Settings
+                        </button>
+                      </Link>
+                    </PopoverBody>
+                    <PopoverFooter>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-950 bg-black/3 hover:bg-black/5 dark:text-white/70 dark:hover:text-white dark:bg-white/5 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer border border-black/8 dark:border-white/10"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </PopoverFooter>
+                  </PopoverContent>
+                </Popover>
+              )}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 text-gray-700 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/10 rounded-xl transition-colors"

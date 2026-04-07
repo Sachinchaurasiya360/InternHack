@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { sendEmail } from "../../utils/email.utils.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
@@ -1612,6 +1613,131 @@ export class AdminService {
     const hackathon = await prisma.hackathon.findUnique({ where: { id } });
     if (!hackathon) throw new Error("Hackathon not found");
     return prisma.hackathon.delete({ where: { id } });
+  }
+
+  // ==================== BROADCAST EMAIL ====================
+
+  private renderBroadcastHtml(subject: string, body: string) {
+    const trimmed = body.trim();
+    // If admin already provided a full HTML document, send as-is.
+    if (/^<!doctype/i.test(trimmed) || /^<html[\s>]/i.test(trimmed)) {
+      return body;
+    }
+
+    // If body contains HTML tags, treat as HTML fragment (don't escape).
+    // Otherwise treat as plain text: escape and convert newlines.
+    const looksLikeHtml = /<\/?[a-z][\s\S]*?>/i.test(trimmed);
+    const content = looksLikeHtml
+      ? body
+      : body
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\n/g, "<br/>");
+
+    const safeSubject = subject.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>${safeSubject}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2937;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+            <tr>
+              <td style="padding:24px 28px;border-bottom:1px solid #f1f2f4;">
+                <div style="font-size:18px;font-weight:700;color:#0f172a;">InternHack</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px;font-size:15px;line-height:1.65;color:#374151;">
+                <h1 style="font-size:20px;font-weight:700;color:#0f172a;margin:0 0 16px;">${safeSubject}</h1>
+                <div>${content}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 28px;border-top:1px solid #f1f2f4;background:#fafafa;font-size:12px;color:#6b7280;text-align:center;">
+                Sent from InternHack · <a href="https://www.internhack.xyz" style="color:#6366f1;text-decoration:none;">internhack.xyz</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+  }
+
+  async sendBroadcastEmail(input: {
+    subject: string;
+    body: string;
+    filter: { role: "STUDENT" | "RECRUITER" | "ADMIN" | "ALL"; isVerified?: boolean | undefined; subscriptionPlan: "FREE" | "MONTHLY" | "YEARLY" | "ALL" };
+    testEmail?: string | undefined;
+    adminId: number;
+  }) {
+    const html = this.renderBroadcastHtml(input.subject, input.body);
+
+    if (input.testEmail) {
+      const sample = (s: string) =>
+        s
+          .replace(/\{\{?\s*username\s*\}?\}/gi, "Sachin")
+          .replace(/\{\{?\s*name\s*\}?\}/gi, "Sachin")
+          .replace(/\{\{?\s*firstName\s*\}?\}/gi, "Sachin")
+          .replace(/\{\{?\s*email\s*\}?\}/gi, input.testEmail);
+      await sendEmail({ to: input.testEmail, subject: `[TEST] ${sample(input.subject)}`, html: sample(html) });
+      return { test: true, sent: 1, failed: 0, recipients: 1 };
+    }
+
+    const where: Prisma.UserWhereInput = { isActive: true };
+    if (input.filter.role !== "ALL") where.role = input.filter.role as UserRole;
+    if (typeof input.filter.isVerified === "boolean") where.isVerified = input.filter.isVerified;
+    if (input.filter.subscriptionPlan !== "ALL") {
+      where.subscriptionPlan = input.filter.subscriptionPlan as Prisma.UserWhereInput["subscriptionPlan"];
+    }
+
+    const users = await prisma.user.findMany({ where, select: { email: true, name: true } });
+
+    const personalize = (template: string, name: string | null, email: string) => {
+      const username = (name && name.trim()) || (email.split("@")[0] ?? "there");
+      const firstName = username.split(" ")[0] ?? username;
+      return template
+        .replace(/\{\{?\s*username\s*\}?\}/gi, username)
+        .replace(/\{\{?\s*name\s*\}?\}/gi, username)
+        .replace(/\{\{?\s*firstName\s*\}?\}/gi, firstName)
+        .replace(/\{\{?\s*email\s*\}?\}/gi, email);
+    };
+
+    let sent = 0;
+    let failed = 0;
+    const batchSize = 10;
+    for (let i = 0; i < users.length; i += batchSize) {
+      const batch = users.slice(i, i + batchSize);
+      const results = await Promise.allSettled(
+        batch.map((u) =>
+          sendEmail({
+            to: u.email,
+            subject: personalize(input.subject, u.name, u.email),
+            html: personalize(html, u.name, u.email),
+          }),
+        ),
+      );
+      results.forEach((r) => (r.status === "fulfilled" ? sent++ : failed++));
+    }
+
+    await this.logActivity(input.adminId, "BROADCAST_EMAIL_SENT", "user", 0, {
+      subject: input.subject,
+      recipients: users.length,
+      sent,
+      failed,
+      filter: input.filter,
+    });
+
+    return { test: false, sent, failed, recipients: users.length };
   }
 
   // ==================== AI PROVIDER MANAGEMENT ====================

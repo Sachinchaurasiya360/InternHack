@@ -99,6 +99,10 @@ export default function AdminLayout() {
           <GitPullRequest className="w-4 h-4" />
           Repo Requests
         </NavLink>
+        <NavLink to="/admin/broadcast-email" className={linkClass} onClick={() => setSidebarOpen(false)}>
+          <Mail className="w-4 h-4" />
+          Broadcast Email
+        </NavLink>
         <NavLink to="/admin/blog" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <BookOpen className="w-4 h-4" />
           Blog

@@ -46,6 +46,7 @@ import {
   updateAdminJobSchema,
   adminExternalJobQuerySchema,
   ingestExternalJobSchema,
+  broadcastEmailSchema,
 } from "./admin.validation.js";
 
 export class AdminController {
@@ -1025,16 +1026,29 @@ export class AdminController {
 
   async ingestExternalJob(req: Request, res: Response) {
     try {
+      logger.info("[ingestExternalJob] incoming request", {
+        ip: req.ip,
+        hasApiKey: !!req.headers["x-api-key"],
+        contentType: req.headers["content-type"],
+        bodyKeys: req.body && typeof req.body === "object" ? Object.keys(req.body) : null,
+      });
+
       const apiKey = req.headers["x-api-key"];
       const expectedKey = process.env["EXTERNAL_JOB_API_KEY"];
       if (!expectedKey || apiKey !== expectedKey) {
+        logger.warn("[ingestExternalJob] auth failed", {
+          expectedKeySet: !!expectedKey,
+          receivedKeyPresent: !!apiKey,
+        });
         return res.status(401).json({ message: "Invalid or missing API key" });
       }
 
       const result = ingestExternalJobSchema.safeParse(req.body);
       if (!result.success) {
+        logger.warn("[ingestExternalJob] validation failed", { errors: result.error.flatten() });
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
+      logger.info("[ingestExternalJob] validation ok", { fields: Object.keys(result.data) });
 
       const d = result.data;
       const role = d.role || d.title || d.position;
@@ -1051,7 +1065,9 @@ export class AdminController {
       if (location) normalized.location = location;
       if (applyLink) normalized.applyLink = applyLink;
 
+      logger.info("[ingestExternalJob] normalized payload", normalized);
       const job = await this.adminService.createExternalJob(normalized);
+      logger.info("[ingestExternalJob] job created", { id: job.id, slug: job.slug });
       const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
       const jobUrl = `${clientUrl}/jobs/ext/${job.slug}`;
 
@@ -1069,6 +1085,25 @@ export class AdminController {
       });
     } catch (error) {
       logger.error("Failed to ingest external job", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async sendBroadcastEmail(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const result = broadcastEmailSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      }
+      const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
+      return res.status(200).json({
+        success: true,
+        message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
+        ...data,
+      });
+    } catch (error) {
+      logger.error("Failed to send broadcast email", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
