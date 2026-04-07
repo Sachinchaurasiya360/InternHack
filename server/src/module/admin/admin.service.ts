@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import { sendEmail } from "../../utils/email.utils.js";
+import { sendEmail, sendEmailBatch, emailSleep } from "../../utils/email.utils.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
@@ -1712,21 +1712,24 @@ export class AdminService {
         .replace(/\{\{?\s*email\s*\}?\}/gi, email);
     };
 
+    // Resend supports up to 100 emails per batch.send() call.
+    // Default rate limit is ~2 req/sec, so we throttle to 1 batch / 600ms.
     let sent = 0;
     let failed = 0;
-    const batchSize = 10;
+    const batchSize = 100;
+    const throttleMs = 600;
+
     for (let i = 0; i < users.length; i += batchSize) {
       const batch = users.slice(i, i + batchSize);
-      const results = await Promise.allSettled(
-        batch.map((u) =>
-          sendEmail({
-            to: u.email,
-            subject: personalize(input.subject, u.name, u.email),
-            html: personalize(html, u.name, u.email),
-          }),
-        ),
-      );
-      results.forEach((r) => (r.status === "fulfilled" ? sent++ : failed++));
+      const payload = batch.map((u) => ({
+        to: u.email,
+        subject: personalize(input.subject, u.name, u.email),
+        html: personalize(html, u.name, u.email),
+      }));
+      const result = await sendEmailBatch(payload);
+      sent += result.sent;
+      failed += result.failed;
+      if (i + batchSize < users.length) await emailSleep(throttleMs);
     }
 
     await this.logActivity(input.adminId, "BROADCAST_EMAIL_SENT", "user", 0, {
