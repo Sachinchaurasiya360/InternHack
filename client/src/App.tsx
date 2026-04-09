@@ -105,6 +105,10 @@ const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPl
 const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
+const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
+const ExamDetailPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamDetailPage"));
+const ExamMockPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamMockPage })));
+const ExamSectionPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamSectionPage })));
 const InterviewLessonsPage = lazyWithRetry(() => import("./module/student/interview-prep/InterviewLessonsPage"));
 const InterviewSectionPage = lazyWithRetry(() => import("./module/student/interview-prep/InterviewSectionPage"));
 const InterviewQuestionPage = lazyWithRetry(() => import("./module/student/interview-prep/InterviewQuestionPage"));
@@ -377,6 +381,10 @@ function App() {
             <Route path="data-analytics" element={<DataAnalyticsLessonsPage />} />
             <Route path="data-analytics/:sectionSlug" element={<DataAnalyticsSectionPage />} />
             <Route path="data-analytics/:sectionSlug/:lessonId" element={<DataAnalyticsLessonDetailPage />} />
+            <Route path="exam-prep" element={<ExamPrepHubPage />} />
+            <Route path="exam-prep/:examId" element={<ExamDetailPage />} />
+            <Route path="exam-prep/:examId/mock" element={<ExamMockPage />} />
+            <Route path="exam-prep/:examId/section/:sectionId" element={<ExamSectionPage />} />
             <Route path="interview" element={<InterviewLessonsPage />} />
             <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
             <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />

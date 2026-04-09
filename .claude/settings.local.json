@@ -6,7 +6,7 @@
       "Bash(/c/Codes/internhack/server/src/module/recruiter/recruiter.service.ts:*)",
       "Bash(npx tsc:*)",
       "Bash(echo:*)",
-      "Bash(npx prisma db push:*)", 
+      "Bash(npx prisma db push:*)",
       "Bash(npx prisma generate:*)",
       "Bash(npm run dev:*)",
       "Bash(node -e:*)",
@@ -25,7 +25,8 @@
       "Bash(npx tsx src/module/career/career.seed.ts)",
       "Bash(npx vite build)",
       "Bash(python3:*)",
-      "Bash(npx prisma db pull:*)"
+      "Bash(npx prisma db pull:*)",
+      "Skill(seo-audit)"
     ]
   }
 }

@@ -5,51 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Primary Meta Tags -->
-    <title>InternHack — AI-Powered Career Platform for Students</title>
+    <title>InternHack: AI-Powered Career Platform for Students</title>
     <meta
       name="description"
-      content="Browse curated internships, score your resume with AI-powered ATS analysis, follow guided career roadmaps, explore companies, and connect directly with recruiters — all in one platform."
+      content="Browse curated internships, score your resume with AI-powered ATS analysis, follow guided career roadmaps, explore companies, and connect directly with recruiters, all in one platform."
     />
     <meta name="author" content="InternHack" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#030712" />
+    <meta name="application-name" content="InternHack" />
+    <meta name="apple-mobile-web-app-title" content="InternHack" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
 
-    <!-- Favicon -->
+    <!-- Favicon and Manifest -->
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.internhack.xyz/" />
     <meta
       property="og:title"
-      content="InternHack — AI-Powered Career Platform for Students"
+      content="InternHack: AI-Powered Career Platform for Students"
     />
     <meta
       property="og:description"
       content="Browse curated internships, score your resume with AI-powered ATS analysis, follow guided career roadmaps, and connect with recruiters."
     />
     <meta property="og:image" content="https://www.internhack.xyz/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="InternHack, AI-powered career platform for students" />
     <meta property="og:site_name" content="InternHack" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://www.internhack.xyz/" />
+    <meta name="twitter:site" content="@internhack" />
+    <meta name="twitter:creator" content="@internhack" />
     <meta
       name="twitter:title"
-      content="InternHack — AI-Powered Career Platform for Students"
+      content="InternHack: AI-Powered Career Platform for Students"
     />
     <meta
       name="twitter:description"
       content="Browse curated internships, score your resume with AI-powered ATS analysis, follow guided career roadmaps, and connect with recruiters."
     />
     <meta name="twitter:image" content="https://www.internhack.xyz/og-image.png" />
+    <meta name="twitter:image:alt" content="InternHack, AI-powered career platform for students" />
 
-    <!-- Canonical -->
-    <link rel="canonical" href="https://www.internhack.xyz/" />
+    <!-- NOTE: Per-route canonical is injected at runtime by the <SEO> component
+         (react-helmet-async). A hard-coded canonical was removed so deep routes
+         no longer self-canonicalize to the homepage in the pre-JS HTML. -->
 
     <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "InternHack",
+        "url": "https://www.internhack.xyz",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.internhack.xyz/jobs?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -78,8 +105,6 @@
         ]
       }
     </script>
-
-    <!-- Organization Schema -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -88,18 +113,18 @@
         "url": "https://www.internhack.xyz",
         "logo": "https://www.internhack.xyz/favicon.png",
         "description": "AI-powered career platform connecting students with internships, coding tutorials, and career tools.",
-        "sameAs": []
+        "sameAs": [
+          "https://github.com/SachinChaurasiya/InternHack"
+        ]
       }
     </script>
 
-    <!-- DNS Prefetch for external domains -->
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <!-- Preconnect to critical origins (preconnect supersedes dns-prefetch) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
     <!-- Fonts (non-blocking) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
       rel="stylesheet"
@@ -109,17 +134,47 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     </noscript>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YT8LFNN50"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4YT8LFNN50');
+    </script>
   </head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YT8LFNN50"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-4YT8LFNN50');
-  </script>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="max-width:780px;margin:40px auto;padding:24px;font-family:system-ui,sans-serif;line-height:1.6;color:#111">
+        <h1>InternHack: AI-Powered Career Platform for Students</h1>
+        <p>
+          InternHack helps students land their first internship and build a career in tech.
+          Browse curated internships, score your resume with AI-powered ATS analysis,
+          follow guided career roadmaps, explore companies, and connect directly with recruiters.
+        </p>
+        <h2>What you can do on InternHack</h2>
+        <ul>
+          <li><a href="/jobs">Internship and job board</a>, curated listings from top companies.</li>
+          <li><a href="/ats">AI ATS resume scorer</a>, get an instant score and actionable fixes.</li>
+          <li><a href="/companies">Company explorer</a>, research employers before you apply.</li>
+          <li><a href="/roadmap">Career roadmaps</a>, step-by-step guidance for frontend, backend, data, and more.</li>
+          <li><a href="/dsa">DSA practice tracker</a>, organized problems with progress tracking.</li>
+          <li><a href="/blog">Blog and guides</a>, interview prep, career advice, and tutorials.</li>
+          <li><a href="/opensource">Open-source projects</a>, contribute to real codebases.</li>
+        </ul>
+        <h2>For recruiters</h2>
+        <p>
+          Post roles, review AI-ranked candidates, and reach motivated student talent.
+          <a href="/recruiters">Learn more about recruiter tools</a>.
+        </p>
+        <p>
+          InternHack is a free, AI-powered career platform.
+          JavaScript is required to use the full application. Please enable JavaScript in your browser.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

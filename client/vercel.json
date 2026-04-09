@@ -1,5 +1,41 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "internhack.xyz" }],
+      "destination": "https://www.internhack.xyz/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://api.internhack.xyz/sitemap.xml"
+    },
+    { "source": "/((?!sitemap\\.xml|robots\\.txt|llms\\.txt|manifest\\.webmanifest|favicon\\.png|og-image\\.png|.*\\.(?:js|css|woff2?|ttf|otf|png|jpg|jpeg|webp|avif|svg|ico|map|json|txt|xml)).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(js|css|woff2|woff|ttf|otf|png|jpg|jpeg|webp|avif|svg|ico)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/(robots\\.txt|llms\\.txt|manifest\\.webmanifest|sitemap\\.xml)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
+      ]
+    }
   ]
 }

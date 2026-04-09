@@ -1,0 +1,27 @@
+{
+  "name": "InternHack: AI-Powered Career Platform for Students",
+  "short_name": "InternHack",
+  "description": "Browse curated internships, score your resume with AI-powered ATS analysis, follow guided career roadmaps, and connect with recruiters.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "lang": "en-US",
+  "categories": ["education", "productivity", "business"],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

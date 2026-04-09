@@ -1,0 +1,37 @@
+# InternHack
+
+> InternHack is a free, AI-powered career platform for students. It offers a curated internship and job board, an AI ATS resume scorer, career roadmaps, company research, DSA practice, open-source contribution guides, and a recruiter dashboard. The platform targets students in India and ships AI tools built on Google Gemini.
+
+## Key Pages
+
+- [Homepage](https://www.internhack.xyz/): Product overview and entry points for students and recruiters.
+- [Internship and Job Board](https://www.internhack.xyz/jobs): Curated internships and entry-level roles, searchable by role, location, and stack.
+- [AI ATS Resume Scorer](https://www.internhack.xyz/ats): Upload a resume and a job description, get an instant ATS score, keyword gaps, and rewrite suggestions.
+- [Career Roadmaps](https://www.internhack.xyz/roadmap): Step-by-step learning paths for frontend, backend, full-stack, data, and more.
+- [Company Explorer](https://www.internhack.xyz/companies): Research employers, tech stacks, and current openings.
+- [DSA Practice Tracker](https://www.internhack.xyz/dsa): Organized data structures and algorithms problems with progress tracking.
+- [Blog and Guides](https://www.internhack.xyz/blog): Interview prep, career advice, coding tutorials.
+- [Open Source](https://www.internhack.xyz/opensource): Curated beginner-friendly open-source projects with contribution guides.
+- [Recruiters](https://www.internhack.xyz/recruiters): Overview of recruiter tools, candidate ranking, and posting flow.
+
+## Tools and Features
+
+- AI ATS Resume Scoring (Google Gemini)
+- AI Cover Letter Generator
+- LaTeX Resume Builder with AI chat
+- AI Mock Interview
+- Curated internship aggregation
+- Career roadmaps
+- Open-source contribution guides
+- Coding tutorials across JavaScript, TypeScript, React, Python, Node, Django, Flask, FastAPI, CSS, HTML, and Blockchain
+- DSA practice tracker
+- Aptitude practice
+
+## About
+
+InternHack is built and maintained by Sachin Chaurasiya. The project is open source on [GitHub](https://github.com/SachinChaurasiya/InternHack).
+
+## Contact
+
+- Website: https://www.internhack.xyz
+- Email: sachin@internhack.xyz

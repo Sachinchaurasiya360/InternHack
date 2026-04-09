@@ -1,8 +1,57 @@
+# InternHack robots.txt
+# https://www.internhack.xyz
+
 User-agent: *
 Allow: /
 Disallow: /student/
 Disallow: /admin/
-Disallow: /recruiters/
-Disallow: /test/
+Disallow: /recruiters/dashboard
+Disallow: /api/
+Disallow: /*?*token=
+Disallow: /*?*auth=
+
+# AI crawlers: explicitly allowed for discoverability in LLM-powered search
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+# Aggressive SEO crawlers: throttle
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: AhrefsBot
+Crawl-delay: 10
 
 Sitemap: https://www.internhack.xyz/sitemap.xml
