@@ -7,7 +7,6 @@ import {
   Search,
   BarChart2,
   Lightbulb,
-  History,
   Briefcase,
   CheckCircle,
   ArrowRight,
@@ -52,12 +51,6 @@ const features = [
     title: "Job-Specific Scoring",
     description: "Paste a job description to get tailored analysis - see exactly how your resume aligns with the role.",
     gradient: "from-pink-500 to-pink-600",
-  },
-  {
-    icon: <History className="w-5 h-5" />,
-    title: "Score History & Tracking",
-    description: "Track your improvements over time with full history. Watch your score climb with every revision.",
-    gradient: "from-indigo-500 to-indigo-600",
   },
 ];
 
@@ -209,7 +202,6 @@ const templatePreviews = [
 export default function AtsLandingPage() {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
-  const historyHref = isAuthenticated ? "/student/ats/history" : "/login";
 
   const handleTryNow = () => {
     navigate(isAuthenticated ? "/student/ats/score" : "/login");
@@ -273,13 +265,6 @@ export default function AtsLandingPage() {
               <Wand2 className="w-5 h-5" />
               {isAuthenticated ? "Analyze My Resume" : "Try Now - It's Free"}
             </button>
-            <Link
-              to={historyHref}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-900 text-gray-950 dark:text-white font-medium rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md transition-all no-underline text-base"
-            >
-              <History className="w-4 h-4" />
-              {isAuthenticated ? "View History" : "Sign In"}
-            </Link>
           </motion.div>
 
           {/* Stats */}
@@ -624,15 +609,6 @@ export default function AtsLandingPage() {
                   {isAuthenticated ? "Get My ATS Score" : "Get Started - It's Free"}
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
-                <Link to={historyHref} className="no-underline">
-                  <motion.button
-                    whileHover={{ scale: 1.03, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="px-8 py-4 bg-white/10 text-white text-base font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all w-full"
-                  >
-                    {isAuthenticated ? "View History" : "Sign In"}
-                  </motion.button>
-                </Link>
               </div>
             </div>
           </motion.div>

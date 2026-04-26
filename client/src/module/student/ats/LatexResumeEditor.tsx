@@ -33,8 +33,6 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { useLatexAutoSave } from "./useLatexAutoSave";
 import { getLatexTemplate } from "./latex-templates.data";
 
-// ── Default LaTeX Template ──
-
 const DEFAULT_TEMPLATE = `\\documentclass[11pt,a4paper]{article}
 \\usepackage[margin=0.75in]{geometry}
 \\usepackage{enumitem}
@@ -93,9 +91,43 @@ Experienced software engineer with 5+ years building scalable web applications. 
 \\textbf{Open Source CLI Tool} -- A command-line tool for automating code reviews. 500+ GitHub stars. Built with Node.js and TypeScript.
 
 \\end{document}`;
-// Tool nav handled by shared AtsToolsNav
 
-// ── Component ──
+const cardCls =
+  "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
+const sectionKickerCls =
+  "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
+const sectionTitleCls =
+  "text-sm font-bold text-stone-900 dark:text-stone-50";
+
+function CardHeader({
+  kicker,
+  title,
+  right,
+}: {
+  kicker: string;
+  title: string;
+  right?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
+      <div className="flex flex-col gap-1 min-w-0">
+        <span className={sectionKickerCls}>
+          <span className="h-1 w-1 bg-lime-400" />
+          {kicker}
+        </span>
+        <span className={sectionTitleCls}>{title}</span>
+      </div>
+      {right && <div className="shrink-0">{right}</div>}
+    </div>
+  );
+}
+
+const ghostBtnCls =
+  "inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+const limeBtnCls =
+  "inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+const darkBtnCls =
+  "inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-50 dark:text-stone-900 bg-stone-900 dark:bg-stone-50 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function LatexResumeEditor() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -113,11 +145,11 @@ export default function LatexResumeEditor() {
     templateOverride,
   );
 
-  // Clear query param after mount so refresh loads from localStorage
   useEffect(() => {
     if (templateId) setSearchParams({}, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const [copied, setCopied] = useState(false);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [chatOpen, setChatOpen] = useState(false);
@@ -132,7 +164,6 @@ export default function LatexResumeEditor() {
     (user?.subscriptionPlan === "MONTHLY" || user?.subscriptionPlan === "YEARLY") &&
     user?.subscriptionStatus === "ACTIVE";
 
-  // Undo/redo history
   const historyRef = useRef<string[]>([code]);
   const historyPosRef = useRef(0);
   const skipHistoryRef = useRef(false);
@@ -141,10 +172,8 @@ export default function LatexResumeEditor() {
     if (skipHistoryRef.current) return;
     const history = historyRef.current;
     const pos = historyPosRef.current;
-    // Trim any future entries if we're not at the end
     historyRef.current = history.slice(0, pos + 1);
     historyRef.current.push(val);
-    // Keep max 50 entries
     if (historyRef.current.length > 50) historyRef.current.shift();
     historyPosRef.current = historyRef.current.length - 1;
   }, []);
@@ -175,23 +204,19 @@ export default function LatexResumeEditor() {
     pushHistory(newCode);
   }, [setCode, pushHistory]);
 
-  // Preview state
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [compiling, setCompiling] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const prevBlobUrl = useRef<string | null>(null);
 
-  // Detect missing file from error (e.g. "File `resume.cls' not found")
   const missingFile = previewError?.match(/File [`']([^'`]+)['`]\s*not found/i)?.[1] ?? null;
 
-  // Cleanup blob URL on unmount
   useEffect(() => {
     return () => {
       if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
     };
   }, []);
 
-  // Auto-compile on mount so the preview shows immediately
   const hasAutoCompiled = useRef(false);
   useEffect(() => {
     if (hasAutoCompiled.current || !code) return;
@@ -207,7 +232,7 @@ export default function LatexResumeEditor() {
         setPdfUrl(url);
       })
       .catch(() => {
-        // Silent fail on auto-compile — user can manually retry
+        // Silent fail on auto-compile, user can manually retry
       })
       .finally(() => setCompiling(false));
   }, [code, supportingFiles]);
@@ -218,7 +243,6 @@ export default function LatexResumeEditor() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Compile - sends to backend, shows PDF in preview
   const handleCompile = async () => {
     setCompiling(true);
     setPreviewError(null);
@@ -254,7 +278,6 @@ export default function LatexResumeEditor() {
     }
   };
 
-  // Download - compiles and triggers download
   const handleDownloadPdf = async () => {
     setCompiling(true);
     try {
@@ -282,197 +305,192 @@ export default function LatexResumeEditor() {
   };
 
   return (
-    <div className="relative max-w-360 mx-auto pb-12">
+    <div className="relative pb-16">
       <SEO title="LaTeX Resume Editor" noIndex />
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      {/* Page Header */}
+      {/* ─── Editorial header ─── */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-8 px-4"
+        transition={{ duration: 0.4 }}
+        className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
       >
-        <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-2 sm:mb-3">
-          LaTeX <span className="text-gradient-accent">Resume Editor</span>
-        </h1>
-        <p className="text-sm sm:text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-          Write LaTeX, compile to PDF, and download your polished resume
-        </p>
+        <div>
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            resume / latex editor
+          </div>
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Write LaTeX.
+          </h1>
+          <p className="mt-3 text-sm text-stone-500 max-w-md">
+            Write LaTeX on the left, see the PDF on the right. Upload supporting files or chat with AI to refine your resume.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCompile}
+            disabled={compiling}
+            className={darkBtnCls}
+          >
+            {compiling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+            {compiling ? "Compiling..." : "Compile"}
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            disabled={compiling}
+            className={limeBtnCls}
+          >
+            <Download className="w-3.5 h-3.5" /> Download PDF
+          </button>
+        </div>
       </motion.div>
 
       <AtsToolsNav />
 
-      {/* Toolbar */}
+      {/* ─── Secondary toolbar ─── */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="px-4 sm:px-6 mb-5"
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className={`${cardCls} mb-5`}
       >
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-3 sm:p-4">
-          {/* Row 1: Mobile view toggle + primary actions */}
-          <div className="flex items-center gap-2">
-            {/* Mobile toggle */}
-            <div className="flex lg:hidden bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5">
-              <button
-                onClick={() => setMobileView("editor")}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                  mobileView === "editor" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
-                }`}
-              >
-                <FileCode2 className="w-3.5 h-3.5 inline mr-1" />
-                Editor
-              </button>
-              <button
-                onClick={() => setMobileView("preview")}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                  mobileView === "preview" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
-                }`}
-              >
-                <Eye className="w-3.5 h-3.5 inline mr-1" />
-                Preview
-              </button>
-            </div>
-
-            <div className="ml-auto flex items-center gap-2">
-              <button
-                onClick={handleCompile}
-                disabled={compiling}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {compiling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-                <span className="hidden sm:inline">{compiling ? "Compiling..." : "Compile"}</span>
-              </button>
-
-              <button
-                onClick={handleDownloadPdf}
-                disabled={compiling}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs font-semibold bg-gray-950 dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Download</span>
-              </button>
-            </div>
+        <div className="flex items-center gap-2 flex-wrap p-3">
+          {/* Mobile panel toggle */}
+          <div className="flex lg:hidden gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setMobileView("editor")}
+              className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-colors cursor-pointer border-0 ${
+                mobileView === "editor"
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                  : "bg-white dark:bg-stone-900 text-stone-500"
+              }`}
+            >
+              <FileCode2 className="w-3 h-3 inline mr-1" /> editor
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileView("preview")}
+              className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-colors cursor-pointer border-0 ${
+                mobileView === "preview"
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                  : "bg-white dark:bg-stone-900 text-stone-500"
+              }`}
+            >
+              <Eye className="w-3 h-3 inline mr-1" /> preview
+            </button>
           </div>
 
-          {/* Row 2: Secondary actions */}
-          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-            <button
-              onClick={handleCopyLatex}
-              title="Copy LaTeX"
-              className="inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:gap-1.5 sm:px-3 sm:py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          <button
+            type="button"
+            onClick={handleCopyLatex}
+            className={ghostBtnCls}
+            title="Copy LaTeX"
+          >
+            {copied ? <Check className="w-3.5 h-3.5 text-lime-500" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? "Copied" : "Copy"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleUndo}
+            disabled={historyPosRef.current <= 0}
+            className={ghostBtnCls}
+            title="Undo"
+          >
+            <Undo2 className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleRedo}
+            disabled={historyPosRef.current >= historyRef.current.length - 1}
+            className={ghostBtnCls}
+            title="Redo"
+          >
+            <Redo2 className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="ml-auto flex items-center gap-2 flex-wrap">
+            <Link
+              to="/student/ats/latex-templates"
+              className={`${ghostBtnCls} no-underline`}
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-              <span className="hidden sm:inline">{copied ? "Copied" : "Copy"}</span>
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Templates</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setFilesOpen(!filesOpen)}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
+                filesOpen
+                  ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                  : "bg-transparent text-stone-700 dark:text-stone-300 border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5"
+              }`}
+              title="Supporting files"
+            >
+              <FileCog className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Files</span>
+              {supportingFiles.length > 0 && (
+                <span className="text-[10px] font-mono bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 px-1.5 rounded">
+                  {supportingFiles.length}
+                </span>
+              )}
             </button>
 
             <button
-              onClick={handleUndo}
-              disabled={historyPosRef.current <= 0}
-              title="Undo"
-              className="inline-flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              type="button"
+              onClick={() => {
+                if (!isPremium) {
+                  toast.error("AI Assistant is a Premium feature. Upgrade to unlock.");
+                  navigate("/student/checkout");
+                  return;
+                }
+                setChatOpen(!chatOpen);
+              }}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
+                chatOpen
+                  ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                  : "bg-transparent text-stone-700 dark:text-stone-300 border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5"
+              }`}
+              title={isPremium ? "AI Assistant" : "AI Assistant, Premium only"}
             >
-              <Undo2 className="w-3.5 h-3.5" />
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">AI Assistant</span>
+              {!isPremium && <Lock className="w-3 h-3 text-amber-500" />}
             </button>
-
-            <button
-              onClick={handleRedo}
-              disabled={historyPosRef.current >= historyRef.current.length - 1}
-              title="Redo"
-              className="inline-flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <Redo2 className="w-3.5 h-3.5" />
-            </button>
-
-            <div className="ml-auto flex items-center gap-2">
-              <Link
-                to="/student/ats/latex-templates"
-                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors no-underline"
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Templates</span>
-              </Link>
-
-              <button
-                onClick={() => setFilesOpen(!filesOpen)}
-                title="Supporting files"
-                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
-                  filesOpen
-                    ? "bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800"
-                    : "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                <FileCog className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Files</span>
-                {supportingFiles.length > 0 && (
-                  <span className="text-[10px] bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 px-1.5 rounded-md font-semibold">
-                    {supportingFiles.length}
-                  </span>
-                )}
-              </button>
-
-              <button
-                onClick={() => {
-                  if (!isPremium) {
-                    toast.error("AI Assistant is a Premium feature. Upgrade to unlock.");
-                    navigate("/student/checkout");
-                    return;
-                  }
-                  setChatOpen(!chatOpen);
-                }}
-                title={isPremium ? "AI Assistant" : "AI Assistant — Premium only"}
-                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
-                  chatOpen
-                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
-                    : "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">AI Assistant</span>
-                {!isPremium && <Lock className="w-3 h-3 text-amber-500" />}
-              </button>
-            </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Supporting Files Panel */}
+      {/* ─── Supporting files panel ─── */}
       {filesOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="px-4 sm:px-6 mb-4"
+          className={`${cardCls} mb-5 overflow-hidden`}
         >
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <FileCog className="w-4 h-4 text-violet-500" />
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Supporting Files
-              </h3>
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                .cls, .sty, .bst, .bib, .tex
+          <CardHeader
+            kicker="assets"
+            title="Supporting files"
+            right={
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                .cls .sty .bst .bib .tex
               </span>
-            </div>
+            }
+          />
 
+          <div className="p-5">
             {supportingFiles.length > 0 && (
-              <div className="mb-3">
-                {/* Collapsible header */}
+              <div className="mb-4">
                 <button
+                  type="button"
                   onClick={() => setFileListCollapsed(!fileListCollapsed)}
-                  className="flex items-center gap-1.5 mb-2 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 mb-2 text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors border-0 bg-transparent cursor-pointer"
                 >
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform ${fileListCollapsed ? "-rotate-90" : ""}`}
@@ -485,34 +503,36 @@ export default function LatexResumeEditor() {
                     {supportingFiles.map((sf, idx) => (
                       <div
                         key={idx}
-                        className="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden"
+                        className="bg-stone-50 dark:bg-stone-950/60 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden"
                       >
                         <div className="flex items-center gap-2 px-3 py-2">
-                          <FileCode2 className="w-3.5 h-3.5 text-violet-500 shrink-0" />
-                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300 flex-1 truncate">
+                          <FileCode2 className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                          <span className="text-xs font-medium text-stone-700 dark:text-stone-300 flex-1 truncate font-mono">
                             {sf.filename}
                           </span>
-                          <span className="text-[10px] text-gray-400">
-                            {Math.round(sf.content.length / 1024)}KB
+                          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+                            {Math.round(sf.content.length / 1024)}kb
                           </span>
                           <button
+                            type="button"
                             onClick={() => setEditingFileIdx(editingFileIdx === idx ? null : idx)}
-                            className="text-xs text-indigo-500 hover:text-indigo-600 font-medium"
+                            className="text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors border-0 bg-transparent cursor-pointer"
                           >
-                            {editingFileIdx === idx ? "Close" : "Edit"}
+                            {editingFileIdx === idx ? "close" : "edit"}
                           </button>
                           <button
+                            type="button"
                             onClick={() => {
                               setSupportingFiles(supportingFiles.filter((_, i) => i !== idx));
                               if (editingFileIdx === idx) setEditingFileIdx(null);
                             }}
-                            className="w-5 h-5 flex items-center justify-center rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors"
+                            className="w-5 h-5 flex items-center justify-center rounded hover:bg-red-50 dark:hover:bg-red-950/30 text-stone-400 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
                           >
                             <X className="w-3 h-3" />
                           </button>
                         </div>
                         {editingFileIdx === idx && (
-                          <div className="border-t border-gray-100 dark:border-gray-700">
+                          <div className="border-t border-stone-200 dark:border-white/10">
                             <textarea
                               value={sf.content}
                               onChange={(e) => {
@@ -520,7 +540,7 @@ export default function LatexResumeEditor() {
                                 updated[idx] = { ...sf, content: e.target.value };
                                 setSupportingFiles(updated);
                               }}
-                              className="w-full h-48 px-3 py-2 text-xs font-mono bg-transparent text-gray-700 dark:text-gray-300 resize-none focus:outline-none"
+                              className="w-full h-48 px-3 py-2 text-xs font-mono bg-transparent text-stone-700 dark:text-stone-300 resize-none focus:outline-none"
                               spellCheck={false}
                             />
                           </div>
@@ -532,7 +552,6 @@ export default function LatexResumeEditor() {
               </div>
             )}
 
-            {/* Upload or add manually */}
             <input
               ref={fileInputRef}
               type="file"
@@ -558,24 +577,27 @@ export default function LatexResumeEditor() {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <button
+                type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
+                className={limeBtnCls}
               >
-                <Upload className="w-3 h-3" />
-                Upload File
+                <Upload className="w-3 h-3" /> Upload file
               </button>
 
-              <span className="hidden sm:inline text-[11px] text-gray-400 dark:text-gray-500">or</span>
+              <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                or
+              </span>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-1">
                 <input
                   type="text"
                   value={newFileName}
                   onChange={(e) => setNewFileName(e.target.value)}
                   placeholder="resume.cls"
-                  className="flex-1 min-w-0 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 placeholder:text-gray-400 dark:placeholder:text-gray-600 text-gray-700 dark:text-gray-300"
+                  className="flex-1 min-w-0 text-xs font-mono px-3 py-2 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
                 />
                 <button
+                  type="button"
                   onClick={() => {
                     const name = newFileName.trim();
                     if (!name || !/\.(cls|sty|bst|bib|tex)$/.test(name)) return;
@@ -586,46 +608,42 @@ export default function LatexResumeEditor() {
                     setNewFileName("");
                   }}
                   disabled={!newFileName.trim() || !/\.(cls|sty|bst|bib|tex)$/.test(newFileName.trim())}
-                  className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/50 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                  className={`${ghostBtnCls} shrink-0`}
                 >
-                  <Plus className="w-3 h-3" />
-                  Add
+                  <Plus className="w-3 h-3" /> Add
                 </button>
               </div>
             </div>
 
-            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
-              Upload .cls, .sty, .bst, .bib, or .tex files that your LaTeX template requires (e.g. resume.cls).
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-3">
+              upload .cls, .sty, .bst, .bib, or .tex files your template requires (e.g. resume.cls).
             </p>
           </div>
         </motion.div>
       )}
 
-      {/* Split Pane */}
+      {/* ─── Split pane ─── */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.25 }}
-        className="px-4 sm:px-6"
+        transition={{ duration: 0.4, delay: 0.15 }}
       >
-        <div className="flex flex-col lg:flex-row gap-4 h-[85vh] lg:h-[calc(100vh-80px)] min-h-120">
-          {/* Editor Panel */}
+        <div className="flex flex-col lg:flex-row gap-5 h-[85vh] lg:h-[calc(100vh-80px)] min-h-120">
+          {/* Editor */}
           <div
-            className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden min-h-0 ${
+            className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden min-h-0 ${
               mobileView === "preview" ? "hidden lg:flex" : "flex"
             }`}
           >
-            <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
-                <FileCode2 className="w-3.5 h-3.5 text-indigo-500" />
-              </div>
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                LaTeX Source
-              </span>
-              <span className="ml-auto text-[10px] font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                Professional
-              </span>
-            </div>
+            <CardHeader
+              kicker="source"
+              title="LaTeX editor"
+              right={
+                <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                  / professional
+                </span>
+              }
+            />
             <div className="flex-1 overflow-auto">
               <CodeMirror
                 value={code}
@@ -644,24 +662,28 @@ export default function LatexResumeEditor() {
             </div>
           </div>
 
-          {/* Preview Panel */}
+          {/* Preview */}
           <div
-            className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden min-h-0 ${
+            className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden min-h-0 ${
               mobileView === "editor" ? "hidden lg:flex" : "flex"
             }`}
           >
-            <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
-                <Eye className="w-3.5 h-3.5 text-violet-500" />
-              </div>
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                PDF Preview
-              </span>
-              {compiling && (
-                <Loader2 className="w-3.5 h-3.5 text-indigo-500 animate-spin ml-auto" />
-              )}
-            </div>
-            <div className="flex-1 relative bg-gray-50/50 dark:bg-gray-800/30">
+            <CardHeader
+              kicker="output"
+              title="PDF preview"
+              right={
+                compiling ? (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                    <Loader2 className="w-3 h-3 animate-spin" /> compiling
+                  </span>
+                ) : pdfUrl ? (
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                    / ready
+                  </span>
+                ) : null
+              }
+            />
+            <div className="flex-1 relative bg-stone-50/60 dark:bg-stone-950/40">
               {pdfUrl && !previewError && (
                 <iframe
                   src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
@@ -673,56 +695,62 @@ export default function LatexResumeEditor() {
               {previewError && (
                 <div className="absolute inset-0 flex items-start justify-center p-6 overflow-y-auto">
                   <div className="max-w-md w-full">
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-red-200 dark:border-red-800/50 shadow-lg p-6">
+                    <div className={`${cardCls} border-red-200 dark:border-red-900/40 p-6`}>
                       <div className="flex items-start gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-center justify-center shrink-0">
                           <AlertCircle className="w-5 h-5 text-red-500" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                            Compilation Failed
-                          </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            Fix the errors below and try again
+                          <div className={sectionKickerCls}>
+                            <span className="h-1 w-1 bg-red-500" />
+                            error
+                          </div>
+                          <h3 className={sectionTitleCls + " mt-1"}>Compilation failed</h3>
+                          <p className="text-xs text-stone-500 mt-0.5">
+                            Fix the errors below and try again.
                           </p>
                         </div>
                       </div>
-                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 rounded-xl p-4">
-                        <pre className="text-xs text-red-700 dark:text-red-400 whitespace-pre-wrap leading-relaxed max-h-40 overflow-auto">
+                      <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 rounded-md p-4">
+                        <pre className="text-xs text-red-700 dark:text-red-400 whitespace-pre-wrap leading-relaxed max-h-40 overflow-auto font-mono">
                           {previewError}
                         </pre>
                       </div>
 
-                      {/* Missing file hint */}
                       {missingFile && (
-                        <div className="mt-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4">
-                          <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-2">
-                            Missing file: {missingFile}
+                        <div className="mt-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-md p-4">
+                          <div className={sectionKickerCls}>
+                            <span className="h-1 w-1 bg-amber-500" />
+                            missing file
+                          </div>
+                          <p className="text-xs font-bold text-amber-800 dark:text-amber-300 mt-1 mb-2 font-mono">
+                            {missingFile}
                           </p>
                           <p className="text-xs text-amber-700 dark:text-amber-400 mb-3 leading-relaxed">
-                            Your LaTeX template requires <span className="font-mono font-semibold">{missingFile}</span>. Upload it using the <span className="font-semibold">Files</span> button in the toolbar:
+                            Your template requires <span className="font-mono font-bold">{missingFile}</span>. Upload it using the Files button in the toolbar:
                           </p>
                           <ol className="text-xs text-amber-700 dark:text-amber-400 space-y-1 mb-3 list-decimal list-inside">
-                            <li>Click the <span className="font-semibold">Files</span> button in the toolbar above</li>
-                            <li>Click <span className="font-semibold">Upload File</span> and select your <span className="font-mono">{missingFile}</span></li>
-                            <li>Click <span className="font-semibold">Compile</span> again</li>
+                            <li>Click the <span className="font-bold">Files</span> button above</li>
+                            <li>Click <span className="font-bold">Upload file</span> and select <span className="font-mono">{missingFile}</span></li>
+                            <li>Click <span className="font-bold">Compile</span> again</li>
                           </ol>
                           <button
+                            type="button"
                             onClick={() => {
                               setFilesOpen(true);
                               setPreviewError(null);
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-amber-50 bg-amber-600 hover:bg-amber-700 transition-colors border-0 cursor-pointer"
                           >
-                            <Upload className="w-3 h-3" />
-                            Open Files & Upload
+                            <Upload className="w-3 h-3" /> Open files
                           </button>
                         </div>
                       )}
 
                       <button
+                        type="button"
                         onClick={() => setPreviewError(null)}
-                        className="mt-4 w-full py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        className={`mt-4 w-full justify-center ${ghostBtnCls}`}
                       >
                         Dismiss
                       </button>
@@ -733,15 +761,24 @@ export default function LatexResumeEditor() {
 
               {!pdfUrl && !previewError && !compiling && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                      <Play className="w-7 h-7 text-indigo-400" />
+                  <div className="text-center max-w-xs">
+                    <div className="w-16 h-16 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center mb-5 mx-auto relative">
+                      <Play className="w-7 h-7 text-stone-400 dark:text-stone-600" />
+                      <span className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400" />
                     </div>
-                    <h3 className="text-gray-800 dark:text-gray-200 font-bold text-base mb-1.5">
-                      Ready to Compile
+                    <div className={sectionKickerCls + " justify-center mb-2"}>
+                      <span className="h-1 w-1 bg-lime-400" />
+                      idle
+                    </div>
+                    <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
+                      Ready to compile.
                     </h3>
-                    <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs mx-auto">
-                      Click <span className="font-semibold text-indigo-600 dark:text-indigo-400">Compile</span> to render your LaTeX resume as PDF
+                    <p className="text-sm text-stone-500 leading-relaxed">
+                      Click{" "}
+                      <span className="font-bold text-stone-900 dark:text-stone-50">
+                        Compile
+                      </span>{" "}
+                      to render your LaTeX source as a PDF.
                     </p>
                   </div>
                 </div>
@@ -750,22 +787,24 @@ export default function LatexResumeEditor() {
               {!pdfUrl && compiling && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="relative w-16 h-16 mx-auto mb-4">
-                      <div className="absolute inset-0 rounded-full border-3 border-indigo-100 dark:border-indigo-900/50" />
+                    <div className="relative w-16 h-16 mx-auto mb-5">
+                      <div className="absolute inset-0 rounded-md border border-stone-200 dark:border-white/10" />
                       <motion.div
-                        className="absolute inset-0 rounded-full border-3 border-indigo-500 border-t-transparent"
+                        className="absolute inset-0 rounded-md border border-lime-400 border-t-transparent"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <Code2 className="w-5 h-5 text-indigo-500" />
+                        <Code2 className="w-5 h-5 text-lime-500" />
                       </div>
                     </div>
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
-                      Compiling LaTeX
-                    </h3>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
-                      This usually takes a few seconds
+                    <div className={sectionKickerCls + " justify-center mb-2"}>
+                      <span className="h-1 w-1 bg-lime-400" />
+                      compiling
+                    </div>
+                    <h3 className={sectionTitleCls}>Rendering LaTeX</h3>
+                    <p className="text-xs text-stone-500 mt-1">
+                      This usually takes a few seconds.
                     </p>
                   </div>
                 </div>
@@ -775,7 +814,6 @@ export default function LatexResumeEditor() {
         </div>
       </motion.div>
 
-      {/* AI Chat Panel — Premium only; click handler already blocks free users */}
       {chatOpen && isPremium && (
         <LatexChatPanel
           code={code}

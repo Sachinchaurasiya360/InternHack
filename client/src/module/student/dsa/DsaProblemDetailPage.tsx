@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
-  Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowRight,
+  Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
   History, Terminal, Lock, Crown, Code2,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
@@ -14,22 +14,18 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
+import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 
-const DIFF_COLORS: Record<string, string> = {
-  Easy: "text-emerald-600 dark:text-emerald-400",
-  Medium: "text-amber-600 dark:text-amber-400",
-  Hard: "text-red-600 dark:text-red-400",
-};
-
-const DIFF_BG: Record<string, string> = {
-  Easy: "bg-emerald-500/10 border-emerald-500/20",
-  Medium: "bg-amber-500/10 border-amber-500/20",
-  Hard: "bg-red-500/10 border-red-500/20",
+const DIFF_STYLE: Record<string, string> = {
+  Easy:   "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Medium: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
+  Hard:   "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
 const DEFAULT_CODE: Record<DsaLanguage, string> = {
@@ -81,6 +77,23 @@ public class Main {
 `,
 };
 
+function MetaChip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
+      {children}
+    </span>
+  );
+}
+
+function SectionLabel({ dot = "bg-lime-400", children }: { dot?: string; children: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+      <span className={`h-1 w-1 ${dot}`} />
+      {children}
+    </div>
+  );
+}
+
 export default function DsaProblemDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuthStore();
@@ -90,13 +103,11 @@ export default function DsaProblemDetailPage() {
     (user?.subscriptionPlan === "MONTHLY" || user?.subscriptionPlan === "YEARLY") &&
     user?.subscriptionStatus === "ACTIVE";
 
-  // Problem state
   const [showAllCompanies, setShowAllCompanies] = useState(false);
   const [expandedHint, setExpandedHint] = useState<number | null>(null);
   const [showNotes, setShowNotes] = useState(false);
   const [noteValue, setNoteValue] = useState("");
 
-  // Code editor state
   const [activeTab, setActiveTab] = useState<"problem" | "code">("problem");
   const [rightTab, setRightTab] = useState<"results" | "history" | "output">("results");
   const [language, setLanguage] = useState<DsaLanguage>("python");
@@ -106,7 +117,6 @@ export default function DsaProblemDetailPage() {
     java: DEFAULT_CODE.java,
   });
 
-  // Load saved code from localStorage
   useEffect(() => {
     if (!slug) return;
     for (const lang of ["python", "cpp", "java"] as DsaLanguage[]) {
@@ -131,7 +141,6 @@ export default function DsaProblemDetailPage() {
     }
   }, [slug]);
 
-  // Queries
   const { data: problem, isLoading } = useQuery({
     queryKey: queryKeys.dsa.problem(slug!),
     queryFn: () => api.get<DsaProblemDetail>(`/dsa/problems/${slug}`).then((r) => r.data),
@@ -146,7 +155,6 @@ export default function DsaProblemDetailPage() {
     staleTime: 60 * 1000,
   });
 
-  // Mutations
   const toggleMutation = useMutation({
     mutationFn: (problemId: number) => api.post(`/dsa/problems/${problemId}/toggle`).then((r) => r.data),
     onSuccess: () => {
@@ -198,25 +206,57 @@ export default function DsaProblemDetailPage() {
   }, [problem, user, isPremium, language, codeMap, executeMutation]);
 
   if (isLoading) return <LoadingScreen />;
-  if (!problem) return <div className="p-8 text-center text-gray-500">Problem not found</div>;
+  if (!problem) {
+    return (
+      <div className="relative max-w-4xl mx-auto py-20 text-center">
+        <p className="text-sm text-stone-600 dark:text-stone-400">Problem not found.</p>
+        <Link
+          to="/learn/dsa"
+          className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
+        >
+          back to dsa <ArrowUpRight className="w-3 h-3" />
+        </Link>
+      </div>
+    );
+  }
 
   const visibleCompanies = showAllCompanies ? problem.companies : problem.companies.slice(0, 20);
 
   return (
     <>
-      <SEO title={`${problem.title} - DSA Practice`} description={problem.description?.slice(0, 160)} />
+      <SEO
+        title={`${problem.title} - DSA Practice`}
+        description={problem.description?.slice(0, 160)}
+        canonicalUrl={canonicalUrl(`/learn/dsa/problem/${problem.slug || problem.id}`)}
+        structuredData={[
+          breadcrumbSchema([
+            { name: "Home", url: SITE_URL },
+            { name: "Learn", url: `${SITE_URL}/learn` },
+            { name: "DSA", url: `${SITE_URL}/learn/dsa` },
+            { name: problem.title, url: `${SITE_URL}/learn/dsa/problem/${problem.slug || problem.id}` },
+          ]),
+        ]}
+      />
 
-      <div className="h-[calc(100vh-64px)] flex flex-col bg-white dark:bg-gray-950">
+      <div className="h-[calc(100vh-64px)] flex flex-col text-stone-900 dark:text-stone-50 bg-white dark:bg-stone-950">
         {/* ── Top bar ── */}
-        <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b border-gray-200 dark:border-gray-800/80 bg-white dark:bg-gray-950 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-stone-200 dark:border-white/10 shrink-0">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md border shrink-0 ${DIFF_BG[problem.difficulty]} ${DIFF_COLORS[problem.difficulty]}`}>
-              {problem.difficulty}
-            </span>
-            <h1 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-              {problem.leetcodeId && <span className="text-gray-400 dark:text-gray-500 mr-1.5">#{problem.leetcodeId}</span>}
-              {problem.title}
-            </h1>
+            <MetaChip className={DIFF_STYLE[problem.difficulty]}>{problem.difficulty}</MetaChip>
+            <div className="min-w-0">
+              <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <span className="h-1 w-1 bg-lime-400" />
+                learn / dsa / problem
+              </div>
+              <h1 className="mt-0.5 text-sm sm:text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate">
+                {problem.leetcodeId && (
+                  <span className="text-stone-400 dark:text-stone-600 font-mono mr-1.5 tabular-nums">
+                    #{problem.leetcodeId}
+                  </span>
+                )}
+                {problem.title}
+              </h1>
+            </div>
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
@@ -224,19 +264,23 @@ export default function DsaProblemDetailPage() {
               <>
                 <button
                   onClick={() => toggleMutation.mutate(problem.id)}
-                  className={`p-2 rounded-lg transition-all ${problem.solved
-                    ? "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-                    : "text-gray-400 hover:text-emerald-500 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                   title={problem.solved ? "Mark unsolved" : "Mark solved"}
+                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${
+                    problem.solved
+                      ? "text-lime-600 dark:text-lime-400 border-lime-300 dark:border-lime-900/60 bg-lime-50 dark:bg-lime-900/10"
+                      : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+                  }`}
                 >
                   {problem.solved ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
                 </button>
                 <button
                   onClick={() => bookmarkMutation.mutate(problem.id)}
-                  className={`p-2 rounded-lg transition-all ${problem.bookmarked
-                    ? "text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                    : "text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                   title={problem.bookmarked ? "Remove bookmark" : "Bookmark"}
+                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${
+                    problem.bookmarked
+                      ? "text-stone-900 dark:text-stone-50 border-stone-900 dark:border-stone-50"
+                      : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+                  }`}
                 >
                   {problem.bookmarked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
                 </button>
@@ -247,24 +291,28 @@ export default function DsaProblemDetailPage() {
                 href={problem.leetcodeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-1 inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors text-xs font-semibold"
+                className="ml-1 inline-flex items-center gap-1.5 px-3 py-2 border border-stone-300 dark:border-white/15 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
               >
-                <ExternalLink className="w-3 h-3" /> LeetCode
+                <ExternalLink className="w-3 h-3" /> leetcode
               </a>
             )}
           </div>
         </div>
 
         {/* ── Mobile tab bar ── */}
-        <div className="lg:hidden flex border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shrink-0">
+        <div className="lg:hidden flex border-b border-stone-200 dark:border-white/10 shrink-0">
           {(["problem", "code"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2.5 text-sm font-medium transition-colors relative ${activeTab === tab ? "text-blue-600 dark:text-blue-400" : "text-gray-500"}`}
+              className={`flex-1 relative py-3 text-[10px] font-mono uppercase tracking-widest transition-colors ${
+                activeTab === tab
+                  ? "text-stone-900 dark:text-stone-50"
+                  : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
+              }`}
             >
-              {tab === "problem" ? "Problem" : "Code"}
-              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />}
+              {tab}
+              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
             </button>
           ))}
         </div>
@@ -272,106 +320,145 @@ export default function DsaProblemDetailPage() {
         {/* ── Split pane ── */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[45fr_55fr] min-h-0">
           {/* LEFT: Problem details */}
-          <div className={`overflow-y-auto border-r border-gray-200 dark:border-gray-800/80 bg-white dark:bg-gray-950 ${activeTab !== "problem" ? "hidden lg:block" : ""}`}>
-            <div className="p-5 space-y-4">
-              {/* Acceptance + stats */}
-              <div className="flex flex-wrap items-center gap-3">
-                {problem.acceptanceRate && (
-                  <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    <BarChart3 className="w-3.5 h-3.5" /> {problem.acceptanceRate} acceptance
-                  </span>
-                )}
-                {problem.totalSubmissions && (
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {(problem.totalAccepted ?? 0).toLocaleString()} / {problem.totalSubmissions.toLocaleString()}
-                  </span>
-                )}
-              </div>
+          <div
+            className={`overflow-y-auto border-r border-stone-200 dark:border-white/10 ${
+              activeTab !== "problem" ? "hidden lg:block" : ""
+            }`}
+          >
+            <div className="p-5 space-y-5">
+              {/* Stats row */}
+              {(problem.acceptanceRate || problem.totalSubmissions) && (
+                <div className="flex flex-wrap items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+                  {problem.acceptanceRate && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <BarChart3 className="w-3 h-3" /> {problem.acceptanceRate} acceptance
+                    </span>
+                  )}
+                  {problem.totalSubmissions && (
+                    <span>
+                      {(problem.totalAccepted ?? 0).toLocaleString()} / {problem.totalSubmissions.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Tags */}
               {problem.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {problem.tags.map((t) => (
-                    <Link key={t} to={`/learn/dsa/${t}`} className="px-2 py-0.5 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors capitalize">
-                      {t.replace(/-/g, " ")}
-                    </Link>
-                  ))}
+                <div>
+                  <SectionLabel>tags</SectionLabel>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {problem.tags.map((t) => (
+                      <Link
+                        key={t}
+                        to={`/learn/dsa/${t}`}
+                        className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border border-stone-200 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
+                      >
+                        {t.replace(/-/g, " ")}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* Companies */}
               {problem.companies.length > 0 && (
-                <div className="rounded-xl border border-gray-100 dark:border-gray-800/80 p-3 bg-gray-50/50 dark:bg-gray-900/50">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="w-3.5 h-3.5 text-gray-400" />
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                      Asked by {problem.companies.length} {problem.companies.length === 1 ? "company" : "companies"}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {visibleCompanies.map((c) => (
-                      <span key={c} className="px-2 py-0.5 text-xs bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md border border-gray-100 dark:border-gray-700/50 capitalize">
-                        {c.replace(/-/g, " ")}
-                      </span>
-                    ))}
-                    {problem.companies.length > 20 && (
-                      <button onClick={() => setShowAllCompanies(!showAllCompanies)} className="px-2 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                        {showAllCompanies ? "Less" : `+${problem.companies.length - 20}`}
-                      </button>
-                    )}
+                <div>
+                  <SectionLabel>
+                    <Building2 className="w-3 h-3" /> asked by {problem.companies.length}{" "}
+                    {problem.companies.length === 1 ? "company" : "companies"}
+                  </SectionLabel>
+                  <div className="mt-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {visibleCompanies.map((c) => (
+                        <MetaChip key={c}>{c.replace(/-/g, " ")}</MetaChip>
+                      ))}
+                      {problem.companies.length > 20 && (
+                        <button
+                          onClick={() => setShowAllCompanies(!showAllCompanies)}
+                          className="inline-flex items-center px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:border-stone-900 dark:hover:border-stone-50 transition-colors"
+                        >
+                          {showAllCompanies ? "less" : `+${problem.companies.length - 20}`}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Description */}
               {problem.description && !problem.isPremium && (
-                <div
-                  className="prose dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ __html: formatDescription(problem.description) }}
-                />
+                <div>
+                  <SectionLabel>description</SectionLabel>
+                  <div className="mt-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
+                    <div
+                      className="prose dark:prose-invert max-w-none text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ __html: formatDescription(problem.description) }}
+                    />
+                  </div>
+                </div>
               )}
 
               {problem.isPremium && (
-                <div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 text-center">
-                  <p className="text-amber-700 dark:text-amber-400 font-semibold text-sm">LeetCode Premium problem</p>
-                  <p className="text-amber-600/70 dark:text-amber-400/60 text-xs mt-1">Visit LeetCode to view the full description.</p>
+                <div className="bg-white dark:bg-stone-900 border border-amber-300 dark:border-amber-900/60 rounded-md p-4 text-center">
+                  <p className="text-sm font-bold text-amber-700 dark:text-amber-400">LeetCode Premium problem</p>
+                  <p className="text-xs text-stone-500 mt-1">Visit LeetCode to view the full description.</p>
                 </div>
               )}
 
               {/* Constraints */}
               {problem.constraints && (
-                <div className="rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800/80 p-3">
-                  <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Constraints</h3>
-                  <div
-                    className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: formatDescription(problem.constraints) }}
-                  />
+                <div>
+                  <SectionLabel>constraints</SectionLabel>
+                  <div className="mt-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
+                    <div
+                      className="text-sm text-stone-700 dark:text-stone-300 whitespace-pre-wrap leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: formatDescription(problem.constraints) }}
+                    />
+                  </div>
                 </div>
               )}
 
               {/* Hints */}
               {problem.hints.length > 0 && (
-                <div className="rounded-xl border border-gray-100 dark:border-gray-800/80 overflow-hidden">
-                  <div className="flex items-center gap-2 px-3 pt-3 pb-2">
-                    <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-                    <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                      {problem.hints.length} {problem.hints.length === 1 ? "Hint" : "Hints"}
-                    </h3>
-                  </div>
-                  <div className="divide-y divide-gray-100 dark:divide-gray-800/80">
+                <div>
+                  <SectionLabel dot="bg-amber-400">
+                    <Lightbulb className="w-3 h-3 text-amber-500" /> {problem.hints.length}{" "}
+                    {problem.hints.length === 1 ? "hint" : "hints"}
+                  </SectionLabel>
+                  <div className="mt-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md divide-y divide-stone-100 dark:divide-white/5 overflow-hidden">
                     {problem.hints.map((hint, i) => (
                       <div key={i}>
                         <button
                           onClick={() => setExpandedHint(expandedHint === i ? null : i)}
-                          className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-medium text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
+                          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors"
                         >
-                          <span>Hint {i + 1}</span>
-                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedHint === i ? "rotate-180" : ""}`} />
+                          <span className="inline-flex items-center gap-3">
+                            <span className="text-[10px] font-mono font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                              {String(i + 1).padStart(2, "0")}
+                            </span>
+                            <span className="text-[11px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
+                              hint {i + 1}
+                            </span>
+                          </span>
+                          <ChevronDown
+                            className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${
+                              expandedHint === i ? "rotate-180" : ""
+                            }`}
+                          />
                         </button>
                         <AnimatePresence>
                           {expandedHint === i && (
-                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                              <div className="px-3 pb-3 text-sm text-gray-600 dark:text-gray-400 leading-relaxed" dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              <div
+                                className="px-4 pb-4 pl-11 text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: cleanHint(hint) }}
+                              />
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -383,57 +470,75 @@ export default function DsaProblemDetailPage() {
 
               {/* Notes */}
               {user && (
-                <div className="rounded-xl border border-gray-100 dark:border-gray-800/80 overflow-hidden">
-                  <button
-                    onClick={() => { setShowNotes(!showNotes); if (!showNotes) setNoteValue(problem.notes ?? ""); }}
-                    className="w-full flex items-center justify-between px-3 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <StickyNote className="w-3.5 h-3.5 text-blue-500" />
-                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">My Notes</span>
-                      {problem.notes && !showNotes && <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />}
-                    </div>
-                    <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${showNotes ? "rotate-180" : ""}`} />
-                  </button>
-                  <AnimatePresence>
-                    {showNotes && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                        <div className="px-3 pb-3">
-                          <textarea
-                            value={noteValue}
-                            onChange={(e) => setNoteValue(e.target.value)}
-                            className="w-full h-28 p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-sm resize-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 focus:outline-none transition-shadow"
-                            placeholder="Write your approach, key observations..."
-                          />
-                          <div className="flex justify-end mt-2">
-                            <button
-                              onClick={() => notesMutation.mutate({ problemId: problem.id, notes: noteValue })}
-                              disabled={notesMutation.isPending}
-                              className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                            >
-                              {notesMutation.isPending ? "Saving..." : "Save"}
-                            </button>
+                <div>
+                  <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                    <button
+                      onClick={() => {
+                        setShowNotes(!showNotes);
+                        if (!showNotes) setNoteValue(problem.notes ?? "");
+                      }}
+                      className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors"
+                    >
+                      <span className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
+                        <StickyNote className="w-3 h-3 text-stone-500" /> my notes
+                        {problem.notes && !showNotes && <span className="h-1 w-1 bg-lime-400" />}
+                      </span>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${
+                          showNotes ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <AnimatePresence>
+                      {showNotes && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-4 pb-4">
+                            <textarea
+                              value={noteValue}
+                              onChange={(e) => setNoteValue(e.target.value)}
+                              className="w-full h-28 p-3 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 resize-none focus:outline-none focus:border-lime-400 transition-colors"
+                              placeholder="Write your approach, key observations..."
+                            />
+                            <div className="flex justify-end mt-2">
+                              <button
+                                onClick={() => notesMutation.mutate({ problemId: problem.id, notes: noteValue })}
+                                disabled={notesMutation.isPending}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900 transition-colors disabled:opacity-50"
+                              >
+                                {notesMutation.isPending ? "saving" : "save"}
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               )}
 
-              {/* Similar Questions */}
+              {/* Similar questions */}
               {problem.similarQuestions && problem.similarQuestions.length > 0 && (
-                <div className="rounded-xl border border-gray-100 dark:border-gray-800/80 overflow-hidden">
-                  <div className="px-3 pt-3 pb-2">
-                    <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400">Similar Questions</h3>
-                  </div>
-                  <div className="divide-y divide-gray-100 dark:divide-gray-800/80">
+                <div>
+                  <SectionLabel>similar questions</SectionLabel>
+                  <div className="mt-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md divide-y divide-stone-100 dark:divide-white/5 overflow-hidden">
                     {problem.similarQuestions.slice(0, 8).map((sq) => (
-                      <Link key={sq.slug} to={`/learn/dsa/problem/${sq.slug}`} className="flex items-center justify-between px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/40 group transition-colors">
-                        <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{sq.title}</span>
+                      <Link
+                        key={sq.slug}
+                        to={`/learn/dsa/problem/${sq.slug}`}
+                        className="group flex items-center justify-between gap-3 px-4 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors no-underline"
+                      >
+                        <span className="text-sm text-stone-700 dark:text-stone-300 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors truncate">
+                          {sq.title}
+                        </span>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className={`text-xs font-semibold ${DIFF_COLORS[sq.difficulty]}`}>{sq.difficulty}</span>
-                          <ArrowRight className="w-3 h-3 text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <MetaChip className={DIFF_STYLE[sq.difficulty]}>{sq.difficulty}</MetaChip>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
                         </div>
                       </Link>
                     ))}
@@ -443,17 +548,16 @@ export default function DsaProblemDetailPage() {
 
               {/* External links */}
               {(problem.gfgUrl || problem.hackerrankUrl || problem.codechefUrl || problem.articleUrl || problem.videoUrl) && (
-                <div className="rounded-xl border border-gray-100 dark:border-gray-800/80 p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Link2 className="w-3.5 h-3.5 text-gray-400" />
-                    <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400">Practice Elsewhere</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {problem.gfgUrl && <ExtLink href={problem.gfgUrl} label="GFG" />}
-                    {problem.hackerrankUrl && <ExtLink href={problem.hackerrankUrl} label="HackerRank" />}
-                    {problem.codechefUrl && <ExtLink href={problem.codechefUrl} label="CodeChef" />}
-                    {problem.articleUrl && <ExtLink href={problem.articleUrl} label="Article" />}
-                    {problem.videoUrl && <ExtLink href={problem.videoUrl} label="Video" />}
+                <div>
+                  <SectionLabel>
+                    <Link2 className="w-3 h-3" /> practice elsewhere
+                  </SectionLabel>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {problem.gfgUrl && <ExtLink href={problem.gfgUrl} label="gfg" />}
+                    {problem.hackerrankUrl && <ExtLink href={problem.hackerrankUrl} label="hackerrank" />}
+                    {problem.codechefUrl && <ExtLink href={problem.codechefUrl} label="codechef" />}
+                    {problem.articleUrl && <ExtLink href={problem.articleUrl} label="article" />}
+                    {problem.videoUrl && <ExtLink href={problem.videoUrl} label="video" />}
                   </div>
                 </div>
               )}
@@ -461,11 +565,15 @@ export default function DsaProblemDetailPage() {
           </div>
 
           {/* ── RIGHT: Code editor + results ── */}
-          <div className={`flex flex-col min-h-0 bg-gray-50 dark:bg-gray-900/50 ${activeTab !== "code" ? "hidden lg:flex" : "flex"}`}>
+          <div
+            className={`flex flex-col min-h-0 bg-stone-50 dark:bg-stone-900/50 ${
+              activeTab !== "code" ? "hidden lg:flex" : "flex"
+            }`}
+          >
             {isPremium ? (
               <>
                 {/* Editor */}
-                <div className="h-[55%] min-h-0 border-b border-gray-200 dark:border-gray-800/80">
+                <div className="h-[55%] min-h-0 border-b border-stone-200 dark:border-white/10">
                   <DsaCodeEditor
                     value={codeMap[language]}
                     onChange={handleCodeChange}
@@ -478,28 +586,36 @@ export default function DsaProblemDetailPage() {
 
                 {/* Results / Output / History tabs */}
                 <div className="flex-1 min-h-0 flex flex-col">
-                  <div className="flex items-center border-b border-gray-200 dark:border-gray-800/80 bg-white dark:bg-gray-950 shrink-0">
+                  <div className="flex items-center border-b border-stone-200 dark:border-white/10 bg-white dark:bg-stone-950 shrink-0">
                     {([
-                      { key: "results" as const, label: "Test Results", icon: null },
-                      { key: "output" as const, label: "Output", icon: Terminal },
-                      { key: "history" as const, label: "History", icon: History },
+                      { key: "results" as const, label: "test results", icon: null },
+                      { key: "output" as const, label: "output", icon: Terminal },
+                      { key: "history" as const, label: "history", icon: History },
                     ]).map(({ key, label, icon: Icon }) => (
                       <button
                         key={key}
                         onClick={() => setRightTab(key)}
-                        className={`px-4 py-2 text-xs font-medium transition-colors flex items-center gap-1.5 relative ${rightTab === key ? "text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                        className={`relative inline-flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-mono uppercase tracking-widest transition-colors ${
+                          rightTab === key
+                            ? "text-stone-900 dark:text-stone-50"
+                            : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
+                        }`}
                       >
-                        {Icon && <Icon className="w-3.5 h-3.5" />}
+                        {Icon && <Icon className="w-3 h-3" />}
                         {label}
                         {key === "history" && submissions && submissions.length > 0 && (
-                          <span className="text-[10px] bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-1.5 py-px rounded-md font-semibold">{submissions.length}</span>
+                          <span className="text-[10px] font-mono tabular-nums bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-1.5 rounded-sm">
+                            {submissions.length}
+                          </span>
                         )}
-                        {rightTab === key && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />}
+                        {rightTab === key && (
+                          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />
+                        )}
                       </button>
                     ))}
                   </div>
 
-                  <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-950">
+                  <div className="flex-1 overflow-y-auto bg-white dark:bg-stone-950">
                     {rightTab === "results" ? (
                       <DsaTestResults result={executeMutation.data ?? null} isRunning={executeMutation.isPending} />
                     ) : rightTab === "output" ? (
@@ -513,32 +629,31 @@ export default function DsaProblemDetailPage() {
             ) : (
               /* ── Premium lock overlay with blurred editor bg ── */
               <div className="relative flex-1 min-h-0 overflow-hidden">
-                {/* Blurred fake editor background */}
                 <div className="absolute inset-0 blur-sm opacity-60 pointer-events-none select-none">
-                  <div className="h-full bg-gray-900 p-4 font-mono text-xs leading-relaxed text-gray-400">
-                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-700">
-                      <span className="px-2 py-1 bg-gray-800 rounded text-gray-300 text-xs">Python 3</span>
-                      <span className="ml-auto px-3 py-1 bg-emerald-600 rounded text-white text-xs">Run</span>
+                  <div className="h-full bg-stone-950 p-4 font-mono text-xs leading-relaxed text-stone-400">
+                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-800">
+                      <span className="px-2 py-1 bg-stone-800 rounded-md text-stone-300 text-xs">Python 3</span>
+                      <span className="ml-auto px-3 py-1 bg-lime-400 rounded-md text-stone-950 text-xs font-bold">Run</span>
                     </div>
                     <p><span className="text-purple-400">import</span> sys</p>
                     <p><span className="text-purple-400">from</span> typing <span className="text-purple-400">import</span> List</p>
                     <p className="mt-2"><span className="text-blue-400">class</span> <span className="text-yellow-300">Solution</span>:</p>
-                    <p className="pl-6"><span className="text-blue-400">def</span> <span className="text-green-300">solve</span>(self):</p>
-                    <p className="pl-12 text-gray-500"># Read input from stdin</p>
-                    <p className="pl-12"><span className="text-gray-500">n = </span><span className="text-blue-300">int</span>(<span className="text-blue-300">input</span>())</p>
-                    <p className="pl-12"><span className="text-gray-500">arr = </span><span className="text-blue-300">list</span>(<span className="text-blue-300">map</span>(<span className="text-blue-300">int</span>, <span className="text-blue-300">input</span>().split()))</p>
-                    <p className="mt-2 pl-12 text-gray-500"># Write your solution here</p>
+                    <p className="pl-6"><span className="text-blue-400">def</span> <span className="text-lime-300">solve</span>(self):</p>
+                    <p className="pl-12 text-stone-500"># Read input from stdin</p>
+                    <p className="pl-12"><span className="text-stone-500">n = </span><span className="text-blue-300">int</span>(<span className="text-blue-300">input</span>())</p>
+                    <p className="pl-12"><span className="text-stone-500">arr = </span><span className="text-blue-300">list</span>(<span className="text-blue-300">map</span>(<span className="text-blue-300">int</span>, <span className="text-blue-300">input</span>().split()))</p>
+                    <p className="mt-2 pl-12 text-stone-500"># Write your solution here</p>
                     <p className="pl-12"><span className="text-blue-300">print</span>(result)</p>
-                    <p className="mt-4 text-gray-600"># --- Do not modify below ---</p>
+                    <p className="mt-4 text-stone-600"># --- Do not modify below ---</p>
                     <p><span className="text-yellow-300">Solution</span>().solve()</p>
-                    <div className="mt-6 pt-3 border-t border-gray-700">
-                      <p className="text-gray-500">Test Results</p>
+                    <div className="mt-6 pt-3 border-t border-stone-800">
+                      <p className="text-stone-500">Test Results</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-emerald-500/40" />
+                        <span className="h-2 w-2 bg-lime-500/60" />
                         <span>Test Case 1: Passed</span>
                       </div>
                       <div className="mt-1 flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-emerald-500/40" />
+                        <span className="h-2 w-2 bg-lime-500/60" />
                         <span>Test Case 2: Passed</span>
                       </div>
                     </div>
@@ -546,39 +661,45 @@ export default function DsaProblemDetailPage() {
                 </div>
 
                 {/* Lock overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-950/40 backdrop-blur-xs z-10">
-                  <div className="text-center max-w-sm px-6">
-                    <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4">
-                      <Lock className="w-6 h-6 text-amber-500" />
+                <div className="absolute inset-0 flex items-center justify-center bg-stone-950/50 backdrop-blur-xs z-10">
+                  <div className="text-center max-w-sm px-6 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
+                    <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
+                      <Lock className="w-5 h-5 text-amber-500" />
                     </div>
-                    <h3 className="text-lg font-bold text-white mb-2">
-                      {user ? "Upgrade to Premium" : "Sign in to continue"}
+                    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                      <span className="h-1 w-1 bg-lime-400" />
+                      {user ? "premium required" : "sign in required"}
+                    </div>
+                    <h3 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
+                      {user ? "Upgrade to run code." : "Sign in to continue."}
                     </h3>
-                    <p className="text-sm text-gray-400 mb-5 leading-relaxed">
+                    <p className="text-sm text-stone-600 dark:text-stone-400 mb-5 leading-relaxed">
                       {user
-                        ? "Run code, test your solutions against test cases, and track your submission history."
+                        ? "Run code, test solutions against test cases, and track your submission history."
                         : "Sign in and upgrade to Premium to access the built-in code editor."}
                     </p>
-                    <div className="flex flex-col gap-2">
-                      {user ? (
-                        <Link
-                          to="/student/checkout"
-                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-xl transition-colors"
-                        >
-                          <Crown className="w-4 h-4" /> Upgrade Now
-                        </Link>
-                      ) : (
-                        <Link
-                          to="/login"
-                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors"
-                        >
-                          Sign In
-                        </Link>
-                      )}
-                    </div>
-                    <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
-                      <span className="flex items-center gap-1"><Code2 className="w-3 h-3" /> Python, C++, Java</span>
-                      <span className="flex items-center gap-1"><Terminal className="w-3 h-3" /> 50 runs/day</span>
+                    {user ? (
+                      <Link
+                        to="/student/checkout"
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-xs font-mono uppercase tracking-widest hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900 transition-colors no-underline"
+                      >
+                        <Crown className="w-3.5 h-3.5" /> upgrade now
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/login"
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-xs font-mono uppercase tracking-widest hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900 transition-colors no-underline"
+                      >
+                        sign in
+                      </Link>
+                    )}
+                    <div className="mt-4 flex items-center justify-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Code2 className="w-3 h-3" /> python / cpp / java
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Terminal className="w-3 h-3" /> 50 runs/day
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -593,7 +714,12 @@ export default function DsaProblemDetailPage() {
 
 function ExtLink({ href, label }: { href: string; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium border border-gray-200 dark:border-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/50 text-gray-500 dark:text-gray-400 transition-colors">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider border border-stone-200 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
+    >
       <ExternalLink className="w-3 h-3" /> {label}
     </a>
   );
@@ -603,13 +729,13 @@ function cleanHint(html: string): string {
   return html
     .replace(/<div[^>]*>/gi, "")
     .replace(/<\/div>/gi, "")
-    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-sm font-mono'>");
+    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 rounded-sm text-sm font-mono'>");
 }
 
 function formatDescription(md: string): string {
   return md
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/`(.*?)`/g, "<code class='px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono'>$1</code>")
+    .replace(/`(.*?)`/g, "<code class='px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 rounded-sm text-sm font-mono'>$1</code>")
     .replace(/_([^_]+)_/g, "<em>$1</em>")
     .replace(/\n/g, "<br />");
 }

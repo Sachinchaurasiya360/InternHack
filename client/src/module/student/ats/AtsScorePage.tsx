@@ -21,6 +21,7 @@ import {
   Zap,
   ArrowRight,
   Award,
+  Mail,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
@@ -48,40 +49,35 @@ const CATEGORY_ICONS: Record<string, typeof BarChart2> = {
 
 type ResultTab = "suggestions" | "breakdown" | "keywords";
 
-// Score tiers — single source of truth for thresholds + colors used by ScoreCircle
-// and any consumer that needs to colorize an ATS score.
+// ── Score tiers ──────────────────────────────────────────────────────────
 interface ScoreTier {
   min: number;
   label: string;
   stroke: string;
-  glow: string;
   text: string;
-  badge: string;
+  bar: string;
 }
 const SCORE_TIERS: ScoreTier[] = [
   {
     min: 70,
     label: "Excellent",
-    stroke: "#22c55e",
-    glow: "rgba(34,197,94,0.15)",
-    text: "text-green-600 dark:text-green-400",
-    badge: "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800",
+    stroke: "#a3e635", // lime-400
+    text: "text-lime-600 dark:text-lime-400",
+    bar: "bg-lime-400",
   },
   {
     min: 40,
     label: "Needs Work",
     stroke: "#eab308",
-    glow: "rgba(234,179,8,0.15)",
     text: "text-yellow-600 dark:text-yellow-400",
-    badge: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800",
+    bar: "bg-yellow-500",
   },
   {
     min: 0,
     label: "Poor",
     stroke: "#ef4444",
-    glow: "rgba(239,68,68,0.15)",
     text: "text-red-600 dark:text-red-400",
-    badge: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800",
+    bar: "bg-red-500",
   },
 ];
 const getScoreTier = (score: number): ScoreTier =>
@@ -99,7 +95,40 @@ const ANALYSIS_STEPS = [
   { icon: BarChart2, label: "Generating ATS score" },
 ];
 
-// ── Score Circle ───────────────────────────────────────────────────────────
+// ── Shared UI primitives ─────────────────────────────────────────────────
+const cardCls =
+  "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
+const sectionKickerCls =
+  "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
+const sectionTitleCls =
+  "text-sm font-bold text-stone-900 dark:text-stone-50";
+const inputCls =
+  "w-full px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
+
+function CardHeader({
+  kicker,
+  title,
+  right,
+}: {
+  kicker: string;
+  title: string;
+  right?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
+      <div className="flex flex-col gap-1 min-w-0">
+        <span className={sectionKickerCls}>
+          <span className="h-1 w-1 bg-lime-400" />
+          {kicker}
+        </span>
+        <span className={sectionTitleCls}>{title}</span>
+      </div>
+      {right && <div className="shrink-0">{right}</div>}
+    </div>
+  );
+}
+
+// ── Score Circle ─────────────────────────────────────────────────────────
 function ScoreCircle({
   score,
   size = "lg",
@@ -116,23 +145,20 @@ function ScoreCircle({
   const offset = circumference - (score / 100) * circumference;
 
   const tier = getScoreTier(score);
-  const { stroke: strokeColor, glow: glowColor, text: textColor, badge: badgeCls, label } = tier;
+  const { stroke: strokeColor, text: textColor } = tier;
 
   return (
-    <div className="flex flex-col items-center shrink-0">
-      <div
-        className={isLg ? "relative w-40 h-40" : "relative w-20 h-20"}
-        style={isLg ? { filter: `drop-shadow(0 0 20px ${glowColor})` } : {}}
-      >
+    <div className="flex items-center shrink-0">
+      <div className={isLg ? "relative w-40 h-40" : "relative w-20 h-20"}>
         <svg className="w-full h-full -rotate-90" viewBox={viewBox}>
           <circle
             cx={cx}
             cy={cx}
             r={radius}
             fill="none"
-            stroke="#f3f4f6"
+            stroke="#e7e5e4"
             strokeWidth={sw}
-            className="dark:stroke-gray-800"
+            className="dark:stroke-white/10"
           />
           <motion.circle
             cx={cx}
@@ -153,29 +179,22 @@ function ScoreCircle({
             initial={{ opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
-            className={`${isLg ? "text-5xl" : "text-xl"} font-extrabold ${textColor} leading-none`}
+            className={`${isLg ? "text-5xl" : "text-xl"} font-bold tracking-tight ${textColor} leading-none tabular-nums`}
           >
             {score}
           </motion.span>
           {isLg && (
-            <span className="text-gray-400 dark:text-gray-500 text-[10px] mt-1 font-medium tracking-wider">
+            <span className="text-stone-400 dark:text-stone-600 text-[10px] mt-1 font-mono uppercase tracking-widest">
               / 100
             </span>
           )}
         </div>
       </div>
-      {isLg && (
-        <span
-          className={`mt-3 px-4 py-1 rounded-full text-xs font-bold border ${badgeCls}`}
-        >
-          {label}
-        </span>
-      )}
     </div>
   );
 }
 
-// ── Main Page ──────────────────────────────────────────────────────────────
+// ── Main Page ────────────────────────────────────────────────────────────
 export default function AtsScorePage() {
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
@@ -201,9 +220,10 @@ export default function AtsScorePage() {
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [analyzedFileName, setAnalyzedFileName] = useState("");
   const [analyzedFileSize, setAnalyzedFileSize] = useState(0);
+  const [emailSent, setEmailSent] = useState(false);
 
   const analyzeMutation = useMutation({
-    mutationFn: async (): Promise<AtsScore> => {
+    mutationFn: async (): Promise<{ score: AtsScore; emailQueued: boolean }> => {
       let url = resumeUrl;
       if (file && !resumeUrl) {
         const formData = new FormData();
@@ -219,10 +239,14 @@ export default function AtsScorePage() {
       if (jobTitle.trim()) body["jobTitle"] = jobTitle.trim();
       if (jobDescription.trim()) body["jobDescription"] = jobDescription.trim();
       const res = await api.post("/ats/score", body);
-      return res.data.score as AtsScore;
+      return {
+        score: res.data.score as AtsScore,
+        emailQueued: Boolean(res.data.emailQueued),
+      };
     },
-    onSuccess: (score) => {
+    onSuccess: ({ score, emailQueued }) => {
       setResult(score);
+      setEmailSent(emailQueued);
       setCurrentStep(ANALYSIS_STEPS.length - 1);
       setAnalysisComplete(true);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
@@ -286,6 +310,7 @@ export default function AtsScorePage() {
   const handleAnalyze = () => {
     setError("");
     setResult(null);
+    setEmailSent(false);
     setActiveTab("suggestions");
     setAnalysisComplete(false);
     setCurrentStep(0);
@@ -305,95 +330,78 @@ export default function AtsScorePage() {
     setAnalysisComplete(false);
     setAnalyzedFileName("");
     setAnalyzedFileSize(0);
+    setEmailSent(false);
   };
 
   const TABS: { id: ResultTab; label: string; icon: React.ReactNode }[] = [
-    {
-      id: "suggestions",
-      label: "Suggestions",
-      icon: <Lightbulb className="w-3.5 h-3.5" />,
-    },
-    {
-      id: "breakdown",
-      label: "Breakdown",
-      icon: <BarChart2 className="w-3.5 h-3.5" />,
-    },
-    {
-      id: "keywords",
-      label: "Keywords",
-      icon: <Search className="w-3.5 h-3.5" />,
-    },
+    { id: "suggestions", label: "Suggestions", icon: <Lightbulb className="w-3.5 h-3.5" /> },
+    { id: "breakdown", label: "Breakdown", icon: <BarChart2 className="w-3.5 h-3.5" /> },
+    { id: "keywords", label: "Keywords", icon: <Search className="w-3.5 h-3.5" /> },
   ];
 
   const showUploadForm = !result;
-
-  // Tool nav handled by shared AtsToolsNav
+  const overallTier = result ? getScoreTier(result.overallScore) : null;
 
   return (
-    <div className="relative max-w-6xl mx-auto pb-12">
+    <div className="relative pb-16">
       <SEO
         title="Resume"
         description="Your resume toolkit - ATS scoring, resume builder, LaTeX editor, and cover letter generator."
         noIndex
       />
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      {/* Page Header - landing page style */}
+      {/* ─── Editorial header ─── */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-10 mt-6"
+        transition={{ duration: 0.4 }}
+        className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-          Resume & <span className="text-gradient-accent">ATS Score</span>
-        </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-          Score, build, and optimize your resume for ATS systems
-        </p>
+        <div>
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            resume / ats score
+          </div>
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Score your resume.
+          </h1>
+          <p className="mt-3 text-sm text-stone-500 max-w-md">
+            Upload a PDF, add a target role, and get an ATS score with keyword gaps and concrete rewrite suggestions.
+          </p>
+        </div>
+        {atsUsage && (
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              daily usage
+            </span>
+            <span className="text-sm font-bold tabular-nums text-stone-900 dark:text-stone-50">
+              {atsUsage.used}
+              <span className="text-stone-400 dark:text-stone-600 font-normal"> / {atsUsage.limit}</span>
+            </span>
+          </div>
+        )}
       </motion.div>
 
       <AtsToolsNav />
 
-      {/* ── ATS Analyzer Section ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="mb-6"
-      >
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-          {/* ── Left Column ── */}
-          <div className="lg:col-span-2 space-y-4">
-            <AnimatePresence mode="wait">
-              {showUploadForm ? (
-                <motion.div
-                  key="upload-form"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
-                  className="space-y-4"
-                >
-                  {/* Upload Card */}
-                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
-                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                      <Upload className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      Upload Resume
-                    </h2>
+      {/* ─── Main grid ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+        {/* ─── Left column ─── */}
+        <div className="lg:col-span-2 space-y-6">
+          <AnimatePresence mode="wait">
+            {showUploadForm ? (
+              <motion.div
+                key="upload-form"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-6"
+              >
+                {/* Upload Card */}
+                <div className={cardCls}>
+                  <CardHeader kicker="step 01" title="Upload resume" />
+                  <div className="p-5">
                     <label
                       onDragOver={(e) => {
                         e.preventDefault();
@@ -401,47 +409,43 @@ export default function AtsScorePage() {
                       }}
                       onDragLeave={() => setIsDragging(false)}
                       onDrop={handleDrop}
-                      className={`relative flex flex-col items-center justify-center gap-3 py-10 px-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${
+                      className={`relative flex flex-col items-center justify-center gap-3 py-10 px-4 border border-dashed rounded-md cursor-pointer transition-colors ${
                         isDragging
-                          ? "border-gray-400 bg-gray-50 dark:bg-gray-800 scale-[1.01]"
+                          ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
                           : file
-                            ? "border-green-300 bg-green-50/50 dark:border-green-700 dark:bg-green-900/20"
-                            : "border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-100/50 dark:hover:bg-gray-800/80"
+                            ? "border-lime-400 bg-lime-50/40 dark:bg-lime-400/5"
+                            : "border-stone-300 dark:border-white/10 bg-stone-50/60 dark:bg-stone-950/40 hover:border-stone-400 dark:hover:border-white/20"
                       }`}
                     >
                       <div
-                        className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${
+                        className={`w-12 h-12 rounded-md flex items-center justify-center transition-colors ${
                           file
-                            ? "bg-green-100 dark:bg-green-900/40"
-                            : isDragging
-                              ? "bg-gray-200 dark:bg-gray-700"
-                              : "bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm"
+                            ? "bg-lime-400 text-stone-950"
+                            : "bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-500"
                         }`}
                       >
                         {file ? (
-                          <FileText className="w-7 h-7 text-green-600 dark:text-green-400" />
+                          <FileText className="w-6 h-6" />
                         ) : (
-                          <Upload
-                            className={`w-7 h-7 ${isDragging ? "text-gray-600 dark:text-gray-300" : "text-gray-400 dark:text-gray-500"}`}
-                          />
+                          <Upload className="w-6 h-6" />
                         )}
                       </div>
                       {file ? (
                         <div className="text-center">
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white max-w-45 truncate mx-auto">
+                          <p className="text-sm font-bold text-stone-900 dark:text-stone-50 max-w-60 truncate mx-auto">
                             {file.name}
                           </p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                            {(file.size / 1024).toFixed(1)} KB
+                          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
+                            {(file.size / 1024).toFixed(1)} kb · pdf
                           </p>
                         </div>
                       ) : (
                         <div className="text-center">
-                          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            {isDragging ? "Drop to upload!" : "Drop PDF here"}
+                          <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                            {isDragging ? "Drop to upload" : "Drop PDF here"}
                           </p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                            or click to browse &middot; Max 10 MB
+                          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
+                            or click to browse · max 10 mb
                           </p>
                         </div>
                       )}
@@ -454,647 +458,638 @@ export default function AtsScorePage() {
                     </label>
                     {file && (
                       <button
+                        type="button"
                         onClick={resetAll}
-                        className="mt-3 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
+                        className="mt-3 inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
                       >
-                        <X className="w-3 h-3" /> Remove file
+                        <X className="w-3 h-3" /> remove file
                       </button>
                     )}
                   </div>
+                </div>
 
-                  {/* Job Context */}
-                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
-                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                      <Target className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      Target Job
-                      <span className="ml-auto text-[10px] font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                        optional
+                {/* Target Job */}
+                <div className={cardCls}>
+                  <CardHeader
+                    kicker="step 02"
+                    title="Target job"
+                    right={
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                        / optional
                       </span>
-                    </h2>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-                      Add job details for role-specific keyword scoring
-                    </p>
-                    <div className="space-y-3">
+                    }
+                  />
+                  <div className="p-5 space-y-3">
+                    <div>
+                      <label className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                        <Target className="w-3 h-3" /> role title
+                      </label>
                       <input
                         type="text"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                         placeholder="e.g. Frontend Developer"
-                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-400 dark:focus:ring-white/10 dark:focus:border-gray-500 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
+                        className={inputCls}
                       />
-                      <div>
-                        <textarea
-                          value={jobDescription}
-                          onChange={(e) => {
-                            const next = e.target.value.slice(0, JD_MAX_CHARS);
-                            if (e.target.value.length > JD_MAX_CHARS) {
-                              toast.error(`Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`);
-                            }
-                            setJobDescription(next);
-                          }}
-                          maxLength={JD_MAX_CHARS}
-                          placeholder="Paste the job description for tailored keyword analysis..."
-                          rows={5}
-                          className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-400 dark:focus:ring-white/10 dark:focus:border-gray-500 transition-all resize-none placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
-                          aria-describedby="jd-char-count"
-                        />
-                        <div
-                          id="jd-char-count"
-                          className={`mt-1 text-right text-[11px] font-medium tabular-nums ${
-                            jobDescription.length >= JD_WARN_CHARS
-                              ? "text-amber-600 dark:text-amber-400"
-                              : "text-gray-400 dark:text-gray-500"
-                          }`}
-                        >
-                          {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
-                        </div>
+                    </div>
+                    <div>
+                      <label className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                        <AlignLeft className="w-3 h-3" /> job description
+                      </label>
+                      <textarea
+                        value={jobDescription}
+                        onChange={(e) => {
+                          const next = e.target.value.slice(0, JD_MAX_CHARS);
+                          if (e.target.value.length > JD_MAX_CHARS) {
+                            toast.error(`Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`);
+                          }
+                          setJobDescription(next);
+                        }}
+                        maxLength={JD_MAX_CHARS}
+                        placeholder="Paste the job description for tailored keyword analysis..."
+                        rows={5}
+                        className={`${inputCls} resize-none`}
+                        aria-describedby="jd-char-count"
+                      />
+                      <div
+                        id="jd-char-count"
+                        className={`mt-1.5 text-right text-[10px] font-mono uppercase tracking-widest tabular-nums ${
+                          jobDescription.length >= JD_WARN_CHARS
+                            ? "text-amber-600 dark:text-amber-400"
+                            : "text-stone-500"
+                        }`}
+                      >
+                        {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {error && (
-                    <div className="flex items-start gap-2.5 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-200 dark:border-red-800">
-                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                      <span>{error}</span>
-                    </div>
-                  )}
+                {error && (
+                  <div className="flex items-start gap-2.5 p-4 bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 rounded-md text-sm border border-red-200 dark:border-red-900/40">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )}
 
-                  <button
-                    onClick={handleAnalyze}
-                    disabled={loading || (!file && !resumeUrl) || limitReached}
-                    className="w-full py-3.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99]"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" /> Analyzing...
-                      </>
-                    ) : limitReached ? (
-                      "Daily limit reached"
-                    ) : (
-                      <>
-                        <ScanSearch className="w-4 h-4" /> Analyze Resume
-                      </>
-                    )}
-                  </button>
-                  {limitReached && (
-                    <p className="text-center text-xs text-gray-500 dark:text-gray-400">
-                      You've hit today's free limit.{" "}
-                      <Link
-                        to="/student/checkout"
-                        className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-                      >
-                        Upgrade for more <ArrowRight className="inline w-3 h-3" />
-                      </Link>
-                    </p>
-                  )}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="analyzed-card"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
-                  className="space-y-4"
+                <button
+                  type="button"
+                  onClick={handleAnalyze}
+                  disabled={loading || (!file && !resumeUrl) || limitReached}
+                  className="group w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {/* Resume Analyzed */}
-                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Analyzing...
+                    </>
+                  ) : limitReached ? (
+                    "Daily limit reached"
+                  ) : (
+                    <>
+                      <ScanSearch className="w-4 h-4" /> Analyze resume
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </>
+                  )}
+                </button>
+                {limitReached && (
+                  <p className="text-center text-xs text-stone-500">
+                    You've hit today's free limit.{" "}
+                    <Link
+                      to="/student/checkout"
+                      className="font-bold text-stone-900 dark:text-stone-50 underline decoration-lime-400 decoration-2 underline-offset-4 hover:decoration-lime-300"
+                    >
+                      Upgrade for more
+                    </Link>
+                  </p>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="analyzed-card"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-6"
+              >
+                {/* Resume Analyzed */}
+                <div className={cardCls}>
+                  <CardHeader
+                    kicker="input"
+                    title="Resume analyzed"
+                    right={
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                        <CheckCircle className="w-3 h-3" />
+                        done
+                      </span>
+                    }
+                  />
+                  <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-green-50 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                        <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <div className="w-11 h-11 bg-lime-400 rounded-md flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 text-stone-950" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-sm font-bold text-gray-900 dark:text-white">
-                          Resume Analyzed
-                        </h2>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                        <p className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
                           {analyzedFileName}
                         </p>
-                      </div>
-                      <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
+                          {(analyzedFileSize / 1024).toFixed(1)} kb · pdf
+                        </p>
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 dark:bg-gray-800/80 rounded-xl p-3.5 mb-4 space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500 dark:text-gray-500">File size</span>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">
-                          {(analyzedFileSize / 1024).toFixed(1)} KB
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500 dark:text-gray-500">Format</span>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">PDF</span>
-                      </div>
+                    <div className="border-t border-stone-200 dark:border-white/10 -mx-5 px-5 pt-4 space-y-2.5">
                       {jobTitle && (
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-500 dark:text-gray-500">Target role</span>
-                          <span className="font-medium text-gray-700 dark:text-gray-300 truncate ml-4 max-w-35">
+                          <span className="font-mono uppercase tracking-widest text-stone-500">target role</span>
+                          <span className="font-bold text-stone-900 dark:text-stone-50 truncate ml-4 max-w-40">
                             {jobTitle}
                           </span>
                         </div>
                       )}
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-mono uppercase tracking-widest text-stone-500">jd length</span>
+                        <span className="font-bold text-stone-900 dark:text-stone-50 tabular-nums">
+                          {jobDescription.length.toLocaleString()} chars
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-2 gap-2 mt-4">
                       <button
+                        type="button"
                         onClick={resetAll}
-                        className="flex-1 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5"
+                        className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-md text-xs font-bold text-stone-900 dark:text-stone-50 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                       >
-                        <Upload className="w-3.5 h-3.5" /> New Resume
+                        <Upload className="w-3.5 h-3.5" /> New resume
                       </button>
                       <button
+                        type="button"
                         onClick={handleAnalyze}
                         disabled={loading}
-                        className="flex-1 py-2.5 text-sm font-medium text-white dark:text-gray-950 bg-gray-950 dark:bg-white rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                        className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-md text-xs font-bold bg-lime-400 text-stone-950 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
                       >
-                        <RefreshCw
-                          className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
-                        />{" "}
+                        <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
                         Re-analyze
                       </button>
                     </div>
                   </div>
+                </div>
 
-                  {/* Category Scores Summary */}
-                  {result && (
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <TrendingUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Category Scores
-                        </h3>
+                {/* Category Scores Summary */}
+                {result && (
+                  <div className={cardCls}>
+                    <CardHeader kicker="breakdown" title="Category scores" />
+                    <div className="p-5 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                      {Object.entries(result.categoryScores)
+                        .slice(0, 6)
+                        .map(([key, score]) => {
+                          const tier = getScoreTier(score);
+                          return (
+                            <div
+                              key={key}
+                              className="bg-white dark:bg-stone-900 p-3 text-left"
+                            >
+                              <p className={`text-xl font-bold tracking-tight tabular-nums ${tier.text}`}>
+                                {score}
+                              </p>
+                              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
+                                {CATEGORY_LABELS[key] ?? key}
+                              </p>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ─── Right column: Results ─── */}
+        <div className="lg:col-span-3">
+          <AnimatePresence mode="wait">
+            {/* Empty state */}
+            {!result && !loading && (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={`${cardCls} min-h-125 flex flex-col items-center justify-center text-center p-10`}
+              >
+                <div className="max-w-xs">
+                  <div className="w-16 h-16 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center mb-5 mx-auto relative">
+                    <BarChart2 className="w-7 h-7 text-stone-400 dark:text-stone-600" />
+                    <span className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400" />
+                  </div>
+                  <div className={sectionKickerCls + " justify-center mb-2"}>
+                    <span className="h-1 w-1 bg-lime-400" />
+                    results panel
+                  </div>
+                  <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
+                    Your results appear here.
+                  </h3>
+                  <p className="text-sm text-stone-500 leading-relaxed">
+                    Upload your resume and click{" "}
+                    <span className="font-bold text-stone-900 dark:text-stone-50">
+                      Analyze resume
+                    </span>{" "}
+                    to get your ATS score, keyword analysis, and rewrite suggestions.
+                  </p>
+                  <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                    {[
+                      { label: "6 categories", icon: <BarChart2 className="w-3 h-3" /> },
+                      { label: "ai powered", icon: <ScanSearch className="w-3 h-3" /> },
+                      { label: "instant", icon: <Zap className="w-3 h-3" /> },
+                    ].map((tag) => (
+                      <div
+                        key={tag.label}
+                        className="bg-white dark:bg-stone-900 px-2 py-2.5 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500"
+                      >
+                        {tag.icon}
+                        {tag.label}
                       </div>
-                      <div className="grid grid-cols-3 gap-2">
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Loading state */}
+            {loading && (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={`${cardCls} min-h-125`}
+              >
+                <CardHeader
+                  kicker="analyzing"
+                  title="Scanning your resume"
+                  right={
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                      ~10-20s
+                    </span>
+                  }
+                />
+                <div className="p-6">
+                  <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-full overflow-hidden mb-6">
+                    <motion.div
+                      className="h-full bg-lime-400"
+                      initial={{ width: "0%" }}
+                      animate={{
+                        width: `${Math.min(((currentStep + 1) / ANALYSIS_STEPS.length) * 100, 100)}%`,
+                      }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    {ANALYSIS_STEPS.map((step, i) => {
+                      const Icon = step.icon;
+                      const isDone =
+                        i < currentStep || (i === currentStep && analysisComplete);
+                      const isCurrent = i === currentStep && !analysisComplete;
+                      const isPending = i > currentStep;
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.08 }}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
+                            isCurrent
+                              ? "bg-lime-400/10 border border-lime-400/40"
+                              : isDone
+                                ? "bg-stone-50 dark:bg-stone-950/60 border border-transparent"
+                                : "border border-transparent opacity-50"
+                          }`}
+                        >
+                          <div
+                            className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
+                              isDone
+                                ? "bg-lime-400 text-stone-950"
+                                : isCurrent
+                                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                                  : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
+                            }`}
+                          >
+                            {isDone ? (
+                              <CheckCircle className="w-3.5 h-3.5" />
+                            ) : isCurrent ? (
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                              >
+                                <Icon className="w-3.5 h-3.5" />
+                              </motion.div>
+                            ) : (
+                              <Icon className="w-3.5 h-3.5" />
+                            )}
+                          </div>
+                          <span
+                            className={`text-sm font-medium flex-1 ${
+                              isDone
+                                ? "text-stone-600 dark:text-stone-400"
+                                : isCurrent
+                                  ? "text-stone-900 dark:text-stone-50"
+                                  : "text-stone-400 dark:text-stone-600"
+                            }`}
+                          >
+                            {step.label}
+                          </span>
+                          {isDone && (
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                              done
+                            </span>
+                          )}
+                          {isCurrent && (
+                            <div className="flex gap-1">
+                              {[0, 0.15, 0.3].map((delay) => (
+                                <motion.div
+                                  key={delay}
+                                  className="w-1.5 h-1.5 rounded-full bg-lime-400"
+                                  animate={{
+                                    scale: [1, 1.4, 1],
+                                    opacity: [0.5, 1, 0.5],
+                                  }}
+                                  transition={{
+                                    duration: 0.8,
+                                    repeat: Infinity,
+                                    delay,
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          )}
+                          {isPending && (
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                              pending
+                            </span>
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Results */}
+            {result && overallTier && (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="space-y-6"
+                role="region"
+                aria-live="polite"
+                aria-label={`ATS analysis complete. Overall score ${result.overallScore} out of 100.`}
+              >
+                {/* Score Header */}
+                <div className={cardCls}>
+                  <CardHeader
+                    kicker="result"
+                    title="Overall ATS score"
+                    right={
+                      <span className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}>
+                        / {overallTier.label.toLowerCase()}
+                      </span>
+                    }
+                  />
+                  <div className="p-6 flex items-center gap-6">
+                    <ScoreCircle score={result.overallScore} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">
+                        {result.overallScore >= 70
+                          ? "Great job. Your resume is well-optimized for ATS systems."
+                          : result.overallScore >= 40
+                            ? "Decent start. A few tweaks can push your score much higher."
+                            : "Your resume needs significant improvements for ATS compatibility."}
+                      </p>
+                      {emailSent && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                          className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 rounded-md bg-lime-50 dark:bg-lime-400/10 border border-lime-200 dark:border-lime-400/30"
+                        >
+                          <Mail className="w-3 h-3 text-lime-600 dark:text-lime-400" />
+                          <span className="text-[10px] font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400">
+                            report emailed to your inbox
+                          </span>
+                        </motion.div>
+                      )}
+                      <div className="flex flex-wrap gap-1.5">
                         {Object.entries(result.categoryScores)
-                          .slice(0, 6)
-                          .map(([key, score]) => {
-                            const scoreColor =
-                              score >= 70
-                                ? "text-green-600 dark:text-green-400"
-                                : score >= 40
-                                  ? "text-yellow-600 dark:text-yellow-400"
-                                  : "text-red-600 dark:text-red-400";
+                          .sort(([, a], [, b]) => b - a)
+                          .slice(0, 3)
+                          .map(([key, score]) => (
+                            <span
+                              key={key}
+                              className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-widest bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 tabular-nums"
+                            >
+                              {CATEGORY_LABELS[key]} · {score}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabbed Results */}
+                <div className={cardCls}>
+                  {/* Tab strip */}
+                  <div className="flex border-b border-stone-200 dark:border-white/10 overflow-x-auto">
+                    {TABS.map((tab) => {
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`relative flex items-center gap-2 px-5 py-3.5 text-xs font-mono uppercase tracking-widest transition-colors border-0 bg-transparent cursor-pointer ${
+                            isActive
+                              ? "text-stone-900 dark:text-stone-50"
+                              : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
+                          }`}
+                        >
+                          {tab.icon}
+                          {tab.label}
+                          {isActive && (
+                            <motion.span
+                              layoutId="ats-tab-underline"
+                              className="absolute left-0 right-0 -bottom-px h-0.5 bg-lime-400"
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="p-5">
+                    <AnimatePresence mode="wait">
+                      {activeTab === "breakdown" && (
+                        <motion.div
+                          key="breakdown"
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 8 }}
+                          transition={{ duration: 0.18 }}
+                          className="space-y-2.5"
+                        >
+                          {Object.entries(result.categoryScores).map(([key, score]) => {
+                            const Icon = CATEGORY_ICONS[key] ?? BarChart2;
+                            const tier = getScoreTier(score);
                             return (
                               <div
                                 key={key}
-                                className="text-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors"
+                                className="flex items-center gap-3 p-3.5 bg-stone-50/60 dark:bg-stone-950/40 border border-stone-200 dark:border-white/10 rounded-md"
                               >
-                                <p className={`text-lg font-bold ${scoreColor}`}>
-                                  {score}
-                                </p>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-500 font-medium mt-0.5">
-                                  {CATEGORY_LABELS[key] ?? key}
-                                </p>
+                                <div className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10">
+                                  <Icon className="w-4 h-4 text-stone-600 dark:text-stone-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex justify-between items-center mb-1.5">
+                                    <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                                      {CATEGORY_LABELS[key] ?? key}
+                                    </span>
+                                    <span className={`text-sm font-bold tabular-nums ${tier.text}`}>
+                                      {score}
+                                      <span className="text-stone-400 dark:text-stone-600 text-xs font-normal">
+                                        /100
+                                      </span>
+                                    </span>
+                                  </div>
+                                  <div className="h-1.5 bg-stone-200 dark:bg-white/10 rounded-full overflow-hidden">
+                                    <motion.div
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${String(score)}%` }}
+                                      transition={{ duration: 0.9, delay: 0.1, ease: "easeOut" }}
+                                      className={`h-full rounded-full ${tier.bar}`}
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             );
                           })}
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                        </motion.div>
+                      )}
 
-          {/* ── Right Column: Results ── */}
-          <div className="lg:col-span-3">
-            <AnimatePresence mode="wait">
-              {/* Empty state */}
-              {!result && !loading && (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="min-h-105 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm"
-                >
-                  <div>
-                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5 mx-auto">
-                      <BarChart2 className="w-9 h-9 text-gray-400 dark:text-gray-500" />
-                    </div>
-                    <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
-                      Your Results Await
-                    </h3>
-                    <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
-                      Upload your resume and click{" "}
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        Analyze Resume
-                      </span>{" "}
-                      to get your ATS score, keyword analysis, and improvement
-                      tips
-                    </p>
-                    <div className="flex items-center justify-center gap-5 mt-6">
-                      {[
-                        {
-                          label: "6 Categories",
-                          icon: <BarChart2 className="w-3.5 h-3.5" />,
-                        },
-                        {
-                          label: "AI Powered",
-                          icon: <ScanSearch className="w-3.5 h-3.5" />,
-                        },
-                        {
-                          label: "Instant",
-                          icon: <Zap className="w-3.5 h-3.5" />,
-                        },
-                      ].map((tag) => (
-                        <span
-                          key={tag.label}
-                          className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium"
-                        >
-                          {tag.icon} {tag.label}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ── Step-by-step Loading ── */}
-              {loading && (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="min-h-105 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-6"
-                >
-                  <div>
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="relative w-10 h-10">
-                        <div className="absolute inset-0 rounded-full border-3 border-gray-200 dark:border-gray-700" />
+                      {activeTab === "keywords" && (
                         <motion.div
-                          className="absolute inset-0 rounded-full border-3 border-gray-950 dark:border-white border-t-transparent"
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <ScanSearch className="w-4 h-4 text-gray-950 dark:text-white" />
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                          Analyzing your resume
-                        </h3>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                          This usually takes 10-20 seconds
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mb-6">
-                      <motion.div
-                        className="h-full bg-gray-950 dark:bg-white rounded-full"
-                        initial={{ width: "0%" }}
-                        animate={{
-                          width: `${Math.min(((currentStep + 1) / ANALYSIS_STEPS.length) * 100, 100)}%`,
-                        }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      {ANALYSIS_STEPS.map((step, i) => {
-                        const Icon = step.icon;
-                        const isDone =
-                          i < currentStep ||
-                          (i === currentStep && analysisComplete);
-                        const isCurrent =
-                          i === currentStep && !analysisComplete;
-                        const isPending = i > currentStep;
-                        return (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.08 }}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                              isCurrent
-                                ? "bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                                : isDone
-                                  ? "bg-green-50/50 dark:bg-green-900/10"
-                                  : "opacity-50"
-                            }`}
-                          >
-                            <div
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDone ? "bg-green-100 dark:bg-green-900/40" : isCurrent ? "bg-gray-200 dark:bg-gray-700" : "bg-gray-100 dark:bg-gray-800"}`}
-                            >
-                              {isDone ? (
-                                <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                              ) : isCurrent ? (
-                                <motion.div
-                                  animate={{ rotate: 360 }}
-                                  transition={{
-                                    duration: 1.5,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                  }}
-                                >
-                                  <Icon className="w-4 h-4 text-gray-950 dark:text-white" />
-                                </motion.div>
-                              ) : (
-                                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                              )}
-                            </div>
-                            <span
-                              className={`text-sm font-medium flex-1 ${isDone ? "text-green-700 dark:text-green-400" : isCurrent ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}
-                            >
-                              {step.label}
-                            </span>
-                            {isDone && (
-                              <motion.span
-                                initial={{ opacity: 0, scale: 0.5 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="text-[10px] font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full"
-                              >
-                                Done
-                              </motion.span>
-                            )}
-                            {isCurrent && (
-                              <div className="flex gap-1">
-                                {[0, 0.15, 0.3].map((delay) => (
-                                  <motion.div
-                                    key={delay}
-                                    className="w-1.5 h-1.5 rounded-full bg-gray-950 dark:bg-white"
-                                    animate={{
-                                      scale: [1, 1.4, 1],
-                                      opacity: [0.5, 1, 0.5],
-                                    }}
-                                    transition={{
-                                      duration: 0.8,
-                                      repeat: Infinity,
-                                      delay,
-                                    }}
-                                  />
-                                ))}
-                              </div>
-                            )}
-                            {isPending && (
-                              <span className="text-[10px] text-gray-300 dark:text-gray-600 font-medium">
-                                Pending
-                              </span>
-                            )}
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ── Results ── */}
-              {result && (
-                <motion.div
-                  key="result"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="space-y-4"
-                  role="region"
-                  aria-live="polite"
-                  aria-label={`ATS analysis complete. Overall score ${result.overallScore} out of 100.`}
-                >
-                  {/* Score Header Card */}
-                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
-                    <div className="p-6 flex items-center gap-6">
-                      <ScoreCircle score={result.overallScore} />
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">
-                          Overall ATS Score
-                        </h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                          {result.overallScore >= 70
-                            ? "Great job! Your resume is well-optimized for ATS systems."
-                            : result.overallScore >= 40
-                              ? "Decent start - a few tweaks can push your score much higher."
-                              : "Your resume needs significant improvements for ATS compatibility."}
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {Object.entries(result.categoryScores)
-                            .sort(([, a], [, b]) => b - a)
-                            .slice(0, 3)
-                            .map(([key, score]) => (
-                              <span
-                                key={key}
-                                className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
-                              >
-                                {CATEGORY_LABELS[key]}: {score}
-                              </span>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tabbed Results */}
-                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm overflow-hidden">
-                    {/* Pill tabs */}
-                    <div className="flex gap-1 p-1.5 mx-4 mt-4 bg-gray-100 dark:bg-gray-800 rounded-xl">
-                      {TABS.map((tab) => (
-                        <button
-                          key={tab.id}
-                          onClick={() => setActiveTab(tab.id)}
-                          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                            activeTab === tab.id
-                              ? "bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm"
-                              : "text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
-                          }`}
+                          key="keywords"
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 8 }}
+                          transition={{ duration: 0.18 }}
+                          className="space-y-5"
                         >
-                          {tab.icon} {tab.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="p-5">
-                      <AnimatePresence mode="wait">
-                        {activeTab === "breakdown" && (
-                          <motion.div
-                            key="breakdown"
-                            initial={{ opacity: 0, x: -8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 8 }}
-                            transition={{ duration: 0.18 }}
-                            className="space-y-2.5"
-                          >
-                            {Object.entries(result.categoryScores).map(
-                              ([key, score]) => {
-                                const Icon = CATEGORY_ICONS[key] ?? BarChart2;
-                                const barColor =
-                                  score >= 70
-                                    ? "bg-green-500"
-                                    : score >= 40
-                                      ? "bg-yellow-500"
-                                      : "bg-red-500";
-                                const scoreText =
-                                  score >= 70
-                                    ? "text-green-600 dark:text-green-400"
-                                    : score >= 40
-                                      ? "text-yellow-600 dark:text-yellow-400"
-                                      : "text-red-600 dark:text-red-400";
-                                return (
-                                  <div
-                                    key={key}
-                                    className="flex items-center gap-3 p-3.5 bg-gray-50/80 dark:bg-gray-800/60 rounded-xl hover:bg-gray-100/80 dark:hover:bg-gray-700/60 transition-colors"
-                                  >
-                                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-gray-100 dark:bg-gray-800">
-                                      <Icon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex justify-between items-center mb-1.5">
-                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                          {CATEGORY_LABELS[key] ?? key}
-                                        </span>
-                                        <span
-                                          className={`text-sm font-bold tabular-nums ${scoreText}`}
-                                        >
-                                          {score}
-                                          <span className="text-gray-400 dark:text-gray-600 text-xs font-normal">
-                                            /100
-                                          </span>
-                                        </span>
-                                      </div>
-                                      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                        <motion.div
-                                          initial={{ width: 0 }}
-                                          animate={{
-                                            width: `${String(score)}%`,
-                                          }}
-                                          transition={{
-                                            duration: 0.9,
-                                            delay: 0.1,
-                                            ease: "easeOut",
-                                          }}
-                                          className={`h-full rounded-full ${barColor}`}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              },
-                            )}
-                          </motion.div>
-                        )}
-
-                        {activeTab === "keywords" && (
-                          <motion.div
-                            key="keywords"
-                            initial={{ opacity: 0, x: -8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 8 }}
-                            transition={{ duration: 0.18 }}
-                            className="space-y-5"
-                          >
-                            {result.keywordAnalysis.found.length > 0 && (
-                              <div>
-                                <div className="flex items-center gap-2 mb-3">
-                                  <div className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
-                                    <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
-                                  </div>
-                                  <span className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wider">
-                                    Found ({result.keywordAnalysis.found.length})
-                                  </span>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                  {result.keywordAnalysis.found.map((kw) => (
-                                    <span
-                                      key={kw}
-                                      className="px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg text-xs font-medium border border-green-200 dark:border-green-800"
-                                    >
-                                      {kw}
-                                    </span>
-                                  ))}
-                                </div>
+                          {result.keywordAnalysis.found.length > 0 && (
+                            <div>
+                              <div className={sectionKickerCls + " mb-3"}>
+                                <span className="h-1 w-1 bg-lime-400" />
+                                found · {result.keywordAnalysis.found.length}
                               </div>
-                            )}
-                            {result.keywordAnalysis.missing.length > 0 && (
-                              <div>
-                                <div className="flex items-center gap-2 mb-3">
-                                  <div className="w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center">
-                                    <AlertCircle className="w-3 h-3 text-orange-500" />
-                                  </div>
-                                  <span className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
-                                    Missing ({result.keywordAnalysis.missing.length})
-                                  </span>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                  {result.keywordAnalysis.missing.map((kw) => (
-                                    <span
-                                      key={kw}
-                                      className="px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 rounded-lg text-xs font-medium border border-orange-200 dark:border-orange-800 border-dashed"
-                                    >
-                                      + {kw}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            {result.keywordAnalysis.found.length === 0 &&
-                              result.keywordAnalysis.missing.length === 0 && (
-                                <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">
-                                  No keyword data available for this analysis.
-                                </p>
-                              )}
-                          </motion.div>
-                        )}
-
-                        {activeTab === "suggestions" && (
-                          <motion.div
-                            key="suggestions"
-                            initial={{ opacity: 0, x: -8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 8 }}
-                            transition={{ duration: 0.18 }}
-                          >
-                            {result.suggestions.length > 0 ? (
-                              <div className="space-y-px rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800">
-                                {result.suggestions.map((s, i) => (
-                                  <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, y: 6 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.05 }}
-                                    className="flex items-start gap-4 px-5 py-4 bg-gray-50/60 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 transition-colors"
+                              <div className="flex flex-wrap gap-1.5">
+                                {result.keywordAnalysis.found.map((kw) => (
+                                  <span
+                                    key={kw}
+                                    className="px-2.5 py-1 bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 rounded-md text-xs font-medium border border-lime-200 dark:border-lime-400/30"
                                   >
-                                    <div className="w-7 h-7 rounded-lg bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mt-0.5">
-                                      <span className="text-[11px] font-bold text-white dark:text-gray-950">{i + 1}</span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{s}</p>
-                                    </div>
-                                    <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0 mt-1" />
-                                  </motion.div>
+                                    {kw}
+                                  </span>
                                 ))}
                               </div>
-                            ) : (
-                              <div className="flex flex-col items-center py-10 text-center">
-                                <div className="w-14 h-14 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center mb-4">
-                                  <CheckCircle className="w-7 h-7 text-green-500" />
-                                </div>
-                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                  No improvements needed
-                                </p>
-                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                  Your resume is well-optimized for ATS systems
-                                </p>
+                            </div>
+                          )}
+                          {result.keywordAnalysis.missing.length > 0 && (
+                            <div>
+                              <div className={sectionKickerCls + " mb-3"}>
+                                <span className="h-1 w-1 bg-orange-500" />
+                                missing · {result.keywordAnalysis.missing.length}
                               </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {result.keywordAnalysis.missing.map((kw) => (
+                                  <span
+                                    key={kw}
+                                    className="px-2.5 py-1 bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 rounded-md text-xs font-medium border border-dashed border-orange-200 dark:border-orange-900/50"
+                                  >
+                                    + {kw}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {result.keywordAnalysis.found.length === 0 &&
+                            result.keywordAnalysis.missing.length === 0 && (
+                              <p className="text-sm text-stone-500 text-center py-8">
+                                No keyword data available for this analysis.
+                              </p>
                             )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                        </motion.div>
+                      )}
+
+                      {activeTab === "suggestions" && (
+                        <motion.div
+                          key="suggestions"
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 8 }}
+                          transition={{ duration: 0.18 }}
+                        >
+                          {result.suggestions.length > 0 ? (
+                            <div className="divide-y divide-stone-200 dark:divide-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                              {result.suggestions.map((s, i) => (
+                                <motion.div
+                                  key={i}
+                                  initial={{ opacity: 0, y: 6 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: i * 0.05 }}
+                                  className="group flex items-start gap-4 px-5 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors"
+                                >
+                                  <div className="w-8 h-8 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center shrink-0 mt-0.5 tabular-nums">
+                                    <span className="text-[11px] font-bold text-stone-50 dark:text-stone-900">
+                                      {String(i + 1).padStart(2, "0")}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
+                                      {s}
+                                    </p>
+                                  </div>
+                                  <ArrowRight className="w-4 h-4 text-stone-300 dark:text-white/20 shrink-0 mt-1 group-hover:text-lime-500 group-hover:translate-x-0.5 transition-all" />
+                                </motion.div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center py-10 text-center">
+                              <div className="w-12 h-12 rounded-md bg-lime-400 flex items-center justify-center mb-4">
+                                <CheckCircle className="w-6 h-6 text-stone-950" />
+                              </div>
+                              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                                No improvements needed
+                              </p>
+                              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+                                resume is ats-ready
+                              </p>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

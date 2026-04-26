@@ -9,6 +9,7 @@ import {
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
+import { Button } from "../../../components/ui/button";
 import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
@@ -89,7 +90,7 @@ export default function PublicProfilePage() {
       <div className="text-center py-20">
         <h2 className="text-xl font-bold text-gray-950 dark:text-white mb-2">Profile not found</h2>
         <p className="text-gray-500 mb-4">This student profile doesn't exist or you don't have permission to view it.</p>
-        <button onClick={() => navigate(-1)} className="text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:underline">Go back</button>
+        <Button variant="primary" mode="link" onClick={() => navigate(-1)} className="text-indigo-600 dark:text-indigo-400 hover:underline">Go back</Button>
       </div>
     );
   }

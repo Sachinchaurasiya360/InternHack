@@ -9,7 +9,7 @@ const interviewController = new InterviewController(interviewService);
 
 export const interviewRouter = Router();
 
-// Interview module extends the recruiter module — requires RECRUITER role
+// Interview module extends the recruiter module, requires RECRUITER role
 interviewRouter.use(authMiddleware, requireRole("RECRUITER"));
 
 interviewRouter.post("/", (req, res) => interviewController.create(req, res));

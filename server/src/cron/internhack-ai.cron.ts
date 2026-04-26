@@ -10,7 +10,7 @@ import { prisma } from "../database/db.js";
  * 3. Daily 3 AM: Maintenance (re-embed users, clean old data)
  */
 export function startAIPipelineCrons() {
-  // ── Every 6 hours at :30 — Sync + Enrich + Embed ──
+  // ── Every 6 hours at :30, Sync + Enrich + Embed ──
   cron.schedule("30 */6 * * *", async () => {
     try {
       console.log("[AI Pipeline] Starting sync...");
@@ -30,7 +30,7 @@ export function startAIPipelineCrons() {
     }
   });
 
-  // ── Every hour — Generate matches ──
+  // ── Every hour, Generate matches ──
   cron.schedule("0 * * * *", async () => {
     try {
       console.log("[AI Pipeline] Generating matches...");
@@ -42,7 +42,7 @@ export function startAIPipelineCrons() {
     }
   });
 
-  // ── Daily at 3 AM — Maintenance ──
+  // ── Daily at 3 AM, Maintenance ──
   cron.schedule("0 3 * * *", async () => {
     try {
       console.log("[AI Pipeline] Daily maintenance...");

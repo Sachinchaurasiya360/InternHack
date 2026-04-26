@@ -3,9 +3,8 @@ import { motion } from "framer-motion";
 import {
   User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2,
   CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap,
-  Linkedin, Github, Globe, X, Plus, AlignLeft, Shield, Calendar, Crown,
-  ChevronDown, ShieldCheck, FolderGit2, Trophy, Pencil, Search as SearchIcon,
-  Crosshair,
+  Linkedin, Github, Globe, X, Plus, AlignLeft, Calendar, Crown,
+  ChevronDown, ShieldCheck, Trophy, Pencil, Search as SearchIcon,
 } from "lucide-react";
 import { Link } from "react-router";
 import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
@@ -37,7 +36,6 @@ interface ProfileData {
   githubUrl: string;
   portfolioUrl: string;
   leetcodeUrl: string;
-  appPassword: string;
   jobStatus: string | null;
   isProfilePublic: boolean;
   projects: ProjectItem[];
@@ -51,7 +49,6 @@ const JOB_STATUS_OPTIONS = [
   { value: "OPEN_TO_OFFER", label: "Open to offer" },
 ] as const;
 
-/** Skills that have proctored verification tests on /student/skill-verification */
 const VERIFIABLE_SKILLS = [
   "JavaScript", "Python", "React", "Node.js", "SQL", "Java", "TypeScript",
   "HTML/CSS", "Git", "Data Structures", "Express.js", "MongoDB", "Docker",
@@ -80,12 +77,66 @@ function getFileNameFromUrl(url: string): string {
 
 const MAX_RESUMES = 2;
 
+const inputClass =
+  "w-full px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
+const inputErrorClass =
+  "w-full px-4 py-2.5 border border-red-400 dark:border-red-600 rounded-md text-sm focus:outline-none focus:border-red-500 transition-colors bg-red-50/40 dark:bg-red-900/10 text-stone-900 dark:text-stone-50";
+const labelClass =
+  "flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-500 mb-2";
+const sectionHeaderBtn =
+  "w-full flex items-center justify-between px-5 py-4 text-left bg-transparent border-0 cursor-pointer hover:bg-stone-100/60 dark:hover:bg-stone-900/60 transition-colors";
+const sectionTitleCls =
+  "inline-flex items-center gap-2.5 text-sm font-bold text-stone-900 dark:text-stone-50";
+const sectionKickerCls =
+  "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
+const cardCls =
+  "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden";
+
+function SectionHeader({
+  kicker,
+  title,
+  open,
+  onToggle,
+  meta,
+  right,
+}: {
+  kicker: string;
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+  meta?: React.ReactNode;
+  right?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center border-b border-stone-200 dark:border-white/10">
+      <button type="button" onClick={onToggle} className={`${sectionHeaderBtn} flex-1`}>
+        <div className="flex flex-col gap-1 min-w-0">
+          <span className={sectionKickerCls}>
+            <span className="h-1 w-1 bg-lime-400" />
+            {kicker}
+          </span>
+          <span className={sectionTitleCls}>
+            {title}
+            {meta && (
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 font-medium">
+                {meta}
+              </span>
+            )}
+          </span>
+        </div>
+        <ChevronDown className={`w-4 h-4 text-stone-500 transition-transform duration-200 shrink-0 ${open ? "rotate-180" : ""}`} />
+      </button>
+      {right && <div className="pr-4 shrink-0">{right}</div>}
+    </div>
+  );
+}
+
 const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { delay: i * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
@@ -95,12 +146,11 @@ export default function StudentProfilePage() {
     name: "", email: "", contactNo: "", company: "", designation: "",
     resumes: [], profilePic: "", coverImage: "", bio: "", college: "",
     graduationYear: null, skills: [], location: "",
-    linkedinUrl: "", githubUrl: "", portfolioUrl: "", leetcodeUrl: "", appPassword: "",
+    linkedinUrl: "", githubUrl: "", portfolioUrl: "", leetcodeUrl: "",
     jobStatus: null, isProfilePublic: false, projects: [], achievements: [],
   });
   const [memberSince, setMemberSince] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
-  const [hasAppPassword, setHasAppPassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPic, setUploadingPic] = useState(false);
@@ -109,7 +159,7 @@ export default function StudentProfilePage() {
   const [deletingResume, setDeletingResume] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    basic: true, education: true, skills: true, jobPrefs: false, projects: true, achievements: true, links: false, email: false, resumes: true,
+    basic: true, education: true, skills: true, jobPrefs: false, projects: true, achievements: true, links: false, resumes: true,
   });
   const [jobPrefRoles, setJobPrefRoles] = useState("");
   const [jobPrefSkills, setJobPrefSkills] = useState("");
@@ -160,22 +210,19 @@ export default function StudentProfilePage() {
           graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
           location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
           githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-          leetcodeUrl: u.leetcodeUrl ?? "", appPassword: "",
+          leetcodeUrl: u.leetcodeUrl ?? "",
           jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
           projects: u.projects ?? [], achievements: u.achievements ?? [],
         });
-        setHasAppPassword(!!u.hasAppPassword);
         setMemberSince(u.createdAt ?? null);
       })
       .catch(() => toast.error("Failed to load profile"))
       .finally(() => setLoading(false));
 
-    // Fetch verified skills
     api.get("/skill-tests/my-verified")
       .then((res) => setVerifiedSkills(res.data.verified ?? []))
       .catch((err) => console.error("Failed to fetch verified skills:", err));
 
-    // Fetch job preferences
     api.get("/job-feed/preferences")
       .then((res) => {
         if (res.data) {
@@ -219,7 +266,6 @@ export default function StudentProfilePage() {
       try {
         const res = await api.get<Array<{ name: string; country: string; "state-province": string | null }>>(`/universities/search`, { params: { name: query } });
         const data = res.data;
-        // Deduplicate by name and take first 8
         const seen = new Set<string>();
         const suggestions: CollegeSuggestion[] = [];
         for (const u of data) {
@@ -306,7 +352,6 @@ export default function StudentProfilePage() {
         location: form.location.trim(), linkedinUrl: form.linkedinUrl.trim(),
         githubUrl: form.githubUrl.trim(), portfolioUrl: form.portfolioUrl.trim(),
         leetcodeUrl: form.leetcodeUrl.trim(),
-        appPassword: form.appPassword.trim() || null,
         jobStatus: form.jobStatus || null, isProfilePublic: form.isProfilePublic,
         projects: form.projects, achievements: form.achievements,
       });
@@ -318,12 +363,11 @@ export default function StudentProfilePage() {
         graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
         location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
         githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-        leetcodeUrl: u.leetcodeUrl ?? "", appPassword: "",
+        leetcodeUrl: u.leetcodeUrl ?? "",
         jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
         projects: u.projects ?? [], achievements: u.achievements ?? [],
       };
       setForm(updated);
-      setHasAppPassword(!!u.hasAppPassword);
       syncUser(updated);
       toast.success("Profile updated!");
     } catch (err: unknown) {
@@ -331,7 +375,6 @@ export default function StudentProfilePage() {
       if (errData?.errors?.fieldErrors) {
         const fe = errData.errors.fieldErrors;
         setFieldErrors(fe);
-        // Auto-open sections that have errors
         const sectionMap: Record<string, string> = {
           name: "basic", contactNo: "basic", bio: "basic", location: "basic", jobStatus: "basic",
           college: "education", graduationYear: "education", company: "education", designation: "education",
@@ -357,7 +400,7 @@ export default function StudentProfilePage() {
     }
   };
 
-  const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
+  const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
   const handleProfilePicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -412,7 +455,6 @@ export default function StudentProfilePage() {
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // Server auto-replaces oldest resume if at max
     setUploadingResume(true);
     try {
       const fd = new FormData();
@@ -450,16 +492,14 @@ export default function StudentProfilePage() {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const inputClass = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all dark:bg-gray-800 dark:text-white bg-gray-50/50 dark:bg-gray-800/50";
-  const inputErrorClass = "w-full px-4 py-2.5 border border-red-300 dark:border-red-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all dark:bg-gray-800 dark:text-white bg-red-50/30 dark:bg-red-900/10";
-  const labelClass = "flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5";
   const FieldError = ({ field }: { field: string }) => {
     const errs = fieldErrors[field];
     if (!errs?.length) return null;
-    return <p className="text-xs text-red-500 dark:text-red-400 mt-1">{errs[0]}</p>;
+    return <p className="text-xs text-red-500 dark:text-red-400 mt-1.5 font-mono">{errs[0]}</p>;
   };
 
   const displayDate = memberSince || user?.createdAt;
+  const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
 
   const profileCompletion = (() => {
     const fields = [form.name, form.bio, form.contactNo, form.location, form.college, form.company, form.linkedinUrl, form.githubUrl];
@@ -472,151 +512,175 @@ export default function StudentProfilePage() {
   if (loading) return <LoadingScreen />;
 
   return (
-    <div className="relative pb-12">
+    <div className="relative pb-16">
       <SEO title="My Profile" description="Update your InternHack student profile details." noIndex />
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      {/* Page Header */}
+      {/* Editorial header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-10 mt-6"
+        transition={{ duration: 0.4 }}
+        className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-          My <span className="text-gradient-accent">Profile</span>
-        </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-          A complete profile helps recruiters find you faster
-        </p>
+        <div>
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            account / profile
+          </div>
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            My profile.
+          </h1>
+          <p className="mt-3 text-sm text-stone-500 max-w-md">
+            A complete profile helps recruiters surface you in talent search and improves AI job matching.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            strength / {profileCompletion}%
+          </span>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className="group inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {saving ? "Saving..." : "Save changes"}
+          </button>
+        </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ───── Left Column: Profile Overview ───── */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Profile Card */}
-          <motion.div
-            custom={0}
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300"
-          >
-            {/* Banner */}
-            <div className="h-28 bg-gray-950 dark:bg-gray-800 relative group/banner overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* ─── Left: Identity sidebar ─── */}
+        <aside className="lg:col-span-4 xl:col-span-3 space-y-4 lg:sticky lg:top-24 lg:self-start">
+          {/* Identity card */}
+          <motion.div custom={0} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            {/* Cover band */}
+            <div className="h-24 bg-stone-900 dark:bg-stone-950 relative group/banner overflow-hidden">
               {form.coverImage ? (
                 <img src={form.coverImage} alt="Cover" className="w-full h-full object-cover" />
               ) : (
-                <div
-                  className="absolute inset-0 opacity-20"
-                  style={{
-                    backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-                    backgroundSize: "24px 24px",
-                  }}
-                />
+                <>
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 pointer-events-none opacity-[0.1]"
+                    style={{
+                      backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+                      backgroundSize: "18px 18px",
+                    }}
+                  />
+                  <span className="absolute top-3 right-3 h-1.5 w-1.5 bg-lime-400" />
+                </>
               )}
-              <button type="button" onClick={() => coverInputRef.current?.click()} disabled={uploadingCover}
-                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/banner:opacity-100 transition-opacity cursor-pointer">
-                {uploadingCover ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                disabled={uploadingCover}
+                className="absolute inset-0 bg-stone-950/50 hover:bg-stone-950/60 text-stone-50 flex items-center justify-center opacity-0 group-hover/banner:opacity-100 transition-opacity border-0 cursor-pointer"
+              >
+                {uploadingCover ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
               </button>
               <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverImageSelect} className="hidden" />
             </div>
 
-            <div className="px-5 pb-5 -mt-12 relative">
+            <div className="px-5 pb-5 -mt-10 relative">
               {/* Avatar */}
-              <div className="relative group mb-3">
-                <div className="w-24 h-24 rounded-2xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-lg text-gray-900 dark:text-white flex items-center justify-center text-3xl font-bold overflow-hidden">
+              <div className="relative group mb-3 w-20">
+                <div className="w-20 h-20 rounded-md bg-white dark:bg-stone-900 border-2 border-white dark:border-stone-900 shadow overflow-hidden">
                   {form.profilePic ? (
-                    <img src={form.profilePic} alt={form.name} className="w-24 h-24 rounded-2xl object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                    <img src={form.profilePic} alt={form.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
                   ) : (
-                    <User className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                    <div className="w-full h-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
+                      <User className="w-8 h-8 text-stone-400" />
+                    </div>
                   )}
                 </div>
-                <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
-                  className="absolute inset-0 w-24 h-24 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                  {uploadingPic ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
+                <button
+                  type="button"
+                  onClick={() => picInputRef.current?.click()}
+                  disabled={uploadingPic}
+                  className="absolute inset-0 w-20 h-20 bg-stone-950/60 text-stone-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-0 cursor-pointer"
+                >
+                  {uploadingPic ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
                 </button>
                 <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicSelect} className="hidden" />
               </div>
 
-              <h2 className="text-lg font-bold text-gray-950 dark:text-white truncate">{form.name || "Your Name"}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{form.email}</p>
+              <h2 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate leading-tight">
+                {form.name || "Your name"}
+              </h2>
+              <p className="text-xs font-mono text-stone-500 truncate mt-0.5">{form.email}</p>
 
               {(form.designation || form.company) && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
-                  {form.designation}{form.designation && form.company ? " at " : ""}{form.company}
+                <p className="text-sm text-stone-600 dark:text-stone-400 mt-2 truncate">
+                  {form.designation}
+                  {form.designation && form.company ? " at " : ""}
+                  <span className="text-stone-900 dark:text-stone-50 font-medium">{form.company}</span>
                 </p>
               )}
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {form.college && (
-                  <span className="inline-flex items-center gap-1 text-xs bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded-lg font-medium">
-                    <GraduationCap className="w-3 h-3" /> {form.college.length > 25 ? form.college.slice(0, 25) + "..." : form.college}
-                  </span>
-                )}
-                {form.location && (
-                  <span className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2.5 py-1 rounded-lg">
-                    <MapPin className="w-3 h-3" /> {form.location}
-                  </span>
-                )}
-              </div>
+              {/* Meta rows */}
+              {(form.college || form.location) && (
+                <div className="mt-3 space-y-1.5 text-xs text-stone-600 dark:text-stone-400">
+                  {form.college && (
+                    <div className="flex items-center gap-2">
+                      <GraduationCap className="w-3.5 h-3.5 shrink-0 text-stone-500" />
+                      <span className="truncate">{form.college}</span>
+                    </div>
+                  )}
+                  {form.location && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5 shrink-0 text-stone-500" />
+                      <span className="truncate">{form.location}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Social links */}
+              {/* Social */}
               {(form.linkedinUrl || form.githubUrl || form.portfolioUrl) && (
-                <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                <div className="flex gap-1 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
                   {form.linkedinUrl && (
                     <a href={form.linkedinUrl} target="_blank" rel="noopener noreferrer"
-                      className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 dark:hover:text-indigo-400 transition-colors">
-                      <Linkedin className="w-4 h-4" />
+                      className="w-8 h-8 rounded-md border border-stone-200 dark:border-white/10 flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
+                      <Linkedin className="w-3.5 h-3.5" />
                     </a>
                   )}
                   {form.githubUrl && (
                     <a href={form.githubUrl} target="_blank" rel="noopener noreferrer"
-                      className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-white transition-colors">
-                      <Github className="w-4 h-4" />
+                      className="w-8 h-8 rounded-md border border-stone-200 dark:border-white/10 flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
+                      <Github className="w-3.5 h-3.5" />
                     </a>
                   )}
                   {form.portfolioUrl && (
                     <a href={form.portfolioUrl} target="_blank" rel="noopener noreferrer"
-                      className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20 dark:hover:text-violet-400 transition-colors">
-                      <Globe className="w-4 h-4" />
+                      className="w-8 h-8 rounded-md border border-stone-200 dark:border-white/10 flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
+                      <Globe className="w-3.5 h-3.5" />
                     </a>
                   )}
                 </div>
               )}
 
-              {/* Visibility Toggle */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Visible to Recruiters</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
-                    {form.isProfilePublic
-                      ? "Your profile appears in recruiter talent search"
-                      : "Your profile is hidden from recruiters"}
+              {/* Visibility */}
+              <div className="flex items-start justify-between gap-3 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                    recruiter visibility
+                  </p>
+                  <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 leading-snug">
+                    {form.isProfilePublic ? "Visible in talent search" : "Hidden from recruiters"}
                   </p>
                 </div>
                 <button
                   type="button"
+                  aria-label="Toggle recruiter visibility"
                   onClick={() => setForm((prev) => ({ ...prev, isProfilePublic: !prev.isProfilePublic }))}
-                  className={`relative w-11 h-6 rounded-full transition-colors ${
-                    form.isProfilePublic ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
+                  className={`relative w-10 h-5 rounded-full transition-colors shrink-0 border-0 cursor-pointer ${
+                    form.isProfilePublic ? "bg-lime-400" : "bg-stone-300 dark:bg-stone-700"
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                    className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white dark:bg-stone-950 rounded-full transition-transform ${
                       form.isProfilePublic ? "translate-x-5" : "translate-x-0"
                     }`}
                   />
@@ -625,200 +689,169 @@ export default function StudentProfilePage() {
             </div>
           </motion.div>
 
-          {/* Profile Completion */}
-          <motion.div
-            custom={1}
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300"
-          >
+          {/* Strength + meta */}
+          <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible" className={`${cardCls} p-5`}>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-gray-950 dark:text-white">Profile Strength</span>
-              <span className={`text-sm font-bold ${profileCompletion >= 80 ? "text-emerald-600" : profileCompletion >= 50 ? "text-amber-600" : "text-red-500"}`}>
+              <span className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <span className="h-1 w-1 bg-lime-400" />
+                profile strength
+              </span>
+              <span className="text-sm font-bold text-stone-900 dark:text-stone-50 tabular-nums">
                 {profileCompletion}%
               </span>
             </div>
-            <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div className="w-full h-1 bg-stone-200 dark:bg-white/10 overflow-hidden rounded-full">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${profileCompletion}%` }}
-                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-                className={`h-full rounded-full ${profileCompletion >= 80 ? "bg-linear-to-r from-emerald-500 to-teal-500" : profileCompletion >= 50 ? "bg-linear-to-r from-amber-500 to-orange-500" : "bg-linear-to-r from-red-500 to-rose-500"}`}
+                transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
+                className="h-full bg-lime-400"
               />
             </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-              {profileCompletion >= 80 ? "Looking great! Your profile is well filled." : profileCompletion >= 50 ? "Good start. Add more details to stand out." : "Fill in your profile to attract recruiters."}
+            <p className="text-xs text-stone-500 mt-3 leading-snug">
+              {profileCompletion >= 80
+                ? "Looking great. Your profile is well filled."
+                : profileCompletion >= 50
+                ? "Good start. Add more details to stand out."
+                : "Fill your profile to attract recruiters."}
             </p>
+
+            <div className="mt-5 pt-5 border-t border-stone-200 dark:border-white/10 space-y-2.5">
+              <MetaRow
+                icon={<Calendar className="w-3.5 h-3.5" />}
+                label="joined"
+                value={
+                  displayDate
+                    ? new Date(displayDate).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+                    : "---"
+                }
+              />
+              <MetaRow
+                icon={<FileText className="w-3.5 h-3.5" />}
+                label="resumes"
+                value={`${form.resumes.length}/${MAX_RESUMES}`}
+              />
+              <MetaRow
+                icon={<Crown className={`w-3.5 h-3.5 ${isPremium ? "text-lime-500" : ""}`} />}
+                label="plan"
+                value={
+                  isPremium ? (
+                    <span className="text-lime-600 dark:text-lime-400 font-bold">Pro</span>
+                  ) : (
+                    <span>Free</span>
+                  )
+                }
+              />
+            </div>
           </motion.div>
 
           {/* Badges */}
           {user?.id && (
-            <motion.div
-              custom={2}
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-            >
+            <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible">
               <BadgesSection studentId={user.id} />
             </motion.div>
           )}
+        </aside>
 
-          {/* Account Info */}
-          <motion.div
-            custom={3}
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300"
-          >
-            <h3 className="text-sm font-semibold text-gray-950 dark:text-white mb-4 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Account
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
-                  <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Role
-                </span>
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{user?.role}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
-                  <Calendar className="w-3.5 h-3.5 text-gray-400" /> Member since
-                </span>
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  {displayDate
-                    ? new Date(displayDate).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
-                    : "---"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
-                  <FileText className="w-3.5 h-3.5 text-gray-400" /> Resumes
-                </span>
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{form.resumes.length}/{MAX_RESUMES}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
-                  <Crown className={`w-3.5 h-3.5 ${user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? "text-amber-500" : "text-gray-400"}`} /> Plan
-                </span>
-                {user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? (
-                  <span className="text-sm font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1">
-                    Pro <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase bg-amber-500 text-white rounded-full">Premium</span>
-                  </span>
-                ) : (
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Free</span>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* ───── Right Column: Editable Sections ───── */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Basic Info */}
-          <motion.div custom={0} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("basic")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <User className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Basic Information
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.basic ? "rotate-180" : ""}`} />
-            </button>
+        {/* ─── Right: Editable sections ─── */}
+        <div className="lg:col-span-8 xl:col-span-9 space-y-4">
+          {/* Basic */}
+          <motion.div custom={0} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 01"
+              title="Basic information"
+              open={openSections.basic}
+              onToggle={() => toggleSection("basic")}
+            />
             {openSections.basic && (
-              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+              <div className="px-5 py-5 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}><User className="w-4 h-4 text-gray-400" /> Full Name</label>
+                    <label className={labelClass}><User className="w-3.5 h-3.5" /> Full name</label>
                     <input type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} className={fieldErrors.name ? inputErrorClass : inputClass} placeholder="Your full name" />
                     <FieldError field="name" />
                   </div>
                   <div>
-                    <label className={labelClass}><Mail className="w-4 h-4 text-gray-400" /> Email</label>
-                    <input type="email" value={form.email} disabled className={`${inputClass} bg-gray-100! dark:bg-gray-900! text-gray-500 cursor-not-allowed`} />
+                    <label className={labelClass}><Mail className="w-3.5 h-3.5" /> Email</label>
+                    <input type="email" value={form.email} disabled className={`${inputClass} bg-stone-100 dark:bg-stone-950 text-stone-500 cursor-not-allowed`} />
                   </div>
                 </div>
                 <div>
-                  <label className={labelClass}><AlignLeft className="w-4 h-4 text-gray-400" /> Bio</label>
+                  <label className={labelClass}><AlignLeft className="w-3.5 h-3.5" /> Bio</label>
                   <textarea value={form.bio} onChange={(e) => handleChange("bio", e.target.value)} rows={3} maxLength={500}
                     className={`${fieldErrors.bio ? inputErrorClass : inputClass} resize-none`} placeholder="A brief introduction about yourself..." />
-                  <div className="flex justify-between mt-1">
+                  <div className="flex justify-between mt-1.5">
                     <FieldError field="bio" />
-                    <p className="text-xs text-gray-400 text-right">{form.bio.length}/500</p>
+                    <p className="text-[10px] font-mono text-stone-500 ml-auto">{form.bio.length}/500</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}><Phone className="w-4 h-4 text-gray-400" /> Phone</label>
+                    <label className={labelClass}><Phone className="w-3.5 h-3.5" /> Phone</label>
                     <input type="tel" value={form.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} className={inputClass} placeholder="+91 98765 43210" />
                   </div>
                   <div>
-                    <label className={labelClass}><MapPin className="w-4 h-4 text-gray-400" /> Location</label>
+                    <label className={labelClass}><MapPin className="w-3.5 h-3.5" /> Location</label>
                     <input type="text" value={form.location} onChange={(e) => handleChange("location", e.target.value)} className={inputClass} placeholder="e.g. Mumbai, India" />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}><SearchIcon className="w-4 h-4 text-gray-400" /> Job Status</label>
-                    <select
-                      value={form.jobStatus ?? ""}
-                      onChange={(e) => handleChange("jobStatus", e.target.value || null)}
-                      className={inputClass}
-                    >
-                      {JOB_STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
+                <div>
+                  <label className={labelClass}><SearchIcon className="w-3.5 h-3.5" /> Job status</label>
+                  <select
+                    value={form.jobStatus ?? ""}
+                    onChange={(e) => handleChange("jobStatus", e.target.value || null)}
+                    className={inputClass}
+                  >
+                    {JOB_STATUS_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             )}
           </motion.div>
 
           {/* Education & Work */}
-          <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("education")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <GraduationCap className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Education & Work
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.education ? "rotate-180" : ""}`} />
-            </button>
+          <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 02"
+              title="Education & work"
+              open={openSections.education}
+              onToggle={() => toggleSection("education")}
+            />
             {openSections.education && (
-              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+              <div className="px-5 py-5 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="relative">
-                    <label className={labelClass}><GraduationCap className="w-4 h-4 text-gray-400" /> College</label>
+                    <label className={labelClass}><GraduationCap className="w-3.5 h-3.5" /> College</label>
                     <input
                       ref={collegeInputRef} type="text" value={form.college}
                       onChange={(e) => handleCollegeChange(e.target.value)}
                       onFocus={() => { if (collegeSuggestions.length > 0) setShowCollegeSuggestions(true); }}
                       className={inputClass} placeholder="Start typing college name..." autoComplete="off"
                     />
-                    {collegeLoading && <Loader2 className="absolute right-3 top-9 w-4 h-4 text-gray-400 animate-spin" />}
+                    {collegeLoading && <Loader2 className="absolute right-3 top-10 w-4 h-4 text-stone-400 animate-spin" />}
                     {showCollegeSuggestions && collegeSuggestions.length > 0 && (
                       <div ref={collegeDropdownRef}
-                        className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                        className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md shadow-lg max-h-56 overflow-y-auto">
                         {collegeSuggestions.map((c, i) => (
-                          <button key={i} type="button" onClick={() => selectCollege(c.name)}
-                            className="w-full text-left px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors first:rounded-t-xl last:rounded-b-xl">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{c.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{c.stateProvince ? `${c.stateProvince}, ` : ""}{c.country}</p>
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => selectCollege(c.name)}
+                            className="w-full flex items-start text-left px-4 py-2.5 hover:bg-stone-100 dark:hover:bg-stone-800 border-0 bg-transparent cursor-pointer border-b border-stone-100 dark:border-white/5 last:border-b-0"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-stone-900 dark:text-stone-50 truncate">{c.name}</p>
+                              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">{c.stateProvince ? `${c.stateProvince}, ` : ""}{c.country}</p>
+                            </div>
                           </button>
                         ))}
                       </div>
                     )}
                   </div>
                   <div>
-                    <label className={labelClass}><Calendar className="w-4 h-4 text-gray-400" /> Graduation Year</label>
+                    <label className={labelClass}><Calendar className="w-3.5 h-3.5" /> Graduation year</label>
                     <input type="number" value={form.graduationYear ?? ""} onChange={(e) => handleChange("graduationYear", e.target.value ? Number(e.target.value) : null)}
                       className={fieldErrors.graduationYear ? inputErrorClass : inputClass} placeholder="e.g. 2026" min={1990} max={2040} />
                     <FieldError field="graduationYear" />
@@ -826,11 +859,11 @@ export default function StudentProfilePage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}><Building2 className="w-4 h-4 text-gray-400" /> Company</label>
+                    <label className={labelClass}><Building2 className="w-3.5 h-3.5" /> Company</label>
                     <input type="text" value={form.company} onChange={(e) => handleChange("company", e.target.value)} className={inputClass} placeholder="e.g. Google" />
                   </div>
                   <div>
-                    <label className={labelClass}><Briefcase className="w-4 h-4 text-gray-400" /> Role</label>
+                    <label className={labelClass}><Briefcase className="w-3.5 h-3.5" /> Role</label>
                     <input type="text" value={form.designation} onChange={(e) => handleChange("designation", e.target.value)} className={inputClass} placeholder="e.g. CS Student" />
                   </div>
                 </div>
@@ -839,31 +872,40 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Skills */}
-          <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("skills")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Skills
-                <span className="text-xs font-normal text-gray-400 ml-1">{form.skills.length}/20</span>
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.skills ? "rotate-180" : ""}`} />
-            </button>
+          <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 03"
+              title="Skills"
+              meta={`${form.skills.length}/20`}
+              open={openSections.skills}
+              onToggle={() => toggleSection("skills")}
+            />
             {openSections.skills && (
-              <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+              <div className="px-5 py-5 space-y-4">
                 {form.skills.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {form.skills.map((skill, i) => {
                       const v = verifiedMap.get(skill.toLowerCase());
                       return (
-                        <span key={i} className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400"}`}>
-                          {v && <ShieldCheck className="w-3.5 h-3.5" />}
-                          {skill}
-                          {v && <span className="text-[10px] opacity-70">{v.score}%</span>}
-                          <button type="button" onClick={() => handleRemoveSkill(i)} className={`${v ? "text-green-400 dark:text-green-500 hover:text-green-600 dark:hover:text-green-300" : "text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300"} ml-0.5`}><X className="w-3 h-3" /></button>
+                        <span
+                          key={i}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md border ${
+                            v
+                              ? "bg-lime-50 dark:bg-lime-900/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800/40"
+                              : "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10"
+                          }`}
+                        >
+                          {v && <ShieldCheck className="w-3 h-3" />}
+                          <span className="font-medium">{skill}</span>
+                          {v && <span className="text-[9px] font-mono opacity-70">{v.score}%</span>}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSkill(i)}
+                            aria-label={`Remove ${skill}`}
+                            className="opacity-60 hover:opacity-100 bg-transparent border-0 cursor-pointer p-0"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
                         </span>
                       );
                     })}
@@ -871,36 +913,45 @@ export default function StudentProfilePage() {
                 )}
                 <div className="relative">
                   <div className="flex gap-2">
-                    <input ref={skillInputRef} type="text" value={skillInput}
+                    <input
+                      ref={skillInputRef} type="text" value={skillInput}
                       onChange={(e) => { setSkillInput(e.target.value); setShowSkillSuggestions(e.target.value.trim().length > 0); }}
                       onFocus={() => { if (skillInput.trim().length > 0) setShowSkillSuggestions(true); }}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSkill(); } }}
-                      className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" autoComplete="off" />
-                    <button type="button" onClick={() => handleAddSkill()}
-                      className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center gap-1 shrink-0">
-                      <Plus className="w-4 h-4" /> Add
+                      className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" autoComplete="off"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddSkill()}
+                      className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm font-bold text-stone-900 dark:text-stone-50 hover:border-stone-900 dark:hover:border-stone-50 transition-colors bg-transparent cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add
                     </button>
                   </div>
                   {showSkillSuggestions && filteredSkillSuggestions.length > 0 && (
                     <div ref={skillDropdownRef}
-                      className="absolute z-50 left-0 right-14 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-52 overflow-y-auto">
-                      <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-gray-800">
-                        Verifiable Skills
+                      className="absolute z-50 left-0 right-16 top-full mt-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md shadow-lg max-h-52 overflow-y-auto">
+                      <p className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950">
+                        verifiable skills
                       </p>
                       {filteredSkillSuggestions.map((skill) => (
-                        <button key={skill} type="button" onClick={() => handleAddSkill(skill)}
-                          className="w-full text-left px-3 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors flex items-center gap-2 last:rounded-b-xl">
-                          <ShieldCheck className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 shrink-0" />
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">{skill}</span>
-                          <span className="text-[10px] text-violet-500 dark:text-violet-400 ml-auto shrink-0">can verify</span>
+                        <button
+                          key={skill}
+                          type="button"
+                          onClick={() => handleAddSkill(skill)}
+                          className="w-full flex items-center gap-2 text-left px-3 py-2 hover:bg-stone-100 dark:hover:bg-stone-800 border-0 bg-transparent cursor-pointer border-b border-stone-100 dark:border-white/5 last:border-b-0"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-lime-500 shrink-0" />
+                          <span className="text-sm font-medium text-stone-900 dark:text-stone-50">{skill}</span>
+                          <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 ml-auto shrink-0">can verify</span>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
                 {form.skills.length > 0 && (
-                  <Link to="/student/skill-verification" className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium no-underline transition-colors">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Verify your skills with proctored tests
+                  <Link to="/student/skill-verification" className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline transition-colors">
+                    <ShieldCheck className="w-3.5 h-3.5" /> verify skills with proctored tests
                   </Link>
                 )}
               </div>
@@ -908,96 +959,64 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Job Preferences */}
-          <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("jobPrefs")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <Crosshair className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Job Preferences
-                <span className="text-xs font-normal text-gray-400 ml-1">AI matching</span>
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.jobPrefs ? "rotate-180" : ""}`} />
-            </button>
+          <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 04"
+              title="Job preferences"
+              meta="ai matching"
+              open={openSections.jobPrefs}
+              onToggle={() => toggleSection("jobPrefs")}
+            />
             {openSections.jobPrefs && (
-              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="px-5 py-5 space-y-4">
+                <p className="text-xs text-stone-500 leading-relaxed">
                   These preferences help InternHack AI find the best jobs for you.
                 </p>
                 <div>
-                  <label className={labelClass}><Briefcase className="w-4 h-4 text-gray-400" /> Desired Roles</label>
+                  <label className={labelClass}><Briefcase className="w-3.5 h-3.5" /> Desired roles</label>
                   <input type="text" value={jobPrefRoles} onChange={(e) => setJobPrefRoles(e.target.value)}
                     className={inputClass} placeholder="e.g. Frontend Developer, React Engineer" />
-                  <p className="text-xs text-gray-400 mt-1">Separate with commas</p>
+                  <p className="text-[10px] font-mono text-stone-500 mt-1.5">separate with commas</p>
                 </div>
                 <div>
-                  <label className={labelClass}><CheckCircle className="w-4 h-4 text-gray-400" /> Preferred Skills</label>
+                  <label className={labelClass}><CheckCircle className="w-3.5 h-3.5" /> Preferred skills</label>
                   <input type="text" value={jobPrefSkills} onChange={(e) => setJobPrefSkills(e.target.value)}
                     className={inputClass} placeholder="e.g. React, TypeScript, Node.js" />
-                  <p className="text-xs text-gray-400 mt-1">Separate with commas</p>
+                  <p className="text-[10px] font-mono text-stone-500 mt-1.5">separate with commas</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}><MapPin className="w-4 h-4 text-gray-400" /> Preferred Locations</label>
+                    <label className={labelClass}><MapPin className="w-3.5 h-3.5" /> Preferred locations</label>
                     <input type="text" value={jobPrefLocations} onChange={(e) => setJobPrefLocations(e.target.value)}
                       className={inputClass} placeholder="e.g. Bangalore, Remote" />
                   </div>
                   <div>
-                    <label className={labelClass}>Min Salary (LPA)</label>
+                    <label className={labelClass}>Min salary (LPA)</label>
                     <input type="number" value={jobPrefSalary} onChange={(e) => setJobPrefSalary(e.target.value)}
                       className={inputClass} placeholder="e.g. 6" />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Work Mode</label>
-                  <div className="flex flex-wrap gap-2">
-                    {["REMOTE", "HYBRID", "ONSITE"].map((m) => (
-                      <button key={m} type="button"
-                        onClick={() => setJobPrefWorkMode((prev) => prev.includes(m) ? prev.filter((v) => v !== m) : [...prev, m])}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                          jobPrefWorkMode.includes(m)
-                            ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
-                            : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                        }`}>
-                        {m.charAt(0) + m.slice(1).toLowerCase()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Experience Level</label>
-                  <div className="flex flex-wrap gap-2">
-                    {["INTERN", "ENTRY", "MID", "SENIOR"].map((l) => (
-                      <button key={l} type="button"
-                        onClick={() => setJobPrefExpLevel((prev) => prev.includes(l) ? prev.filter((v) => v !== l) : [...prev, l])}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                          jobPrefExpLevel.includes(l)
-                            ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
-                            : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                        }`}>
-                        {l.charAt(0) + l.slice(1).toLowerCase()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain</label>
-                  <div className="flex flex-wrap gap-2">
-                    {["frontend", "backend", "fullstack", "devops", "data", "ml", "mobile"].map((d) => (
-                      <button key={d} type="button"
-                        onClick={() => setJobPrefDomains((prev) => prev.includes(d) ? prev.filter((v) => v !== d) : [...prev, d])}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                          jobPrefDomains.includes(d)
-                            ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
-                            : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                        }`}>
-                        {d.charAt(0).toUpperCase() + d.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <TogglePills
+                  label="Work mode"
+                  options={["REMOTE", "HYBRID", "ONSITE"]}
+                  selected={jobPrefWorkMode}
+                  onChange={setJobPrefWorkMode}
+                  format={(m) => m.charAt(0) + m.slice(1).toLowerCase()}
+                />
+                <TogglePills
+                  label="Experience level"
+                  options={["INTERN", "ENTRY", "MID", "SENIOR"]}
+                  selected={jobPrefExpLevel}
+                  onChange={setJobPrefExpLevel}
+                  format={(l) => l.charAt(0) + l.slice(1).toLowerCase()}
+                />
+                <TogglePills
+                  label="Domain"
+                  options={["frontend", "backend", "fullstack", "devops", "data", "ml", "mobile"]}
+                  selected={jobPrefDomains}
+                  onChange={setJobPrefDomains}
+                  format={(d) => d.charAt(0).toUpperCase() + d.slice(1)}
+                />
                 <button
                   type="button"
                   disabled={savingJobPrefs}
@@ -1021,171 +1040,132 @@ export default function StudentProfilePage() {
                       setSavingJobPrefs(false);
                     }
                   }}
-                  className="w-full py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-sm font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer disabled:opacity-50"
                 >
-                  {savingJobPrefs ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : "Save Preferences"}
+                  {savingJobPrefs ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : "Save preferences"}
                 </button>
               </div>
             )}
           </motion.div>
 
           {/* Projects */}
-          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <div className="flex items-center justify-between px-6 py-4">
-              <button type="button" onClick={() => toggleSection("projects")}
-                className="flex items-center justify-between flex-1 text-left">
-                <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                    <FolderGit2 className="w-4 h-4 text-white dark:text-gray-900" />
-                  </div>
-                  Projects
-                  <span className="text-xs font-normal text-gray-400 ml-1">{form.projects.length}/10</span>
-                </h3>
-                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.projects ? "rotate-180" : ""}`} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowGitHubImport(true)}
-                className="ml-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0"
-              >
-                <Github className="w-3.5 h-3.5" /> Import GitHub
-              </button>
-            </div>
+          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 05"
+              title="Projects"
+              meta={`${form.projects.length}/10`}
+              open={openSections.projects}
+              onToggle={() => toggleSection("projects")}
+              right={
+                <button
+                  type="button"
+                  onClick={() => setShowGitHubImport(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
+                >
+                  <Github className="w-3.5 h-3.5" /> import
+                </button>
+              }
+            />
             {openSections.projects && (
-              <ProjectsSection projects={form.projects} onChange={(projects) => { setForm((prev) => ({ ...prev, projects })); if (fieldErrors.projects) setFieldErrors((prev) => { const next = { ...prev }; delete next.projects; return next; }); }} inputClass={inputClass} labelClass={labelClass} errors={fieldErrors.projects} />
+              <ProjectsSection
+                projects={form.projects}
+                onChange={(projects) => {
+                  setForm((prev) => ({ ...prev, projects }));
+                  if (fieldErrors.projects) setFieldErrors((prev) => { const next = { ...prev }; delete next.projects; return next; });
+                }}
+                errors={fieldErrors.projects}
+              />
             )}
           </motion.div>
 
           {/* Achievements */}
-          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("achievements")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <Trophy className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Achievements & Leadership
-                <span className="text-xs font-normal text-gray-400 ml-1">{form.achievements.length}/10</span>
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.achievements ? "rotate-180" : ""}`} />
-            </button>
+          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 06"
+              title="Achievements & leadership"
+              meta={`${form.achievements.length}/10`}
+              open={openSections.achievements}
+              onToggle={() => toggleSection("achievements")}
+            />
             {openSections.achievements && (
-              <AchievementsSection achievements={form.achievements} onChange={(achievements) => { setForm((prev) => ({ ...prev, achievements })); if (fieldErrors.achievements) setFieldErrors((prev) => { const next = { ...prev }; delete next.achievements; return next; }); }} inputClass={inputClass} labelClass={labelClass} errors={fieldErrors.achievements} />
+              <AchievementsSection
+                achievements={form.achievements}
+                onChange={(achievements) => {
+                  setForm((prev) => ({ ...prev, achievements }));
+                  if (fieldErrors.achievements) setFieldErrors((prev) => { const next = { ...prev }; delete next.achievements; return next; });
+                }}
+                errors={fieldErrors.achievements}
+              />
             )}
           </motion.div>
 
-          {/* Social Links */}
-          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("links")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <Globe className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Social Links
-                {(form.linkedinUrl || form.githubUrl || form.portfolioUrl || form.leetcodeUrl) && (
-                  <span className="text-xs font-normal text-gray-400 ml-1">
-                    {[form.linkedinUrl, form.githubUrl, form.portfolioUrl, form.leetcodeUrl].filter(Boolean).length} added
-                  </span>
-                )}
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.links ? "rotate-180" : ""}`} />
-            </button>
+          {/* Social links */}
+          <motion.div custom={6} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 07"
+              title="Social links"
+              meta={
+                [form.linkedinUrl, form.githubUrl, form.portfolioUrl, form.leetcodeUrl].filter(Boolean).length > 0
+                  ? `${[form.linkedinUrl, form.githubUrl, form.portfolioUrl, form.leetcodeUrl].filter(Boolean).length} added`
+                  : undefined
+              }
+              open={openSections.links}
+              onToggle={() => toggleSection("links")}
+            />
             {openSections.links && (
-              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+              <div className="px-5 py-5 space-y-4">
                 <div>
-                  <label className={labelClass}><Linkedin className="w-4 h-4 text-gray-400" /> LinkedIn</label>
+                  <label className={labelClass}><Linkedin className="w-3.5 h-3.5" /> LinkedIn</label>
                   <input type="url" value={form.linkedinUrl} onChange={(e) => handleChange("linkedinUrl", e.target.value)} className={fieldErrors.linkedinUrl ? inputErrorClass : inputClass} placeholder="https://linkedin.com/in/yourname" />
                   <FieldError field="linkedinUrl" />
                 </div>
                 <div>
-                  <label className={labelClass}><Github className="w-4 h-4 text-gray-400" /> GitHub</label>
+                  <label className={labelClass}><Github className="w-3.5 h-3.5" /> GitHub</label>
                   <input type="url" value={form.githubUrl} onChange={(e) => handleChange("githubUrl", e.target.value)} className={fieldErrors.githubUrl ? inputErrorClass : inputClass} placeholder="https://github.com/yourname" />
                   <FieldError field="githubUrl" />
                 </div>
                 <div>
-                  <label className={labelClass}><Globe className="w-4 h-4 text-gray-400" /> Portfolio</label>
+                  <label className={labelClass}><Globe className="w-3.5 h-3.5" /> Portfolio</label>
                   <input type="url" value={form.portfolioUrl} onChange={(e) => handleChange("portfolioUrl", e.target.value)} className={fieldErrors.portfolioUrl ? inputErrorClass : inputClass} placeholder="https://yourportfolio.com" />
                   <FieldError field="portfolioUrl" />
                 </div>
                 <div>
-                  <label className={labelClass}><ExternalLink className="w-4 h-4 text-gray-400" /> LeetCode</label>
+                  <label className={labelClass}><ExternalLink className="w-3.5 h-3.5" /> LeetCode</label>
                   <input type="url" value={form.leetcodeUrl} onChange={(e) => handleChange("leetcodeUrl", e.target.value)} className={inputClass} placeholder="https://leetcode.com/yourname" />
                 </div>
               </div>
             )}
           </motion.div>
 
-          {/* Email Settings */}
-          <motion.div custom={6} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("email")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <Mail className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Email Settings
-                {hasAppPassword && (
-                  <span className="flex items-center gap-1 text-xs font-normal text-emerald-600 dark:text-emerald-400">
-                    <CheckCircle className="w-3.5 h-3.5" /> Configured
-                  </span>
-                )}
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.email ? "rotate-180" : ""}`} />
-            </button>
-            {openSections.email && (
-              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
-                <div>
-                  <label className={labelClass}><Shield className="w-4 h-4 text-gray-400" /> Gmail App Password</label>
-                  <input
-                    type="password"
-                    value={form.appPassword}
-                    onChange={(e) => handleChange("appPassword", e.target.value)}
-                    className={inputClass}
-                    placeholder={hasAppPassword ? "••••••••••••••••" : "Enter your Gmail App Password"}
-                  />
-                  <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
-                    Required for email outreach. Generate one at{" "}
-                    <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                      myaccount.google.com/apppasswords
-                    </a>
-                  </p>
-                </div>
-              </div>
-            )}
-          </motion.div>
-
           {/* Resumes */}
-          <motion.div custom={6} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("resumes")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Resumes
-                <span className="text-xs font-normal text-gray-400 ml-1">{form.resumes.length}/{MAX_RESUMES}</span>
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.resumes ? "rotate-180" : ""}`} />
-            </button>
+          <motion.div custom={7} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+            <SectionHeader
+              kicker="section / 08"
+              title="Resumes"
+              meta={`${form.resumes.length}/${MAX_RESUMES}`}
+              open={openSections.resumes}
+              onToggle={() => toggleSection("resumes")}
+            />
             {openSections.resumes && (
-              <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+              <div className="px-5 py-5 space-y-3">
                 {form.resumes.length > 0 && (
                   <div className="space-y-2">
                     {form.resumes.map((url) => (
-                      <div key={url} className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
-                          <FileText className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                      <div key={url} className="flex items-center gap-3 px-4 py-3 border border-stone-200 dark:border-white/10 rounded-md">
+                        <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
+                          <FileText className="w-4 h-4 text-stone-500" />
                         </div>
-                        <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1">{getFileNameFromUrl(url)}</span>
-                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0"><ExternalLink className="w-3.5 h-3.5" /></a>
-                        <button type="button" onClick={() => handleResumeDelete(url)} disabled={deletingResume === url}
-                          className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 disabled:opacity-50">
+                        <span className="text-sm text-stone-700 dark:text-stone-300 truncate flex-1">{getFileNameFromUrl(url)}</span>
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors shrink-0">
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleResumeDelete(url)}
+                          disabled={deletingResume === url}
+                          aria-label="Delete resume"
+                          className="text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 bg-transparent border-0 cursor-pointer p-1"
+                        >
                           {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                         </button>
                       </div>
@@ -1193,30 +1173,38 @@ export default function StudentProfilePage() {
                   </div>
                 )}
 
-                <button type="button" onClick={() => resumeInputRef.current?.click()} disabled={uploadingResume}
-                  className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 hover:border-gray-400 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/80 transition-all disabled:opacity-50">
-                  {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume (PDF)</>}
+                <button
+                  type="button"
+                  onClick={() => resumeInputRef.current?.click()}
+                  disabled={uploadingResume}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-stone-300 dark:border-white/15 rounded-md text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent cursor-pointer disabled:opacity-50"
+                >
+                  {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload resume (PDF)</>}
                 </button>
                 <input ref={resumeInputRef} type="file" accept=".pdf" onChange={handleResumeUpload} className="hidden" />
-                <p className="text-xs text-gray-400 mt-1">PDF only, max 10 MB each.</p>
+                <p className="text-[10px] font-mono text-stone-500">PDF only, max 10 MB each.</p>
               </div>
             )}
           </motion.div>
 
-          {/* Coding Activity */}
-          <motion.div custom={7} variants={fadeInUp} initial="hidden" animate="visible">
+          {/* Coding activity */}
+          <motion.div custom={9} variants={fadeInUp} initial="hidden" animate="visible">
             <ContributionGraphs
-              githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/,"") : undefined}
-              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/^\/?u\//, "").replace(/\/$/,"") : undefined}
+              githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/, "") : undefined}
+              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/^\/?u\//, "").replace(/\/$/, "") : undefined}
               showPrompts
             />
           </motion.div>
 
-          {/* Save Button */}
-          <motion.div custom={8} variants={fadeInUp} initial="hidden" animate="visible">
-            <button onClick={handleSave} disabled={saving}
-              className="w-full py-4 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-black/10 cursor-pointer">
-              {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save Changes</>}
+          {/* Save (bottom) */}
+          <motion.div custom={10} variants={fadeInUp} initial="hidden" animate="visible" className="pt-2">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+            >
+              {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save all changes</>}
             </button>
           </motion.div>
         </div>
@@ -1253,12 +1241,63 @@ export default function StudentProfilePage() {
   );
 }
 
+function MetaRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+        <span className="text-stone-400">{icon}</span>
+        {label}
+      </span>
+      <span className="text-xs font-medium text-stone-700 dark:text-stone-300">{value}</span>
+    </div>
+  );
+}
+
+function TogglePills({
+  label,
+  options,
+  selected,
+  onChange,
+  format,
+}: {
+  label: string;
+  options: string[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  format: (o: string) => string;
+}) {
+  return (
+    <div>
+      <label className={labelClass}>{label}</label>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => {
+          const active = selected.includes(o);
+          return (
+            <button
+              key={o}
+              type="button"
+              onClick={() =>
+                onChange(active ? selected.filter((v) => v !== o) : [...selected, o])
+              }
+              className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                active
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+              }`}
+            >
+              {format(o)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Projects Sub-Component ──────────────────────────── */
-function ProjectsSection({ projects, onChange, inputClass, labelClass, errors }: {
+function ProjectsSection({ projects, onChange, errors }: {
   projects: ProjectItem[];
   onChange: (p: ProjectItem[]) => void;
-  inputClass: string;
-  labelClass: string;
   errors?: string[];
 }) {
   const [editing, setEditing] = useState<string | null>(null);
@@ -1302,38 +1341,42 @@ function ProjectsSection({ projects, onChange, inputClass, labelClass, errors }:
   };
 
   return (
-    <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+    <div className="px-5 py-5 space-y-3">
       {errors && errors.length > 0 && (
-        <p className="text-xs text-red-500 dark:text-red-400 px-1">Project URLs must be valid (e.g. https://...)</p>
+        <p className="text-xs text-red-500 dark:text-red-400 px-1 font-mono">Project URLs must be valid (e.g. https://...)</p>
       )}
       {projects.filter((p) => p.id !== editing).map((p) => (
-        <div key={p.id} className="flex items-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+        <div key={p.id} className="flex items-start gap-3 px-4 py-3 border border-stone-200 dark:border-white/10 rounded-md">
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{p.title}</h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{p.description}</p>
+            <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">{p.title}</h4>
+            <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">{p.description}</p>
             {p.techStack.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {p.techStack.map((t, i) => (
-                  <span key={i} className="px-2 py-0.5 text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-md">{t}</span>
+                  <span key={i} className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-md border border-stone-200 dark:border-white/10">{t}</span>
                 ))}
               </div>
             )}
             {(p.liveUrl || p.repoUrl) && (
-              <div className="flex gap-3 mt-2">
-                {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"><ExternalLink className="w-3 h-3" /> Live</a>}
-                {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-1"><Github className="w-3 h-3" /> Code</a>}
+              <div className="flex gap-3 mt-2.5">
+                {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"><ExternalLink className="w-3 h-3" /> live</a>}
+                {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"><Github className="w-3 h-3" /> code</a>}
               </div>
             )}
           </div>
           <div className="flex gap-1 shrink-0">
-            <button type="button" onClick={() => startEdit(p)} className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-            <button type="button" onClick={() => remove(p.id)} className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+            <button type="button" onClick={() => startEdit(p)} aria-label="Edit project" className="p-1.5 rounded-md text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors bg-transparent border-0 cursor-pointer">
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+            <button type="button" onClick={() => remove(p.id)} aria-label="Delete project" className="p-1.5 rounded-md text-stone-400 hover:text-red-500 transition-colors bg-transparent border-0 cursor-pointer">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       ))}
 
       {editing && (
-        <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-indigo-200 dark:border-indigo-800 space-y-3">
+        <div className="px-4 py-4 border border-lime-300 dark:border-lime-700/40 bg-lime-50/40 dark:bg-lime-900/5 rounded-md space-y-3">
           <div>
             <label className={labelClass}>Title</label>
             <input type="text" value={draft.title} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} className={inputClass} placeholder="Project title" maxLength={100} />
@@ -1343,11 +1386,19 @@ function ProjectsSection({ projects, onChange, inputClass, labelClass, errors }:
             <textarea value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} className={`${inputClass} resize-none`} rows={2} placeholder="Brief description..." maxLength={500} />
           </div>
           <div>
-            <label className={labelClass}>Tech Stack</label>
+            <label className={labelClass}>Tech stack</label>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {draft.techStack.map((t, i) => (
-                <span key={i} className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-lg font-medium">
-                  {t} <button type="button" onClick={() => setDraft((d) => ({ ...d, techStack: d.techStack.filter((_, j) => j !== i) }))} className="text-amber-400 hover:text-amber-600"><X className="w-3 h-3" /></button>
+                <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-md border border-stone-200 dark:border-white/10">
+                  {t}
+                  <button
+                    type="button"
+                    onClick={() => setDraft((d) => ({ ...d, techStack: d.techStack.filter((_, j) => j !== i) }))}
+                    aria-label={`Remove ${t}`}
+                    className="opacity-60 hover:opacity-100 bg-transparent border-0 cursor-pointer p-0"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
                 </span>
               ))}
             </div>
@@ -1355,29 +1406,40 @@ function ProjectsSection({ projects, onChange, inputClass, labelClass, errors }:
               <input type="text" value={techInput} onChange={(e) => setTechInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTech(); } }}
                 className={`${inputClass} flex-1`} placeholder="Add technology" />
-              <button type="button" onClick={addTech}
-                className="px-3 py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl text-xs font-medium hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors shrink-0">
+              <button
+                type="button"
+                onClick={addTech}
+                aria-label="Add technology"
+                className="shrink-0 inline-flex items-center justify-center w-10 h-10 border border-stone-300 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-900 dark:hover:border-stone-50 transition-colors bg-transparent cursor-pointer"
+              >
                 <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}><ExternalLink className="w-3.5 h-3.5 text-gray-400" /> Live URL</label>
+              <label className={labelClass}><ExternalLink className="w-3 h-3" /> Live URL</label>
               <input type="url" value={draft.liveUrl ?? ""} onChange={(e) => setDraft((d) => ({ ...d, liveUrl: e.target.value }))} className={inputClass} placeholder="https://..." />
             </div>
             <div>
-              <label className={labelClass}><Github className="w-3.5 h-3.5 text-gray-400" /> Repo URL</label>
+              <label className={labelClass}><Github className="w-3 h-3" /> Repo URL</label>
               <input type="url" value={draft.repoUrl ?? ""} onChange={(e) => setDraft((d) => ({ ...d, repoUrl: e.target.value }))} className={inputClass} placeholder="https://github.com/..." />
             </div>
           </div>
           <div className="flex gap-2 pt-1">
-            <button type="button" onClick={save} disabled={!draft.title.trim()}
-              className="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50">
+            <button
+              type="button"
+              onClick={save}
+              disabled={!draft.title.trim()}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-lime-400 text-stone-950 rounded-md text-xs font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+            >
               Save
             </button>
-            <button type="button" onClick={() => setEditing(null)}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            <button
+              type="button"
+              onClick={() => setEditing(null)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 border border-stone-300 dark:border-white/10 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 hover:border-stone-500 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
+            >
               Cancel
             </button>
           </div>
@@ -1385,9 +1447,12 @@ function ProjectsSection({ projects, onChange, inputClass, labelClass, errors }:
       )}
 
       {projects.length < 10 && !editing && (
-        <button type="button" onClick={startAdd}
-          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 hover:border-amber-300 dark:hover:border-amber-600 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50/30 dark:hover:bg-amber-900/10 transition-all">
-          <Plus className="w-4 h-4" /> Add Project
+        <button
+          type="button"
+          onClick={startAdd}
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-stone-300 dark:border-white/15 rounded-md text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent cursor-pointer"
+        >
+          <Plus className="w-4 h-4" /> Add project
         </button>
       )}
     </div>
@@ -1395,11 +1460,9 @@ function ProjectsSection({ projects, onChange, inputClass, labelClass, errors }:
 }
 
 /* ─── Achievements Sub-Component ──────────────────────── */
-function AchievementsSection({ achievements, onChange, inputClass, labelClass, errors }: {
+function AchievementsSection({ achievements, onChange, errors }: {
   achievements: AchievementItem[];
   onChange: (a: AchievementItem[]) => void;
-  inputClass: string;
-  labelClass: string;
   errors?: string[];
 }) {
   const [editing, setEditing] = useState<string | null>(null);
@@ -1434,29 +1497,33 @@ function AchievementsSection({ achievements, onChange, inputClass, labelClass, e
   };
 
   return (
-    <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+    <div className="px-5 py-5 space-y-3">
       {errors && errors.length > 0 && (
-        <p className="text-xs text-red-500 dark:text-red-400 px-1">{errors[0]}</p>
+        <p className="text-xs text-red-500 dark:text-red-400 px-1 font-mono">{errors[0]}</p>
       )}
       {achievements.filter((a) => a.id !== editing).map((a) => (
-        <div key={a.id} className="flex items-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-          <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center shrink-0">
-            <Trophy className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+        <div key={a.id} className="flex items-start gap-3 px-4 py-3 border border-stone-200 dark:border-white/10 rounded-md">
+          <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
+            <Trophy className="w-4 h-4 text-stone-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{a.title}</h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{a.description}</p>
-            {a.date && <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">{a.date}</p>}
+            <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">{a.title}</h4>
+            <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">{a.description}</p>
+            {a.date && <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1.5">{a.date}</p>}
           </div>
           <div className="flex gap-1 shrink-0">
-            <button type="button" onClick={() => startEdit(a)} className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-            <button type="button" onClick={() => remove(a.id)} className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+            <button type="button" onClick={() => startEdit(a)} aria-label="Edit achievement" className="p-1.5 rounded-md text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors bg-transparent border-0 cursor-pointer">
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+            <button type="button" onClick={() => remove(a.id)} aria-label="Delete achievement" className="p-1.5 rounded-md text-stone-400 hover:text-red-500 transition-colors bg-transparent border-0 cursor-pointer">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       ))}
 
       {editing && (
-        <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-rose-200 dark:border-rose-800 space-y-3">
+        <div className="px-4 py-4 border border-lime-300 dark:border-lime-700/40 bg-lime-50/40 dark:bg-lime-900/5 rounded-md space-y-3">
           <div>
             <label className={labelClass}>Title</label>
             <input type="text" value={draft.title} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} className={inputClass} placeholder="e.g. Dean's List, Hackathon Winner" maxLength={100} />
@@ -1466,16 +1533,23 @@ function AchievementsSection({ achievements, onChange, inputClass, labelClass, e
             <textarea value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} className={`${inputClass} resize-none`} rows={2} placeholder="Brief description..." maxLength={300} />
           </div>
           <div>
-            <label className={labelClass}><Calendar className="w-3.5 h-3.5 text-gray-400" /> Date</label>
+            <label className={labelClass}><Calendar className="w-3 h-3" /> Date</label>
             <input type="text" value={draft.date ?? ""} onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))} className={inputClass} placeholder="e.g. June 2025 or 2024-2025" maxLength={20} />
           </div>
           <div className="flex gap-2 pt-1">
-            <button type="button" onClick={save} disabled={!draft.title.trim()}
-              className="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50">
+            <button
+              type="button"
+              onClick={save}
+              disabled={!draft.title.trim()}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-lime-400 text-stone-950 rounded-md text-xs font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+            >
               Save
             </button>
-            <button type="button" onClick={() => setEditing(null)}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            <button
+              type="button"
+              onClick={() => setEditing(null)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 border border-stone-300 dark:border-white/10 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 hover:border-stone-500 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
+            >
               Cancel
             </button>
           </div>
@@ -1483,9 +1557,12 @@ function AchievementsSection({ achievements, onChange, inputClass, labelClass, e
       )}
 
       {achievements.length < 10 && !editing && (
-        <button type="button" onClick={startAdd}
-          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 hover:border-rose-300 dark:hover:border-rose-600 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/30 dark:hover:bg-rose-900/10 transition-all">
-          <Plus className="w-4 h-4" /> Add Achievement
+        <button
+          type="button"
+          onClick={startAdd}
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-stone-300 dark:border-white/15 rounded-md text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent cursor-pointer"
+        >
+          <Plus className="w-4 h-4" /> Add achievement
         </button>
       )}
     </div>

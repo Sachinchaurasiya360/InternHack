@@ -7,7 +7,7 @@ export default function TermsPage() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
       <SEO
         title="Terms and Conditions"
-        description="Terms and Conditions for using InternHack — your all-in-one career platform."
+        description="Terms and Conditions for using InternHack, your all-in-one career platform."
       />
       <Navbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 pt-28 pb-16">
@@ -65,7 +65,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">6. Intellectual Property</h2>
             <p>
-              All content on the Platform — including text, graphics, logos, code, and AI-generated outputs — is
+              All content on the Platform, including text, graphics, logos, code, and AI-generated outputs, is
               the property of InternHack or its licensors and is protected by applicable intellectual property
               laws. You may not reproduce, distribute, or create derivative works without our express written permission.
             </p>

@@ -48,7 +48,7 @@ export function useLatexAutoSave(
       localStorage.setItem(STORAGE_KEY, codeRef.current);
       localStorage.setItem(FILES_STORAGE_KEY, JSON.stringify(filesRef.current));
     } catch {
-      // storage full — ignore
+      // storage full, ignore
     }
   }, []);
 

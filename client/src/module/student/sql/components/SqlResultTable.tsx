@@ -12,8 +12,8 @@ interface SqlResultTableProps {
 export default function SqlResultTable({ result, validation, showExpected, expectedOutput }: SqlResultTableProps) {
   if (!result) {
     return (
-      <div className="text-center py-8 text-gray-400 dark:text-gray-500 text-sm">
-        Run your query to see results
+      <div className="text-center py-8 text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+        / run your query to see results
       </div>
     );
   }
@@ -21,28 +21,36 @@ export default function SqlResultTable({ result, validation, showExpected, expec
   return (
     <div className="space-y-3">
       {/* Status bar */}
-      <div className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+      <div className="flex items-center justify-between px-3 py-2 bg-stone-50 dark:bg-stone-950/40 border border-stone-200 dark:border-white/10 rounded-md">
         <div className="flex items-center gap-2">
           {result.error ? (
             <>
-              <AlertTriangle className="w-4 h-4 text-red-500" />
-              <span className="text-sm text-red-600 dark:text-red-400">Error</span>
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400">
+                / error
+              </span>
             </>
           ) : validation?.correct ? (
             <>
-              <CheckCircle2 className="w-4 h-4 text-green-500" />
-              <span className="text-sm text-green-600 dark:text-green-400">{validation.message}</span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-lime-500" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                / {validation.message}
+              </span>
             </>
           ) : validation ? (
             <>
-              <XCircle className="w-4 h-4 text-yellow-500" />
-              <span className="text-sm text-yellow-600 dark:text-yellow-400">{validation.message}</span>
+              <XCircle className="w-3.5 h-3.5 text-amber-500" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400">
+                / {validation.message}
+              </span>
             </>
           ) : (
-            <span className="text-sm text-gray-500">{result.rowCount} rows returned</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
+              / {result.rowCount} rows
+            </span>
           )}
         </div>
-        <div className="flex items-center gap-1 text-xs text-gray-400">
+        <div className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 tabular-nums">
           <Clock className="w-3 h-3" />
           {result.timeMs}ms
         </div>
@@ -50,26 +58,40 @@ export default function SqlResultTable({ result, validation, showExpected, expec
 
       {/* Error display */}
       {result.error && (
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <pre className="text-sm text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">{result.error}</pre>
+        <div className="p-3 bg-white dark:bg-stone-900 border border-rose-200 dark:border-rose-900/40 rounded-md">
+          <pre className="text-sm text-rose-700 dark:text-rose-300 whitespace-pre-wrap font-mono">{result.error}</pre>
         </div>
       )}
 
       {/* Results grid */}
       {!result.error && (
-        <div className={showExpected && expectedOutput ? "grid grid-cols-2 gap-3" : ""}>
+        <div className={showExpected && expectedOutput ? "grid grid-cols-1 md:grid-cols-2 gap-3" : ""}>
           {/* User output */}
-          <div>
+          <div className="space-y-2">
             {showExpected && expectedOutput && (
-              <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Your Output</h4>
+              <div className="flex items-center gap-2">
+                <div className="h-1 w-1 bg-lime-400"></div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  your output
+                </span>
+              </div>
             )}
-            <ResultTable columns={result.columns} rows={result.rows} highlight={validation && !validation.correct ? "error" : validation?.correct ? "success" : undefined} />
+            <ResultTable
+              columns={result.columns}
+              rows={result.rows}
+              highlight={validation && !validation.correct ? "error" : validation?.correct ? "success" : undefined}
+            />
           </div>
 
           {/* Expected output */}
           {showExpected && expectedOutput && (
-            <div>
-              <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Expected Output</h4>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-1 w-1 bg-stone-400 dark:bg-stone-600"></div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  expected output
+                </span>
+              </div>
               <ResultTable columns={expectedOutput.columns} rows={expectedOutput.rows} />
             </div>
           )}
@@ -89,23 +111,30 @@ function ResultTable({
   highlight?: "success" | "error";
 }) {
   if (columns.length === 0) {
-    return <div className="text-sm text-gray-400 py-4 text-center">No results</div>;
+    return (
+      <div className="text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 py-4 text-center">
+        / no results
+      </div>
+    );
   }
 
   const borderColor = highlight === "success"
-    ? "border-green-300 dark:border-green-700"
+    ? "border-lime-300 dark:border-lime-900/50"
     : highlight === "error"
-      ? "border-yellow-300 dark:border-yellow-700"
-      : "border-gray-200 dark:border-gray-700";
+      ? "border-amber-300 dark:border-amber-900/50"
+      : "border-stone-200 dark:border-white/10";
 
   return (
-    <div className={`border ${borderColor} rounded-lg overflow-hidden`}>
+    <div className={`border ${borderColor} rounded-md overflow-hidden bg-white dark:bg-stone-900`}>
       <div className="overflow-x-auto max-h-64">
         <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-800">
+          <thead className="sticky top-0">
+            <tr className="bg-stone-50 dark:bg-stone-950/40">
               {columns.map((col, i) => (
-                <th key={i} className="px-3 py-1.5 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
+                <th
+                  key={i}
+                  className="px-3 py-2 text-left text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 whitespace-nowrap border-b border-stone-200 dark:border-white/10"
+                >
                   {col}
                 </th>
               ))}
@@ -113,10 +142,20 @@ function ResultTable({
           </thead>
           <tbody>
             {rows.slice(0, 100).map((row, i) => (
-              <tr key={i} className="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/30">
+              <tr
+                key={i}
+                className="border-b border-stone-100 dark:border-white/5 last:border-0 hover:bg-stone-50/50 dark:hover:bg-white/5 transition-colors"
+              >
                 {row.map((cell, j) => (
-                  <td key={j} className="px-3 py-1.5 text-gray-700 dark:text-gray-300 whitespace-nowrap font-mono text-xs">
-                    {cell === null ? <span className="text-gray-400 italic">NULL</span> : String(cell)}
+                  <td
+                    key={j}
+                    className="px-3 py-1.5 text-stone-700 dark:text-stone-300 whitespace-nowrap font-mono text-xs"
+                  >
+                    {cell === null ? (
+                      <span className="text-stone-300 dark:text-stone-600 italic">NULL</span>
+                    ) : (
+                      String(cell)
+                    )}
                   </td>
                 ))}
               </tr>
@@ -124,8 +163,8 @@ function ResultTable({
           </tbody>
         </table>
         {rows.length > 100 && (
-          <div className="px-3 py-2 text-xs text-gray-400 text-center bg-gray-50 dark:bg-gray-800/50">
-            Showing 100 of {rows.length} rows
+          <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 text-center bg-stone-50 dark:bg-stone-950/40 border-t border-stone-200 dark:border-white/10 tabular-nums">
+            / showing 100 of {rows.length} rows
           </div>
         )}
       </div>

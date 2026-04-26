@@ -1,4 +1,4 @@
-# InternHack — Repo Map (Quick Reference)
+# InternHack, Repo Map (Quick Reference)
 
 > Read this before any editing task. It tells you where things live so you don't need to explore the whole repo.
 
@@ -12,9 +12,9 @@
 | Backend | Express 5, TypeScript 5, Prisma 7, Node Cron |
 | Database | PostgreSQL (via Prisma + `@prisma/adapter-pg`) |
 | Auth | JWT + Google OAuth, email verification (Resend) |
-| AI | Google Gemini (`gemini-2.5-flash-lite`) — ATS scoring, cover letters, LaTeX chat, resume generation |
+| AI | Google Gemini (`gemini-2.5-flash-lite`), ATS scoring, cover letters, LaTeX chat, resume generation |
 | Storage | AWS S3 (with local fallback to `server/uploads/`) |
-| Payments | Razorpay (subscription plans) |
+| Payments | Dodo Payment (subscription plans) |
 | State | Zustand (auth, theme, layout) + React Query (server state) |
 | Proctoring | MediaPipe face detection + browser event monitoring |
 
@@ -31,7 +31,7 @@ InternHack/
 
 ---
 
-## Server — `server/src/`
+## Server, `server/src/`
 
 ### Entry & Database
 
@@ -43,9 +43,9 @@ InternHack/
 | `src/database/prisma.config.ts` | Prisma config (schema path, DB url from env) |
 | `src/database/prisma/migrations/` | Migration SQL files |
 
-**Run migrations from:** `server/src/database/` (not server root) — uses `prisma.config.ts`
+**Run migrations from:** `server/src/database/` (not server root), uses `prisma.config.ts`
 
-### Seed Scripts — `src/database/`
+### Seed Scripts, `src/database/`
 
 | File | Purpose |
 |---|---|
@@ -65,9 +65,8 @@ InternHack/
 | `seed-internships.ts` | Seeds government/public-sector internships |
 | `seed-professors.ts` | Seeds professor/mentor records (reads XLSX) |
 | `seed-yc.ts` | Fetches YC companies from yc-oss API, seeds via raw pg |
-| `seed-hr-contacts.ts` | Parses 1800+ IT HR contacts from PDF, seeds `itHrContact`, creates companies & contacts |
 
-### Middleware — `src/middleware/`
+### Middleware, `src/middleware/`
 
 | File | Exports |
 |---|---|
@@ -75,15 +74,15 @@ InternHack/
 | `role.middleware.ts` | `requireRole(role)` |
 | `error.middleware.ts` | Global error handler |
 | `upload.middleware.ts` | `uploadSingle()`, `uploadResume()`, `uploadImage()` |
-| `usage-limit.middleware.ts` | `usageLimit(action)` — checks daily limits by plan tier, 429 on exceed |
+| `usage-limit.middleware.ts` | `usageLimit(action)`, checks daily limits by plan tier, 429 on exceed |
 
-### Config — `src/config/`
+### Config, `src/config/`
 
 | File | Purpose |
 |---|---|
 | `usage-limits.ts` | `DAILY_LIMITS` per action per tier (FREE/PREMIUM), `getPlanTier()` |
 
-### Modules — `src/module/<name>/`
+### Modules, `src/module/<name>/`
 
 Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.ts`
 
@@ -93,33 +92,33 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `job` | `/api/jobs` | Job CRUD, status changes (public read, recruiter write) |
 | `recruiter` | `/api/recruiter` | Rounds mgmt, application review, evaluation, analytics |
 | `student` | `/api/student` | Apply, track applications, submit round responses |
-| `ats` | `/api/ats` | AI resume scoring, score history, cover letters, AI LaTeX chat, JD optimization, resume generation |
+| `ats` | `/api/ats` | AI resume scoring, cover letters, AI LaTeX chat, JD optimization, resume generation |
 | `latex` | `/api/latex` | Compile LaTeX to PDF (local pdflatex → online API fallback), supporting files |
 | `company` | `/api/companies` | Company directory, reviews, contacts, contributions |
 | `scraper` | `/api/scraped-jobs` | External job aggregation, cron-based scraping |
+| `signals` | `/api/signals` | Funding signals ingest, surfaces hiring intent from YC Launches, TechCrunch Venture, and HN hiring threads. Cron every 6h (offset 30m from scraper). |
 
 > **Note:** There is no `college` module. `seed-colleges.ts` loads AICTE data, but no CRUD module, routes, or client pages exist. College is only referenced as a string field on student profiles.
-| `admin` | `/api/admin` | Full platform management — users, jobs, companies, colleges, repos, DSA, aptitude, skill-tests, hackathons, blog, badges |
+| `admin` | `/api/admin` | Full platform management, users, jobs, companies, colleges, repos, DSA, aptitude, skill-tests, hackathons, blog, badges |
 | `upload` | `/api/upload` | S3 uploads with local fallback |
 | `newsletter` | `/api/newsletter` | Email subscription management |
 | `badge` | `/api/badges` | Badge definitions, award logic, student earned badges |
-| `skill-test` | `/api/skill-tests` | Proctored skill tests — browse, take, submit, verify |
+| `skill-test` | `/api/skill-tests` | Proctored skill tests, browse, take, submit, verify |
 | `payment` | `/api/payments` | Razorpay order creation & payment verification, subscription updates |
 | `yc` | `/api/yc` | YC company directory with on-demand Cheerio scraping of founders |
-| `blog` | `/api/blog` | Blog posts — public read, admin CRUD + publish/feature |
+| `blog` | `/api/blog` | Blog posts, public read, admin CRUD + publish/feature |
 | `gsoc` | `/api/gsoc` | GSoC organization directory with filtering |
 | `opensource` | `/api/opensource` | Open source repo directory with filtering + repo request/approval flow |
-| `aptitude` | `/api/aptitude` | Aptitude quiz system — categories, topics, companies, progress |
-| `dsa` | `/api/dsa` | DSA problem tracker — topics, bookmarks, notes, patterns, companies |
+| `aptitude` | `/api/aptitude` | Aptitude quiz system, categories, topics, companies, progress |
+| `dsa` | `/api/dsa` | DSA problem tracker, topics, bookmarks, notes, patterns, companies |
 | `hackathon` | `/api/hackathons` | Hackathon listings (public read) |
 | `internship` | `/api/internships` | Government/public-sector internship listings |
 | `campus-drive` | `/api/campus-drives` | Campus placement drive management (recruiter CRUD, student browse) |
 | `sql` | `/api/sql` | SQL exercise progress persistence |
 | `professor` | `/api/professors` | Professor/mentor directory |
-| `hr-contact` | `/api/hr-contacts` | IT HR contact directory (1800+ contacts from PDF seed), stats, search |
-| `email-campaign` | `/api/email-campaigns` | Email outreach campaigns to HR contacts with templates & tracking |
+| `email-campaign` | `/api/email-campaigns` | Email outreach campaigns to IIT professors with templates & tracking |
 
-### ATS Sub-Module Detail — `src/module/ats/`
+### ATS Sub-Module Detail, `src/module/ats/`
 
 | File | Purpose |
 |---|---|
@@ -135,7 +134,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `latex-chat.controller.ts` | `/latex-chat` and `/latex-optimize-jd` endpoints (premium-gated) |
 | `latex-chat.validation.ts` | Zod schemas: `latexChatSchema`, `latexJDOptimizeSchema` |
 
-### LaTeX Module — `src/module/latex/`
+### LaTeX Module, `src/module/latex/`
 
 | File | Purpose |
 |---|---|
@@ -144,43 +143,43 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `latex.controller.ts` | Compile endpoint controller |
 | `latex.validation.ts` | Zod schema for compile input (source + supporting files) |
 
-### Utilities — `src/utils/`
+### Utilities, `src/utils/`
 
 | File | Exports |
 |---|---|
 | `jwt.utils.ts` | `generateToken()`, `verifyToken()` |
 | `password.utils.ts` | `hashPassword()`, `comparePassword()` |
 | `s3.utils.ts` | `uploadToS3()`, `deleteFromS3()`, `getS3KeyFromUrl()`, `getBufferFromS3()` |
-| `cookie.utils.ts` | `setTokenCookie()`, `clearTokenCookie()` — httpOnly JWT cookies |
-| `file-validation.utils.ts` | `validateFileContent()` — checks magic bytes against MIME types |
-| `email.utils.ts` | `sendEmail()` — transactional email via Resend SDK |
-| `email-templates.ts` | `welcomeEmailHtml(name)`, `repoRequestSubmittedHtml()`, `repoRequestApprovedHtml()` — HTML email templates |
+| `cookie.utils.ts` | `setTokenCookie()`, `clearTokenCookie()`, httpOnly JWT cookies |
+| `file-validation.utils.ts` | `validateFileContent()`, checks magic bytes against MIME types |
+| `email.utils.ts` | `sendEmail()`, transactional email via Resend SDK |
+| `email-templates.ts` | `welcomeEmailHtml(name)`, `repoRequestSubmittedHtml()`, `repoRequestApprovedHtml()`, HTML email templates |
 
 ---
 
-## Client — `client/src/`
+## Client, `client/src/`
 
 ### Core Files
 
 | File | Purpose |
 |---|---|
-| `main.tsx` | App root — GoogleOAuthProvider, React Query, HelmetProvider |
+| `main.tsx` | App root, GoogleOAuthProvider, React Query, HelmetProvider |
 | `App.tsx` | React Router routes + ProtectedRoute wrapping |
-| `lib/axios.ts` | Axios instance — auto injects JWT, handles 401 logout |
-| `lib/auth.store.ts` | Zustand auth store — persists to localStorage |
+| `lib/axios.ts` | Axios instance, auto injects JWT, handles 401 logout |
+| `lib/auth.store.ts` | Zustand auth store, persists to localStorage |
 | `lib/theme.store.ts` | Zustand dark/light theme store |
 | `lib/layout.store.ts` | Zustand immersive mode toggle (hides sidebar in lessons) |
 | `lib/query-keys.ts` | React Query key factories by domain |
 | `lib/types.ts` | TypeScript types mirroring backend models |
 
-### Hooks — `src/hooks/`
+### Hooks, `src/hooks/`
 
 | File | Purpose |
 |---|---|
 | `useFaceDetection.ts` | MediaPipe face detection via webcam; detects no-face / multiple-faces |
-| `useProctoring.ts` | Full proctoring system — tab switches, focus, fullscreen, DevTools, face violations |
+| `useProctoring.ts` | Full proctoring system, tab switches, focus, fullscreen, DevTools, face violations |
 
-### Components — `src/components/`
+### Components, `src/components/`
 
 | Component | Use |
 |---|---|
@@ -201,9 +200,9 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `CollegeDiscoverySection.tsx` | Landing page college search |
 | Landing page sections | `HeroSection`, `FeaturesSection`, `StatsSection`, `CTASection`, `HowItWorksSection`, `PricingSection`, `RecentJobs`, `GrantsSection`, `AIInterview`, `TestimonialsSection` |
 
-### Page Modules — `src/module/`
+### Page Modules, `src/module/`
 
-#### Auth — `src/module/auth/`
+#### Auth, `src/module/auth/`
 | File | Purpose |
 |---|---|
 | `LoginPage.tsx` | Email/password + Google OAuth |
@@ -211,55 +210,53 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `VerifyEmailPage.tsx` | Email verification with OTP/token |
 | `ForgotPasswordPage.tsx` | Password reset request |
 
-#### Student — `src/module/student/`
+#### Student, `src/module/student/`
 
-**ATS Tools — `ats/`**
+**ATS Tools, `ats/`**
 | File | Purpose |
 |---|---|
 | `AtsLandingPage.tsx` | ATS hub with tool navigation |
-| `AtsToolsNav.tsx` | Grid nav linking 6 ATS tools |
+| `AtsToolsNav.tsx` | Grid nav linking ATS tools |
 | `AtsScorePage.tsx` | Upload resume, score it |
-| `AtsHistoryPage.tsx` | Previous ATS scores |
-| `AtsScoreDetailPage.tsx` | Detailed score analysis |
 | `ResumeBuilderPage.tsx` | Template-based resume builder |
 | `ResumeGeneratorPage.tsx` | AI-generated resume from profile |
 | `CoverLetterPage.tsx` | AI cover letter generator |
 | `LatexResumeEditor.tsx` | CodeMirror LaTeX editor + PDF preview + AI chat + supporting files + undo/redo |
-| `LatexChatPanel.tsx` | Floating AI chat panel — Gemini chat, JD optimization, markdown rendering, premium gate |
+| `LatexChatPanel.tsx` | Floating AI chat panel, Gemini chat, JD optimization, markdown rendering, premium gate |
 | `useLatexAutoSave.ts` | Hook: debounced localStorage autosave for LaTeX code + supporting files |
 | `PublicAtsPage.tsx` | Public-facing ATS wrapper |
 | `resume-builder/templates/` | 6 templates: Classic, Compact, Creative, Minimal, Modern, Professional |
 | `latex-templates.data.ts` | 14 LaTeX resume templates (Professional, Academic, Minimal, Two-Column, Deedy, Executive, Software Engineer, Modern Clean, Jake's, Sidebar, Classic Serif, Compact Tech, ATS Optimized, Bold Header) |
 
-**Learning Hub — `learn/`**
+**Learning Hub, `learn/`**
 | File | Purpose |
 |---|---|
 | `LearnHubPage.tsx` | Landing page listing all learning tracks |
 | `LearnLayout.tsx` | Dual-mode layout: student sidebar or public navbar |
 
 **Language Modules** (each has `LessonsPage`, `SectionPage`, `LessonDetailPage` + `data/lessons/*.json`)
-- `javascript/` — JS lessons + `JsEditor`, `JsConsoleOutput`, `js-engine.ts`
-- `html/` — HTML lessons + `HtmlEditor`
-- `css/` — CSS lessons + `CssEditor`
-- `typescript/` — TS lessons + `TsEditor`, `ts-engine.ts`
-- `react/` — React lessons + `ReactEditor`, `react-engine.ts`
-- `python/` — Python lessons + `PythonEditor`, `PythonConsoleOutput`, `python-engine.ts`
-- `nodejs/` — Node.js lessons + `NodeEditor`
-- `django/` — Django lessons (data only)
-- `flask/` — Flask lessons (data only)
-- `fastapi/` — FastAPI lessons (data only)
+- `javascript/`, JS lessons + `JsEditor`, `JsConsoleOutput`, `js-engine.ts`
+- `html/`, HTML lessons + `HtmlEditor`
+- `css/`, CSS lessons + `CssEditor`
+- `typescript/`, TS lessons + `TsEditor`, `ts-engine.ts`
+- `react/`, React lessons + `ReactEditor`, `react-engine.ts`
+- `python/`, Python lessons + `PythonEditor`, `PythonConsoleOutput`, `python-engine.ts`
+- `nodejs/`, Node.js lessons + `NodeEditor`
+- `django/`, Django lessons (data only)
+- `flask/`, Flask lessons (data only)
+- `fastapi/`, FastAPI lessons (data only)
 
-**Interview Preparation — `interview-prep/`**
+**Interview Preparation, `interview-prep/`**
 | File | Purpose |
 |---|---|
 | `InterviewLessonsPage.tsx` | 10 sections overview with progress tracking |
 | `InterviewSectionPage.tsx` | Question list per section with type/difficulty badges |
-| `InterviewQuestionPage.tsx` | Full question detail — answer, code examples, notes, tips |
+| `InterviewQuestionPage.tsx` | Full question detail, answer, code examples, notes, tips |
 | `data/types.ts` | `InterviewQuestion`, `InterviewSection`, `InterviewProgress` types |
 | `data/sections.ts` | 10 sections: JS, React, Node, TS, Python, SQL, System Design, Behavioral, HTML/CSS, Git/DevOps |
 | `data/lessons/*.json` | 30 questions per section (300 total) with code examples, follow-ups, interview tips |
 
-**SQL Playground — `sql/`**
+**SQL Playground, `sql/`**
 | File | Purpose |
 |---|---|
 | `SqlPracticePage.tsx` | SQL practice with exercises |
@@ -268,34 +265,34 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `components/SqlEditor.tsx` | Monaco-based SQL editor |
 | `lib/sql-engine.ts` | In-browser SQL execution |
 
-**DSA — `dsa/`**
+**DSA, `dsa/`**
 | File | Purpose |
 |---|---|
 | `DsaTopicsPage.tsx` | Browse DSA topics with solve progress |
-| `DsaTopicDetailPage.tsx` | Topic problems — toggle solved, notes, bookmark |
+| `DsaTopicDetailPage.tsx` | Topic problems, toggle solved, notes, bookmark |
 | `DsaCompaniesPage.tsx` | Filter by company |
 | `DsaPatternsPage.tsx` | Problems by algorithm pattern |
 | `DsaBookmarksPage.tsx` | Bookmarked problems |
 
-**Aptitude — `aptitude/`**
+**Aptitude, `aptitude/`**
 | File | Purpose |
 |---|---|
 | `AptitudeCategoriesPage.tsx` | Browse aptitude categories |
 | `AptitudeTopicPage.tsx` | Quiz page per topic |
 | `AptitudeCompaniesPage.tsx` | Company-specific question sets |
 
-**Skill Verification — `skill-verification/`**
+**Skill Verification, `skill-verification/`**
 | File | Purpose |
 |---|---|
 | `SkillVerificationPage.tsx` | Browse skill tests with verified badge status |
-| `SkillTestPage.tsx` | Proctored test UI — fullscreen, timed, proctor log |
+| `SkillTestPage.tsx` | Proctored test UI, fullscreen, timed, proctor log |
 
-**Mock Interview — `mock-interview/`**
+**Mock Interview, `mock-interview/`**
 | File | Purpose |
 |---|---|
 | `MockInterviewPage.tsx` | AI interview or expert Calendly booking |
 
-**Open Source — `opensource/`**
+**Open Source, `opensource/`**
 | File | Purpose |
 |---|---|
 | `OpenSourceLandingPage.tsx` | Open source hub |
@@ -309,7 +306,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `OpenSourceAnalyticsPage.tsx` | Contribution analytics |
 | `data/` | Static guide JSON content |
 
-**Grants — `grants/`**
+**Grants, `grants/`**
 | File | Purpose |
 |---|---|
 | `GrantsPage.tsx` | Grants & opportunities listing |
@@ -331,7 +328,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `badges/BadgesSection.tsx` | Earned badges display |
 | `companies/EmailCampaignTab.tsx` | Email outreach campaigns to HR contacts |
 
-#### Recruiter — `src/module/recruiter/`
+#### Recruiter, `src/module/recruiter/`
 | File | Purpose |
 |---|---|
 | `RecruiterDashboard.tsx` | Metrics overview |
@@ -350,7 +347,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `drives/CreateDrivePage.tsx` | Create campus drive |
 | `drives/DriveDetailPage.tsx` | Drive detail + registrations |
 
-#### Admin — `src/module/admin/`
+#### Admin, `src/module/admin/`
 | File | Purpose |
 |---|---|
 | `AdminLoginPage.tsx` | Admin auth |
@@ -372,7 +369,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `hackathons/AdminHackathonsPage.tsx` | Hackathon CRUD |
 | `repo-requests/AdminRepoRequestsPage.tsx` | Review/approve/reject student repo suggestions |
 
-#### Blog — `src/module/blog/`
+#### Blog, `src/module/blog/`
 | File | Purpose |
 |---|---|
 | `BlogListPage.tsx` | Public blog listing with featured posts |
@@ -407,7 +404,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `jobs`, `jobs/:id`, `jobs/:id/apply` | Job browse + apply |
 | `internships` | Gov internships |
 | `companies`, `companies/:slug`, `companies/add` | Company directory + contribute |
-| `ats`, `ats/score`, `ats/history`, `ats/history/:scoreId` | ATS tools |
+| `ats`, `ats/score` | ATS tools |
 | `ats/resume-generator`, `ats/templates`, `ats/cover-letter`, `ats/latex-editor` | Resume tools |
 | `skill-verification` | Skill tests |
 | `mock-interview` | Mock interview |
@@ -494,6 +491,7 @@ EMAIL_FROM            # Sender address
 ALLOWED_ORIGINS       # CORS origins (comma-separated)
 PORT                  # default 3000
 SCRAPER_CRON          # default: 0 */6 * * *
+SIGNALS_CRON          # default: 30 */6 * * * (funding signals ingest)
 NODE_ENV
 ```
 

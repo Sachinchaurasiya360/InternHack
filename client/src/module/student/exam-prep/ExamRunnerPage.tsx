@@ -241,7 +241,7 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
 
   return (
     <div className="relative pb-12">
-      <SEO title={`${exam.name} — ${mode === "mock" ? "Mock Test" : "Practice"}`} noIndex />
+      <SEO title={`${exam.name}, ${mode === "mock" ? "Mock Test" : "Practice"}`} noIndex />
       <div className="sticky top-0 z-30 -mx-4 px-4 py-3 bg-white/95 dark:bg-gray-950/95 backdrop-blur border-b border-gray-100 dark:border-gray-800 mb-5">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">

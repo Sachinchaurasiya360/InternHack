@@ -4,7 +4,7 @@ export const blockchainSections: BlockchainSection[] = [
   {
     id: "blockchain-fundamentals",
     title: "Blockchain Fundamentals",
-    description: "Core concepts — distributed ledgers, hashing, consensus, blocks, and transactions.",
+    description: "Core concepts, distributed ledgers, hashing, consensus, blocks, and transactions.",
     orderIndex: 0,
     level: "Beginner",
   },

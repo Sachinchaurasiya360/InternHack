@@ -1,11 +1,63 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import prerender from '@prerenderer/rollup-plugin'
 import path from 'path'
+
+// Routes to prerender to static HTML at build time. Only include pages that
+// render the same content for every visitor (no auth, no per-user data).
+const PRERENDER_ROUTES = [
+  '/',
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/for-recruiters',
+  '/terms',
+  '/privacy',
+  '/refund',
+  '/learn',
+  '/learn/javascript',
+  '/learn/python',
+  '/learn/html',
+  '/learn/css',
+  '/learn/react',
+  '/learn/typescript',
+  '/learn/nodejs',
+  '/learn/fastapi',
+  '/learn/flask',
+  '/learn/django',
+  '/learn/blockchain',
+  '/learn/data-analytics',
+  '/learn/interview',
+  '/learn/dsa',
+  '/learn/dsa/patterns',
+  '/learn/dsa/companies',
+  '/learn/aptitude',
+  '/learn/aptitude/companies',
+  '/learn/sql',
+  '/learn/sql/playground',
+  '/learn/exam-prep',
+]
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    prerender({
+      routes: PRERENDER_ROUTES,
+      renderer: '@prerenderer/renderer-puppeteer',
+      rendererOptions: {
+        // Give React.lazy() chunks and react-helmet enough time to commit
+        // <title>, meta, and JSON-LD before snapshotting. Serial rendering
+        // avoids chunk-load races that cause sporadic empty captures.
+        renderAfterTime: 4500,
+        maxConcurrentRoutes: 1,
+        headless: true,
+        timeout: 30000,
+      },
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -17,6 +69,10 @@ export default defineConfig({
     },
   },
   server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+    },
     proxy: {
       // Proxy sitemap.xml to backend so it works in development
       '/sitemap.xml': {
@@ -47,7 +103,7 @@ export default defineConfig({
           // ── Lesson data splits (5.4 MB total, ~114 JSON files) ───
           // Each language's lesson JSON is placed in its own chunk so:
           //  1. It is downloaded only when that language's page is visited.
-          //  2. It gets its own cache fingerprint — UI changes don't bust
+          //  2. It gets its own cache fingerprint, UI changes don't bust
           //     the lesson-data cache and vice-versa.
           if (id.includes('/module/student/javascript/data')) return 'learn-data-js';
           if (id.includes('/module/student/typescript/data')) return 'learn-data-ts';

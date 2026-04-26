@@ -44,11 +44,11 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "Memorize squares of 1 to 30 and cubes of 1 to 15 — many series are based on these.",
+      "Memorize squares of 1 to 30 and cubes of 1 to 15, many series are based on these.",
       "If differences between terms are increasing rapidly, suspect a geometric or exponential pattern rather than arithmetic.",
       "If no single pattern fits all terms, try splitting the series into two interleaved sub-series (odd and even positions).",
-      "For series like 2, 6, 12, 20, 30 — differences are 4, 6, 8, 10 (arithmetic). The next difference is 12, so the next term is 42.",
-      "Prime number series (2, 3, 5, 7, 11, 13, 17) and their multiples appear frequently — keep the first 15 primes memorized.",
+      "For series like 2, 6, 12, 20, 30, differences are 4, 6, 8, 10 (arithmetic). The next difference is 12, so the next term is 42.",
+      "Prime number series (2, 3, 5, 7, 11, 13, 17) and their multiples appear frequently, keep the first 15 primes memorized.",
     ],
     solvedExamples: [
       {
@@ -74,14 +74,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Assuming the series is arithmetic without checking — always verify by computing differences first.",
+      "Assuming the series is arithmetic without checking, always verify by computing differences first.",
       "Overlooking alternating patterns where odd and even positions follow different rules.",
       "Confusing a quadratic pattern (differences increasing by a constant) with a geometric pattern.",
     ],
     keyTakeaways: [
-      "Always start with the difference method — compute first-order and second-order differences.",
+      "Always start with the difference method, compute first-order and second-order differences.",
       "If differences do not reveal a pattern, try the ratio method.",
-      "Many series are based on squares, cubes, primes, or factorials — keep these sequences memorized.",
+      "Many series are based on squares, cubes, primes, or factorials, keep these sequences memorized.",
       "Alternating and combined-operation series require you to look at every other term or track the cycle of operations.",
       "Practice is the single best way to improve speed and accuracy in number series problems.",
     ],
@@ -93,7 +93,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "Letter and Symbol Series problems test your ability to identify patterns in sequences of letters, symbols, or combinations of both. These questions are a staple of logical reasoning sections in placement exams and require you to find the rule governing the sequence and predict the next element or identify the missing one.\n\nLetter series operate on the positions of letters in the alphabet (A=1, B=2, ..., Z=26). Patterns may involve constant shifts (e.g., +2 positions each step), alternating shifts, skipping patterns, or reversals. Some series involve pairs or groups of letters where each group follows an internal pattern. Symbol series involve shapes, arrows, or special characters arranged according to rotation, reflection, addition/removal, or positional rules.\n\nThe key skill is translating letters to their numerical positions and then applying the same difference/ratio techniques used in number series. For symbol series, focus on identifying which property changes (shape, size, shading, orientation, count) and which stays constant across the sequence.",
     concepts: [
       "Alphabetical Position Values: A=1, B=2, C=3, ..., Z=26. Converting letters to numbers helps identify arithmetic patterns.",
-      "Cyclic Nature: The alphabet is cyclic — after Z (26), you wrap back to A (1). So Z + 2 = B.",
+      "Cyclic Nature: The alphabet is cyclic, after Z (26), you wrap back to A (1). So Z + 2 = B.",
       "Forward and Backward Shifts: A series may move forward (+1, +2, +3) or backward (-1, -2, -3) through the alphabet.",
       "Group Patterns: Letters may be arranged in groups (pairs, triples) where each group follows a consistent rule.",
       "Mirror/Reverse Patterns: Some series use mirror images of letter groups, e.g., AB, BA, CD, DC.",
@@ -139,14 +139,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
       {
         problem: "Find the next letter in the series: A, C, F, J, O, ?",
         solution:
-          "Step 1: Convert to positions: A=1, C=3, F=6, J=10, O=15.\nStep 2: Compute differences: 3-1=2, 6-3=3, 10-6=4, 15-10=5.\nStep 3: The differences are 2, 3, 4, 5 — increasing by 1 each time.\nStep 4: The next difference = 6. Next position = 15 + 6 = 21.\nStep 5: Position 21 = U.",
+          "Step 1: Convert to positions: A=1, C=3, F=6, J=10, O=15.\nStep 2: Compute differences: 3-1=2, 6-3=3, 10-6=4, 15-10=5.\nStep 3: The differences are 2, 3, 4, 5, increasing by 1 each time.\nStep 4: The next difference = 6. Next position = 15 + 6 = 21.\nStep 5: Position 21 = U.",
         answer: "U",
       },
       {
         problem:
           "Find the next group in the series: AZ, BY, CX, DW, ?",
         solution:
-          "Step 1: First letters of each group: A, B, C, D — moving forward by 1.\nStep 2: Second letters of each group: Z, Y, X, W — moving backward by 1.\nStep 3: The pattern: first letter advances by 1, second letter retreats by 1.\nStep 4: Next first letter: E (D+1). Next second letter: V (W-1).\nStep 5: The next group is EV.",
+          "Step 1: First letters of each group: A, B, C, D, moving forward by 1.\nStep 2: Second letters of each group: Z, Y, X, W, moving backward by 1.\nStep 3: The pattern: first letter advances by 1, second letter retreats by 1.\nStep 4: Next first letter: E (D+1). Next second letter: V (W-1).\nStep 5: The next group is EV.",
         answer: "EV",
       },
       {
@@ -158,12 +158,12 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Forgetting the cyclic nature of the alphabet — after Z comes A, not stopping at Z.",
+      "Forgetting the cyclic nature of the alphabet, after Z comes A, not stopping at Z.",
       "Miscounting letter positions, especially for letters in the second half of the alphabet (N=14, not 13).",
       "Trying to force a single pattern when the series actually has two interleaved sub-patterns.",
     ],
     keyTakeaways: [
-      "Always convert letters to numbers first — it makes pattern detection much easier.",
+      "Always convert letters to numbers first, it makes pattern detection much easier.",
       "Memorize key letter positions to speed up conversions.",
       "Look for group patterns when individual letter patterns are not obvious.",
       "For symbol series, track each visual property independently.",
@@ -174,7 +174,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "essential-part",
     categorySlug: "logical-reasoning",
     introduction:
-      "Essential Part questions test your ability to identify the most fundamental component of a given concept, object, or situation. You are given a word and a set of answer choices, and you must determine which choice represents something that is absolutely necessary for the given word to exist or function. This is a test of precise definitional thinking.\n\nThe key principle is necessity versus association. Many things may be commonly associated with a concept, but only the essential part is something without which the concept cannot exist. For example, a 'book' essentially requires 'pages' — without pages, there is no book. A 'library' or 'author' may be associated with books, but they are not essential to the definition of a book.\n\nThese questions appear straightforward but can be tricky because distractors are often closely related to the word. The difference between 'essential' and 'commonly associated' is the crux. Ask yourself: 'Can the thing exist without this?' If the answer is yes, it is not essential.",
+      "Essential Part questions test your ability to identify the most fundamental component of a given concept, object, or situation. You are given a word and a set of answer choices, and you must determine which choice represents something that is absolutely necessary for the given word to exist or function. This is a test of precise definitional thinking.\n\nThe key principle is necessity versus association. Many things may be commonly associated with a concept, but only the essential part is something without which the concept cannot exist. For example, a 'book' essentially requires 'pages', without pages, there is no book. A 'library' or 'author' may be associated with books, but they are not essential to the definition of a book.\n\nThese questions appear straightforward but can be tricky because distractors are often closely related to the word. The difference between 'essential' and 'commonly associated' is the crux. Ask yourself: 'Can the thing exist without this?' If the answer is yes, it is not essential.",
     concepts: [
       "Necessity Test: An essential part is something without which the given word/concept cannot exist or be defined.",
       "Association vs. Essence: Many options will be related or associated but not essential. A 'car' is associated with 'roads' but does not require roads to exist.",
@@ -204,13 +204,13 @@ export const logicalReasoningTheory: TopicTheory[] = [
     ],
     rules: [
       "The essential part is always necessary, never merely sufficient or common.",
-      "If multiple options seem necessary, choose the most fundamental one — the one that is required by definition.",
+      "If multiple options seem necessary, choose the most fundamental one, the one that is required by definition.",
       "Do not confuse a typical feature with a defining feature.",
       "General categories are more likely to be essential than specific instances (e.g., 'fuel' is essential for fire, not 'wood' specifically).",
     ],
     quickTricks: [
       "Use the 'remove and check' test: mentally remove the option from the concept. If the concept collapses, that is the essential part.",
-      "Be wary of options that describe a common scenario — 'umbrella' is commonly associated with 'rain' but rain does not essentially require an umbrella.",
+      "Be wary of options that describe a common scenario, 'umbrella' is commonly associated with 'rain' but rain does not essentially require an umbrella.",
       "The essential part is usually a broader, more fundamental concept, not a narrow or specific one.",
       "If confused between two choices, pick the one that is more universally true across all instances of the concept.",
     ],
@@ -219,21 +219,21 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "What is the essential part of 'language'?\nOptions: (a) Words (b) Grammar (c) Writing (d) Conversation",
         solution:
-          "Step 1: Define 'language' — a system of communication using symbols or sounds.\nStep 2: Apply the necessity test:\n- Words: A language must have units of meaning (words or signs). Without words/signs, there is no language. Essential.\n- Grammar: While languages have grammar, the most fundamental requirement is having the units themselves.\n- Writing: Many languages have no written form (oral languages). Not essential.\n- Conversation: Language can exist without conversation (e.g., written-only use or a dead language). Not essential.\nStep 3: Words are the fundamental units without which a language cannot exist.",
+          "Step 1: Define 'language', a system of communication using symbols or sounds.\nStep 2: Apply the necessity test:\n- Words: A language must have units of meaning (words or signs). Without words/signs, there is no language. Essential.\n- Grammar: While languages have grammar, the most fundamental requirement is having the units themselves.\n- Writing: Many languages have no written form (oral languages). Not essential.\n- Conversation: Language can exist without conversation (e.g., written-only use or a dead language). Not essential.\nStep 3: Words are the fundamental units without which a language cannot exist.",
         answer: "(a) Words",
       },
       {
         problem:
           "What is the essential part of 'desert'?\nOptions: (a) Cactus (b) Sand (c) Arid (d) Oasis",
         solution:
-          "Step 1: Define 'desert' — a barren, extremely dry (arid) region with very little precipitation.\nStep 2: Apply the necessity test:\n- Cactus: Many deserts have no cacti (e.g., Antarctic desert, Gobi desert). Not essential.\n- Sand: Not all deserts are sandy — rocky deserts and ice deserts exist. Not essential.\n- Arid: By definition, a desert is an arid (extremely dry) region. This is the defining characteristic. Essential.\n- Oasis: An oasis is a feature found in some deserts, not all. Not essential.\nStep 3: Aridity is the defining characteristic of a desert.",
+          "Step 1: Define 'desert', a barren, extremely dry (arid) region with very little precipitation.\nStep 2: Apply the necessity test:\n- Cactus: Many deserts have no cacti (e.g., Antarctic desert, Gobi desert). Not essential.\n- Sand: Not all deserts are sandy, rocky deserts and ice deserts exist. Not essential.\n- Arid: By definition, a desert is an arid (extremely dry) region. This is the defining characteristic. Essential.\n- Oasis: An oasis is a feature found in some deserts, not all. Not essential.\nStep 3: Aridity is the defining characteristic of a desert.",
         answer: "(c) Arid",
       },
       {
         problem:
           "What is the essential part of 'election'?\nOptions: (a) Voters (b) Democracy (c) Candidates (d) Campaign",
         solution:
-          "Step 1: Define 'election' — a process in which people choose among candidates for a position.\nStep 2: Apply the necessity test:\n- Voters: An election requires people who vote. Without voters, there is no election. Essential.\n- Democracy: Elections can occur in non-democratic systems (e.g., union elections, corporate board elections). Not essential to the concept of an election.\n- Candidates: An election also requires candidates. Essential.\n- Campaign: Campaigns are common but not necessary — an election can happen without campaigning.\nStep 3: Both voters and candidates are essential. Among the choices, 'candidates' is what makes an election distinct (choosing among candidates). But 'voters' is equally essential. Typically, the question expects the most defining element — candidates define what is being voted on.\nNote: When both seem essential, pick the most universally required one. Without candidates there is nothing to choose from, making the election meaningless.",
+          "Step 1: Define 'election', a process in which people choose among candidates for a position.\nStep 2: Apply the necessity test:\n- Voters: An election requires people who vote. Without voters, there is no election. Essential.\n- Democracy: Elections can occur in non-democratic systems (e.g., union elections, corporate board elections). Not essential to the concept of an election.\n- Candidates: An election also requires candidates. Essential.\n- Campaign: Campaigns are common but not necessary, an election can happen without campaigning.\nStep 3: Both voters and candidates are essential. Among the choices, 'candidates' is what makes an election distinct (choosing among candidates). But 'voters' is equally essential. Typically, the question expects the most defining element, candidates define what is being voted on.\nNote: When both seem essential, pick the most universally required one. Without candidates there is nothing to choose from, making the election meaningless.",
         answer: "(c) Candidates",
       },
     ],
@@ -243,18 +243,18 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "Overthinking by bringing in real-world associations instead of focusing on the core definition.",
     ],
     keyTakeaways: [
-      "The essential part is what is absolutely necessary for the concept to exist — not what is merely typical.",
+      "The essential part is what is absolutely necessary for the concept to exist, not what is merely typical.",
       "Use the 'remove and check' test: if removing the option destroys the concept, it is essential.",
       "Prefer broader, definitional components over narrow, specific instances.",
       "Always focus on the dictionary definition, not personal experience or common associations.",
-      "Eliminate options one by one — usually only one option passes the strict necessity test.",
+      "Eliminate options one by one, usually only one option passes the strict necessity test.",
     ],
   },
   {
     slug: "analogies",
     categorySlug: "logical-reasoning",
     introduction:
-      "Analogy questions test your ability to identify relationships between pairs of words or concepts and then find another pair that shares the same relationship. The format is usually 'A is to B as C is to ?' — you must determine the relationship between A and B, then apply that same relationship to find the answer for C.\n\nAnalogies appear in verbal reasoning, logical reasoning, and even non-verbal reasoning sections. The relationships tested can be semantic (meaning-based), functional (use-based), categorical (part-whole, type-of), or degree-based (intensity). Being able to precisely name the relationship is the most critical skill.\n\nCommon pitfall: many students identify only a vague connection (e.g., 'they are related') instead of the specific, precise relationship. For instance, 'Pen : Writer' is not just 'related to writing' — the precise relationship is 'tool : user.' Finding this precise relationship and matching it is the key to answering correctly.",
+      "Analogy questions test your ability to identify relationships between pairs of words or concepts and then find another pair that shares the same relationship. The format is usually 'A is to B as C is to ?', you must determine the relationship between A and B, then apply that same relationship to find the answer for C.\n\nAnalogies appear in verbal reasoning, logical reasoning, and even non-verbal reasoning sections. The relationships tested can be semantic (meaning-based), functional (use-based), categorical (part-whole, type-of), or degree-based (intensity). Being able to precisely name the relationship is the most critical skill.\n\nCommon pitfall: many students identify only a vague connection (e.g., 'they are related') instead of the specific, precise relationship. For instance, 'Pen : Writer' is not just 'related to writing', the precise relationship is 'tool : user.' Finding this precise relationship and matching it is the key to answering correctly.",
     concepts: [
       "Synonyms/Antonyms: Words that mean the same (happy : joyful) or opposite (hot : cold).",
       "Part to Whole: One word is a component of the other (wheel : car, chapter : book).",
@@ -268,7 +268,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
         name: "Relationship Identification Method",
         steps: [
           "Examine the given pair (A : B) and formulate a precise sentence describing their relationship, e.g., 'A is a tool used by B.'",
-          "Test your relationship sentence by substituting the words back in — it should feel natural and accurate.",
+          "Test your relationship sentence by substituting the words back in, it should feel natural and accurate.",
           "Apply the exact same relationship sentence to the second pair (C : ?) to find the answer.",
           "Verify that the answer pair has the same relationship direction and type as the original pair.",
         ],
@@ -292,41 +292,41 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "Always define the relationship as precisely as possible — 'tool used by professional' is better than 'related to.'",
+      "Always define the relationship as precisely as possible, 'tool used by professional' is better than 'related to.'",
       "Watch out for direction: 'Dog : Puppy' (adult : young) is different from 'Puppy : Dog' (young : adult).",
       "If the analogy involves degree, make sure the intensity change is in the same direction (mild to strong or vice versa).",
-      "For part-to-whole analogies, ensure the specificity matches — if the original is a small part to a large whole, the answer should follow the same proportion.",
+      "For part-to-whole analogies, ensure the specificity matches, if the original is a small part to a large whole, the answer should follow the same proportion.",
     ],
     solvedExamples: [
       {
         problem:
           "Pen : Writer :: Scalpel : ?\nOptions: (a) Butcher (b) Surgeon (c) Knife (d) Hospital",
         solution:
-          "Step 1: Identify the relationship in 'Pen : Writer' — a pen is the primary tool used by a writer. Relationship: Tool : Professional who uses it.\nStep 2: Apply the same relationship to 'Scalpel : ?' — a scalpel is the primary tool used by a surgeon.\nStep 3: Check options: (a) Butcher uses a cleaver, not a scalpel. (b) Surgeon uses a scalpel. (c) Knife is another tool, not a professional. (d) Hospital is a place, not a professional.\nStep 4: Answer is Surgeon.",
+          "Step 1: Identify the relationship in 'Pen : Writer', a pen is the primary tool used by a writer. Relationship: Tool : Professional who uses it.\nStep 2: Apply the same relationship to 'Scalpel : ?', a scalpel is the primary tool used by a surgeon.\nStep 3: Check options: (a) Butcher uses a cleaver, not a scalpel. (b) Surgeon uses a scalpel. (c) Knife is another tool, not a professional. (d) Hospital is a place, not a professional.\nStep 4: Answer is Surgeon.",
         answer: "(b) Surgeon",
       },
       {
         problem:
           "Drizzle : Downpour :: Breeze : ?\nOptions: (a) Wind (b) Gale (c) Air (d) Cloud",
         solution:
-          "Step 1: Identify the relationship in 'Drizzle : Downpour' — both are types of rain, but a drizzle is mild and a downpour is intense. Relationship: Mild form : Intense form of the same phenomenon.\nStep 2: Apply to 'Breeze : ?' — a breeze is a mild form of wind. The intense form of wind is a gale.\nStep 3: Check options: (a) Wind is the general category, not the intense form. (b) Gale is an intense, strong wind — matches the relationship. (c) Air is the medium, not related to intensity. (d) Cloud is unrelated.\nStep 4: Answer is Gale.",
+          "Step 1: Identify the relationship in 'Drizzle : Downpour', both are types of rain, but a drizzle is mild and a downpour is intense. Relationship: Mild form : Intense form of the same phenomenon.\nStep 2: Apply to 'Breeze : ?', a breeze is a mild form of wind. The intense form of wind is a gale.\nStep 3: Check options: (a) Wind is the general category, not the intense form. (b) Gale is an intense, strong wind, matches the relationship. (c) Air is the medium, not related to intensity. (d) Cloud is unrelated.\nStep 4: Answer is Gale.",
         answer: "(b) Gale",
       },
       {
         problem:
           "Chapter : Book :: Verse : ?\nOptions: (a) Poem (b) Stanza (c) Sentence (d) Library",
         solution:
-          "Step 1: Identify the relationship: A chapter is a section/part of a book. Relationship: Part : Whole.\nStep 2: Apply to 'Verse : ?' — a verse is a part of a poem.\nStep 3: Check: (a) Poem — a verse is part of a poem. This matches. (b) Stanza — a verse and stanza are at the same level (both are parts), not a part-whole relationship. (c) Sentence — different structure. (d) Library — not a part-whole relationship.\nStep 4: Answer is Poem.",
+          "Step 1: Identify the relationship: A chapter is a section/part of a book. Relationship: Part : Whole.\nStep 2: Apply to 'Verse : ?', a verse is a part of a poem.\nStep 3: Check: (a) Poem, a verse is part of a poem. This matches. (b) Stanza, a verse and stanza are at the same level (both are parts), not a part-whole relationship. (c) Sentence, different structure. (d) Library, not a part-whole relationship.\nStep 4: Answer is Poem.",
         answer: "(a) Poem",
       },
     ],
     commonMistakes: [
       "Identifying a vague relationship ('they are related') instead of a precise one ('tool used by professional').",
-      "Ignoring the direction of the analogy — the order of the pair matters.",
+      "Ignoring the direction of the analogy, the order of the pair matters.",
       "Choosing an answer that shares a topic with the original pair but not the same type of relationship.",
     ],
     keyTakeaways: [
-      "Precision is everything — always name the exact type of relationship (tool:user, part:whole, cause:effect, etc.).",
+      "Precision is everything, always name the exact type of relationship (tool:user, part:whole, cause:effect, etc.).",
       "The relationship must work in the same direction for both pairs.",
       "Use bridge sentences to test each option systematically.",
       "Common relationship types include: synonym, antonym, part-whole, tool-user, worker-tool, cause-effect, degree/intensity, category-member.",
@@ -337,11 +337,11 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "artificial-language",
     categorySlug: "logical-reasoning",
     introduction:
-      "Artificial Language questions present a set of made-up words with their English translations, and then ask you to translate a new word or phrase using the patterns established by the given translations. This tests your ability to decode a systematic mapping between the invented language and English by identifying roots, prefixes, suffixes, and structural rules.\n\nThe approach is similar to cracking a code. You compare the given translations to find common elements. If 'gorplex' means 'big dog' and 'gorfinx' means 'big cat,' then 'gor' likely means 'big,' 'plex' means 'dog,' and 'finx' means 'cat.' By systematically isolating common and differing parts, you can decode the language and translate new words.\n\nThese questions require careful, systematic analysis rather than guesswork. The invented language typically has consistent rules — each syllable or morpheme maps to a specific English word or concept. Your job is to figure out which part means what, and then assemble or decode the target word accordingly.",
+      "Artificial Language questions present a set of made-up words with their English translations, and then ask you to translate a new word or phrase using the patterns established by the given translations. This tests your ability to decode a systematic mapping between the invented language and English by identifying roots, prefixes, suffixes, and structural rules.\n\nThe approach is similar to cracking a code. You compare the given translations to find common elements. If 'gorplex' means 'big dog' and 'gorfinx' means 'big cat,' then 'gor' likely means 'big,' 'plex' means 'dog,' and 'finx' means 'cat.' By systematically isolating common and differing parts, you can decode the language and translate new words.\n\nThese questions require careful, systematic analysis rather than guesswork. The invented language typically has consistent rules, each syllable or morpheme maps to a specific English word or concept. Your job is to figure out which part means what, and then assemble or decode the target word accordingly.",
     concepts: [
       "Morpheme Mapping: Each meaningful unit (prefix, root, suffix) in the artificial language maps to a specific English word or concept.",
       "Comparative Analysis: By comparing two phrases that share a common English word, you can isolate the artificial word for that shared concept.",
-      "Positional Consistency: In most artificial languages, word order is consistent — if adjectives come before nouns in one phrase, they do so in all phrases.",
+      "Positional Consistency: In most artificial languages, word order is consistent, if adjectives come before nouns in one phrase, they do so in all phrases.",
       "Systematic Isolation: Identify what changes and what stays the same between given translations to decode individual word meanings.",
       "Compound Construction: Once individual word meanings are decoded, new phrases are constructed by combining decoded parts in the correct order.",
     ],
@@ -351,7 +351,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
         steps: [
           "List all given artificial phrases alongside their English translations.",
           "Find pairs of translations that share a common English word.",
-          "Identify the common element in the corresponding artificial phrases — that element maps to the shared English word.",
+          "Identify the common element in the corresponding artificial phrases, that element maps to the shared English word.",
           "By process of elimination, determine the meaning of the remaining elements.",
           "Use the decoded mappings to translate the target phrase.",
         ],
@@ -368,16 +368,16 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     rules: [
-      "Every component of the artificial language has a consistent, fixed meaning — it does not change between phrases.",
+      "Every component of the artificial language has a consistent, fixed meaning, it does not change between phrases.",
       "If a component appears in the same position across multiple phrases, it likely carries the same type of meaning (e.g., always an adjective or always a noun).",
-      "Do not assume English word order — the artificial language may place modifiers before or after the main word.",
+      "Do not assume English word order, the artificial language may place modifiers before or after the main word.",
       "Always verify your decoded mappings against all given translations before answering.",
     ],
     quickTricks: [
-      "Start with the pair of phrases that share the most common English words — they will reveal the most mappings in one comparison.",
+      "Start with the pair of phrases that share the most common English words, they will reveal the most mappings in one comparison.",
       "If three translations are given and two share a word, compare those two first to isolate the shared element.",
-      "Write down each decoded mapping immediately — do not try to keep it all in your head.",
-      "Check your final answer by 'back-translating' — does your decoded answer correctly translate back to the given English meaning?",
+      "Write down each decoded mapping immediately, do not try to keep it all in your head.",
+      "Check your final answer by 'back-translating', does your decoded answer correctly translate back to the given English meaning?",
     ],
     solvedExamples: [
       {
@@ -391,20 +391,20 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "In an artificial language:\n'dor argel' means 'small tree'\n'mal argel fin' means 'beautiful small garden'\n'dor lok' means 'small house'\nWhat word means 'garden'?",
         solution:
-          "Step 1: Compare 'dor argel' (small tree) and 'dor lok' (small house). Common: 'dor' = 'small.'\nStep 2: From 'dor argel': dor = small, so argel = tree.\nStep 3: From 'dor lok': dor = small, so lok = house.\nStep 4: Look at 'mal argel fin' (beautiful small garden). We know argel = tree... wait, let me re-examine. 'argel' appears in both 'small tree' and 'beautiful small garden.'\nStep 5: Actually, compare 'dor argel' (small tree) and 'mal argel fin' (beautiful small garden). Common artificial word: 'argel.' But the English translations share 'small.' So argel = small.\nStep 6: Revise: from 'dor argel' (small tree), argel = small, so dor = tree.\nStep 7: From 'dor lok' (small house)... but dor = tree now, which contradicts. Let me re-examine.\nStep 8: Re-compare: 'dor argel' shares 'dor' with 'dor lok.' In English, 'small tree' shares 'small' with 'small house.' So dor = small.\nStep 9: Then argel = tree (from 'dor argel'). And lok = house (from 'dor lok').\nStep 10: From 'mal argel fin' (beautiful small garden): dor is not present, but argel is. If argel = tree, then 'mal [tree] fin' = 'beautiful small garden' does not parse well.\nStep 11: Reconsider: in 'mal argel fin,' argel might not mean tree but instead the shared 'small' if word order differs. Checking: 'dor argel' and 'mal argel fin' both contain argel. English: 'small tree' and 'beautiful small garden' both contain 'small.' So argel = small.\nStep 12: Then from 'dor argel' (small tree): argel = small, dor = tree. From 'dor lok' (small house): dor = tree? But English says 'small house.' Contradiction: dor cannot mean both 'small' and 'tree.'\nStep 13: Resolution: 'dor argel' (small tree) and 'dor lok' (small house) share 'dor' and English shares 'small.' So dor = small. From 'dor argel': argel = tree. From 'mal argel fin' (beautiful small garden): argel = tree does not fit because 'tree' is not in 'beautiful small garden.' Unless the language reuses 'argel' differently. But artificial languages are consistent.\nStep 14: The key insight — maybe 'dor' is what is shared with meaning 'small' in the first and third phrases, and 'argel' in phrase 1 and 2 needs re-examination. If dor = small, argel = tree, lok = house. In 'mal argel fin' = 'beautiful small garden': there is no 'small' word since 'dor' is absent. So argel cannot mean small.\nStep 15: Final resolution: dor = small, argel = tree, lok = house. In 'mal argel fin' = 'beautiful small garden,' we need small = some word. Since dor = small but dor is not in this phrase, there may be an error in the problem. Taking it at face value: mal and fin remain. One means 'beautiful' and one means 'garden.' Since 'argel' = tree and is present but 'tree' is not in the translation, this artificial language may use 'argel' to mean 'small' after all. Given the overlap analysis, argel = small (appears in all three English phrases containing 'small'). Then dor = tree, lok = house, mal = beautiful, fin = garden.\nThe word for 'garden' is 'fin.'",
+          "Step 1: Compare 'dor argel' (small tree) and 'dor lok' (small house). Common: 'dor' = 'small.'\nStep 2: From 'dor argel': dor = small, so argel = tree.\nStep 3: From 'dor lok': dor = small, so lok = house.\nStep 4: Look at 'mal argel fin' (beautiful small garden). We know argel = tree... wait, let me re-examine. 'argel' appears in both 'small tree' and 'beautiful small garden.'\nStep 5: Actually, compare 'dor argel' (small tree) and 'mal argel fin' (beautiful small garden). Common artificial word: 'argel.' But the English translations share 'small.' So argel = small.\nStep 6: Revise: from 'dor argel' (small tree), argel = small, so dor = tree.\nStep 7: From 'dor lok' (small house)... but dor = tree now, which contradicts. Let me re-examine.\nStep 8: Re-compare: 'dor argel' shares 'dor' with 'dor lok.' In English, 'small tree' shares 'small' with 'small house.' So dor = small.\nStep 9: Then argel = tree (from 'dor argel'). And lok = house (from 'dor lok').\nStep 10: From 'mal argel fin' (beautiful small garden): dor is not present, but argel is. If argel = tree, then 'mal [tree] fin' = 'beautiful small garden' does not parse well.\nStep 11: Reconsider: in 'mal argel fin,' argel might not mean tree but instead the shared 'small' if word order differs. Checking: 'dor argel' and 'mal argel fin' both contain argel. English: 'small tree' and 'beautiful small garden' both contain 'small.' So argel = small.\nStep 12: Then from 'dor argel' (small tree): argel = small, dor = tree. From 'dor lok' (small house): dor = tree? But English says 'small house.' Contradiction: dor cannot mean both 'small' and 'tree.'\nStep 13: Resolution: 'dor argel' (small tree) and 'dor lok' (small house) share 'dor' and English shares 'small.' So dor = small. From 'dor argel': argel = tree. From 'mal argel fin' (beautiful small garden): argel = tree does not fit because 'tree' is not in 'beautiful small garden.' Unless the language reuses 'argel' differently. But artificial languages are consistent.\nStep 14: The key insight, maybe 'dor' is what is shared with meaning 'small' in the first and third phrases, and 'argel' in phrase 1 and 2 needs re-examination. If dor = small, argel = tree, lok = house. In 'mal argel fin' = 'beautiful small garden': there is no 'small' word since 'dor' is absent. So argel cannot mean small.\nStep 15: Final resolution: dor = small, argel = tree, lok = house. In 'mal argel fin' = 'beautiful small garden,' we need small = some word. Since dor = small but dor is not in this phrase, there may be an error in the problem. Taking it at face value: mal and fin remain. One means 'beautiful' and one means 'garden.' Since 'argel' = tree and is present but 'tree' is not in the translation, this artificial language may use 'argel' to mean 'small' after all. Given the overlap analysis, argel = small (appears in all three English phrases containing 'small'). Then dor = tree, lok = house, mal = beautiful, fin = garden.\nThe word for 'garden' is 'fin.'",
         answer: "fin",
       },
     ],
     commonMistakes: [
       "Jumping to conclusions from a single comparison without verifying against all given translations.",
-      "Assuming the artificial language follows English word order — it may not.",
+      "Assuming the artificial language follows English word order, it may not.",
       "Failing to cross-check decoded mappings against every given phrase for consistency.",
     ],
     keyTakeaways: [
       "Artificial language problems are decoded by comparing phrases that share common English words.",
       "Always isolate one meaning at a time through systematic comparison.",
       "Verify every decoded mapping against all given translations before answering.",
-      "Word order in the artificial language may differ from English — do not assume.",
+      "Word order in the artificial language may differ from English, do not assume.",
       "Write down your mappings as you decode them to avoid confusion.",
     ],
   },
@@ -412,7 +412,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "matching-definitions",
     categorySlug: "logical-reasoning",
     introduction:
-      "Matching Definitions questions provide you with a definition and ask you to identify which word from the given options best matches that definition. Unlike vocabulary questions that test whether you know the meaning of a word, these questions test whether you can apply a precise definition to select the correct term from among close alternatives.\n\nThe challenge lies in the fact that answer choices often include words that are related but not exactly matching. You might see synonyms, near-synonyms, or words from the same domain. The correct answer is the one that most precisely and completely matches the given definition, not just partially.\n\nSuccess requires careful reading of the definition, identifying its key distinguishing features, and then matching those features against each option. Pay attention to qualifiers like 'always,' 'sometimes,' 'intentional,' 'unintentional,' 'positive,' 'negative' — these subtle words often distinguish the correct answer from the distractors.",
+      "Matching Definitions questions provide you with a definition and ask you to identify which word from the given options best matches that definition. Unlike vocabulary questions that test whether you know the meaning of a word, these questions test whether you can apply a precise definition to select the correct term from among close alternatives.\n\nThe challenge lies in the fact that answer choices often include words that are related but not exactly matching. You might see synonyms, near-synonyms, or words from the same domain. The correct answer is the one that most precisely and completely matches the given definition, not just partially.\n\nSuccess requires careful reading of the definition, identifying its key distinguishing features, and then matching those features against each option. Pay attention to qualifiers like 'always,' 'sometimes,' 'intentional,' 'unintentional,' 'positive,' 'negative', these subtle words often distinguish the correct answer from the distractors.",
     concepts: [
       "Precise Matching: The correct answer must match ALL parts of the definition, not just some parts.",
       "Key Qualifiers: Words like 'intentional,' 'deliberate,' 'accidental,' 'always,' 'sometimes' in the definition narrow down the correct match significantly.",
@@ -442,9 +442,9 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "Pay special attention to qualifiers in the definition — 'deliberate' vs. 'accidental' can change the answer entirely.",
+      "Pay special attention to qualifiers in the definition, 'deliberate' vs. 'accidental' can change the answer entirely.",
       "If two options seem similar, look for the subtle difference that the definition specifically addresses.",
-      "Read the definition twice — once for overall meaning, once for specific details you might have missed.",
+      "Read the definition twice, once for overall meaning, once for specific details you might have missed.",
       "If the definition mentions a specific field or context, only consider words that belong to that field.",
     ],
     solvedExamples: [
@@ -452,14 +452,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "Definition: 'A feeling of deep admiration for someone or something elicited by their abilities, qualities, or achievements.'\nOptions: (a) Sympathy (b) Respect (c) Jealousy (d) Fear",
         solution:
-          "Step 1: Key features of the definition: (1) feeling of deep admiration, (2) elicited by abilities/qualities/achievements.\nStep 2: Check options:\n- Sympathy: feeling of pity or sorrow for someone else's misfortune — does not match 'admiration for abilities.'\n- Respect: a feeling of deep admiration for someone based on their abilities, qualities, or achievements — perfect match.\n- Jealousy: resentment toward someone for their advantages — negative connotation, not admiration.\n- Fear: an unpleasant emotion caused by threat of danger — completely unrelated to admiration.\nStep 3: Respect matches all key features.",
+          "Step 1: Key features of the definition: (1) feeling of deep admiration, (2) elicited by abilities/qualities/achievements.\nStep 2: Check options:\n- Sympathy: feeling of pity or sorrow for someone else's misfortune, does not match 'admiration for abilities.'\n- Respect: a feeling of deep admiration for someone based on their abilities, qualities, or achievements, perfect match.\n- Jealousy: resentment toward someone for their advantages, negative connotation, not admiration.\n- Fear: an unpleasant emotion caused by threat of danger, completely unrelated to admiration.\nStep 3: Respect matches all key features.",
         answer: "(b) Respect",
       },
       {
         problem:
           "Definition: 'The act of intentionally deceiving someone in order to gain an unfair or unlawful advantage.'\nOptions: (a) Mistake (b) Fraud (c) Error (d) Negligence",
         solution:
-          "Step 1: Key features: (1) intentional, (2) deceiving someone, (3) to gain unfair/unlawful advantage.\nStep 2: Check options:\n- Mistake: unintentional error — fails the 'intentional' criterion.\n- Fraud: intentional deception for unlawful gain — matches all three features.\n- Error: unintentional inaccuracy — fails the 'intentional' criterion.\n- Negligence: failure to take proper care — not intentional deception.\nStep 3: Fraud is the only option matching all key features.",
+          "Step 1: Key features: (1) intentional, (2) deceiving someone, (3) to gain unfair/unlawful advantage.\nStep 2: Check options:\n- Mistake: unintentional error, fails the 'intentional' criterion.\n- Fraud: intentional deception for unlawful gain, matches all three features.\n- Error: unintentional inaccuracy, fails the 'intentional' criterion.\n- Negligence: failure to take proper care, not intentional deception.\nStep 3: Fraud is the only option matching all key features.",
         answer: "(b) Fraud",
       },
     ],
@@ -473,16 +473,16 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "The correct answer must match ALL key features of the definition, not just some.",
       "Qualifiers (intentional, accidental, always, sometimes) are critical differentiators.",
       "When two options seem similar, the subtle details in the definition will point to the correct one.",
-      "Practice building definitions for common words — this strengthens your matching ability.",
+      "Practice building definitions for common words, this strengthens your matching ability.",
     ],
   },
   {
     slug: "making-judgments",
     categorySlug: "logical-reasoning",
     introduction:
-      "Making Judgments questions assess your ability to evaluate a situation and decide on the best course of action based on given facts, rules, or criteria. You are presented with a scenario and a set of rules or policies, and you must determine the correct judgment or decision that follows from applying those rules to the given facts.\n\nThese questions simulate real-world decision-making processes — such as loan eligibility, admission criteria, or candidate selection — where specific conditions must be met. The scenario provides all the data about a person or situation, and the rules specify the conditions. Your job is to check each condition systematically and arrive at the correct judgment.\n\nThe key skill is methodical, step-by-step evaluation. You must resist the temptation to skim the conditions or rely on intuition. Every condition must be checked, and partial matches must be identified. Often, the correct answer involves 'refer to a higher authority' or 'conditional acceptance' rather than a simple accept/reject.",
+      "Making Judgments questions assess your ability to evaluate a situation and decide on the best course of action based on given facts, rules, or criteria. You are presented with a scenario and a set of rules or policies, and you must determine the correct judgment or decision that follows from applying those rules to the given facts.\n\nThese questions simulate real-world decision-making processes, such as loan eligibility, admission criteria, or candidate selection, where specific conditions must be met. The scenario provides all the data about a person or situation, and the rules specify the conditions. Your job is to check each condition systematically and arrive at the correct judgment.\n\nThe key skill is methodical, step-by-step evaluation. You must resist the temptation to skim the conditions or rely on intuition. Every condition must be checked, and partial matches must be identified. Often, the correct answer involves 'refer to a higher authority' or 'conditional acceptance' rather than a simple accept/reject.",
     concepts: [
-      "Condition Matching: Check whether the given facts satisfy each specified condition exactly — partially met conditions may lead to a different outcome.",
+      "Condition Matching: Check whether the given facts satisfy each specified condition exactly, partially met conditions may lead to a different outcome.",
       "Decision Hierarchy: Rules often specify a hierarchy: accept if all conditions are met, reject if a key condition is unmet, refer to authority if borderline.",
       "Threshold Values: Many conditions involve numerical thresholds (age, percentage, experience). Pay close attention to boundary conditions like 'at least,' 'more than,' 'not less than.'",
       "Exception Clauses: Some rules have exceptions or special cases that override the general conditions. Read all rules completely before deciding.",
@@ -493,7 +493,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
         name: "Checklist Method",
         steps: [
           "List all conditions/criteria specified in the rules.",
-          "For each condition, check whether the candidate/situation satisfies it — mark as Met, Not Met, or Borderline.",
+          "For each condition, check whether the candidate/situation satisfies it, mark as Met, Not Met, or Borderline.",
           "Count the results: if all conditions are Met, the judgment is usually 'Accept' or 'Approve.'",
           "If one or more conditions are Not Met, check if any exception or referral rule applies.",
           "Apply the decision rule that matches the pattern of met/unmet conditions.",
@@ -510,9 +510,9 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "Underline all numerical thresholds in the rules — these are the most common sources of error.",
-      "Pay attention to 'at least' (>=) vs. 'more than' (>) vs. 'not less than' (>=) — they make a critical difference at boundary values.",
-      "Check if there is a 'refer' or 'conditional' option — many questions are designed so that one condition is just barely unmet, leading to referral rather than rejection.",
+      "Underline all numerical thresholds in the rules, these are the most common sources of error.",
+      "Pay attention to 'at least' (>=) vs. 'more than' (>) vs. 'not less than' (>=), they make a critical difference at boundary values.",
+      "Check if there is a 'refer' or 'conditional' option, many questions are designed so that one condition is just barely unmet, leading to referral rather than rejection.",
       "If the candidate meets all but one condition, look for exception clauses that might still allow acceptance.",
     ],
     solvedExamples: [
@@ -520,27 +520,27 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "A bank gives a loan if: (1) Applicant is at least 21 years old, (2) Annual income is at least 5 lakhs, (3) Has a guarantor with annual income of at least 3 lakhs, (4) If conditions 1 and 2 are met but not 3, the case is referred to the manager. Candidate: Age 25, Income 6 lakhs, No guarantor. What is the decision?",
         solution:
-          "Step 1: Check condition 1 — Age is 25, requirement is at least 21. Met.\nStep 2: Check condition 2 — Income is 6 lakhs, requirement is at least 5 lakhs. Met.\nStep 3: Check condition 3 — No guarantor. Not Met.\nStep 4: Apply rule 4 — Conditions 1 and 2 are met but condition 3 is not met. The case is referred to the manager.",
+          "Step 1: Check condition 1, Age is 25, requirement is at least 21. Met.\nStep 2: Check condition 2, Income is 6 lakhs, requirement is at least 5 lakhs. Met.\nStep 3: Check condition 3, No guarantor. Not Met.\nStep 4: Apply rule 4, Conditions 1 and 2 are met but condition 3 is not met. The case is referred to the manager.",
         answer: "Refer to manager",
       },
       {
         problem:
           "A company selects a candidate if: (1) Age is between 22 and 30, (2) Has at least 2 years of experience, (3) Scored at least 60% in graduation. If condition 3 is not met but score is at least 55%, candidate may be given a provisional offer. Candidate: Age 26, Experience 3 years, Graduation score 57%. What is the decision?",
         solution:
-          "Step 1: Check condition 1 — Age 26, between 22 and 30. Met.\nStep 2: Check condition 2 — Experience 3 years, at least 2 required. Met.\nStep 3: Check condition 3 — Graduation score 57%, at least 60% required. Not Met.\nStep 4: Check exception — Score is at least 55% (57% >= 55%). Exception applies.\nStep 5: Candidate gets a provisional offer.",
+          "Step 1: Check condition 1, Age 26, between 22 and 30. Met.\nStep 2: Check condition 2, Experience 3 years, at least 2 required. Met.\nStep 3: Check condition 3, Graduation score 57%, at least 60% required. Not Met.\nStep 4: Check exception, Score is at least 55% (57% >= 55%). Exception applies.\nStep 5: Candidate gets a provisional offer.",
         answer: "Provisional offer",
       },
     ],
     commonMistakes: [
-      "Missing a condition during evaluation — always check every single condition systematically.",
+      "Missing a condition during evaluation, always check every single condition systematically.",
       "Confusing 'at least X' (>=) with 'more than X' (>), especially at boundary values.",
       "Ignoring exception or referral clauses and jumping to a simple accept/reject conclusion.",
     ],
     keyTakeaways: [
-      "Use a systematic checklist approach — check every condition one by one.",
+      "Use a systematic checklist approach, check every condition one by one.",
       "Pay close attention to boundary values and the exact wording of thresholds.",
-      "Look for exception clauses and conditional decisions — not every answer is a simple accept/reject.",
-      "Do not rely on intuition — the answer must follow from the given rules, not your personal judgment.",
+      "Look for exception clauses and conditional decisions, not every answer is a simple accept/reject.",
+      "Do not rely on intuition, the answer must follow from the given rules, not your personal judgment.",
       "Practice with different rule structures to develop speed in condition-checking.",
     ],
   },
@@ -548,14 +548,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "logical-deduction",
     categorySlug: "logical-reasoning",
     introduction:
-      "Logical Deduction involves drawing valid conclusions from given statements (premises) using the rules of formal logic. The most common form involves categorical syllogisms — arguments with two premises and a conclusion involving categories of things (All, Some, No). You must determine whether a given conclusion logically follows from the premises, regardless of whether the statements are true in the real world.\n\nThe key principle is that logical validity depends on the structure of the argument, not the truth of the statements. If the premises say 'All dogs are cats' and 'All cats are birds,' then the conclusion 'All dogs are birds' is logically valid, even though the premises are factually false. Your job is to evaluate the logical structure, not the factual content.\n\nLogical deduction questions frequently test your understanding of universal statements (All A are B, No A are B) and particular statements (Some A are B, Some A are not B). Venn diagrams are the most reliable tool for solving these problems, as they visually represent the relationships and make valid conclusions immediately apparent.",
+      "Logical Deduction involves drawing valid conclusions from given statements (premises) using the rules of formal logic. The most common form involves categorical syllogisms, arguments with two premises and a conclusion involving categories of things (All, Some, No). You must determine whether a given conclusion logically follows from the premises, regardless of whether the statements are true in the real world.\n\nThe key principle is that logical validity depends on the structure of the argument, not the truth of the statements. If the premises say 'All dogs are cats' and 'All cats are birds,' then the conclusion 'All dogs are birds' is logically valid, even though the premises are factually false. Your job is to evaluate the logical structure, not the factual content.\n\nLogical deduction questions frequently test your understanding of universal statements (All A are B, No A are B) and particular statements (Some A are B, Some A are not B). Venn diagrams are the most reliable tool for solving these problems, as they visually represent the relationships and make valid conclusions immediately apparent.",
     concepts: [
-      "Universal Affirmative (A-type): 'All A are B' — every member of A is also a member of B.",
-      "Universal Negative (E-type): 'No A is B' — no member of A is a member of B (and vice versa).",
-      "Particular Affirmative (I-type): 'Some A are B' — at least one member of A is also a member of B.",
-      "Particular Negative (O-type): 'Some A are not B' — at least one member of A is not a member of B.",
+      "Universal Affirmative (A-type): 'All A are B', every member of A is also a member of B.",
+      "Universal Negative (E-type): 'No A is B', no member of A is a member of B (and vice versa).",
+      "Particular Affirmative (I-type): 'Some A are B', at least one member of A is also a member of B.",
+      "Particular Negative (O-type): 'Some A are not B', at least one member of A is not a member of B.",
       "Conversion: 'All A are B' does NOT mean 'All B are A.' But 'No A is B' does imply 'No B is A.' 'Some A are B' implies 'Some B are A.'",
-      "Complementary Pairs: 'All A are B' and 'Some A are not B' are complementary — exactly one must be true. Similarly, 'No A is B' and 'Some A are B' are complementary.",
+      "Complementary Pairs: 'All A are B' and 'Some A are not B' are complementary, exactly one must be true. Similarly, 'No A is B' and 'Some A are B' are complementary.",
     ],
     methods: [
       {
@@ -597,42 +597,42 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "Statements: All dogs are animals. All animals are living beings.\nConclusions: I. All dogs are living beings. II. Some living beings are dogs.",
         solution:
-          "Step 1: Draw Venn diagrams. 'All dogs are animals' — dogs circle inside animals circle. 'All animals are living beings' — animals circle inside living beings circle.\nStep 2: Result: Dogs inside Animals inside Living Beings.\nStep 3: Check Conclusion I: 'All dogs are living beings.' Since dogs are inside animals, which are inside living beings, all dogs are indeed living beings. Follows.\nStep 4: Check Conclusion II: 'Some living beings are dogs.' Since all dogs are living beings, there exist some living beings that are dogs. Follows.\nStep 5: Both conclusions I and II follow.",
+          "Step 1: Draw Venn diagrams. 'All dogs are animals', dogs circle inside animals circle. 'All animals are living beings', animals circle inside living beings circle.\nStep 2: Result: Dogs inside Animals inside Living Beings.\nStep 3: Check Conclusion I: 'All dogs are living beings.' Since dogs are inside animals, which are inside living beings, all dogs are indeed living beings. Follows.\nStep 4: Check Conclusion II: 'Some living beings are dogs.' Since all dogs are living beings, there exist some living beings that are dogs. Follows.\nStep 5: Both conclusions I and II follow.",
         answer: "Both I and II follow",
       },
       {
         problem:
           "Statements: Some books are pens. No pen is a pencil.\nConclusions: I. Some books are not pencils. II. No book is a pencil.",
         solution:
-          "Step 1: 'Some books are pens' — books and pens circles partially overlap.\nStep 2: 'No pen is a pencil' — pens and pencils circles do not overlap at all.\nStep 3: Check Conclusion I: 'Some books are not pencils.' The books that are pens cannot be pencils (since no pen is a pencil). So at least those books are not pencils. This follows.\nStep 4: Check Conclusion II: 'No book is a pencil.' We know some books are pens and no pen is a pencil, but what about books that are not pens? Those books might or might not be pencils — we have no information. So we cannot say 'No book is a pencil' with certainty. Does not follow.\nStep 5: Only Conclusion I follows.",
+          "Step 1: 'Some books are pens', books and pens circles partially overlap.\nStep 2: 'No pen is a pencil', pens and pencils circles do not overlap at all.\nStep 3: Check Conclusion I: 'Some books are not pencils.' The books that are pens cannot be pencils (since no pen is a pencil). So at least those books are not pencils. This follows.\nStep 4: Check Conclusion II: 'No book is a pencil.' We know some books are pens and no pen is a pencil, but what about books that are not pens? Those books might or might not be pencils, we have no information. So we cannot say 'No book is a pencil' with certainty. Does not follow.\nStep 5: Only Conclusion I follows.",
         answer: "Only I follows",
       },
       {
         problem:
           "Statements: No car is a bus. Some buses are trains.\nConclusions: I. No car is a train. II. Some trains are not cars.",
         solution:
-          "Step 1: 'No car is a bus' — cars and buses do not overlap.\nStep 2: 'Some buses are trains' — buses and trains partially overlap.\nStep 3: Check Conclusion I: 'No car is a train.' Cars and buses do not overlap, and some buses are trains. But can some cars be trains (through a path not involving buses)? We have no information preventing cars and trains from overlapping directly. So 'No car is a train' does not necessarily follow.\nStep 4: Check Conclusion II: 'Some trains are not cars.' The trains that are buses cannot be cars (since no car is a bus). So at least some trains (those that are buses) are not cars. This follows.\nStep 5: Only Conclusion II follows.",
+          "Step 1: 'No car is a bus', cars and buses do not overlap.\nStep 2: 'Some buses are trains', buses and trains partially overlap.\nStep 3: Check Conclusion I: 'No car is a train.' Cars and buses do not overlap, and some buses are trains. But can some cars be trains (through a path not involving buses)? We have no information preventing cars and trains from overlapping directly. So 'No car is a train' does not necessarily follow.\nStep 4: Check Conclusion II: 'Some trains are not cars.' The trains that are buses cannot be cars (since no car is a bus). So at least some trains (those that are buses) are not cars. This follows.\nStep 5: Only Conclusion II follows.",
         answer: "Only II follows",
       },
     ],
     commonMistakes: [
-      "Assuming 'All A are B' means 'All B are A' — this is the most common error (illicit conversion).",
-      "Drawing only one possible Venn diagram instead of considering all valid configurations — a conclusion must hold in ALL valid diagrams.",
+      "Assuming 'All A are B' means 'All B are A', this is the most common error (illicit conversion).",
+      "Drawing only one possible Venn diagram instead of considering all valid configurations, a conclusion must hold in ALL valid diagrams.",
       "Forgetting to check for the 'either-or' option when neither conclusion individually follows.",
     ],
     keyTakeaways: [
-      "Always use Venn diagrams for syllogism problems — they make the logic visual and unambiguous.",
+      "Always use Venn diagrams for syllogism problems, they make the logic visual and unambiguous.",
       "Logical validity depends on structure, not real-world truth.",
-      "'All A are B' only means A is a subset of B — it does NOT mean B is a subset of A.",
+      "'All A are B' only means A is a subset of B, it does NOT mean B is a subset of A.",
       "Two negative premises or two particular premises yield no definite conclusion.",
-      "Check for complementary pairs when neither conclusion individually follows — the answer may be 'either-or.'",
+      "Check for complementary pairs when neither conclusion individually follows, the answer may be 'either-or.'",
     ],
   },
   {
     slug: "logical-problems",
     categorySlug: "logical-reasoning",
     introduction:
-      "Logical Problems encompass a broad category of reasoning questions where you must use given clues, conditions, or constraints to arrive at a definite conclusion. These include puzzles involving arrangements (linear, circular), rankings, grouping, scheduling, and truth-teller/liar problems. The common thread is that you must systematically process information to deduce facts that are not directly stated.\n\nThese problems test your ability to organize information, make valid inferences, and avoid contradictions. The typical approach involves creating a structured representation (table, grid, diagram) and filling it in step by step using the given clues. Each clue narrows down the possibilities, and the combination of all clues leads to a unique solution.\n\nThe most important skill is systematic elimination: start with the clues that give the most definite information, fill in what you can, and then use the remaining clues to resolve ambiguities. Avoid guessing — every conclusion should be logically forced by the clues.",
+      "Logical Problems encompass a broad category of reasoning questions where you must use given clues, conditions, or constraints to arrive at a definite conclusion. These include puzzles involving arrangements (linear, circular), rankings, grouping, scheduling, and truth-teller/liar problems. The common thread is that you must systematically process information to deduce facts that are not directly stated.\n\nThese problems test your ability to organize information, make valid inferences, and avoid contradictions. The typical approach involves creating a structured representation (table, grid, diagram) and filling it in step by step using the given clues. Each clue narrows down the possibilities, and the combination of all clues leads to a unique solution.\n\nThe most important skill is systematic elimination: start with the clues that give the most definite information, fill in what you can, and then use the remaining clues to resolve ambiguities. Avoid guessing, every conclusion should be logically forced by the clues.",
     concepts: [
       "Linear Arrangement: Arranging people or objects in a row based on given conditions about their relative positions.",
       "Circular Arrangement: Arranging people around a circular table where positions are relative (no fixed start point).",
@@ -647,7 +647,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
         steps: [
           "Identify all the variables (people, items, positions, attributes).",
           "Create a table or grid with one axis for each variable category.",
-          "Start with the most definitive clues — those that fix a specific value or position.",
+          "Start with the most definitive clues, those that fix a specific value or position.",
           "Fill in the grid step by step, using each clue to mark 'yes' or 'no' in cells.",
           "After each clue, check for cells that can be determined by elimination (if all but one option in a row/column are eliminated, the remaining one must be correct).",
         ],
@@ -666,7 +666,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
         steps: [
           "When direct deduction stalls, assume one possibility from a limited set.",
           "Follow through the consequences of that assumption using the given clues.",
-          "If the assumption leads to a contradiction, it is false — the other possibility must be correct.",
+          "If the assumption leads to a contradiction, it is false, the other possibility must be correct.",
           "If the assumption is consistent with all clues, it is the correct answer.",
         ],
       },
@@ -676,14 +676,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "In arrangement problems, fix one element's position first, then place others relative to it.",
       "In circular arrangements, fix one person's seat (since there is no absolute position) and place others relative to them.",
       "For truth/liar problems, assume one person is telling the truth, follow the implications, and check for consistency.",
-      "Draw diagrams — visual representations make complex relationships much easier to track.",
+      "Draw diagrams, visual representations make complex relationships much easier to track.",
     ],
     solvedExamples: [
       {
         problem:
-          "Five people — A, B, C, D, E — are sitting in a row facing north. B sits to the immediate right of A. E sits at one of the extreme ends. C is not adjacent to E. D sits to the immediate right of C. Who sits in the middle?",
+          "Five people, A, B, C, D, E, are sitting in a row facing north. B sits to the immediate right of A. E sits at one of the extreme ends. C is not adjacent to E. D sits to the immediate right of C. Who sits in the middle?",
         solution:
-          "Step 1: There are 5 positions (left to right): 1, 2, 3, 4, 5.\nStep 2: E sits at an extreme end — either position 1 or 5.\nStep 3: B sits immediately right of A, so A-B are consecutive (A then B).\nStep 4: D sits immediately right of C, so C-D are consecutive (C then D).\nStep 5: We have two consecutive pairs: A-B and C-D, plus E at an end.\nStep 6: Try E at position 1: Remaining positions 2-5 must contain A-B and C-D. Possible: E, C, D, A, B or E, A, B, C, D.\nStep 7: Check 'C is not adjacent to E.' In E, C, D, A, B — C is at position 2, adjacent to E at position 1. Violates the condition.\nStep 8: Try E, A, B, C, D — C is at position 4, not adjacent to E at position 1. Valid.\nStep 9: Try E at position 5: Possible arrangements with A-B and C-D in positions 1-4: A, B, C, D, E or C, D, A, B, E.\nStep 10: Check C, D, A, B, E — C at position 1, E at position 5, not adjacent. Valid. A, B, C, D, E — C at position 3, E at position 5, not adjacent. Valid.\nStep 11: We have multiple valid arrangements. In E, A, B, C, D — middle (position 3) is B. In C, D, A, B, E — middle is A. In A, B, C, D, E — middle is C.\nStep 12: Recheck all conditions for each. All three satisfy the given conditions. The problem likely expects a unique answer, suggesting I may need to re-examine. Actually, in a standard exam context, the question asks 'who sits in the middle' implying a unique answer. Let me recheck: in arrangement A,B,C,D,E — that works. In E,A,B,C,D — works. In C,D,A,B,E — works. Since multiple arrangements are valid, the question as stated has multiple answers. In exam settings, such problems usually have additional implicit constraints. The most commonly expected answer based on standard versions of this problem is B (from E, A, B, C, D).",
+          "Step 1: There are 5 positions (left to right): 1, 2, 3, 4, 5.\nStep 2: E sits at an extreme end, either position 1 or 5.\nStep 3: B sits immediately right of A, so A-B are consecutive (A then B).\nStep 4: D sits immediately right of C, so C-D are consecutive (C then D).\nStep 5: We have two consecutive pairs: A-B and C-D, plus E at an end.\nStep 6: Try E at position 1: Remaining positions 2-5 must contain A-B and C-D. Possible: E, C, D, A, B or E, A, B, C, D.\nStep 7: Check 'C is not adjacent to E.' In E, C, D, A, B, C is at position 2, adjacent to E at position 1. Violates the condition.\nStep 8: Try E, A, B, C, D, C is at position 4, not adjacent to E at position 1. Valid.\nStep 9: Try E at position 5: Possible arrangements with A-B and C-D in positions 1-4: A, B, C, D, E or C, D, A, B, E.\nStep 10: Check C, D, A, B, E, C at position 1, E at position 5, not adjacent. Valid. A, B, C, D, E, C at position 3, E at position 5, not adjacent. Valid.\nStep 11: We have multiple valid arrangements. In E, A, B, C, D, middle (position 3) is B. In C, D, A, B, E, middle is A. In A, B, C, D, E, middle is C.\nStep 12: Recheck all conditions for each. All three satisfy the given conditions. The problem likely expects a unique answer, suggesting I may need to re-examine. Actually, in a standard exam context, the question asks 'who sits in the middle' implying a unique answer. Let me recheck: in arrangement A,B,C,D,E, that works. In E,A,B,C,D, works. In C,D,A,B,E, works. Since multiple arrangements are valid, the question as stated has multiple answers. In exam settings, such problems usually have additional implicit constraints. The most commonly expected answer based on standard versions of this problem is B (from E, A, B, C, D).",
         answer: "B (in the arrangement E, A, B, C, D)",
       },
       {
@@ -695,8 +695,8 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Not considering all possible arrangements before settling on one — always verify uniqueness.",
-      "Misinterpreting 'left of' vs. 'immediate left of' — one allows gaps, the other does not.",
+      "Not considering all possible arrangements before settling on one, always verify uniqueness.",
+      "Misinterpreting 'left of' vs. 'immediate left of', one allows gaps, the other does not.",
       "In ranking problems, confusing 'taller than' (greater) with 'shorter than' (lesser) when chaining inequalities.",
     ],
     keyTakeaways: [
@@ -711,14 +711,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "course-of-action",
     categorySlug: "logical-reasoning",
     introduction:
-      "Course of Action questions present a situation or problem statement followed by suggested courses of action. You must evaluate whether each proposed action logically addresses the problem and is practically feasible. The question typically asks which course(s) of action should be taken in response to the given situation.\n\nThese questions test your practical reasoning and decision-making ability. A good course of action must be (1) directly relevant to the problem stated, (2) practically implementable, (3) likely to solve or mitigate the problem, and (4) not create bigger problems than the one it aims to solve. Actions that are extreme, impractical, or unrelated to the root cause should be rejected.\n\nThe key is to evaluate each proposed action independently against the given problem. Do not assume information not stated in the problem, and do not reject an action just because it is not the best possible action — it only needs to be a reasonable and viable step toward addressing the situation.",
+      "Course of Action questions present a situation or problem statement followed by suggested courses of action. You must evaluate whether each proposed action logically addresses the problem and is practically feasible. The question typically asks which course(s) of action should be taken in response to the given situation.\n\nThese questions test your practical reasoning and decision-making ability. A good course of action must be (1) directly relevant to the problem stated, (2) practically implementable, (3) likely to solve or mitigate the problem, and (4) not create bigger problems than the one it aims to solve. Actions that are extreme, impractical, or unrelated to the root cause should be rejected.\n\nThe key is to evaluate each proposed action independently against the given problem. Do not assume information not stated in the problem, and do not reject an action just because it is not the best possible action, it only needs to be a reasonable and viable step toward addressing the situation.",
     concepts: [
       "Relevance: The action must directly address the problem or situation described, not a tangential issue.",
-      "Practicality: The action must be realistically implementable — banning something nationwide or changing laws overnight is generally impractical.",
-      "Proportionality: The action should be proportionate to the problem — extreme measures for minor issues are not good courses of action.",
+      "Practicality: The action must be realistically implementable, banning something nationwide or changing laws overnight is generally impractical.",
+      "Proportionality: The action should be proportionate to the problem, extreme measures for minor issues are not good courses of action.",
       "Root Cause vs. Symptom: The best actions address the root cause of a problem, not just its symptoms.",
       "Negative Consequences: An action that creates bigger problems than it solves should be rejected.",
-      "Independence: Evaluate each course of action independently — one action being good does not affect the evaluation of another.",
+      "Independence: Evaluate each course of action independently, one action being good does not affect the evaluation of another.",
     ],
     methods: [
       {
@@ -753,24 +753,24 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "Problem: The number of road accidents in the city has increased by 30% in the last year.\nCourses of Action:\nI. The government should impose a complete ban on all private vehicles.\nII. The traffic police should increase patrolling and enforce traffic rules more strictly.",
         solution:
-          "Step 1: Core issue — increase in road accidents.\nStep 2: Evaluate Action I — 'Complete ban on all private vehicles.' Is it relevant? Yes, fewer vehicles means fewer accidents. Is it practical? No, a complete ban on private vehicles is extreme and would cripple transportation, economy, and daily life. Is it proportionate? No, a 30% increase does not justify a total ban. Conclusion: Not a good course of action.\nStep 3: Evaluate Action II — 'Increase patrolling and enforce traffic rules.' Is it relevant? Yes, better enforcement directly reduces accidents. Is it practical? Yes, increasing police presence is a standard and feasible measure. Is it effective? Yes, stricter enforcement has been shown to reduce violations and accidents. Conclusion: Good course of action.",
+          "Step 1: Core issue, increase in road accidents.\nStep 2: Evaluate Action I, 'Complete ban on all private vehicles.' Is it relevant? Yes, fewer vehicles means fewer accidents. Is it practical? No, a complete ban on private vehicles is extreme and would cripple transportation, economy, and daily life. Is it proportionate? No, a 30% increase does not justify a total ban. Conclusion: Not a good course of action.\nStep 3: Evaluate Action II, 'Increase patrolling and enforce traffic rules.' Is it relevant? Yes, better enforcement directly reduces accidents. Is it practical? Yes, increasing police presence is a standard and feasible measure. Is it effective? Yes, stricter enforcement has been shown to reduce violations and accidents. Conclusion: Good course of action.",
         answer: "Only II follows",
       },
       {
         problem:
           "Problem: Many students in rural areas are dropping out of school due to lack of transportation.\nCourses of Action:\nI. The government should arrange free bus services for students in rural areas.\nII. The government should build new schools in every village.",
         solution:
-          "Step 1: Core issue — students dropping out due to lack of transportation.\nStep 2: Evaluate Action I — 'Free bus services for rural students.' Relevant? Yes, directly addresses the transportation problem. Practical? Yes, government-funded school buses exist in many programs. Effective? Yes, removes the transportation barrier. Good course of action.\nStep 3: Evaluate Action II — 'Build new schools in every village.' Relevant? Yes, if schools are in the village, transportation is not needed. Practical? Building schools in every single village is a massive undertaking and may not be feasible in the short term. However, it does address the root cause. In standard exam logic, this is considered a valid long-term action. Effective? Yes, if implemented. Generally considered a good course of action.\nStep 4: Both actions address the problem through different but valid approaches.",
+          "Step 1: Core issue, students dropping out due to lack of transportation.\nStep 2: Evaluate Action I, 'Free bus services for rural students.' Relevant? Yes, directly addresses the transportation problem. Practical? Yes, government-funded school buses exist in many programs. Effective? Yes, removes the transportation barrier. Good course of action.\nStep 3: Evaluate Action II, 'Build new schools in every village.' Relevant? Yes, if schools are in the village, transportation is not needed. Practical? Building schools in every single village is a massive undertaking and may not be feasible in the short term. However, it does address the root cause. In standard exam logic, this is considered a valid long-term action. Effective? Yes, if implemented. Generally considered a good course of action.\nStep 4: Both actions address the problem through different but valid approaches.",
         answer: "Both I and II follow",
       },
     ],
     commonMistakes: [
-      "Rejecting a course of action because it is not the 'best' action — it only needs to be reasonable and viable.",
+      "Rejecting a course of action because it is not the 'best' action, it only needs to be reasonable and viable.",
       "Accepting extreme actions (total bans, shutting down all operations) that are disproportionate to the problem.",
       "Evaluating actions in relation to each other rather than independently against the problem statement.",
     ],
     keyTakeaways: [
-      "A good course of action is relevant, practical, and effective — test each criterion independently.",
+      "A good course of action is relevant, practical, and effective, test each criterion independently.",
       "Evaluate each action independently, not in comparison with other actions.",
       "Extreme measures are almost never the right answer unless the problem is extremely severe.",
       "Actions that address the root cause are stronger than those addressing symptoms, but both may be valid.",
@@ -785,7 +785,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
     concepts: [
       "Direct Cause and Effect: One event directly leads to another through a clear mechanism. Example: Heavy rain (cause) leads to flooding (effect).",
       "Common Cause: Two events are both effects of a third, underlying cause. Example: High absenteeism and low morale may both be caused by poor management.",
-      "Independent Events: Two events happen to occur together but have no causal connection. Example: A new CEO is appointed, and the monsoon arrives — unrelated.",
+      "Independent Events: Two events happen to occur together but have no causal connection. Example: A new CEO is appointed, and the monsoon arrives, unrelated.",
       "Temporal Sequence: The cause must precede or be simultaneous with the effect. If event B happened before event A, then A cannot be the cause of B.",
       "Logical Mechanism: For a valid causal relationship, there must be a reasonable explanation of HOW the cause produces the effect.",
     ],
@@ -821,14 +821,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "Statement I: The government has increased the import duty on electronic goods.\nStatement II: The prices of electronic goods in the domestic market have risen sharply.",
         solution:
-          "Step 1: Identify potential mechanism from I to II: When import duty increases, imported goods become more expensive. Domestic sellers also raise prices due to reduced competition from imports. This is a clear and direct mechanism.\nStep 2: Check reverse: Can rising prices cause the government to increase import duty? This is less likely — governments usually reduce duties to lower prices, not increase them when prices are already high.\nStep 3: Conclusion: Statement I (increased import duty) is the cause, and Statement II (rising prices) is the effect.",
+          "Step 1: Identify potential mechanism from I to II: When import duty increases, imported goods become more expensive. Domestic sellers also raise prices due to reduced competition from imports. This is a clear and direct mechanism.\nStep 2: Check reverse: Can rising prices cause the government to increase import duty? This is less likely, governments usually reduce duties to lower prices, not increase them when prices are already high.\nStep 3: Conclusion: Statement I (increased import duty) is the cause, and Statement II (rising prices) is the effect.",
         answer: "Statement I is the cause and Statement II is its effect",
       },
       {
         problem:
           "Statement I: Many farmers in the region have shifted from growing rice to growing cotton.\nStatement II: There has been a severe shortage of rice in the local market.",
         solution:
-          "Step 1: Mechanism from I to II: If farmers shift from rice to cotton, less rice is produced, leading to a shortage. Clear and logical mechanism.\nStep 2: Mechanism from II to I: Could rice shortage cause farmers to shift to cotton? If there is a shortage, rice prices would rise, making rice more profitable — farmers would shift TO rice, not away from it. So this direction does not make sense.\nStep 3: Conclusion: Statement I (shift to cotton) is the cause, and Statement II (rice shortage) is the effect.",
+          "Step 1: Mechanism from I to II: If farmers shift from rice to cotton, less rice is produced, leading to a shortage. Clear and logical mechanism.\nStep 2: Mechanism from II to I: Could rice shortage cause farmers to shift to cotton? If there is a shortage, rice prices would rise, making rice more profitable, farmers would shift TO rice, not away from it. So this direction does not make sense.\nStep 3: Conclusion: Statement I (shift to cotton) is the cause, and Statement II (rice shortage) is the effect.",
         answer: "Statement I is the cause and Statement II is its effect",
       },
       {
@@ -840,8 +840,8 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing correlation with causation — just because two events happen together does not mean one caused the other.",
-      "Assuming the first statement is always the cause — sometimes Statement II is the cause and I is the effect.",
+      "Confusing correlation with causation, just because two events happen together does not mean one caused the other.",
+      "Assuming the first statement is always the cause, sometimes Statement II is the cause and I is the effect.",
       "Ignoring the possibility that both statements could be effects of a common underlying cause not mentioned in the question.",
     ],
     keyTakeaways: [
@@ -856,12 +856,12 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "statement-and-argument",
     categorySlug: "logical-reasoning",
     introduction:
-      "Statement and Argument questions present a statement (usually a proposal, policy, or opinion) followed by two or more arguments for or against it. You must evaluate whether each argument is a 'strong' argument or a 'weak' argument in relation to the given statement. This tests your ability to assess the logical quality and relevance of reasoning.\n\nA strong argument is one that is (1) directly related to the statement, (2) provides a significant and valid reason for or against the statement, and (3) is based on facts, logic, or widely accepted principles rather than assumptions, emotions, or extreme generalizations. A weak argument, on the other hand, is irrelevant, trivial, based on unverified assumptions, overly emotional, or uses extreme/absolute language.\n\nThese questions require you to set aside your personal opinions and evaluate each argument on its logical merit. You are not deciding whether the statement is right or wrong — you are evaluating the quality of the arguments presented for and against it.",
+      "Statement and Argument questions present a statement (usually a proposal, policy, or opinion) followed by two or more arguments for or against it. You must evaluate whether each argument is a 'strong' argument or a 'weak' argument in relation to the given statement. This tests your ability to assess the logical quality and relevance of reasoning.\n\nA strong argument is one that is (1) directly related to the statement, (2) provides a significant and valid reason for or against the statement, and (3) is based on facts, logic, or widely accepted principles rather than assumptions, emotions, or extreme generalizations. A weak argument, on the other hand, is irrelevant, trivial, based on unverified assumptions, overly emotional, or uses extreme/absolute language.\n\nThese questions require you to set aside your personal opinions and evaluate each argument on its logical merit. You are not deciding whether the statement is right or wrong, you are evaluating the quality of the arguments presented for and against it.",
     concepts: [
       "Strong Argument: Directly relevant to the statement, logically valid, factually grounded, and addresses a significant aspect of the issue.",
       "Weak Argument: Irrelevant, vague, based on assumptions, emotionally charged, uses extreme generalizations, or addresses a trivial aspect.",
       "Relevance Test: The argument must be directly connected to the topic of the statement, not a tangential issue.",
-      "Significance Test: Even if relevant, the argument must address a substantial point — minor or trivial reasons are weak.",
+      "Significance Test: Even if relevant, the argument must address a substantial point, minor or trivial reasons are weak.",
       "Ambiguity/Assumption Test: Arguments that rest on unverified assumptions or are vague ('everyone knows,' 'it is obvious') are weak.",
       "Universality/Extremism Test: Arguments using 'all,' 'never,' 'always,' 'no one' are typically weak due to overgeneralization.",
     ],
@@ -869,9 +869,9 @@ export const logicalReasoningTheory: TopicTheory[] = [
       {
         name: "Three-Filter Method",
         steps: [
-          "Filter 1 — Relevance: Is the argument directly related to the statement? If not, it is weak.",
-          "Filter 2 — Logic and Factual Basis: Does the argument present a valid, factual, or logical reason? If it is based on assumptions, emotions, or hearsay, it is weak.",
-          "Filter 3 — Significance: Does the argument address a substantial point? If the reason is trivial or minor, it is weak.",
+          "Filter 1, Relevance: Is the argument directly related to the statement? If not, it is weak.",
+          "Filter 2, Logic and Factual Basis: Does the argument present a valid, factual, or logical reason? If it is based on assumptions, emotions, or hearsay, it is weak.",
+          "Filter 3, Significance: Does the argument address a substantial point? If the reason is trivial or minor, it is weak.",
           "If the argument passes all three filters, it is strong. If it fails any filter, it is weak.",
         ],
       },
@@ -889,15 +889,15 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "Arguments using extreme words like 'only,' 'never,' 'always,' 'all,' 'no one' are almost always weak.",
       "Arguments appealing to emotion ('it is cruel,' 'it is our duty') without logical backing are weak.",
       "Arguments presenting practical, factual consequences (economic impact, health effect, proven data) are usually strong.",
-      "If an argument could apply to almost anything ('it will cost money' — everything costs money), it is likely too vague to be strong.",
-      "An argument can be 'for' or 'against' the statement and still be strong — strength is about quality, not direction.",
+      "If an argument could apply to almost anything ('it will cost money', everything costs money), it is likely too vague to be strong.",
+      "An argument can be 'for' or 'against' the statement and still be strong, strength is about quality, not direction.",
     ],
     solvedExamples: [
       {
         problem:
           "Statement: Should the government ban the use of plastic bags?\nArgument I: Yes, plastic bags are a major source of environmental pollution and take hundreds of years to decompose.\nArgument II: No, plastic bags are used by everyone and banning them would be unpopular.",
         solution:
-          "Step 1: Evaluate Argument I:\n- Relevance: Directly addresses the environmental impact of plastic bags. Relevant.\n- Logic/Facts: Plastic bags causing pollution and taking hundreds of years to decompose is factually well-established. Valid.\n- Significance: Environmental pollution is a major issue. Significant.\n- Verdict: Strong argument.\n\nStep 2: Evaluate Argument II:\n- Relevance: Addresses the practical impact of a ban. Relevant.\n- Logic/Facts: 'Would be unpopular' is not a logical reason against a policy — popularity does not determine whether a policy is right or needed. Weak reasoning.\n- Significance: Unpopularity alone is a trivial objection — many necessary policies are initially unpopular.\n- Verdict: Weak argument.",
+          "Step 1: Evaluate Argument I:\n- Relevance: Directly addresses the environmental impact of plastic bags. Relevant.\n- Logic/Facts: Plastic bags causing pollution and taking hundreds of years to decompose is factually well-established. Valid.\n- Significance: Environmental pollution is a major issue. Significant.\n- Verdict: Strong argument.\n\nStep 2: Evaluate Argument II:\n- Relevance: Addresses the practical impact of a ban. Relevant.\n- Logic/Facts: 'Would be unpopular' is not a logical reason against a policy, popularity does not determine whether a policy is right or needed. Weak reasoning.\n- Significance: Unpopularity alone is a trivial objection, many necessary policies are initially unpopular.\n- Verdict: Weak argument.",
         answer: "Only Argument I is strong",
       },
       {
@@ -909,15 +909,15 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Letting personal opinion influence the evaluation — you must assess argument quality objectively, not whether you agree with it.",
-      "Accepting a relevant but trivial argument as strong — relevance alone is not enough; the argument must also be significant.",
-      "Rejecting an argument just because it opposes the statement — arguments against the statement can be strong too.",
+      "Letting personal opinion influence the evaluation, you must assess argument quality objectively, not whether you agree with it.",
+      "Accepting a relevant but trivial argument as strong, relevance alone is not enough; the argument must also be significant.",
+      "Rejecting an argument just because it opposes the statement, arguments against the statement can be strong too.",
     ],
     keyTakeaways: [
       "Apply the three-filter test: relevance, logic/facts, significance. All three must be met for a strong argument.",
       "Extreme, emotional, or assumption-based arguments are weak regardless of their direction.",
-      "Both 'for' and 'against' arguments can be strong — strength is about quality, not position.",
-      "Set aside personal opinions — evaluate arguments purely on their logical merit.",
+      "Both 'for' and 'against' arguments can be strong, strength is about quality, not position.",
+      "Set aside personal opinions, evaluate arguments purely on their logical merit.",
       "Practice distinguishing between 'relevant but trivial' (weak) and 'relevant and significant' (strong) arguments.",
     ],
   },
@@ -925,11 +925,11 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "statement-and-assumption",
     categorySlug: "logical-reasoning",
     introduction:
-      "Statement and Assumption questions present a statement and ask you to identify which assumptions are implicit in it. An assumption is an unstated premise that the speaker takes for granted — something that must be true for the statement to make logical sense. Identifying assumptions requires reading between the lines to find what is implied but not directly said.\n\nFor example, if someone says 'Take an umbrella, it might rain today,' the implicit assumption is that an umbrella provides protection from rain. This is not stated but is taken for granted. Similarly, if an advertisement says 'Join our coaching class to crack the exam,' the implicit assumption is that the coaching class is effective in helping students crack the exam.\n\nThese questions test your ability to distinguish between what is explicitly stated, what is logically assumed, and what is merely possible or related. The assumption must be something the speaker necessarily believes for the statement to hold. It should not be an obvious restatement of the statement, nor should it be an extreme extension of the statement.",
+      "Statement and Assumption questions present a statement and ask you to identify which assumptions are implicit in it. An assumption is an unstated premise that the speaker takes for granted, something that must be true for the statement to make logical sense. Identifying assumptions requires reading between the lines to find what is implied but not directly said.\n\nFor example, if someone says 'Take an umbrella, it might rain today,' the implicit assumption is that an umbrella provides protection from rain. This is not stated but is taken for granted. Similarly, if an advertisement says 'Join our coaching class to crack the exam,' the implicit assumption is that the coaching class is effective in helping students crack the exam.\n\nThese questions test your ability to distinguish between what is explicitly stated, what is logically assumed, and what is merely possible or related. The assumption must be something the speaker necessarily believes for the statement to hold. It should not be an obvious restatement of the statement, nor should it be an extreme extension of the statement.",
     concepts: [
       "Implicit Assumption: Something taken for granted that is not explicitly stated but must be true for the statement to be logical.",
       "Necessary vs. Sufficient: An assumption is something NECESSARY for the statement to make sense, not just something that supports it.",
-      "Restatement is Not Assumption: If the 'assumption' simply restates the statement in different words, it is not a valid assumption — it is already stated.",
+      "Restatement is Not Assumption: If the 'assumption' simply restates the statement in different words, it is not a valid assumption, it is already stated.",
       "Extreme Assumptions: If the proposed assumption uses extreme language ('only,' 'best,' 'all,' 'none') while the statement is moderate, it is likely not implicit.",
       "Negation Test: If negating the proposed assumption makes the statement illogical or meaningless, then the assumption IS implicit.",
     ],
@@ -946,7 +946,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       {
         name: "Gap-Filling Method",
         steps: [
-          "Read the statement and identify the logical 'gap' — what must be true for the statement to make sense that is not directly stated.",
+          "Read the statement and identify the logical 'gap', what must be true for the statement to make sense that is not directly stated.",
           "Check if the proposed assumption fills that gap.",
           "If it fills the gap exactly, it is an implicit assumption.",
           "If it overshoots (too extreme) or misses (irrelevant), it is not implicit.",
@@ -956,17 +956,17 @@ export const logicalReasoningTheory: TopicTheory[] = [
         name: "Qualification Check Method",
         steps: [
           "Read the proposed assumption and check if it uses extreme qualifiers ('only,' 'best,' 'all,' 'none,' 'always,' 'never').",
-          "Compare with the original statement — if the statement is moderate but the assumption is extreme, it is likely not implicit.",
+          "Compare with the original statement, if the statement is moderate but the assumption is extreme, it is likely not implicit.",
           "If the assumption is a reasonable, moderate extension of the statement, it may be implicit.",
           "Apply the negation test to confirm.",
         ],
       },
     ],
     rules: [
-      "An assumption must be UNSTATED — if it is directly mentioned in the statement, it is not an assumption.",
-      "An assumption must be NECESSARY — the statement must require it to be true.",
-      "An assumption should not be an extreme version of the statement — it should be a reasonable, moderate underlying belief.",
-      "Personal opinions and general knowledge should not influence your evaluation — only the logical relationship between the statement and assumption matters.",
+      "An assumption must be UNSTATED, if it is directly mentioned in the statement, it is not an assumption.",
+      "An assumption must be NECESSARY, the statement must require it to be true.",
+      "An assumption should not be an extreme version of the statement, it should be a reasonable, moderate underlying belief.",
+      "Personal opinions and general knowledge should not influence your evaluation, only the logical relationship between the statement and assumption matters.",
     ],
     quickTricks: [
       "The negation test is the most reliable method: negate the assumption and see if the statement breaks.",
@@ -1001,13 +1001,13 @@ export const logicalReasoningTheory: TopicTheory[] = [
     commonMistakes: [
       "Confusing an assumption (unstated) with a restatement of the statement (already stated).",
       "Accepting extreme assumptions ('only,' 'best,' 'all') when the statement is moderate.",
-      "Failing to apply the negation test — it is the most reliable way to check if an assumption is implicit.",
+      "Failing to apply the negation test, it is the most reliable way to check if an assumption is implicit.",
     ],
     keyTakeaways: [
       "An assumption is an unstated premise that must be true for the statement to be logical.",
       "The negation test is the gold standard: negate the assumption and check if the statement still makes sense.",
       "Extreme assumptions (using 'only,' 'best,' 'all,' 'never') are usually not implicit unless the statement itself is extreme.",
-      "An assumption should not be a restatement of the statement — it must be something new and unstated.",
+      "An assumption should not be a restatement of the statement, it must be something new and unstated.",
       "Practice regularly with the negation test until it becomes second nature.",
     ],
   },
@@ -1019,9 +1019,9 @@ export const logicalReasoningTheory: TopicTheory[] = [
     concepts: [
       "A conclusion must be directly derivable from the statement without external knowledge.",
       "Over-generalization: if the statement says 'some,' the conclusion cannot say 'all.'",
-      "A conclusion can be the contrapositive of the statement — if A then B implies if not B then not A.",
+      "A conclusion can be the contrapositive of the statement, if A then B implies if not B then not A.",
       "Conclusions that restate the statement in different words are usually valid.",
-      "Quantifier hierarchy: All > Most > Some > A few — conclusions cannot jump up the hierarchy.",
+      "Quantifier hierarchy: All > Most > Some > A few, conclusions cannot jump up the hierarchy.",
     ],
     methods: [
       {
@@ -1039,7 +1039,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
           "Treat the statement as an absolute truth.",
           "For each conclusion, ask: 'Can I derive this using ONLY the statement?'",
           "If additional facts or assumptions are needed, the conclusion does not follow.",
-          "Check for contrapositives — they are always valid conclusions.",
+          "Check for contrapositives, they are always valid conclusions.",
         ],
       },
     ],
@@ -1047,7 +1047,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "If a conclusion uses extreme words (always, never, all, only) but the statement does not, it is usually invalid.",
       "Conclusions that are merely rephrased versions of the statement are valid.",
       "If the statement is about a specific group, a conclusion about a different group does not follow.",
-      "Watch for negation traps — 'not all' is different from 'none.'",
+      "Watch for negation traps, 'not all' is different from 'none.'",
     ],
     solvedExamples: [
       {
@@ -1066,15 +1066,15 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing 'most effective' with 'only' — the most effective method does not mean it is the sole method.",
-      "Reversing universal statements — 'All A are B' does not mean 'All B are A.'",
+      "Confusing 'most effective' with 'only', the most effective method does not mean it is the sole method.",
+      "Reversing universal statements, 'All A are B' does not mean 'All B are A.'",
       "Adding real-world knowledge to validate a conclusion that is not supported by the statement alone.",
     ],
     keyTakeaways: [
       "A conclusion must be derivable directly from the statement without external knowledge.",
-      "Check the scope and quantifiers carefully — never expand beyond what is given.",
+      "Check the scope and quantifiers carefully, never expand beyond what is given.",
       "Contrapositives are always valid: 'If A then B' means 'If not B then not A.'",
-      "'Most effective' does not equal 'only' — be precise with language.",
+      "'Most effective' does not equal 'only', be precise with language.",
       "Practice distinguishing between restatements and extensions of the original statement.",
     ],
   },
@@ -1084,8 +1084,8 @@ export const logicalReasoningTheory: TopicTheory[] = [
     introduction:
       "Theme Detection questions require you to identify the central theme or main idea of a given passage or set of statements. The theme is the underlying message or the core point that the author is trying to convey.\n\nThese questions test your ability to look beyond surface-level details and extract the fundamental message. The passage may discuss specific examples, but the theme is the general principle or lesson that those examples illustrate.\n\nTheme Detection is commonly found in bank exams, SSC, and campus placement tests. It requires strong reading comprehension skills and the ability to distinguish between the main idea and supporting details.",
     concepts: [
-      "The theme is the central idea — the one sentence summary of the entire passage.",
-      "Supporting details and examples are NOT the theme — they serve the theme.",
+      "The theme is the central idea, the one sentence summary of the entire passage.",
+      "Supporting details and examples are NOT the theme, they serve the theme.",
       "The theme should cover all parts of the passage, not just one section.",
       "A theme that is too narrow misses part of the passage; too broad goes beyond it.",
       "The theme is often implied rather than explicitly stated.",
@@ -1104,7 +1104,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       {
         name: "First-Last Sentence Method",
         steps: [
-          "Read the first and last sentences of the passage — they often contain the theme.",
+          "Read the first and last sentences of the passage, they often contain the theme.",
           "Identify the recurring subject or keyword throughout the passage.",
           "Match the recurring idea with the answer options.",
           "Verify your choice covers all paragraphs or sections of the passage.",
@@ -1129,7 +1129,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "Passage: Trees absorb carbon dioxide and release oxygen. Deforestation leads to increased greenhouse gases. Planting more trees can help combat climate change. Governments are launching afforestation programs worldwide.\nOptions: A. Governments are planting trees. B. Trees are essential for combating climate change. C. Deforestation should be banned. D. Climate change is irreversible.",
         solution:
-          "Option A is too specific (only about governments). Option C is not stated (the passage talks about planting, not banning). Option D contradicts the passage's positive tone about solutions. Option B captures the central idea that connects all statements — trees are key to fighting climate change.",
+          "Option A is too specific (only about governments). Option C is not stated (the passage talks about planting, not banning). Option D contradicts the passage's positive tone about solutions. Option B captures the central idea that connects all statements, trees are key to fighting climate change.",
         answer: "B. Trees are essential for combating climate change.",
       },
     ],
@@ -1142,7 +1142,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "The theme is the central message that covers the entire passage.",
       "Eliminate options that are too specific, too broad, or contradictory.",
       "First and last sentences are often the best clues to the theme.",
-      "Supporting details serve the theme — they are not the theme itself.",
+      "Supporting details serve the theme, they are not the theme itself.",
       "Always verify your chosen theme against all parts of the passage.",
     ],
   },
@@ -1152,7 +1152,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
     introduction:
       "Blood Relations problems test your ability to determine family relationships from given information. These questions provide a set of clues about how people are related, and you must figure out the relationship between specific individuals.\n\nThere are three main types: conversation-based (using dialogue), coded relationships (symbols represent relationships), and family tree puzzles. The key skill is building a family tree diagram from the given clues and then reading off the required relationship.\n\nBlood Relations is one of the most frequently tested topics in bank exams, SSC, and campus placements. With a systematic approach, these questions can be solved quickly and accurately.",
     concepts: [
-      "Every relationship has a complementary pair — if A is B's father, B is A's son/daughter.",
+      "Every relationship has a complementary pair, if A is B's father, B is A's son/daughter.",
       "Gender indicators: father, mother, brother, sister, husband, wife, uncle, aunt, nephew, niece.",
       "Generations: grandparents (2 above), parents (1 above), self (0), children (1 below), grandchildren (2 below).",
       "Sibling relationships: brother/sister share at least one parent.",
@@ -1181,7 +1181,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "Always draw the diagram — do not try to solve blood relations mentally.",
+      "Always draw the diagram, do not try to solve blood relations mentally.",
       "Use conventions: males as squares/+, females as circles/-, marriages as double lines.",
       "If the question says 'A is the son of B's father,' A is B's brother (or A is B himself).",
       "Count generations: same generation = sibling/cousin, one up = parent/uncle/aunt, one down = child/nephew/niece.",
@@ -1211,12 +1211,12 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Assuming gender without evidence — 'child' does not specify gender; only 'son' or 'daughter' does.",
-      "Confusing paternal and maternal relationships — always track which side of the family you are on.",
-      "Overlooking the word 'only' — 'only son' means there are no other sons, which is a crucial constraint.",
+      "Assuming gender without evidence, 'child' does not specify gender; only 'son' or 'daughter' does.",
+      "Confusing paternal and maternal relationships, always track which side of the family you are on.",
+      "Overlooking the word 'only', 'only son' means there are no other sons, which is a crucial constraint.",
     ],
     keyTakeaways: [
-      "Always draw a family tree diagram — it prevents errors and saves time.",
+      "Always draw a family tree diagram, it prevents errors and saves time.",
       "Pay close attention to gender-specific terms and the word 'only.'",
       "Trace relationships step by step through the tree rather than trying to jump directly.",
       "In coded questions, decode symbols first before building the chain.",
@@ -1281,16 +1281,16 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Assuming a constant shift without verifying all letters — some codes use variable shifts.",
+      "Assuming a constant shift without verifying all letters, some codes use variable shifts.",
       "Confusing reverse alphabet (A↔Z) with simple backward shift (each letter -1).",
-      "Making arithmetic errors in positional calculations — double-check A=1 through Z=26.",
+      "Making arithmetic errors in positional calculations, double-check A=1 through Z=26.",
     ],
     keyTakeaways: [
       "Always compare original and coded letters side by side using positional values.",
       "The most common coding types are shift cipher and reverse alphabet.",
       "Reverse alphabet: position + reverse position = 27 (A↔Z, B↔Y, etc.).",
       "If a simple pattern doesn't emerge, check for conditional rules (odd/even positions).",
-      "Speed comes from quickly recognizing common patterns — practice multiple types.",
+      "Speed comes from quickly recognizing common patterns, practice multiple types.",
     ],
   },
   {
@@ -1332,7 +1332,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "About turn (180°) reverses direction: N→S, E→W.",
       "Morning shadow falls to the West (sun in East). Evening shadow falls to the East (sun in West).",
       "If asked 'in which direction is the starting point,' flip the final direction.",
-      "For shortest distance, always use Pythagoras — don't trace the walking path.",
+      "For shortest distance, always use Pythagoras, don't trace the walking path.",
     ],
     solvedExamples: [
       {
@@ -1351,12 +1351,12 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing left and right turns — always use the compass rose, not your body orientation.",
+      "Confusing left and right turns, always use the compass rose, not your body orientation.",
       "Forgetting to update the facing direction after a turn before calculating the next movement.",
       "Calculating total walking distance instead of shortest (straight-line) distance.",
     ],
     keyTakeaways: [
-      "Always draw a diagram — do not attempt direction problems mentally.",
+      "Always draw a diagram, do not attempt direction problems mentally.",
       "Right turns go clockwise, left turns go counter-clockwise.",
       "Use Pythagorean theorem for shortest distance calculations.",
       "Shadow direction is opposite to the sun: morning shadows point West, evening shadows point East.",
@@ -1401,15 +1401,15 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "In a row of N people, person at position K from the left is at position (N-K+1) from the right.",
       "In a circle of N people, the person opposite to someone is N/2 seats away.",
       "Start with the clue that gives the most definite information.",
-      "For 'between' clues, the two people on either side could be in either order — consider both cases.",
-      "Count total seats and people — sometimes not all seats are filled.",
+      "For 'between' clues, the two people on either side could be in either order, consider both cases.",
+      "Count total seats and people, sometimes not all seats are filled.",
     ],
     solvedExamples: [
       {
         problem:
           "Five friends A, B, C, D, E sit in a row facing North. C sits in the middle. A sits to the immediate left of C. B does not sit at any end. Who sits at the extreme right?",
         solution:
-          "Row: _ _ _ _ _ (positions 1-5 from left)\nC is in position 3 (middle).\nA is immediately left of C → A is in position 2.\nB is not at any end (not position 1 or 5), and positions 2 and 3 are taken. So B is in position 4.\nD and E fill positions 1 and 5.\nExtreme right is position 5, which is either D or E. Since no more constraints, either could be at position 5.\nBut the question asks who sits at extreme right — since B is at position 4, the answer needs more info. However, given no other constraint, D or E sit at the ends.",
+          "Row: _ _ _ _ _ (positions 1-5 from left)\nC is in position 3 (middle).\nA is immediately left of C → A is in position 2.\nB is not at any end (not position 1 or 5), and positions 2 and 3 are taken. So B is in position 4.\nD and E fill positions 1 and 5.\nExtreme right is position 5, which is either D or E. Since no more constraints, either could be at position 5.\nBut the question asks who sits at extreme right, since B is at position 4, the answer needs more info. However, given no other constraint, D or E sit at the ends.",
         answer: "D or E (insufficient constraints to determine exactly which one)",
       },
       {
@@ -1421,12 +1421,12 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing left and right in circular arrangements — always check if people face inward or outward.",
-      "Forgetting that 'immediate left' and 'second to the left' are different — one is adjacent, the other skips one seat.",
+      "Confusing left and right in circular arrangements, always check if people face inward or outward.",
+      "Forgetting that 'immediate left' and 'second to the left' are different, one is adjacent, the other skips one seat.",
       "Not considering both possible cases when a clue allows two arrangements.",
     ],
     keyTakeaways: [
-      "Always draw the arrangement — rows as numbered boxes, circles as clock positions.",
+      "Always draw the arrangement, rows as numbered boxes, circles as clock positions.",
       "Fix the most constrained person first and build the arrangement around them.",
       "In circular arrangements, left/right depend on facing direction (inward vs outward).",
       "Use case-based approach when a clue has two possible interpretations.",
@@ -1463,7 +1463,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
           "If neither conclusion individually follows, check if they form a complementary pair.",
           "Complementary pairs: (All A are B, Some A are not B) and (Some A are B, No A are B).",
           "If the two conclusions are a complementary pair, 'Either I or II follows.'",
-          "This is a shortcut — if you determine both individually don't follow, check for this pattern.",
+          "This is a shortcut, if you determine both individually don't follow, check for this pattern.",
         ],
       },
     ],
@@ -1487,17 +1487,17 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "Statements: Some books are pens. No pens are erasers.\nConclusions: I. Some books are erasers. II. Some books are not erasers.",
         solution:
-          "Some books are pens + No pens are erasers → the books that are pens cannot be erasers. So some books are definitely not erasers. Conclusion II follows.\nConclusion I says some books are erasers. This is possible only for books that are NOT pens, but we cannot confirm it — it is not necessary. Conclusion I does not follow.",
+          "Some books are pens + No pens are erasers → the books that are pens cannot be erasers. So some books are definitely not erasers. Conclusion II follows.\nConclusion I says some books are erasers. This is possible only for books that are NOT pens, but we cannot confirm it, it is not necessary. Conclusion I does not follow.",
         answer: "Only Conclusion II follows.",
       },
     ],
     commonMistakes: [
-      "Drawing only one Venn diagram — you must check ALL possible configurations, not just the most obvious one.",
-      "Forgetting the complementary pair rule — when neither conclusion follows individually, check for either-or.",
-      "Confusing 'Some A are B' with 'All A are B' — 'some' means at least one, not necessarily all.",
+      "Drawing only one Venn diagram, you must check ALL possible configurations, not just the most obvious one.",
+      "Forgetting the complementary pair rule, when neither conclusion follows individually, check for either-or.",
+      "Confusing 'Some A are B' with 'All A are B', 'some' means at least one, not necessarily all.",
     ],
     keyTakeaways: [
-      "Use Venn diagrams for every syllogism problem — they are the most reliable method.",
+      "Use Venn diagrams for every syllogism problem, they are the most reliable method.",
       "A conclusion follows only if it is true in ALL possible diagram configurations.",
       "Memorize combination rules: All+All=All, All+No=No, Some+All=Some.",
       "Always check for complementary pairs when individual conclusions fail.",
@@ -1508,7 +1508,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
     slug: "puzzles",
     categorySlug: "logical-reasoning",
     introduction:
-      "Puzzle problems in logical reasoning involve arranging data based on multiple conditions. These are more complex than simple seating arrangements because they combine multiple dimensions — such as name, profession, age, city, and floor number — all of which must be determined from the given clues.\n\nCommon types include floor-based puzzles (who lives on which floor), scheduling puzzles (who does what on which day), comparison puzzles (ranking by age, height, salary), and multi-parameter puzzles that combine several attributes.\n\nPuzzles are heavily weighted in bank exams and campus placements. They require systematic organization, careful clue processing, and patience. The key is creating a clear table or grid and filling it in methodically.",
+      "Puzzle problems in logical reasoning involve arranging data based on multiple conditions. These are more complex than simple seating arrangements because they combine multiple dimensions, such as name, profession, age, city, and floor number, all of which must be determined from the given clues.\n\nCommon types include floor-based puzzles (who lives on which floor), scheduling puzzles (who does what on which day), comparison puzzles (ranking by age, height, salary), and multi-parameter puzzles that combine several attributes.\n\nPuzzles are heavily weighted in bank exams and campus placements. They require systematic organization, careful clue processing, and patience. The key is creating a clear table or grid and filling it in methodically.",
     concepts: [
       "Each puzzle has a fixed set of entities (people) and attributes (floor, color, profession, etc.).",
       "Each attribute value is assigned to exactly one entity (one-to-one mapping).",
@@ -1540,31 +1540,31 @@ export const logicalReasoningTheory: TopicTheory[] = [
     ],
     quickTricks: [
       "Always count: if 8 people and 8 floors, each floor has exactly one person.",
-      "Process the most restrictive clue first — it eliminates the most possibilities.",
+      "Process the most restrictive clue first, it eliminates the most possibilities.",
       "If a clue says 'A is two floors above B,' in a 5-floor building, B can only be on floors 1-3.",
       "Cross-reference clues: if two clues both involve person X, combine their constraints.",
-      "Read ALL clues before starting — some clues make more sense after reading others.",
+      "Read ALL clues before starting, some clues make more sense after reading others.",
     ],
     solvedExamples: [
       {
         problem:
           "Four friends A, B, C, D live on floors 1-4 (1=ground). A lives above B. C lives on floor 3. D does not live on floor 1. Who lives on floor 1?",
         solution:
-          "C is on floor 3 (given).\nD is not on floor 1. Remaining floors: 1, 2, 4 for A, B, D.\nA lives above B, so A's floor > B's floor.\nIf B is on floor 1, A could be on 2 or 4. D takes the remaining.\nIf B is on floor 2, A must be on floor 4 (only floor above 2 that is available). D takes floor 1. But D is not on floor 1 — contradiction.\nSo B must be on floor 1. A is on 2 or 4, D takes the other.\nIf A is on floor 2, D is on floor 4. A(2) > B(1) ✓.\nIf A is on floor 4, D is on floor 2. A(4) > B(1) ✓. Both work.\nBut the question only asks floor 1: B.",
+          "C is on floor 3 (given).\nD is not on floor 1. Remaining floors: 1, 2, 4 for A, B, D.\nA lives above B, so A's floor > B's floor.\nIf B is on floor 1, A could be on 2 or 4. D takes the remaining.\nIf B is on floor 2, A must be on floor 4 (only floor above 2 that is available). D takes floor 1. But D is not on floor 1, contradiction.\nSo B must be on floor 1. A is on 2 or 4, D takes the other.\nIf A is on floor 2, D is on floor 4. A(2) > B(1) ✓.\nIf A is on floor 4, D is on floor 2. A(4) > B(1) ✓. Both work.\nBut the question only asks floor 1: B.",
         answer: "B lives on floor 1.",
       },
     ],
     commonMistakes: [
-      "Not reading all clues before starting — a later clue might make an earlier one easier.",
-      "Forgetting the one-to-one constraint — once an attribute is assigned, it cannot be used again.",
-      "Making assumptions without basis — only fill cells that are logically determined.",
+      "Not reading all clues before starting, a later clue might make an earlier one easier.",
+      "Forgetting the one-to-one constraint, once an attribute is assigned, it cannot be used again.",
+      "Making assumptions without basis, only fill cells that are logically determined.",
     ],
     keyTakeaways: [
       "Create a clear table or grid before processing any clues.",
       "Process definite clues first, then relative clues, then negative clues.",
-      "Use case splitting when stuck — one case will always lead to a contradiction.",
+      "Use case splitting when stuck, one case will always lead to a contradiction.",
       "Verify your final answer against EVERY clue to ensure consistency.",
-      "Practice regularly — speed in puzzles comes from pattern recognition across many problem types.",
+      "Practice regularly, speed in puzzles comes from pattern recognition across many problem types.",
     ],
   },
   {
@@ -1602,9 +1602,9 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "Start with entities that have the most conditions — they are the most constrained.",
-      "Boundary positions (first and last) are the easiest to resolve — start there.",
-      "If two conditions are contradictory, one case is impossible — eliminate it immediately.",
+      "Start with entities that have the most conditions, they are the most constrained.",
+      "Boundary positions (first and last) are the easiest to resolve, start there.",
+      "If two conditions are contradictory, one case is impossible, eliminate it immediately.",
       "Count remaining options: if N entities remain for N slots, each has limited choices.",
     ],
     solvedExamples: [
@@ -1617,16 +1617,16 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Processing clues in order of appearance rather than order of definiteness — always start with the most definite clues.",
+      "Processing clues in order of appearance rather than order of definiteness, always start with the most definite clues.",
       "Forgetting to propagate constraints after making an assignment.",
       "Not considering all possible cases when a clue allows multiple interpretations.",
     ],
     keyTakeaways: [
       "Use a table or grid to organize the data systematically.",
       "Process definite clues first, then relative clues, then negative clues.",
-      "Boundary positions are often the easiest to determine — start with them.",
+      "Boundary positions are often the easiest to determine, start with them.",
       "Always verify the final arrangement against all conditions.",
-      "Practice builds speed — the more puzzle types you see, the faster you recognize patterns.",
+      "Practice builds speed, the more puzzle types you see, the faster you recognize patterns.",
     ],
   },
   {
@@ -1666,7 +1666,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
     quickTricks: [
       "If the final output is fully sorted, the machine is performing a sorting algorithm.",
       "If one element moves per step, count which step you need and apply the rule that many times.",
-      "Look at Step 1 carefully — the first operation reveals the primary sorting criterion.",
+      "Look at Step 1 carefully, the first operation reveals the primary sorting criterion.",
       "If words and numbers are intermixed, they may be sorted by separate rules (words alphabetically, numbers numerically).",
       "Count total steps needed: for N elements, usually N-1 steps are needed for full sorting.",
     ],
@@ -1675,14 +1675,14 @@ export const logicalReasoningTheory: TopicTheory[] = [
         problem:
           "Input: 45 love 32 nice 67 act 18\nStep 1: act 45 love 32 nice 67 18\nStep 2: act 18 45 love 32 nice 67\nStep 3: act 18 love 45 32 nice 67\nWhat is Step 4?",
         solution:
-          "Step 1: 'act' (alphabetically first word) moved to position 1.\nStep 2: 18 (smallest number) moved to position 2.\nStep 3: 'love' (next alphabetically among remaining words) moved to position 3.\nPattern: alternating — first alphabetical word, then smallest number, then next word, then next number.\nStep 4: next smallest number among remaining = 32. Move 32 to position 4.\nResult: act 18 love 32 45 nice 67.",
+          "Step 1: 'act' (alphabetically first word) moved to position 1.\nStep 2: 18 (smallest number) moved to position 2.\nStep 3: 'love' (next alphabetically among remaining words) moved to position 3.\nPattern: alternating, first alphabetical word, then smallest number, then next word, then next number.\nStep 4: next smallest number among remaining = 32. Move 32 to position 4.\nResult: act 18 love 32 45 nice 67.",
         answer: "act 18 love 32 45 nice 67",
       },
     ],
     commonMistakes: [
-      "Assuming the rule before checking all steps — always verify your pattern against at least 2 transitions.",
+      "Assuming the rule before checking all steps, always verify your pattern against at least 2 transitions.",
       "Confusing the sorting order (ascending vs descending, A-Z vs Z-A).",
-      "Miscounting positions — always number positions explicitly.",
+      "Miscounting positions, always number positions explicitly.",
     ],
     keyTakeaways: [
       "Compare consecutive steps to identify the single operation applied at each step.",
@@ -1699,7 +1699,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "Ranking and Order problems involve determining the position or rank of a person in a row, queue, or group based on given information. These problems typically provide the rank from one end and ask for the rank from the other end, or provide relative rankings and ask for the total count.\n\nCommon scenarios include finding a person's position in a class, row, or queue from the top/bottom/left/right. The problems may also involve interchanging positions between two people and finding new rankings.\n\nThis topic is straightforward but requires careful reading to avoid off-by-one errors. It appears regularly in bank exams, SSC, and placement tests.",
     concepts: [
       "Rank from left + Rank from right = Total + 1.",
-      "If two people interchange positions, only their individual ranks change — others remain the same.",
+      "If two people interchange positions, only their individual ranks change, others remain the same.",
       "When finding total people between two positions: |Rank1 - Rank2| - 1.",
       "Rank from top + Rank from bottom = Total students + 1.",
       "If ranks overlap (the same person is counted from both ends), avoid double counting.",
@@ -1767,16 +1767,16 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Forgetting the '-1' in the total formula — this accounts for the person being counted twice.",
-      "Confusing 'from the left' with 'from the right' — always clarify which end is referenced.",
-      "In interchange problems, confusing whose position goes where — A goes to B's old spot and vice versa.",
+      "Forgetting the '-1' in the total formula, this accounts for the person being counted twice.",
+      "Confusing 'from the left' with 'from the right', always clarify which end is referenced.",
+      "In interchange problems, confusing whose position goes where, A goes to B's old spot and vice versa.",
     ],
     keyTakeaways: [
       "Core formula: Total = Rank from one end + Rank from other end - 1.",
       "People between two positions (same end) = |Rank1 - Rank2| - 1.",
       "In interchange problems, A's new position = B's old position.",
       "Always draw a number line for complex multi-person problems.",
-      "Read the question carefully — 'from the top' and 'from the left' are different dimensions.",
+      "Read the question carefully, 'from the top' and 'from the left' are different dimensions.",
     ],
   },
   {
@@ -1836,8 +1836,8 @@ export const logicalReasoningTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Chaining through a direction reversal — A > B < C does NOT tell you A > C or A < C.",
-      "Forgetting that >= includes equality — if the chain has >=, conclusions using strict > may not hold.",
+      "Chaining through a direction reversal, A > B < C does NOT tell you A > C or A < C.",
+      "Forgetting that >= includes equality, if the chain has >=, conclusions using strict > may not hold.",
       "Not checking for complementary pairs when both conclusions fail individually.",
     ],
     keyTakeaways: [
@@ -1845,7 +1845,7 @@ export const logicalReasoningTheory: TopicTheory[] = [
       "A conclusion is valid only if the chain between the two elements has consistent direction.",
       "If any link is >= or <=, the overall conclusion can only be >= or <= (not strict).",
       "Check complementary pairs when individual conclusions fail.",
-      "Decode symbols immediately — don't try to work with coded operators.",
+      "Decode symbols immediately, don't try to work with coded operators.",
     ],
   },
 ];

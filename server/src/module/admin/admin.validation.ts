@@ -321,6 +321,8 @@ export const adminExternalJobQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   search: z.string().optional(),
+  location: z.string().optional(),
+  tags: z.string().optional(),
 });
 
 // ==================== BROADCAST EMAIL ====================

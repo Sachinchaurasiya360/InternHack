@@ -1,83 +1,45 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import NumberFlow from "@number-flow/react";
+import { ArrowRight, Play, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
 
-function ElegantShape({
-  className,
-  delay = 0,
-  width = 400,
-  height = 100,
-  rotate = 0,
-  gradient = "from-white/[0.08]",
-}: {
-  className?: string;
-  delay?: number;
-  width?: number;
-  height?: number;
-  rotate?: number;
-  gradient?: string;
-}) {
-  return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        y: -150,
-        rotate: rotate - 15,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        rotate: rotate,
-      }}
-      transition={{
-        duration: 2.4,
-        delay,
-        ease: [0.23, 0.86, 0.39, 0.96],
-        opacity: { duration: 1.2 },
-      }}
-      className={cn("absolute", className)}
-    >
-      <motion.div
-        animate={{
-          y: [0, 15, 0],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
-        style={{
-          width,
-          height,
-        }}
-        className="relative"
-      >
-        <div
-          className={cn(
-            "absolute inset-0 rounded-full",
-            "bg-gradient-to-r to-transparent",
-            gradient,
-            "backdrop-blur-[2px] border-2 border-gray-200/50 dark:border-white/15",
-            "shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_0_rgba(255,255,255,0.1)]",
-            "after:absolute after:inset-0 after:rounded-full",
-            "after:bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.15),transparent_70%)] dark:after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]"
-          )}
-        />
-      </motion.div>
-    </motion.div>
-  );
-}
+const ROTATING_WORDS = ["offer.", "internship.", "interview.", "callback.", "dream job."];
 
-function HeroGeometric({
-  title1 = "AI-Powered Internship &",
-  title2 = "Career Platform for Students",
-}: {
-  title1?: string;
-  title2?: string;
-}) {
+const WINS = [
+  { name: "Aarav", role: "SWE Intern", at: "Wipro" },
+  { name: "Tanvi", role: "Frontend", at: "Mphasis" },
+  { name: "Priya", role: "Data Intern", at: "LTIMindtree" },
+  { name: "Rehan", role: "QA Intern", at: "Hexaware" },
+  { name: "Rohan", role: "Associate", at: "Capgemini" },
+  { name: "Sneha", role: "SDE Intern", at: "Cognizant" },
+  { name: "Ishita", role: "Junior Dev", at: "Tech Mahindra" },
+  { name: "Devansh", role: "Backend", at: "Josh Talks" },
+  { name: "Karan", role: "SWE Intern", at: "NIIT" },
+  { name: "Pooja", role: "Android", at: "CarWale" },
+  { name: "Neha", role: "Data Analyst", at: "Nagarro" },
+  { name: "Arjun", role: "Full Stack", at: "Newgen" },
+  { name: "Ayush", role: "Backend", at: "Infosys" },
+  { name: "Riya", role: "ML Intern", at: "Quinnox" },
+  { name: "Meera", role: "ML Intern", at: "Hidden Brains" },
+  { name: "Harsh", role: "DevOps", at: "Coforge" },
+  { name: "Sakshi", role: "SDE Intern", at: "TCS" },
+  { name: "Vikram", role: "Frontend", at: "Chaayos" },
+  { name: "Ananya", role: "Product", at: "Zensar" },
+  { name: "Nikhil", role: "SDE Intern", at: "Mindtree" },
+  { name: "Ritika", role: "Support Eng", at: "HCL" },
+  { name: "Siddharth", role: "Backend", at: "Sapient" },
+  { name: "Zoya", role: "UX Intern", at: "Persistent" },
+  { name: "Manan", role: "Junior Dev", at: "Birlasoft" },
+  { name: "Kavya", role: "Web Dev", at: "Cyient" },
+  { name: "Yash", role: "Intern", at: "Mastek" },
+  { name: "Mehul", role: "Junior Dev", at: "Sonata Software" },
+  { name: "Tara", role: "Frontend", at: "Syntel" },
+];
+
+function HeroGeometric() {
   const { isAuthenticated, user } = useAuthStore();
-
   const getStartedHref = isAuthenticated
     ? user?.role === "ADMIN"
       ? "/admin"
@@ -86,132 +48,241 @@ function HeroGeometric({
         : "/student/applications"
     : "/register";
 
-  const fadeUpVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 1,
-        delay: 0.5 + i * 0.2,
-        ease: [0.25, 0.4, 0.25, 1] as const,
-      },
-    }),
-  };
+  const [wordIdx, setWordIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(
+      () => setWordIdx((i) => (i + 1) % ROTATING_WORDS.length),
+      2200,
+    );
+    return () => clearInterval(id);
+  }, []);
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-[#030303]">
-      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-rose-500/5 blur-3xl dark:block hidden" />
+    <section className="relative w-full overflow-hidden bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 border-b border-stone-200 dark:border-white/10">
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none dark:hidden"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(23,23,23,0.04) 1px, transparent 1px)",
+          backgroundSize: "140px 100%",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none hidden dark:block"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "140px 100%",
+        }}
+      />
 
-      <div className="absolute inset-0 overflow-hidden">
-        <ElegantShape
-          delay={0.3}
-          width={600}
-          height={140}
-          rotate={12}
-          gradient="from-indigo-500/[0.15]"
-          className="left-[-10%] md:left-[-5%] top-[15%] md:top-[20%]"
-        />
-        <ElegantShape
-          delay={0.5}
-          width={500}
-          height={120}
-          rotate={-15}
-          gradient="from-rose-500/[0.15]"
-          className="right-[-5%] md:right-[0%] top-[70%] md:top-[75%]"
-        />
-        <ElegantShape
-          delay={0.4}
-          width={300}
-          height={80}
-          rotate={-8}
-          gradient="from-violet-500/[0.15]"
-          className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%]"
-        />
-        <ElegantShape
-          delay={0.6}
-          width={200}
-          height={60}
-          rotate={20}
-          gradient="from-amber-500/[0.15]"
-          className="right-[15%] md:right-[20%] top-[10%] md:top-[15%]"
-        />
-        <ElegantShape
-          delay={0.7}
-          width={150}
-          height={40}
-          rotate={-25}
-          gradient="from-cyan-500/[0.15]"
-          className="left-[20%] md:left-[25%] top-[5%] md:top-[10%]"
-        />
+      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-10 md:pt-40 md:pb-14 text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.08 }}
+          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none"
+        >
+          Land the
+          <br />
+          <span className="relative inline-block align-baseline">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={ROTATING_WORDS[wordIdx]}
+                initial={{ y: 40, opacity: 0, filter: "blur(8px)" }}
+                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                exit={{ y: -40, opacity: 0, filter: "blur(8px)" }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="relative z-10 inline-block"
+              >
+                {ROTATING_WORDS[wordIdx]}
+              </motion.span>
+            </AnimatePresence>
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
+              aria-hidden
+              className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+            />
+          </span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mt-8 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed"
+        >
+          InternHack scores your resume, sharpens your DSA, runs mock
+          interviews, and sends your application straight to recruiters hiring.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.28 }}
+          className="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center"
+        >
+          <Link to={getStartedHref} className="no-underline">
+            <button className="group inline-flex items-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0">
+              {isAuthenticated ? "Open dashboard" : "Start free"}
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </Link>
+          <a href="#demo" className="no-underline">
+            <button className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-stone-900 dark:text-stone-100 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
+              <Play className="w-4 h-4 fill-current" />
+              Watch 90s demo
+            </button>
+          </a>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.36 }}
+          className="mt-5 flex items-center justify-center gap-4 text-xs font-mono text-stone-500"
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <Star className="w-3.5 h-3.5 fill-lime-400 stroke-lime-400" />
+            4.8 from 12k+ students
+          </span>
+          <span className="text-stone-300 dark:text-stone-700">·</span>
+          <span>free forever · ₹249/mo pro</span>
+        </motion.div>
+
+        <AnimatedStats />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 md:px-6 flex flex-col items-center pt-20 md:pt-0">
-        <div className="max-w-5xl mx-auto text-center">
-          <motion.div
-            custom={0}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-6 md:mb-8 tracking-tight leading-tight">
-              <span className="bg-clip-text text-transparent bg-linear-to-b from-gray-900 to-gray-900/80 dark:from-white dark:to-white/80">
-                {title1}
-              </span>
-              <br />
-              <span
-                className={cn(
-                  "bg-clip-text text-transparent bg-linear-to-r from-indigo-600 via-gray-900 to-rose-600 dark:from-indigo-300 dark:via-white/90 dark:to-rose-300"
-                )}
-              >
-                {title2}
-              </span>
-            </h1>
-          </motion.div>
+      <WinsMarquee />
 
-          <motion.div
-            custom={2}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-500 dark:text-white/40 mb-10 leading-relaxed font-light tracking-wide max-w-2xl mx-auto px-4">
-              Browse curated jobs, score your resume with AI, follow guided
-              career roadmaps, and connect directly with recruiters.
-            </p>
-          </motion.div>
-
-          <motion.div
-            custom={3}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            <Link to={getStartedHref} className="no-underline">
-              <motion.button
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-10 py-4 bg-gray-950 text-white dark:bg-indigo-300 dark:text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-800 dark:hover:bg-indigo-200 transition-all shadow-lg shadow-gray-950/15 dark:shadow-indigo-500/20 flex items-center"
-              >
-                {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
-              </motion.button>
-            </Link>
-            <Link to="/jobs" className="no-underline">
-              <motion.button
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-10 py-4 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white text-base font-semibold rounded-2xl border border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10 transition-all"
-              >
-                Browse Jobs
-              </motion.button>
-            </Link>
-          </motion.div>
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10 border-t border-stone-200 dark:border-white/10">
+        <div className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-4 text-center">
+          Trusted by students at
         </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold text-stone-500 dark:text-stone-500">
+          <span>IITs</span>
+          <span className="text-stone-300 dark:text-stone-700">/</span>
+          <span>NITs</span>
+          <span className="text-stone-300 dark:text-stone-700">/</span>
+          <span>BITS Pilani</span>
+          <span className="text-stone-300 dark:text-stone-700">/</span>
+          <span>IIITs</span>
+          <span className="text-stone-300 dark:text-stone-700">/</span>
+          <span>VIT</span>
+          <span className="text-stone-300 dark:text-stone-700">/</span>
+          <span>SRM</span>
+          <span className="text-stone-300 dark:text-stone-700">/</span>
+          <span>Manipal</span>
+          <span className="text-stone-300 dark:text-stone-700">/</span>
+          <span>200+ colleges</span>
+        </div>
+      </div>
+    </section>
+  );
+}
 
+function AnimatedStats() {
+  const [values, setValues] = useState({ resumes: 0, roles: 0, placements: 0 });
+  useEffect(() => {
+    const t = setTimeout(
+      () => setValues({ resumes: 54230, roles: 1247, placements: 8900 }),
+      700,
+    );
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.5 }}
+      className="mt-16 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-xl overflow-hidden max-w-3xl mx-auto"
+    >
+      <StatCell
+        value={values.resumes}
+        label="resumes scored"
+        suffix="+"
+      />
+      <StatCell value={values.roles} label="curated roles" suffix="+" />
+      <StatCell
+        value={values.placements}
+        label="offers landed"
+        suffix="+"
+      />
+    </motion.div>
+  );
+}
+
+function StatCell({
+  value,
+  label,
+  suffix,
+}: {
+  value: number;
+  label: string;
+  suffix?: string;
+}) {
+  return (
+    <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 text-left min-w-0">
+      <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 wrap-break-word">
+        <NumberFlow value={value} />
+        {suffix && (
+          <span className="text-lime-500 dark:text-lime-400">{suffix}</span>
+        )}
+      </div>
+      <div className="mt-1 text-[10px] sm:text-xs font-mono uppercase tracking-widest text-stone-500 leading-snug">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function WinsMarquee() {
+  const row = [...WINS, ...WINS];
+  return (
+    <div
+      className="relative py-6 border-y border-stone-200 dark:border-white/10 bg-stone-100/60 dark:bg-white/2 overflow-hidden"
+      aria-hidden
+    >
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r from-stone-100/60 dark:from-stone-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l from-stone-100/60 dark:from-stone-950 to-transparent z-10" />
+
+      <div className="flex items-center gap-3 px-6 max-w-6xl mx-auto mb-3">
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+          Live · recent wins
+        </span>
       </div>
 
-      <div className="absolute inset-0 bg-linear-to-t from-white via-transparent to-white/80 dark:from-[#030303] dark:via-transparent dark:to-[#030303]/80 pointer-events-none" />
+      <motion.div
+        className="flex gap-3 whitespace-nowrap w-max"
+        animate={{ x: ["0%", "-50%"] }}
+        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+      >
+        {row.map((w, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-lg"
+          >
+            <span className="h-6 w-6 rounded-md bg-lime-400/15 border border-lime-400/30 flex items-center justify-center text-xs font-bold text-lime-700 dark:text-lime-400">
+              {w.name[0]}
+            </span>
+            <span className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+              {w.name}
+            </span>
+            <span className="text-xs font-mono text-stone-500">
+              {w.role}
+            </span>
+            <span className="text-stone-300 dark:text-stone-700">→</span>
+            <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+              {w.at}
+            </span>
+          </div>
+        ))}
+      </motion.div>
     </div>
   );
 }

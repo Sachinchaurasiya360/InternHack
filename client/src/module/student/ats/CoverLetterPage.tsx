@@ -20,6 +20,11 @@ import {
   GraduationCap,
   FolderGit2,
   Trophy,
+  AlignLeft,
+  AlertCircle,
+  Loader2,
+  ArrowRight,
+  Zap,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
@@ -42,11 +47,41 @@ const GENERATION_STEPS = [
   { icon: CheckCircle, label: "Finalizing" },
 ];
 
-const inputCls =
-  "w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white";
-const labelCls = "block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1.5";
+const JD_MIN_CHARS = 50;
 
-// Tool nav handled by shared AtsToolsNav
+const cardCls =
+  "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
+const sectionKickerCls =
+  "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
+const sectionTitleCls =
+  "text-sm font-bold text-stone-900 dark:text-stone-50";
+const inputCls =
+  "w-full px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
+const labelCls =
+  "flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2";
+
+function CardHeader({
+  kicker,
+  title,
+  right,
+}: {
+  kicker: string;
+  title: string;
+  right?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
+      <div className="flex flex-col gap-1 min-w-0">
+        <span className={sectionKickerCls}>
+          <span className="h-1 w-1 bg-lime-400" />
+          {kicker}
+        </span>
+        <span className={sectionTitleCls}>{title}</span>
+      </div>
+      {right && <div className="shrink-0">{right}</div>}
+    </div>
+  );
+}
 
 export default function CoverLetterPage() {
   const queryClient = useQueryClient();
@@ -88,8 +123,8 @@ export default function CoverLetterPage() {
   const hasProfileData = profileSummary && profileSummary.length > 0;
 
   const handleGenerate = async () => {
-    if (jobDescription.trim().length < 50) {
-      toast.error("Job description must be at least 50 characters");
+    if (jobDescription.trim().length < JD_MIN_CHARS) {
+      toast.error(`Job description must be at least ${JD_MIN_CHARS} characters`);
       return;
     }
 
@@ -195,287 +230,321 @@ export default function CoverLetterPage() {
   };
 
   return (
-    <div className="relative max-w-6xl mx-auto pb-12">
+    <div className="relative pb-16">
       <SEO title="Cover Letter Builder - InternHack" description="Generate AI-powered cover letters tailored to any job" noIndex />
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      {/* Page Header */}
+      {/* ─── Editorial header ─── */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-8"
+        transition={{ duration: 0.4 }}
+        className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-          Personalize <span className="text-gradient-accent">Cover Letter</span> Builder
-        </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-          Generate tailored, professional cover letters in seconds
-        </p>
+        <div>
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            resume / cover letter
+          </div>
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Write your cover letter.
+          </h1>
+          <p className="mt-3 text-sm text-stone-500 max-w-md">
+            Paste a job description, pick a tone, and get a tailored letter you can copy, edit, or export as PDF or DOCX.
+          </p>
+        </div>
+        {clUsage && (
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              daily usage
+            </span>
+            <span className="text-sm font-bold tabular-nums text-stone-900 dark:text-stone-50">
+              {clUsage.used}
+              <span className="text-stone-400 dark:text-stone-600 font-normal"> / {clUsage.limit}</span>
+            </span>
+          </div>
+        )}
       </motion.div>
 
       <AtsToolsNav />
 
-      {/* Main Content */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <div className="grid md:grid-cols-5 gap-6">
-          {/* Left - Input Form */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-violet-500" />
-                Job Details
-              </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+        {/* ─── Left column: form ─── */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className={cardCls}>
+            <CardHeader kicker="step 01" title="Job details" />
+            <div className="p-5 space-y-4">
+              <div>
+                <label className={labelCls}>
+                  <AlignLeft className="w-3 h-3" /> job description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  className={`${inputCls} min-h-35 resize-y`}
+                  placeholder="Paste the full job description here..."
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                />
+                <p
+                  className={`mt-1.5 text-[10px] font-mono uppercase tracking-widest tabular-nums ${
+                    jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "text-stone-500"
+                  }`}
+                >
+                  {jobDescription.length} / {JD_MIN_CHARS} min
+                </p>
+              </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className={labelCls}>Job Description *</label>
-                  <textarea
-                    className={`${inputCls} min-h-35 resize-y`}
-                    placeholder="Paste the full job description here..."
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
-                  />
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-                    {jobDescription.length}/50 characters minimum
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className={labelCls}>
-                      <Briefcase className="w-3 h-3 inline mr-1" />
-                      Job Title
-                    </label>
-                    <input
-                      className={inputCls}
-                      placeholder="Software Engineer"
-                      value={jobTitle}
-                      onChange={(e) => setJobTitle(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelCls}>
-                      <Building2 className="w-3 h-3 inline mr-1" />
-                      Company Name
-                    </label>
-                    <input
-                      className={inputCls}
-                      placeholder="Google"
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                    />
-                  </div>
-                </div>
-
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>
-                    <Code2 className="w-3 h-3 inline mr-1" />
-                    Your Key Skills & Experience
+                    <Briefcase className="w-3 h-3" /> job title
                   </label>
-                  <textarea
-                    className={`${inputCls} min-h-20 resize-y`}
-                    placeholder="3 years of React/Node.js experience, built scalable microservices, led a team of 4..."
-                    value={keySkills}
-                    onChange={(e) => setKeySkills(e.target.value)}
+                  <input
+                    className={inputCls}
+                    placeholder="Software Engineer"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
                   />
                 </div>
-
-                {/* Use My Profile Toggle */}
                 <div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!hasProfileData) {
-                        toast.error("Complete your profile first to use this feature");
-                        return;
-                      }
-                      setUseProfile(!useProfile);
-                    }}
-                    className={`w-full flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all text-left ${
-                      useProfile
-                        ? "border-violet-500 bg-violet-50/50 dark:bg-violet-900/20"
-                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-                    }`}
-                  >
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                      useProfile ? "bg-violet-100 dark:bg-violet-900/40" : "bg-gray-100 dark:bg-gray-800"
-                    }`}>
-                      <User className={`w-4 h-4 ${useProfile ? "text-violet-600 dark:text-violet-400" : "text-gray-400 dark:text-gray-500"}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-semibold ${useProfile ? "text-violet-700 dark:text-violet-400" : "text-gray-700 dark:text-gray-300"}`}>
-                        Use My Profile
-                      </p>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
-                        {hasProfileData ? "Send your skills, projects & achievements to AI" : "Complete your profile to enable this"}
-                      </p>
-                    </div>
-                    <div className={`w-9 h-5 rounded-full relative transition-colors ${
-                      useProfile ? "bg-violet-500" : "bg-gray-200 dark:bg-gray-700"
-                    }`}>
-                      <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
-                        useProfile ? "left-4.5" : "left-0.5"
-                      }`} />
-                    </div>
-                  </button>
-
-                  {/* Profile data preview */}
-                  <AnimatePresence>
-                    {useProfile && hasProfileData && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-2 p-3 bg-violet-50/50 dark:bg-violet-900/10 rounded-xl border border-violet-100 dark:border-violet-900/30">
-                          <div className="space-y-1.5">
-                            {user?.skills && user.skills.length > 0 && (
-                              <div className="flex items-start gap-2">
-                                <Code2 className="w-3 h-3 text-violet-400 mt-0.5 shrink-0" />
-                                <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
-                                  {user.skills.slice(0, 6).join(", ")}{user.skills.length > 6 ? ` +${String(user.skills.length - 6)} more` : ""}
-                                </p>
-                              </div>
-                            )}
-                            {user?.college && (
-                              <div className="flex items-start gap-2">
-                                <GraduationCap className="w-3 h-3 text-violet-400 mt-0.5 shrink-0" />
-                                <p className="text-[11px] text-gray-600 dark:text-gray-400">
-                                  {user.college}{user.graduationYear ? ` (${String(user.graduationYear)})` : ""}
-                                </p>
-                              </div>
-                            )}
-                            {user?.projects && user.projects.length > 0 && (
-                              <div className="flex items-start gap-2">
-                                <FolderGit2 className="w-3 h-3 text-violet-400 mt-0.5 shrink-0" />
-                                <p className="text-[11px] text-gray-600 dark:text-gray-400">
-                                  {user.projects.map((p) => p.title).join(", ")}
-                                </p>
-                              </div>
-                            )}
-                            {user?.achievements && user.achievements.length > 0 && (
-                              <div className="flex items-start gap-2">
-                                <Trophy className="w-3 h-3 text-violet-400 mt-0.5 shrink-0" />
-                                <p className="text-[11px] text-gray-600 dark:text-gray-400">
-                                  {user.achievements.map((a) => a.title).join(", ")}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                          <Link
-                            to="/student/profile"
-                            className="inline-flex items-center gap-1 mt-2 text-[10px] text-violet-600 dark:text-violet-400 font-medium hover:underline no-underline"
-                          >
-                            Edit profile <ChevronRight className="w-2.5 h-2.5" />
-                          </Link>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <label className={labelCls}>
+                    <Building2 className="w-3 h-3" /> company
+                  </label>
+                  <input
+                    className={inputCls}
+                    placeholder="Google"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                  />
                 </div>
+              </div>
 
-                {/* Tone Selector */}
-                <div>
-                  <label className={labelCls}>Tone</label>
-                  <div className="flex gap-2">
-                    {TONES.map((t) => (
-                      <button
-                        key={t.id}
-                        onClick={() => setTone(t.id)}
-                        className={`flex-1 px-3 py-2.5 rounded-xl border-2 text-xs font-medium transition-all ${
-                          tone === t.id
-                            ? "border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400"
-                            : "border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                        }`}
-                      >
-                        <div>{t.label}</div>
-                        <div className="text-[10px] font-normal mt-0.5 opacity-70">
-                          {t.description}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {clUsage && (
-                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                    <span>{clUsage.used}/{clUsage.limit} used today</span>
-                    {limitReached && (
-                      <Link to="/student/pricing" className="text-violet-600 dark:text-violet-400 font-medium no-underline hover:underline">
-                        Upgrade
-                      </Link>
-                    )}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleGenerate}
-                  disabled={loading || jobDescription.trim().length < 50 || limitReached}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200 active:scale-[0.99]"
-                >
-                  {loading ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Generating...
-                    </>
-                  ) : limitReached ? (
-                    "Daily limit reached"
-                  ) : (
-                    <>
-                      Generate Cover Letter
-                    </>
-                  )}
-                </button>
+              <div>
+                <label className={labelCls}>
+                  <Code2 className="w-3 h-3" /> your key skills & experience
+                </label>
+                <textarea
+                  className={`${inputCls} min-h-20 resize-y`}
+                  placeholder="3 years of React/Node.js experience, built scalable microservices, led a team of 4..."
+                  value={keySkills}
+                  onChange={(e) => setKeySkills(e.target.value)}
+                />
               </div>
             </div>
           </div>
 
-          {/* Right - Output */}
-          <div className="md:col-span-3">
-            <AnimatePresence mode="wait">
-              {loading && (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 p-6 shadow-sm"
-                >
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="relative w-10 h-10">
-                      <div className="absolute inset-0 rounded-full border-3 border-violet-100 dark:border-violet-900/50" />
-                      <motion.div
-                        className="absolute inset-0 rounded-full border-3 border-violet-500 border-t-transparent"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Wand2 className="w-4 h-4 text-violet-500" />
+          {/* ─── Tone card ─── */}
+          <div className={cardCls}>
+            <CardHeader kicker="step 02" title="Tone" />
+            <div className="p-5">
+              <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                {TONES.map((t, i) => {
+                  const isActive = tone === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTone(t.id)}
+                      className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
+                        isActive
+                          ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                          : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
+                      }`}
+                    >
+                      <span
+                        className={`text-[10px] font-mono uppercase tracking-widest ${
+                          isActive ? "text-lime-400" : "text-stone-500"
+                        }`}
+                      >
+                        / {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-sm font-bold">{t.label}</span>
+                      <span
+                        className={`text-[11px] ${
+                          isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+                        }`}
+                      >
+                        {t.description}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* ─── Profile toggle ─── */}
+          <div className={cardCls}>
+            <CardHeader
+              kicker="step 03"
+              title="Use my profile"
+              right={
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  / optional
+                </span>
+              }
+            />
+            <div className="p-5">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!hasProfileData) {
+                    toast.error("Complete your profile first to use this feature");
+                    return;
+                  }
+                  setUseProfile(!useProfile);
+                }}
+                className={`w-full flex items-center gap-3 p-3.5 rounded-md border transition-colors text-left cursor-pointer ${
+                  !hasProfileData
+                    ? "border-stone-200 dark:border-white/10 opacity-60 cursor-not-allowed"
+                    : useProfile
+                      ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
+                      : "border-stone-300 dark:border-white/10 bg-stone-50/60 dark:bg-stone-950/40 hover:border-stone-400 dark:hover:border-white/20"
+                }`}
+              >
+                <div className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${
+                  useProfile && hasProfileData
+                    ? "bg-lime-400 text-stone-950"
+                    : "bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-500"
+                }`}>
+                  <User className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                    Pull from profile
+                  </p>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
+                    {hasProfileData ? "include skills, projects, achievements" : "complete profile to enable"}
+                  </p>
+                </div>
+                <div className={`w-9 h-5 relative transition-colors shrink-0 rounded-sm ${
+                  useProfile && hasProfileData ? "bg-lime-400" : "bg-stone-200 dark:bg-white/10"
+                }`}>
+                  <div className={`absolute top-0.5 w-4 h-4 bg-white dark:bg-stone-50 shadow-sm transition-all rounded-xs ${
+                    useProfile && hasProfileData ? "left-4.5" : "left-0.5"
+                  }`} />
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {useProfile && hasProfileData && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-3 p-3.5 bg-stone-50/60 dark:bg-stone-950/40 border border-stone-200 dark:border-white/10 rounded-md">
+                      <div className="space-y-2">
+                        {user?.skills && user.skills.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <Code2 className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
+                            <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-relaxed">
+                              {user.skills.slice(0, 6).join(", ")}{user.skills.length > 6 ? ` +${String(user.skills.length - 6)} more` : ""}
+                            </p>
+                          </div>
+                        )}
+                        {user?.college && (
+                          <div className="flex items-start gap-2">
+                            <GraduationCap className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
+                            <p className="text-[11px] text-stone-600 dark:text-stone-400">
+                              {user.college}{user.graduationYear ? ` (${String(user.graduationYear)})` : ""}
+                            </p>
+                          </div>
+                        )}
+                        {user?.projects && user.projects.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <FolderGit2 className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
+                            <p className="text-[11px] text-stone-600 dark:text-stone-400">
+                              {user.projects.map((p) => p.title).join(", ")}
+                            </p>
+                          </div>
+                        )}
+                        {user?.achievements && user.achievements.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <Trophy className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
+                            <p className="text-[11px] text-stone-600 dark:text-stone-400">
+                              {user.achievements.map((a) => a.title).join(", ")}
+                            </p>
+                          </div>
+                        )}
                       </div>
+                      <Link
+                        to="/student/profile"
+                        className="inline-flex items-center gap-1 mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors no-underline"
+                      >
+                        edit profile <ChevronRight className="w-2.5 h-2.5" />
+                      </Link>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-gray-900 dark:text-white">Generating your cover letter</h3>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">This usually takes 10-15 seconds</p>
-                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={loading || jobDescription.trim().length < JD_MIN_CHARS || limitReached}
+            className="group w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Generating...
+              </>
+            ) : limitReached ? (
+              "Daily limit reached"
+            ) : (
+              <>
+                <Wand2 className="w-4 h-4" /> Generate cover letter
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </>
+            )}
+          </button>
+          {limitReached && (
+            <p className="text-center text-xs text-stone-500">
+              You've hit today's free limit.{" "}
+              <Link
+                to="/student/checkout"
+                className="font-bold text-stone-900 dark:text-stone-50 underline decoration-lime-400 decoration-2 underline-offset-4 hover:decoration-lime-300"
+              >
+                Upgrade for more
+              </Link>
+            </p>
+          )}
+        </div>
+
+        {/* ─── Right column: output ─── */}
+        <div className="lg:col-span-3">
+          <AnimatePresence mode="wait">
+            {loading && (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={`${cardCls} min-h-125`}
+              >
+                <CardHeader
+                  kicker="generating"
+                  title="Drafting your letter"
+                  right={
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                      ~10-15s
+                    </span>
+                  }
+                />
+                <div className="p-6">
+                  <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-full overflow-hidden mb-6">
+                    <motion.div
+                      className="h-full bg-lime-400"
+                      initial={{ width: "0%" }}
+                      animate={{
+                        width: `${Math.min(((currentStep + 1) / GENERATION_STEPS.length) * 100, 100)}%`,
+                      }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
+                    />
                   </div>
 
                   <div className="space-y-1">
@@ -490,89 +559,102 @@ export default function CoverLetterPage() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.08 }}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                          className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
                             isActive
-                              ? "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800"
+                              ? "bg-lime-400/10 border border-lime-400/40"
                               : isDone
-                                ? "bg-green-50/50 dark:bg-green-900/10"
-                                : "opacity-50"
+                                ? "bg-stone-50 dark:bg-stone-950/60 border border-transparent"
+                                : "border border-transparent opacity-50"
                           }`}
                         >
                           <div
-                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                              isDone ? "bg-green-100 dark:bg-green-900/40" : isActive ? "bg-violet-100 dark:bg-violet-900/40" : "bg-gray-100 dark:bg-gray-800"
+                            className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
+                              isDone
+                                ? "bg-lime-400 text-stone-950"
+                                : isActive
+                                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                                  : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
                             }`}
                           >
                             {isDone ? (
-                              <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                              <CheckCircle className="w-3.5 h-3.5" />
                             ) : isActive ? (
                               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}>
-                                <Icon className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                                <Icon className="w-3.5 h-3.5" />
                               </motion.div>
                             ) : (
-                              <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                              <Icon className="w-3.5 h-3.5" />
                             )}
                           </div>
-                          <span className={`text-sm font-medium flex-1 ${isDone ? "text-green-700 dark:text-green-400" : isActive ? "text-violet-700 dark:text-violet-400" : "text-gray-400 dark:text-gray-500"}`}>
+                          <span
+                            className={`text-sm font-medium flex-1 ${
+                              isDone
+                                ? "text-stone-600 dark:text-stone-400"
+                                : isActive
+                                  ? "text-stone-900 dark:text-stone-50"
+                                  : "text-stone-400 dark:text-stone-600"
+                            }`}
+                          >
                             {step.label}
                           </span>
                           {isDone && (
-                            <motion.span initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} className="text-[10px] font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full">
-                              Done
-                            </motion.span>
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                              done
+                            </span>
                           )}
                           {isActive && (
                             <div className="flex gap-1">
                               {[0, 0.15, 0.3].map((delay) => (
-                                <motion.div key={delay} className="w-1.5 h-1.5 rounded-full bg-violet-400" animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.8, repeat: Infinity, delay }} />
+                                <motion.div key={delay} className="w-1.5 h-1.5 rounded-full bg-lime-400" animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.8, repeat: Infinity, delay }} />
                               ))}
                             </div>
                           )}
                           {isPending && (
-                            <span className="text-[10px] text-gray-300 dark:text-gray-600 font-medium">Pending</span>
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                              pending
+                            </span>
                           )}
                         </motion.div>
                       );
                     })}
                   </div>
-                </motion.div>
-              )}
+                </div>
+              </motion.div>
+            )}
 
-              {!loading && coverLetter && (
-                <motion.div
-                  key="result"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm overflow-hidden"
-                >
-                  {/* Actions bar */}
-                  <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                      <CheckCircle className="w-3.5 h-3.5 text-green-500" />
-                      Generated successfully
-                    </span>
+            {!loading && coverLetter && (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`${cardCls} overflow-hidden`}
+              >
+                <CardHeader
+                  kicker="result"
+                  title="Cover letter ready"
+                  right={
                     <div className="flex items-center gap-1.5">
                       <button
+                        type="button"
                         onClick={handleGenerate}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                       >
-                        <RefreshCw className="w-3 h-3" />
-                        Regenerate
+                        <RefreshCw className="w-3 h-3" /> Regenerate
                       </button>
                       <button
+                        type="button"
                         onClick={handleCopy}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                       >
-                        <Copy className="w-3 h-3" />
-                        Copy
+                        <Copy className="w-3 h-3" /> Copy
                       </button>
                       <div className="relative" ref={downloadMenuRef}>
                         <button
+                          type="button"
                           onClick={() => setShowDownloadMenu((v) => !v)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-gray-950 hover:bg-gray-800 rounded-lg transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer"
                         >
-                          <Download className="w-3 h-3" />
-                          Download
+                          <Download className="w-3 h-3" /> Download
                         </button>
                         <AnimatePresence>
                           {showDownloadMenu && (
@@ -581,94 +663,120 @@ export default function CoverLetterPage() {
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: 4 }}
                               transition={{ duration: 0.15 }}
-                              className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden z-20"
+                              className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md shadow-lg overflow-hidden z-20"
                             >
                               <button
+                                type="button"
                                 onClick={handleDownloadPdf}
-                                className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-0 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-red-500" />
-                                PDF
+                                <FileText className="w-3.5 h-3.5 text-stone-500" /> PDF
                               </button>
                               <button
+                                type="button"
                                 onClick={handleDownloadDocx}
-                                className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-t border-stone-200 dark:border-white/10 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-blue-500" />
-                                DOCX
+                                <FileText className="w-3.5 h-3.5 text-stone-500" /> DOCX
                               </button>
                             </motion.div>
                           )}
                         </AnimatePresence>
                       </div>
                     </div>
-                  </div>
-                  {/* Letter content */}
-                  <div className="p-6" ref={letterRef}>
-                    <textarea
-                      className="w-full min-h-100 text-sm text-gray-700 dark:text-gray-300 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
-                      value={coverLetter}
-                      onChange={(e) => setCoverLetter(e.target.value)}
-                    />
-                  </div>
-                </motion.div>
-              )}
+                  }
+                />
+                <div className="p-6" ref={letterRef}>
+                  <textarea
+                    className="w-full min-h-100 text-sm text-stone-700 dark:text-stone-300 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
+                    value={coverLetter}
+                    onChange={(e) => setCoverLetter(e.target.value)}
+                  />
+                </div>
+              </motion.div>
+            )}
 
-              {!loading && !coverLetter && !error && (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="min-h-105 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm"
-                >
-                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
-                    <Mail className="w-9 h-9 text-violet-400" />
+            {!loading && !coverLetter && !error && (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={`${cardCls} min-h-125 flex flex-col items-center justify-center text-center p-10`}
+              >
+                <div className="max-w-xs">
+                  <div className="w-16 h-16 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center mb-5 mx-auto relative">
+                    <Mail className="w-7 h-7 text-stone-400 dark:text-stone-600" />
+                    <span className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400" />
                   </div>
-                  <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">Your Cover Letter Awaits</h3>
-                  <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
-                    Fill in the job details and click{" "}
-                    <span className="font-semibold text-violet-600 dark:text-violet-400">Generate Cover Letter</span>{" "}
-                    to create a tailored letter
+                  <div className={sectionKickerCls + " justify-center mb-2"}>
+                    <span className="h-1 w-1 bg-lime-400" />
+                    letter panel
+                  </div>
+                  <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
+                    Your letter appears here.
+                  </h3>
+                  <p className="text-sm text-stone-500 leading-relaxed">
+                    Paste a job description, pick a tone, and click{" "}
+                    <span className="font-bold text-stone-900 dark:text-stone-50">
+                      Generate cover letter
+                    </span>
+                    .
                   </p>
-                  <div className="flex items-center justify-center gap-5 mt-6">
+                  <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                     {[
-                      { label: "AI Powered", icon: <Wand2 className="w-3.5 h-3.5" /> },
-                      { label: "3 Tones", icon: <MessageSquare className="w-3.5 h-3.5" /> },
-                      { label: "Instant", icon: <RefreshCw className="w-3.5 h-3.5" /> },
+                      { label: "ai powered", icon: <Wand2 className="w-3 h-3" /> },
+                      { label: "3 tones", icon: <MessageSquare className="w-3 h-3" /> },
+                      { label: "instant", icon: <Zap className="w-3 h-3" /> },
                     ].map((tag) => (
-                      <span key={tag.label} className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium">
-                        {tag.icon} {tag.label}
-                      </span>
+                      <div
+                        key={tag.label}
+                        className="bg-white dark:bg-stone-900 px-2 py-2.5 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500"
+                      >
+                        {tag.icon}
+                        {tag.label}
+                      </div>
                     ))}
                   </div>
-                </motion.div>
-              )}
+                </div>
+              </motion.div>
+            )}
 
-              {!loading && error && !coverLetter && (
-                <motion.div
-                  key="error"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-red-200 dark:border-red-800 p-8 shadow-sm text-center"
-                >
-                  <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
-                    <FileText className="w-6 h-6 text-red-400" />
+            {!loading && error && !coverLetter && (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className={`${cardCls} border-red-200 dark:border-red-900/40`}
+              >
+                <CardHeader
+                  kicker="failed"
+                  title="Generation failed"
+                  right={
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-red-600 dark:text-red-400">
+                      / retry available
+                    </span>
+                  }
+                />
+                <div className="p-6 text-center">
+                  <div className="w-14 h-14 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-center justify-center mx-auto mb-4">
+                    <AlertCircle className="w-6 h-6 text-red-500" />
                   </div>
-                  <h3 className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">Generation Failed</h3>
-                  <p className="text-xs text-red-400 dark:text-red-500 mb-4">{error}</p>
+                  <p className="text-sm text-stone-700 dark:text-stone-300 mb-5 max-w-sm mx-auto">{error}</p>
                   <button
+                    type="button"
                     onClick={handleGenerate}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
                   >
-                    <RefreshCw className="w-3 h-3" />
-                    Try Again
+                    <RefreshCw className="w-3.5 h-3.5" /> Try again
                   </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -53,7 +53,7 @@ INSTRUCTIONS:
 
 RESPONSE FORMAT:
 <reply>your explanation here</reply>
-<latex>full modified LaTeX code here — ONLY include this tag if a code change was requested, omit entirely if no change</latex>`;
+<latex>full modified LaTeX code here, ONLY include this tag if a code change was requested, omit entirely if no change</latex>`;
   }
 
   private buildJDPrompt(latexCode: string, jobDescription: string): string {
@@ -73,7 +73,7 @@ OPTIMIZATION INSTRUCTIONS:
 3. Reorder and rephrase Experience bullet points to emphasize relevant skills
 4. Add missing keywords from the job description naturally into the content
 5. Adjust the Skills section to prioritize technologies mentioned in the JD
-6. Keep all factual content accurate — do not fabricate experience or qualifications
+6. Keep all factual content accurate, do not fabricate experience or qualifications
 7. Maintain the exact same LaTeX structure and formatting
 8. The document MUST compile with standard pdflatex using only: geometry, enumitem, hyperref, titlesec
 9. Keep it to exactly 1 page
@@ -90,7 +90,7 @@ RESPONSE FORMAT:
 
     // Primary: extract from XML-style tags (robust with LaTeX backslashes)
     const replyMatch = text.match(/<reply>([\s\S]*?)<\/reply>/);
-    // Use greedy match for <latex> — it's always the last/largest block
+    // Use greedy match for <latex>, it's always the last/largest block
     let latexMatch = text.match(/<latex>([\s\S]*)<\/latex>/);
 
     // Fallback: if <latex> exists but no closing tag (model truncated), take everything after it

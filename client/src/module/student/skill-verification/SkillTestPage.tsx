@@ -23,6 +23,7 @@ import type { SkillTestWithQuestions, SkillTestSubmitResult } from "../../../lib
 import { useProctoring } from "../../../hooks/useProctoring";
 import ProctoringCamera from "../../../components/ProctoringCamera";
 import ProctorWarningOverlay from "./ProctorWarningOverlay";
+import { Button } from "../../../components/ui/button";
 
 const OPTION_LABELS = ["A", "B", "C", "D"] as const;
 
@@ -215,12 +216,14 @@ export default function SkillTestPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
         <div className="max-w-3xl mx-auto">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={closeTab}
-            className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5 transition-colors"
+            className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5"
           >
             <ArrowLeft className="w-4 h-4" /> Close
-          </button>
+          </Button>
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-10 text-center space-y-3">
             <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto" />
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Test Not Available</h2>
@@ -278,13 +281,14 @@ export default function SkillTestPage() {
             </div>
           )}
 
-          <button
+          <Button
+            size="lg"
             onClick={requestCamera}
-            className="w-full py-3.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
           >
             <Camera className="w-4 h-4" />
             Enable Camera & Continue
-          </button>
+          </Button>
         </motion.div>
       </div>
     );
@@ -359,13 +363,14 @@ export default function SkillTestPage() {
             </ul>
           </div>
 
-          <button
+          <Button
+            size="lg"
             onClick={handleStart}
-            className="w-full py-3.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
           >
             <Maximize className="w-4 h-4" />
             Start Proctored Test
-          </button>
+          </Button>
         </motion.div>
       </div>
       </div>
@@ -487,24 +492,27 @@ export default function SkillTestPage() {
 
         {/* Actions */}
         <div className="flex gap-3 pt-2 pb-8">
-          <button
+          <Button
+            size="lg"
+            variant="secondary"
             onClick={closeTab}
-            className="flex-1 py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="flex-1 rounded-xl"
           >
             Close Tab
-          </button>
+          </Button>
           {!result.passed && (
-            <button
+            <Button
+              size="lg"
               onClick={() => {
                 setResult(null);
                 setAnswers({});
                 setCurrentQ(0);
                 setStarted(false);
               }}
-              className="flex-1 py-3 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors"
+              className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
             >
               Try Again
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -589,19 +597,21 @@ export default function SkillTestPage() {
       {/* Horizontal question navigator - at top */}
       <div className="flex flex-wrap gap-1.5 mb-5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-3">
         {questions.map((q, i) => (
-          <button
+          <Button
             key={q.id}
+            size="sm"
+            variant="ghost"
             onClick={() => setCurrentQ(i)}
-            className={`w-9 h-9 rounded-lg text-xs font-bold transition-all ${
+            className={`w-9 h-9 ${
               i === currentQ
-                ? "bg-violet-600 text-white shadow-sm"
+                ? "bg-violet-600 text-white shadow-sm hover:bg-violet-700"
                 : answers[q.id] !== undefined
                 ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
           >
             {i + 1}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -626,13 +636,15 @@ export default function SkillTestPage() {
               {currentQuestion.options.map((opt, optIdx) => {
                 const isSelected = answers[currentQuestion.id] === optIdx;
                 return (
-                  <button
+                  <Button
                     key={optIdx}
+                    variant="outline"
                     onClick={() => selectAnswer(currentQuestion.id, optIdx)}
-                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm transition-all border ${
+                    autoHeight
+                    className={`w-full justify-start gap-3 py-3.5 rounded-xl text-left ${
                       isSelected
                         ? "border-violet-400 dark:border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-900 dark:text-violet-200 ring-1 ring-violet-200 dark:ring-violet-700"
-                        : "border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:border-gray-200 dark:hover:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : ""
                     }`}
                   >
                     <span
@@ -645,7 +657,7 @@ export default function SkillTestPage() {
                       {OPTION_LABELS[optIdx]}
                     </span>
                     <span className="flex-1">{opt}</span>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -654,19 +666,20 @@ export default function SkillTestPage() {
 
         {/* Navigation */}
         <div className="flex items-center justify-between mt-5 pb-8">
-          <button
+          <Button
+            variant="secondary"
             onClick={() => setCurrentQ((p) => Math.max(0, p - 1))}
             disabled={currentQ === 0}
-            className="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="rounded-xl"
           >
             <ChevronLeft className="w-4 h-4" /> Previous
-          </button>
+          </Button>
 
           {currentQ === totalQuestions - 1 ? (
-            <button
+            <Button
               onClick={() => handleSubmit(false)}
               disabled={!allAnswered || submitting}
-              className="flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
             >
               {submitting ? (
                 <>
@@ -679,16 +692,16 @@ export default function SkillTestPage() {
                     ` (${totalQuestions - answeredCount} unanswered)`}
                 </>
               )}
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={() =>
                 setCurrentQ((p) => Math.min(totalQuestions - 1, p + 1))
               }
-              className="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors"
+              className="bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
             >
               Next <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           )}
         </div>
       </div>

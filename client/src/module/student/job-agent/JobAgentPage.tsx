@@ -30,10 +30,10 @@ interface DisplayMessage {
 const FREE_LIMIT = 2;
 
 const QUICK_PROMPTS = [
-  { icon: Code2, text: "Remote React jobs", color: "text-blue-500" },
-  { icon: MapPin, text: "Backend roles in Bangalore", color: "text-emerald-500" },
-  { icon: Briefcase, text: "Internships above 5 LPA", color: "text-amber-500" },
-  { icon: Zap, text: "Show me DevOps opportunities", color: "text-purple-500" },
+  { icon: Code2, text: "Remote React jobs" },
+  { icon: MapPin, text: "Backend roles in Bangalore" },
+  { icon: Briefcase, text: "Internships above 5 LPA" },
+  { icon: Zap, text: "Show me DevOps opportunities" },
 ];
 
 function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; maxHeight?: number }) {
@@ -84,7 +84,6 @@ export default function JobAgentPage() {
 
   const userMsgCount = messages.filter((m) => m.role === "user").length;
 
-  // Load existing conversation
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
     queryFn: async () => {
@@ -112,7 +111,6 @@ export default function JobAgentPage() {
     }
   }, [conversation, isPremium]);
 
-  // Auto-scroll
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
@@ -139,12 +137,12 @@ export default function JobAgentPage() {
         setHitFreeLimit(true);
         setMessages((prev) => [...prev, {
           role: "assistant",
-          content: "You've used your 2 free messages! Upgrade to Premium for unlimited AI-powered job search.",
+          content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
         }]);
       } else {
         setMessages((prev) => [...prev, {
           role: "assistant",
-          content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment!",
+          content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
         }]);
       }
     },
@@ -180,87 +178,141 @@ export default function JobAgentPage() {
   const inputDisabled = chatMut.isPending || hitFreeLimit;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto">
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
       <SEO title="InternHack AI" noIndex />
-      {/* Messages area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
-        <AnimatePresence mode="wait">
-          {isEmpty ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center h-full min-h-100"
-            >
-              {/* Hero icon */}
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-3xl bg-gray-950 dark:bg-white flex items-center justify-center shadow-lg shadow-gray-950/20 dark:shadow-white/10">
-                  <BotMessageSquare className="w-10 h-10 text-white dark:text-gray-950" />
-                </div>
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                  className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-400 border-2 border-white dark:border-gray-950 flex items-center justify-center"
-                >
-                  <Zap className="w-2.5 h-2.5 text-white" />
-                </motion.div>
-              </div>
 
-              <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-1.5">
-                Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}!
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 text-center max-w-sm">
-                I'm your AI job hunting buddy. Tell me what you're looking for and I'll find the best matches for you.
-              </p>
-              {!isPremium && (
-                <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
-                  {FREE_LIMIT} free messages —{" "}
-                  <Link to="/student/checkout" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 no-underline font-medium">
-                    upgrade for unlimited
-                  </Link>
-                </p>
+      {/* Editorial header */}
+      <div className="shrink-0 border-b border-stone-200 dark:border-white/10 px-4 sm:px-8 pt-6 pb-4 bg-stone-50 dark:bg-stone-950">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-1 w-1 bg-lime-400"></div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              ai / job agent
+            </span>
+          </div>
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              Talk to your job agent.
+            </h1>
+            <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest">
+              {!isPremium ? (
+                <span className="text-stone-500 dark:text-stone-400">
+                  <span className="text-stone-900 dark:text-stone-50">{Math.min(userMsgCount, FREE_LIMIT)}</span>
+                  <span className="text-stone-400 dark:text-stone-600"> / {FREE_LIMIT} free</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-lime-600 dark:text-lime-400">
+                  <div className="h-1 w-1 bg-lime-400"></div>
+                  premium, unlimited
+                </span>
               )}
+              {messages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => resetMut.mutate()}
+                  disabled={resetMut.isPending}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  new chat
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
-              {/* Quick prompt grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-md">
-                {QUICK_PROMPTS.map((q) => (
-                  <button
-                    key={q.text}
-                    onClick={() => handleSend(q.text)}
-                    className="group flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-left hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-sm transition-all"
-                  >
-                    <q.icon className={`w-4 h-4 ${q.color} shrink-0`} />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-950 dark:group-hover:text-white transition-colors">
-                      {q.text}
-                    </span>
-                  </button>
+      {/* Messages area */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 py-6">
+        <div className="max-w-4xl mx-auto">
+          <AnimatePresence mode="wait">
+            {isEmpty ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col items-center justify-center py-12"
+              >
+                {/* Hero icon box */}
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center">
+                    <BotMessageSquare className="w-8 h-8 text-stone-50 dark:text-stone-900" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400"></div>
+                </div>
+
+                <h2 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5">
+                  Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
+                </h2>
+                <p className="text-sm text-stone-600 dark:text-stone-400 mb-6 text-center max-w-md">
+                  Tell me what you're looking for and I'll surface the best matches from the live job feed.
+                </p>
+
+                {/* Quick prompt numbered grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 w-full max-w-2xl border-t border-l border-stone-200 dark:border-white/10">
+                  {QUICK_PROMPTS.map((q, i) => (
+                    <button
+                      key={q.text}
+                      type="button"
+                      onClick={() => handleSend(q.text)}
+                      className="group relative flex items-start gap-3 p-4 text-left transition-colors border-r border-b border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 hover:bg-stone-900 dark:hover:bg-stone-50 cursor-pointer"
+                    >
+                      <div className="flex flex-col gap-2 flex-1 min-w-0">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
+                          / {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <div className="flex items-start gap-2">
+                          <q.icon className="w-4 h-4 shrink-0 mt-0.5 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
+                          <span className="text-sm font-medium text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-stone-900">
+                            {q.text}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {!isPremium && (
+                  <p className="text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-6">
+                    {FREE_LIMIT} free messages.{" "}
+                    <Link
+                      to="/student/checkout"
+                      className="text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 no-underline"
+                    >
+                      <span className="underline decoration-lime-400 decoration-2 underline-offset-4">
+                        upgrade for unlimited
+                      </span>
+                    </Link>
+                  </p>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                {messages.map((msg, i) => (
+                  <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
                 ))}
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-              {messages.map((msg, i) => (
-                <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
-              ))}
-              {chatMut.isPending && <ThinkingIndicator />}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {chatMut.isPending && <ThinkingIndicator />}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Upgrade banner */}
       {hitFreeLimit && !isPremium && (
-        <div className="px-4 sm:px-6 py-3 bg-violet-50 dark:bg-violet-950/30 border-t border-violet-100 dark:border-violet-900/50">
-          <div className="flex items-center justify-between">
+        <div className="shrink-0 px-4 sm:px-8 py-3 border-t border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900">
+          <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Crown className="w-4 h-4 text-violet-500" />
-              <span className="text-sm text-violet-700 dark:text-violet-300">Unlock unlimited AI chat with Premium</span>
+              <Crown className="w-4 h-4 text-lime-600 dark:text-lime-400" />
+              <span className="text-xs text-stone-700 dark:text-stone-300">
+                Unlock unlimited AI chat with Premium.
+              </span>
             </div>
             <Link
               to="/student/checkout"
-              className="px-4 py-1.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-xs font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors no-underline"
             >
               Upgrade
             </Link>
@@ -268,81 +320,66 @@ export default function JobAgentPage() {
         </div>
       )}
 
-      {/* V0-style input bar */}
-      <div className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-gray-950">
-        <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 focus-within:border-gray-400 dark:focus-within:border-gray-600 focus-within:ring-2 focus-within:ring-gray-950/10 dark:focus-within:ring-white/10 transition-all shadow-sm">
-          <div className="overflow-y-auto">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                adjustHeight();
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder={
-                hitFreeLimit
-                  ? "Upgrade to continue chatting..."
-                  : chatMut.isPending
-                    ? "Thinking..."
-                    : "Ask me about jobs..."
-              }
-              disabled={inputDisabled}
-              className={cn(
-                "w-full px-4 py-3",
-                "resize-none",
-                "bg-transparent",
-                "border-none",
-                "text-gray-950 dark:text-white text-sm",
-                "focus:outline-none",
-                "focus-visible:ring-0 focus-visible:ring-offset-0",
-                "placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:text-sm",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-              )}
-              style={{ overflow: "hidden", minHeight: "44px" }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between px-3 pb-3">
-            <div className="flex items-center gap-2">
-              {!isPremium && (
-                <span className="text-[11px] text-gray-400 dark:text-gray-500 px-1">
-                  {Math.min(userMsgCount, FREE_LIMIT)}/{FREE_LIMIT} free
-                </span>
-              )}
+      {/* Input bar */}
+      <div className="shrink-0 px-4 sm:px-8 py-4 border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 focus-within:border-stone-400 dark:focus-within:border-white/25 transition-colors">
+            <div className="overflow-y-auto">
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  adjustHeight();
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  hitFreeLimit
+                    ? "Upgrade to continue chatting..."
+                    : chatMut.isPending
+                      ? "Thinking..."
+                      : "Ask me about jobs..."
+                }
+                disabled={inputDisabled}
+                className={cn(
+                  "w-full px-4 py-3",
+                  "resize-none",
+                  "bg-transparent",
+                  "border-none",
+                  "text-stone-900 dark:text-stone-50 text-sm",
+                  "focus:outline-none",
+                  "focus-visible:ring-0 focus-visible:ring-offset-0",
+                  "placeholder:text-stone-400 dark:placeholder:text-stone-500 placeholder:text-sm",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                )}
+                style={{ overflow: "hidden", minHeight: "44px" }}
+              />
             </div>
-            <div className="flex items-center gap-2">
-              {messages.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => resetMut.mutate()}
-                  disabled={resetMut.isPending}
-                  className="px-2.5 py-1.5 rounded-lg text-xs text-gray-400 dark:text-gray-500 transition-colors border border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-1"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  New chat
-                </button>
-              )}
+
+            <div className="flex items-center justify-between px-3 pb-2.5">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                {hitFreeLimit ? "limit reached" : "enter to send, shift + enter for newline"}
+              </span>
               <button
                 type="button"
                 onClick={() => handleSend()}
                 disabled={!input.trim() || inputDisabled}
                 className={cn(
-                  "p-2 rounded-xl text-sm transition-all",
+                  "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
                   input.trim() && !inputDisabled
-                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-sm"
-                    : "text-gray-300 dark:text-gray-600",
+                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
+                    : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
                 )}
+                aria-label="Send"
               >
                 <ArrowUpIcon className="w-4 h-4" />
-                <span className="sr-only">Send</span>
               </button>
             </div>
           </div>
+          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+            powered by Neural Network , always verify job details
+          </p>
         </div>
-        <p className="text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2">
-          Powered by AI — results may vary. Always verify job details.
-        </p>
       </div>
     </div>
   );

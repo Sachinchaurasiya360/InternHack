@@ -1,6 +1,15 @@
 import { prisma } from "../../database/db.js";
 import type { Prisma, ApplicationStatus } from "@prisma/client";
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
+import { sendEmail } from "../../utils/email.utils.js";
+import {
+  applicationStatusEmailHtml,
+  applicationStatusSubject,
+  isEmailableStatus,
+} from "../../utils/email-templates.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("recruiter.service");
 
 interface TalentSearchFilter {
   page: number;
@@ -258,16 +267,41 @@ export class RecruiterService {
   async updateApplicationStatus(applicationId: number, recruiterId: number, status: ApplicationStatus) {
     const application = await prisma.application.findUnique({
       where: { id: applicationId },
-      include: { job: { select: { recruiterId: true } } },
+      include: {
+        job: { select: { recruiterId: true, title: true, company: true } },
+        student: { select: { name: true, email: true } },
+      },
     });
 
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    return prisma.application.update({
+    const previousStatus = application.status;
+
+    const updated = await prisma.application.update({
       where: { id: applicationId },
       data: { status },
     });
+
+    if (previousStatus !== status && isEmailableStatus(status) && application.student.email) {
+      const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
+      const html = applicationStatusEmailHtml({
+        studentName: application.student.name,
+        jobTitle: application.job.title,
+        company: application.job.company,
+        status,
+        applicationUrl: `${clientUrl}/student/applications`,
+      });
+      sendEmail({
+        to: application.student.email,
+        subject: applicationStatusSubject(status, application.job.title),
+        html,
+      }).catch((err) => {
+        logger.error("Failed to send application status email", { applicationId, status, err });
+      });
+    }
+
+    return updated;
   }
 
   async advanceApplication(applicationId: number, recruiterId: number) {
@@ -599,92 +633,12 @@ export class RecruiterService {
     };
   }
 
-  // ==================== TALENT POOLS ====================
+  // ==================== SAVED CANDIDATES ====================
 
-  async createTalentPool(recruiterId: number, data: { name: string; description?: string }) {
-    return prisma.talentPool.create({
-      data: {
-        recruiterId,
-        name: data.name,
-        description: data.description ?? null,
-      },
-    });
-  }
-
-  async getTalentPools(recruiterId: number) {
-    return prisma.talentPool.findMany({
+  async getSavedCandidates(recruiterId: number) {
+    const saved = await prisma.savedCandidate.findMany({
       where: { recruiterId },
       orderBy: { createdAt: "desc" },
-      include: {
-        _count: { select: { members: true } },
-      },
-    });
-  }
-
-  async getTalentPoolById(poolId: number, recruiterId: number) {
-    const pool = await prisma.talentPool.findUnique({
-      where: { id: poolId },
-      include: {
-        members: {
-          include: {
-            student: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                college: true,
-                skills: true,
-                profilePic: true,
-              },
-            },
-          },
-          orderBy: { addedAt: "desc" },
-        },
-      },
-    });
-
-    if (!pool) throw new Error("Talent pool not found");
-    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
-
-    return pool;
-  }
-
-  async updateTalentPool(poolId: number, recruiterId: number, data: { name?: string; description?: string }) {
-    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
-    if (!pool) throw new Error("Talent pool not found");
-    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
-
-    return prisma.talentPool.update({
-      where: { id: poolId },
-      data: {
-        ...(data.name !== undefined && { name: data.name }),
-        ...(data.description !== undefined && { description: data.description }),
-      },
-    });
-  }
-
-  async deleteTalentPool(poolId: number, recruiterId: number) {
-    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
-    if (!pool) throw new Error("Talent pool not found");
-    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
-
-    await prisma.talentPool.delete({ where: { id: poolId } });
-  }
-
-  async addPoolMember(poolId: number, recruiterId: number, studentId: number, notes?: string) {
-    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
-    if (!pool) throw new Error("Talent pool not found");
-    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
-
-    const student = await prisma.user.findUnique({ where: { id: studentId } });
-    if (!student || student.role !== "STUDENT") throw new Error("Student not found");
-
-    return prisma.talentPoolMember.create({
-      data: {
-        poolId,
-        studentId,
-        notes: notes ?? null,
-      },
       include: {
         student: {
           select: {
@@ -692,26 +646,47 @@ export class RecruiterService {
             name: true,
             email: true,
             college: true,
+            graduationYear: true,
+            location: true,
             skills: true,
             profilePic: true,
+            bio: true,
+            linkedinUrl: true,
+            githubUrl: true,
+            portfolioUrl: true,
           },
         },
       },
     });
+    return saved;
   }
 
-  async removePoolMember(poolId: number, recruiterId: number, studentId: number) {
-    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
-    if (!pool) throw new Error("Talent pool not found");
-    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
-
-    const member = await prisma.talentPoolMember.findUnique({
-      where: { poolId_studentId: { poolId, studentId } },
+  async getSavedIds(recruiterId: number) {
+    const rows = await prisma.savedCandidate.findMany({
+      where: { recruiterId },
+      select: { studentId: true },
     });
-    if (!member) throw new Error("Member not found in pool");
+    return rows.map((r) => r.studentId);
+  }
 
-    await prisma.talentPoolMember.delete({
-      where: { poolId_studentId: { poolId, studentId } },
+  async saveCandidate(recruiterId: number, studentId: number, notes?: string) {
+    const student = await prisma.user.findUnique({ where: { id: studentId } });
+    if (!student || student.role !== "STUDENT") throw new Error("Student not found");
+
+    return prisma.savedCandidate.upsert({
+      where: { recruiterId_studentId: { recruiterId, studentId } },
+      update: { notes: notes ?? null },
+      create: { recruiterId, studentId, notes: notes ?? null },
+    });
+  }
+
+  async unsaveCandidate(recruiterId: number, studentId: number) {
+    const existing = await prisma.savedCandidate.findUnique({
+      where: { recruiterId_studentId: { recruiterId, studentId } },
+    });
+    if (!existing) return;
+    await prisma.savedCandidate.delete({
+      where: { recruiterId_studentId: { recruiterId, studentId } },
     });
   }
 }

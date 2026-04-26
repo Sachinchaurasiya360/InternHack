@@ -16,6 +16,7 @@ import {
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { grants } from "./grantsData";
+import { Button } from "../../../components/ui/button";
 
 // ---- Types ----------------------------------------------------------------
 
@@ -128,26 +129,32 @@ function TrackedGrantCard({
 
         {confirmDelete ? (
           <div className="flex items-center gap-1.5 shrink-0">
-            <button
+            <Button
+              size="sm"
+              variant="ghost"
               onClick={() => onDelete(grant.id)}
-              className="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+              className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50"
             >
               Confirm
-            </button>
-            <button
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
               onClick={() => setConfirmDelete(false)}
-              className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         ) : (
-          <button
+          <Button
+            variant="ghost"
+            mode="icon"
+            size="sm"
             onClick={() => setConfirmDelete(true)}
-            className="p-1.5 rounded-lg text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0"
+            className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 shrink-0"
           >
             <Trash2 className="w-4 h-4" />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -262,12 +269,9 @@ function AddGrantModal({
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Add Grant to Tracker
           </h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors"
-          >
+          <Button variant="ghost" mode="icon" size="sm" onClick={onClose}>
             <X className="w-4 h-4 text-gray-500 dark:text-gray-500" />
-          </button>
+          </Button>
         </div>
 
         {/* Search */}
@@ -563,13 +567,14 @@ export default function GrantTrackerPage() {
         <div className="flex-1" />
 
         {/* Add grant */}
-        <button
+        <Button
+          variant="mono"
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+          className="rounded-xl"
         >
           <Plus className="w-4 h-4" />
           Add Grant
-        </button>
+        </Button>
       </motion.div>
 
       {/* Cards list / Empty state */}
@@ -588,13 +593,15 @@ export default function GrantTrackerPage() {
             Start by adding a grant you are interested in. Your progress is
             saved locally on this device.
           </p>
-          <button
+          <Button
+            variant="mono"
+            size="lg"
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+            className="rounded-xl"
           >
             <Plus className="w-4 h-4" />
             Add Your First Grant
-          </button>
+          </Button>
         </motion.div>
       ) : filtered.length === 0 ? (
         <motion.div

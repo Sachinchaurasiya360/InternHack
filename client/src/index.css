@@ -139,7 +139,7 @@ body {
   100% { inset: 0 35px 35px 0; }
 }
 
-/* Proctored test — lock down the page */
+/* Proctored test, lock down the page */
 .proctored-test {
   user-select: none !important;
   -webkit-user-select: none !important;

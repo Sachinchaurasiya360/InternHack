@@ -6,6 +6,7 @@ import { java } from "@codemirror/lang-java";
 import { keymap } from "@codemirror/view";
 import { Play, Loader2 } from "lucide-react";
 import type { DsaLanguage } from "../../../../lib/types";
+import { Button } from "../../../../components/ui/button";
 
 const LANG_EXTENSIONS = { python: python(), cpp: cpp(), java: java() };
 const LANG_LABELS: Record<DsaLanguage, string> = { python: "Python 3", cpp: "C++ 17", java: "Java" };
@@ -51,17 +52,19 @@ export function DsaCodeEditor({ value, onChange, onRun, language, onLanguageChan
               {runsLimit - runsUsed} runs left
             </span>
           )}
-          <button
+          <Button
+            variant="primary"
+            size="sm"
             onClick={onRun}
             disabled={isRunning || !value.trim()}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
             {isRunning ? (
               <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Running...</>
             ) : (
               <><Play className="w-3.5 h-3.5" /> Run</>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -20,8 +20,6 @@ export const queryKeys = {
   // ATS
   ats: {
     all: ["ats"] as const,
-    history: () => ["ats", "history"] as const,
-    detail: (id: string | number) => ["ats", "detail", id] as const,
     usage: () => ["ats", "usage"] as const,
   },
 
@@ -150,32 +148,10 @@ export const queryKeys = {
     admin: (params?: Record<string, string | number>) => ["badges", "admin", params] as const,
   },
 
-  // Talent Pools
-  talentPools: {
-    list: () => ["talent-pools", "list"] as const,
-    detail: (poolId: number) => ["talent-pools", "detail", poolId] as const,
-  },
-
-  // Campus Drives
-  campusDrives: {
-    recruiter: (params?: Record<string, string | number>) => ["campus-drives", "recruiter", params] as const,
-    detail: (id: number) => ["campus-drives", "detail", id] as const,
-    registrations: (id: number) => ["campus-drives", "registrations", id] as const,
-    eligible: (params?: Record<string, string | number>) => ["campus-drives", "eligible", params] as const,
-    my: () => ["campus-drives", "my"] as const,
-  },
-
-  // HR Contacts
-  hrContacts: {
-    list: (params?: Record<string, string | number>) =>
-      ["hr-contacts", "list", params] as const,
-    stats: () => ["hr-contacts", "stats"] as const,
-  },
-
-  // Email Campaigns
-  emailCampaigns: {
-    list: () => ["email-campaigns", "list"] as const,
-    detail: (id: number) => ["email-campaigns", "detail", id] as const,
+  // Saved Candidates
+  savedCandidates: {
+    list: () => ["saved-candidates", "list"] as const,
+    ids: () => ["saved-candidates", "ids"] as const,
   },
 
   // Job Feed (InternHack AI)
@@ -187,6 +163,28 @@ export const queryKeys = {
   },
   jobAgent: {
     conversation: () => ["job-agent", "conversation"] as const,
+  },
+
+  // Interview Experiences
+  interviews: {
+    all: ["interviews"] as const,
+    list: (params?: Record<string, string | number | boolean>) =>
+      ["interviews", "list", params] as const,
+    detail: (id: number) => ["interviews", "detail", id] as const,
+    companies: (params?: Record<string, string | number>) =>
+      ["interviews", "companies", params] as const,
+    companySummary: (slug: string) => ["interviews", "company-summary", slug] as const,
+    topQuestions: (slug: string) => ["interviews", "top-questions", slug] as const,
+  },
+
+  // Funding Signals
+  signals: {
+    all: ["signals"] as const,
+    list: (params?: Record<string, string | number | boolean>) =>
+      ["signals", "list", params] as const,
+    detail: (id: number) => ["signals", "detail", id] as const,
+    sources: () => ["signals", "sources"] as const,
+    stats: () => ["signals", "stats"] as const,
   },
 
   // DSA Practice

@@ -2,62 +2,132 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, MapPin, IndianRupee, Wallet, Clock, X, Landmark, ChevronRight } from "lucide-react";
+import { Search, MapPin, IndianRupee, Wallet, Clock, X, Landmark, ArrowUpRight } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { ExternalJob, Job, Pagination } from "../../../lib/types";
+import type { ExternalJob, Job, Pagination, ScrapedJob } from "../../../lib/types";
 
 const FILTER_TAGS = [
   "Frontend", "Backend", "Full Stack", "Python", "Java", "DevOps",
   "AI", "Cloud", "Data Science",
 ] as const;
 
-// Detect if a salary string already carries a currency symbol/code (₹ $ € £ ¥, or USD/EUR/GBP/INR/JPY).
 const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
+
+const cardBase =
+  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
+
+function CompanyMark({ label }: { label: string }) {
+  return (
+    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
+      {label?.charAt(0)?.toUpperCase() || "?"}
+    </div>
+  );
+}
+
+function MetaChip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
+      <span className="text-stone-400">{icon}</span>
+      {children}
+    </span>
+  );
+}
 
 const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: ExternalJob }) {
   const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
-    <Link
-      to={job.slug ? `/jobs/ext/${job.slug}` : "#"}
-      className="group flex flex-col bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 h-full no-underline"
-    >
-      <div className="flex items-start mb-3">
-        <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mr-3 text-white dark:text-gray-950 text-sm font-bold">
-          {job.company?.charAt(0) || "?"}
-        </div>
+    <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={cardBase}>
+      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
+        <span className="h-1 w-1 bg-lime-400" />
+        external
+      </span>
+      <div className="flex items-start gap-3 mb-3 pr-16">
+        <CompanyMark label={job.company || "?"} />
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{job.role || "Open Role"}</h3>
-          <span className="text-sm text-gray-500">{job.company || "Company"}</span>
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+            {job.role || "Open Role"}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {job.company || "company"}
+          </span>
         </div>
       </div>
-      {job.description && <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>}
-      <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-4">
-        {job.location && (
-          <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
-        )}
-        {job.salary && (
-          <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><SalaryIcon className="w-3 h-3 text-emerald-400" />{job.salary}</span>
-        )}
+      {job.description && (
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>
+      )}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
+        {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
       </div>
       {job.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-1 mb-4">
           {job.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium">{tag}</span>
+            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+              {tag}
+            </span>
           ))}
         </div>
       )}
-      <div className="mt-auto">
-        <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-lg group-hover:bg-gray-800 dark:group-hover:bg-gray-200 transition-colors">
-          View Details <ChevronRight className="w-3.5 h-3.5" />
-        </span>
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
       </div>
     </Link>
+  );
+});
+
+const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: ScrapedJob }) {
+  const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
+  const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
+  return (
+    <a
+      href={job.applicationUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cardBase}
+    >
+      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
+        <span className="h-1 w-1 bg-lime-400" />
+        {job.source}
+      </span>
+      <div className="flex items-start gap-3 mb-3 pr-20">
+        <CompanyMark label={job.company || "?"} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+            {job.title || "Open Role"}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {job.company || "company"}
+          </span>
+        </div>
+      </div>
+      {job.description && (
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>
+      )}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
+        {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
+      </div>
+      {job.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-4">
+          {job.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+      </div>
+    </a>
   );
 });
 
@@ -70,9 +140,9 @@ export default function JobBrowsePage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
+  const [scrPage, setScrPage] = useState(1);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Debounce search & location inputs
   useEffect(() => {
     timerRef.current = setTimeout(() => {
       setDebouncedSearch(search);
@@ -106,8 +176,27 @@ export default function JobBrowsePage() {
       { page: extPage, search: debouncedSearch, location: debouncedLocation, tags: selectedTags.join(",") },
     ],
     queryFn: async () => {
-      const res = await api.get(`/external-jobs?page=${extPage}&limit=12`);
+      const params = new URLSearchParams({ page: String(extPage), limit: "12" });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (debouncedLocation) params.set("location", debouncedLocation);
+      if (selectedTags.length) params.set("tags", selectedTags.join(","));
+      const res = await api.get(`/external-jobs?${params}`);
       return res.data as { jobs: ExternalJob[]; total: number; totalPages: number; page: number };
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: scrData } = useQuery({
+    queryKey: [
+      "public-scraped-jobs",
+      { page: scrPage, search: debouncedSearch, location: debouncedLocation, tags: selectedTags.join(",") },
+    ],
+    queryFn: async () => {
+      const params = new URLSearchParams({ page: String(scrPage), limit: "12" });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (debouncedLocation) params.set("location", debouncedLocation);
+      const res = await api.get(`/scraped-jobs?${params}`);
+      return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
     placeholderData: keepPreviousData,
   });
@@ -118,6 +207,7 @@ export default function JobBrowsePage() {
     );
     setPage(1);
     setExtPage(1);
+    setScrPage(1);
   };
 
   const clearAll = () => {
@@ -126,19 +216,30 @@ export default function JobBrowsePage() {
     setSelectedTags([]);
     setPage(1);
     setExtPage(1);
+    setScrPage(1);
   };
 
   const hasFilters = search || locationFilter || selectedTags.length > 0;
 
-  // Client-side filter for external jobs: match selected tags against role, description, and tags
-  const filteredExtJobs = (extData?.jobs ?? []).filter((job) => {
-    if (selectedTags.length === 0) return true;
-    const haystack = `${job.role ?? ""} ${job.description ?? ""} ${job.tags.join(" ")}`.toLowerCase();
-    return selectedTags.some((tag) => haystack.includes(tag.toLowerCase()));
-  });
+  const submitSearch = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setDebouncedSearch(search);
+    setDebouncedLocation(locationFilter);
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+  };
+
+  const filteredExtJobs = extData?.jobs ?? [];
+  const scrapedJobs = scrData?.jobs ?? [];
+  const scrapedPagination = scrData?.pagination;
+
+  const internalTotal = data?.pagination?.total;
+  const externalTotal = extData?.total;
+  const scrapedTotal = scrData?.pagination?.total;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950 relative overflow-hidden">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 relative">
       <SEO
         title="Browse Jobs & Internships"
         description="Find your next internship or job opportunity. Browse curated listings from top companies, filter by location and role, and apply directly."
@@ -146,117 +247,200 @@ export default function JobBrowsePage() {
         canonicalUrl={canonicalUrl("/jobs")}
       />
 
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-150 h-150 rounded-full bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/30 dark:to-violet-900/30 opacity-60 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-125 h-125 rounded-full bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/30 dark:to-blue-900/30 opacity-60 blur-3xl" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-200 h-200 rounded-full border border-black/3 dark:border-white/3" />
-      </div>
+      {!isInsideLayout && <Navbar />}
+
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
         style={{
-          backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundSize: "120px 100%",
         }}
       />
 
-      {!isInsideLayout && <Navbar />}
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-16">
-        {/* Hero header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mt-6 mb-10">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-            Find Your Next <span className="text-gradient-accent">Opportunity</span>
-          </h1>
-          <p className="text-lg text-gray-500 max-w-xl mx-auto">Browse open positions from top companies and kickstart your career</p>
+      <div className="relative max-w-6xl mx-auto px-6 pt-8 pb-20">
+        {/* Editorial header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
+        >
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              browse / jobs
+            </div>
+            <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+              Find your next{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">role.</span>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                  aria-hidden
+                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                />
+              </span>
+            </h1>
+            <p className="mt-3 text-sm text-stone-500 max-w-md">
+              Open positions from partner companies plus curated external listings, updated daily.
+            </p>
+          </div>
+          <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            {typeof internalTotal === "number" && (
+              <span>
+                internal <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{internalTotal}</span>
+              </span>
+            )}
+            {typeof externalTotal === "number" && (
+              <span>
+                external <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{externalTotal}</span>
+              </span>
+            )}
+            {typeof scrapedTotal === "number" && (
+              <span>
+                scraped <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{scrapedTotal}</span>
+              </span>
+            )}
+          </div>
         </motion.div>
 
-        {/* Government Internships Banner */}
+        {/* Gov internships strip */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="max-w-4xl mx-auto mb-6"
+          className="mb-6"
         >
           <Link
             to={isInsideLayout ? "/student/internships" : "/internships"}
-            className="w-full flex items-center gap-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group no-underline"
+            className="group flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
           >
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-              <Landmark className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
+              <Landmark className="w-4 h-4 text-stone-600 dark:text-stone-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">Top 100 Internships in India 2026</p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">Government, PSUs, IITs, Tech Giants & Global Organizations</p>
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                Top 100 Internships in India 2026
+              </p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
+                government / psus / iits / tech giants
+              </p>
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors shrink-0" />
+            <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>
         </motion.div>
 
-        {/* Search + Filters */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="max-w-4xl mx-auto mb-10 space-y-3">
-          {/* Search bar */}
-          <div className="bg-white dark:bg-gray-900 p-3 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-lg shadow-black/4">
-            <div className="flex items-center gap-3">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
-                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 text-sm dark:text-white dark:placeholder-gray-500"
-                  placeholder="Search by title, company, or keyword..." />
-              </div>
-              <div className="relative hidden sm:block">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-                <input type="text" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}
-                  className="pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 text-sm w-48 dark:text-white dark:placeholder-gray-500"
-                  placeholder="Location" />
-              </div>
+        {/* Search + filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-10 space-y-4"
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitSearch();
+            }}
+            className="flex flex-col sm:flex-row gap-2"
+          >
+            <div className="flex-1 relative">
+              <button
+                type="submit"
+                aria-label="Search"
+                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer border-0 bg-transparent"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+                placeholder="Search by title, company, or keyword..."
+              />
             </div>
-          </div>
+            <div className="relative sm:w-60">
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+              <input
+                type="text"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+                placeholder="Location"
+              />
+            </div>
+          </form>
 
-          {/* Filter chips */}
           <div className="flex items-center gap-2 flex-wrap">
-            {FILTER_TAGS.map((tag, i) => (
-              <motion.button
-                key={tag}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03, duration: 0.25 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => toggleTag(tag)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors duration-200 ${
-                  selectedTags.includes(tag)
-                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-md"
-                    : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700"
-                }`}>
-                {tag}
-              </motion.button>
-            ))}
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
+              filter /
+            </span>
+            {FILTER_TAGS.map((tag, i) => {
+              const active = selectedTags.includes(tag);
+              return (
+                <motion.button
+                  key={tag}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.02, duration: 0.2 }}
+                  onClick={() => toggleTag(tag)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                    active
+                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                  }`}
+                >
+                  {tag}
+                </motion.button>
+              );
+            })}
             <AnimatePresence>
               {hasFilters && (
                 <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.2 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.15 }}
                   onClick={clearAll}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1">
-                  <X className="w-3 h-3" /> Clear
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
+                >
+                  <X className="w-3 h-3" /> clear
                 </motion.button>
               )}
             </AnimatePresence>
           </div>
         </motion.div>
 
-        {/* External Jobs Section — shown first */}
-        {filteredExtJobs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
-            <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">Latest Opportunities</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Curated external listings updated daily</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* External + scraped jobs */}
+        {(filteredExtJobs.length > 0 || scrapedJobs.length > 0) && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
+            <div className="flex items-end justify-between gap-4 mb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  <span className="h-1 w-1 bg-lime-400" />
+                  external / curated
+                </div>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                  Latest opportunities
+                </h2>
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
+                updated daily
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
-                <motion.div key={job.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                <motion.div key={`ext-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                   <ExternalJobCard job={job} />
+                </motion.div>
+              ))}
+              {scrapedJobs.map((job, i) => (
+                <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (filteredExtJobs.length + i) * 0.03 }}>
+                  <ScrapedJobCard job={job} />
                 </motion.div>
               ))}
             </div>
@@ -267,55 +451,100 @@ export default function JobBrowsePage() {
                 onPageChange={setExtPage}
               />
             )}
+            {scrapedPagination && scrapedPagination.totalPages > 1 && (
+              <PaginationControls
+                currentPage={scrPage}
+                totalPages={scrapedPagination.totalPages}
+                onPageChange={setScrPage}
+              />
+            )}
           </motion.div>
         )}
 
+        {/* Internal jobs */}
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <div>
+            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1 w-1 bg-lime-400" />
+              internal / live
+            </div>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              Partner roles
+            </h2>
+          </div>
+        </div>
+
         {isLoading ? (
-          <div className="text-center py-16 text-gray-500">Loading jobs...</div>
+          <div className="py-20 text-center">
+            <div className="inline-flex flex-col items-center gap-3">
+              <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
+            </div>
+          </div>
         ) : (data?.jobs ?? []).length === 0 ? (
-          <div className="text-center py-16 text-gray-500">No jobs found. Try different search criteria.</div>
+          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
+            <p className="text-sm text-stone-600 dark:text-stone-400">No jobs found.</p>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">try different search criteria</p>
+          </div>
         ) : (
           <>
             <div className="relative">
               {isFetching && (
-                <div className="absolute inset-0 bg-white/60 dark:bg-gray-950/60 z-10 flex items-center justify-center rounded-2xl">
-                  <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-white rounded-full animate-spin" />
+                <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
+                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
                 </div>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(data?.jobs ?? []).map((job, i) => (
-                  <motion.div key={job.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                    <Link to={`/jobs/${job.id}`}
-                      className="group block bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 no-underline">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mr-3 text-white dark:text-gray-950 text-sm font-bold">
-                          {job.company?.charAt(0) || "C"}
-                        </div>
+                  <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+                    <Link to={`/jobs/${job.id}`} className={cardBase}>
+                      <div className="flex items-start gap-3 mb-3">
+                        <CompanyMark label={job.company || "C"} />
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{job.title}</h3>
-                          <span className="text-sm text-gray-500">{job.company}</span>
+                          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+                            {job.title}
+                          </h3>
+                          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+                            {job.company}
+                          </span>
                         </div>
                         {job._count && (
-                          <span className="text-[11px] text-gray-400 dark:text-gray-500 shrink-0 ml-2 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded-full">{job._count.applications} applied</span>
+                          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 shrink-0">
+                            {job._count.applications} applied
+                          </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>
-                      <div className="flex flex-wrap gap-3 text-xs text-gray-500">
-                        <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
-                        <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><IndianRupee className="w-3 h-3 text-emerald-400" />{job.salary}</span>
+                      <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+                        {job.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
+                        <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
                         {job.deadline && (
-                          new Date(job.deadline) < new Date()
-                            ? <span className="flex items-center gap-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-lg font-medium"><Clock className="w-3 h-3" />Expired</span>
-                            : <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><Clock className="w-3 h-3 text-amber-400" />{new Date(job.deadline).toLocaleDateString()}</span>
+                          new Date(job.deadline) < new Date() ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
+                              <Clock className="w-3 h-3" /> expired
+                            </span>
+                          ) : (
+                            <MetaChip icon={<Clock className="w-3 h-3" />}>
+                              {new Date(job.deadline).toLocaleDateString()}
+                            </MetaChip>
+                          )
                         )}
                       </div>
                       {job.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-gray-50 dark:border-gray-800">
+                        <div className="flex flex-wrap gap-1 mb-4">
                           {job.tags.slice(0, 3).map((tag) => (
-                            <span key={tag} className="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-medium">{tag}</span>
+                            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+                              {tag}
+                            </span>
                           ))}
                         </div>
                       )}
+                      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+                        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+                        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+                      </div>
                     </Link>
                   </motion.div>
                 ))}

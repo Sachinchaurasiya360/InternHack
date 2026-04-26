@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Briefcase } from "lucide-react";
-import { GoogleLogin } from "@react-oauth/google";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
-import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 
 export default function RecruiterRegisterPage() {
@@ -15,24 +13,6 @@ export default function RecruiterRegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
-    setError("");
-    setLoading(true);
-    try {
-      const { data } = await api.post("/auth/google", {
-        credential: credentialResponse.credential,
-        role: "RECRUITER",
-      });
-      login(data.user);
-      navigate("/recruiters");
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Google sign-up failed");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,102 +43,103 @@ export default function RecruiterRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
         title="Recruiter Registration"
         description="Create a free recruiter account on InternHack. Post jobs, manage applications, and hire top talent from leading institutions."
         keywords="recruiter signup, post jobs, hire interns, InternHack recruiter"
       />
-      <Navbar />
-      <div className="flex-1 flex items-center justify-center px-4 pt-24 pb-12">
+
+      <AuthPromoPanel
+        kicker="start hiring in 10 minutes"
+        headline={
+          <>
+            Your first hire.{" "}
+            <span className="text-stone-500">
+              Live by tomorrow.
+            </span>
+          </>
+        }
+        sub="Spin up a recruiter workspace, post a role, and see ranked candidates inside the day. Seven days on the house, no card required."
+      />
+
+      <div className="relative flex items-center justify-center px-6 py-16 lg:py-0">
+        <Link
+          to="/"
+          className="absolute top-6 left-6 flex items-center gap-2 text-sm no-underline text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
+        >
+          <div className="relative">
+            <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-md object-contain" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
+          </div>
+          <span className="font-bold text-stone-900 dark:text-stone-50">InternHack</span>
+        </Link>
+
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
-          <div className="text-center mb-8">
-            <div className="mx-auto w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
-              <Briefcase className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Recruiter Account</h1>
-            <p className="text-gray-500 dark:text-gray-500 mt-1">Start hiring on InternHack</p>
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            create account
           </div>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Recruiter signup.
+          </h1>
+          <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">
+            Seven-day free trial. Cancel any time.
+          </p>
 
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-5">
+          <div className="mt-8 space-y-5">
             {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
 
-            {/* Google Sign-Up */}
-            <div className="[&>div]:w-full [&_iframe]:w-full! [&>div>div]:w-full">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setError("Google sign-up failed")}
-                size="large"
-                width={380}
-                text="signup_with"
-                shape="pill"
-                theme="outline"
-                logo_alignment="center"
-              />
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200 dark:border-gray-700" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-white dark:bg-gray-900 px-3 text-gray-400 dark:text-gray-500">or sign up with email</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <FormField label="Full name">
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                  placeholder="John Doe"
+                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  placeholder="Jane Doe"
                   required
                 />
-              </div>
+              </FormField>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Work Email</label>
+              <FormField label="Work email">
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
                   placeholder="you@company.com"
                   required
                 />
-              </div>
+              </FormField>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company Name</label>
+              <FormField label="Company">
                 <input
                   type="text"
                   value={form.company}
                   onChange={(e) => setForm({ ...form, company: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
                   placeholder="Your company name"
                   required
                 />
-              </div>
+              </FormField>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+              <FormField label="Password">
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors pr-10 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
                     placeholder="Min. 6 characters"
                     required
                     minLength={6}
@@ -166,39 +147,174 @@ export default function RecruiterRegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
+              </FormField>
 
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+              <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-50"
               >
-                {loading ? "Creating account..." : "Create Account"}
-              </motion.button>
+                {loading ? "Creating account..." : "Create account"}
+                {!loading && (
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                )}
+              </button>
+
+              <p className="text-xs text-stone-500 leading-relaxed">
+                By creating an account you agree to our{" "}
+                <Link to="/terms" className="text-stone-700 dark:text-stone-300 border-b border-stone-300 dark:border-white/20 pb-0.5 no-underline">
+                  terms
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" className="text-stone-700 dark:text-stone-300 border-b border-stone-300 dark:border-white/20 pb-0.5 no-underline">
+                  privacy policy
+                </Link>
+                .
+              </p>
             </form>
 
-            <p className="text-center text-sm text-gray-500 dark:text-gray-500">
-              Already have an account?{" "}
-              <Link to="/recruiter/login" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
-                Sign in
-              </Link>
-            </p>
-
-            <p className="text-center text-xs text-gray-400 dark:text-gray-600">
-              Looking for internships?{" "}
-              <Link to="/register" className="hover:underline">
-                Register as student
-              </Link>
-            </p>
+            <div className="pt-4 space-y-2">
+              <p className="text-sm text-stone-600 dark:text-stone-400">
+                Already have an account?{" "}
+                <Link
+                  to="/recruiter/login"
+                  className="text-stone-900 dark:text-stone-50 font-bold border-b border-stone-900 dark:border-stone-50 pb-0.5 no-underline"
+                >
+                  Sign in
+                </Link>
+              </p>
+              <p className="text-xs font-mono text-stone-500">
+                looking for internships?{" "}
+                <Link to="/register" className="hover:text-stone-900 dark:hover:text-stone-50 no-underline">
+                  register as student
+                </Link>
+              </p>
+            </div>
           </div>
         </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  right,
+  children,
+}: {
+  label: string;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="text-xs font-mono uppercase tracking-widest text-stone-500">
+          {label}
+        </label>
+        {right}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function AuthPromoPanel({
+  kicker,
+  headline,
+  sub,
+}: {
+  kicker: string;
+  headline: React.ReactNode;
+  sub: string;
+}) {
+  return (
+    <div className="hidden lg:flex relative flex-col justify-between p-12 xl:p-16 bg-stone-900 overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-[0.06]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+          backgroundSize: "28px 28px",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "120px 100%",
+        }}
+      />
+
+      <div className="relative">
+        <Link to="/" className="inline-flex items-center gap-2.5 no-underline">
+          <div className="relative">
+            <img src="/logo.png" alt="InternHack" className="h-8 w-8 rounded-md object-contain" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
+          </div>
+          <span className="text-base font-bold tracking-tight text-stone-50">
+            InternHack
+          </span>
+        </Link>
+      </div>
+
+      <div className="relative max-w-lg">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-400"
+        >
+          <motion.span
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="h-1.5 w-1.5 bg-lime-400"
+          />
+          {kicker}
+        </motion.div>
+        <h2 className="mt-6 text-4xl xl:text-5xl font-bold tracking-tight text-stone-50 leading-none">
+          {headline}
+        </h2>
+        <p className="mt-6 text-base text-stone-400 leading-relaxed">{sub}</p>
+
+        <div className="mt-12 grid grid-cols-3 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden">
+          <div className="bg-stone-900 p-5">
+            <div className="text-2xl xl:text-3xl font-bold tracking-tight text-stone-50 tabular-nums">
+              7<span className="text-lime-400">d</span>
+            </div>
+            <div className="mt-1 text-xs font-mono uppercase tracking-widest text-stone-500">
+              free trial
+            </div>
+          </div>
+          <div className="bg-stone-900 p-5">
+            <div className="text-2xl xl:text-3xl font-bold tracking-tight text-stone-50 tabular-nums">
+              14<span className="text-lime-400">/</span>14
+            </div>
+            <div className="mt-1 text-xs font-mono uppercase tracking-widest text-stone-500">
+              hr modules
+            </div>
+          </div>
+          <div className="bg-stone-900 p-5">
+            <div className="text-2xl xl:text-3xl font-bold tracking-tight text-stone-50 tabular-nums">
+              10<span className="text-lime-400">m</span>
+            </div>
+            <div className="mt-1 text-xs font-mono uppercase tracking-widest text-stone-500">
+              to first post
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative text-xs font-mono text-stone-500">
+        no card required. cancel any time.
       </div>
     </div>
   );

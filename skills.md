@@ -1,13 +1,13 @@
-# InternHack — Code Style & UI Skills
+# InternHack, Code Style & UI Skills
 
 ## TailwindCSS v4 Rules
 
 ### Canonical classes only
 - Colors: `bg-indigo-600`, `text-gray-500` (standard palette)
 - Gradients: `bg-linear-to-br from-indigo-100 to-violet-100` (NOT `bg-gradient-to-br`)
-- Sizing: use scale classes (`text-sm`, `text-lg`, `w-96`) — avoid arbitrary brackets like `text-[17px]`
-- Spacing: standard scale (`p-4`, `gap-2.5`, `mb-3`) — brackets OK for calc: `h-[calc(100vh-180px)]`
-- Border radius: `rounded-xl`, `rounded-2xl`, `rounded-lg` — NOT `rounded-[12px]`
+- Sizing: use scale classes (`text-sm`, `text-lg`, `w-96`), avoid arbitrary brackets like `text-[17px]`
+- Spacing: standard scale (`p-4`, `gap-2.5`, `mb-3`), brackets OK for calc: `h-[calc(100vh-180px)]`
+- Border radius: `rounded-xl`, `rounded-2xl`, `rounded-lg`, NOT `rounded-[12px]`
 
 ### Dark mode
 - Always include dark variants: `bg-white dark:bg-gray-900`, `text-gray-800 dark:text-gray-200`
@@ -23,7 +23,7 @@ Instead, use `mt-6` on the header wrapper for top spacing.
 ### Icons
 - Import from `lucide-react`
 - Size: `w-3.5 h-3.5` (small/toolbar), `w-4 h-4` (standard), `w-5 h-5` (emphasis)
-- No gradient backgrounds on icons — use flat color: `text-indigo-500`
+- No gradient backgrounds on icons, use flat color: `text-indigo-500`
 - Icon containers: `w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center`
 
 ### Company/entity avatars
@@ -51,7 +51,7 @@ First-letter initial in neutral box, NOT generic icon:
 </p>
 ```
 
-### Buttons — Use `<Button>` Component
+### Buttons, Use `<Button>` Component
 Import from `components/ui/button.tsx` (CVA-based). Do NOT use raw `<button>` with inline Tailwind for new code.
 
 ```tsx
@@ -111,7 +111,7 @@ Show Lock icon + upsell card for free users.
 ## Code Quality
 
 ### DRY
-- No duplicate helpers — extract shared utilities
+- No duplicate helpers, extract shared utilities
 - Shared animation variants per file (don't repeat `initial/animate/transition`)
 - Shared type definitions in `client/src/lib/types.ts`
 
@@ -146,7 +146,7 @@ All admin and recruiter pages must have `<SEO title="..." noIndex />`. Public-fa
 Client-side file uploads must validate size (default 5 MB) and allowed MIME types before sending. See `DynamicFieldRenderer.tsx` FILE_UPLOAD case for the pattern.
 
 ### AI response parsing (LaTeX chat)
-- Prompt AI with XML tags (`<reply>`, `<latex>`) — NOT JSON (LaTeX backslashes break JSON)
+- Prompt AI with XML tags (`<reply>`, `<latex>`), NOT JSON (LaTeX backslashes break JSON)
 - Parse with greedy regex: `/<latex>([\s\S]*)<\/latex>/`
 - Fallback: if `<latex>` tag found but no closing tag, take everything after it
 - JSON fallback for backward compat

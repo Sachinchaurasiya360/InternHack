@@ -66,7 +66,7 @@ const plans: Plan[] = [
   {
     key: "pro",
     name: "Pro",
-    price: 333,
+    price: 249,
     yearlyPrice: 2999,
     badge: "Most Popular",
     description: "Unlock every tool to stand out and land your dream internship.",
@@ -89,7 +89,6 @@ const plans: Plan[] = [
       "Advanced company search (YC + local)",
       "Public shareable profile",
       "Priority application badge",
-      "Score history & tracking",
       "Email support",
     ],
   },
@@ -103,7 +102,7 @@ const testimonials = [
 
 const faqs = [
   { q: "Can I cancel anytime?", a: "Yes! You can cancel your subscription at any time. You'll retain access until the end of your billing period." },
-  { q: "Is there a student discount?", a: "Our Pro plan is already priced for students at just ₹333/month. We also offer additional discounts for verified .edu email addresses." },
+  { q: "Is there a student discount?", a: "Our Pro plan is already priced for students at just ₹249/month. We also offer additional discounts for verified .edu email addresses." },
   { q: "What payment methods do you accept?", a: "We accept all major credit/debit cards, UPI, net banking, and popular wallets through our secure payment partner." },
   { q: "Can I upgrade or downgrade later?", a: "Absolutely. You can switch plans at any time from your profile settings. Prorated adjustments apply automatically." },
 ];
@@ -118,7 +117,7 @@ const HOW_IT_WORKS = [
   {
     step: "2",
     title: "Pay securely",
-    desc: "Cards, UPI, net banking — all options supported.",
+    desc: "Cards, UPI, net banking, all options supported.",
   },
   {
     step: "3",

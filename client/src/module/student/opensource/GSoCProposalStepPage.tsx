@@ -18,6 +18,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
 
@@ -59,13 +60,15 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={copy}
-      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+      className="text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
     >
       {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? "Copied!" : label}
-    </button>
+    </Button>
   );
 }
 
@@ -125,17 +128,18 @@ export default function GSoCProposalStepPage() {
               </div>
               <h1 className="text-xl font-bold text-gray-950 dark:text-white">{step.title}</h1>
             </div>
-            <button
+            <Button
+              variant="outline"
               onClick={toggleComplete}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors shrink-0 ${
+              className={`shrink-0 rounded-xl ${
                 isDone
-                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
-                  : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+                  : ""
               }`}
             >
               {isDone ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
               {isDone ? "Completed" : "Mark Complete"}
-            </button>
+            </Button>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{step.description}</p>
 
@@ -304,13 +308,15 @@ export default function GSoCProposalStepPage() {
               </div>
               <div className="flex gap-2">
                 <CopyButton text={PROPOSAL_TEMPLATE} label="Copy Template" />
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowTemplate(!showTemplate)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
+                  className="text-gray-600 dark:text-gray-400"
                 >
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showTemplate ? "rotate-180" : ""}`} />
                   {showTemplate ? "Hide" : "Preview"}
-                </button>
+                </Button>
               </div>
             </div>
 

@@ -4,6 +4,7 @@ import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter,
 } from "lucide-react";
+import { Button } from "../../../components/ui/button";
 
 // ─── Data ──────────────────────────────────────────────────────
 interface Program {
@@ -560,13 +561,15 @@ function ProgramCard({ program }: { program: Program }) {
 
         {/* Expand / CTA row */}
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
           >
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {expanded ? "Less details" : "Full details"}
-          </button>
+          </Button>
           <div className="flex gap-2">
             <a href={program.website} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors">
@@ -718,28 +721,30 @@ export default function ProgramTrackerPage() {
             { label: "Stipend", value: selectedStipend, options: STIPEND_OPTIONS, set: setSelectedStipend },
           ].map(({ label, value, options, set }) => (
             <div key={label} className="relative group">
-              <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900">
+              <Button variant="outline" size="sm">
                 <Filter className="w-3 h-3" />
                 <span className="text-gray-400">{label}:</span>
                 <span className="font-semibold text-gray-900 dark:text-white">{value}</span>
                 <ChevronDown className="w-3 h-3 opacity-50" />
-              </button>
+              </Button>
               <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
                 {options.map((opt) => (
-                  <button key={opt} onClick={() => set(opt)}
-                    className={`block w-full rounded-lg px-3 py-2 text-left text-xs transition ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}>
+                  <Button key={opt} variant="ghost" size="sm" onClick={() => set(opt)}
+                    className={`w-full justify-start ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}>
                     {opt}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
           ))}
           {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search) && (
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); }}
-              className="flex items-center gap-1 px-3 py-2 text-xs text-gray-500 hover:text-gray-900 dark:hover:text-white bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700">
+              className="text-gray-500">
               <X className="w-3.5 h-3.5" /> Clear
-            </button>
+            </Button>
           )}
         </div>
       </div>

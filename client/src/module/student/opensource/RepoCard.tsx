@@ -11,7 +11,6 @@ interface RepoCardProps {
   onSelect: (repo: OpenSourceRepo) => void;
 }
 
-// Cap stagger delay so the Nth card doesn't wait forever on large pages.
 const MAX_STAGGER_INDEX = 8;
 
 export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: RepoCardProps) {
@@ -25,46 +24,52 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -4 }}
       className="h-full"
     >
       <button
         onClick={() => onSelect(repo)}
-        className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900 transition-all duration-300 cursor-pointer"
+        className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
       >
         {repo.trending && (
-          <div className="absolute -top-2.5 right-4 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+          <div className="absolute -top-2 right-4 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
             <Flame size={10} aria-hidden />
-            Trending
+            trending
           </div>
         )}
 
-        <div className="flex flex-col flex-1 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+        <div className="flex flex-col flex-1 p-5">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-2.5 min-w-0">
               <div
-                className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 text-sm font-bold text-gray-500 dark:text-gray-400"
+                className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-200"
                 aria-hidden
               >
                 {repo.owner[0].toUpperCase()}
               </div>
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-500">{repo.owner}</span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1 w-1 bg-lime-400"></div>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
+                    {repo.owner}
+                  </span>
+                </div>
+              </div>
             </div>
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ${badge.cls}`}>
+            <span className={`rounded-md px-2 py-0.5 text-[10px] font-medium ring-1 shrink-0 ${badge.cls}`}>
               {badge.label}
             </span>
           </div>
 
-          <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 leading-snug group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 leading-snug">
             {repo.name}
           </h3>
 
-          <p className="text-sm text-gray-500 dark:text-gray-500 line-clamp-2 leading-relaxed mb-4 flex-1">
+          <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed mb-4 flex-1">
             {repo.description}
           </p>
 
           <div className="flex flex-wrap gap-1.5 mb-4">
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-600 dark:text-gray-400">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-[11px] font-medium text-stone-700 dark:text-stone-300">
               <span
                 className="inline-block h-2 w-2 rounded-full"
                 style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? "#888" }}
@@ -75,31 +80,31 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
             {repo.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-800 text-[10px] text-gray-500 dark:text-gray-400"
+                className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-[10px] font-mono text-stone-600 dark:text-stone-400"
               >
                 #{tag}
               </span>
             ))}
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
-            <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center justify-between pt-3 border-t border-stone-200 dark:border-white/10">
+            <div className="flex items-center gap-3 text-[11px] font-mono text-stone-500 dark:text-stone-400">
               <span className="flex items-center gap-1">
-                <Star size={13} className="text-amber-500" aria-hidden />
+                <Star size={12} className="text-lime-600 dark:text-lime-400" aria-hidden />
                 {formatCount(repo.stars)}
               </span>
               <span className="flex items-center gap-1">
-                <GitFork size={13} className="text-cyan-500" aria-hidden />
+                <GitFork size={12} aria-hidden />
                 {formatCount(repo.forks)}
               </span>
               <span className="flex items-center gap-1">
-                <CircleDot size={13} className="text-emerald-500" aria-hidden />
+                <CircleDot size={12} aria-hidden />
                 {formatCount(repo.openIssues)}
               </span>
             </div>
-            <span className="flex items-center gap-1 text-sm font-medium text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-              Details
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" aria-hidden />
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors">
+              details
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" aria-hidden />
             </span>
           </div>
         </div>
@@ -110,24 +115,24 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
 
 export const RepoCardSkeleton = React.memo(function RepoCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 animate-pulse">
+    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5 animate-pulse">
       <div className="flex items-start gap-3 mb-3">
-        <div className="h-10 w-10 rounded-xl bg-gray-100 dark:bg-gray-800" />
+        <div className="h-9 w-9 rounded-md bg-stone-100 dark:bg-white/5" />
         <div className="flex-1">
-          <div className="h-4 w-3/4 rounded bg-gray-100 dark:bg-gray-800 mb-2" />
-          <div className="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-800" />
+          <div className="h-3 w-1/2 rounded bg-stone-100 dark:bg-white/5 mb-2" />
+          <div className="h-4 w-3/4 rounded bg-stone-100 dark:bg-white/5" />
         </div>
       </div>
-      <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-800 mb-2" />
-      <div className="h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-800 mb-4" />
+      <div className="h-3 w-full rounded bg-stone-100 dark:bg-white/5 mb-2" />
+      <div className="h-3 w-2/3 rounded bg-stone-100 dark:bg-white/5 mb-4" />
       <div className="flex gap-1.5 mb-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-5 w-14 rounded-md bg-gray-100 dark:bg-gray-800" />
+          <div key={i} className="h-5 w-14 rounded-md bg-stone-100 dark:bg-white/5" />
         ))}
       </div>
-      <div className="flex gap-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+      <div className="flex gap-4 pt-3 border-t border-stone-200 dark:border-white/10">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-3 w-12 rounded bg-gray-100 dark:bg-gray-800" />
+          <div key={i} className="h-3 w-10 rounded bg-stone-100 dark:bg-white/5" />
         ))}
       </div>
     </div>

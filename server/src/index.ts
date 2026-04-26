@@ -15,6 +15,8 @@ import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
 import { scraperRouter, scraperController } from "./module/scraper/scraper.routes.js";
+import { signalsRouter, signalsController } from "./module/signals/signals.routes.js";
+import { interviewExperienceRouter } from "./module/interview-experience/interview-experience.routes.js";
 import { atsRouter } from "./module/ats/ats.routes.js";
 import { companyRouter } from "./module/company/company.routes.js";
 import { adminRouter } from "./module/admin/admin.routes.js";
@@ -32,10 +34,7 @@ import { sqlRouter } from "./module/sql/sql.routes.js";
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { professorRouter } from "./module/professor/professor.routes.js";
-import { hrContactRouter } from "./module/hr-contact/hr-contact.routes.js";
-import { emailCampaignRouter } from "./module/email-campaign/email-campaign.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
-import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 // ── HR Modules ──
@@ -65,7 +64,6 @@ import { initServiceProviders } from "./lib/ai-provider-registry.js";
 import { startFollowUpCron } from "./cron/scheduled-emails.js";
 import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
-import { recoverActiveCampaigns } from "./module/email-campaign/email-campaign.worker.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -96,6 +94,9 @@ app.use(
         fontSrc: ["'self'", "https:", "data:"],
       },
     },
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false,
   }),
 );
 
@@ -187,6 +188,8 @@ app.use("/api/recruiter", recruiterRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
+app.use("/api/signals", signalsRouter);
+app.use("/api/interviews", interviewExperienceRouter);
 app.use("/api/ats", atsRouter);
 app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
@@ -202,10 +205,7 @@ app.use("/api/sql", sqlRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/professors", professorRouter);
-app.use("/api/hr-contacts", hrContactRouter);
-app.use("/api/email-campaigns", emailCampaignRouter);
 app.use("/api/internships", internshipRouter);
-app.use("/api/campus-drives", campusDriveRouter);
 app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
 
@@ -233,7 +233,7 @@ app.use("/api/milestones", milestoneRouter);
 
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
-// Public ingest endpoint — external websites POST jobs here with API key
+// Public ingest endpoint, external websites POST jobs here with API key
 app.post("/api/external-jobs/ingest", (req, res) => publicAdminController.ingestExternalJob(req, res));
 app.get("/api/external-jobs/:slug", (req, res) => publicAdminController.getPublicExternalJobBySlug(req, res));
 app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
@@ -283,14 +283,15 @@ app.listen(PORT, async () => {
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
   scraperController.getService().startCron(cronSchedule);
 
+  // Start the funding signals ingest cron (offset 30 min from scraper)
+  const signalsSchedule = process.env["SIGNALS_CRON"] || "30 */6 * * *";
+  signalsController.getService().startCron(signalsSchedule);
+
   // Start the 10-day follow-up email cron (daily at 9 AM)
   startFollowUpCron();
 
   // Start subscription expiry cron (daily at midnight)
   startSubscriptionExpiryCron();
-
-  // Resume any in-progress email campaigns
-  recoverActiveCampaigns().catch((err) => console.error("[EmailCampaign] Recovery failed:", err));
 
   // Start InternHack AI pipeline crons
   startAIPipelineCrons();

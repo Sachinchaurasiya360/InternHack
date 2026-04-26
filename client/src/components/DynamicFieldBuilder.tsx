@@ -118,7 +118,7 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
                 </div>
               </div>
 
-              {/* Placeholder — only for types that accept text input */}
+              {/* Placeholder, only for types that accept text input */}
               {!["FILE_UPLOAD", "BOOLEAN", "DATE"].includes(field.fieldType) && (
                 <div>
                   <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Placeholder</label>

@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HelmetProvider } from 'react-helmet-async'
@@ -25,7 +25,9 @@ const queryClient = new QueryClient({
 // Wire up query client for cache invalidation on login/logout
 setAuthQueryClient(queryClient)
 
-createRoot(document.getElementById('root')!).render(
+const rootEl = document.getElementById('root')!
+
+const tree = (
   <StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
@@ -38,5 +40,12 @@ createRoot(document.getElementById('root')!).render(
         </GoogleOAuthProvider>
       </QueryClientProvider>
     </HelmetProvider>
-  </StrictMode>,
+  </StrictMode>
 )
+
+if (rootEl.hasChildNodes()) {
+  hydrateRoot(rootEl, tree)
+} else {
+  createRoot(rootEl).render(tree)
+}
+

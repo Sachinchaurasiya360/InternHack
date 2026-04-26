@@ -740,7 +740,7 @@ Data scientist specializing in building production ML pipelines and turning comp
   {
     id: "jakes-resume",
     name: "Jake's Resume",
-    description: "Popular CS resume format — compact, single-column, no frills",
+    description: "Popular CS resume format, compact, single-column, no frills",
     category: "technical",
     tags: ["ATS-friendly", "compact", "CS"],
     previewLines: [
@@ -1015,7 +1015,7 @@ UX designer with 6+ years of experience crafting intuitive digital products. Pas
   {
     id: "classic-serif",
     name: "Classic Serif",
-    description: "Traditional Times-style resume — formal, timeless, ATS-safe",
+    description: "Traditional Times-style resume, formal, timeless, ATS-safe",
     category: "professional",
     tags: ["traditional", "serif", "ATS-friendly"],
     previewLines: [
@@ -1105,7 +1105,7 @@ Certified Public Accountant with 8+ years of experience in audit, tax compliance
   {
     id: "compact-tech",
     name: "Compact Tech",
-    description: "Ultra-dense single-page layout — fits maximum content for tech roles",
+    description: "Ultra-dense single-page layout, fits maximum content for tech roles",
     category: "technical",
     tags: ["compact", "dense", "single-page"],
     previewLines: [
@@ -1114,8 +1114,8 @@ Certified Public Accountant with 8+ years of experience in audit, tax compliance
       "────────────────────────────────",
       "Skills: Go, Rust, K8s, gRPC, Kafka",
       "────────────────────────────────",
-      "Staff Engineer — Cloudflare",
-      "Principal Engineer — Vercel",
+      "Staff Engineer, Cloudflare",
+      "Principal Engineer, Vercel",
     ],
     supportingFiles: [],
     source: `\\documentclass[9pt,a4paper]{article}
@@ -1203,7 +1203,7 @@ Certified Public Accountant with 8+ years of experience in audit, tax compliance
   {
     id: "ats-optimized",
     name: "ATS Optimized",
-    description: "Maximum ATS compatibility — plain, parseable, zero formatting tricks",
+    description: "Maximum ATS compatibility, plain, parseable, zero formatting tricks",
     category: "professional",
     tags: ["ATS-friendly", "plain", "safe"],
     previewLines: [
@@ -1214,7 +1214,7 @@ Certified Public Accountant with 8+ years of experience in audit, tax compliance
       "Marketing professional with 6+ years...",
       "────────────────────────────────",
       "WORK EXPERIENCE",
-      "Marketing Manager — HubSpot",
+      "Marketing Manager, HubSpot",
     ],
     supportingFiles: [],
     source: `\\documentclass[11pt,letterpaper]{article}
@@ -1304,8 +1304,8 @@ Google Analytics Certified \\enspace $\\cdot$ \\enspace HubSpot Inbound Marketin
       "═══════════════════════════",
       "",
       "Experience",
-      "  Senior PM — Notion",
-      "  PM — Slack",
+      "  Senior PM, Notion",
+      "  PM, Slack",
     ],
     supportingFiles: [],
     source: `\\documentclass[10pt,a4paper]{article}
@@ -1352,7 +1352,7 @@ Product leader with 7+ years of experience shipping B2B SaaS products from 0-to-
 \\textbf{Senior Product Manager} \\hfill Notion, San Francisco \\\\
 {\\small\\color{muted}\\textit{Jan 2022 -- Present}}
 \\begin{itemize}[leftmargin=12pt, nosep, topsep=3pt]
-  \\item Led Notion Projects launch — largest product launch in company history with 2M+ adoptions in first month
+  \\item Led Notion Projects launch, largest product launch in company history with 2M+ adoptions in first month
   \\item Drove 35\\% increase in enterprise retention through workflow automation features
   \\item Managed roadmap for 15-person engineering team across 3 product areas
   \\item Ran 40+ user interviews and synthesized insights into product strategy presentations for C-suite
@@ -1362,7 +1362,7 @@ Product leader with 7+ years of experience shipping B2B SaaS products from 0-to-
 \\textbf{Product Manager} \\hfill Slack, San Francisco \\\\
 {\\small\\color{muted}\\textit{Mar 2019 -- Dec 2021}}
 \\begin{itemize}[leftmargin=12pt, nosep, topsep=3pt]
-  \\item Shipped Slack Connect — enabling cross-organization messaging for 750K+ companies
+  \\item Shipped Slack Connect, enabling cross-organization messaging for 750K+ companies
   \\item Improved channel discovery reducing time-to-value for new workspace members by 40\\%
   \\item Designed experimentation framework adopted by 8 product teams for feature rollouts
   \\item Collaborated with design and engineering to reduce onboarding drop-off by 25\\%

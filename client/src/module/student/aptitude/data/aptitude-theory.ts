@@ -80,7 +80,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Calculating profit% or loss% on SP instead of CP.",
-      "Forgetting that successive discounts are not additive — they must be applied one after another.",
+      "Forgetting that successive discounts are not additive, they must be applied one after another.",
       "Confusing Marked Price with Cost Price when discount is given.",
     ],
     keyTakeaways: [
@@ -95,7 +95,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "percentage",
     categorySlug: "aptitude",
     introduction:
-      "Percentage is the backbone of quantitative aptitude. The word 'percent' means 'per hundred,' and it represents a fraction with 100 as the denominator. Almost every other topic in aptitude — profit & loss, interest, data interpretation — requires a solid understanding of percentages.\n\nPercentages are used to express how large or small one quantity is relative to another. Converting between fractions, decimals, and percentages is a fundamental skill. For example, 1/4 = 0.25 = 25%. Competitive exams frequently test percentage increase/decrease, successive percentage changes, and percentage-based word problems.\n\nSpeed in percentage calculations comes from memorizing common fraction-to-percentage conversions and understanding the concept of base value. The 'base' is the quantity on which the percentage is calculated — getting this right is critical to avoiding errors.",
+      "Percentage is the backbone of quantitative aptitude. The word 'percent' means 'per hundred,' and it represents a fraction with 100 as the denominator. Almost every other topic in aptitude, profit & loss, interest, data interpretation, requires a solid understanding of percentages.\n\nPercentages are used to express how large or small one quantity is relative to another. Converting between fractions, decimals, and percentages is a fundamental skill. For example, 1/4 = 0.25 = 25%. Competitive exams frequently test percentage increase/decrease, successive percentage changes, and percentage-based word problems.\n\nSpeed in percentage calculations comes from memorizing common fraction-to-percentage conversions and understanding the concept of base value. The 'base' is the quantity on which the percentage is calculated, getting this right is critical to avoiding errors.",
     concepts: [
       "Percentage means 'out of 100'. x% = x/100.",
       "Base value: The quantity on which the percentage is calculated.",
@@ -175,11 +175,11 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Adding successive percentage changes directly instead of applying them sequentially.",
-      "Using the wrong base value — percentage increase is on the original, not the new value.",
-      "Confusing 'A is 25% more than B' with 'B is 25% less than A' — they are different statements.",
+      "Using the wrong base value, percentage increase is on the original, not the new value.",
+      "Confusing 'A is 25% more than B' with 'B is 25% less than A', they are different statements.",
     ],
     keyTakeaways: [
-      "Percentage is always relative to a base value — identify the base correctly.",
+      "Percentage is always relative to a base value, identify the base correctly.",
       "Successive percentage changes are multiplicative, not additive.",
       "Memorize common fraction-percentage equivalents for speed.",
       "The 'x% of y = y% of x' trick can simplify many calculations.",
@@ -277,7 +277,7 @@ export const aptitudeTheory: TopicTheory[] = [
       "Assuming ratios can be directly subtracted or added like regular numbers.",
     ],
     keyTakeaways: [
-      "Ratios compare relative sizes — they do not tell you the actual quantities unless you have additional information.",
+      "Ratios compare relative sizes, they do not tell you the actual quantities unless you have additional information.",
       "To combine a:b and b:c into a:b:c, equalize the common term b.",
       "Proportion problems can always be solved using cross multiplication.",
       "Ratios must be in the same units before comparison.",
@@ -320,7 +320,7 @@ export const aptitudeTheory: TopicTheory[] = [
       {
         name: "LCM Method",
         steps: [
-          "Find LCM of individual completion times — this is total work units.",
+          "Find LCM of individual completion times, this is total work units.",
           "Calculate each person's per-day rate = Total work / their time.",
           "Add rates for combined work, then Time = Total work / combined rate.",
         ],
@@ -364,9 +364,9 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Adding times directly (e.g., A=10 days, B=15 days, together=25 days) — you must add rates, not times.",
+      "Adding times directly (e.g., A=10 days, B=15 days, together=25 days), you must add rates, not times.",
       "Forgetting to subtract work already done when someone leaves partway through.",
-      "Confusing 'twice as efficient' with 'takes twice the time' — twice as efficient means half the time.",
+      "Confusing 'twice as efficient' with 'takes twice the time', twice as efficient means half the time.",
     ],
     keyTakeaways: [
       "Always work with rates (work per day), never add times directly.",
@@ -459,11 +459,11 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Using arithmetic mean instead of harmonic mean for average speed over equal distances.",
-      "Mixing units — using km/hr in a problem that requires m/s.",
+      "Mixing units, using km/hr in a problem that requires m/s.",
       "Using relative speed = sum when objects move in the same direction (should be difference).",
     ],
     keyTakeaways: [
-      "D = S x T is the master formula — everything else derives from it.",
+      "D = S x T is the master formula, everything else derives from it.",
       "Average speed for equal distances = 2ab/(a+b) (harmonic mean).",
       "Always check and convert units before calculating.",
       "Same direction: subtract speeds. Opposite direction: add speeds.",
@@ -543,12 +543,12 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Forgetting to convert months to years before applying the formula.",
-      "Confusing Amount with Simple Interest — Amount = Principal + SI.",
+      "Confusing Amount with Simple Interest, Amount = Principal + SI.",
       "Using compound interest logic (interest on interest) in simple interest problems.",
     ],
     keyTakeaways: [
       "SI = PRT/100 is the master formula. Know how to rearrange it for P, R, or T.",
-      "Simple interest grows linearly — the interest each year is the same.",
+      "Simple interest grows linearly, the interest each year is the same.",
       "Time to become n times the principal = (n-1) x 100/R years.",
       "Always ensure rate and time are in compatible units (per annum with years).",
     ],
@@ -650,7 +650,7 @@ export const aptitudeTheory: TopicTheory[] = [
     keyTakeaways: [
       "A = P(1 + R/100)^n is the core formula for compound interest.",
       "CI is always more than SI for the same P, R, T (when T > 1).",
-      "CI - SI for 2 years = P(R/100)^2 — memorize this for quick solving.",
+      "CI - SI for 2 years = P(R/100)^2, memorize this for quick solving.",
       "The Rule of 72 gives a quick estimate: money doubles in approximately 72/R years.",
       "Depreciation uses the same formula with subtraction: Value = P(1 - R/100)^n.",
     ],
@@ -755,7 +755,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "ages",
     categorySlug: "aptitude",
     introduction:
-      "Problems on Ages involve finding the present, past, or future ages of people based on given relationships. These problems are essentially algebraic in nature — you set up variables for unknown ages and form equations from the given conditions.\n\nThe key insight is that the difference between two people's ages remains constant throughout their lives. If A is 5 years older than B today, A was 5 years older 10 years ago and will be 5 years older 20 years from now. This constant difference is often the key to setting up equations.\n\nMost age problems can be solved by assuming the present age as x and translating the word problem into one or two equations. Problems may involve ratios of ages at different times, sums of ages, or conditions like 'n years ago' or 'n years hence.' Linear equation skills are essential here.",
+      "Problems on Ages involve finding the present, past, or future ages of people based on given relationships. These problems are essentially algebraic in nature, you set up variables for unknown ages and form equations from the given conditions.\n\nThe key insight is that the difference between two people's ages remains constant throughout their lives. If A is 5 years older than B today, A was 5 years older 10 years ago and will be 5 years older 20 years from now. This constant difference is often the key to setting up equations.\n\nMost age problems can be solved by assuming the present age as x and translating the word problem into one or two equations. Problems may involve ratios of ages at different times, sums of ages, or conditions like 'n years ago' or 'n years hence.' Linear equation skills are essential here.",
     concepts: [
       "The age difference between two people remains constant over time.",
       "If present age is x, age n years ago = x - n, age n years hence = x + n.",
@@ -796,7 +796,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     quickTricks: [
       "If the ratio of ages of A and B is a:b now and c:d after t years, then A's present age = at(c-d) / (ad - bc).",
-      "The difference in ages always remains constant — use this to quickly verify answers.",
+      "The difference in ages always remains constant, use this to quickly verify answers.",
       "If 'A is twice as old as B was when A was as old as B is now,' set up the timeline carefully with variables.",
       "For sum-based problems, if sum of present ages = S, then sum of ages n years ago = S - 2n (for 2 people).",
     ],
@@ -825,8 +825,8 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Forgetting to add/subtract the same number of years to BOTH people's ages.",
-      "Setting up the wrong equation — carefully read whether it says 'years ago' or 'years hence.'",
-      "Getting confused with complex wordings like 'A was as old as B is now' — draw a timeline.",
+      "Setting up the wrong equation, carefully read whether it says 'years ago' or 'years hence.'",
+      "Getting confused with complex wordings like 'A was as old as B is now', draw a timeline.",
     ],
     keyTakeaways: [
       "Age difference between two people is always constant.",
@@ -929,7 +929,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Using the wrong count after adding or removing elements.",
-      "Confusing the average with the median — they are not always the same.",
+      "Confusing the average with the median, they are not always the same.",
       "Forgetting that average of first n natural numbers is (n+1)/2, not n/2.",
     ],
     keyTakeaways: [
@@ -1107,14 +1107,14 @@ export const aptitudeTheory: TopicTheory[] = [
     commonMistakes: [
       "Confusing lateral/curved surface area with total surface area.",
       "Forgetting to use the slant height (l) for cone surface area instead of the vertical height (h).",
-      "Not converting units properly — especially cm³ to litres (divide by 1000).",
+      "Not converting units properly, especially cm³ to litres (divide by 1000).",
     ],
     keyTakeaways: [
       "Memorize volume and surface area formulas for all standard 3D shapes.",
       "Volume is conserved in melting/recasting problems.",
       "Cone volume = 1/3 of cylinder volume with same base and height.",
       "Scaling by factor k: surface area x k², volume x k³.",
-      "Always verify units — volume in cubic, surface area in square units.",
+      "Always verify units, volume in cubic, surface area in square units.",
     ],
   },
   {
@@ -1152,8 +1152,8 @@ export const aptitudeTheory: TopicTheory[] = [
         name: "Deciding Permutation vs Combination",
         steps: [
           "Ask: does the order of selection matter?",
-          "If yes (arrangements, rankings, positions) — use permutation.",
-          "If no (groups, teams, committees) — use combination.",
+          "If yes (arrangements, rankings, positions), use permutation.",
+          "If no (groups, teams, committees), use combination.",
         ],
       },
       {
@@ -1191,7 +1191,7 @@ export const aptitudeTheory: TopicTheory[] = [
         problem:
           "How many 4-letter words can be formed using the letters of 'APPLE'?",
         solution:
-          "Step 1: APPLE has 5 letters: A, P, P, L, E (P repeats twice).\nStep 2: Case 1 — all 4 letters different (choose from A, P, L, E): 4C4 x 4! = 1 x 24 = 24.\nStep 3: Case 2 — two P's and 2 from {A, L, E}: 3C2 x 4!/2! = 3 x 12 = 36.\nStep 4: Total = 24 + 36 = 60.",
+          "Step 1: APPLE has 5 letters: A, P, P, L, E (P repeats twice).\nStep 2: Case 1, all 4 letters different (choose from A, P, L, E): 4C4 x 4! = 1 x 24 = 24.\nStep 3: Case 2, two P's and 2 from {A, L, E}: 3C2 x 4!/2! = 3 x 12 = 36.\nStep 4: Total = 24 + 36 = 60.",
         answer: "60",
       },
     ],
@@ -1296,12 +1296,12 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Assuming 1 is a prime number — 1 is neither prime nor composite.",
+      "Assuming 1 is a prime number, 1 is neither prime nor composite.",
       "Forgetting that 2 is the only even prime number.",
       "In unit digit problems, not recognizing the cyclicity pattern and doing full exponentiation.",
     ],
     keyTakeaways: [
-      "Memorize divisibility rules for 2 through 11 — they save enormous time.",
+      "Memorize divisibility rules for 2 through 11, they save enormous time.",
       "Unit digit cyclicity for most digits is 4. Memorize the cycles.",
       "Number of factors of N = product of (power + 1) for each prime factor.",
       "Sum of first n natural numbers = n(n+1)/2.",
@@ -1387,7 +1387,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing a two-digit number with the sum of its digits — 10x + y is not x + y.",
+      "Confusing a two-digit number with the sum of its digits, 10x + y is not x + y.",
       "Using consecutive numbers (n, n+1) when the problem says consecutive even/odd (n, n+2).",
       "Forgetting that digits must be between 0 and 9 (and tens digit cannot be 0).",
     ],
@@ -1395,7 +1395,7 @@ export const aptitudeTheory: TopicTheory[] = [
       "Always express the number in terms of its digits: 10a + b for two-digit numbers.",
       "Translate English statements into equations carefully.",
       "For consecutive number problems, center the variable for simpler equations.",
-      "Digit-based conditions often give two equations — solve simultaneously.",
+      "Digit-based conditions often give two equations, solve simultaneously.",
       "Verify the answer satisfies all given conditions.",
     ],
   },
@@ -1482,8 +1482,8 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Applying HCF x LCM = product for more than two numbers — this only works for exactly two numbers.",
-      "Confusing when to find HCF vs LCM — 'greatest number that divides' = HCF, 'least number divisible by' = LCM.",
+      "Applying HCF x LCM = product for more than two numbers, this only works for exactly two numbers.",
+      "Confusing when to find HCF vs LCM, 'greatest number that divides' = HCF, 'least number divisible by' = LCM.",
       "In remainder problems, forgetting to subtract the remainder from each number before finding HCF.",
     ],
     keyTakeaways: [
@@ -1539,7 +1539,7 @@ export const aptitudeTheory: TopicTheory[] = [
       "√2 ≈ 1.414, √3 ≈ 1.732, √5 ≈ 2.236. Memorize for quick approximations.",
       "(√a + √b)(√a - √b) = a - b. This eliminates surds quickly.",
       "If bases are same, equate exponents. If exponents are same, equate bases.",
-      "aᵐ x bᵐ = (ab)ᵐ — useful for combining different bases with same exponent.",
+      "aᵐ x bᵐ = (ab)ᵐ, useful for combining different bases with same exponent.",
     ],
     solvedExamples: [
       {
@@ -1564,10 +1564,10 @@ export const aptitudeTheory: TopicTheory[] = [
     commonMistakes: [
       "Adding exponents when bases are different: 2³ x 3³ ≠ 6⁶ (correct: (2x3)³ = 6³).",
       "Applying (aᵐ)ⁿ = a^(m+n) instead of a^(mn).",
-      "Forgetting to rationalize — leaving surds in the denominator in final answers.",
+      "Forgetting to rationalize, leaving surds in the denominator in final answers.",
     ],
     keyTakeaways: [
-      "Memorize all laws of indices — they are used everywhere.",
+      "Memorize all laws of indices, they are used everywhere.",
       "Same base: add/subtract exponents. Same exponent: multiply/divide bases.",
       "Rationalizing removes surds from the denominator using conjugates.",
       "To compare surds of different orders, convert to a common root.",
@@ -1711,7 +1711,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Getting direct and inverse proportion mixed up — always think logically about the relationship.",
+      "Getting direct and inverse proportion mixed up, always think logically about the relationship.",
       "Forgetting to account for one of the variables in a multi-variable problem.",
       "Not adjusting for work already done before conditions change.",
     ],
@@ -1727,7 +1727,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "pipes-and-cistern",
     categorySlug: "aptitude",
     introduction:
-      "Pipes and Cistern problems are analogous to Time and Work problems. Instead of workers completing a job, pipes fill or empty a tank (cistern). An inlet pipe fills the tank, while an outlet pipe (leak) empties it.\n\nIf a pipe can fill a tank in n hours, it fills 1/n of the tank per hour. If a leak can empty a full tank in m hours, it empties 1/m per hour. When both work simultaneously, the net effect is the difference: 1/n - 1/m per hour (if filling is faster) or negative (if emptying is faster).\n\nThese problems often involve multiple inlet and outlet pipes working together, pipes being opened or closed at different times, and finding when the tank gets full or empty. The LCM method (same as in Time and Work) is very effective here — take LCM of all times as the tank capacity for clean integer arithmetic.",
+      "Pipes and Cistern problems are analogous to Time and Work problems. Instead of workers completing a job, pipes fill or empty a tank (cistern). An inlet pipe fills the tank, while an outlet pipe (leak) empties it.\n\nIf a pipe can fill a tank in n hours, it fills 1/n of the tank per hour. If a leak can empty a full tank in m hours, it empties 1/m per hour. When both work simultaneously, the net effect is the difference: 1/n - 1/m per hour (if filling is faster) or negative (if emptying is faster).\n\nThese problems often involve multiple inlet and outlet pipes working together, pipes being opened or closed at different times, and finding when the tank gets full or empty. The LCM method (same as in Time and Work) is very effective here, take LCM of all times as the tank capacity for clean integer arithmetic.",
     concepts: [
       "Inlet pipe fills the tank; outlet pipe empties it.",
       "Rate of filling = 1/(time to fill entire tank).",
@@ -1772,7 +1772,7 @@ export const aptitudeTheory: TopicTheory[] = [
       "If pipe A fills in a hours and pipe B empties in b hours, net time = ab/(b-a) hours (b > a).",
       "If a pipe fills a tank in n hours, in 1 hour it fills 1/n of the tank.",
       "A leak increases the filling time. Extra time due to leak indicates the leak rate.",
-      "Use the LCM method for clean calculations — avoids fractions entirely.",
+      "Use the LCM method for clean calculations, avoids fractions entirely.",
     ],
     solvedExamples: [
       {
@@ -1799,7 +1799,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Treating an outlet pipe as positive instead of negative when calculating net rate.",
-      "Adding times instead of rates — two pipes filling in 10 and 15 hours don't fill together in 25 hours.",
+      "Adding times instead of rates, two pipes filling in 10 and 15 hours don't fill together in 25 hours.",
       "Forgetting that a leak means the emptying time is longer, not shorter.",
     ],
     keyTakeaways: [
@@ -1873,7 +1873,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Subtracting stream speed for downstream and adding for upstream — it's the opposite.",
+      "Subtracting stream speed for downstream and adding for upstream, it's the opposite.",
       "Using average speed formula for round trip instead of calculating each leg separately.",
       "Forgetting that the boat cannot go upstream if stream speed exceeds boat speed (b must be > s).",
     ],
@@ -1931,7 +1931,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "Alligation works for price, concentration, percentage, speed — any weighted average scenario.",
+      "Alligation works for price, concentration, percentage, speed, any weighted average scenario.",
       "If mixing in ratio m:n, mean value = (m.v1 + n.v2)/(m+n).",
       "In replacement: after 1 operation, pure quantity left = Initial x (V-k)/V.",
       "If 1/n of the solution is replaced by water each time, after k times: concentration = original x ((n-1)/n)^k.",
@@ -1960,9 +1960,9 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing which ratio the alligation gives — it gives the ratio of quantities (cheaper:dearer), not prices.",
+      "Confusing which ratio the alligation gives, it gives the ratio of quantities (cheaper:dearer), not prices.",
       "In replacement problems, forgetting that you remove mixture (not pure ingredient) each time.",
-      "Not realizing that alligation can be applied to speeds, percentages, etc. — not just prices.",
+      "Not realizing that alligation can be applied to speeds, percentages, etc., not just prices.",
     ],
     keyTakeaways: [
       "Alligation ratio = (dearer - mean) : (mean - cheaper).",
@@ -1976,7 +1976,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "logarithm",
     categorySlug: "aptitude",
     introduction:
-      "A logarithm answers the question: 'To what power must the base be raised to get a given number?' If aˣ = N, then log_a(N) = x. Logarithms convert multiplication into addition and exponentiation into multiplication, making them powerful tools for simplifying complex calculations.\n\nThe two most common bases are 10 (common logarithm, written as log) and e ≈ 2.718 (natural logarithm, written as ln). The properties of logarithms — product rule, quotient rule, and power rule — are essential for simplification. Log_a(MN) = log_a(M) + log_a(N), log_a(M/N) = log_a(M) - log_a(N), and log_a(Mⁿ) = n.log_a(M).\n\nCompetitive exams test your ability to simplify logarithmic expressions, solve logarithmic equations, and apply the change of base formula. A key identity to remember: log_a(b) x log_b(a) = 1, and the change of base formula: log_a(b) = log_c(b) / log_c(a).",
+      "A logarithm answers the question: 'To what power must the base be raised to get a given number?' If aˣ = N, then log_a(N) = x. Logarithms convert multiplication into addition and exponentiation into multiplication, making them powerful tools for simplifying complex calculations.\n\nThe two most common bases are 10 (common logarithm, written as log) and e ≈ 2.718 (natural logarithm, written as ln). The properties of logarithms, product rule, quotient rule, and power rule, are essential for simplification. Log_a(MN) = log_a(M) + log_a(N), log_a(M/N) = log_a(M) - log_a(N), and log_a(Mⁿ) = n.log_a(M).\n\nCompetitive exams test your ability to simplify logarithmic expressions, solve logarithmic equations, and apply the change of base formula. A key identity to remember: log_a(b) x log_b(a) = 1, and the change of base formula: log_a(b) = log_c(b) / log_c(a).",
     concepts: [
       "If aˣ = N, then log_a(N) = x.",
       "log_a(1) = 0 for any base a.",
@@ -2010,7 +2010,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "log_a(b) x log_b(c) = log_a(c) — the 'chain rule' for logarithms.",
+      "log_a(b) x log_b(c) = log_a(c), the 'chain rule' for logarithms.",
       "log_a(b) x log_b(a) = 1.",
       "log 2 ≈ 0.301, log 3 ≈ 0.477, log 5 ≈ 0.699, log 7 ≈ 0.845. Memorize these for quick calculations.",
       "If log(x) = n, then x = 10ⁿ (for common logarithm base 10).",
@@ -2038,9 +2038,9 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Writing log(a + b) = log(a) + log(b) — this is WRONG. The product rule is log(ab) = log(a) + log(b).",
+      "Writing log(a + b) = log(a) + log(b), this is WRONG. The product rule is log(ab) = log(a) + log(b).",
       "Forgetting that log is undefined for negative numbers and zero.",
-      "Confusing log_a(b) with log_b(a) — they are reciprocals, not equal.",
+      "Confusing log_a(b) with log_b(a), they are reciprocals, not equal.",
     ],
     keyTakeaways: [
       "log converts multiplication to addition, division to subtraction, powers to multiplication.",
@@ -2124,7 +2124,7 @@ export const aptitudeTheory: TopicTheory[] = [
     commonMistakes: [
       "Adding probabilities of non-mutually exclusive events without subtracting the overlap.",
       "Multiplying probabilities of dependent events as if they were independent.",
-      "Forgetting that probability can never exceed 1 — if your answer is > 1, recheck.",
+      "Forgetting that probability can never exceed 1, if your answer is > 1, recheck.",
     ],
     keyTakeaways: [
       "P(E) = Favorable / Total. Always ensure outcomes are equally likely.",
@@ -2202,7 +2202,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing angle of elevation with angle of depression — draw the figure first.",
+      "Confusing angle of elevation with angle of depression, draw the figure first.",
       "Using sin or cos when tan is the appropriate ratio (height and distance are perpendicular and base).",
       "Forgetting standard trigonometric values for 30°, 45°, 60°.",
     ],
@@ -2211,7 +2211,7 @@ export const aptitudeTheory: TopicTheory[] = [
       "tan θ = opposite/adjacent = height/distance is the most used formula.",
       "Memorize tan values: tan 30° = 1/√3, tan 45° = 1, tan 60° = √3.",
       "Angle of depression from top = Angle of elevation from bottom.",
-      "Two-triangle problems share a common side — use it to connect equations.",
+      "Two-triangle problems share a common side, use it to connect equations.",
     ],
   },
   {
@@ -2221,7 +2221,7 @@ export const aptitudeTheory: TopicTheory[] = [
       "Simplification involves reducing complex mathematical expressions to their simplest form using the order of operations (BODMAS/PEMDAS) and arithmetic shortcuts. This is one of the most frequently tested topics as it appears directly or indirectly in almost every aptitude question.\n\nBODMAS stands for Brackets, Orders (powers/roots), Division, Multiplication, Addition, Subtraction. This is the order in which operations must be performed. Within brackets, the same order applies. Division and Multiplication are performed left to right (equal priority), as are Addition and Subtraction.\n\nSpeed in simplification comes from knowing multiplication tables, squares, cubes, fraction-decimal equivalents, and applying algebraic identities. Questions in this category range from straightforward arithmetic to expressions involving fractions, decimals, surds, and nested brackets.",
     concepts: [
       "BODMAS: Brackets → Orders → Division/Multiplication → Addition/Subtraction.",
-      "Within brackets: (), {}, [] — innermost first.",
+      "Within brackets: (), {}, [], innermost first.",
       "Division and Multiplication have equal priority (left to right).",
       "Addition and Subtraction have equal priority (left to right).",
     ],
@@ -2280,12 +2280,12 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Not following BODMAS order — e.g., adding before multiplying.",
-      "Treating division and multiplication as different priority — they are equal, processed left to right.",
-      "Misapplying algebraic identities — e.g., using (a+b)² = a² + b² instead of a² + 2ab + b².",
+      "Not following BODMAS order, e.g., adding before multiplying.",
+      "Treating division and multiplication as different priority, they are equal, processed left to right.",
+      "Misapplying algebraic identities, e.g., using (a+b)² = a² + b² instead of a² + 2ab + b².",
     ],
     keyTakeaways: [
-      "BODMAS is the golden rule — always follow the order of operations.",
+      "BODMAS is the golden rule, always follow the order of operations.",
       "Recognize algebraic identity patterns for instant simplification.",
       "Speed tricks: multiply by breaking numbers into simpler components.",
       "Memorize squares (1-30), cubes (1-15), and common fraction-decimal conversions.",
@@ -2296,7 +2296,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "square-root-and-cube-root",
     categorySlug: "aptitude",
     introduction:
-      "Square root and cube root are the inverse operations of squaring and cubing respectively. The square root of a number n is the value that, when multiplied by itself, gives n. The cube root of n is the value that, when cubed, gives n.\n\nFinding square roots and cube roots quickly is an important skill for competitive exams. For perfect squares and cubes, memorization is key: know squares up to at least 30 (900) and cubes up to at least 15 (3375). For non-perfect squares, estimation and the long division method are used.\n\nProperties of square roots include: √(ab) = √a x √b, √(a/b) = √a/√b, and (√a)² = a. For cube roots: ³√(ab) = ³√a x ³√b. These properties help simplify expressions. The last digit of a perfect square can only be 0, 1, 4, 5, 6, or 9 — never 2, 3, 7, or 8. This helps quickly eliminate non-perfect squares.",
+      "Square root and cube root are the inverse operations of squaring and cubing respectively. The square root of a number n is the value that, when multiplied by itself, gives n. The cube root of n is the value that, when cubed, gives n.\n\nFinding square roots and cube roots quickly is an important skill for competitive exams. For perfect squares and cubes, memorization is key: know squares up to at least 30 (900) and cubes up to at least 15 (3375). For non-perfect squares, estimation and the long division method are used.\n\nProperties of square roots include: √(ab) = √a x √b, √(a/b) = √a/√b, and (√a)² = a. For cube roots: ³√(ab) = ³√a x ³√b. These properties help simplify expressions. The last digit of a perfect square can only be 0, 1, 4, 5, 6, or 9, never 2, 3, 7, or 8. This helps quickly eliminate non-perfect squares.",
     concepts: [
       "√n x √n = n. If √n = x, then x² = n.",
       "³√n x ³√n x ³√n = n.",
@@ -2359,9 +2359,9 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Assuming √(a+b) = √a + √b — this is WRONG. √(a+b) ≠ √a + √b.",
+      "Assuming √(a+b) = √a + √b, this is WRONG. √(a+b) ≠ √a + √b.",
       "Forgetting that a number ending in 2, 3, 7, or 8 cannot be a perfect square.",
-      "Not simplifying surds fully — e.g., leaving √12 instead of 2√3.",
+      "Not simplifying surds fully, e.g., leaving √12 instead of 2√3.",
     ],
     keyTakeaways: [
       "Memorize squares (1-30) and cubes (1-15) for quick recognition.",
@@ -2375,7 +2375,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "decimal-fraction",
     categorySlug: "aptitude",
     introduction:
-      "Decimal fractions are fractions whose denominators are powers of 10 (10, 100, 1000, etc.), represented using a decimal point. For example, 0.5 = 5/10 = 1/2, and 0.25 = 25/100 = 1/4. Understanding the conversion between fractions and decimals is fundamental.\n\nA recurring (repeating) decimal is one where a digit or group of digits repeats infinitely, like 1/3 = 0.333... = 0.3̄. Converting recurring decimals to fractions is an important skill: for a pure recurring decimal like 0.x̄, the fraction is x/9; for 0.xȳ (two digits repeating), the fraction is xy/99.\n\nDecimal fraction problems in competitive exams test conversions between fractions and decimals, comparison of decimal numbers, and arithmetic operations with decimals. Pay special attention to place value — each position after the decimal point represents tenths, hundredths, thousandths, etc.",
+      "Decimal fractions are fractions whose denominators are powers of 10 (10, 100, 1000, etc.), represented using a decimal point. For example, 0.5 = 5/10 = 1/2, and 0.25 = 25/100 = 1/4. Understanding the conversion between fractions and decimals is fundamental.\n\nA recurring (repeating) decimal is one where a digit or group of digits repeats infinitely, like 1/3 = 0.333... = 0.3̄. Converting recurring decimals to fractions is an important skill: for a pure recurring decimal like 0.x̄, the fraction is x/9; for 0.xȳ (two digits repeating), the fraction is xy/99.\n\nDecimal fraction problems in competitive exams test conversions between fractions and decimals, comparison of decimal numbers, and arithmetic operations with decimals. Pay special attention to place value, each position after the decimal point represents tenths, hundredths, thousandths, etc.",
     concepts: [
       "0.1 = 1/10 (tenths place).",
       "0.01 = 1/100 (hundredths place).",
@@ -2439,7 +2439,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Confusing 0.5 (one-half) with 0.05 (one-twentieth).",
-      "Incorrect decimal placement when multiplying — count total decimal places in both numbers.",
+      "Incorrect decimal placement when multiplying, count total decimal places in both numbers.",
       "Not simplifying the fraction after converting from a recurring decimal.",
     ],
     keyTakeaways: [
@@ -2454,7 +2454,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "calendar",
     categorySlug: "aptitude",
     introduction:
-      "Calendar problems involve finding the day of the week for a given date, counting odd days, and understanding leap years. The concept of 'odd days' is central: odd days are the number of days more than complete weeks in a given period.\n\nA normal year has 365 days = 52 weeks + 1 odd day. A leap year has 366 days = 52 weeks + 2 odd days. A leap year occurs every 4 years, except century years — century years are leap years only if divisible by 400. So 1900 is not a leap year, but 2000 is.\n\nTo find the day of the week for any date, calculate the total odd days from a reference point. The coding is: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday. This topic requires memorizing a few key values and applying a systematic method.",
+      "Calendar problems involve finding the day of the week for a given date, counting odd days, and understanding leap years. The concept of 'odd days' is central: odd days are the number of days more than complete weeks in a given period.\n\nA normal year has 365 days = 52 weeks + 1 odd day. A leap year has 366 days = 52 weeks + 2 odd days. A leap year occurs every 4 years, except century years, century years are leap years only if divisible by 400. So 1900 is not a leap year, but 2000 is.\n\nTo find the day of the week for any date, calculate the total odd days from a reference point. The coding is: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday. This topic requires memorizing a few key values and applying a systematic method.",
     concepts: [
       "Odd days = remaining days after complete weeks.",
       "Ordinary year: 1 odd day. Leap year: 2 odd days.",
@@ -2502,7 +2502,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "400 years have exactly 0 odd days — so the day pattern repeats every 400 years.",
+      "400 years have exactly 0 odd days, so the day pattern repeats every 400 years.",
       "January and October always start on the same day in a non-leap year.",
       "In a leap year, January and July start on the same day.",
       "The last day of a century cannot be Tuesday, Thursday, or Saturday.",
@@ -2525,7 +2525,7 @@ export const aptitudeTheory: TopicTheory[] = [
     commonMistakes: [
       "Forgetting that century years are NOT leap years unless divisible by 400.",
       "Not accounting for February having 29 days in a leap year when counting days.",
-      "Confusing odd days coding — mixing up which number corresponds to which day.",
+      "Confusing odd days coding, mixing up which number corresponds to which day.",
     ],
     keyTakeaways: [
       "Odd days concept is the key to all calendar problems.",
@@ -2613,7 +2613,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Thinking hands coincide 12 times in 12 hours — it is 11 (the 12th coincidence is at the start of the next cycle).",
+      "Thinking hands coincide 12 times in 12 hours, it is 11 (the 12th coincidence is at the start of the next cycle).",
       "Forgetting to take the absolute value or check if angle > 180°.",
       "In gain/loss problems, not converting the error rate to actual time difference correctly.",
     ],
@@ -2777,13 +2777,13 @@ export const aptitudeTheory: TopicTheory[] = [
     commonMistakes: [
       "Adding beating distances directly in a three-person race instead of using ratios.",
       "Confusing 'A gives B a start of x meters' (B starts ahead) with 'A beats B by x meters' (B finishes behind).",
-      "Not using the correct time frame — always use the winner's time as the reference.",
+      "Not using the correct time frame, always use the winner's time as the reference.",
     ],
     keyTakeaways: [
       "Convert beating distances to speed ratios for multi-person calculations.",
       "A beats B by x in D meters means ratio = D:(D-x).",
       "For three-person races, chain the ratios correctly.",
-      "Dead heat means both finish at the same time — their speeds times their respective distances are equal.",
+      "Dead heat means both finish at the same time, their speeds times their respective distances are equal.",
       "In game problems, scoring ratio = Game points : (Game points - handicap).",
     ],
   },
@@ -2850,7 +2850,7 @@ export const aptitudeTheory: TopicTheory[] = [
       {
         problem: "Find the odd one out: 1, 4, 9, 16, 23, 36, 49.",
         solution:
-          "Step 1: These look like perfect squares: 1², 2², 3², 4², ?, 6², 7².\nStep 2: 5² = 25, but we have 23.\nStep 3: 23 is the odd one out — it should be 25.",
+          "Step 1: These look like perfect squares: 1², 2², 3², 4², ?, 6², 7².\nStep 2: 5² = 25, but we have 23.\nStep 3: 23 is the odd one out, it should be 25.",
         answer: "23 (should be 25)",
       },
       {
@@ -2861,15 +2861,15 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Looking at only the first few terms to identify the pattern — check ALL terms.",
-      "Assuming the series is always arithmetic or geometric — it could be based on squares, cubes, or mixed operations.",
+      "Looking at only the first few terms to identify the pattern, check ALL terms.",
+      "Assuming the series is always arithmetic or geometric, it could be based on squares, cubes, or mixed operations.",
       "Not checking if the 'odd' number is actually a calculation error in the question (read carefully).",
     ],
     keyTakeaways: [
       "Start by computing differences between consecutive terms.",
       "If differences don't reveal a pattern, try ratios or check for square/cube relationships.",
       "Memorize primes, perfect squares, and cubes for quick identification.",
-      "Some series alternate between two operations — look for patterns in odd and even positions.",
+      "Some series alternate between two operations, look for patterns in odd and even positions.",
       "Always verify the identified pattern works for ALL terms except the odd one.",
     ],
   },
@@ -2946,7 +2946,7 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing True Discount with Banker's Discount — TD is on PV, BD is on Amount.",
+      "Confusing True Discount with Banker's Discount, TD is on PV, BD is on Amount.",
       "Using the Amount instead of PV when calculating SI for True Discount.",
       "Forgetting to convert months to years in the time period.",
     ],
@@ -2962,7 +2962,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "bankers-discount",
     categorySlug: "aptitude",
     introduction:
-      "Banker's Discount (BD) is the simple interest on the face value (amount due) of a bill for the unexpired time. It is what a banker charges when a bill is discounted (cashed before its due date). Unlike True Discount which is calculated on the present value, Banker's Discount is calculated on the amount due.\n\nBanker's Discount is always greater than True Discount because it is SI on the full amount, while TD is SI on the smaller present value. The difference between BD and TD is called the Banker's Gain (BG), and it equals the SI on the True Discount: BG = BD - TD = SI on TD.\n\nThese concepts are used in commercial banking for bill discounting. When a trader has a bill due in the future, they can get it cashed at a bank by accepting a discount. The bank charges BD, but the fair discount would be TD — the difference (BG) is the banker's extra profit.",
+      "Banker's Discount (BD) is the simple interest on the face value (amount due) of a bill for the unexpired time. It is what a banker charges when a bill is discounted (cashed before its due date). Unlike True Discount which is calculated on the present value, Banker's Discount is calculated on the amount due.\n\nBanker's Discount is always greater than True Discount because it is SI on the full amount, while TD is SI on the smaller present value. The difference between BD and TD is called the Banker's Gain (BG), and it equals the SI on the True Discount: BG = BD - TD = SI on TD.\n\nThese concepts are used in commercial banking for bill discounting. When a trader has a bill due in the future, they can get it cashed at a bank by accepting a discount. The bank charges BD, but the fair discount would be TD, the difference (BG) is the banker's extra profit.",
     concepts: [
       "Banker's Discount = SI on the Amount (face value) for the given time.",
       "True Discount = SI on the Present Value for the given time.",
@@ -3014,7 +3014,7 @@ export const aptitudeTheory: TopicTheory[] = [
     quickTricks: [
       "BD = SI on Amount. TD = SI on PV. BG = SI on TD.",
       "BD - TD = Banker's Gain. This is the banker's profit.",
-      "Amount = TD²/BG — useful shortcut.",
+      "Amount = TD²/BG, useful shortcut.",
       "If BD, TD are known: PV = TD x Amount / BD = TD²/(BD - TD).",
     ],
     solvedExamples: [
@@ -3042,7 +3042,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Confusing BD (SI on Amount) with TD (SI on PV).",
-      "Thinking BD < TD — Banker's Discount is always MORE than True Discount.",
+      "Thinking BD < TD, Banker's Discount is always MORE than True Discount.",
       "Not remembering that BG = BD - TD = SI on TD.",
     ],
     keyTakeaways: [
@@ -3137,12 +3137,12 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Forgetting to subtract the intersection when finding the union — double counting.",
-      "Confusing 'n(A ∩ B)' (both) with 'n(A only)' — A only = n(A) - n(A ∩ B).",
+      "Forgetting to subtract the intersection when finding the union, double counting.",
+      "Confusing 'n(A ∩ B)' (both) with 'n(A only)', A only = n(A) - n(A ∩ B).",
       "In three-set problems, forgetting to add back n(A ∩ B ∩ C) in the inclusion-exclusion formula.",
     ],
     keyTakeaways: [
-      "n(A ∪ B) = n(A) + n(B) - n(A ∩ B) — the most important formula.",
+      "n(A ∪ B) = n(A) + n(B) - n(A ∩ B), the most important formula.",
       "For three sets, inclusion-exclusion adds and subtracts alternately.",
       "Venn diagrams: always fill from the innermost region outward.",
       "De Morgan's Laws connect unions and intersections through complements.",
@@ -3236,7 +3236,7 @@ export const aptitudeTheory: TopicTheory[] = [
       "Triangle angle sum = 180°. Quadrilateral angle sum = 360°.",
       "Pythagorean theorem only applies to right triangles.",
       "Similar triangles: sides are proportional, areas are in ratio of squares of sides.",
-      "Circle theorems are essential — angle in semicircle = 90°, tangent perpendicular to radius.",
+      "Circle theorems are essential, angle in semicircle = 90°, tangent perpendicular to radius.",
       "Memorize common Pythagorean triplets for quick recognition.",
     ],
   },
@@ -3244,7 +3244,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "trigonometry",
     categorySlug: "aptitude",
     introduction:
-      "Trigonometry is the study of relationships between the sides and angles of triangles. The six trigonometric ratios — sine, cosine, tangent, cosecant, secant, and cotangent — are defined for an acute angle in a right triangle as ratios of different pairs of sides.\n\nFor a right triangle with angle θ: sin θ = opposite/hypotenuse, cos θ = adjacent/hypotenuse, tan θ = opposite/adjacent. The reciprocal ratios are: csc θ = 1/sin θ, sec θ = 1/cos θ, cot θ = 1/tan θ. The fundamental identity sin²θ + cos²θ = 1 connects sine and cosine.\n\nFor competitive exams, you need to memorize the values of trigonometric ratios for standard angles (0°, 30°, 45°, 60°, 90°), know the important identities, and be able to simplify trigonometric expressions. Most aptitude problems involve simplification using identities rather than complex trigonometric equations.",
+      "Trigonometry is the study of relationships between the sides and angles of triangles. The six trigonometric ratios, sine, cosine, tangent, cosecant, secant, and cotangent, are defined for an acute angle in a right triangle as ratios of different pairs of sides.\n\nFor a right triangle with angle θ: sin θ = opposite/hypotenuse, cos θ = adjacent/hypotenuse, tan θ = opposite/adjacent. The reciprocal ratios are: csc θ = 1/sin θ, sec θ = 1/cos θ, cot θ = 1/tan θ. The fundamental identity sin²θ + cos²θ = 1 connects sine and cosine.\n\nFor competitive exams, you need to memorize the values of trigonometric ratios for standard angles (0°, 30°, 45°, 60°, 90°), know the important identities, and be able to simplify trigonometric expressions. Most aptitude problems involve simplification using identities rather than complex trigonometric equations.",
     concepts: [
       "sin θ = opposite/hypotenuse, cos θ = adjacent/hypotenuse, tan θ = opposite/adjacent.",
       "csc θ = 1/sin θ, sec θ = 1/cos θ, cot θ = 1/tan θ.",
@@ -3310,9 +3310,9 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Confusing sin and cos for complementary angles — sin 60° = cos 30°, not sin 30°.",
+      "Confusing sin and cos for complementary angles, sin 60° = cos 30°, not sin 30°.",
       "Forgetting that tan 90° and sec 90° are undefined.",
-      "Applying Pythagorean identity incorrectly — it is sin²+cos²=1, not sin+cos=1.",
+      "Applying Pythagorean identity incorrectly, it is sin²+cos²=1, not sin+cos=1.",
     ],
     keyTakeaways: [
       "Memorize sin/cos/tan for 0°, 30°, 45°, 60°, 90°.",
@@ -3326,7 +3326,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "linear-equations",
     categorySlug: "aptitude",
     introduction:
-      "Linear equations are equations where the highest power of the variable is 1. A linear equation in one variable (ax + b = 0) has exactly one solution. A system of two linear equations in two variables can be solved by substitution, elimination, or cross-multiplication to find the unique values of both variables.\n\nFor a system a1x + b1y = c1 and a2x + b2y = c2: if a1/a2 ≠ b1/b2, the system has a unique solution (consistent). If a1/a2 = b1/b2 = c1/c2, the equations are identical (infinite solutions). If a1/a2 = b1/b2 ≠ c1/c2, the system is inconsistent (no solution — parallel lines).\n\nLinear equation problems in competitive exams are usually word problems that require you to set up two equations from the given conditions and solve them. Common scenarios include age problems, digit problems, fraction problems, and work-rate problems where the unknowns are linearly related.",
+      "Linear equations are equations where the highest power of the variable is 1. A linear equation in one variable (ax + b = 0) has exactly one solution. A system of two linear equations in two variables can be solved by substitution, elimination, or cross-multiplication to find the unique values of both variables.\n\nFor a system a1x + b1y = c1 and a2x + b2y = c2: if a1/a2 ≠ b1/b2, the system has a unique solution (consistent). If a1/a2 = b1/b2 = c1/c2, the equations are identical (infinite solutions). If a1/a2 = b1/b2 ≠ c1/c2, the system is inconsistent (no solution, parallel lines).\n\nLinear equation problems in competitive exams are usually word problems that require you to set up two equations from the given conditions and solve them. Common scenarios include age problems, digit problems, fraction problems, and work-rate problems where the unknowns are linearly related.",
     concepts: [
       "Linear equation in one variable: ax + b = 0 → x = -b/a.",
       "System of two linear equations has a unique solution when the lines intersect.",
@@ -3372,10 +3372,10 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     quickTricks: [
-      "For simple problems, try substitution of answer choices — it can be faster.",
+      "For simple problems, try substitution of answer choices, it can be faster.",
       "If coefficients are small, elimination is often the fastest algebraic method.",
       "For fraction problems: let the fraction be x/y, then set up two equations from given conditions.",
-      "Cross-multiplication is a formula-based method — directly gives x and y without step-by-step elimination.",
+      "Cross-multiplication is a formula-based method, directly gives x and y without step-by-step elimination.",
     ],
     solvedExamples: [
       {
@@ -3395,7 +3395,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Sign errors when multiplying or adding equations in the elimination method.",
-      "Setting up the wrong equation from the word problem — read carefully.",
+      "Setting up the wrong equation from the word problem, read carefully.",
       "Forgetting to check the solution in BOTH original equations.",
     ],
     keyTakeaways: [
@@ -3481,7 +3481,7 @@ export const aptitudeTheory: TopicTheory[] = [
     ],
     commonMistakes: [
       "Forgetting that a ≠ 0 (otherwise it's a linear equation, not quadratic).",
-      "Sign errors in the quadratic formula — the -b term means negating b.",
+      "Sign errors in the quadratic formula, the -b term means negating b.",
       "Dividing by x without considering that x = 0 might be a root.",
     ],
     keyTakeaways: [
@@ -3496,11 +3496,11 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "progressions",
     categorySlug: "aptitude",
     introduction:
-      "Progressions are sequences of numbers that follow a specific pattern. The three main types are Arithmetic Progression (AP), Geometric Progression (GP), and Harmonic Progression (HP). Each has its own formulas for the nth term and the sum of n terms.\n\nIn an AP, each term differs from the previous by a constant called the common difference (d). The nth term is a + (n-1)d and the sum of n terms is n/2 x [2a + (n-1)d] or equivalently n/2 x (first + last). In a GP, each term is obtained by multiplying the previous by a constant ratio (r). The nth term is ar^(n-1) and the sum of n terms is a(r^n - 1)/(r - 1) for r ≠ 1.\n\nHP is the reciprocal of an AP — if a, b, c are in HP, then 1/a, 1/b, 1/c are in AP. There is no direct formula for HP sums; convert to AP first. The relationship between Arithmetic Mean (AM), Geometric Mean (GM), and Harmonic Mean (HM) is important: AM ≥ GM ≥ HM for positive numbers, with equality only when all numbers are equal.",
+      "Progressions are sequences of numbers that follow a specific pattern. The three main types are Arithmetic Progression (AP), Geometric Progression (GP), and Harmonic Progression (HP). Each has its own formulas for the nth term and the sum of n terms.\n\nIn an AP, each term differs from the previous by a constant called the common difference (d). The nth term is a + (n-1)d and the sum of n terms is n/2 x [2a + (n-1)d] or equivalently n/2 x (first + last). In a GP, each term is obtained by multiplying the previous by a constant ratio (r). The nth term is ar^(n-1) and the sum of n terms is a(r^n - 1)/(r - 1) for r ≠ 1.\n\nHP is the reciprocal of an AP, if a, b, c are in HP, then 1/a, 1/b, 1/c are in AP. There is no direct formula for HP sums; convert to AP first. The relationship between Arithmetic Mean (AM), Geometric Mean (GM), and Harmonic Mean (HM) is important: AM ≥ GM ≥ HM for positive numbers, with equality only when all numbers are equal.",
     concepts: [
       "AP: constant difference d. Example: 2, 5, 8, 11, ... (d = 3).",
       "GP: constant ratio r. Example: 3, 6, 12, 24, ... (r = 2).",
-      "HP: reciprocals form an AP. Example: 1, 1/2, 1/3, ... (reciprocals are 1, 2, 3 — AP).",
+      "HP: reciprocals form an AP. Example: 1, 1/2, 1/3, ... (reciprocals are 1, 2, 3, AP).",
       "AM ≥ GM ≥ HM (for positive numbers).",
     ],
     formulas: [
@@ -3604,7 +3604,7 @@ export const aptitudeTheory: TopicTheory[] = [
       {
         name: "Solving Linear Inequalities",
         steps: [
-          "Treat it like an equation — isolate the variable.",
+          "Treat it like an equation, isolate the variable.",
           "If you multiply/divide by a negative, flip the sign.",
           "Express the solution as an interval.",
         ],
@@ -3672,7 +3672,7 @@ export const aptitudeTheory: TopicTheory[] = [
     slug: "data-sufficiency",
     categorySlug: "aptitude",
     introduction:
-      "Data Sufficiency is a unique type of problem where you are not asked to solve a question but to determine whether the given data is sufficient to answer it. Typically, a question is posed followed by two statements. You must decide if Statement 1 alone is sufficient, Statement 2 alone is sufficient, both together are sufficient, or neither is sufficient.\n\nThe standard answer choices are: (A) Statement 1 alone is sufficient. (B) Statement 2 alone is sufficient. (C) Both together are sufficient. (D) Each alone is sufficient. (E) Neither is sufficient, even together. This format tests logical and analytical thinking rather than computation.\n\nThe key skill is recognizing what information is needed to answer the question and whether each statement provides that information. You should not actually solve the problem — just determine if it CAN be solved. This saves time and is the intended approach. Look for whether statements provide unique values or leave ambiguity.",
+      "Data Sufficiency is a unique type of problem where you are not asked to solve a question but to determine whether the given data is sufficient to answer it. Typically, a question is posed followed by two statements. You must decide if Statement 1 alone is sufficient, Statement 2 alone is sufficient, both together are sufficient, or neither is sufficient.\n\nThe standard answer choices are: (A) Statement 1 alone is sufficient. (B) Statement 2 alone is sufficient. (C) Both together are sufficient. (D) Each alone is sufficient. (E) Neither is sufficient, even together. This format tests logical and analytical thinking rather than computation.\n\nThe key skill is recognizing what information is needed to answer the question and whether each statement provides that information. You should not actually solve the problem, just determine if it CAN be solved. This saves time and is the intended approach. Look for whether statements provide unique values or leave ambiguity.",
     concepts: [
       "You must determine sufficiency, not compute the answer.",
       "A statement is sufficient if it leads to a unique answer.",
@@ -3689,7 +3689,7 @@ export const aptitudeTheory: TopicTheory[] = [
       {
         name: "Systematic Approach",
         steps: [
-          "Understand what the question is asking — what do you need to find?",
+          "Understand what the question is asking, what do you need to find?",
           "Analyze Statement 1 alone: Can it uniquely answer the question? (Ignore Statement 2).",
           "Analyze Statement 2 alone: Can it uniquely answer the question? (Ignore Statement 1).",
           "If neither alone works, combine both: Can they together uniquely answer it?",
@@ -3708,9 +3708,9 @@ export const aptitudeTheory: TopicTheory[] = [
     quickTricks: [
       "If the question asks for a specific value (like 'what is x?'), the statement must give exactly one value.",
       "If the question asks yes/no, the statement is sufficient if it always gives the same answer (always yes or always no).",
-      "Two linear equations with two unknowns generally give a unique solution — both together are usually sufficient.",
+      "Two linear equations with two unknowns generally give a unique solution, both together are usually sufficient.",
       "One equation with two unknowns is usually NOT sufficient (infinite solutions).",
-      "Inequalities often leave multiple possibilities — check carefully.",
+      "Inequalities often leave multiple possibilities, check carefully.",
     ],
     solvedExamples: [
       {
@@ -3736,14 +3736,14 @@ export const aptitudeTheory: TopicTheory[] = [
       },
     ],
     commonMistakes: [
-      "Actually solving the problem instead of just determining sufficiency — this wastes time.",
+      "Actually solving the problem instead of just determining sufficiency, this wastes time.",
       "Forgetting to consider both positive and negative solutions (e.g., x² = 9 gives x = 3 or -3).",
-      "Not considering all possible cases — one counterexample is enough to show insufficiency.",
+      "Not considering all possible cases, one counterexample is enough to show insufficiency.",
     ],
     keyTakeaways: [
-      "Do NOT solve — just determine if the data is sufficient for a unique answer.",
+      "Do NOT solve, just determine if the data is sufficient for a unique answer.",
       "Analyze each statement independently first, then combine if needed.",
-      "Sufficient means a single definite answer — not two possible answers.",
+      "Sufficient means a single definite answer, not two possible answers.",
       "For yes/no questions, consistent yes or consistent no is sufficient.",
       "Use counterexamples to disprove sufficiency quickly.",
     ],

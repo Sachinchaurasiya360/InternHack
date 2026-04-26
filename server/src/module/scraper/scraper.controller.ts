@@ -12,6 +12,7 @@ export class ScraperController {
       const search = req.query["search"] ? String(req.query["search"]) : undefined;
       const location = req.query["location"] ? String(req.query["location"]) : undefined;
       const source = req.query["source"] ? String(req.query["source"]) : undefined;
+      const tags = req.query["tags"] ? String(req.query["tags"]) : undefined;
 
       const result = await scraperService.getScrapedJobs({
         page,
@@ -19,6 +20,7 @@ export class ScraperController {
         search,
         location,
         source,
+        tags,
       });
 
       res.json(result);

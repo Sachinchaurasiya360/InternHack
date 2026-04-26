@@ -1,6 +1,6 @@
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, IndianRupee, Users, CheckCircle, ArrowRight, Send, Check, Building2, CalendarDays, Tag, Clock, Briefcase, BookOpen } from "lucide-react";
+import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
@@ -15,15 +15,31 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.07 } } };
 
+function Kicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+      <span className="h-1.5 w-1.5 bg-lime-400" />
+      {children}
+    </div>
+  );
+}
+
+function CompanyMark({ label, size = "md" }: { label: string; size?: "md" | "lg" }) {
+  const dims = size === "lg" ? "w-14 h-14 text-xl" : "w-10 h-10 text-sm";
+  return (
+    <div className={`${dims} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 font-bold`}>
+      {label?.charAt(0)?.toUpperCase() || "?"}
+    </div>
+  );
+}
+
 function getDeadlineInfo(deadline: string) {
   const diff = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  if (diff < 0) return { label: "Expired", color: "text-red-500 dark:text-red-400", chipCls: "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400" };
-  if (diff <= 3) return { label: `${diff}d left`, color: "text-red-500 dark:text-red-400", chipCls: "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400" };
-  if (diff <= 7) return { label: `${diff}d left`, color: "text-amber-500 dark:text-amber-400", chipCls: "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400" };
+  if (diff < 0) return { label: "Expired", urgent: true };
+  if (diff <= 7) return { label: `${diff}d left`, urgent: diff <= 3 };
   return {
     label: new Date(deadline).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-    color: "text-gray-500 dark:text-gray-400",
-    chipCls: "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400",
+    urgent: false,
   };
 }
 
@@ -67,7 +83,7 @@ export default function JobDetailPage() {
   if (isLoading) {
     if (inStudentLayout) return <LoadingScreen />;
     return (
-      <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
         <Navbar />
         <LoadingScreen />
       </div>
@@ -75,11 +91,20 @@ export default function JobDetailPage() {
   }
 
   if (!job) {
-    if (inStudentLayout) return <div className="text-center pt-12 text-gray-500">Job not found</div>;
+    const notFound = (
+      <div className="max-w-6xl mx-auto px-6 pt-24 text-center">
+        <Kicker>error / 404</Kicker>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50">Job not found.</h1>
+        <Link to={backPath} className="mt-4 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline">
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to jobs
+        </Link>
+      </div>
+    );
+    if (inStudentLayout) return notFound;
     return (
-      <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
         <Navbar />
-        <div className="text-center pt-24 text-gray-500">Job not found</div>
+        {notFound}
       </div>
     );
   }
@@ -88,157 +113,137 @@ export default function JobDetailPage() {
 
   const ctaButton = isAuthenticated && user?.role === "STUDENT" ? (
     applicationStatus?.applied ? (
-      <Link to={`/student/applications/${applicationStatus.application!.id}`}
-        className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all no-underline text-sm shadow-sm">
+      <Link
+        to={`/student/applications/${applicationStatus.application!.id}`}
+        className="inline-flex items-center gap-2 px-6 py-3 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 font-semibold rounded-md hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline text-sm"
+      >
         <Check className="w-4 h-4" /> Applied
       </Link>
     ) : (
-      <Link to={applyPath}
-        className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all no-underline text-sm shadow-lg shadow-gray-950/10 dark:shadow-white/10">
-        <Send className="w-4 h-4" /> Apply Now
+      <Link
+        to={applyPath}
+        className="inline-flex items-center gap-2 px-6 py-3 bg-lime-400 text-stone-900 font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline text-sm"
+      >
+        <Send className="w-4 h-4" /> Apply now
       </Link>
     )
   ) : !isAuthenticated ? (
-    <Link to="/login"
-      className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all no-underline text-sm shadow-lg shadow-gray-950/10 dark:shadow-white/10">
-      <ArrowRight className="w-4 h-4" /> Sign In to Apply
+    <Link
+      to="/login"
+      className="inline-flex items-center gap-2 px-6 py-3 bg-lime-400 text-stone-900 font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline text-sm"
+    >
+      Sign in to apply <ArrowUpRight className="w-4 h-4" />
     </Link>
   ) : null;
 
   const page = (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-150 h-150 rounded-full bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/30 dark:to-violet-900/30 opacity-60 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-125 h-125 rounded-full bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/30 dark:to-blue-900/30 opacity-60 blur-3xl" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-200 h-200 rounded-full border border-black/3 dark:border-white/3" />
-      </div>
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-        }}
-      />
-
-      <div className={`relative z-10 max-w-5xl mx-auto ${inStudentLayout ? "px-6 pt-8 pb-16" : "px-6 pt-24 pb-16"}`}>
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+      <div className={`max-w-6xl mx-auto px-6 pb-16 ${inStudentLayout ? "" : "pt-24"}`}>
         {/* Back link */}
         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-          <Link to={backPath} className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-900 dark:hover:text-white mb-8 no-underline transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Jobs
+          <Link
+            to={backPath}
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 mb-8 no-underline transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to jobs
           </Link>
         </motion.div>
 
-        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
-          {/* Hero Header */}
-          <motion.div variants={fadeUp} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-            <div className="p-8 sm:p-10">
-              <div className="flex items-start gap-5">
-                {/* Company avatar */}
-                <div className="w-14 h-14 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center text-xl font-bold text-white dark:text-gray-950 shrink-0">
-                  {job.company?.charAt(0) || "C"}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-950 dark:text-white">
-                    {job.title}
-                  </h1>
-                  <p className="text-base text-gray-500 dark:text-gray-400 mt-1">{job.company}</p>
-                </div>
-
-                {/* Desktop CTA */}
-                <div className="shrink-0 hidden sm:block">
-                  {ctaButton}
-                </div>
+        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-10">
+          {/* Header */}
+          <motion.div variants={fadeUp}>
+            <Kicker>internal / posting</Kicker>
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-start gap-5">
+              <CompanyMark label={job.company || "?"} size="lg" />
+              <div className="flex-1 min-w-0">
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
+                  {job.title}
+                </h1>
+                <p className="mt-2 text-sm text-stone-500">{job.company}</p>
               </div>
-
-              {/* Meta chips */}
-              <div className="mt-6 flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400">
-                  <MapPin className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
-                  {job.location}
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400">
-                  <IndianRupee className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-                  {job.salary}
-                </span>
-                {job._count && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400">
-                    <Users className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" />
-                    {job._count.applications} applicant{job._count.applications !== 1 ? "s" : ""}
-                  </span>
-                )}
-                {deadlineInfo && (
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg ${deadlineInfo.chipCls}`}>
-                    <Clock className="w-3.5 h-3.5" />
-                    {deadlineInfo.label}
-                  </span>
-                )}
-              </div>
-
-              {/* Tags */}
-              {job.tags.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {job.tags.map((tag) => (
-                    <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium">
-                      <Tag className="w-3 h-3" />{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Mobile CTA */}
-              <div className="mt-6 sm:hidden">
-                {ctaButton && (
-                  <div className="[&>a]:flex [&>a]:w-full [&>a]:justify-center">
-                    {ctaButton}
-                  </div>
-                )}
-              </div>
+              <div className="shrink-0">{ctaButton}</div>
             </div>
+
+            {/* Meta row */}
+            <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-stone-600 dark:text-stone-400">
+              {job.location && (
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-stone-400" /> {job.location}
+                </span>
+              )}
+              {job.salary && (
+                <span className="flex items-center gap-1.5">
+                  <IndianRupee className="w-3.5 h-3.5 text-stone-400" /> {job.salary}
+                </span>
+              )}
+              {job._count && (
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-stone-400" />
+                  {job._count.applications} applicant{job._count.applications !== 1 ? "s" : ""}
+                </span>
+              )}
+              {deadlineInfo && (
+                <span className={`flex items-center gap-1.5 ${deadlineInfo.urgent ? "text-red-600 dark:text-red-400" : ""}`}>
+                  <Clock className={`w-3.5 h-3.5 ${deadlineInfo.urgent ? "text-red-500" : "text-stone-400"}`} />
+                  {deadlineInfo.label}
+                </span>
+              )}
+            </div>
+
+            {/* Tags */}
+            {job.tags.length > 0 && (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {job.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-md border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </motion.div>
 
-          {/* Two-column layout */}
+          {/* Two column */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main content */}
+            {/* Main */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Description */}
-              <motion.div variants={fadeUp} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-8">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
-                    <Briefcase className="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                  <h2 className="text-base font-semibold text-gray-900 dark:text-white">About the Role</h2>
+              <motion.div variants={fadeUp} className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-8">
+                <Kicker>about / role</Kicker>
+                <div className="mt-3 text-sm text-stone-700 dark:text-stone-300 whitespace-pre-wrap leading-relaxed">
+                  {job.description}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">{job.description}</div>
               </motion.div>
 
-              {/* Hiring Process */}
               {job.rounds && job.rounds.length > 0 && (
-                <motion.div variants={fadeUp} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-8">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
-                      <CheckCircle className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
-                    </div>
-                    <h2 className="text-base font-semibold text-gray-900 dark:text-white">Hiring Process</h2>
-                    <span className="ml-auto text-xs font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg">{job.rounds.length} round{job.rounds.length !== 1 ? "s" : ""}</span>
+                <motion.div variants={fadeUp} className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-8">
+                  <div className="flex items-center justify-between mb-5">
+                    <Kicker>hiring / process</Kicker>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                      {job.rounds.length} round{job.rounds.length !== 1 ? "s" : ""}
+                    </span>
                   </div>
                   <div className="space-y-0">
                     {job.rounds.map((round, i) => (
-                      <div key={round.id} className="flex items-start gap-4 group">
+                      <div key={round.id} className="flex items-start gap-4">
                         <div className="flex flex-col items-center">
-                          <div className="w-9 h-9 bg-gray-950 dark:bg-white text-white dark:text-gray-950 rounded-lg flex items-center justify-center text-xs font-bold transition-transform group-hover:scale-110">
-                            {i + 1}
+                          <div className="w-8 h-8 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md flex items-center justify-center text-xs font-mono font-bold">
+                            {String(i + 1).padStart(2, "0")}
                           </div>
-                          {i < job.rounds!.length - 1 && <div className="w-px h-full min-h-8 bg-gray-200 dark:bg-gray-700" />}
+                          {i < job.rounds!.length - 1 && (
+                            <div className="w-px h-full min-h-8 bg-stone-200 dark:bg-white/10" />
+                          )}
                         </div>
                         <div className="flex-1 pb-5 pt-1">
-                          <h3 className="font-medium text-gray-900 dark:text-white text-sm">{round.name}</h3>
-                          {round.description && <p className="text-xs text-gray-500 mt-1 leading-relaxed">{round.description}</p>}
+                          <h3 className="font-bold text-stone-900 dark:text-stone-50 text-sm">{round.name}</h3>
+                          {round.description && (
+                            <p className="text-xs text-stone-500 mt-1 leading-relaxed">{round.description}</p>
+                          )}
                           {round.customFields.length > 0 && (
-                            <span className="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mt-2 font-medium bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded-md">
-                              <CheckCircle className="w-3 h-3 text-emerald-500 dark:text-emerald-400" /> {round.customFields.length} field{round.customFields.length !== 1 ? "s" : ""} to complete
-                            </span>
+                            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+                              {round.customFields.length} field{round.customFields.length !== 1 ? "s" : ""} to complete
+                            </p>
                           )}
                         </div>
                       </div>
@@ -250,69 +255,51 @@ export default function JobDetailPage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Quick Info Card */}
-              <motion.div variants={fadeUp} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-5">Job Details</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
-                      <MapPin className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">Location</p>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{job.location}</p>
-                    </div>
+              <motion.div variants={fadeUp} className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-6">
+                <Kicker>job / details</Kicker>
+                <dl className="mt-4 space-y-3 text-sm">
+                  <div className="flex items-start justify-between gap-3">
+                    <dt className="text-[10px] font-mono uppercase tracking-widest text-stone-500">Location</dt>
+                    <dd className="text-stone-900 dark:text-stone-50 text-right truncate">{job.location}</dd>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
-                      <IndianRupee className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">Compensation</p>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{job.salary}</p>
-                    </div>
+                  <div className="flex items-start justify-between gap-3">
+                    <dt className="text-[10px] font-mono uppercase tracking-widest text-stone-500">Salary</dt>
+                    <dd className="text-stone-900 dark:text-stone-50 text-right truncate">{job.salary}</dd>
                   </div>
                   {job._count && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
-                        <Users className="w-4 h-4 text-violet-500 dark:text-violet-400" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">Applicants</p>
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{job._count.applications}</p>
-                      </div>
+                    <div className="flex items-start justify-between gap-3">
+                      <dt className="text-[10px] font-mono uppercase tracking-widest text-stone-500">Applicants</dt>
+                      <dd className="text-stone-900 dark:text-stone-50 text-right">{job._count.applications}</dd>
                     </div>
                   )}
                   {deadlineInfo && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
-                        <CalendarDays className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">Deadline</p>
-                        <p className={`text-sm font-medium ${deadlineInfo.color}`}>{deadlineInfo.label}</p>
-                      </div>
+                    <div className="flex items-start justify-between gap-3">
+                      <dt className="text-[10px] font-mono uppercase tracking-widest text-stone-500">Deadline</dt>
+                      <dd className={`text-right ${deadlineInfo.urgent ? "text-red-600 dark:text-red-400" : "text-stone-900 dark:text-stone-50"}`}>
+                        {deadlineInfo.label}
+                      </dd>
                     </div>
                   )}
-                </div>
+                </dl>
               </motion.div>
 
-              {/* Recruiter Info */}
               {job.recruiter && (
-                <motion.div variants={fadeUp} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-5">Posted By</h3>
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center text-white dark:text-gray-950 font-bold text-base">
-                      {job.recruiter.name?.charAt(0) || "R"}
-                    </div>
+                <motion.div variants={fadeUp} className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-6">
+                  <Kicker>posted / by</Kicker>
+                  <div className="mt-4 flex items-center gap-3">
+                    <CompanyMark label={job.recruiter.name || "?"} />
                     <div className="min-w-0">
-                      <p className="font-medium text-sm text-gray-700 dark:text-gray-300 truncate">{job.recruiter.name}</p>
+                      <p className="font-bold text-sm text-stone-900 dark:text-stone-50 truncate">
+                        {job.recruiter.name}
+                      </p>
                       {job.recruiter.company && (
-                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                          <Building2 className="w-3 h-3" />{job.recruiter.company}
+                        <p className="text-xs text-stone-500 flex items-center gap-1 mt-0.5">
+                          <Building2 className="w-3 h-3" /> {job.recruiter.company}
                         </p>
                       )}
-                      {job.recruiter.designation && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{job.recruiter.designation}</p>}
+                      {job.recruiter.designation && (
+                        <p className="text-xs text-stone-500 mt-0.5">{job.recruiter.designation}</p>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -320,39 +307,43 @@ export default function JobDetailPage() {
             </div>
           </div>
 
-          {/* Related Jobs */}
+          {/* Related jobs */}
           {relatedJobs.length > 0 && (
             <motion.div variants={fadeUp}>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
-                  <Briefcase className="w-4.5 h-4.5 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Similar Positions</h2>
-              </div>
+              <Kicker>related / similar roles</Kicker>
+              <h2 className="mt-3 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-5">
+                Similar positions.
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {relatedJobs.slice(0, 4).map((rj) => (
-                  <Link key={rj.id} to={inStudentLayout ? `/student/jobs/${rj.id}` : `/jobs/${rj.id}`} className="no-underline group">
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 text-sm font-bold text-white dark:text-gray-950">
-                          {rj.company?.charAt(0) || "C"}
+                  <Link
+                    key={rj.id}
+                    to={inStudentLayout ? `/student/jobs/${rj.id}` : `/jobs/${rj.id}`}
+                    className="group no-underline block bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5 hover:border-stone-400 dark:hover:border-white/30 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <CompanyMark label={rj.company || "?"} />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight">
+                            {rj.title}
+                          </h3>
+                          <p className="text-xs text-stone-500 mt-0.5 truncate">{rj.company}</p>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{rj.title}</h3>
-                          <p className="text-xs text-gray-500 mt-0.5">{rj.company}</p>
-                          <div className="flex items-center gap-3 mt-2.5">
-                            <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded-md">
-                              <MapPin className="w-3 h-3 text-indigo-400" />{rj.location}
-                            </span>
-                            {rj.salary && (
-                              <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded-md">
-                                <IndianRupee className="w-3 h-3 text-emerald-400" />{rj.salary}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors mt-1 shrink-0" />
                       </div>
+                      <ArrowUpRight className="w-4 h-4 shrink-0 text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-50 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    </div>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500">
+                      {rj.location && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" /> {rj.location}
+                        </span>
+                      )}
+                      {rj.salary && (
+                        <span className="flex items-center gap-1">
+                          <IndianRupee className="w-3 h-3" /> {rj.salary}
+                        </span>
+                      )}
                     </div>
                   </Link>
                 ))}
@@ -360,28 +351,34 @@ export default function JobDetailPage() {
             </motion.div>
           )}
 
-          {/* Related Blog Posts */}
+          {/* Related posts */}
           {relatedPosts.length > 0 && (
             <motion.div variants={fadeUp}>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                  <BookOpen className="w-4.5 h-4.5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Related Articles</h2>
-              </div>
+              <Kicker>related / articles</Kicker>
+              <h2 className="mt-3 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-5">
+                From the blog.
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {relatedPosts.slice(0, 3).map((rp) => (
-                  <Link key={rp.id} to={`/blog/${rp.slug}`} className="no-underline group">
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 hover:shadow-md transition-shadow h-full">
-                      {rp.featuredImage && (
-                        <img src={rp.featuredImage} alt={rp.title} className="w-full h-28 object-cover rounded-xl mb-3" />
-                      )}
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{rp.title}</h3>
-                      <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{rp.excerpt}</p>
-                      <span className="inline-flex items-center gap-1 text-xs text-gray-400 mt-2">
-                        <Clock className="w-3 h-3" />{rp.readingTime} min read
-                      </span>
-                    </div>
+                  <Link
+                    key={rp.id}
+                    to={`/blog/${rp.slug}`}
+                    className="group no-underline block bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full"
+                  >
+                    {rp.featuredImage && (
+                      <img
+                        src={rp.featuredImage}
+                        alt={rp.title}
+                        className="w-full h-28 object-cover rounded-md mb-3 border border-stone-200 dark:border-white/10"
+                      />
+                    )}
+                    <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 line-clamp-2 leading-tight">
+                      {rp.title}
+                    </h3>
+                    <p className="text-xs text-stone-500 mt-1.5 line-clamp-2">{rp.excerpt}</p>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-3">
+                      <Clock className="w-3 h-3" /> {rp.readingTime} min read
+                    </span>
                   </Link>
                 ))}
               </div>
@@ -392,12 +389,13 @@ export default function JobDetailPage() {
     </div>
   );
 
-  if (inStudentLayout) return (
-    <>
-      <SEO title={`${job.title} at ${job.company}`} noIndex />
-      {page}
-    </>
-  );
+  if (inStudentLayout)
+    return (
+      <>
+        <SEO title={`${job.title} at ${job.company}`} noIndex />
+        {page}
+      </>
+    );
 
   return (
     <>

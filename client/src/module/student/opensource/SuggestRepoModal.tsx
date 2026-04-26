@@ -8,6 +8,7 @@ import type { RepoDomain, RepoDifficulty } from "../../../lib/types";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS } from "./reposData";
 import { parseGithubRepoUrl } from "./_shared/repo-utils";
 import { getInputCls } from "../../../components/ui/form";
+import { Button } from "../../../components/ui/button";
 
 interface SuggestRepoForm {
   name: string;
@@ -124,13 +125,14 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
       >
         <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Suggest a Repository</h2>
-          <button
+          <Button
+            variant="ghost"
+            mode="icon"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
             aria-label="Close"
           >
             <X className="w-4 h-4 text-gray-500" aria-hidden />
-          </button>
+          </Button>
         </div>
 
         {success ? (
@@ -229,10 +231,12 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               </p>
             )}
 
-            <button
+            <Button
               type="submit"
+              variant="mono"
+              size="lg"
               disabled={mutation.isPending}
-              className="w-full py-3 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+              className="w-full rounded-xl"
             >
               {mutation.isPending ? (
                 <>
@@ -242,7 +246,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               ) : (
                 "Submit Request"
               )}
-            </button>
+            </Button>
           </form>
         )}
       </motion.div>

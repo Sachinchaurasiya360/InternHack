@@ -26,15 +26,23 @@ export default function SqlEditor({ value, onChange, onRun, disabled }: SqlEdito
   const handleChange = useCallback((val: string) => onChange(val), [onChange]);
 
   return (
-    <div className="relative bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800">
-        <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">SQL Editor</span>
+    <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 border-b border-stone-200 dark:border-white/10">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="h-1 w-1 bg-lime-400 shrink-0"></div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            sql editor
+          </span>
+        </div>
         <div className="flex items-center gap-3">
-          <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Ctrl+Enter to run</span>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 hidden sm:block">
+            ctrl+enter
+          </span>
           <button
+            type="button"
             onClick={onRun}
             disabled={disabled}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-gray-950 dark:bg-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Play className="w-3 h-3" />
             Run

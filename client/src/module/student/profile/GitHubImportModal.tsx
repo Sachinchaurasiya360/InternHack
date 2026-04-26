@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Github, Loader2, Check, AlertCircle } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
+import { Button } from "../../../components/ui/button";
 import type { ProjectItem } from "../../../lib/types";
 
 interface GitHubImportData {
@@ -175,12 +176,14 @@ export default function GitHubImportModal({
                   <Github className="w-5 h-5" />
                   Import from GitHub
                 </h2>
-                <button
+                <Button
+                  variant="ghost"
+                  mode="icon"
                   onClick={handleClose}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 transition-colors"
+                  className="text-gray-500"
                 >
                   <X className="w-5 h-5" />
-                </button>
+                </Button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-5">
@@ -200,14 +203,15 @@ export default function GitHubImportModal({
                         className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                         autoFocus
                       />
-                      <button
+                      <Button
+                        variant="mono"
                         onClick={handleFetch}
                         disabled={loading || !username.trim()}
-                        className="px-5 py-2.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+                        className="rounded-xl"
                       >
                         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Github className="w-4 h-4" />}
                         Fetch
-                      </button>
+                      </Button>
                     </div>
                     {error && (
                       <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
@@ -265,21 +269,23 @@ export default function GitHubImportModal({
                             const isExisting = currentSkills.some((s) => s.toLowerCase() === lang.toLowerCase());
                             const isSelected = selectedSkills.has(lang);
                             return (
-                              <button
+                              <Button
                                 key={lang}
+                                variant={isSelected ? "mono" : "outline"}
+                                size="sm"
                                 onClick={() => !isExisting && toggleSkill(lang)}
                                 disabled={isExisting}
-                                className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
+                                className={
                                   isExisting
                                     ? "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed"
                                     : isSelected
                                     ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 ring-1 ring-indigo-300 dark:ring-indigo-700"
-                                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                                }`}
+                                    : ""
+                                }
                               >
                                 {isExisting && <Check className="w-3 h-3 inline mr-1" />}
                                 {lang}
-                              </button>
+                              </Button>
                             );
                           })}
                         </div>
@@ -332,19 +338,21 @@ export default function GitHubImportModal({
               {/* Footer */}
               {result && (
                 <div className="flex justify-between items-center p-6 border-t border-gray-100 dark:border-gray-800 shrink-0">
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={() => { setResult(null); setError(null); }}
-                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                   >
                     Back
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="mono"
                     onClick={handleImport}
                     disabled={selectedSkills.size === 0 && selectedRepos.size === 0 && !importBio && !importLocation}
-                    className="px-6 py-2.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
+                    className="rounded-xl"
                   >
                     Import Selected
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

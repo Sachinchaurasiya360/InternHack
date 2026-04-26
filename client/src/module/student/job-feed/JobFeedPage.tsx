@@ -9,6 +9,7 @@ import type { JobFeedMatch, JobFeedStats, JobPreferences, Pagination } from "../
 import { JobFeedCard } from "./JobFeedCard";
 import { JobPreferencesModal } from "./JobPreferencesModal";
 import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
+import { Button } from "../../../components/ui/button";
 
 export default function JobFeedPage() {
   const { user } = useAuthStore();
@@ -81,13 +82,15 @@ export default function JobFeedPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="outline"
+              mode="icon"
               onClick={() => setPrefOpen(true)}
-              className="p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              className="rounded-xl"
               title="Preferences"
             >
               <Settings className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
         </div>
       </motion.div>
@@ -100,12 +103,14 @@ export default function JobFeedPage() {
           <Bookmark className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No matches yet</h3>
           <p className="text-sm text-gray-500 mb-6">Set your preferences to get personalized recommendations</p>
-          <button
+          <Button
+            variant="mono"
+            size="lg"
             onClick={() => setPrefOpen(true)}
-            className="px-5 py-2.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+            className="rounded-xl"
           >
             Set Preferences
-          </button>
+          </Button>
         </div>
       ) : (
         <>
@@ -123,23 +128,27 @@ export default function JobFeedPage() {
 
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-center gap-3 mt-10">
-              <button
+              <Button
+                variant="outline"
+                size="lg"
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="px-5 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl disabled:opacity-30 hover:border-gray-300 dark:hover:border-gray-600 transition-colors dark:text-gray-300 shadow-sm"
+                className="rounded-xl"
               >
                 Previous
-              </button>
+              </Button>
               <span className="text-sm text-gray-500">
                 Page {page} of {pagination.totalPages}
               </span>
-              <button
+              <Button
+                variant="outline"
+                size="lg"
                 onClick={() => setPage(Math.min(pagination.totalPages, page + 1))}
                 disabled={page === pagination.totalPages}
-                className="px-5 py-2.5 text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl disabled:opacity-30 hover:border-gray-300 dark:hover:border-gray-600 transition-colors dark:text-gray-300 shadow-sm"
+                className="rounded-xl"
               >
                 Next
-              </button>
+              </Button>
             </div>
           )}
         </>

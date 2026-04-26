@@ -9,6 +9,7 @@ import {
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
 
 // ─── Styles ──────────────────────────────────────────────────────
@@ -63,9 +64,9 @@ function GSoCOrgModal({ org, onClose }: { org: GSoCOrganization; onClose: () => 
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors shrink-0 ml-2">
+          <Button variant="ghost" mode="icon" size="sm" onClick={onClose} className="text-gray-400 shrink-0 ml-2">
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -111,17 +112,20 @@ function GSoCOrgModal({ org, onClose }: { org: GSoCOrganization; onClose: () => 
               </div>
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {years.map((y) => (
-                  <button
+                  <Button
                     key={y}
+                    variant={String(y) === activeYear ? "mono" : "outline"}
+                    size="sm"
+                    shape="circle"
                     onClick={() => setSelectedYear(String(y))}
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-full border transition-colors ${
+                    className={
                       String(y) === activeYear
-                        ? "bg-amber-500 text-white border-amber-500"
+                        ? "bg-amber-500 text-white border-amber-500 hover:bg-amber-500/90"
                         : "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/50"
-                    }`}
+                    }
                   >
                     {y} ({org.projectsData![String(y)]?.num_projects || 0})
-                  </button>
+                  </Button>
                 ))}
               </div>
 
@@ -263,20 +267,20 @@ function FilterDropdown({
 }: { label: string; icon: React.ReactNode; value: string; options: string[]; onChange: (v: string) => void }) {
   return (
     <div className="relative group">
-      <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-900">
+      <Button variant="outline" size="sm">
         {icon}
         <span className="hidden sm:inline text-xs text-gray-400 dark:text-gray-500">{label}:</span>
         <span className="font-medium text-gray-900 dark:text-white text-xs truncate max-w-[100px]">{value}</span>
         <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-      </button>
+      </Button>
       <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[180px] max-h-[260px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
         {options.map((opt) => (
-          <button
-            key={opt} onClick={() => onChange(opt)}
-            className={`block w-full rounded-lg px-3 py-2 text-left text-xs transition ${value === opt ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium" : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
+          <Button
+            key={opt} variant="ghost" size="sm" onClick={() => onChange(opt)}
+            className={`w-full justify-start ${value === opt ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}
           >
             {opt}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -398,13 +402,15 @@ export default function GSoCReposPage() {
           <FilterDropdown label="Tech" icon={<Code2 className="w-3.5 h-3.5" />}
             value={selectedTech} options={techOptions} onChange={(v) => { setSelectedTech(v); setPage(1); }} />
           {hasFilters && (
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={clearFilters}
-              className="flex items-center gap-1 px-3 py-2 text-xs text-gray-500 hover:text-gray-900 dark:hover:text-white bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
+              className="text-gray-500"
             >
               <X className="w-3.5 h-3.5" />
               Clear
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -443,37 +449,40 @@ export default function GSoCReposPage() {
       {/* Pagination */}
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-8">
-          <button
+          <Button
+            variant="outline"
+            mode="icon"
+            size="sm"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
-          </button>
+          </Button>
           {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
             const start = Math.max(1, Math.min(page - 2, pagination.totalPages - 4));
             const p = start + i;
             if (p > pagination.totalPages) return null;
             return (
-              <button
-                key={p} onClick={() => setPage(p)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  p === page
-                    ? "bg-amber-500 text-white"
-                    : "border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
+              <Button
+                key={p}
+                variant={p === page ? "mono" : "outline"}
+                size="sm"
+                onClick={() => setPage(p)}
+                className={p === page ? "bg-amber-500 text-white hover:bg-amber-500/90" : ""}
               >
                 {p}
-              </button>
+              </Button>
             );
           })}
-          <button
+          <Button
+            variant="outline"
+            mode="icon"
+            size="sm"
             onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             disabled={page === pagination.totalPages}
-            className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors"
           >
             <ChevronRight className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       )}
 

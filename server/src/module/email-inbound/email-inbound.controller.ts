@@ -48,14 +48,14 @@ export async function handleInboundEmail(req: Request, res: Response): Promise<v
     const to = Array.isArray(data?.to) ? data.to.join(", ") : (data?.to ?? "");
     const cc = Array.isArray(data?.cc) ? data.cc.join(", ") : (data?.cc ?? "");
 
-    console.log(`[Inbound] Received email from ${from} — subject: "${subject}"`);
+    console.log(`[Inbound] Received email from ${from}, subject: "${subject}"`);
 
     const forwardHtml = `<!DOCTYPE html>
 <html><body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
   <tr>
     <td style="background-color:#0a0a0a;padding:16px 20px;text-align:center;">
-      <p style="margin:0;font-size:13px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">InternHack — Forwarded Reply</p>
+      <p style="margin:0;font-size:13px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">InternHack, Forwarded Reply</p>
     </td>
   </tr>
   <tr>

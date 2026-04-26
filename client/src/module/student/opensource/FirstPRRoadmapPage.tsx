@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
+import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
 
@@ -146,7 +147,10 @@ export default function FirstPRRoadmapPage() {
                 }`}
               >
                 {/* Step number / check */}
-                <button
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"
                 >
@@ -157,7 +161,7 @@ export default function FirstPRRoadmapPage() {
                       <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
                     </div>
                   )}
-                </button>
+                </Button>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">

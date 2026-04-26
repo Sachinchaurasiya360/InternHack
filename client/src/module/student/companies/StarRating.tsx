@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { Button } from "../../../components/ui/button";
 
 interface StarRatingProps {
   rating: number;
@@ -12,12 +13,15 @@ export default function StarRating({ rating, onRate, size = "md" }: StarRatingPr
   return (
     <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
-        <button
+        <Button
           key={star}
           type="button"
           onClick={() => onRate?.(star)}
           disabled={!onRate}
-          className={`${onRate ? "cursor-pointer hover:scale-110" : "cursor-default"} transition-transform`}
+          variant="ghost"
+          mode="icon"
+          size="sm"
+          className={`bg-transparent hover:bg-transparent h-auto w-auto p-0 ${onRate ? "hover:scale-110" : "cursor-default"} transition-transform disabled:opacity-100`}
         >
           <Star
             className={`${sizeClass} ${
@@ -26,7 +30,7 @@ export default function StarRating({ rating, onRate, size = "md" }: StarRatingPr
                 : "text-gray-300 dark:text-gray-600"
             }`}
           />
-        </button>
+        </Button>
       ))}
     </div>
   );

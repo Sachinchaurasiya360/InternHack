@@ -1,155 +1,152 @@
 import { motion } from "framer-motion";
-import { Briefcase, Map, FileCheck, Building2, GitBranch, ArrowRight } from "lucide-react";
+import {
+  Briefcase,
+  Map,
+  FileCheck,
+  Building2,
+  GitBranch,
+  Code2,
+  ArrowRight,
+} from "lucide-react";
 import { Link } from "react-router";
 import type { LucideIcon } from "lucide-react";
 
-const features: { title: string; desc: string; icon: LucideIcon; href: string }[] = [
+type Feature = {
+  title: string;
+  desc: string;
+  icon: LucideIcon;
+  href: string;
+  stat: string;
+  span?: "single" | "double";
+};
+
+const FEATURES: Feature[] = [
   {
-    title: "Smart Job Board",
-    desc: "Curated roles from verified recruiters with real-time tracking and one-click apply.",
-    icon: Briefcase,
-    href: "/jobs",
-  },
-  {
-    title: "AI Resume Scorer",
-    desc: "Instant ATS scores with actionable tips to beat automated filters.",
+    title: "ATS Resume Scorer",
+    desc: "Instant scores and line-by-line fixes tuned to recruiter ATS filters. LaTeX editor built in.",
     icon: FileCheck,
     href: "/ats-score",
+    stat: "54k resumes scored",
+    span: "double",
+  },
+  {
+    title: "Smart Job Board",
+    desc: "Curated roles from verified recruiters, one-click apply, saved filters.",
+    icon: Briefcase,
+    href: "/jobs",
+    stat: "1.2k+ roles",
   },
   {
     title: "Career Roadmaps",
-    desc: "Guided learning paths across 8+ tracks with skill checkpoints.",
+    desc: "Eight tracks from frontend to ML, checkpoints the recruiter will actually ask about.",
     icon: Map,
     href: "/learn",
+    stat: "8 tracks",
+  },
+  {
+    title: "DSA, SQL, Aptitude",
+    desc: "Daily drills, curated sheets, timed mock rounds. No endless LeetCode scroll.",
+    icon: Code2,
+    href: "/student/dsa",
+    stat: "2k+ problems",
   },
   {
     title: "Company Explorer",
-    desc: "Research tech stacks, culture, and open roles at 4,000+ companies.",
+    desc: "Real stacks, real salaries, real interview loops from 4k+ companies.",
     icon: Building2,
     href: "/companies",
+    stat: "4k+ companies",
   },
   {
     title: "Open Source & GSoC",
-    desc: "Discover beginner-friendly repos and 520+ GSoC organizations.",
+    desc: "Beginner repos, mentor-approved issues, 520+ GSoC orgs indexed.",
     icon: GitBranch,
     href: "/opensource",
+    stat: "520+ orgs",
+    span: "double",
   },
 ];
 
 const containerVariants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.06 } },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
   },
 };
 
 export function FeaturesSection() {
-  const [hero, ...rest] = features;
-
   return (
-    <section className="relative py-24 md:py-32 bg-white dark:bg-[#030303] overflow-hidden">
-      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-rose-500/5 blur-3xl dark:block hidden" />
-
+    <section className="relative py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
-        {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          transition={{ duration: 0.5 }}
+          className="max-w-3xl mb-16"
         >
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-            <span className="bg-clip-text text-transparent bg-linear-to-b from-gray-900 to-gray-900/80 dark:from-white dark:to-white/80">
-              Your career toolkit,
-            </span>
-            <br />
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-600 via-gray-900 to-rose-600 dark:from-indigo-300 dark:via-white/90 dark:to-rose-300">
-              all in one place
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            the stack
+          </div>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Six tools.{" "}
+            <span className="text-stone-400 dark:text-stone-600">
+              One workspace.
             </span>
           </h2>
-          <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto">
-            Every tool you need to go from resume to offer letter.
+          <p className="mt-6 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
+            Everything you need between uploading a resume and signing an
+            offer. Nothing you do not.
           </p>
         </motion.div>
 
-        {/* Bento grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 md:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-2xl overflow-hidden"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
         >
-          {/* Hero card - full width */}
-          <motion.div variants={cardVariants} className="md:col-span-2">
-            <Link to={hero.href} className="no-underline block group">
-              <motion.div
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.25 }}
-                className="relative rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/3 p-6 md:p-8 transition-all duration-300 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-white/5 overflow-hidden"
-              >
-                {/* Subtle dot texture */}
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.04]"
-                  style={{
-                    backgroundImage:
-                      "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
-                    backgroundSize: "24px 24px",
-                  }}
-                />
-
-                <div className="relative flex flex-col md:flex-row md:items-center gap-5">
-                  <div className="w-12 h-12 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
-                    <hero.icon className="w-6 h-6 text-white dark:text-gray-950" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white mb-1">
-                      {hero.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-white/50 leading-relaxed max-w-lg">
-                      {hero.desc}
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-white/40 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors shrink-0">
-                    Learn more
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </span>
-                </div>
-              </motion.div>
-            </Link>
-          </motion.div>
-
-          {/* Feature cards - 2×2 */}
-          {rest.map((f) => (
-            <motion.div key={f.title} variants={cardVariants}>
+          {FEATURES.map((f) => (
+            <motion.div
+              key={f.title}
+              variants={cardVariants}
+              className={f.span === "double" ? "md:col-span-2" : ""}
+            >
               <Link to={f.href} className="no-underline block group h-full">
-                <motion.div
-                  whileHover={{ y: -4 }}
-                  transition={{ duration: 0.25 }}
-                  className="relative h-full rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/3 p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-white/5"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center mb-4">
-                    <f.icon className="w-5 h-5 text-white dark:text-gray-950" />
+                <div className="relative h-full flex flex-col p-8 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400">
+                      <f.icon className="w-4.5 h-4.5" strokeWidth={2} />
+                    </div>
+                    <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+                      {f.stat}
+                    </span>
                   </div>
-                  <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">
+
+                  <h3 className="text-xl md:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
                     {f.title}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-white/50 leading-relaxed mb-4">
+                  <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 leading-relaxed flex-1">
                     {f.desc}
                   </p>
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-white/40 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
-                    Learn more
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
+
+                  <span className="mt-8 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 group-hover:gap-2.5 transition-all">
+                    open
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </span>
-                </motion.div>
+                </div>
               </Link>
             </motion.div>
           ))}

@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Star, AlertTriangle,
-  Info, Copy, Check, ArrowRight, RotateCcw, Lightbulb, Eye, Code2,
+  Info, Copy, Check, ArrowUpRight, RotateCcw, Lightbulb, Eye, Code2,
 } from "lucide-react";
 import { sections, lessons } from "./data";
 import type { HtmlProgress, CodeExample, PracticeExercise } from "./data/types";
@@ -32,14 +32,31 @@ function toggleProgress(lessonId: string): boolean {
   return !current;
 }
 
-const DIFF_BADGE: Record<string, string> = {
-  Beginner: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
-  Intermediate: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
-  Advanced: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
-  Easy: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
-  Medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
-  Hard: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+const DIFF_STYLE: Record<string, string> = {
+  Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
+  Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
+  Easy:         "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Medium:       "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
+  Hard:         "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
+
+function MetaChip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
+      {children}
+    </span>
+  );
+}
+
+function SectionLabel({ dot, children }: { dot: string; children: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+      <span className={`h-1 w-1 ${dot}`} />
+      {children}
+    </div>
+  );
+}
 
 function CodeBlock({ example }: { example: CodeExample }) {
   const [copied, setCopied] = useState(false);
@@ -51,26 +68,29 @@ function CodeBlock({ example }: { example: CodeExample }) {
   }, [example.code]);
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{example.title}</span>
-        <button onClick={handleCopy} className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-          {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? "Copied" : "Copy"}
+    <div className="rounded-md border border-stone-200 dark:border-white/10 overflow-hidden bg-white dark:bg-stone-900">
+      <div className="flex items-center justify-between gap-2 px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border-b border-stone-200 dark:border-white/10">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 truncate min-w-0">{example.title}</span>
+        <button
+          onClick={handleCopy}
+          className="inline-flex items-center gap-1.5 shrink-0 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
+        >
+          {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
+          {copied ? "copied" : "copy"}
         </button>
       </div>
-      <pre className="p-4 overflow-x-auto bg-gray-950 text-gray-100 text-sm leading-relaxed">
+      <pre className="p-4 overflow-x-auto bg-stone-950 text-stone-100 text-sm leading-relaxed">
         <code>{example.code}</code>
       </pre>
       {example.output && (
-        <div className="px-4 py-2.5 bg-gray-900 border-t border-gray-800">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 block mb-1">Output</span>
-          <pre className="text-sm text-emerald-400 whitespace-pre-wrap">{example.output}</pre>
+        <div className="px-4 py-3 bg-stone-900 border-t border-stone-800">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1.5">output</span>
+          <pre className="text-sm text-lime-400 whitespace-pre-wrap">{example.output}</pre>
         </div>
       )}
       {example.explanation && (
-        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{example.explanation}</p>
+        <div className="px-4 py-3 bg-stone-50 dark:bg-stone-900/50 border-t border-stone-200 dark:border-white/10">
+          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">{example.explanation}</p>
         </div>
       )}
     </div>
@@ -117,64 +137,75 @@ function ExerciseSection({ exercises, lessonId }: { exercises: PracticeExercise[
   const solvedCount = exercises.filter((e) => solved[e.id]).length;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.35 }} className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Code2 className="w-5 h-5 text-orange-500" />
-          <h2 className="text-lg font-bold text-gray-950 dark:text-white">Practice Exercises</h2>
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.35 }} className="space-y-4">
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div className="min-w-0">
+          <SectionLabel dot="bg-orange-400">
+            <Code2 className="w-3 h-3" /> practice / exercises
+          </SectionLabel>
+          <h2 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">Practice exercises</h2>
         </div>
-        <span className="text-xs font-medium text-gray-400 dark:text-gray-500">{solvedCount}/{exercises.length} solved</span>
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+          {solvedCount} / {exercises.length} solved
+        </span>
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap">
-        {exercises.map((ex, i) => (
-          <button
-            key={ex.id}
-            onClick={() => setActiveIdx(i)}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-xl transition-colors ${
-              i === activeIdx
-                ? "bg-gray-950 text-white dark:bg-white dark:text-gray-950"
-                : solved[ex.id]
-                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                  : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-            }`}
-          >
-            {solved[ex.id] && i !== activeIdx && <CheckCircle2 className="w-3 h-3 inline mr-1" />}
-            Ex {i + 1}
-          </button>
-        ))}
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {exercises.map((ex, i) => {
+          const isActive = i === activeIdx;
+          const isSolved = solved[ex.id];
+          return (
+            <button
+              key={ex.id}
+              onClick={() => setActiveIdx(i)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest border rounded-md transition-colors ${
+                isActive
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : isSolved
+                    ? "text-lime-700 dark:text-lime-400 border-lime-300 dark:border-lime-900/60 hover:bg-lime-50 dark:hover:bg-lime-900/20"
+                    : "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+              }`}
+            >
+              {isSolved && !isActive && <CheckCircle2 className="w-3 h-3" />}
+              ex {String(i + 1).padStart(2, "0")}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-bold text-gray-950 dark:text-white">{exercise.title}</h3>
-          <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${DIFF_BADGE[exercise.difficulty]}`}>{exercise.difficulty}</span>
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
+        <div className="flex items-start justify-between gap-3 mb-2.5">
+          <h3 className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50">{exercise.title}</h3>
+          <MetaChip className={DIFF_STYLE[exercise.difficulty]}>{exercise.difficulty}</MetaChip>
         </div>
-        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{exercise.description}</p>
+        <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">{exercise.description}</p>
       </div>
 
       <HtmlEditor value={code} onChange={setCode} />
 
       <div className="flex items-center gap-2 flex-wrap">
-        <button onClick={handleReset} className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors">
-          <RotateCcw className="w-3.5 h-3.5" />
-          Reset
+        <button
+          onClick={handleReset}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors"
+        >
+          <RotateCcw className="w-3 h-3" />
+          reset
         </button>
         <button
           onClick={() => setShowHints((h) => Math.min(h + 1, exercise.hints.length))}
           disabled={showHints >= exercise.hints.length}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-amber-600 dark:text-amber-400 bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 disabled:opacity-40 rounded-xl transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-900/60 rounded-md hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Lightbulb className="w-3.5 h-3.5" />
-          Hint ({showHints}/{exercise.hints.length})
+          <Lightbulb className="w-3 h-3" />
+          hint ({showHints}/{exercise.hints.length})
         </button>
         {!solved[exercise.id] && (
           <button
             onClick={handleMarkSolved}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-green-600 dark:text-green-400 bg-white dark:bg-gray-900 border border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400 border border-lime-300 dark:border-lime-900/60 rounded-md hover:bg-lime-50 dark:hover:bg-lime-900/20 transition-colors"
           >
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            Mark as Solved
+            <CheckCircle2 className="w-3 h-3" />
+            mark solved
           </button>
         )}
         <button
@@ -183,19 +214,21 @@ function ExerciseSection({ exercises, lessonId }: { exercises: PracticeExercise[
             if (!showSolution) setCode(exercise.solution);
             else setCode(exercise.starterCode);
           }}
-          className="ml-auto inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded-xl transition-colors"
+          className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
         >
-          <Eye className="w-3.5 h-3.5" />
-          {showSolution ? "Hide Solution" : "Solution"}
+          <Eye className="w-3 h-3" />
+          {showSolution ? "hide solution" : "solution"}
         </button>
       </div>
 
       {showHints > 0 && (
-        <div className="space-y-2">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md divide-y divide-stone-100 dark:divide-white/5">
           {exercise.hints.slice(0, showHints).map((hint, i) => (
-            <div key={i} className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl">
-              <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-              <p className="text-sm text-amber-800 dark:text-amber-300">{hint}</p>
+            <div key={i} className="flex items-start gap-3 p-4">
+              <span className="text-[10px] font-mono font-bold tabular-nums text-amber-600 dark:text-amber-400 mt-0.5 shrink-0">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{hint}</p>
             </div>
           ))}
         </div>
@@ -207,10 +240,10 @@ function ExerciseSection({ exercises, lessonId }: { exercises: PracticeExercise[
         <div className="flex justify-end">
           <button
             onClick={() => setActiveIdx(activeIdx + 1)}
-            className="group inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-gray-950 dark:bg-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-xl transition-colors"
+            className="group inline-flex items-center gap-1.5 px-4 py-2 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors"
           >
-            Next Exercise
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            next exercise
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       )}
@@ -246,9 +279,7 @@ export default function HtmlLessonDetailPage() {
     setCompleted(newVal);
     if (newVal && isAuthenticated && sectionSlug) {
       const progress = getLocalProgress();
-      const allDone = sectionLessons.every(
-        (l) => progress[l.id]?.completed
-      );
+      const allDone = sectionLessons.every((l) => progress[l.id]?.completed);
       if (allDone) reportMilestone("COURSE_COMPLETE", "html");
     }
   }, [lessonId, isAuthenticated, sectionSlug, sectionLessons]);
@@ -260,9 +291,14 @@ export default function HtmlLessonDetailPage() {
 
   if (!lesson || !section) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">Lesson not found</p>
-        <Link to={basePath} className="text-blue-500 hover:underline text-sm mt-2 inline-block">Back to HTML Lessons</Link>
+      <div className="relative max-w-6xl mx-auto py-20 text-center">
+        <p className="text-sm text-stone-600 dark:text-stone-400">Lesson not found.</p>
+        <Link
+          to={basePath}
+          className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
+        >
+          back to html <ArrowUpRight className="w-3 h-3" />
+        </Link>
       </div>
     );
   }
@@ -271,7 +307,7 @@ export default function HtmlLessonDetailPage() {
   const exercises = lesson.exercises ?? [];
 
   return (
-    <div className="relative pb-12">
+    <div className="relative text-stone-900 dark:text-stone-50 pb-12">
       <SEO
         title={`${lesson.title} - HTML`}
         description={`Learn about ${lesson.title} in HTML. Covers key concepts with code examples and practice exercises.`}
@@ -279,137 +315,221 @@ export default function HtmlLessonDetailPage() {
         canonicalUrl={canonicalUrl(`/learn/html/${sectionSlug}/${lessonId}`)}
       />
 
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-orange-100 dark:bg-orange-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-amber-100 dark:bg-amber-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]" style={{ backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-      </div>
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
+        style={{
+          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundSize: "120px 100%",
+        }}
+      />
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="mb-6">
-        <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-6 py-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{currentIndex + 1}</span>
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-8">
+        {/* Editorial header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-2 mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-6"
+        >
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 wrap-break-word">
+              <span className="h-1.5 w-1.5 bg-lime-400 shrink-0" />
+              <span className="min-w-0">learn / html / {sectionSlug} / #{String(currentIndex + 1).padStart(2, "0")}</span>
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h1 className="font-display text-xl font-bold text-gray-950 dark:text-white truncate">{lesson.title}</h1>
-                {lesson.isInterviewQuestion && <Star className="w-4 h-4 text-amber-400 fill-amber-400 shrink-0" />}
-              </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${DIFF_BADGE[lesson.difficulty]}`}>{lesson.difficulty}</span>
-                {completed && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    Completed
-                  </span>
-                )}
-              </div>
+            <div className="mt-3 flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight wrap-break-word">
+                {lesson.title}
+              </h1>
+              {lesson.isInterviewQuestion && <Star className="w-5 h-5 text-amber-500 fill-amber-500 shrink-0" />}
+            </div>
+            <div className="mt-3 flex items-center gap-1.5 flex-wrap">
+              <MetaChip className={DIFF_STYLE[lesson.difficulty]}>{lesson.difficulty}</MetaChip>
+              {completed && (
+                <MetaChip className="text-lime-700 dark:text-lime-400 border-lime-300 dark:border-lime-900/60">
+                  <CheckCircle2 className="w-3 h-3" /> completed
+                </MetaChip>
+              )}
+              {lesson.concepts.slice(0, 4).map((c) => (
+                <MetaChip key={c}>{c}</MetaChip>
+              ))}
             </div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button onClick={() => prevLesson && navigate(`${basePath}/${sectionSlug}/${prevLesson.id}`)} disabled={!prevLesson} className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-colors" title="Previous">
-              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <button
+              onClick={() => prevLesson && navigate(`${basePath}/${sectionSlug}/${prevLesson.id}`)}
+              disabled={!prevLesson}
+              className="w-9 h-9 inline-flex items-center justify-center border border-stone-200 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              title="Previous"
+            >
+              <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-xs text-gray-400 dark:text-gray-500 px-2 font-medium tabular-nums">{currentIndex + 1} / {sectionLessons.length}</span>
-            <button onClick={() => nextLesson && navigate(`${basePath}/${sectionSlug}/${nextLesson.id}`)} disabled={!nextLesson} className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-colors" title="Next">
-              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 px-2 tabular-nums">
+              {currentIndex + 1} / {sectionLessons.length}
+            </span>
+            <button
+              onClick={() => nextLesson && navigate(`${basePath}/${sectionSlug}/${nextLesson.id}`)}
+              disabled={!nextLesson}
+              className="w-9 h-9 inline-flex items-center justify-center border border-stone-200 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              title="Next"
+            >
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
-      </motion.div>
-
-      <div className="space-y-5">
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} className="flex items-center gap-2 flex-wrap">
-          {lesson.concepts.map((c) => (
-            <span key={c} className="text-[10px] px-2.5 py-1 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 font-medium">{c}</span>
-          ))}
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6">
-          <h2 className="text-lg font-bold text-gray-950 dark:text-white mb-4">Explanation</h2>
-          <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{content.explanation}</div>
+        {/* Explanation */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="mb-8"
+        >
+          <SectionLabel dot="bg-lime-400">explanation</SectionLabel>
+          <div className="mt-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
+            <div className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
+              {content.explanation}
+            </div>
+          </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.15 }} className="space-y-4">
-          <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
-          {content.codeExamples.map((example, i) => (
-            <CodeBlock key={i} example={example} />
-          ))}
-        </motion.div>
+        {/* Code examples */}
+        {content.codeExamples.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="mb-8"
+          >
+            <div className="flex items-end justify-between gap-4 flex-wrap mb-3">
+              <div className="min-w-0">
+                <SectionLabel dot="bg-lime-400">code / examples</SectionLabel>
+                <h2 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">Code examples</h2>
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+                {content.codeExamples.length} total
+              </span>
+            </div>
+            <div className="space-y-4">
+              {content.codeExamples.map((example, i) => (
+                <CodeBlock key={i} example={example} />
+              ))}
+            </div>
+          </motion.div>
+        )}
 
+        {/* Important notes */}
         {content.notes.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }} className="border-l-4 border-l-blue-500 pl-5 py-1">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="mb-8"
+          >
             <div className="flex items-center gap-2 mb-3">
-              <Info className="w-4.5 h-4.5 text-blue-500" />
-              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Important Notes</h3>
+              <SectionLabel dot="bg-blue-400">
+                <Info className="w-3 h-3 text-blue-500" /> important notes
+              </SectionLabel>
             </div>
-            <ul className="space-y-2">
+            <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md divide-y divide-stone-100 dark:divide-white/5">
               {content.notes.map((note, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-500 mt-2 shrink-0" />
-                  {note}
-                </li>
+                <div key={i} className="flex items-start gap-4 p-4">
+                  <span className="text-[10px] font-mono font-bold tabular-nums text-blue-600 dark:text-blue-400 mt-0.5 shrink-0">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{note}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </motion.div>
         )}
 
+        {/* Common pitfalls */}
         {content.commonPitfalls && content.commonPitfalls.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }} className="border-l-4 border-l-amber-500 pl-5 py-1">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25 }}
+            className="mb-8"
+          >
             <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="w-4.5 h-4.5 text-amber-500" />
-              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Common Pitfalls</h3>
+              <SectionLabel dot="bg-amber-400">
+                <AlertTriangle className="w-3 h-3 text-amber-500" /> common pitfalls
+              </SectionLabel>
             </div>
-            <ul className="space-y-2">
+            <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md divide-y divide-stone-100 dark:divide-white/5">
               {content.commonPitfalls.map((pitfall, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 dark:bg-amber-500 mt-2 shrink-0" />
-                  {pitfall}
-                </li>
+                <div key={i} className="flex items-start gap-4 p-4">
+                  <span className="text-[10px] font-mono font-bold tabular-nums text-amber-600 dark:text-amber-400 mt-0.5 shrink-0">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{pitfall}</p>
+                </div>
               ))}
-            </ul>
-          </motion.div>
-        )}
-
-        {content.interviewTips && content.interviewTips.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }} className="border-l-4 border-l-violet-500 pl-5 py-1">
-            <div className="flex items-center gap-2 mb-3">
-              <Star className="w-4.5 h-4.5 text-violet-500 fill-violet-500" />
-              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Interview Tips</h3>
             </div>
-            <ul className="space-y-2">
-              {content.interviewTips.map((tip, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400 dark:bg-violet-500 mt-2 shrink-0" />
-                  {tip}
-                </li>
-              ))}
-            </ul>
           </motion.div>
         )}
 
-        {exercises.length > 0 && <ExerciseSection exercises={exercises} lessonId={lessonId!} />}
+        {/* Interview tips */}
+        {content.interviewTips && content.interviewTips.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <SectionLabel dot="bg-violet-400">
+                <Star className="w-3 h-3 text-violet-500 fill-violet-500" /> interview tips
+              </SectionLabel>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {content.interviewTips.map((tip, i) => (
+                <div
+                  key={i}
+                  className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4 hover:border-violet-300 dark:hover:border-violet-900/60 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <Star className="w-3.5 h-3.5 text-violet-500 fill-violet-500 mt-0.5 shrink-0" />
+                    <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{tip}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4 }} className="flex items-center justify-between pt-2">
+        {exercises.length > 0 && (
+          <div className="mb-8">
+            <ExerciseSection exercises={exercises} lessonId={lessonId!} />
+          </div>
+        )}
+
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+          className="flex items-center justify-between gap-3 flex-wrap pt-6 border-t border-stone-200 dark:border-white/10"
+        >
           <button
             onClick={handleToggleComplete}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl transition-colors ${
+            className={`inline-flex items-center gap-2 px-4 py-2 text-[11px] font-mono uppercase tracking-widest border rounded-md transition-colors ${
               completed
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50"
-                : "bg-gray-950 text-white dark:bg-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100"
+                ? "bg-lime-400 border-lime-400 text-stone-900"
+                : "bg-stone-900 dark:bg-stone-50 border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900"
             }`}
           >
-            <CheckCircle2 className="w-4 h-4" />
-            {completed ? "Completed" : "Mark as Complete"}
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            {completed ? "completed" : "mark as complete"}
           </button>
           {nextLesson && (
             <button
               onClick={() => navigate(`${basePath}/${sectionSlug}/${nextLesson.id}`)}
-              className="group inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
+              className="group inline-flex items-center gap-2 px-4 py-2 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:border-stone-900 dark:hover:border-stone-50 transition-colors"
             >
-              Next Lesson
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              next lesson
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
             </button>
           )}
         </motion.div>

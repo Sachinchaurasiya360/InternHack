@@ -57,8 +57,9 @@ export class StudentService {
         });
       }
 
-      // Check for first_application badge (fire-and-forget)
+      // Check application badges (fire-and-forget)
       badgeService.checkAndAwardBadges(studentId, "first_application").catch(() => {});
+      badgeService.checkAndAwardBadges(studentId, "job_apply").catch(() => {});
       // Check 10-application milestone (fire-and-forget)
       this.checkApplicationMilestone(studentId).catch(() => {});
 
@@ -131,6 +132,9 @@ export class StudentService {
           },
         },
       });
+      // Check application badges (fire-and-forget)
+      badgeService.checkAndAwardBadges(studentId, "first_application").catch(() => {});
+      badgeService.checkAndAwardBadges(studentId, "job_apply").catch(() => {});
       // Check 10-application milestone (fire-and-forget)
       this.checkApplicationMilestone(studentId).catch(() => {});
       return application;
@@ -164,7 +168,7 @@ export class StudentService {
         const html = milestoneEmailHtml(
           user.name,
           "10 Applications Sent!",
-          "You've applied to 10 jobs on InternHack — that's serious commitment. " +
+          "You've applied to 10 jobs on InternHack, that's serious commitment. " +
           "Consistency is the #1 predictor of landing an offer. Keep the momentum going, " +
           "explore new roles, and don't forget to sharpen your resume with our AI ATS scorer.",
           "Browse More Jobs",
@@ -296,119 +300,4 @@ export class StudentService {
     return submission;
   }
 
-  // ── Campus Drive Methods ──
-
-  async getEligibleDrives(studentId: number, page: number, limit: number) {
-    const student = await prisma.user.findUnique({
-      where: { id: studentId },
-      select: { college: true, graduationYear: true },
-    });
-
-    if (!student) throw new Error("Student not found");
-
-    const where: Prisma.campusDriveWhereInput = {
-      status: "OPEN",
-      AND: [
-        {
-          OR: [
-            { targetColleges: { isEmpty: true } },
-            ...(student.college
-              ? [{ targetColleges: { has: student.college } }]
-              : []),
-          ],
-        },
-        {
-          OR: [
-            { eligibleGraduationYears: { isEmpty: true } },
-            ...(student.graduationYear
-              ? [{ eligibleGraduationYears: { has: student.graduationYear } }]
-              : []),
-          ],
-        },
-      ],
-    };
-
-    const [drives, total] = await Promise.all([
-      prisma.campusDrive.findMany({
-        where,
-        orderBy: { registrationDeadline: "asc" },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          recruiter: { select: { id: true, name: true, company: true, profilePic: true } },
-          _count: { select: { registrations: true } },
-        },
-      }),
-      prisma.campusDrive.count({ where }),
-    ]);
-
-    return { drives, total, page, limit, totalPages: Math.ceil(total / limit) };
-  }
-
-  async getCampusDriveDetail(driveId: number) {
-    const drive = await prisma.campusDrive.findUnique({
-      where: { id: driveId },
-      include: {
-        recruiter: { select: { id: true, name: true, company: true, profilePic: true } },
-        _count: { select: { registrations: true } },
-      },
-    });
-
-    if (!drive) throw new Error("Drive not found");
-    return drive;
-  }
-
-  async registerForDrive(driveId: number, studentId: number) {
-    const drive = await prisma.campusDrive.findUnique({ where: { id: driveId } });
-    if (!drive) throw new Error("Drive not found");
-    if (drive.status !== "OPEN") throw new Error("Drive is not open for registration");
-    if (new Date(drive.registrationDeadline) < new Date()) throw new Error("Registration deadline has passed");
-
-    // Check eligibility
-    const student = await prisma.user.findUnique({
-      where: { id: studentId },
-      select: { college: true, graduationYear: true },
-    });
-    if (!student) throw new Error("Student not found");
-
-    if (drive.targetColleges.length > 0) {
-      const collegeLower = (student.college || "").toLowerCase();
-      const match = drive.targetColleges.some((c) => c.toLowerCase() === collegeLower);
-      if (!match) throw new Error("Your college is not eligible for this drive");
-    }
-
-    if (drive.eligibleGraduationYears.length > 0) {
-      if (!student.graduationYear || !drive.eligibleGraduationYears.includes(student.graduationYear)) {
-        throw new Error("Your graduation year is not eligible for this drive");
-      }
-    }
-
-    // Check duplicate
-    const existing = await prisma.campusDriveRegistration.findUnique({
-      where: { driveId_studentId: { driveId, studentId } },
-    });
-    if (existing) throw new Error("Already registered for this drive");
-
-    return prisma.campusDriveRegistration.create({
-      data: { driveId, studentId },
-      include: {
-        drive: { select: { id: true, title: true, company: true } },
-      },
-    });
-  }
-
-  async getMyRegistrations(studentId: number) {
-    return prisma.campusDriveRegistration.findMany({
-      where: { studentId },
-      orderBy: { registeredAt: "desc" },
-      include: {
-        drive: {
-          include: {
-            recruiter: { select: { id: true, name: true, company: true, profilePic: true } },
-            _count: { select: { registrations: true } },
-          },
-        },
-      },
-    });
-  }
 }

@@ -634,6 +634,67 @@ export function repoRequestSubmittedHtml(name: string, repoName: string, repoOwn
 </html>`;
 }
 
+export function interviewExperienceApprovedHtml(args: {
+  name: string;
+  companyName: string;
+  role: string;
+  experienceId: number;
+  earnedBadges?: { name: string; description?: string }[];
+}): string {
+  const firstName = args.name.split(" ")[0];
+  const detailUrl = `https://www.internhack.xyz/student/interviews/${String(args.experienceId)}`;
+  const badges = args.earnedBadges ?? [];
+
+  const badgeBlock =
+    badges.length > 0
+      ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;">
+        <tr><td style="padding:16px 18px;background-color:#f7fee7;border:1px solid #d9f99d;border-radius:8px;">
+          <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#3f6212;">
+            &#127942; You earned ${String(badges.length)} new badge${badges.length === 1 ? "" : "s"}
+          </p>
+          ${badges
+            .map(
+              (b) =>
+                `<p style="margin:6px 0 0;font-size:13px;color:#365314;line-height:1.5;"><strong>${b.name}</strong>${
+                  b.description ? ` &mdash; ${b.description}` : ""
+                }</p>`,
+            )
+            .join("")}
+        </td></tr>
+      </table>`
+      : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+    </td></tr>
+    <tr><td style="padding:28px 24px;">
+      <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Your interview experience is live, ${firstName}!</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+        Your interview experience for <strong>${args.role}</strong> at <strong>${args.companyName}</strong> has been approved and is now visible to other students preparing for the same company.
+      </p>
+      ${badgeBlock}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+        <tr><td style="text-align:center;padding:8px 0 16px;">
+          <a href="${detailUrl}" style="display:inline-block;padding:12px 28px;background-color:#0a0a0a;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">
+            View your post
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:0;font-size:13px;color:#71717a;">Thanks for helping the community prep smarter.</p>
+    </td></tr>
+    <tr><td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 export function repoRequestApprovedHtml(name: string, repoName: string, repoOwner: string): string {
   const firstName = name.split(" ")[0];
   return `<!DOCTYPE html>
@@ -661,6 +722,345 @@ export function repoRequestApprovedHtml(name: string, repoName: string, repoOwne
     <tr><td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
       <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
     </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+export function atsScoreReportHtml(params: {
+  name: string;
+  overallScore: number;
+  categoryScores: Record<string, number>;
+  suggestions: string[];
+  keywordAnalysis: { found: string[]; missing: string[] };
+  jobTitle?: string | null;
+}): string {
+  const { name, overallScore, categoryScores, suggestions, keywordAnalysis, jobTitle } = params;
+  const firstName = name.split(" ")[0] || "there";
+
+  const tier =
+    overallScore >= 70
+      ? { label: "Excellent", accent: "#a3e635", text: "#3f6212", bg: "#f7fee7", border: "#d9f99d" }
+      : overallScore >= 40
+        ? { label: "Needs Work", accent: "#eab308", text: "#854d0e", bg: "#fefce8", border: "#fde68a" }
+        : { label: "Poor", accent: "#ef4444", text: "#991b1b", bg: "#fef2f2", border: "#fecaca" };
+
+  const summary =
+    overallScore >= 70
+      ? "Great job. Your resume is well-optimized for ATS systems."
+      : overallScore >= 40
+        ? "Decent start. A few focused tweaks can push your score much higher."
+        : "Your resume needs meaningful work to clear ATS filters reliably.";
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    formatting: "Formatting",
+    keywords: "Keywords",
+    experience: "Experience",
+    skills: "Skills",
+    education: "Education",
+    impact: "Impact",
+  };
+
+  const escape = (s: string) => s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const scoreColor = (v: number) => (v >= 70 ? "#3f6212" : v >= 40 ? "#854d0e" : "#991b1b");
+  const barColor = (v: number) => (v >= 70 ? "#a3e635" : v >= 40 ? "#eab308" : "#ef4444");
+
+  const categoryRows = Object.entries(categoryScores)
+    .map(
+      ([key, score]) => `
+      <tr>
+        <td style="padding:10px 4px;font-size:13px;color:#27272a;font-weight:600;width:40%;">${CATEGORY_LABELS[key] ?? key}</td>
+        <td style="padding:10px 4px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="background-color:#f4f4f5;border-radius:999px;height:8px;overflow:hidden;">
+                <table role="presentation" width="${score}%" cellpadding="0" cellspacing="0" style="height:8px;background-color:${barColor(score)};border-radius:999px;">
+                  <tr><td style="line-height:1px;font-size:1px;">&nbsp;</td></tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td style="padding:10px 4px 10px 12px;font-size:13px;font-weight:700;color:${scoreColor(score)};text-align:right;white-space:nowrap;">${score}<span style="color:#a1a1aa;font-weight:400;">/100</span></td>
+      </tr>`,
+    )
+    .join("");
+
+  const topSuggestions = suggestions.slice(0, 6);
+  const suggestionItems = topSuggestions
+    .map(
+      (s, i) => `
+      <tr>
+        <td style="padding:10px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="width:28px;vertical-align:top;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="width:22px;height:22px;background-color:#0a0a0a;color:#ffffff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;font-family:'Courier New',Courier,monospace;line-height:22px;">${String(i + 1).padStart(2, "0")}</td>
+                  </tr>
+                </table>
+              </td>
+              <td style="vertical-align:top;padding-left:4px;">
+                <p style="margin:0;font-size:13px;line-height:1.55;color:#27272a;">${escape(s)}</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td style="height:6px;"></td></tr>`,
+    )
+    .join("");
+
+  const missing = keywordAnalysis.missing.slice(0, 12);
+  const missingChips =
+    missing.length > 0
+      ? missing
+          .map(
+            (kw) =>
+              `<span style="display:inline-block;margin:0 4px 6px 0;padding:4px 10px;background-color:#fff7ed;border:1px dashed #fdba74;border-radius:6px;font-size:12px;color:#9a3412;font-weight:500;">+ ${escape(kw)}</span>`,
+          )
+          .join("")
+      : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your ATS score report</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <!-- Header -->
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+        <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">resume / ats score</p>
+      </td>
+    </tr>
+
+    <!-- Body -->
+    <tr>
+      <td style="background-color:#ffffff;padding:32px 24px;">
+        <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;letter-spacing:-0.3px;">Hey ${firstName}, here's your resume score.</h2>
+        <p style="margin:0 0 22px;font-size:14px;line-height:1.6;color:#52525b;">
+          ${summary}${jobTitle ? ` Scored against <strong style="color:#18181b;">${escape(jobTitle)}</strong>.` : ""}
+        </p>
+
+        <!-- Score card -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:26px;background-color:${tier.bg};border:1px solid ${tier.border};border-radius:12px;">
+          <tr>
+            <td style="padding:22px 20px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <p style="margin:0 0 4px;font-size:10px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;text-transform:uppercase;color:${tier.text};">
+                      overall ats score
+                    </p>
+                    <p style="margin:0;font-size:52px;font-weight:800;line-height:1;color:${tier.text};letter-spacing:-2px;">
+                      ${overallScore}<span style="font-size:20px;color:#a1a1aa;font-weight:500;letter-spacing:0;"> /100</span>
+                    </p>
+                  </td>
+                  <td style="vertical-align:middle;text-align:right;">
+                    <span style="display:inline-block;padding:6px 14px;background-color:${tier.accent};color:#18181b;font-size:12px;font-weight:700;border-radius:6px;text-transform:uppercase;letter-spacing:1px;">
+                      ${tier.label}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Category breakdown -->
+        <p style="margin:0 0 10px;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;text-transform:uppercase;color:#71717a;">
+          / category breakdown
+        </p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border:1px solid #e4e4e7;border-radius:10px;padding:6px 14px;">
+          ${categoryRows}
+        </table>
+
+        ${
+          topSuggestions.length > 0
+            ? `
+        <!-- Suggestions -->
+        <p style="margin:0 0 10px;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;text-transform:uppercase;color:#71717a;">
+          / suggestions &middot; ${topSuggestions.length}
+        </p>
+        <p style="margin:0 0 14px;font-size:13px;color:#52525b;line-height:1.5;">
+          Work through these in order. Each one is a concrete edit you can make today.
+        </p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+          ${suggestionItems}
+        </table>
+        `
+            : ""
+        }
+
+        ${
+          missingChips
+            ? `
+        <!-- Missing keywords -->
+        <p style="margin:0 0 10px;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;text-transform:uppercase;color:#9a3412;">
+          / missing keywords &middot; ${missing.length}
+        </p>
+        <p style="margin:0 0 12px;font-size:13px;color:#52525b;line-height:1.5;">
+          These terms appeared in the job context but were not found in your resume. Weave them in where they honestly apply.
+        </p>
+        <div style="margin-bottom:26px;">${missingChips}</div>
+        `
+            : ""
+        }
+
+        <!-- CTA -->
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px auto 18px;">
+          <tr>
+            <td style="background-color:#a3e635;border-radius:8px;">
+              <a href="https://www.internhack.xyz/student/ats/score" target="_blank" style="display:inline-block;padding:13px 32px;font-size:14px;font-weight:700;color:#18181b;text-decoration:none;letter-spacing:0.2px;">
+                Open resume tools
+              </a>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;line-height:1.5;">
+          You got this report because you scored a resume on InternHack. Reply if something looks off, we read every email.
+        </p>
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+        <p style="margin:0 0 6px;font-size:12px;">
+          <a href="https://linkedin.com/company/internhack" style="color:#18181b;text-decoration:none;">LinkedIn</a>
+        </p>
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">
+          &copy; ${new Date().getFullYear()} InternHack. All rights reserved.
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+
+type ApplicationStatusEmailStatus = "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED";
+
+const STATUS_COPY: Record<
+  ApplicationStatusEmailStatus,
+  { subject: (job: string) => string; headline: string; body: string; accent: string; badgeBg: string; badgeText: string }
+> = {
+  IN_PROGRESS: {
+    subject: (job) => `Your application for ${job} is moving forward`,
+    headline: "Your application is in progress.",
+    body: "The recruiter is reviewing your profile and has advanced you to the next stage. Keep an eye on your inbox for the next round or a scheduled interview.",
+    accent: "#0a0a0a",
+    badgeBg: "#fef3c7",
+    badgeText: "#92400e",
+  },
+  SHORTLISTED: {
+    subject: (job) => `You've been shortlisted for ${job}`,
+    headline: "Great news, you're shortlisted.",
+    body: "The recruiter liked what they saw and has shortlisted your application. Expect them to reach out soon with next steps.",
+    accent: "#065f46",
+    badgeBg: "#d1fae5",
+    badgeText: "#065f46",
+  },
+  REJECTED: {
+    subject: (job) => `Update on your ${job} application`,
+    headline: "An update on your application.",
+    body: "Unfortunately, the recruiter has decided not to move forward with your application for this role. This happens to every candidate at some point, and it says nothing about your potential. Keep applying, keep building.",
+    accent: "#991b1b",
+    badgeBg: "#fee2e2",
+    badgeText: "#991b1b",
+  },
+  HIRED: {
+    subject: (job) => `Congratulations, you've been hired for ${job}!`,
+    headline: "You're hired. Congratulations!",
+    body: "The recruiter has selected you for this role. They should follow up directly with the offer and onboarding details. Huge congratulations from the InternHack team!",
+    accent: "#065f46",
+    badgeBg: "#d1fae5",
+    badgeText: "#065f46",
+  },
+};
+
+export function isEmailableStatus(status: string): status is ApplicationStatusEmailStatus {
+  return status === "IN_PROGRESS" || status === "SHORTLISTED" || status === "REJECTED" || status === "HIRED";
+}
+
+export function applicationStatusSubject(status: ApplicationStatusEmailStatus, jobTitle: string): string {
+  return STATUS_COPY[status].subject(jobTitle);
+}
+
+export function applicationStatusEmailHtml(args: {
+  studentName: string;
+  jobTitle: string;
+  company: string;
+  status: ApplicationStatusEmailStatus;
+  applicationUrl?: string;
+}): string {
+  const firstName = args.studentName.split(" ")[0] || args.studentName;
+  const copy = STATUS_COPY[args.status];
+  const label = args.status.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  const cta = args.applicationUrl || "https://www.internhack.xyz/student/applications";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application update</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#ffffff;padding:32px 24px;">
+        <p style="margin:0 0 14px;display:inline-block;padding:4px 10px;background-color:${copy.badgeBg};color:${copy.badgeText};font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;">
+          ${label}
+        </p>
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}, ${copy.headline}</h2>
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+          ${copy.body}
+        </p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+          <tr>
+            <td style="padding:16px 18px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;">
+              <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Role</p>
+              <p style="margin:0 0 10px;font-size:15px;font-weight:700;color:#18181b;">${args.jobTitle}</p>
+              <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Company</p>
+              <p style="margin:0;font-size:15px;color:#18181b;">${args.company}</p>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+          <tr>
+            <td style="background-color:${copy.accent};border-radius:6px;">
+              <a href="${cta}" style="display:inline-block;padding:12px 24px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">
+                View application
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+        <p style="margin:0 0 6px;font-size:12px;">
+          <a href="https://linkedin.com/company/internhack" style="color:#18181b;text-decoration:none;">LinkedIn</a>
+        </p>
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">
+          &copy; ${new Date().getFullYear()} InternHack. All rights reserved.
+        </p>
+      </td>
+    </tr>
   </table>
 </body>
 </html>`;

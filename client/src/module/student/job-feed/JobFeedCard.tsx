@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { MapPin, IndianRupee, Bookmark, X, ExternalLink, Laptop, Building, Home } from "lucide-react";
 import { MatchScoreBadge } from "./MatchScoreBadge";
 import type { JobFeedMatch } from "../../../lib/types";
+import { Button } from "../../../components/ui/button";
 
 interface Props {
   match: JobFeedMatch;
@@ -93,24 +94,30 @@ export function JobFeedCard({ match, onDismiss, onSave, index }: Props) {
         ) : (
           <span className="text-xs text-gray-400">No apply link</span>
         )}
-        <button
+        <Button
+          variant="ghost"
+          mode="icon"
+          size="sm"
           onClick={() => onSave(match.matchId)}
-          className={`p-2 rounded-lg transition-colors ${
+          className={
             saved
               ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400"
-              : "text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600"
-          }`}
+              : "text-gray-400"
+          }
           title={saved ? "Saved" : "Save"}
         >
           <Bookmark className={`w-4 h-4 ${saved ? "fill-current" : ""}`} />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          mode="icon"
+          size="sm"
           onClick={() => onDismiss(match.matchId)}
-          className="p-2 rounded-lg text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-colors ml-auto"
+          className="text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 ml-auto"
           title="Dismiss"
         >
           <X className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export { type UserProfile } from "./cover-letter.validation.js";
 
-// Hard caps — mirror the client soft limits but enforced authoritatively here.
+// Hard caps, mirror the client soft limits but enforced authoritatively here.
 export const JD_MAX_CHARS = 5000;
 export const KEY_SKILLS_MAX_CHARS = 1000;
 export const JOB_TITLE_MAX_CHARS = 200;

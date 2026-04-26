@@ -10,7 +10,6 @@ const badgeService = new BadgeService();
 import { signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
-import { encrypt as encryptAppPassword } from "../../utils/crypto.utils.js";
 import type { UserRole } from "@prisma/client";
 import { PERSONAL_EMAIL_DOMAINS } from "./auth.validation.js";
 
@@ -223,7 +222,7 @@ export class AuthService {
       throw new Error("Invalid email or password");
     }
 
-    // Block unverified students/recruiters — admins skip verification
+    // Block unverified students/recruiters, admins skip verification
     if (!user.isVerified && user.role !== "ADMIN") {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedOtp = await hashPassword(otp);
@@ -301,15 +300,7 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
-    appPassword: true,
   } as const;
-
-  private stripAppPassword(user: Record<string, unknown>) {
-    const hasAppPassword = !!user.appPassword;
-    delete user.appPassword;
-    user.hasAppPassword = hasAppPassword;
-    return user;
-  }
 
   async getProfile(userId: number) {
     const user = await prisma.user.findUnique({
@@ -325,7 +316,7 @@ export class AuthService {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
 
-    return this.stripAppPassword(user as Record<string, unknown>);
+    return user;
   }
 
   async updateProfile(userId: number, data: UpdateProfileInput) {
@@ -353,10 +344,6 @@ export class AuthService {
     if ("isProfilePublic" in data) {
       updateData.isProfilePublic = !!data.isProfilePublic;
     }
-    if ("appPassword" in data) {
-      const val = (data as Record<string, unknown>).appPassword as string | null | undefined;
-      updateData.appPassword = val?.trim() ? encryptAppPassword(val.trim()) : null;
-    }
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -371,7 +358,7 @@ export class AuthService {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
 
-    return this.stripAppPassword(user as Record<string, unknown>);
+    return user;
   }
 
   async getPublicProfile(userId: number) {
@@ -456,7 +443,7 @@ export class AuthService {
       html: welcomeEmailHtml(user.name),
     }).catch((err) => console.error("Failed to send welcome email:", err));
 
-    // Increment tokenVersion — first real login after email verification
+    // Increment tokenVersion, first real login after email verification
     const versionUpdate = await prisma.user.update({
       where: { id: updated.id },
       data: { tokenVersion: { increment: 1 } },

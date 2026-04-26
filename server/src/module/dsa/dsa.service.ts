@@ -572,7 +572,7 @@ export class DsaService {
 
     const problem = await prisma.dsaProblem.findUnique({ where: { id: problemId } });
     if (!problem) throw new Error("Problem not found");
-    if (!problem.description) throw new Error("Cannot generate test cases — problem has no description");
+    if (!problem.description) throw new Error("Cannot generate test cases, problem has no description");
 
     const testCases = await this.generateTestCasesWithAI(problem);
 

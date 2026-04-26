@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Link, useSearchParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   MapPin,
@@ -19,21 +19,28 @@ import {
   GraduationCap,
   Mail,
   BookOpen,
+  ArrowUpRight,
+  Plus,
+  MessageCircle,
+  Clock,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import EmailCampaignTab from "./EmailCampaignTab";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { cn } from "@/lib/utils";
 import type {
   Company,
   CityCount,
   Pagination,
   YCCompany,
   YCStats,
+  InterviewCompanyListItem,
+  InterviewCompanyListResponse,
 } from "../../../lib/types";
+import { listInterviewCompanies } from "../interviews/interviews-api";
 
 const SIZE_LABELS: Record<string, string> = {
   STARTUP: "Startup",
@@ -43,190 +50,335 @@ const SIZE_LABELS: Record<string, string> = {
   ENTERPRISE: "Enterprise",
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  Active: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  Acquired: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  Public: "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-  Inactive: "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
-};
+// ─── Shared editorial atoms ────────────────────────────
+const cardBase =
+  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
 
-function CompanyCard({ company }: { company: Company }) {
+function EditorialLabel({ children }: { children: React.ReactNode }) {
   return (
-    <Link
-      to={`/companies/${company.slug}`}
-      className="block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 p-5 no-underline"
+    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+      <span className="h-1 w-1 bg-lime-400" />
+      {children}
+    </div>
+  );
+}
+
+function CompanyMark({ label, src }: { label: string; src?: string | null }) {
+  if (src) {
+    return (
+      <img
+        src={src.startsWith("http") ? src : `${SERVER_URL}${src}`}
+        alt={label}
+        className="w-10 h-10 rounded-md object-cover bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 shrink-0"
+      />
+    );
+  }
+  return (
+    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
+      {label?.charAt(0)?.toUpperCase() || "?"}
+    </div>
+  );
+}
+
+function MetaChip({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
+      <span className="text-stone-400">{icon}</span>
+      {children}
+    </span>
+  );
+}
+
+function StatusChip({ label, tone = "neutral" }: { label: string; tone?: "hiring" | "neutral" | "accent" }) {
+  const styles =
+    tone === "hiring"
+      ? "text-lime-700 dark:text-lime-400 border-lime-300/70 dark:border-lime-500/30 bg-lime-50/60 dark:bg-lime-500/5"
+      : tone === "accent"
+        ? "text-stone-900 dark:text-stone-50 border-stone-300 dark:border-white/20 bg-stone-100 dark:bg-stone-800"
+        : "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10";
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md",
+        styles
+      )}
     >
-      <div className="flex items-start gap-4">
-        {company.logo ? (
-          <img
-            src={company.logo.startsWith('http') ? company.logo : `${SERVER_URL}${company.logo}`}
-            alt={company.name}
-            className="w-14 h-14 rounded-lg object-cover border border-gray-100 dark:border-gray-800"
-          />
-        ) : (
-          <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
-            <Building2 className="w-6 h-6 text-gray-400 dark:text-gray-500" />
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
-              {company.name}
-            </h3>
-            {company.hiringStatus && (
-              <span className="px-2 py-0.5 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs font-medium rounded-full shrink-0">
-                Hiring
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-500">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              {company.city}
-            </span>
-            <span>{company.industry}</span>
-          </div>
+      {tone === "hiring" && <span className="h-1 w-1 bg-lime-500" />}
+      {label}
+    </span>
+  );
+}
+
+function EmptyState({
+  icon,
+  title,
+  hint,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  hint: string;
+}) {
+  return (
+    <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
+      <div className="inline-flex flex-col items-center gap-3">
+        <div className="w-12 h-12 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 flex items-center justify-center text-stone-400">
+          {icon}
         </div>
+        <p className="text-sm text-stone-700 dark:text-stone-300 font-medium">{title}</p>
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          {hint}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function Spinner() {
+  return (
+    <div className="py-20 text-center">
+      <div className="inline-flex flex-col items-center gap-3">
+        <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          loading...
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function UpgradeBanner({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div className="mt-8 flex items-center gap-4 p-5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
+      <div className="w-10 h-10 rounded-md bg-lime-50 dark:bg-lime-500/10 border border-lime-200/70 dark:border-lime-500/20 flex items-center justify-center shrink-0">
+        <Lock className="w-4 h-4 text-lime-700 dark:text-lime-400" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-bold text-stone-900 dark:text-stone-50">{title}</p>
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
+          {subtitle}
+        </p>
+      </div>
+      <Link
+        to="/student/checkout"
+        className="group inline-flex items-center gap-2 px-4 py-2 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 text-xs font-bold uppercase tracking-widest rounded-md hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline shrink-0"
+      >
+        Upgrade
+        <ArrowUpRight className="w-3.5 h-3.5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+      </Link>
+    </div>
+  );
+}
+
+// ─── Cards ──────────────────────────────────────────────
+const CompanyCard = React.memo(function CompanyCard({ company }: { company: Company }) {
+  return (
+    <Link to={`/companies/${company.slug}`} className={cardBase}>
+      <div className="flex items-start gap-3 mb-3">
+        <CompanyMark label={company.name} src={company.logo} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+            {company.name}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {company.industry || "company"}
+          </span>
+        </div>
+        {company.hiringStatus && <StatusChip label="hiring" tone="hiring" />}
       </div>
 
-      <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-        {company.description}
-      </p>
+      {company.description && (
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+          {company.description}
+        </p>
+      )}
 
-      <div className="mt-3 flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {company.avgRating > 0 ? company.avgRating.toFixed(1) : "New"}
-          </span>
-          {company.reviewCount > 0 && (
-            <span className="text-xs text-gray-400 dark:text-gray-500">
-              ({company.reviewCount})
-            </span>
-          )}
-        </div>
-        <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-950 px-2 py-1 rounded-full">
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {company.city && (
+          <MetaChip icon={<MapPin className="w-3 h-3" />}>{company.city}</MetaChip>
+        )}
+        <MetaChip icon={<Users className="w-3 h-3" />}>
           {SIZE_LABELS[company.size] ?? company.size}
-        </span>
+        </MetaChip>
+        <MetaChip icon={<Star className="w-3 h-3" />}>
+          {company.avgRating > 0 ? company.avgRating.toFixed(1) : "new"}
+          {company.reviewCount > 0 && (
+            <span className="text-stone-400 ml-1">({company.reviewCount})</span>
+          )}
+        </MetaChip>
       </div>
 
       {company.technologies.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1 mb-4">
           {company.technologies.slice(0, 4).map((tech) => (
             <span
               key={tech}
-              className="px-2 py-0.5 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-xs rounded-full"
+              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
             >
               {tech}
             </span>
           ))}
           {company.technologies.length > 4 && (
-            <span className="px-2 py-0.5 bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-500 text-xs rounded-full">
+            <span className="px-2 py-0.5 text-stone-500 text-[10px] font-mono uppercase tracking-wider">
               +{company.technologies.length - 4}
             </span>
           )}
         </div>
       )}
+
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          view company
+        </span>
+        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+      </div>
     </Link>
   );
-}
+});
 
-function YCCard({ company }: { company: YCCompany }) {
+const YCCard = React.memo(function YCCard({ company }: { company: YCCompany }) {
   return (
-    <Link to={`/yc/${company.slug}`} className="block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-300 p-5 group no-underline">
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="flex items-center gap-3 min-w-0">
-          {company.smallLogoUrl ? (
-            <img
-              src={company.smallLogoUrl}
-              alt={company.name}
-              className="w-10 h-10 rounded-lg object-contain bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-800"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
-              <span className="text-orange-600 dark:text-orange-400 font-bold text-sm">
-                {company.name.charAt(0)}
-              </span>
-            </div>
-          )}
-          <div className="min-w-0">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-              {company.name}
-            </h4>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              {company.industry || company.subindustry || "-"}
-            </p>
-          </div>
+    <Link to={`/yc/${company.slug}`} className={cardBase}>
+      <div className="flex items-start gap-3 mb-3">
+        <CompanyMark label={company.name} src={company.smallLogoUrl} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+            {company.name}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {company.industry || company.subindustry || "yc company"}
+          </span>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {company.batchShort && (
-            <span className="px-2 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-[10px] font-bold rounded-full border border-orange-100 dark:border-orange-800">
-              {company.batchShort}
-            </span>
-          )}
-          {company.isHiring && (
-            <span className="px-2 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-medium rounded-full">
-              Hiring
-            </span>
-          )}
-          {company.status && (
-            <span
-              className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${STATUS_COLORS[company.status] ?? "bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400"}`}
-            >
-              {company.status}
-            </span>
-          )}
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          {company.batchShort && <StatusChip label={company.batchShort} tone="accent" />}
+          {company.isHiring && <StatusChip label="hiring" tone="hiring" />}
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-        {company.oneLiner || "-"}
-      </p>
+      {company.oneLiner && (
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+          {company.oneLiner}
+        </p>
+      )}
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
-          {company.allLocations && (
-            <span className="flex items-center gap-1 truncate max-w-40">
-              <MapPin className="w-3 h-3 shrink-0" />
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {company.allLocations && (
+          <MetaChip icon={<MapPin className="w-3 h-3" />}>
+            <span className="truncate max-w-32 inline-block align-bottom">
               {company.allLocations}
             </span>
-          )}
-          {company.teamSize && (
-            <span className="flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              {company.teamSize}
-            </span>
-          )}
-        </div>
-        {company.website && (
-          <a
-            href={company.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-300 dark:text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
-            onClick={(e) => e.stopPropagation()}
-            title="Visit website"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          </MetaChip>
         )}
+        {company.teamSize && (
+          <MetaChip icon={<Users className="w-3 h-3" />}>{company.teamSize}</MetaChip>
+        )}
+        {company.status && <MetaChip icon={<Rocket className="w-3 h-3" />}>{company.status}</MetaChip>}
       </div>
 
       {company.tags.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 mb-4">
           {company.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="px-2 py-0.5 bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-500 text-[10px] rounded-full"
+              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
             >
-              #{tag}
+              {tag}
             </span>
           ))}
         </div>
       )}
+
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          view yc profile
+        </span>
+        <div className="flex items-center gap-2">
+          {company.website && (
+            <a
+              href={company.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
+              title="Visit website"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+          <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+        </div>
+      </div>
     </Link>
   );
+});
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const days = Math.round(diffMs / 86_400_000);
+  if (days < 1) return "today";
+  if (days < 30) return `${String(days)}d ago`;
+  const months = Math.round(days / 30);
+  return `${String(months)}mo ago`;
 }
+
+const InterviewCompanyCard = React.memo(function InterviewCompanyCard({
+  company,
+  insideLayout,
+}: {
+  company: InterviewCompanyListItem;
+  insideLayout: boolean;
+}) {
+  const target = `${insideLayout ? "/student/companies" : "/companies"}/${company.slug}#interviews`;
+  return (
+    <Link to={target} className={cardBase}>
+      <div className="flex items-start gap-3 mb-3">
+        <CompanyMark label={company.name} src={company.logo} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+            {company.name}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {company.industry || "company"}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {company.city && (
+          <MetaChip icon={<MapPin className="w-3 h-3" />}>{company.city}</MetaChip>
+        )}
+        <MetaChip icon={<MessageCircle className="w-3 h-3" />}>
+          {company.experienceCount} experience{company.experienceCount === 1 ? "" : "s"}
+        </MetaChip>
+        <MetaChip icon={<Star className="w-3 h-3" />}>
+          {company.avgRating > 0 ? company.avgRating.toFixed(1) : "new"}
+          {company.reviewCount > 0 && (
+            <span className="text-stone-400 ml-1">({company.reviewCount})</span>
+          )}
+        </MetaChip>
+        <MetaChip icon={<Clock className="w-3 h-3" />}>{timeAgo(company.latestAt)}</MetaChip>
+      </div>
+
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          read interviews + reviews
+        </span>
+        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+      </div>
+    </Link>
+  );
+});
 
 // ─── Professor types ──────────────────────────────────────
 interface Professor {
@@ -245,114 +397,122 @@ interface ProfessorStats {
   departments: { name: string; count: number }[];
 }
 
-function ProfessorCard({ professor }: { professor: Professor }) {
+const ProfessorCard = React.memo(function ProfessorCard({ professor }: { professor: Professor }) {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 p-5">
-      <div className="flex items-start gap-3">
-        <div className="w-11 h-11 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-          <span className="text-indigo-600 dark:text-indigo-400 font-bold text-sm">
-            {professor.name.charAt(0)}
-          </span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+    <div className={cardBase}>
+      <div className="flex items-start gap-3 mb-3">
+        <CompanyMark label={professor.name} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
             {professor.name}
-          </h4>
-          <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
             {professor.collegeName}
-          </p>
+          </span>
         </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400">
-        <BookOpen className="w-3 h-3 shrink-0" />
-        <span className="truncate">{professor.department}</span>
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        <MetaChip icon={<BookOpen className="w-3 h-3" />}>{professor.department}</MetaChip>
+        {professor.collegeType && (
+          <MetaChip icon={<GraduationCap className="w-3 h-3" />}>{professor.collegeType}</MetaChip>
+        )}
       </div>
 
       {professor.areaOfInterest && (
-        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
           {professor.areaOfInterest}
         </p>
       )}
 
-      {professor.email && (
-        <a
-          href={`mailto:${professor.email}`}
-          className="mt-3 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Mail className="w-3 h-3 shrink-0" />
-          {professor.email}
-        </a>
-      )}
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          {professor.email ? "contact" : "no email"}
+        </span>
+        {professor.email && (
+          <a
+            href={`mailto:${professor.email}`}
+            className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-lime-500 transition-colors truncate max-w-48"
+          >
+            <Mail className="w-3 h-3 shrink-0" />
+            <span className="truncate">{professor.email}</span>
+          </a>
+        )}
+      </div>
     </div>
   );
+});
+
+// ─── Dropdown (hover-driven select) ───────────────────────
+interface DropdownOption {
+  value: string;
+  label: string;
+  count?: number;
 }
 
-// ─── HR Contact types ─────────────────────────────────────
-interface HRContact {
-  id: number;
-  name: string;
-  email: string | null;
-  company: string | null;
-  designation: string | null;
-  linkedinUrl: string | null;
-}
-
-interface HRContactStats {
-  total: number;
-  companies: { name: string; count: number }[];
-}
-
-function HRContactCard({ contact }: { contact: HRContact }) {
+function EditorialDropdown({
+  icon,
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  options: DropdownOption[];
+  onChange: (value: string) => void;
+}) {
+  const current = options.find((o) => o.value === value);
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-teal-200 dark:hover:border-teal-800 transition-all duration-300 p-5">
-      <div className="flex items-start gap-3">
-        <div className="w-11 h-11 rounded-lg bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
-          <span className="text-teal-600 dark:text-teal-400 font-bold text-sm">
-            {contact.name.charAt(0)}
-          </span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-            {contact.name}
-          </h4>
-          {contact.designation && (
-            <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
-              {contact.designation}
-            </p>
-          )}
-        </div>
-      </div>
-      {contact.company && (
-        <div className="mt-3 flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400">
-          <Building2 className="w-3 h-3 shrink-0" />
-          <span className="truncate">{contact.company}</span>
-        </div>
-      )}
-      <div className="mt-3 flex items-center gap-3">
-        {contact.linkedinUrl && (
-          <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer"
-            className="text-xs text-gray-400 hover:text-blue-600 transition-colors"
-            onClick={(e) => e.stopPropagation()}>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        )}
-        {contact.email && (
-          <a href={`mailto:${contact.email}`}
-            className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors truncate"
-            onClick={(e) => e.stopPropagation()}>
-            <Mail className="w-3 h-3 shrink-0" />
-            {contact.email}
-          </a>
-        )}
+    <div className="relative group">
+      <button
+        type="button"
+        className="inline-flex items-center gap-2 h-10 px-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer"
+      >
+        <span className="text-stone-400">{icon}</span>
+        <span>{label}</span>
+        <span className="text-stone-900 dark:text-stone-50 font-bold normal-case tracking-normal truncate max-w-28">
+          {current?.label ?? "All"}
+        </span>
+        <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+      </button>
+      <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-55 max-h-80 overflow-y-auto rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
+        {options.map((opt) => {
+          const active = opt.value === value;
+          return (
+            <button
+              key={opt.value || "__all"}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              className={cn(
+                "flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors",
+                active
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 font-medium"
+                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-50"
+              )}
+            >
+              <span className="truncate">{opt.label}</span>
+              {typeof opt.count === "number" && (
+                <span
+                  className={cn(
+                    "text-[10px] font-mono tabular-nums shrink-0",
+                    active ? "text-stone-300 dark:text-stone-500" : "text-stone-400"
+                  )}
+                >
+                  {opt.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 // ─── Tab type ─────────────────────────────────────────────
-type Tab = "all" | "yc" | "professors" | "hr" | "email";
+type Tab = "all" | "interviews" | "yc" | "professors";
 
 export default function CompanyListPage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
@@ -368,21 +528,25 @@ export default function CompanyListPage() {
   // Active tab
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
-  // YC filters (local state, debounced before query)
+  // YC filters
   const [ycSearchInput, setYcSearchInput] = useState("");
   const [ycSearch, setYcSearch] = useState("");
   const [ycBatch, setYcBatch] = useState("");
   const [ycIndustry, setYcIndustry] = useState("");
   const [ycPage, setYcPage] = useState(1);
 
-  // Professor filters (local state)
+  // Professor filters
   const [profSearchInput, setProfSearchInput] = useState("");
   const [profSearch, setProfSearch] = useState("");
   const [profCollege, setProfCollege] = useState("");
   const [profDepartment, setProfDepartment] = useState("");
   const [profPage, setProfPage] = useState(1);
 
-  // Debounce YC search
+  // Interview filters
+  const [interviewSearchInput, setInterviewSearchInput] = useState("");
+  const [interviewSearch, setInterviewSearch] = useState("");
+  const [interviewPage, setInterviewPage] = useState(1);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setYcSearch(ycSearchInput);
@@ -391,13 +555,6 @@ export default function CompanyListPage() {
     return () => clearTimeout(timer);
   }, [ycSearchInput]);
 
-  // HR contact filters (local state)
-  const [hrSearchInput, setHrSearchInput] = useState("");
-  const [hrSearch, setHrSearch] = useState("");
-  const [hrCompany, setHrCompany] = useState("");
-  const [hrPage, setHrPage] = useState(1);
-
-  // Debounce professor search
   useEffect(() => {
     const timer = setTimeout(() => {
       setProfSearch(profSearchInput);
@@ -406,14 +563,13 @@ export default function CompanyListPage() {
     return () => clearTimeout(timer);
   }, [profSearchInput]);
 
-  // Debounce HR search
   useEffect(() => {
     const timer = setTimeout(() => {
-      setHrSearch(hrSearchInput);
-      setHrPage(1);
+      setInterviewSearch(interviewSearchInput);
+      setInterviewPage(1);
     }, 400);
     return () => clearTimeout(timer);
-  }, [hrSearchInput]);
+  }, [interviewSearchInput]);
 
   const selectedCity = searchParams.get("city") || "";
   const search = searchParams.get("search") || "";
@@ -475,14 +631,13 @@ export default function CompanyListPage() {
   const hasActiveFilters =
     selectedCity || industry || size || hiring || minRating || search;
 
-  // ── YC Stats query ──
+  // ── YC queries ──
   const { data: ycStats } = useQuery<YCStats>({
     queryKey: queryKeys.yc.stats(),
     queryFn: () => api.get("/yc/stats").then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── YC Companies query ──
   const ycQueryParams: Record<string, string | number> = { page: ycPage, limit: 24 };
   if (ycSearch) ycQueryParams["search"] = ycSearch;
   if (ycBatch) ycQueryParams["batch"] = ycBatch;
@@ -500,14 +655,13 @@ export default function CompanyListPage() {
   const ycCompanies = ycData?.companies ?? [];
   const ycPagination = ycData?.pagination ?? null;
 
-  // ── Professor Stats query ──
+  // ── Professor queries ──
   const { data: profStats } = useQuery<ProfessorStats>({
     queryKey: queryKeys.professors.stats(),
     queryFn: () => api.get("/professors/stats").then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── Professor list query ──
   const profQueryParams: Record<string, string | number> = { page: profPage, limit: 24 };
   if (profSearch) profQueryParams["search"] = profSearch;
   if (profCollege) profQueryParams["college"] = profCollege;
@@ -526,295 +680,355 @@ export default function CompanyListPage() {
   const professors = profData?.professors ?? [];
   const profPagination = profData?.pagination ?? null;
 
-  // ── HR Contact Stats query ──
-  const { data: hrStats } = useQuery<HRContactStats>({
-    queryKey: queryKeys.hrContacts.stats(),
-    queryFn: () => api.get("/hr-contacts/stats").then((r) => r.data),
-    staleTime: 5 * 60 * 1000,
-  });
+  // ── Interview experience queries ──
+  const interviewQueryParams: Record<string, string | number> = {
+    page: interviewPage,
+    limit: 24,
+  };
+  if (interviewSearch) interviewQueryParams["search"] = interviewSearch;
 
-  // ── HR Contact list query ──
-  const hrQueryParams: Record<string, string | number> = { page: hrPage, limit: 24 };
-  if (hrSearch) hrQueryParams["search"] = hrSearch;
-  if (hrCompany) hrQueryParams["company"] = hrCompany;
+  const { data: interviewData, isLoading: interviewLoading } =
+    useQuery<InterviewCompanyListResponse>({
+      queryKey: queryKeys.interviews.companies(interviewQueryParams),
+      queryFn: () =>
+        listInterviewCompanies({
+          page: interviewPage,
+          limit: 24,
+          search: interviewSearch || undefined,
+        }),
+      enabled: activeTab === "interviews",
+      staleTime: 5 * 60 * 1000,
+    });
 
-  const { data: hrData, isLoading: hrLoading } = useQuery<{
-    contacts: HRContact[];
-    pagination: Pagination;
-    premiumRequired?: boolean;
-  }>({
-    queryKey: queryKeys.hrContacts.list(hrQueryParams),
-    queryFn: () => api.get("/hr-contacts", { params: hrQueryParams }).then((r) => r.data),
-    enabled: activeTab === "hr",
-  });
+  const interviewCompanies = interviewData?.companies ?? [];
+  const interviewPagination = interviewData?.pagination ?? null;
 
-  const hrContacts = hrData?.contacts ?? [];
-  const hrPagination = hrData?.pagination ?? null;
+  const tabs: { key: Tab; label: string; icon: React.ReactNode; count?: number | string }[] = [
+    { key: "all", label: "Companies", icon: <Building2 className="w-4 h-4" />, count: pagination?.total },
+    { key: "interviews", label: "Interviews", icon: <MessageCircle className="w-4 h-4" />, count: interviewPagination?.total },
+    { key: "yc", label: "YC", icon: <Rocket className="w-4 h-4" />, count: ycStats?.total },
+    { key: "professors", label: "Professors", icon: <GraduationCap className="w-4 h-4" />, count: profStats?.total },
+  ];
 
   return (
-    <div className="relative min-h-screen bg-white/50 dark:bg-gray-950">
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 relative">
+      <SEO
+        title="Explore Companies"
+        description="Discover companies hiring on InternHack. Browse by industry, size, and location. Read reviews, see tech stacks, and find your ideal workplace."
+        keywords="company explorer, companies hiring, company reviews, tech companies, startup jobs, company directory, workplace reviews"
+        canonicalUrl={canonicalUrl("/companies")}
+      />
 
       {!isInsideLayout && <Navbar />}
-      <div className="relative max-w-7xl mx-auto px-4 py-8 pt-24 pb-12">
-        <SEO
-          title="Explore Companies"
-          description="Discover companies hiring on InternHack. Browse by industry, size, and location. Read reviews, see tech stacks, and find your ideal workplace."
-          keywords="company explorer, companies hiring, company reviews, tech companies, startup jobs, company directory, workplace reviews"
-          canonicalUrl={canonicalUrl("/companies")}
-        />
 
-        {/* Hero Header */}
+      {/* Grid line background */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundSize: "120px 100%",
+        }}
+      />
+
+      <div className="relative max-w-6xl mx-auto px-6 pt-8 pb-20">
+        {/* Editorial header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-8"
+          transition={{ duration: 0.4 }}
+          className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
         >
-          <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-            Explore <span className="text-gradient-accent">Companies</span>
-          </h1>
-          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-            Discover companies across cities, read reviews, and find your ideal workplace
-          </p>
+          <div>
+            <EditorialLabel>browse / companies</EditorialLabel>
+            <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+              The people and places{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">hiring.</span>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                  aria-hidden
+                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                />
+              </span>
+            </h1>
+            <p className="mt-3 text-sm text-stone-500 max-w-md">
+              Partner companies, YC startups, and professors. One directory to map your next move.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            {typeof pagination?.total === "number" && (
+              <span>
+                companies{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {pagination.total}
+                </span>
+              </span>
+            )}
+            {typeof ycStats?.total === "number" && (
+              <span>
+                yc{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {ycStats.total}
+                </span>
+              </span>
+            )}
+            {typeof profStats?.total === "number" && (
+              <span>
+                profs{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {profStats.total}
+                </span>
+              </span>
+            )}
+          </div>
         </motion.div>
 
-        {/* ── Tabs ─────────────────────────────────────── */}
+        {/* Contribute strip */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-6 flex items-center justify-center"
+          transition={{ delay: 0.05 }}
+          className="mb-8"
         >
-        <div className="flex items-center gap-1 bg-white dark:bg-gray-900 rounded-xl p-1 border border-gray-100 dark:border-gray-800 shadow-sm overflow-x-auto">
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === "all"
-                ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
+          <Link
+            to={isInsideLayout ? "/student/companies/add" : "/companies/add"}
+            className="group flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
           >
-            <Building2 className="w-4 h-4 shrink-0" />
-            Companies
-          </button>
-          <button
-            onClick={() => setActiveTab("yc")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === "yc"
-                ? "bg-white dark:bg-gray-900 text-orange-700 dark:text-orange-400 shadow-sm"
-                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-          >
-            <Rocket className="w-4 h-4 shrink-0" />
-            YC
-            <span className="px-1.5 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[10px] font-bold rounded-full border border-orange-100 dark:border-orange-800">
-              {ycStats?.total ?? "..."}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab("professors")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === "professors"
-                ? "bg-white dark:bg-gray-900 text-indigo-700 dark:text-indigo-400 shadow-sm"
-                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-          >
-            <GraduationCap className="w-4 h-4 shrink-0" />
-            Professors
-            <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-full border border-indigo-100 dark:border-indigo-800">
-              {profStats?.total ?? "..."}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab("hr")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === "hr"
-                ? "bg-white dark:bg-gray-900 text-teal-700 dark:text-teal-400 shadow-sm"
-                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-          >
-            <Users className="w-4 h-4 shrink-0" />
-            HR Contacts
-            <span className="px-1.5 py-0.5 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-bold rounded-full border border-teal-100 dark:border-teal-800">
-              {hrStats?.total ?? "..."}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab("email")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === "email"
-                ? "bg-white dark:bg-gray-900 text-purple-700 dark:text-purple-400 shadow-sm"
-                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-          >
-            <Mail className="w-4 h-4 shrink-0" />
-            Email Outreach
-          </button>
-        </div>
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
+              <Plus className="w-4 h-4 text-stone-600 dark:text-stone-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                Add a company to the directory
+              </p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
+                help the community / earn contributor points
+              </p>
+            </div>
+            <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </Link>
         </motion.div>
 
-        {/* ── TAB: All Companies ─────────────────────── */}
+        {/* Tabs (underline style) */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8 border-b border-stone-200 dark:border-white/10"
+        >
+          <div className="flex items-center gap-0 overflow-x-auto -mb-px">
+            {tabs.map((t) => {
+              const active = activeTab === t.key;
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => setActiveTab(t.key)}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer",
+                    active
+                      ? "border-lime-400 text-stone-900 dark:text-stone-50"
+                      : "border-transparent text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
+                  )}
+                >
+                  <span
+                    className={
+                      active ? "text-stone-900 dark:text-stone-50" : "text-stone-400"
+                    }
+                  >
+                    {t.icon}
+                  </span>
+                  {t.label}
+                  {typeof t.count !== "undefined" && (
+                    <span
+                      className={cn(
+                        "text-[10px] font-mono tabular-nums",
+                        active ? "text-stone-400" : "text-stone-400"
+                      )}
+                    >
+                      {t.count ?? "..."}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* ── TAB: All Companies ───────────────────────── */}
         {activeTab === "all" && (
           <>
-            {/* City Chips */}
+            {/* City filter row */}
             {cities.length > 0 && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1 shrink-0">
+                    city /
+                  </span>
                   <button
                     onClick={() => updateParam("city", "")}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                    className={cn(
+                      "px-3 py-1.5 rounded-md text-xs font-medium border transition-colors whitespace-nowrap cursor-pointer",
                       !selectedCity
-                        ? "bg-black dark:bg-white text-white dark:text-gray-950"
-                        : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    }`}
+                        ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                        : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                    )}
                   >
-                    All Cities
+                    All
                   </button>
                   {cities.map((c) => (
                     <button
                       key={c.city}
                       onClick={() => updateParam("city", c.city)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                      className={cn(
+                        "px-3 py-1.5 rounded-md text-xs font-medium border transition-colors whitespace-nowrap cursor-pointer",
                         selectedCity === c.city
-                          ? "bg-black dark:bg-white text-white dark:text-gray-950"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      }`}
+                          ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                          : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                      )}
                     >
-                      {c.city} ({c.count})
+                      {c.city}{" "}
+                      <span
+                        className={cn(
+                          "font-mono text-[10px] ml-1",
+                          selectedCity === c.city
+                            ? "text-stone-300 dark:text-stone-500"
+                            : "text-stone-400"
+                        )}
+                      >
+                        {c.count}
+                      </span>
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Search + Filter Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="flex items-center gap-3 mb-6"
-            >
+            {/* Search + filter toggle */}
+            <div className="flex flex-col sm:flex-row gap-2 mb-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => updateParam("search", e.target.value)}
-                  placeholder="Search companies by name or industry..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                  placeholder="Search by name or industry..."
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
+                className={cn(
+                  "inline-flex items-center justify-center gap-2 px-4 h-12 sm:h-auto rounded-md text-sm font-medium border transition-colors cursor-pointer",
                   showFilters
-                    ? "border-black dark:border-white bg-black dark:bg-white text-white dark:text-gray-950"
-                    : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                    : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
+                )}
               >
                 <Filter className="w-4 h-4" />
                 Filters
               </button>
-              {hasActiveFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
-                >
-                  <X className="w-4 h-4" /> Clear
-                </button>
-              )}
-            </motion.div>
+              <AnimatePresence>
+                {hasActiveFilters && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.15 }}
+                    onClick={clearFilters}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
+                  >
+                    <X className="w-3 h-3" /> clear
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
 
-            {/* Filter Panel */}
-            {showFilters && (
-              <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">
-                    Industry
-                  </label>
-                  <input
-                    type="text"
-                    value={industry}
-                    onChange={(e) => updateParam("industry", e.target.value)}
-                    placeholder="e.g. Technology"
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">
-                    Company Size
-                  </label>
-                  <select
-                    value={size}
-                    onChange={(e) => updateParam("size", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="">All Sizes</option>
-                    <option value="STARTUP">Startup</option>
-                    <option value="SMALL">Small</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="LARGE">Large</option>
-                    <option value="ENTERPRISE">Enterprise</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">
-                    Hiring Status
-                  </label>
-                  <select
-                    value={hiring}
-                    onChange={(e) => updateParam("hiring", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="">All</option>
-                    <option value="true">Hiring Now</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">
-                    Min Rating
-                  </label>
-                  <select
-                    value={minRating}
-                    onChange={(e) => updateParam("minRating", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="">Any</option>
-                    <option value="4">4+ Stars</option>
-                    <option value="3">3+ Stars</option>
-                    <option value="2">2+ Stars</option>
-                  </select>
-                </div>
-              </div>
-            )}
+            {/* Filter panel */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden mb-6"
+                >
+                  <div className="bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                        industry
+                      </label>
+                      <input
+                        type="text"
+                        value={industry}
+                        onChange={(e) => updateParam("industry", e.target.value)}
+                        placeholder="e.g. Technology"
+                        className="w-full px-3 py-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 dark:text-stone-50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                        company size
+                      </label>
+                      <select
+                        value={size}
+                        onChange={(e) => updateParam("size", e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 dark:text-stone-50"
+                      >
+                        <option value="">All sizes</option>
+                        <option value="STARTUP">Startup</option>
+                        <option value="SMALL">Small</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LARGE">Large</option>
+                        <option value="ENTERPRISE">Enterprise</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                        hiring status
+                      </label>
+                      <select
+                        value={hiring}
+                        onChange={(e) => updateParam("hiring", e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 dark:text-stone-50"
+                      >
+                        <option value="">All</option>
+                        <option value="true">Hiring now</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                        min rating
+                      </label>
+                      <select
+                        value={minRating}
+                        onChange={(e) => updateParam("minRating", e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 dark:text-stone-50"
+                      >
+                        <option value="">Any</option>
+                        <option value="4">4+ stars</option>
+                        <option value="3">3+ stars</option>
+                        <option value="2">2+ stars</option>
+                      </select>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Results */}
             {loading ? (
               <LoadingScreen compact />
             ) : companies.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
-                  <Users className="w-9 h-9 text-gray-400" />
-                </div>
-                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
-                  No companies found
-                </h3>
-                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
-                  Try adjusting your search or filters to discover more companies
-                </p>
-              </div>
+              <EmptyState
+                icon={<Building2 className="w-5 h-5" />}
+                title="No companies found"
+                hint="try different search criteria"
+              />
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -823,35 +1037,20 @@ export default function CompanyListPage() {
                       key={company.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                      transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
                       <CompanyCard company={company} />
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Upgrade banner for city-limited results */}
                 {cityLimited && selectedCity && (
-                  <div className="mt-6 flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                        Showing first 20 of {totalUnlimited} companies in {selectedCity}
-                      </p>
-                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
-                        Upgrade to Premium to see all companies in this city.
-                      </p>
-                    </div>
-                    <Link
-                      to="/student/checkout"
-                      className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
-                    >
-                      Upgrade
-                    </Link>
-                  </div>
+                  <UpgradeBanner
+                    title={`Showing first 20 of ${totalUnlimited} companies in ${selectedCity}`}
+                    subtitle="upgrade to premium / see every company in this city"
+                  />
                 )}
 
-                {/* Pagination */}
                 {pagination && (
                   <PaginationControls
                     currentPage={pagination.page}
@@ -864,122 +1063,78 @@ export default function CompanyListPage() {
           </>
         )}
 
-        {/* ── TAB: YC Companies ──────────────────────── */}
+        {/* ── TAB: YC ──────────────────────────────────── */}
         {activeTab === "yc" && (
           <>
-            {/* YC-specific controls */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <div className="flex flex-col sm:flex-row gap-2 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
                   type="text"
                   value={ycSearchInput}
                   onChange={(e) => setYcSearchInput(e.target.value)}
                   placeholder="Search YC companies..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
                 />
               </div>
-
-              {/* Batch dropdown */}
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <Rocket className="w-4 h-4" />
-                  Batch:{" "}
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {ycBatch || "All"}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[160px] max-h-[240px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
-                  <button
-                    onClick={() => { setYcBatch(""); setYcPage(1); }}
-                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                      !ycBatch
-                        ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    All
-                  </button>
-                  {(ycStats?.batches ?? []).map((b) => (
-                    <button
-                      key={b.name}
-                      onClick={() => { setYcBatch(b.name); setYcPage(1); }}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                        ycBatch === b.name
-                          ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
-                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                      }`}
-                    >
-                      {b.name} ({b.count})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Industry dropdown */}
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <Filter className="w-4 h-4" />
-                  Industry:{" "}
-                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
-                    {ycIndustry || "All"}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
-                  <button
-                    onClick={() => { setYcIndustry(""); setYcPage(1); }}
-                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                      !ycIndustry
-                        ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    All
-                  </button>
-                  {(ycStats?.industries ?? []).slice(0, 30).map((ind) => (
-                    <button
-                      key={ind.name}
-                      onClick={() => { setYcIndustry(ind.name); setYcPage(1); }}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                        ycIndustry === ind.name
-                          ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
-                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                      }`}
-                    >
-                      {ind.name} ({ind.count})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Clear YC filters */}
+              <EditorialDropdown
+                icon={<Rocket className="w-3.5 h-3.5" />}
+                label="batch"
+                value={ycBatch}
+                onChange={(v) => {
+                  setYcBatch(v);
+                  setYcPage(1);
+                }}
+                options={[
+                  { value: "", label: "All" },
+                  ...(ycStats?.batches ?? []).map((b) => ({
+                    value: b.name,
+                    label: b.name,
+                    count: b.count,
+                  })),
+                ]}
+              />
+              <EditorialDropdown
+                icon={<Filter className="w-3.5 h-3.5" />}
+                label="industry"
+                value={ycIndustry}
+                onChange={(v) => {
+                  setYcIndustry(v);
+                  setYcPage(1);
+                }}
+                options={[
+                  { value: "", label: "All" },
+                  ...(ycStats?.industries ?? []).slice(0, 30).map((ind) => ({
+                    value: ind.name,
+                    label: ind.name,
+                    count: ind.count,
+                  })),
+                ]}
+              />
               {(ycSearch || ycBatch || ycIndustry) && (
                 <button
-                  onClick={() => { setYcSearchInput(""); setYcSearch(""); setYcBatch(""); setYcIndustry(""); setYcPage(1); }}
-                  className="flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                  onClick={() => {
+                    setYcSearchInput("");
+                    setYcSearch("");
+                    setYcBatch("");
+                    setYcIndustry("");
+                    setYcPage(1);
+                  }}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
                 >
-                  <X className="w-4 h-4" /> Clear
+                  <X className="w-3 h-3" /> clear
                 </button>
               )}
             </div>
 
-            {/* YC Results */}
             {ycLoading ? (
-              <LoadingScreen compact />
+              <Spinner />
             ) : ycCompanies.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
-                  <Rocket className="w-9 h-9 text-orange-400" />
-                </div>
-                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
-                  No YC companies found
-                </h3>
-                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
-                  Try adjusting your search or filters
-                </p>
-              </div>
+              <EmptyState
+                icon={<Rocket className="w-5 h-5" />}
+                title="No YC companies found"
+                hint="try different search criteria"
+              />
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -988,14 +1143,12 @@ export default function CompanyListPage() {
                       key={company.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                      transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
                       <YCCard company={company} />
                     </motion.div>
                   ))}
                 </div>
-
-                {/* YC Pagination */}
                 {ycPagination && (
                   <PaginationControls
                     currentPage={ycPage}
@@ -1007,122 +1160,79 @@ export default function CompanyListPage() {
             )}
           </>
         )}
-        {/* ── TAB: IIT Professors ───────────────────── */}
+
+        {/* ── TAB: Professors ──────────────────────────── */}
         {activeTab === "professors" && (
           <>
-            {/* Professor-specific controls */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <div className="flex flex-col sm:flex-row gap-2 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
                   type="text"
                   value={profSearchInput}
                   onChange={(e) => setProfSearchInput(e.target.value)}
-                  placeholder="Search professors by name, area of interest..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                  placeholder="Search by name, area of interest..."
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
                 />
               </div>
-
-              {/* College dropdown */}
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <GraduationCap className="w-4 h-4" />
-                  College:{" "}
-                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
-                    {profCollege || "All"}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
-                  <button
-                    onClick={() => { setProfCollege(""); setProfPage(1); }}
-                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                      !profCollege
-                        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    All
-                  </button>
-                  {(profStats?.colleges ?? []).map((c) => (
-                    <button
-                      key={c.name}
-                      onClick={() => { setProfCollege(c.name); setProfPage(1); }}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                        profCollege === c.name
-                          ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
-                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                      }`}
-                    >
-                      {c.name} ({c.count})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Department dropdown */}
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <BookOpen className="w-4 h-4" />
-                  Dept:{" "}
-                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
-                    {profDepartment || "All"}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[240px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
-                  <button
-                    onClick={() => { setProfDepartment(""); setProfPage(1); }}
-                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                      !profDepartment
-                        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    All
-                  </button>
-                  {(profStats?.departments ?? []).map((d) => (
-                    <button
-                      key={d.name}
-                      onClick={() => { setProfDepartment(d.name); setProfPage(1); }}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                        profDepartment === d.name
-                          ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
-                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                      }`}
-                    >
-                      {d.name} ({d.count})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Clear professor filters */}
+              <EditorialDropdown
+                icon={<GraduationCap className="w-3.5 h-3.5" />}
+                label="college"
+                value={profCollege}
+                onChange={(v) => {
+                  setProfCollege(v);
+                  setProfPage(1);
+                }}
+                options={[
+                  { value: "", label: "All" },
+                  ...(profStats?.colleges ?? []).map((c) => ({
+                    value: c.name,
+                    label: c.name,
+                    count: c.count,
+                  })),
+                ]}
+              />
+              <EditorialDropdown
+                icon={<BookOpen className="w-3.5 h-3.5" />}
+                label="dept"
+                value={profDepartment}
+                onChange={(v) => {
+                  setProfDepartment(v);
+                  setProfPage(1);
+                }}
+                options={[
+                  { value: "", label: "All" },
+                  ...(profStats?.departments ?? []).map((d) => ({
+                    value: d.name,
+                    label: d.name,
+                    count: d.count,
+                  })),
+                ]}
+              />
               {(profSearch || profCollege || profDepartment) && (
                 <button
-                  onClick={() => { setProfSearchInput(""); setProfSearch(""); setProfCollege(""); setProfDepartment(""); setProfPage(1); }}
-                  className="flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                  onClick={() => {
+                    setProfSearchInput("");
+                    setProfSearch("");
+                    setProfCollege("");
+                    setProfDepartment("");
+                    setProfPage(1);
+                  }}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
                 >
-                  <X className="w-4 h-4" /> Clear
+                  <X className="w-3 h-3" /> clear
                 </button>
               )}
             </div>
 
-            {/* Professor Results */}
             {profLoading ? (
-              <LoadingScreen compact />
+              <Spinner />
             ) : professors.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
-                  <GraduationCap className="w-9 h-9 text-indigo-400" />
-                </div>
-                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
-                  No professors found
-                </h3>
-                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
-                  Try adjusting your search or filters
-                </p>
-              </div>
+              <EmptyState
+                icon={<GraduationCap className="w-5 h-5" />}
+                title="No professors found"
+                hint="try different search criteria"
+              />
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1131,35 +1241,20 @@ export default function CompanyListPage() {
                       key={prof.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                      transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
                       <ProfessorCard professor={prof} />
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Premium upgrade banner */}
                 {profData?.premiumRequired && (
-                  <div className="mt-6 flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                        First 100 professors are free
-                      </p>
-                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
-                        Upgrade to Premium to access all {profStats?.total ?? 1584} IIT professors.
-                      </p>
-                    </div>
-                    <Link
-                      to="/student/checkout"
-                      className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
-                    >
-                      Upgrade
-                    </Link>
-                  </div>
+                  <UpgradeBanner
+                    title="First 100 professors are free"
+                    subtitle={`upgrade to premium / unlock all ${profStats?.total ?? 1584} iit professors`}
+                  />
                 )}
 
-                {/* Professor Pagination */}
                 {profPagination && (
                   <PaginationControls
                     currentPage={profPage}
@@ -1172,121 +1267,82 @@ export default function CompanyListPage() {
           </>
         )}
 
-        {/* ── TAB: HR Contacts ────────────────────────── */}
-        {activeTab === "hr" && (
+        {/* ── TAB: Interview Experiences ───────────────── */}
+        {activeTab === "interviews" && (
           <>
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            {/* Intro strip with "Share yours" CTA */}
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                  Real interviews, real reviews
+                </p>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
+                  rounds, questions, ratings, work culture / earn a contributor badge when you share
+                </p>
+              </div>
+              <Link
+                to={isInsideLayout ? "/student/interviews/share" : "/student/interviews/share"}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-lime-400 hover:bg-lime-500 text-stone-900 rounded-md text-sm font-semibold transition-colors no-underline shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                Share experience
+              </Link>
+            </div>
+
+            {/* Search */}
+            <div className="flex flex-col sm:flex-row gap-2 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
                   type="text"
-                  value={hrSearchInput}
-                  onChange={(e) => setHrSearchInput(e.target.value)}
-                  placeholder="Search by name, company, designation..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-300 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                  value={interviewSearchInput}
+                  onChange={(e) => setInterviewSearchInput(e.target.value)}
+                  placeholder="Search by company..."
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
                 />
               </div>
-
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <Building2 className="w-4 h-4" />
-                  Company:{" "}
-                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
-                    {hrCompany || "All"}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
-                  <button
-                    onClick={() => { setHrCompany(""); setHrPage(1); }}
-                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                      !hrCompany
-                        ? "bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 font-medium"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    All
-                  </button>
-                  {(hrStats?.companies ?? []).slice(0, 50).map((c) => (
-                    <button
-                      key={c.name}
-                      onClick={() => { setHrCompany(c.name); setHrPage(1); }}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                        hrCompany === c.name
-                          ? "bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 font-medium"
-                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                      }`}
-                    >
-                      {c.name} ({c.count})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {(hrSearch || hrCompany) && (
+              {interviewSearch && (
                 <button
-                  onClick={() => { setHrSearchInput(""); setHrSearch(""); setHrCompany(""); setHrPage(1); }}
-                  className="flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                  onClick={() => {
+                    setInterviewSearchInput("");
+                    setInterviewSearch("");
+                    setInterviewPage(1);
+                  }}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
                 >
-                  <X className="w-4 h-4" /> Clear
+                  <X className="w-3 h-3" /> clear
                 </button>
               )}
             </div>
 
-            {hrLoading ? (
-              <LoadingScreen compact />
-            ) : hrContacts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
-                  <Users className="w-9 h-9 text-teal-400" />
-                </div>
-                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
-                  No HR contacts found
-                </h3>
-                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
-                  Try adjusting your search or filters
-                </p>
-              </div>
+            {interviewLoading ? (
+              <Spinner />
+            ) : interviewCompanies.length === 0 ? (
+              <EmptyState
+                icon={<MessageCircle className="w-5 h-5" />}
+                title="No interview experiences yet"
+                hint="be the first to share — earn a badge"
+              />
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {hrContacts.map((contact, i) => (
+                  {interviewCompanies.map((company, i) => (
                     <motion.div
-                      key={contact.id}
+                      key={company.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                      transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
-                      <HRContactCard contact={contact} />
+                      <InterviewCompanyCard company={company} insideLayout={isInsideLayout} />
                     </motion.div>
                   ))}
                 </div>
 
-                {hrData?.premiumRequired && (
-                  <div className="mt-6 flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                        First 100 contacts are free
-                      </p>
-                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
-                        Upgrade to Premium to access all {hrStats?.total ?? 0} HR contacts.
-                      </p>
-                    </div>
-                    <Link
-                      to="/student/checkout"
-                      className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
-                    >
-                      Upgrade
-                    </Link>
-                  </div>
-                )}
-
-                {hrPagination && (
+                {interviewPagination && interviewPagination.totalPages > 1 && (
                   <PaginationControls
-                    currentPage={hrPage}
-                    totalPages={hrPagination.totalPages}
-                    onPageChange={setHrPage}
+                    currentPage={interviewPage}
+                    totalPages={interviewPagination.totalPages}
+                    onPageChange={setInterviewPage}
                   />
                 )}
               </>
@@ -1294,8 +1350,6 @@ export default function CompanyListPage() {
           </>
         )}
 
-        {/* ── TAB: Email Outreach ─────────────────────── */}
-        {activeTab === "email" && <EmailCampaignTab />}
       </div>
       {!isInsideLayout && <Footer />}
     </div>

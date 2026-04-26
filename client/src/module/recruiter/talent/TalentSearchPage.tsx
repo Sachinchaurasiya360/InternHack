@@ -1,14 +1,17 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
-  Search,
+  Search as SearchIcon,
   SlidersHorizontal,
   Users,
   ChevronDown,
   X,
+  Bookmark,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
@@ -40,7 +43,7 @@ const defaultFilters: TalentFilters = {
 };
 
 const JOB_STATUS_OPTIONS = [
-  { key: "", label: "All Status" },
+  { key: "", label: "All" },
   { key: "LOOKING", label: "Looking" },
   { key: "OPEN_TO_OFFER", label: "Open to offers" },
   { key: "NO_OFFER", label: "Not looking" },
@@ -51,11 +54,28 @@ interface TalentSearchResponse {
   pagination: Pagination;
 }
 
+const inputClass =
+  "w-full px-3 py-2 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors";
+
+const labelClass =
+  "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
+
 export default function TalentSearchPage() {
   const [filters, setFilters] = useState<TalentFilters>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<TalentFilters>(defaultFilters);
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+
+  const { data: savedIdsData } = useQuery({
+    queryKey: queryKeys.savedCandidates.ids(),
+    queryFn: async () => {
+      const res = await api.get("/recruiter/saved-candidates/ids");
+      return (res.data?.ids ?? []) as number[];
+    },
+    staleTime: 1000 * 60,
+  });
+
+  const savedSet = useMemo(() => new Set(savedIdsData ?? []), [savedIdsData]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.recruiter.talentSearch({ ...appliedFilters, page }),
@@ -110,354 +130,330 @@ export default function TalentSearchPage() {
     }).length;
   }, [appliedFilters]);
 
-  const inputClass =
-    "w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 dark:focus:border-purple-700 transition-all";
-
   return (
-    <div className="-m-8">
+    <div className="max-w-7xl mx-auto">
       <SEO title="Talent Search" noIndex />
-      {/* ── Hero Header ── */}
-      <div className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950">
-        {/* Gradient orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-150 h-150 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 opacity-60 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-125 h-125 rounded-full bg-gradient-to-tr from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 opacity-60 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 rounded-full border border-black/3 dark:border-white/3" />
+
+      {/* Editorial header */}
+      <header className="mt-6 mb-8">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="h-1 w-1 bg-lime-400" />
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            recruiter / talent search
+          </span>
         </div>
 
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-
-        <div className="relative z-10 max-w-5xl mx-auto px-8 pt-16 pb-12 text-center">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm rounded-full text-xs font-medium mb-8"
-          >
-            <Search className="w-3.5 h-3.5 text-purple-500" />
-            <span className="text-gray-600 dark:text-gray-400">Talent Discovery Platform</span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-5xl md:text-6xl font-bold mb-5 leading-tight tracking-tight text-gray-950 dark:text-white"
-          >
-            Find Top{" "}
-            <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
-              Talent
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
-          >
-            Discover skilled students, filter by verified skills, ATS scores, and location. Connect with the best candidates for your team.
-          </motion.p>
-
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="relative max-w-2xl mx-auto"
-          >
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              value={filters.search}
-              onChange={(e) => updateFilter("search", e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-              placeholder="Search by name, email, or skills..."
-              className="w-full pl-13 pr-28 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-base text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 dark:focus:border-purple-700 shadow-lg shadow-gray-200/50 dark:shadow-gray-950/50 transition-all"
-            />
-            <button
-              onClick={applyFilters}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-            >
-              Search
-            </button>
-          </motion.div>
-
-          {/* Stats */}
-          {pagination && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 mt-12 pt-8 border-t border-gray-200/60 dark:border-gray-700/60 max-w-md mx-auto"
-            >
-              <div>
-                <div className="text-3xl font-bold text-gray-950 dark:text-white tabular-nums">{pagination.total}</div>
-                <div className="text-gray-400 text-sm mt-0.5">Candidates</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-gray-950 dark:text-white tabular-nums">{pagination.totalPages}</div>
-                <div className="text-gray-400 text-sm mt-0.5">Pages</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-gray-950 dark:text-white tabular-nums">{students.length}</div>
-                <div className="text-gray-400 text-sm mt-0.5">Showing</div>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Filters + Results ── */}
-      <div className="bg-[#fafafa] dark:bg-gray-950 min-h-screen">
-        <div className="max-w-6xl mx-auto px-8 py-10">
-          {/* Filter Bar */}
-          <div className="flex flex-wrap items-center gap-2.5 mb-8">
-            {JOB_STATUS_OPTIONS.map((opt) => (
-              <button
-                key={opt.key}
-                onClick={() => setJobStatus(opt.key)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
-                  appliedFilters.jobStatus === opt.key
-                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white shadow-md"
-                    : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-
-            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
-
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
-                activeFilterCount > 0
-                  ? "bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-200 dark:shadow-purple-900/30"
-                  : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm"
-              }`}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              Filters
-              {activeFilterCount > 0 && (
-                <span className="w-5 h-5 rounded-md text-xs font-bold flex items-center justify-center bg-white/20">
-                  {activeFilterCount}
-                </span>
-              )}
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`} />
-            </button>
-
-            {(activeFilterCount > 0 || appliedFilters.search) && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center gap-1 px-3 py-2 text-xs text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors font-medium"
-              >
-                <X className="w-3 h-3" />
-                Clear all
-              </button>
-            )}
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              Find{" "}
+              <span className="relative inline-block">
+                candidates.
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.25, duration: 0.5, ease: "easeOut" }}
+                  className="absolute -bottom-0.5 left-0 right-0 h-0.75 bg-lime-400 origin-left"
+                />
+              </span>
+            </h1>
+            <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 max-w-xl">
+              Filter by verified skills, college, graduation year, and ATS score. Save anyone worth following up.
+            </p>
           </div>
 
-          {/* Expanded Filters */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden mb-8"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Skills</label>
-                    <input
-                      type="text"
-                      value={filters.skills}
-                      onChange={(e) => updateFilter("skills", e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-                      className={inputClass}
-                      placeholder="React, Node.js..."
-                    />
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Comma-separated</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Verified Skills</label>
-                    <input
-                      type="text"
-                      value={filters.verifiedSkills}
-                      onChange={(e) => updateFilter("verifiedSkills", e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-                      className={inputClass}
-                      placeholder="javascript, react..."
-                    />
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Test-verified only</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">College</label>
-                    <input
-                      type="text"
-                      value={filters.college}
-                      onChange={(e) => updateFilter("college", e.target.value)}
-                      className={inputClass}
-                      placeholder="e.g. IIT Delhi"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Location</label>
-                    <input
-                      type="text"
-                      value={filters.location}
-                      onChange={(e) => updateFilter("location", e.target.value)}
-                      className={inputClass}
-                      placeholder="e.g. Bangalore"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Graduation Year</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <input type="number" value={filters.graduationYearMin} onChange={(e) => updateFilter("graduationYearMin", e.target.value)} className={inputClass} placeholder="From" min={2000} max={2040} />
-                      <input type="number" value={filters.graduationYearMax} onChange={(e) => updateFilter("graduationYearMax", e.target.value)} className={inputClass} placeholder="To" min={2000} max={2040} />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Min ATS Score</label>
-                      <span className="text-sm font-bold text-gray-900 dark:text-white tabular-nums">{filters.minAtsScore}</span>
-                    </div>
-                    <input
-                      type="range" min={0} max={100} step={5}
-                      value={filters.minAtsScore}
-                      onChange={(e) => updateFilter("minAtsScore", Number(e.target.value))}
-                      className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer accent-purple-600 dark:accent-purple-400 mt-2"
-                    />
-                    <div className="flex justify-between text-xs text-gray-300 dark:text-gray-600 mt-1 font-medium">
-                      <span>0</span><span>50</span><span>100</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-end sm:col-span-2 lg:col-span-2">
-                    <div className="flex gap-2 w-full">
-                      <button
-                        onClick={applyFilters}
-                        className="flex-1 py-2.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-                      >
-                        Apply Filters
-                      </button>
-                      {activeFilterCount > 0 && (
-                        <button onClick={clearFilters} className="px-4 py-2.5 text-sm text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors font-medium">
-                          Clear
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Results */}
-          {isLoading ? (
-            <LoadingSkeleton />
-          ) : students.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <>
-              <div className="flex items-center justify-between mb-6">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold text-gray-900 dark:text-white">{pagination?.total ?? 0}</span> candidate{(pagination?.total ?? 0) !== 1 ? "s" : ""} found
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                {students.map((student, i) => (
-                  <TalentCard key={student.id} student={student} index={i} />
-                ))}
-              </div>
-
-              {pagination && (
-                <PaginationControls
-                  currentPage={page}
-                  totalPages={pagination.totalPages}
-                  onPageChange={setPage}
-                />
-              )}
-            </>
-          )}
+          <Button asChild variant="secondary" size="sm">
+            <Link to="/recruiters/saved" className="no-underline inline-flex items-center gap-2">
+              <Bookmark className="w-4 h-4" />
+              Saved
+            </Link>
+          </Button>
         </div>
+
+        {/* Stat strip */}
+        <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+          <Stat label="candidates" value={pagination?.total ?? 0} />
+          <Stat label="showing" value={students.length} />
+          <Stat label="page" value={`${pagination?.page ?? page} / ${pagination?.totalPages ?? 1}`} />
+        </div>
+      </header>
+
+      {/* Search bar */}
+      <div className="mb-4 flex items-center gap-2">
+        <div className="relative flex-1">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+          <input
+            type="text"
+            value={filters.search}
+            onChange={(e) => updateFilter("search", e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+            placeholder="Search by name, email, or skill"
+            className="w-full pl-9 pr-3 py-2.5 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors"
+          />
+        </div>
+        <Button variant="primary" size="md" onClick={applyFilters}>
+          Search
+        </Button>
       </div>
+
+      {/* Filter chips row */}
+      <div className="mb-6 flex flex-wrap items-center gap-1.5">
+        {JOB_STATUS_OPTIONS.map((opt) => {
+          const active = appliedFilters.jobStatus === opt.key;
+          return (
+            <button
+              key={opt.key}
+              onClick={() => setJobStatus(opt.key)}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                active
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+              }`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+
+        <span className="mx-1 h-5 w-px bg-stone-200 dark:bg-white/10" />
+
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+            activeFilterCount > 0
+              ? "bg-lime-400 text-stone-900 border-lime-400"
+              : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+          }`}
+        >
+          <SlidersHorizontal className="w-3.5 h-3.5" />
+          Filters
+          {activeFilterCount > 0 && (
+            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 rounded-sm bg-stone-900 text-lime-400 text-[10px] font-mono">
+              {activeFilterCount}
+            </span>
+          )}
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+        </button>
+
+        {(activeFilterCount > 0 || appliedFilters.search) && (
+          <button
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
+          >
+            <X className="w-3 h-3" />
+            Clear
+          </button>
+        )}
+      </div>
+
+      {/* Expanded filter panel */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden mb-6"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md">
+              <div>
+                <label className={labelClass}>skills</label>
+                <input
+                  type="text"
+                  value={filters.skills}
+                  onChange={(e) => updateFilter("skills", e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+                  className={inputClass}
+                  placeholder="React, Node.js"
+                />
+                <p className="mt-1 text-[10px] font-mono text-stone-400">comma-separated</p>
+              </div>
+
+              <div>
+                <label className={labelClass}>verified skills</label>
+                <input
+                  type="text"
+                  value={filters.verifiedSkills}
+                  onChange={(e) => updateFilter("verifiedSkills", e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+                  className={inputClass}
+                  placeholder="javascript, react"
+                />
+                <p className="mt-1 text-[10px] font-mono text-stone-400">test-verified only</p>
+              </div>
+
+              <div>
+                <label className={labelClass}>college</label>
+                <input
+                  type="text"
+                  value={filters.college}
+                  onChange={(e) => updateFilter("college", e.target.value)}
+                  className={inputClass}
+                  placeholder="e.g. IIT Delhi"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>location</label>
+                <input
+                  type="text"
+                  value={filters.location}
+                  onChange={(e) => updateFilter("location", e.target.value)}
+                  className={inputClass}
+                  placeholder="e.g. Bangalore"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>graduation year</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    value={filters.graduationYearMin}
+                    onChange={(e) => updateFilter("graduationYearMin", e.target.value)}
+                    className={inputClass}
+                    placeholder="From"
+                    min={2000}
+                    max={2040}
+                  />
+                  <input
+                    type="number"
+                    value={filters.graduationYearMax}
+                    onChange={(e) => updateFilter("graduationYearMax", e.target.value)}
+                    className={inputClass}
+                    placeholder="To"
+                    min={2000}
+                    max={2040}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className={labelClass + " mb-0"}>min ats score</span>
+                  <span className="text-xs font-mono tabular-nums text-stone-900 dark:text-stone-50">
+                    {filters.minAtsScore}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={filters.minAtsScore}
+                  onChange={(e) => updateFilter("minAtsScore", Number(e.target.value))}
+                  className="w-full h-1 bg-stone-200 dark:bg-white/10 rounded appearance-none cursor-pointer accent-lime-400"
+                />
+                <div className="flex justify-between text-[10px] font-mono text-stone-400 mt-1">
+                  <span>0</span>
+                  <span>50</span>
+                  <span>100</span>
+                </div>
+              </div>
+
+              <div className="flex items-end sm:col-span-2 gap-2">
+                <Button variant="primary" size="sm" onClick={applyFilters} className="flex-1">
+                  Apply filters
+                </Button>
+                {activeFilterCount > 0 && (
+                  <Button variant="ghost" size="sm" onClick={clearFilters}>
+                    Clear
+                  </Button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Results */}
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : students.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {students.map((student, i) => (
+              <TalentCard
+                key={student.id}
+                student={student}
+                index={i}
+                saved={savedSet.has(student.id)}
+              />
+            ))}
+          </div>
+
+          {pagination && pagination.totalPages > 1 && (
+            <PaginationControls
+              currentPage={page}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
+              showingInfo={{ total: pagination.total, limit: 12 }}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Loading Skeleton                                                   */
-/* ------------------------------------------------------------------ */
+function Stat({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div className="bg-white dark:bg-stone-950 px-4 py-3">
+      <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+        {label}
+      </div>
+      <div className="mt-0.5 text-lg font-bold tabular-nums text-stone-900 dark:text-stone-50">
+        {value}
+      </div>
+    </div>
+  );
+}
 
 function LoadingSkeleton() {
   return (
-    <div>
-      <div className="h-5 w-48 bg-gray-200 dark:bg-gray-800 rounded-lg mb-6 animate-pulse" />
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 animate-pulse">
-            <div className="flex items-start gap-4 mb-5">
-              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800" />
-              <div className="flex-1 space-y-2.5">
-                <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-lg w-3/4" />
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-lg w-1/2" />
-              </div>
-            </div>
-            <div className="space-y-2 mb-5">
-              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-lg w-full" />
-              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-lg w-2/3" />
-            </div>
-            <div className="flex gap-1.5">
-              <div className="h-6 w-16 bg-gray-100 dark:bg-gray-800 rounded-lg" />
-              <div className="h-6 w-14 bg-gray-100 dark:bg-gray-800 rounded-lg" />
-              <div className="h-6 w-20 bg-gray-100 dark:bg-gray-800 rounded-lg" />
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md p-5 animate-pulse"
+        >
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-stone-900" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3.5 bg-stone-100 dark:bg-stone-900 rounded w-3/4" />
+              <div className="h-2.5 bg-stone-100 dark:bg-stone-900 rounded w-1/2" />
             </div>
           </div>
-        ))}
-      </div>
+          <div className="space-y-2 mb-4">
+            <div className="h-2.5 bg-stone-100 dark:bg-stone-900 rounded w-full" />
+            <div className="h-2.5 bg-stone-100 dark:bg-stone-900 rounded w-2/3" />
+          </div>
+          <div className="flex gap-1.5">
+            <div className="h-5 w-14 bg-stone-100 dark:bg-stone-900 rounded" />
+            <div className="h-5 w-12 bg-stone-100 dark:bg-stone-900 rounded" />
+            <div className="h-5 w-16 bg-stone-100 dark:bg-stone-900 rounded" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Empty State                                                        */
-/* ------------------------------------------------------------------ */
-
 function EmptyState() {
   return (
-    <div className="relative flex flex-col items-center justify-center py-24 text-center">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-60 h-60 rounded-full bg-purple-100 dark:bg-purple-900/20 opacity-40 blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-40 h-40 rounded-full bg-indigo-100 dark:bg-indigo-900/20 opacity-40 blur-3xl" />
+    <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950">
+      <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
+        <Users className="w-5 h-5 text-stone-400" />
       </div>
-      <div className="relative z-10">
-        <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center mb-5">
-          <Users className="w-7 h-7 text-gray-400 dark:text-gray-500" />
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No candidates found</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs leading-relaxed">
-          Try adjusting your filters or broadening your search criteria to discover more talent.
-        </p>
-      </div>
+      <h3 className="text-base font-semibold text-stone-900 dark:text-stone-50 mb-1">
+        No candidates found
+      </h3>
+      <p className="text-sm text-stone-500 max-w-xs">
+        Try loosening the filters or searching by a broader skill.
+      </p>
     </div>
   );
 }

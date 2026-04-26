@@ -1,6 +1,6 @@
 # InternHack
 
-**Prepare. Practice. Placed.** — An open-source, full-stack career platform that helps students land jobs through AI-powered tools, structured learning, and recruiter dashboards.
+**Prepare. Practice. Placed.**, An open-source, full-stack career platform that helps students land jobs through AI-powered tools, structured learning, and recruiter dashboards.
 
 Live at **[internhack.xyz](https://www.internhack.xyz)**
 
@@ -25,37 +25,37 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ### For Students
 
-- **Job Board** — Browse recruiter-posted jobs with search, filters, tags, and one-click apply
-- **External Jobs** — Curated listings from external sources, updated regularly
-- **AI Job Agent** — Chat-based AI assistant that finds jobs matching your profile and skills
-- **ATS Resume Scorer** — Upload resume + JD, get an AI-powered match score with keyword gap analysis
-- **Cover Letter Generator** — AI-generated cover letters tailored to specific job postings
-- **AI Resume Builder** — Generate professional LaTeX resumes with AI assistance
-- **Mock Interviews** — Practice with AI-driven interview simulations
-- **Learning Hub** — 3,300+ DSA problems, SQL practice, aptitude questions, and 500+ lessons across 12 technologies
-- **Skill Tests** — Timed assessments with auto-grading and verified skill badges
-- **Career Roadmaps** — Guided paths for Full-Stack, Frontend, Backend, Data Science, DevOps, and more
-- **Company Explorer** — Reviews, ratings, salaries, HR contacts, and open positions
-- **Application Tracker** — Track applications from applied through hiring rounds to offer
-- **Open Source Guide** — Step-by-step guides for reading codebases and contributing to OSS
+- **Job Board**, Browse recruiter-posted jobs with search, filters, tags, and one-click apply
+- **External Jobs**, Curated listings from external sources, updated regularly
+- **AI Job Agent**, Chat-based AI assistant that finds jobs matching your profile and skills
+- **ATS Resume Scorer**, Upload resume + JD, get an AI-powered match score with keyword gap analysis
+- **Cover Letter Generator**, AI-generated cover letters tailored to specific job postings
+- **AI Resume Builder**, Generate professional LaTeX resumes with AI assistance
+- **Mock Interviews**, Practice with AI-driven interview simulations
+- **Learning Hub**, 3,300+ DSA problems, SQL practice, aptitude questions, and 500+ lessons across 12 technologies
+- **Skill Tests**, Timed assessments with auto-grading and verified skill badges
+- **Career Roadmaps**, Guided paths for Full-Stack, Frontend, Backend, Data Science, DevOps, and more
+- **Company Explorer**, Reviews, ratings, salaries, HR contacts, and open positions
+- **Application Tracker**, Track applications from applied through hiring rounds to offer
+- **Open Source Guide**, Step-by-step guides for reading codebases and contributing to OSS
 
 ### For Recruiters
 
-- **Dashboard** — Overview of posted jobs, applications, and hiring pipeline
-- **Job Management** — Create jobs with custom fields, multiple interview rounds, and auto-assessments
-- **Multi-Round Hiring** — Coding, DSA, HR, system design rounds with per-round evaluations
-- **Application Review** — Filter applicants, advance/reject through rounds, ATS scores per resume
-- **Talent Pools** — Save and organize promising candidates
-- **Campus Drives** — Manage campus recruitment drives
+- **Dashboard**, Overview of posted jobs, applications, and hiring pipeline
+- **Job Management**, Create jobs with custom fields, multiple interview rounds, and auto-assessments
+- **Multi-Round Hiring**, Coding, DSA, HR, system design rounds with per-round evaluations
+- **Application Review**, Filter applicants, advance/reject through rounds, ATS scores per resume
+- **Talent Pools**, Save and organize promising candidates
+- **Campus Drives**, Manage campus recruitment drives
 
 ### For Admins
 
-- **Platform Dashboard** — Real-time stats across the platform
-- **User & Job Management** — Moderate users, jobs, companies, reviews
-- **External Job Management** — Post and manage curated external job listings
-- **AI Provider Management** — Switch between AI providers (Gemini, Groq, Claude, etc.)
-- **Content Management** — DSA problems, aptitude questions, skill tests, hackathons, blog
-- **Activity & Error Logs** — Full audit trail
+- **Platform Dashboard**, Real-time stats across the platform
+- **User & Job Management**, Moderate users, jobs, companies, reviews
+- **External Job Management**, Post and manage curated external job listings
+- **AI Provider Management**, Switch between AI providers (Gemini, Groq, Claude, etc.)
+- **Content Management**, DSA problems, aptitude questions, skill tests, hackathons, blog
+- **Activity & Error Logs**, Full audit trail
 
 ---
 
@@ -64,7 +64,7 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 ### Prerequisites
 
 - **Node.js** 18+
-- **PostgreSQL** database (local or hosted — [Neon](https://neon.tech), [Supabase](https://supabase.com), etc.)
+- **PostgreSQL** database (local or hosted, [Neon](https://neon.tech), [Supabase](https://supabase.com), etc.)
 - **Google Cloud Console** project (for OAuth client ID)
 - **Gemini API Key** ([Get one free](https://aistudio.google.com/apikey))
 
@@ -126,10 +126,10 @@ npm run seed:all
 ### 6. Start development servers
 
 ```bash
-# Terminal 1 — Server (runs on port 3000)
+# Terminal 1, Server (runs on port 3000)
 cd server && npm run dev
 
-# Terminal 2 — Client (runs on port 5173)
+# Terminal 2, Client (runs on port 5173)
 cd client && npm run dev
 ```
 
@@ -258,7 +258,7 @@ cd server && npm run build && npm start
 
 # Client
 cd client && npm run build
-# Outputs to client/dist/ — serve with any static host
+# Outputs to client/dist/, serve with any static host
 ```
 
 ---

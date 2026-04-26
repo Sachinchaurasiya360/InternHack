@@ -7,7 +7,7 @@ export default function ShippingPage() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
       <SEO
         title="Shipping & Delivery Policy"
-        description="Shipping and Delivery Policy for InternHack — a digital platform with instant access."
+        description="Shipping and Delivery Policy for InternHack, a digital platform with instant access."
       />
       <Navbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 pt-28 pb-16">

@@ -34,7 +34,7 @@ export class AtsService {
     }
 
     // Cache hit: identical (resumeUrl, jobTitle, jobDescription) from the same
-    // student within the TTL — return the prior row without burning AI quota.
+    // student within the TTL, return the prior row without burning AI quota.
     const cached = await prisma.atsScore.findFirst({
       where: {
         studentId,
@@ -70,21 +70,6 @@ export class AtsService {
     });
 
     return atsScore;
-  }
-
-  async getScoreHistory(studentId: number) {
-    return prisma.atsScore.findMany({
-      where: { studentId },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    });
-  }
-
-  async getScoreById(scoreId: number, studentId: number) {
-    const score = await prisma.atsScore.findUnique({ where: { id: scoreId } });
-    if (!score) throw new Error("Score not found");
-    if (score.studentId !== studentId) throw new Error("Not authorized");
-    return score;
   }
 
   private async extractPdfText(resumeUrl: string): Promise<string> {

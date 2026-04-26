@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Flame, Target, Zap, Search,
+  Lock, Search, BookOpen, TrendingUp, Target,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
@@ -15,12 +15,37 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
-import { CircularProgress } from "../../../components/ui/CircularProgress";
 
 const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
 
 type DifficultyTab = "all" | "easy" | "medium-hard";
+
+function CircularProgress({ progress }: { progress: number }) {
+  const r = 20;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (progress / 100) * circ;
+  return (
+    <div className="relative w-11 h-11 shrink-0">
+      <svg className="w-11 h-11 -rotate-90" viewBox="0 0 48 48">
+        <circle cx="24" cy="24" r={r} fill="none" className="stroke-stone-200 dark:stroke-white/10" strokeWidth="3" />
+        <circle
+          cx="24" cy="24" r={r}
+          fill="none"
+          className={progress === 100 ? "stroke-lime-400" : "stroke-stone-900 dark:stroke-stone-50"}
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeDasharray={`${circ}`}
+          strokeDashoffset={offset}
+          style={{ transition: "stroke-dashoffset 0.6s ease" }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold tabular-nums text-stone-900 dark:text-stone-50">
+        {progress}%
+      </span>
+    </div>
+  );
+}
 
 export default function DsaTopicsPage() {
   const { user } = useAuthStore();
@@ -67,9 +92,6 @@ export default function DsaTopicsPage() {
   });
 
   const totalProblems = uniqueProblems;
-  // Clamp solved to [0, totalProblems] so transient count mismatches between
-  // per-topic solvedCount (which may double-count problems tagged with multiple topics)
-  // and uniqueProblems can never produce a >100% or negative overall percentage.
   const rawSolved = topics?.reduce((s, t) => s + t.solvedCount, 0) ?? 0;
   const totalSolved = Math.max(0, Math.min(rawSolved, totalProblems));
   const overallPct = totalProblems > 0 ? Math.round((totalSolved / totalProblems) * 100) : 0;
@@ -81,240 +103,329 @@ export default function DsaTopicsPage() {
 
   if (isLoading) return <LoadingScreen />;
 
+  const tabs: { key: DifficultyTab; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "easy", label: "Easy" },
+    { key: "medium-hard", label: "Medium & Hard" },
+  ];
+
+  const quickLinks = [
+    { to: "/learn/dsa/companies", icon: Building2, label: "companies" },
+    { to: "/learn/dsa/patterns", icon: Puzzle, label: "patterns" },
+    ...(user ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" }] : []),
+  ];
+
   return (
-    <div className="relative pb-12">
+    <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
       <SEO
-        title="DSA Practice - Data Structures & Algorithms"
+        title="DSA Practice, Data Structures & Algorithms"
         description="Practice data structures and algorithms problems organized by topic. Track your progress across arrays, trees, graphs, dynamic programming, and more."
         keywords="DSA practice, data structures, algorithms, leetcode, coding interview, arrays, trees, graphs, dynamic programming"
         canonicalUrl={canonicalUrl("/learn/dsa")}
       />
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-cyan-100 dark:from-indigo-900/20 dark:to-cyan-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-violet-100 dark:from-slate-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
-      </div>
-
-      {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-4 sm:p-8 mb-8 mt-2"
-      >
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          {/* Progress ring */}
-          {user && (
-            <CircularProgress progress={overallPct} size={80} />
-          )}
-
-          <div className="flex-1 text-center sm:text-left">
-            <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-1">
-              DSA Practice
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              {totalProblems.toLocaleString()} problems across {allTopicsCount} topics &middot; Curated by FAANG engineers
-              {user && totalSolved > 0 && (
-                <span className="text-emerald-600 dark:text-emerald-400 font-medium"> &middot; {totalSolved} solved</span>
-              )}
-            </p>
+      <div className="max-w-6xl mx-auto px-3 sm:px-8 py-8">
+        {/* Editorial header */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-1 w-1 bg-lime-400"></div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              learn / dsa
+            </span>
           </div>
-
-          {/* Quick nav */}
-          <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end">
-            {[
-              { to: "/learn/dsa/companies", icon: Building2, label: "Companies", color: "text-blue-500 bg-blue-50 dark:bg-blue-900/20" },
-              { to: "/learn/dsa/patterns", icon: Puzzle, label: "Patterns", color: "text-purple-500 bg-purple-50 dark:bg-purple-900/20" },
-              ...(user ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "Saved", color: "text-amber-500 bg-amber-50 dark:bg-amber-900/20" }] : []),
-            ].map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`flex flex-col items-center gap-1 px-3 py-2 sm:px-4 sm:py-3 rounded-xl ${link.color} hover:opacity-80 transition-opacity no-underline`}
-              >
-                <link.icon className="w-5 h-5" />
-                <span className="text-[10px] font-semibold uppercase tracking-wide opacity-70">{link.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Difficulty breakdown bar */}
-        {user && progress && (
-          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {([
-                { key: "easy" as const, label: "Easy", icon: Zap, color: "text-green-600 dark:text-green-400", bg: "bg-green-500" },
-                { key: "medium" as const, label: "Medium", icon: Target, color: "text-yellow-600 dark:text-yellow-400", bg: "bg-yellow-500" },
-                { key: "hard" as const, label: "Hard", icon: Flame, color: "text-red-600 dark:text-red-400", bg: "bg-red-500" },
-              ]).map((d) => {
-                const stat = progress.byDifficulty[d.key];
-                const dPct = stat.total > 0 ? Math.round((stat.solved / stat.total) * 100) : 0;
-                return (
-                  <div key={d.key} className="text-center">
-                    <div className="flex items-center justify-center gap-1.5 mb-2">
-                      <d.icon className={`w-3.5 h-3.5 ${d.color}`} />
-                      <span className={`text-xs font-bold uppercase tracking-wider ${d.color}`}>{d.label}</span>
-                    </div>
-                    <p className="font-display text-lg font-bold text-gray-950 dark:text-white">
-                      {stat.solved}<span className="text-gray-300 dark:text-gray-600 font-normal">/{stat.total}</span>
-                    </p>
-                    <div className="w-full h-1 bg-gray-100 dark:bg-gray-800 rounded-full mt-2 overflow-hidden">
-                      <div className={`h-full rounded-full ${d.bg}`} style={{ width: `${dPct}%`, transition: "width 0.6s ease" }} />
-                    </div>
-                  </div>
-                );
-              })}
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5">
+                Solve the pattern.
+              </h1>
+              <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
+                Data structures and algorithms, organized by topic. Curated for interviews, tracked by you.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
+              <span>
+                <span className="text-stone-900 dark:text-stone-50 tabular-nums">{totalSolved}</span>
+                <span className="text-stone-400 dark:text-stone-600"> / {totalProblems.toLocaleString()} solved</span>
+              </span>
+              <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+              <span className="text-lime-600 dark:text-lime-400 tabular-nums">{overallPct}% complete</span>
             </div>
           </div>
-        )}
-      </motion.div>
+        </motion.div>
 
-      {/* Difficulty Tabs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-1.5 mb-6"
-      >
-        {([
-          { key: "all" as DifficultyTab, label: "All Topics" },
-          { key: "easy" as DifficultyTab, label: "Easy" },
-          { key: "medium-hard" as DifficultyTab, label: "Medium & Hard" },
-        ]).map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => { setActiveTab(tab.key); setPage(1); }}
-            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              activeTab === tab.key
-                ? "bg-gray-950 text-white dark:bg-white dark:text-gray-950 shadow-sm"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </motion.div>
-
-      {/* Search */}
-      <div className="relative max-w-sm mb-6">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-        <input
-          type="text"
-          placeholder="Search topics..."
-          value={topicSearch}
-          onChange={(e) => setTopicSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-100 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950/10 dark:focus:ring-white/10 transition-all"
-        />
-      </div>
-
-      {/* Topic List */}
-      <div className="space-y-2.5">
-        {paginatedTopics?.map((topic, idx) => {
-          const pct = topic.problemCount > 0
-            ? Math.min(100, Math.max(0, Math.round((topic.solvedCount / topic.problemCount) * 100)))
-            : 0;
-          const isComplete = pct === 100;
-          const isLocked = topic.orderIndex >= FREE_LIMIT && !user;
-          const globalIdx = (page - 1) * TOPICS_PER_PAGE + idx + 1;
-
-          return (
-            <motion.div
-              key={topic.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(idx, 10) * 0.03 }}
+        {/* Stats strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.05 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10 mb-6"
+        >
+          {[
+            { icon: BookOpen, value: totalProblems.toLocaleString(), label: "problems" },
+            { icon: TrendingUp, value: allTopicsCount, label: "topics" },
+            { icon: CheckCircle2, value: `${overallPct}%`, label: "overall" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="flex items-start gap-3 p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10"
             >
-              {isLocked ? (
-                <button
-                  onClick={() => setShowGate(true)}
-                  className="w-full group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 opacity-50 hover:opacity-70 transition-all duration-300 text-left cursor-pointer"
-                >
-                  <div className="w-10 h-10 shrink-0 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                    <Lock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{topic.name}</h3>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{topic.problemCount} problems</p>
-                  </div>
-                  <Lock className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0" />
-                </button>
-              ) : (
-                <Link
-                  to={`/learn/dsa/${topic.slug}`}
-                  className="group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg hover:shadow-gray-200/40 dark:hover:shadow-gray-900/40 transition-all duration-300 no-underline"
-                >
-                  {/* Progress or number */}
-                  {user ? (
-                    <CircularProgress progress={pct} size={44} />
-                  ) : (
-                    <div className="w-11 h-11 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-sm font-bold text-gray-400 dark:text-gray-500">{globalIdx}</span>
-                    </div>
-                  )}
+              <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center shrink-0">
+                <stat.icon className="w-4 h-4 text-lime-600 dark:text-lime-400" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 tabular-nums">
+                  {stat.value}
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
+                  / {stat.label}
+                </span>
+              </div>
+            </div>
+          ))}
+        </motion.div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <h3 className="text-sm font-semibold text-gray-950 dark:text-white truncate">
-                        {topic.name}
-                      </h3>
-                      {isComplete && user && (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                      )}
-                    </div>
-
-                    {/* Progress bar (for logged in users) */}
-                    {user ? (
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${pct}%` }}
-                            transition={{ duration: 0.6, delay: Math.min(idx, 10) * 0.03 }}
-                            className={`h-full rounded-full ${
-                              isComplete ? "bg-emerald-500" : pct > 0 ? "bg-indigo-500" : "bg-transparent"
-                            }`}
-                          />
-                        </div>
-                        <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500 shrink-0 tabular-nums">
-                          {topic.solvedCount}/{topic.problemCount}
-                        </span>
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{topic.problemCount} problems</p>
-                    )}
-                  </div>
-
-                  <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all shrink-0" />
-                </Link>
-              )}
-            </motion.div>
-          );
-        })}
-
-        {paginatedTopics?.length === 0 && (
+        {/* Difficulty breakdown (logged-in) */}
+        {user && progress && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
+            transition={{ delay: 0.08 }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10 mb-6"
           >
-            <Target className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="font-display text-lg font-bold text-gray-950 dark:text-white mb-2">No topics found</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-500 max-w-sm mx-auto">
-              No topics available for this difficulty level.
-            </p>
+            {([
+              { key: "easy" as const, label: "easy", color: "text-emerald-600 dark:text-emerald-400", bar: "bg-emerald-500" },
+              { key: "medium" as const, label: "medium", color: "text-amber-600 dark:text-amber-400", bar: "bg-amber-500" },
+              { key: "hard" as const, label: "hard", color: "text-rose-600 dark:text-rose-400", bar: "bg-rose-500" },
+            ]).map((d) => {
+              const stat = progress.byDifficulty[d.key];
+              const dPct = stat.total > 0 ? Math.round((stat.solved / stat.total) * 100) : 0;
+              return (
+                <div
+                  key={d.key}
+                  className="flex flex-col gap-2 p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10"
+                >
+                  <div className="flex items-baseline justify-between">
+                    <span className={`text-[10px] font-mono uppercase tracking-widest ${d.color}`}>
+                      / {d.label}
+                    </span>
+                    <span className="text-xs font-mono tabular-nums text-stone-500 dark:text-stone-400">
+                      {dPct}%
+                    </span>
+                  </div>
+                  <p className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 tabular-nums">
+                    {stat.solved}
+                    <span className="text-stone-400 dark:text-stone-600 font-normal"> / {stat.total}</span>
+                  </p>
+                  <div className="w-full h-0.5 bg-stone-200 dark:bg-white/10 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${dPct}%` }}
+                      transition={{ duration: 0.6 }}
+                      className={`h-full ${d.bar}`}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </motion.div>
         )}
-      </div>
 
-      <PaginationControls
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+        {/* Quick links strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-8"
+        >
+          {quickLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="group flex items-center gap-2 sm:gap-3 bg-white dark:bg-stone-900 px-3 sm:px-4 py-3 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline min-w-0"
+            >
+              <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center shrink-0">
+                <link.icon className="w-4 h-4 text-lime-600 dark:text-lime-400" />
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-50 transition-colors truncate min-w-0">
+                / {link.label}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 ml-auto group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+            </Link>
+          ))}
+        </motion.div>
+
+        {/* Filters + search */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="mb-6 space-y-3"
+        >
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+            <input
+              type="text"
+              placeholder="Search topics..."
+              value={topicSearch}
+              onChange={(e) => setTopicSearch(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
+              difficulty /
+            </span>
+            {tabs.map((tab) => {
+              const active = activeTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => { setActiveTab(tab.key); setPage(1); }}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                    active
+                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* Section header */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="h-1 w-1 bg-lime-400"></div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            topics / {totalTopics}
+          </span>
+        </div>
+
+        {/* Topic list */}
+        <div className="space-y-2">
+          {paginatedTopics?.map((topic, idx) => {
+            const pct = topic.problemCount > 0
+              ? Math.min(100, Math.max(0, Math.round((topic.solvedCount / topic.problemCount) * 100)))
+              : 0;
+            const isComplete = pct === 100;
+            const isLocked = topic.orderIndex >= FREE_LIMIT && !user;
+            const globalIdx = (page - 1) * TOPICS_PER_PAGE + idx + 1;
+            const topicNum = String(globalIdx).padStart(2, "0");
+
+            const inner = (
+              <>
+                <div className="flex flex-col items-center gap-1 shrink-0 w-11">
+                  {isLocked ? (
+                    <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center">
+                      <Lock className="w-4 h-4 text-stone-400 dark:text-stone-500" />
+                    </div>
+                  ) : user ? (
+                    <CircularProgress progress={pct} />
+                  ) : (
+                    <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center">
+                      <span className="text-[11px] font-mono font-bold tabular-nums text-stone-500 dark:text-stone-400">
+                        {topicNum}
+                      </span>
+                    </div>
+                  )}
+                  {!isLocked && user && (
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                      / {topicNum}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate">
+                      {topic.name}
+                    </h3>
+                    {isComplete && user && (
+                      <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 shrink-0" />
+                    )}
+                  </div>
+                  {user && !isLocked ? (
+                    <>
+                      <div className="w-full h-0.5 bg-stone-200 dark:bg-white/10 overflow-hidden mb-2">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, delay: Math.min(idx, 10) * 0.03 }}
+                          className={`h-full ${isComplete ? "bg-lime-400" : pct > 0 ? "bg-stone-900 dark:bg-stone-50" : "bg-transparent"}`}
+                        />
+                      </div>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
+                        <span className="text-stone-900 dark:text-stone-50">{topic.solvedCount}</span>
+                        <span className="text-stone-400 dark:text-stone-600"> / {topic.problemCount} problems</span>
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
+                      {topic.problemCount} problems
+                    </span>
+                  )}
+                </div>
+
+                <div className="shrink-0">
+                  {isLocked ? (
+                    <Lock className="w-4 h-4 text-stone-300 dark:text-stone-600" />
+                  ) : (
+                    <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all" />
+                  )}
+                </div>
+              </>
+            );
+
+            return (
+              <motion.div
+                key={topic.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(idx, 10) * 0.03 }}
+              >
+                {isLocked ? (
+                  <button
+                    onClick={() => setShowGate(true)}
+                    className="group w-full flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 opacity-70 hover:opacity-100 hover:border-stone-400 dark:hover:border-white/25 transition-all text-left cursor-pointer"
+                  >
+                    {inner}
+                  </button>
+                ) : (
+                  <Link
+                    to={`/learn/dsa/${topic.slug}`}
+                    className="group flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
+                  >
+                    {inner}
+                  </Link>
+                )}
+              </motion.div>
+            );
+          })}
+
+          {paginatedTopics?.length === 0 && (
+            <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
+              <Target className="w-8 h-8 text-stone-400 mx-auto mb-3" />
+              <p className="text-sm text-stone-600 dark:text-stone-400">No topics found.</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+                try a different keyword or difficulty
+              </p>
+            </div>
+          )}
+        </div>
+
+        <PaginationControls
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
 
       <LoginGate open={showGate} onClose={() => setShowGate(false)} />
     </div>

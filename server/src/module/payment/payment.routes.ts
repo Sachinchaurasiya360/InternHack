@@ -24,7 +24,7 @@ paymentRouter.get(
   (req, res, next) => paymentController.checkoutStatus(req, res, next),
 );
 
-// Webhook route — NO auth middleware (Dodo server calls this directly)
+// Webhook route, NO auth middleware (Dodo server calls this directly)
 // Raw body parsing is handled in index.ts
 paymentRouter.post(
   "/webhook",

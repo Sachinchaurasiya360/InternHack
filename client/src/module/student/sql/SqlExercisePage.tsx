@@ -80,10 +80,10 @@ function useSqlProgress() {
   return { progress, save };
 }
 
-const DIFF_BADGE: Record<string, string> = {
-  Easy: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
-  Medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
-  Hard: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+const DIFF_COLOR: Record<string, string> = {
+  Easy: "text-emerald-600 dark:text-emerald-400",
+  Medium: "text-amber-600 dark:text-amber-400",
+  Hard: "text-rose-600 dark:text-rose-400",
 };
 
 export default function SqlExercisePage() {
@@ -202,113 +202,159 @@ export default function SqlExercisePage() {
   if (!exerciseId && section) {
     const solvedCount = sectionExercises.filter((e) => progress[e.id]?.solved).length;
     const pct = sectionExercises.length > 0 ? Math.round((solvedCount / sectionExercises.length) * 100) : 0;
+    const sectionNum = sectionIndex >= 0 ? String(sectionIndex + 1).padStart(2, "0") : "00";
 
     return (
-      <div className="relative pb-12">
+      <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
         <SEO
-          title={`${section.title} - SQL Exercises`}
+          title={`${section.title}, SQL Exercises`}
           description={`Practice ${section.title} SQL exercises with an interactive editor.`}
           canonicalUrl={canonicalUrl(`/learn/sql/${sectionSlug}`)}
         />
 
-        {/* Atmospheric background */}
-        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-          <div className="absolute -top-32 -right-32 w-150 h-150 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-40" />
-          <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
-          <div
-            className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-            style={{
-              backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-        </div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
+          {/* Editorial header */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-1 bg-lime-400"></div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                sql / section {sectionNum}
+              </span>
+            </div>
+            <div className="flex items-end justify-between gap-4 flex-wrap">
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5">
+                  {section.title}
+                </h1>
+                <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
+                  {section.description}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
+                <span>
+                  <span className="text-stone-900 dark:text-stone-50">{solvedCount}</span>
+                  <span className="text-stone-400 dark:text-stone-600"> / {sectionExercises.length} solved</span>
+                </span>
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                <span className="text-lime-600 dark:text-lime-400">{pct}% complete</span>
+              </div>
+            </div>
+          </motion.div>
 
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-8"
-        >
-          <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-            {section.title}
-          </h1>
-          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-            {section.description}
-          </p>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-3 gap-4 mb-8"
-        >
-          {[
-            { icon: BookOpen, value: sectionExercises.length, label: "Exercises", iconColor: "text-blue-500" },
-            { icon: TrendingUp, value: solvedCount, label: "Solved", iconColor: "text-violet-500" },
-            { icon: CheckCircle2, value: `${pct}%`, label: "Complete", iconColor: "text-emerald-500" },
-          ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
-            >
-              <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
-              <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Exercise list */}
-        <div className="space-y-3">
-          {sectionExercises.map((ex, i) => {
-            const isSolved = progress[ex.id]?.solved;
-            return (
-              <motion.div
-                key={ex.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.04 }}
+          {/* Stats strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10 mb-8"
+          >
+            {[
+              { icon: BookOpen, value: sectionExercises.length, label: "exercises" },
+              { icon: TrendingUp, value: solvedCount, label: "solved" },
+              { icon: CheckCircle2, value: `${pct}%`, label: "complete" },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="flex items-start gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10"
               >
-                <Link
-                  to={`${basePath}/${sectionSlug}/${ex.id}`}
-                  className="group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
-                >
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-                    {isSolved ? (
-                      <CheckCircle2 className="w-6 h-6 text-green-500" />
-                    ) : (
-                      <span className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm font-semibold">
-                        {i + 1}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold mb-1 ${isSolved ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-900 dark:text-white"}`}>
-                      {ex.title}
-                    </p>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {ex.concepts.slice(0, 4).map((c) => (
-                        <span key={c} className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
-                          {c}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${DIFF_BADGE[ex.difficulty]}`}>
-                    {ex.difficulty}
+                <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center shrink-0">
+                  <stat.icon className="w-4 h-4 text-lime-600 dark:text-lime-400" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                    {stat.value}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-                </Link>
-              </motion.div>
-            );
-          })}
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                    / {stat.label}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-1 w-1 bg-lime-400"></div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              exercises / {sectionExercises.length}
+            </span>
+          </div>
+
+          {/* Exercise list */}
+          <div className="space-y-2">
+            {sectionExercises.map((ex, i) => {
+              const isSolved = progress[ex.id]?.solved;
+              const exNum = String(i + 1).padStart(2, "0");
+
+              return (
+                <motion.div
+                  key={ex.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + i * 0.03 }}
+                >
+                  <Link
+                    to={`${basePath}/${sectionSlug}/${ex.id}`}
+                    className="group flex items-center gap-4 bg-white dark:bg-stone-900 px-5 py-4 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
+                  >
+                    <div className="flex flex-col items-center gap-1.5 shrink-0 w-14">
+                      <div
+                        className={`w-14 h-14 rounded-md flex items-center justify-center ${
+                          isSolved
+                            ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
+                            : "bg-stone-100 dark:bg-white/5 text-stone-500 dark:text-stone-400"
+                        }`}
+                      >
+                        {isSolved ? (
+                          <CheckCircle2 className="w-5 h-5" />
+                        ) : (
+                          <span className="text-sm font-mono font-bold">{exNum}</span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                        / {exNum}
+                      </span>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <h3
+                          className={`text-base font-bold tracking-tight truncate ${
+                            isSolved
+                              ? "text-stone-400 dark:text-stone-500 line-through"
+                              : "text-stone-900 dark:text-stone-50"
+                          }`}
+                        >
+                          {ex.title}
+                        </h3>
+                        {isSolved && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded-md bg-stone-900 dark:bg-stone-50 text-lime-400">
+                            <CheckCircle2 className="w-3 h-3" />
+                            solved
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
+                        <span className={DIFF_COLOR[ex.difficulty]}>/ {ex.difficulty.toLowerCase()}</span>
+                        {ex.concepts.slice(0, 4).map((c) => (
+                          <span key={c} className="inline-flex items-center gap-1.5">
+                            <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                            <span>{c}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -316,248 +362,300 @@ export default function SqlExercisePage() {
 
   if (!exercise || !section) {
     return (
-      <div className="max-w-4xl mx-auto text-center py-12">
-        <p className="text-gray-500">Exercise not found</p>
-        <Link to={basePath} className="text-blue-500 hover:underline text-sm mt-2 inline-block">
-          Back to SQL Practice
-        </Link>
+      <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-16 text-center">
+          <p className="text-sm text-stone-500 dark:text-stone-400">Exercise not found.</p>
+          <Link
+            to={basePath}
+            className="inline-block mt-3 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline"
+          >
+            / return to sql practice
+          </Link>
+        </div>
       </div>
     );
   }
 
+  const exerciseNum = String(currentIndex + 1).padStart(2, "0");
+  const sectionNum = sectionIndex >= 0 ? String(sectionIndex + 1).padStart(2, "0") : "00";
+  const progressPct = sectionExercises.length > 0
+    ? Math.round(((currentIndex + 1) / sectionExercises.length) * 100)
+    : 0;
+
   return (
-    <div className="relative pb-12">
+    <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
       <SEO
-        title={`${exercise.title} - SQL Exercise`}
+        title={`${exercise.title}, SQL Exercise`}
         description={`Solve the ${exercise.title} SQL exercise with instant feedback.`}
         canonicalUrl={canonicalUrl(`/learn/sql/${sectionSlug}/${exerciseId}`)}
       />
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-6"
-      >
-        <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-6 py-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{currentIndex + 1}</span>
-            </div>
-            <div className="min-w-0">
-              <h1 className="font-display text-xl font-bold text-gray-950 dark:text-white truncate">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
+        {/* Editorial header */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-6"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-1 w-1 bg-lime-400"></div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              sql / section {sectionNum} / exercise {exerciseNum}
+            </span>
+          </div>
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 wrap-break-word">
                 {exercise.title}
               </h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${DIFF_BADGE[exercise.difficulty]}`}>
-                  {exercise.difficulty}
-                </span>
+              <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
+                <span className={DIFF_COLOR[exercise.difficulty]}>/ {exercise.difficulty.toLowerCase()}</span>
                 {solved && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    Solved
-                  </span>
+                  <>
+                    <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                    <span className="inline-flex items-center gap-1 text-lime-600 dark:text-lime-400">
+                      <CheckCircle2 className="w-3 h-3" />
+                      solved
+                    </span>
+                  </>
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Nav arrows */}
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => prevExercise && navigate(`${basePath}/${sectionSlug}/${prevExercise.id}`)}
-              disabled={!prevExercise}
-              className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-colors"
-              title="Previous"
-            >
-              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            </button>
-            <span className="text-xs text-gray-400 dark:text-gray-500 px-2 font-medium tabular-nums">
-              {currentIndex + 1} / {sectionExercises.length}
-            </span>
-            <button
-              onClick={() => nextExercise && navigate(`${basePath}/${sectionSlug}/${nextExercise.id}`)}
-              disabled={!nextExercise}
-              className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-colors"
-              title="Next"
-            >
-              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-5">
-        <div className="space-y-5">
-          {/* Description */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5"
-          >
-            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
-              {exercise.description}
-            </p>
-            <div className="flex items-center gap-2 mt-4 flex-wrap">
-              {exercise.concepts.map((c) => (
-                <span key={c} className="text-[10px] px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-medium">
-                  {c}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Editor */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-          >
-            <SqlEditor
-              value={code}
-              onChange={setCode}
-              onRun={handleRun}
-              disabled={!dbReady}
-            />
-          </motion.div>
-
-          {/* Action buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="flex items-center gap-2 flex-wrap"
-          >
-            <button
-              onClick={handleReset}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset
-            </button>
-
-            <button
-              onClick={() => setShowHints((h) => Math.min(h + 1, exercise.hints.length))}
-              disabled={showHints >= exercise.hints.length}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-amber-600 dark:text-amber-400 bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 disabled:opacity-40 rounded-xl transition-colors"
-            >
-              <Lightbulb className="w-3.5 h-3.5" />
-              Hint ({showHints}/{exercise.hints.length})
-            </button>
-
-            <button
-              onClick={() => setShowExpected((s) => !s)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-900 border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"
-            >
-              {showExpected ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              {showExpected ? "Hide" : "Show"} Expected
-            </button>
-
-            <button
-              onClick={() => setShowSchema((s) => !s)}
-              className="lg:hidden inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
-            >
-              <Database className="w-3.5 h-3.5" />
-              Schema
-            </button>
-
-            <button
-              onClick={() => setCode(exercise.solution)}
-              className="ml-auto inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded-xl transition-colors"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              Solution
-            </button>
-          </motion.div>
-
-          {/* Hints */}
-          {showHints > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-2"
-            >
-              {exercise.hints.slice(0, showHints).map((hint, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl">
-                  <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                  <p className="text-sm text-amber-800 dark:text-amber-300">{hint}</p>
-                </div>
-              ))}
-            </motion.div>
-          )}
-
-          {/* Results */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.25 }}
-            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5"
-          >
-            <SqlResultTable
-              result={result}
-              validation={validation}
-              showExpected={showExpected}
-              expectedOutput={
-                showExpected && result
-                  ? undefined
-                  : undefined
-              }
-            />
-          </motion.div>
-
-          {/* Navigation */}
-          {(validation?.correct || solved) && nextExercise && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex justify-end"
-            >
+            {/* Prev/next controls */}
+            <div className="flex items-center gap-1 shrink-0">
               <button
-                onClick={() => navigate(`${basePath}/${sectionSlug}/${nextExercise.id}`)}
-                className="group inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-gray-950 dark:bg-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-xl transition-colors"
+                type="button"
+                onClick={() => prevExercise && navigate(`${basePath}/${sectionSlug}/${prevExercise.id}`)}
+                disabled={!prevExercise}
+                title="Previous"
+                className="w-8 h-8 rounded-md flex items-center justify-center bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Next Exercise
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
-            </motion.div>
-          )}
-        </div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 px-2 tabular-nums">
+                <span className="text-stone-900 dark:text-stone-50">{currentIndex + 1}</span>
+                <span className="text-stone-400 dark:text-stone-600"> / {sectionExercises.length}</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => nextExercise && navigate(`${basePath}/${sectionSlug}/${nextExercise.id}`)}
+                disabled={!nextExercise}
+                title="Next"
+                className="w-8 h-8 rounded-md flex items-center justify-center bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
 
-        {/* Schema panel (desktop sidebar) */}
-        <motion.div
-          initial={{ opacity: 0, x: 15 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="hidden lg:block"
-        >
-          <div className="sticky top-4">
-            <SqlSchemaPanel tables={schema} onClose={() => {}} />
+          {/* Section progress bar */}
+          <div className="mt-4 w-full h-0.5 bg-stone-200 dark:bg-white/10 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPct}%` }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="h-full bg-lime-400"
+            />
           </div>
         </motion.div>
 
-        {/* Schema panel (mobile overlay) */}
-        {showSchema && (
-          <div className="lg:hidden fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center p-4">
-            <div className="w-full max-w-sm">
-              <SqlSchemaPanel tables={schema} onClose={() => setShowSchema(false)} />
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-5">
+          <div className="space-y-5">
+            {/* Problem description */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden"
+            >
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 border-b border-stone-200 dark:border-white/10">
+                <div className="h-1 w-1 bg-lime-400"></div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  problem
+                </span>
+              </div>
+              <div className="p-5">
+                <p className="text-sm text-stone-700 dark:text-stone-300 whitespace-pre-line leading-relaxed">
+                  {exercise.description}
+                </p>
+                {exercise.concepts.length > 0 && (
+                  <div className="flex items-center gap-1.5 mt-4 flex-wrap">
+                    {exercise.concepts.map((c) => (
+                      <span
+                        key={c}
+                        className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Editor */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.15 }}
+            >
+              <SqlEditor
+                value={code}
+                onChange={setCode}
+                onRun={handleRun}
+                disabled={!dbReady}
+              />
+            </motion.div>
+
+            {/* Action buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              className="flex items-center gap-2 flex-wrap"
+            >
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-3 h-3" />
+                reset
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowHints((h) => Math.min(h + 1, exercise.hints.length))}
+                disabled={showHints >= exercise.hints.length}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-[10px] font-mono uppercase tracking-widest text-amber-700 dark:text-amber-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Lightbulb className="w-3 h-3" />
+                hint {showHints}/{exercise.hints.length}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowExpected((s) => !s)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                {showExpected ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                {showExpected ? "hide expected" : "show expected"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowSchema((s) => !s)}
+                className="lg:hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <Database className="w-3 h-3" />
+                schema
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCode(exercise.solution)}
+                className="ml-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <Eye className="w-3 h-3" />
+                solution
+              </button>
+            </motion.div>
+
+            {/* Hints */}
+            {showHints > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-2"
+              >
+                {exercise.hints.slice(0, showHints).map((hint, i) => (
+                  <div
+                    key={i}
+                    className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden"
+                  >
+                    <div className="flex items-center gap-2 px-4 py-2 bg-stone-50 dark:bg-stone-950/40 border-b border-stone-200 dark:border-white/10">
+                      <div className="h-1 w-1 bg-amber-400"></div>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                        hint / {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-3 px-4 py-3">
+                      <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                      <p className="text-sm text-stone-700 dark:text-stone-300">{hint}</p>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+
+            {/* Results */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.25 }}
+              className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden"
+            >
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 border-b border-stone-200 dark:border-white/10">
+                <div className="h-1 w-1 bg-lime-400"></div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  results
+                </span>
+              </div>
+              <div className="p-5">
+                <SqlResultTable
+                  result={result}
+                  validation={validation}
+                  showExpected={showExpected}
+                  expectedOutput={undefined}
+                />
+              </div>
+            </motion.div>
+
+            {/* Next exercise CTA */}
+            {(validation?.correct || solved) && nextExercise && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-end"
+              >
+                <button
+                  type="button"
+                  onClick={() => navigate(`${basePath}/${sectionSlug}/${nextExercise.id}`)}
+                  className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors cursor-pointer"
+                >
+                  Next exercise
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </motion.div>
+            )}
           </div>
-        )}
+
+          {/* Schema panel (desktop sidebar) */}
+          <motion.div
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="hidden lg:block"
+          >
+            <div className="sticky top-4">
+              <SqlSchemaPanel tables={schema} onClose={() => {}} />
+            </div>
+          </motion.div>
+
+          {/* Schema panel (mobile overlay) */}
+          {showSchema && (
+            <div
+              className="lg:hidden fixed inset-0 z-50 bg-stone-950/60 flex items-end sm:items-center justify-center p-4"
+              onClick={() => setShowSchema(false)}
+            >
+              <div className="w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+                <SqlSchemaPanel tables={schema} onClose={() => setShowSchema(false)} />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

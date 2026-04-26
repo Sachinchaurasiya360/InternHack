@@ -9,6 +9,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job, CustomFieldDefinition, User } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 
 function getFileNameFromUrl(url: string): string {
   try {
@@ -93,7 +94,7 @@ export default function ApplyPage() {
 
   const content = (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950 relative overflow-hidden">
-      {/* Background decorations — matching JobBrowsePage */}
+      {/* Background decorations, matching JobBrowsePage */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-150 h-150 rounded-full bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/30 dark:to-violet-900/30 opacity-60 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-125 h-125 rounded-full bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/30 dark:to-blue-900/30 opacity-60 blur-3xl" />
@@ -170,14 +171,16 @@ export default function ApplyPage() {
             {resumes.length > 0 ? (
               <div className="space-y-2.5">
                 {resumes.map((url, i) => (
-                  <button
+                  <Button
                     key={url}
                     type="button"
+                    variant="outline"
+                    autoHeight
                     onClick={() => setSelectedResume(selectedResume === url ? null : url)}
-                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all duration-200 text-left ${
+                    className={`w-full justify-start gap-3 py-3.5 rounded-xl text-left ${
                       selectedResume === url
                         ? "border-indigo-300 bg-indigo-50/50 dark:border-indigo-600 dark:bg-indigo-900/20 shadow-sm"
-                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50"
+                        : ""
                     }`}
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
@@ -196,7 +199,7 @@ export default function ApplyPage() {
                           ? "text-indigo-700 dark:text-indigo-300"
                           : "text-gray-700 dark:text-gray-300"
                       }`}>
-                        Resume {resumes.length > 1 ? i + 1 : ""} — {getFileNameFromUrl(url)}
+                        Resume {resumes.length > 1 ? i + 1 : ""}, {getFileNameFromUrl(url)}
                       </p>
                     </div>
                     <a
@@ -208,7 +211,7 @@ export default function ApplyPage() {
                     >
                       <ExternalLink className="w-4 h-4" />
                     </a>
-                  </button>
+                  </Button>
                 ))}
               </div>
             ) : (
@@ -266,8 +269,13 @@ export default function ApplyPage() {
 
           {/* Submit */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <button type="submit" disabled={submitting}
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-50 shadow-lg shadow-gray-950/10 dark:shadow-white/10 text-sm">
+            <Button
+              type="submit"
+              variant="mono"
+              size="lg"
+              disabled={submitting}
+              className="w-full rounded-xl"
+            >
               {submitting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 dark:border-gray-950/30 border-t-white dark:border-t-gray-950 rounded-full animate-spin" />
@@ -279,7 +287,7 @@ export default function ApplyPage() {
                   Submit Application
                 </>
               )}
-            </button>
+            </Button>
           </motion.div>
         </form>
       </div>

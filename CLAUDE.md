@@ -1,4 +1,4 @@
-# InternHack — Claude Code Instructions
+# InternHack, Claude Code Instructions
 
 ## Project Overview
 InternHack is a full-stack internship/career platform for students with AI-powered tools, learning modules, and recruiter features.
@@ -6,7 +6,7 @@ InternHack is a full-stack internship/career platform for students with AI-power
 ## Quick Start
 - **Server:** `cd server && npm run dev` (runs `tsx watch src/index.ts`)
 - **Client:** `cd client && npm run dev` (Vite on port 5173)
-- **Migrations:** Must run from `server/src/database/` — that's where `prisma.config.ts` lives
+- **Migrations:** Must run from `server/src/database/`, that's where `prisma.config.ts` lives
 
 ## Repo Map
 **Always read `.claude/REPO_MAP.md` before any editing task.** It maps every module, route, model, and component.
@@ -23,12 +23,12 @@ InternHack is a full-stack internship/career platform for students with AI-power
 
 ### TailwindCSS v4
 - Use canonical TW v4 classes only
-- No `bg-gradient-*` shorthand — use `bg-linear-to-*` instead
-- No arbitrary bracket sizes like `text-[17px]` — use standard scale classes
-- No gradient backgrounds on icons — use flat color or bare colored icons
+- No `bg-gradient-*` shorthand, use `bg-linear-to-*` instead
+- No arbitrary bracket sizes like `text-[17px]`, use standard scale classes
+- No gradient backgrounds on icons, use flat color or bare colored icons
 
 ### UI Conventions
-- **No pill badges** — do not use `rounded-full` category/section tag pills above page headings. Use `mt-6` on the header wrapper for top spacing instead
+- **No pill badges**, do not use `rounded-full` category/section tag pills above page headings. Use `mt-6` on the header wrapper for top spacing instead
 - Company avatars: first-letter initial in neutral box, not generic icon
 - DRY: no duplicate helpers, shared animation variants per file
 
@@ -101,11 +101,11 @@ export const MyCard = React.memo(function MyCard({ data }: Props) { ... });
 ```
 
 ### Repo Request Approval Flow
-Students can suggest repos via `POST /api/opensource/requests`. Admin reviews at `/admin/repo-requests`. On approval, the repo is auto-created and the student gets an email. Routes are in `opensource.routes.ts` — `/requests/*` routes must appear BEFORE `/:id` to avoid route conflicts.
+Students can suggest repos via `POST /api/opensource/requests`. Admin reviews at `/admin/repo-requests`. On approval, the repo is auto-created and the student gets an email. Routes are in `opensource.routes.ts`, `/requests/*` routes must appear BEFORE `/:id` to avoid route conflicts.
 
 ## Do NOT
-- Create Prisma migrations without confirming — run from `server/src/database/`
-- Use `bg-gradient-*` in TailwindCSS — use `bg-linear-to-*`
+- Create Prisma migrations without confirming, run from `server/src/database/`
+- Use `bg-gradient-*` in TailwindCSS, use `bg-linear-to-*`
 - Add `rounded-full` pill badges above headings
-- Fabricate new UsageAction enum values — reuse existing ones to avoid migrations
+- Fabricate new UsageAction enum values, reuse existing ones to avoid migrations
 - Push to remote without explicit permission

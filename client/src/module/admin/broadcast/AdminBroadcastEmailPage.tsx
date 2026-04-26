@@ -71,7 +71,7 @@ export default function AdminBroadcastEmailPage() {
               <code className="px-1 rounded bg-white/70 dark:bg-black/30">{"{{username}}"}</code>,{" "}
               <code className="px-1 rounded bg-white/70 dark:bg-black/30">{"{name}"}</code>,{" "}
               <code className="px-1 rounded bg-white/70 dark:bg-black/30">{"{firstName}"}</code>, or{" "}
-              <code className="px-1 rounded bg-white/70 dark:bg-black/30">{"{email}"}</code> in the subject or body — they're case-insensitive and replaced per recipient. Test sends use <strong>Sachin</strong> as the sample name.
+              <code className="px-1 rounded bg-white/70 dark:bg-black/30">{"{email}"}</code> in the subject or body, they're case-insensitive and replaced per recipient. Test sends use <strong>Sachin</strong> as the sample name.
             </p>
           </div>
           <div>
@@ -80,7 +80,7 @@ export default function AdminBroadcastEmailPage() {
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={12}
-              placeholder="Write your email body. Plain text — line breaks are preserved."
+              placeholder="Write your email body. Plain text, line breaks are preserved."
               className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20"
             />
             <p className="text-xs text-gray-400 mt-1">{body.length} / 20000</p>

@@ -34,25 +34,36 @@ export function TestimonialsColumn({
           <React.Fragment key={index}>
             {testimonials.map(({ text, image, name, role }, i) => (
               <div
-                className="p-6 rounded-2xl border border-gray-200 dark:border-white/8 max-w-xs w-full bg-gray-50/50 dark:bg-white/3"
+                className="p-6 rounded-xl border border-stone-200 dark:border-white/10 max-w-xs w-full bg-white dark:bg-stone-900"
                 key={i}
               >
-                <p className="text-sm text-gray-600 dark:text-white/60 leading-relaxed">
+                <div className="flex items-center gap-1 mb-4 text-lime-500">
+                  {[0, 1, 2, 3, 4].map((n) => (
+                    <svg
+                      key={n}
+                      className="w-3.5 h-3.5 fill-current"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
                   {text}
                 </p>
-                <div className="flex items-center gap-3 mt-5">
+                <div className="flex items-center gap-3 mt-5 pt-5 border-t border-stone-200 dark:border-white/10">
                   <img
                     width={40}
                     height={40}
                     src={image}
                     alt={name}
-                    className="h-10 w-10 rounded-full object-cover"
+                    className="h-10 w-10 rounded-md object-cover border border-stone-200 dark:border-white/10"
                   />
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white tracking-tight leading-5">
+                    <span className="text-sm font-bold text-stone-900 dark:text-stone-50 tracking-tight leading-5">
                       {name}
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-white/40 tracking-tight leading-5">
+                    <span className="text-xs font-mono text-stone-500 tracking-tight leading-5">
                       {role}
                     </span>
                   </div>

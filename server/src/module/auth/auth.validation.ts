@@ -66,5 +66,4 @@ export const updateProfileSchema = z.object({
     date: z.string().max(20).optional(),
   })).max(10).optional(),
   isProfilePublic: z.boolean().optional(),
-  appPassword: z.string().max(100).optional().nullable(),
 });

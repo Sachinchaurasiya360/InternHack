@@ -7,13 +7,15 @@ import {
   TrendingUp,
   Award,
   ShieldCheck,
-  LayoutDashboard,
   ArrowRight,
+  ArrowUpRight,
+  PlusCircle,
 } from "lucide-react";
 import api from "../../lib/axios";
 import { LoadingScreen } from "../../components/LoadingScreen";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
+import { useAuthStore } from "../../lib/auth.store";
 
 interface DashboardData {
   totalJobs: number;
@@ -32,6 +34,7 @@ interface DashboardData {
 }
 
 export default function RecruiterDashboard() {
+  const { user } = useAuthStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,375 +52,321 @@ export default function RecruiterDashboard() {
 
   if (!data) {
     return (
-      <div className="text-center text-gray-500 dark:text-gray-500 py-20">
+      <div className="text-center text-stone-500 py-20">
         Failed to load dashboard
       </div>
     );
   }
 
   const stats = [
-    {
-      label: "Total Jobs",
-      value: data.totalJobs,
-      icon: Briefcase,
-      color: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20",
-    },
-    {
-      label: "Active Jobs",
-      value: data.activeJobs,
-      icon: TrendingUp,
-      color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20",
-    },
-    {
-      label: "Total Applicants",
-      value: data.totalApplications,
-      icon: Users,
-      color: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20",
-    },
-    {
-      label: "Hired",
-      value: data.hiredCount,
-      icon: Award,
-      color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20",
-    },
+    { label: "total jobs", value: data.totalJobs, icon: Briefcase },
+    { label: "active jobs", value: data.activeJobs, icon: TrendingUp },
+    { label: "applicants", value: data.totalApplications, icon: Users },
+    { label: "hired", value: data.hiredCount, icon: Award },
   ];
 
+  const firstName = user?.company || user?.name?.split(" ")[0] || "Recruiter";
+  const topSkillPeak = data.topVerifiedSkills[0]?.count || 1;
+
   return (
-    <div className="-m-8">
+    <div className="relative text-stone-900 dark:text-stone-50">
       <SEO title="Recruiter Dashboard" noIndex />
-      {/* ── Hero Header ── */}
-      <div className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950">
-        {/* Gradient orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-150 h-150 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 opacity-60 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-125 h-125 rounded-full bg-gradient-to-tr from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 opacity-60 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 rounded-full border border-black/3 dark:border-white/3" />
+
+      {/* Faint vertical rule pattern, same as student editorial pages */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
+        style={{
+          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundSize: "120px 100%",
+        }}
+      />
+
+      <div className="relative max-w-6xl mx-auto">
+        {/* Editorial header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-6 border-b border-stone-200 dark:border-white/10 pb-8"
+        >
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              recruiter / dashboard
+            </div>
+            <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+              Hiring{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">overview.</span>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                  aria-hidden
+                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                />
+              </span>
+            </h1>
+            <p className="mt-3 text-sm text-stone-500 max-w-md">
+              Welcome back, {firstName}. Track your open roles, watch your pipeline, and meet the candidates coming in.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button asChild variant="secondary" size="md">
+              <Link to="/recruiters/jobs" className="no-underline">
+                My jobs
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            </Button>
+            <Button asChild variant="primary" size="md">
+              <Link to="/recruiters/jobs/create" className="no-underline">
+                <PlusCircle className="w-4 h-4" />
+                Post a job
+              </Link>
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.05 }}
+              className="relative bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5 hover:border-stone-300 dark:hover:border-white/20 transition-colors"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  {stat.label}
+                </span>
+                <stat.icon className="w-4 h-4 text-stone-400" />
+              </div>
+              <p className="text-3xl font-bold text-stone-900 dark:text-stone-50 tabular-nums leading-none">
+                {stat.value}
+              </p>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-
-        <div className="relative z-10 max-w-5xl mx-auto px-8 pt-16 pb-14 text-center">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm rounded-full text-xs font-medium mb-8"
-          >
-            <LayoutDashboard className="w-3.5 h-3.5 text-purple-500" />
-            <span className="text-gray-600 dark:text-gray-400">Recruiter Dashboard</span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl sm:text-5xl md:text-6xl font-bold mb-5 leading-tight tracking-tight text-gray-950 dark:text-white"
-          >
-            Your Hiring{" "}
-            <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
-              Overview
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
+        {/* Pipeline + Skills */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-12">
+          {/* Application Status */}
+          <motion.section
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="lg:col-span-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6"
           >
-            Track your jobs, monitor applications, and discover top talent, all in one place.
-          </motion.p>
+            <div className="flex items-center gap-2 mb-5">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              <h2 className="text-xs font-mono uppercase tracking-widest text-stone-500">
+                application status
+              </h2>
+            </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 + i * 0.08 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50 transition-all"
-              >
-                <div
-                  className={`w-10 h-10 rounded-xl ${stat.color} flex items-center justify-center mx-auto mb-3`}
-                >
-                  <stat.icon className="w-5 h-5" />
-                </div>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-950 dark:text-white tabular-nums">
-                  {stat.value}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">
-                  {stat.label}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
+            {Object.keys(data.statusBreakdown).length === 0 ? (
+              <p className="text-sm text-stone-500">No applications in the pipeline yet.</p>
+            ) : (
+              <ul className="divide-y divide-stone-200 dark:divide-white/10">
+                {Object.entries(data.statusBreakdown).map(([status, count]) => (
+                  <li key={status} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className={`h-1.5 w-1.5 shrink-0 ${getStatusDot(status)}`} />
+                      <span className="text-sm text-stone-700 dark:text-stone-300 truncate">
+                        {humanizeStatus(status)}
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-stone-900 dark:text-stone-50 tabular-nums shrink-0 ml-4">
+                      {count}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </motion.section>
 
-      {/* ── Content ── */}
-      <div className="relative bg-white dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
-          {/* Section heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+          {/* Top Verified Skills */}
+          <motion.section
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-center mb-10"
+            transition={{ delay: 0.35 }}
+            className="lg:col-span-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-5">
-              Analytics
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-950 dark:text-white tracking-tight mb-3">
-              Pipeline{" "}
-              <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                Insights
-              </span>
-            </h2>
-            <p className="text-base text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
-              Application breakdown and top skills across your candidate pool.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Status Breakdown */}
-            {Object.keys(data.statusBreakdown).length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                whileHover={{ y: -4 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50 transition-all"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h2 className="text-base font-bold text-gray-900 dark:text-white">
-                    Application Status
-                  </h2>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(data.statusBreakdown).map(([status, count]) => (
-                    <div
-                      key={status}
-                      className="px-4 py-3.5 bg-gray-50 dark:bg-gray-950 rounded-xl border border-gray-100 dark:border-gray-800"
-                    >
-                      <span className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-medium">
-                        {status.replace(/_/g, " ")}
-                      </span>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 tabular-nums">
-                        {count}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Top Verified Skills */}
-            {data.topVerifiedSkills && data.topVerifiedSkills.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.08, duration: 0.5 }}
-                whileHover={{ y: -4 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50 transition-all"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
-                    <ShieldCheck className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  </div>
-                  <h2 className="text-base font-bold text-gray-900 dark:text-white">
-                    Top Verified Skills
-                  </h2>
-                </div>
-                <div className="space-y-4">
-                  {data.topVerifiedSkills.map((skill, i) => (
-                    <div key={skill.skillName} className="flex items-center gap-3">
-                      <span className="text-xs font-bold text-gray-300 dark:text-gray-600 w-5 tabular-nums">
-                        #{i + 1}
-                      </span>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {skill.skillName}
-                          </span>
-                          <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums">
-                            {skill.count} verified
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
-                          <div
-                            className="bg-green-500 rounded-full h-1.5 transition-all"
-                            style={{
-                              width: `${Math.min(100, (skill.count / (data.topVerifiedSkills[0]?.count || 1)) * 100)}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Recent Applications ── */}
-      <div className="relative bg-[#fafafa] dark:bg-gray-950">
-        <div
-          className="absolute inset-0 opacity-[0.02] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
-          {/* Section heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-10"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-5">
-              <Users className="w-3 h-3" />
-              Applicants
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-950 dark:text-white tracking-tight mb-3">
-              Recent{" "}
-              <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                Applications
-              </span>
-            </h2>
-            <p className="text-base text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
-              Latest candidates who applied to your job postings.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50 transition-all"
-          >
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
-                  <Briefcase className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white">All Applications</span>
-              </div>
-              <Link
-                to="/recruiters/jobs"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors no-underline px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                View all
-                <ArrowRight className="w-3 h-3" />
-              </Link>
+            <div className="flex items-center gap-2 mb-5">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              <h2 className="text-xs font-mono uppercase tracking-widest text-stone-500">
+                top verified skills
+              </h2>
             </div>
 
-            {data.recentApplications.length === 0 ? (
-              <div className="p-12 text-center">
-                <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
-                  <Briefcase className="w-5 h-5 text-gray-400" />
-                </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  No applications yet.
-                </p>
-                <Button asChild variant="mono" size="md">
-                  <Link to="/recruiters/jobs/create" className="no-underline">
-                    Create a Job
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </Button>
+            {!data.topVerifiedSkills || data.topVerifiedSkills.length === 0 ? (
+              <div className="flex items-start gap-3 text-sm text-stone-500">
+                <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-stone-400" />
+                <p>No verified skills in your applicant pool yet. Candidates will show up here as they pass skill tests.</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                {data.recentApplications.map((app, i) => (
-                  <motion.div
-                    key={app.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.1 + i * 0.04 }}
-                  >
-                    <Link
-                      to={`/recruiters/applications/${app.id}`}
-                      className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors no-underline group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
-                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                            {app.student.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .toUpperCase()
-                              .slice(0, 2)}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm text-gray-900 dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-                            {app.student.name}
-                          </p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">
-                            {app.job.title}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium ${getStatusColor(app.status)}`}
-                        >
-                          {app.status.replace(/_/g, " ")}
+              <ul className="space-y-4">
+                {data.topVerifiedSkills.map((skill, i) => (
+                  <li key={skill.skillName} className="flex items-center gap-3">
+                    <span className="text-[10px] font-mono tabular-nums text-stone-400 w-5 shrink-0">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm font-medium text-stone-900 dark:text-stone-50 truncate">
+                          {skill.skillName}
                         </span>
-                        <span className="text-xs text-gray-300 dark:text-gray-600 tabular-nums">
-                          {new Date(app.createdAt).toLocaleDateString()}
+                        <span className="text-[11px] font-mono text-stone-500 tabular-nums shrink-0 ml-3">
+                          {skill.count} verified
                         </span>
                       </div>
-                    </Link>
-                  </motion.div>
+                      <div className="relative h-1 bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-sm">
+                        <motion.div
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.6, delay: 0.4 + i * 0.05, ease: "easeOut" }}
+                          className="absolute inset-y-0 left-0 bg-lime-400 origin-left rounded-sm"
+                          style={{ width: `${Math.min(100, (skill.count / topSkillPeak) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
-          </motion.div>
+          </motion.section>
         </div>
+
+        {/* Recent Applications */}
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-12"
+        >
+          <div className="flex items-end justify-between border-b border-stone-200 dark:border-white/10 pb-4 mb-0">
+            <div>
+              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+                <span className="h-1.5 w-1.5 bg-lime-400" />
+                recent applications
+              </div>
+              <h2 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                Who just applied
+              </h2>
+            </div>
+            <Link
+              to="/recruiters/jobs"
+              className="text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline inline-flex items-center gap-1.5 transition-colors"
+            >
+              view all
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {data.recentApplications.length === 0 ? (
+            <div className="border border-stone-200 dark:border-white/10 border-t-0 rounded-b-md bg-white dark:bg-stone-900 px-6 py-16 text-center">
+              <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
+                <Briefcase className="w-4 h-4 text-stone-400" />
+              </div>
+              <p className="text-sm text-stone-500 mb-5">
+                No applications yet. Post a role and candidates will land here.
+              </p>
+              <Button asChild variant="primary" size="md">
+                <Link to="/recruiters/jobs/create" className="no-underline">
+                  <PlusCircle className="w-4 h-4" />
+                  Post a job
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <ul className="divide-y divide-stone-200 dark:divide-white/10 border-l border-r border-b border-stone-200 dark:border-white/10 rounded-b-md bg-white dark:bg-stone-900">
+              {data.recentApplications.map((app, i) => (
+                <motion.li
+                  key={app.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.45 + i * 0.03 }}
+                >
+                  <Link
+                    to={`/recruiters/applications/${app.id}`}
+                    className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-stone-50 dark:hover:bg-stone-950/40 transition-colors no-underline group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-bold text-stone-600 dark:text-stone-300">
+                          {getInitials(app.student.name)}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm text-stone-900 dark:text-stone-50 group-hover:underline decoration-lime-400 decoration-2 underline-offset-4 truncate">
+                          {app.student.name}
+                        </p>
+                        <p className="text-xs text-stone-500 truncate">
+                          {app.job.title}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0">
+                      <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
+                        <span className={`h-1.5 w-1.5 ${getStatusDot(app.status)}`} />
+                        {humanizeStatus(app.status)}
+                      </span>
+                      <span className="text-[11px] font-mono text-stone-400 tabular-nums">
+                        {formatDate(app.createdAt)}
+                      </span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-50 transition-colors" />
+                    </div>
+                  </Link>
+                </motion.li>
+              ))}
+            </ul>
+          )}
+        </motion.section>
       </div>
     </div>
   );
 }
 
-function getStatusColor(status: string) {
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+function humanizeStatus(status: string) {
+  return status
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function getStatusDot(status: string) {
   switch (status) {
     case "APPLIED":
-      return "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+      return "bg-blue-500";
     case "IN_PROGRESS":
-      return "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+      return "bg-amber-500";
     case "SHORTLISTED":
-      return "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400";
-    case "REJECTED":
-      return "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+      return "bg-lime-400";
     case "HIRED":
-      return "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+      return "bg-emerald-500";
+    case "REJECTED":
+      return "bg-red-500";
     case "WITHDRAWN":
-      return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+      return "bg-stone-400";
     default:
-      return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+      return "bg-stone-400";
   }
 }

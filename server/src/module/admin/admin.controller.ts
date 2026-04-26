@@ -1089,6 +1089,8 @@ export class AdminController {
     }
   }
 
+  private broadcastInFlight = false;
+
   async sendBroadcastEmail(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -1096,12 +1098,21 @@ export class AdminController {
       if (!result.success) {
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
-      const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
-      return res.status(200).json({
-        success: true,
-        message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
-        ...data,
-      });
+      const isTest = !!result.data.testEmail;
+      if (!isTest && this.broadcastInFlight) {
+        return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
+      }
+      if (!isTest) this.broadcastInFlight = true;
+      try {
+        const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
+        return res.status(200).json({
+          success: true,
+          message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
+          ...data,
+        });
+      } finally {
+        if (!isTest) this.broadcastInFlight = false;
+      }
     } catch (error) {
       logger.error("Failed to send broadcast email", error);
       return res.status(500).json({ message: "Internal Server Error" });

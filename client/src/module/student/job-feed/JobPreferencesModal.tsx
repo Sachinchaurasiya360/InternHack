@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
+import { Button } from "../../../components/ui/button";
 
 import type { JobPreferences } from "../../../lib/types";
 
@@ -91,9 +92,9 @@ export function JobPreferencesModal({ open, onClose, current }: Props) {
             >
               <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
                 <h2 className="text-lg font-bold text-gray-950 dark:text-white">Job Preferences</h2>
-                <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <Button variant="ghost" mode="icon" size="sm" onClick={onClose} className="text-gray-400">
                   <X className="w-5 h-5" />
-                </button>
+                </Button>
               </div>
 
               <div className="p-6 space-y-5">
@@ -138,17 +139,14 @@ export function JobPreferencesModal({ open, onClose, current }: Props) {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{label}</label>
                     <div className="flex flex-wrap gap-2">
                       {items.map((item) => (
-                        <button
+                        <Button
                           key={item}
+                          size="sm"
+                          variant={selected.includes(item) ? "mono" : "outline"}
                           onClick={() => toggleItem([...selected], set, item)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                            selected.includes(item)
-                              ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
-                              : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                          }`}
                         >
                           {item.charAt(0) + item.slice(1).toLowerCase()}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -156,16 +154,17 @@ export function JobPreferencesModal({ open, onClose, current }: Props) {
               </div>
 
               <div className="p-6 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
-                <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                <Button variant="ghost" onClick={onClose} className="rounded-xl">
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="mono"
                   onClick={handleSave}
                   disabled={mutation.isPending}
-                  className="px-5 py-2 text-sm font-semibold bg-gray-950 dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  className="rounded-xl"
                 >
                   {mutation.isPending ? "Saving..." : "Save Preferences"}
-                </button>
+                </Button>
               </div>
             </div>
           </motion.div>

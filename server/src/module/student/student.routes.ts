@@ -33,8 +33,3 @@ studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", (req, r
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
 studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));
 
-// Campus drives
-studentRouter.get("/campus-drives", (req, res, next) => studentController.getEligibleDrives(req, res, next));
-studentRouter.get("/campus-drives/my", (req, res, next) => studentController.getMyRegistrations(req, res, next));
-studentRouter.get("/campus-drives/:id", (req, res, next) => studentController.getCampusDriveDetail(req, res, next));
-studentRouter.post("/campus-drives/:id/register", (req, res, next) => studentController.registerForDrive(req, res, next));

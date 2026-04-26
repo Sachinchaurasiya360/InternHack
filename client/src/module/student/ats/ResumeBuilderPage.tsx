@@ -16,7 +16,6 @@ import {
   ChevronUp,
   Eye,
   PenLine,
-  Palette,
   ScanSearch,
   CheckCircle,
   UserPlus,
@@ -35,7 +34,6 @@ import type {
 import { defaultResumeData } from "./resume-builder/types";
 import { TEMPLATES, getTemplate } from "./resume-builder/templates";
 import AtsToolsNav from "./AtsToolsNav";
-import { inputCls, labelCls } from "./_shared/form-styles";
 
 const STORAGE_KEY = "internhack-resume-data";
 const TEMPLATE_KEY = "internhack-resume-template";
@@ -45,7 +43,6 @@ function loadSaved(): ResumeData {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return defaultResumeData;
     const parsed = JSON.parse(saved) as ResumeData;
-    // If saved data is essentially empty, use the prefilled defaults
     const isEmpty =
       !parsed.personalInfo?.fullName &&
       !parsed.summary &&
@@ -62,8 +59,18 @@ function loadTemplate(): TemplateId {
   return (localStorage.getItem(TEMPLATE_KEY) as TemplateId) || "classic";
 }
 
-// ── Section Wrapper ────────────────────────────────────────────────
+const cardCls =
+  "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
+const sectionKickerCls =
+  "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
+const inputCls =
+  "w-full px-3 py-2 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
+const labelCls =
+  "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
+
+// ── Collapsible form section ────────────────────────────────────
 function FormSection({
+  kicker,
   title,
   icon,
   open,
@@ -71,6 +78,7 @@ function FormSection({
   children,
   delay = 0,
 }: {
+  kicker: string;
   title: string;
   icon: React.ReactNode;
   open: boolean;
@@ -80,23 +88,33 @@ function FormSection({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+      transition={{ duration: 0.3, delay }}
+      className={`${cardCls} overflow-hidden`}
     >
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors"
+        className="w-full flex items-center justify-between gap-3 px-5 py-3.5 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-0 bg-transparent cursor-pointer text-left"
       >
-        <span className="flex items-center gap-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200">
-          {icon}
-          {title}
-        </span>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10">
+            {icon}
+          </div>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className={sectionKickerCls}>
+              <span className="h-1 w-1 bg-lime-400" />
+              {kicker}
+            </span>
+            <span className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
+              {title}
+            </span>
+          </div>
+        </div>
         {open ? (
-          <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+          <ChevronUp className="w-4 h-4 text-stone-500 shrink-0" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+          <ChevronDown className="w-4 h-4 text-stone-500 shrink-0" />
         )}
       </button>
       <AnimatePresence>
@@ -106,9 +124,9 @@ function FormSection({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden"
+            className="overflow-hidden border-t border-stone-200 dark:border-white/10"
           >
-            <div className="px-5 pb-5 pt-1 space-y-3">{children}</div>
+            <div className="px-5 py-4 space-y-3">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -116,32 +134,18 @@ function FormSection({
   );
 }
 
-// ── Small helpers ──────────────────────────────────────────────────
 const btnAddCls =
-  "flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 mt-2";
+  "inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors mt-2 border-0 bg-transparent cursor-pointer";
 const btnRemoveCls =
-  "p-1 text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors rounded";
+  "p-1 text-stone-400 dark:text-stone-600 hover:text-red-500 transition-colors rounded border-0 bg-transparent cursor-pointer";
+const itemRowCls =
+  "border border-stone-200 dark:border-white/10 rounded-md p-3 space-y-2 relative bg-stone-50/40 dark:bg-stone-950/40";
 
 function uid() {
   return crypto.randomUUID();
 }
 
-const TEMPLATE_COLORS: Record<string, { dot: string; bg: string; border: string }> = {
-  classic: { dot: "bg-gray-800 dark:bg-gray-200", bg: "bg-gray-50 dark:bg-gray-800/80", border: "border-gray-800 dark:border-gray-200" },
-  modern: { dot: "bg-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20", border: "border-indigo-500" },
-  minimal: { dot: "bg-gray-400", bg: "bg-gray-50 dark:bg-gray-800/60", border: "border-gray-400" },
-  professional: { dot: "bg-gray-900 dark:bg-white", bg: "bg-gray-50 dark:bg-gray-800/80", border: "border-gray-900 dark:border-white" },
-  creative: { dot: "bg-violet-500", bg: "bg-violet-50 dark:bg-violet-900/20", border: "border-violet-500" },
-  compact: { dot: "bg-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-900/20", border: "border-emerald-500" },
-};
-
-// Tool nav handled by shared AtsToolsNav
-
-// ── Memoized list-row components ──────────────────────────────────
-// Each row re-renders only when its item data changes because update/remove
-// callbacks are stable (useCallback in the parent) and the item itself is
-// referentially swapped only when its fields change.
-
+// ── Memoized row components ──────────────────────────────────
 const ExperienceRow = React.memo(function ExperienceRow({
   exp,
   onUpdate,
@@ -156,26 +160,26 @@ const ExperienceRow = React.memo(function ExperienceRow({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+      className={itemRowCls}
     >
       <button onClick={() => onRemove(exp.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className={labelCls}>Job Title</label>
+          <label className={labelCls}>job title</label>
           <input className={inputCls} placeholder="Software Engineer" value={exp.title} onChange={(e) => onUpdate(exp.id, "title", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Company</label>
+          <label className={labelCls}>company</label>
           <input className={inputCls} placeholder="Google" value={exp.company} onChange={(e) => onUpdate(exp.id, "company", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Start Date</label>
+          <label className={labelCls}>start date</label>
           <input className={inputCls} placeholder="Jan 2022" value={exp.startDate} onChange={(e) => onUpdate(exp.id, "startDate", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>End Date</label>
+          <label className={labelCls}>end date</label>
           <input
             className={inputCls}
             placeholder="Present"
@@ -185,17 +189,17 @@ const ExperienceRow = React.memo(function ExperienceRow({
           />
         </div>
       </div>
-      <label className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 cursor-pointer">
+      <label className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-500 cursor-pointer">
         <input
           type="checkbox"
           checked={exp.current}
           onChange={(e) => onUpdate(exp.id, "current", e.target.checked)}
-          className="rounded border-gray-300 dark:border-gray-600"
+          className="border-stone-300 dark:border-white/10 accent-lime-400"
         />
-        I currently work here
+        currently work here
       </label>
       <div>
-        <label className={labelCls}>Description (one bullet per line)</label>
+        <label className={labelCls}>description (one bullet per line)</label>
         <textarea
           className={`${inputCls} min-h-15 resize-y`}
           placeholder="- Led development of microservices architecture&#10;- Improved API response time by 40%"
@@ -221,34 +225,34 @@ const EducationRow = React.memo(function EducationRow({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+      className={itemRowCls}
     >
       <button onClick={() => onRemove(edu.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">
         <div className="col-span-2">
-          <label className={labelCls}>Institution</label>
+          <label className={labelCls}>institution</label>
           <input className={inputCls} placeholder="Stanford University" value={edu.institution} onChange={(e) => onUpdate(edu.id, "institution", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Degree</label>
+          <label className={labelCls}>degree</label>
           <input className={inputCls} placeholder="B.Tech" value={edu.degree} onChange={(e) => onUpdate(edu.id, "degree", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Field of Study</label>
+          <label className={labelCls}>field of study</label>
           <input className={inputCls} placeholder="Computer Science" value={edu.field} onChange={(e) => onUpdate(edu.id, "field", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Start Date</label>
+          <label className={labelCls}>start date</label>
           <input className={inputCls} placeholder="Aug 2019" value={edu.startDate} onChange={(e) => onUpdate(edu.id, "startDate", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>End Date</label>
+          <label className={labelCls}>end date</label>
           <input className={inputCls} placeholder="May 2023" value={edu.endDate} onChange={(e) => onUpdate(edu.id, "endDate", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>GPA (optional)</label>
+          <label className={labelCls}>gpa (optional)</label>
           <input className={inputCls} placeholder="3.8/4.0" value={edu.gpa} onChange={(e) => onUpdate(edu.id, "gpa", e.target.value)} />
         </div>
       </div>
@@ -270,26 +274,26 @@ const ProjectRow = React.memo(function ProjectRow({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+      className={itemRowCls}
     >
       <button onClick={() => onRemove(proj.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className={labelCls}>Project Name</label>
+          <label className={labelCls}>project name</label>
           <input className={inputCls} placeholder="E-Commerce Platform" value={proj.name} onChange={(e) => onUpdate(proj.id, "name", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Link (optional)</label>
+          <label className={labelCls}>link (optional)</label>
           <input className={inputCls} placeholder="github.com/..." value={proj.link} onChange={(e) => onUpdate(proj.id, "link", e.target.value)} />
         </div>
         <div className="col-span-2">
-          <label className={labelCls}>Tech Stack</label>
+          <label className={labelCls}>tech stack</label>
           <input className={inputCls} placeholder="React, Node.js, PostgreSQL" value={proj.techStack} onChange={(e) => onUpdate(proj.id, "techStack", e.target.value)} />
         </div>
         <div className="col-span-2">
-          <label className={labelCls}>Description</label>
+          <label className={labelCls}>description</label>
           <textarea
             className={`${inputCls} min-h-12.5 resize-y`}
             placeholder="Built a full-stack e-commerce platform with..."
@@ -316,22 +320,22 @@ const CertificationRow = React.memo(function CertificationRow({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
+      className={itemRowCls}
     >
       <button onClick={() => onRemove(cert.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
         <Trash2 className="w-3.5 h-3.5" />
       </button>
       <div className="grid grid-cols-2 gap-2">
         <div className="col-span-2">
-          <label className={labelCls}>Certification Name</label>
+          <label className={labelCls}>certification name</label>
           <input className={inputCls} placeholder="AWS Solutions Architect" value={cert.name} onChange={(e) => onUpdate(cert.id, "name", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Issuer</label>
+          <label className={labelCls}>issuer</label>
           <input className={inputCls} placeholder="Amazon Web Services" value={cert.issuer} onChange={(e) => onUpdate(cert.id, "issuer", e.target.value)} />
         </div>
         <div>
-          <label className={labelCls}>Date</label>
+          <label className={labelCls}>date</label>
           <input className={inputCls} placeholder="Mar 2024" value={cert.date} onChange={(e) => onUpdate(cert.id, "date", e.target.value)} />
         </div>
       </div>
@@ -339,7 +343,7 @@ const CertificationRow = React.memo(function CertificationRow({
   );
 });
 
-// ── Main Page ──────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────────────
 export default function ResumeBuilderPage() {
   const [data, setData] = useState<ResumeData>(loadSaved);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(loadTemplate);
@@ -357,7 +361,6 @@ export default function ResumeBuilderPage() {
   const printRef = useRef<HTMLDivElement>(null);
   const user = useAuthStore((s) => s.user);
 
-  // Persist — debounced so we're not serializing the full resume on every keystroke.
   useEffect(() => {
     const t = setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -450,14 +453,12 @@ export default function ResumeBuilderPage() {
   const toggle = (key: string) =>
     setOpenSections((s) => ({ ...s, [key]: !s[key] }));
 
-  // Update helpers
   const updatePersonal = (field: string, value: string) =>
     setData((d) => ({ ...d, personalInfo: { ...d.personalInfo, [field]: value } }));
 
   const updateSummary = (value: string) =>
     setData((d) => ({ ...d, summary: value }));
 
-  // Experience
   const addExperience = useCallback(() =>
     setData((d) => ({
       ...d,
@@ -474,7 +475,6 @@ export default function ResumeBuilderPage() {
   const removeExperience = useCallback((id: string) =>
     setData((d) => ({ ...d, experience: d.experience.filter((e) => e.id !== id) })), []);
 
-  // Education
   const addEducation = useCallback(() =>
     setData((d) => ({
       ...d,
@@ -491,7 +491,6 @@ export default function ResumeBuilderPage() {
   const removeEducation = useCallback((id: string) =>
     setData((d) => ({ ...d, education: d.education.filter((e) => e.id !== id) })), []);
 
-  // Skills
   const addSkill = () => {
     const trimmed = skillInput.trim();
     if (!trimmed || data.skills.includes(trimmed)) return;
@@ -501,7 +500,6 @@ export default function ResumeBuilderPage() {
   const removeSkill = (skill: string) =>
     setData((d) => ({ ...d, skills: d.skills.filter((s) => s !== skill) }));
 
-  // Projects
   const addProject = useCallback(() =>
     setData((d) => ({
       ...d,
@@ -518,7 +516,6 @@ export default function ResumeBuilderPage() {
   const removeProject = useCallback((id: string) =>
     setData((d) => ({ ...d, projects: d.projects.filter((p) => p.id !== id) })), []);
 
-  // Certifications
   const addCertification = useCallback(() =>
     setData((d) => ({
       ...d,
@@ -535,7 +532,6 @@ export default function ResumeBuilderPage() {
   const removeCertification = useCallback((id: string) =>
     setData((d) => ({ ...d, certifications: d.certifications.filter((c) => c.id !== id) })), []);
 
-  // PDF Download
   const handleDownload = () => {
     if (!printRef.current) return;
     const content = printRef.current.innerHTML;
@@ -561,350 +557,369 @@ export default function ResumeBuilderPage() {
     <>
       <SEO title="Resume Builder - InternHack" description="Build your ATS-optimized resume with professional templates" noIndex />
 
-      <div className="relative max-w-[1440px] mx-auto pb-12">
-        {/* Atmospheric background */}
-        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-          <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-violet-100 to-indigo-100 dark:from-violet-900/20 dark:to-indigo-900/20 rounded-full blur-3xl opacity-40" />
-          <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
-          <div
-            className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-            style={{
-              backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-        </div>
-
-        {/* Page Header - landing page style */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-8 px-4"
-        >
-         
-          <h1 className=" mt-4 font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-            Build Your <span className="text-gradient-accent">Perfect Resume</span>
-          </h1>
-          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-            Fill in your details, pick a template, and download a polished PDF
-          </p>
-        </motion.div>
-
-        <div className="px-4 sm:px-6 mb-8">
-          <AtsToolsNav />
-        </div>
-
-        {/* Template Selector */}
+      <div className="relative pb-16">
+        {/* ─── Editorial header ─── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="px-4 sm:px-6 mb-6"
+          transition={{ duration: 0.4 }}
+          className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
         >
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <Palette className="w-4 h-4 text-violet-500" />
-              <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Choose Template
-              </h2>
-              {/* Mobile toggle */}
-              <div className="flex md:hidden ml-auto bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5">
-                <button
-                  onClick={() => setMobileView("form")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                    mobileView === "form" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  <PenLine className="w-3.5 h-3.5 inline mr-1" />
-                  Edit
-                </button>
-                <button
-                  onClick={() => setMobileView("preview")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                    mobileView === "preview" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  <Eye className="w-3.5 h-3.5 inline mr-1" />
-                  Preview
-                </button>
-              </div>
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              resume / builder
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-              {TEMPLATES.map((tpl) => {
-                const isActive = selectedTemplate === tpl.id;
-                const colors = TEMPLATE_COLORS[tpl.id] ?? TEMPLATE_COLORS.classic;
-                return (
-                  <button
-                    key={tpl.id}
-                    onClick={() => setSelectedTemplate(tpl.id)}
-                    className={`shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-medium transition-all border-2 ${
-                      isActive
-                        ? `${colors.border} ${colors.bg} text-gray-900 dark:text-white shadow-sm`
-                        : "border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300"
-                    }`}
-                  >
-                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isActive ? colors.dot : "bg-gray-300 dark:bg-gray-600"}`} />
-                    <span>{tpl.name}</span>
-                    {isActive && (
-                      <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+              Build your resume.
+            </h1>
+            <p className="mt-3 text-sm text-stone-500 max-w-md">
+              Fill in your details, pick a template, and export a polished PDF. Everything saves locally as you type.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/student/ats/score"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors no-underline"
+            >
+              <ScanSearch className="w-3.5 h-3.5" /> Score it
+            </Link>
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" /> Download PDF
+            </button>
           </div>
         </motion.div>
 
-        {/* Main Content */}
-        <div className="px-4 sm:px-6">
-          <div className="flex gap-6">
-            {/* Left - Form */}
-            <div
-              className={`w-full md:w-[420px] shrink-0 space-y-3 ${
-                mobileView === "preview" ? "hidden md:block" : ""
-              }`}
-            >
-              {/* Import from InternHack profile */}
-              <motion.button
-                type="button"
-                onClick={importFromProfile}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.18 }}
-                className="w-full flex items-center gap-3 p-3.5 rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-800/60 bg-violet-50/40 dark:bg-violet-900/10 hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all text-left"
-              >
-                <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0">
-                  <UserPlus className="w-4 h-4 text-violet-600 dark:text-violet-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-violet-700 dark:text-violet-300">
-                    Import from InternHack profile
-                  </p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
-                    Prefill name, contact, education, skills &amp; projects from your profile
-                  </p>
-                </div>
-              </motion.button>
+        <AtsToolsNav />
 
-              {/* Personal Info */}
-              <FormSection
-                title="Personal Information"
-                icon={<User className="w-4 h-4 text-violet-500" />}
-                open={openSections.personal!}
-                onToggle={() => toggle("personal")}
-                delay={0.2}
-              >
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2">
-                    <label className={labelCls}>Full Name</label>
-                    <input className={inputCls} placeholder="John Doe" value={data.personalInfo.fullName} onChange={(e) => updatePersonal("fullName", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Email</label>
-                    <input className={inputCls} type="email" placeholder="john@email.com" value={data.personalInfo.email} onChange={(e) => updatePersonal("email", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Phone</label>
-                    <input className={inputCls} placeholder="+1 234 567 890" value={data.personalInfo.phone} onChange={(e) => updatePersonal("phone", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Location</label>
-                    <input className={inputCls} placeholder="New York, NY" value={data.personalInfo.location} onChange={(e) => updatePersonal("location", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>LinkedIn</label>
-                    <input className={inputCls} placeholder="linkedin.com/in/johndoe" value={data.personalInfo.linkedIn} onChange={(e) => updatePersonal("linkedIn", e.target.value)} />
-                  </div>
-                  <div className="col-span-2">
-                    <label className={labelCls}>Portfolio / Website</label>
-                    <input className={inputCls} placeholder="johndoe.dev" value={data.personalInfo.portfolio} onChange={(e) => updatePersonal("portfolio", e.target.value)} />
-                  </div>
-                </div>
-              </FormSection>
-
-              {/* Summary */}
-              <FormSection
-                title="Professional Summary"
-                icon={<FileText className="w-4 h-4 text-blue-500" />}
-                open={openSections.summary!}
-                onToggle={() => toggle("summary")}
-                delay={0.24}
-              >
-                <textarea
-                  className={`${inputCls} min-h-[80px] resize-y`}
-                  placeholder="Experienced software engineer with 3+ years of expertise in React and Node.js..."
-                  value={data.summary}
-                  onChange={(e) => updateSummary(e.target.value)}
-                />
-              </FormSection>
-
-              {/* Experience */}
-              <FormSection
-                title={`Work Experience${data.experience.length ? ` (${data.experience.length})` : ""}`}
-                icon={<Briefcase className="w-4 h-4 text-emerald-500" />}
-                open={openSections.experience!}
-                onToggle={() => toggle("experience")}
-                delay={0.28}
-              >
-                <AnimatePresence>
-                  {data.experience.map((exp) => (
-                    <ExperienceRow key={exp.id} exp={exp} onUpdate={updateExperience} onRemove={removeExperience} />
-                  ))}
-                </AnimatePresence>
-                <button onClick={addExperience} className={btnAddCls}>
-                  <Plus className="w-3.5 h-3.5" /> Add Experience
-                </button>
-              </FormSection>
-
-              {/* Education */}
-              <FormSection
-                title={`Education${data.education.length ? ` (${data.education.length})` : ""}`}
-                icon={<GraduationCap className="w-4 h-4 text-amber-500" />}
-                open={openSections.education!}
-                onToggle={() => toggle("education")}
-                delay={0.32}
-              >
-                <AnimatePresence>
-                  {data.education.map((edu) => (
-                    <EducationRow key={edu.id} edu={edu} onUpdate={updateEducation} onRemove={removeEducation} />
-                  ))}
-                </AnimatePresence>
-                <button onClick={addEducation} className={btnAddCls}>
-                  <Plus className="w-3.5 h-3.5" /> Add Education
-                </button>
-              </FormSection>
-
-              {/* Skills */}
-              <FormSection
-                title={`Skills${data.skills.length ? ` (${data.skills.length})` : ""}`}
-                icon={<Code2 className="w-4 h-4 text-pink-500" />}
-                open={openSections.skills!}
-                onToggle={() => toggle("skills")}
-                delay={0.36}
-              >
-                <div className="flex gap-2">
-                  <input
-                    className={inputCls}
-                    placeholder="Type a skill and press Enter"
-                    value={skillInput}
-                    onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addSkill();
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={addSkill}
-                    className="px-3.5 py-2.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-xl text-xs font-medium hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors shrink-0"
-                  >
-                    Add
-                  </button>
-                </div>
-                {data.skills.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-1">
-                    {data.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs"
-                      >
-                        {skill}
-                        <button onClick={() => removeSkill(skill)} className="text-gray-400 dark:text-gray-500 hover:text-red-500">
-                          &times;
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </FormSection>
-
-              {/* Projects */}
-              <FormSection
-                title={`Projects${data.projects.length ? ` (${data.projects.length})` : ""}`}
-                icon={<FolderOpen className="w-4 h-4 text-indigo-500" />}
-                open={openSections.projects!}
-                onToggle={() => toggle("projects")}
-                delay={0.4}
-              >
-                <AnimatePresence>
-                  {data.projects.map((proj) => (
-                    <ProjectRow key={proj.id} proj={proj} onUpdate={updateProject} onRemove={removeProject} />
-                  ))}
-                </AnimatePresence>
-                <button onClick={addProject} className={btnAddCls}>
-                  <Plus className="w-3.5 h-3.5" /> Add Project
-                </button>
-              </FormSection>
-
-              {/* Certifications */}
-              <FormSection
-                title={`Certifications${data.certifications.length ? ` (${data.certifications.length})` : ""}`}
-                icon={<Award className="w-4 h-4 text-teal-500" />}
-                open={openSections.certifications!}
-                onToggle={() => toggle("certifications")}
-                delay={0.44}
-              >
-                <AnimatePresence>
-                  {data.certifications.map((cert) => (
-                    <CertificationRow key={cert.id} cert={cert} onUpdate={updateCertification} onRemove={removeCertification} />
-                  ))}
-                </AnimatePresence>
-                <button onClick={addCertification} className={btnAddCls}>
-                  <Plus className="w-3.5 h-3.5" /> Add Certification
-                </button>
-              </FormSection>
+        {/* ─── Template picker ─── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.1 }}
+          className={`${cardCls} mb-6`}
+        >
+          <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
+            <div className="flex flex-col gap-1 min-w-0">
+              <span className={sectionKickerCls}>
+                <span className="h-1 w-1 bg-lime-400" />
+                step 01
+              </span>
+              <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                Choose a template
+              </span>
             </div>
-
-            {/* Right - Preview */}
-            <div
-              className={`flex-1 ${
-                mobileView === "form" ? "hidden md:block" : ""
-              }`}
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.25 }}
-                className="sticky top-4"
+            <div className="flex md:hidden gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setMobileView("form")}
+                className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-colors cursor-pointer border-0 ${
+                  mobileView === "form"
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                    : "bg-white dark:bg-stone-900 text-stone-500"
+                }`}
               >
-                {/* Preview header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-violet-500" />
-                    <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Live Preview
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      to="/student/ats/score"
-                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors no-underline"
+                <PenLine className="w-3 h-3 inline mr-1" /> edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileView("preview")}
+                className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-colors cursor-pointer border-0 ${
+                  mobileView === "preview"
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                    : "bg-white dark:bg-stone-900 text-stone-500"
+                }`}
+              >
+                <Eye className="w-3 h-3 inline mr-1" /> preview
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-stone-200 dark:bg-white/10">
+            {TEMPLATES.map((tpl, i) => {
+              const isActive = selectedTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  type="button"
+                  onClick={() => setSelectedTemplate(tpl.id)}
+                  className={`group relative flex flex-col gap-2 p-4 text-left transition-colors border-0 cursor-pointer ${
+                    isActive
+                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                      : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span
+                      className={`text-[10px] font-mono uppercase tracking-widest ${
+                        isActive ? "text-lime-400" : "text-stone-500"
+                      }`}
                     >
-                      <ScanSearch className="w-3.5 h-3.5" />
-                      Score It
-                    </Link>
-                    <button
-                      onClick={handleDownload}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-xs font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Download PDF
-                    </button>
+                      / {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {isActive && <CheckCircle className="w-3.5 h-3.5 text-lime-400 shrink-0" />}
                   </div>
-                </div>
+                  <p className="text-sm font-bold truncate">{tpl.name}</p>
+                  <p
+                    className={`text-[11px] truncate ${
+                      isActive
+                        ? "text-stone-300 dark:text-stone-600"
+                        : "text-stone-500"
+                    }`}
+                  >
+                    {tpl.id}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
 
+        {/* ─── Main grid ─── */}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Left: form */}
+          <div
+            className={`w-full md:w-100 lg:w-110 shrink-0 space-y-3 ${
+              mobileView === "preview" ? "hidden md:block" : ""
+            }`}
+          >
+            {/* Import-from-profile card */}
+            <motion.button
+              type="button"
+              onClick={importFromProfile}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+              className="group w-full flex items-center gap-3 p-4 rounded-md border border-dashed border-stone-300 dark:border-white/15 bg-stone-50/60 dark:bg-stone-950/40 hover:border-lime-400 hover:bg-lime-50/40 dark:hover:bg-lime-400/5 transition-colors text-left cursor-pointer"
+            >
+              <div className="w-9 h-9 rounded-md bg-lime-400 text-stone-950 flex items-center justify-center shrink-0">
+                <UserPlus className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                  Import from profile
+                </p>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
+                  prefill name, contact, education, skills & projects
+                </p>
+              </div>
+            </motion.button>
+
+            <FormSection
+              kicker="section 01"
+              title="Personal information"
+              icon={<User className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+              open={openSections.personal!}
+              onToggle={() => toggle("personal")}
+              delay={0.2}
+            >
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <label className={labelCls}>full name</label>
+                  <input className={inputCls} placeholder="John Doe" value={data.personalInfo.fullName} onChange={(e) => updatePersonal("fullName", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>email</label>
+                  <input className={inputCls} type="email" placeholder="john@email.com" value={data.personalInfo.email} onChange={(e) => updatePersonal("email", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>phone</label>
+                  <input className={inputCls} placeholder="+1 234 567 890" value={data.personalInfo.phone} onChange={(e) => updatePersonal("phone", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>location</label>
+                  <input className={inputCls} placeholder="New York, NY" value={data.personalInfo.location} onChange={(e) => updatePersonal("location", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>linkedin</label>
+                  <input className={inputCls} placeholder="linkedin.com/in/johndoe" value={data.personalInfo.linkedIn} onChange={(e) => updatePersonal("linkedIn", e.target.value)} />
+                </div>
+                <div className="col-span-2">
+                  <label className={labelCls}>portfolio / website</label>
+                  <input className={inputCls} placeholder="johndoe.dev" value={data.personalInfo.portfolio} onChange={(e) => updatePersonal("portfolio", e.target.value)} />
+                </div>
+              </div>
+            </FormSection>
+
+            <FormSection
+              kicker="section 02"
+              title="Professional summary"
+              icon={<FileText className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+              open={openSections.summary!}
+              onToggle={() => toggle("summary")}
+              delay={0.22}
+            >
+              <textarea
+                className={`${inputCls} min-h-20 resize-y`}
+                placeholder="Experienced software engineer with 3+ years of expertise in React and Node.js..."
+                value={data.summary}
+                onChange={(e) => updateSummary(e.target.value)}
+              />
+            </FormSection>
+
+            <FormSection
+              kicker={`section 03${data.experience.length ? ` · ${String(data.experience.length)}` : ""}`}
+              title="Work experience"
+              icon={<Briefcase className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+              open={openSections.experience!}
+              onToggle={() => toggle("experience")}
+              delay={0.24}
+            >
+              <AnimatePresence>
+                {data.experience.map((exp) => (
+                  <ExperienceRow key={exp.id} exp={exp} onUpdate={updateExperience} onRemove={removeExperience} />
+                ))}
+              </AnimatePresence>
+              <button type="button" onClick={addExperience} className={btnAddCls}>
+                <Plus className="w-3.5 h-3.5" /> add experience
+              </button>
+            </FormSection>
+
+            <FormSection
+              kicker={`section 04${data.education.length ? ` · ${String(data.education.length)}` : ""}`}
+              title="Education"
+              icon={<GraduationCap className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+              open={openSections.education!}
+              onToggle={() => toggle("education")}
+              delay={0.26}
+            >
+              <AnimatePresence>
+                {data.education.map((edu) => (
+                  <EducationRow key={edu.id} edu={edu} onUpdate={updateEducation} onRemove={removeEducation} />
+                ))}
+              </AnimatePresence>
+              <button type="button" onClick={addEducation} className={btnAddCls}>
+                <Plus className="w-3.5 h-3.5" /> add education
+              </button>
+            </FormSection>
+
+            <FormSection
+              kicker={`section 05${data.skills.length ? ` · ${String(data.skills.length)}` : ""}`}
+              title="Skills"
+              icon={<Code2 className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+              open={openSections.skills!}
+              onToggle={() => toggle("skills")}
+              delay={0.28}
+            >
+              <div className="flex gap-2">
+                <input
+                  className={inputCls}
+                  placeholder="Type a skill and press Enter"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addSkill();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={addSkill}
+                  className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer"
+                >
+                  Add
+                </button>
+              </div>
+              {data.skills.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {data.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 rounded-md text-xs font-medium"
+                    >
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => removeSkill(skill)}
+                        className="text-stone-400 dark:text-stone-600 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </FormSection>
+
+            <FormSection
+              kicker={`section 06${data.projects.length ? ` · ${String(data.projects.length)}` : ""}`}
+              title="Projects"
+              icon={<FolderOpen className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+              open={openSections.projects!}
+              onToggle={() => toggle("projects")}
+              delay={0.3}
+            >
+              <AnimatePresence>
+                {data.projects.map((proj) => (
+                  <ProjectRow key={proj.id} proj={proj} onUpdate={updateProject} onRemove={removeProject} />
+                ))}
+              </AnimatePresence>
+              <button type="button" onClick={addProject} className={btnAddCls}>
+                <Plus className="w-3.5 h-3.5" /> add project
+              </button>
+            </FormSection>
+
+            <FormSection
+              kicker={`section 07${data.certifications.length ? ` · ${String(data.certifications.length)}` : ""}`}
+              title="Certifications"
+              icon={<Award className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+              open={openSections.certifications!}
+              onToggle={() => toggle("certifications")}
+              delay={0.32}
+            >
+              <AnimatePresence>
+                {data.certifications.map((cert) => (
+                  <CertificationRow key={cert.id} cert={cert} onUpdate={updateCertification} onRemove={removeCertification} />
+                ))}
+              </AnimatePresence>
+              <button type="button" onClick={addCertification} className={btnAddCls}>
+                <Plus className="w-3.5 h-3.5" /> add certification
+              </button>
+            </FormSection>
+          </div>
+
+          {/* Right: live preview */}
+          <div
+            className={`flex-1 min-w-0 ${
+              mobileView === "form" ? "hidden md:block" : ""
+            }`}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.18 }}
+              className="sticky top-4"
+            >
+              <div className={`${cardCls} overflow-hidden`}>
+                <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <span className={sectionKickerCls}>
+                      <span className="h-1 w-1 bg-lime-400" />
+                      live preview
+                    </span>
+                    <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                      {getTemplate(selectedTemplate).name}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 shrink-0">
+                    / auto-saved
+                  </span>
+                </div>
                 <div
-                  className="bg-white rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
-                  style={{ maxHeight: "calc(100vh - 100px)", overflowY: "auto" }}
+                  className="bg-white overflow-auto"
+                  style={{ maxHeight: "calc(100vh - 180px)" }}
                 >
                   <div ref={printRef}>
                     <TemplateComponent data={data} />
                   </div>
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>

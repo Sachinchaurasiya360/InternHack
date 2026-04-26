@@ -10,7 +10,7 @@
  *
  * NOTE: Requires a Chromium-capable environment. On hosts that lack system
  * Chrome libs (Vercel, some CI containers), the script exits gracefully
- * with code 0 so the build still succeeds — prerendering is simply skipped.
+ * with code 0 so the build still succeeds, prerendering is simply skipped.
  */
 
 import { createServer } from "http";
@@ -57,7 +57,7 @@ function startServer(port) {
     const server = createServer((req, res) => {
       let filePath = join(DIST, req.url === "/" ? "index.html" : req.url);
 
-      // SPA fallback — serve index.html for routes without file extension
+      // SPA fallback, serve index.html for routes without file extension
       if (!filePath.includes(".") || !existsSync(filePath)) {
         filePath = join(DIST, "index.html");
       }
@@ -90,7 +90,7 @@ async function main() {
   try {
     puppeteer = (await import("puppeteer")).default;
   } catch {
-    console.warn("[prerender] puppeteer not installed — skipping prerender.");
+    console.warn("[prerender] puppeteer not installed, skipping prerender.");
     process.exit(0);
   }
 

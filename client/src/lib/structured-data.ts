@@ -151,6 +151,56 @@ export function faqSchema(
   };
 }
 
+export function websiteSchema(): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "InternHack",
+    url: SITE_URL,
+    description:
+      "AI-powered career platform for students, curated internships, ATS resume scoring, learning tracks, and direct recruiter connections.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/jobs?search={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export function platformOrganizationSchema(): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "InternHack",
+    url: SITE_URL,
+    logo: `${SITE_URL}/og-image.png`,
+    description:
+      "AI-powered career platform for students and recruiters, internships, ATS resume scoring, learning tracks, open source, skill verification.",
+    sameAs: [
+      "https://twitter.com/internhack",
+      "https://www.linkedin.com/company/internhack",
+      "https://github.com/internhack",
+    ],
+  };
+}
+
+export function itemListSchema(items: { name: string; url: string; description?: string }[]): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      url: item.url,
+      ...(item.description && { description: item.description }),
+    })),
+  };
+}
+
 export function organizationSchema(org: {
   name: string;
   description: string;

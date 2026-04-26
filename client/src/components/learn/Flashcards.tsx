@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, RotateCcw, Layers } from "lucide-react";
+import { Button } from "../ui/button";
 
 export type FlashcardItem = { front: string; back: string };
 
@@ -72,19 +73,16 @@ export function Flashcards({ cards, title = "Concept Flashcards" }: { cards: Fla
         </AnimatePresence>
       </div>
       <div className="flex items-center justify-center gap-2 mt-4">
-        <button onClick={prev} className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-          <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-        </button>
-        <button
-          onClick={() => setFlipped((f) => !f)}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors"
-        >
+        <Button variant="secondary" mode="icon" size="sm" onClick={prev} className="rounded-xl">
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        <Button variant="secondary" size="sm" onClick={() => setFlipped((f) => !f)} className="rounded-xl">
           <RotateCcw className="w-3.5 h-3.5" />
           Flip
-        </button>
-        <button onClick={next} className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-          <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-        </button>
+        </Button>
+        <Button variant="secondary" mode="icon" size="sm" onClick={next} className="rounded-xl">
+          <ChevronRight className="w-4 h-4" />
+        </Button>
       </div>
     </section>
   );

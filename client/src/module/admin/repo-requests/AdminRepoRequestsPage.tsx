@@ -36,7 +36,7 @@ export default function AdminRepoRequestsPage() {
   const handleApprove = async (id: number) => {
     try {
       await api.put(`/opensource/requests/${id}/approve`);
-      toast.success("Request approved — repo added to directory");
+      toast.success("Request approved, repo added to directory");
       fetchRequests();
     } catch {
       toast.error("Failed to approve request");

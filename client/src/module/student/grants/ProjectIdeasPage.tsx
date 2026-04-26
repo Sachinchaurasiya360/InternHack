@@ -7,6 +7,7 @@ import {
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
+import { Button } from "../../../components/ui/button";
 
 // ─── Types ─────────────────────────────────────────────────────
 type Difficulty = "Beginner" | "Intermediate" | "Advanced";
@@ -1300,28 +1301,24 @@ export default function ProjectIdeasPage() {
 
         {/* Filter chips */}
         <div className="flex flex-wrap gap-2">
-          <button
+          <Button
+            size="sm"
+            variant={difficultyFilter === "ALL" ? "mono" : "outline"}
             onClick={() => setDifficultyFilter("ALL")}
-            className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all border ${
-              difficultyFilter === "ALL"
-                ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white"
-                : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-            }`}
+            className="rounded-xl"
           >
             All Levels
-          </button>
+          </Button>
           {(["Beginner", "Intermediate", "Advanced"] as Difficulty[]).map((diff) => (
-            <button
+            <Button
               key={diff}
+              size="sm"
+              variant={difficultyFilter === diff ? "mono" : "outline"}
               onClick={() => setDifficultyFilter(diff === difficultyFilter ? "ALL" : diff)}
-              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all border ${
-                difficultyFilter === diff
-                  ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white"
-                  : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-              }`}
+              className="rounded-xl"
             >
               {diff}
-            </button>
+            </Button>
           ))}
 
           <select

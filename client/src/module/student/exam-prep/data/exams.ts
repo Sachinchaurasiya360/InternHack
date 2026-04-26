@@ -34,7 +34,7 @@ export const EXAMS: Exam[] = [
     id: "tcs-nqt",
     company: "TCS",
     name: "TCS NQT",
-    tagline: "National Qualifier Test — Numerical, Verbal, Reasoning, Coding",
+    tagline: "National Qualifier Test, Numerical, Verbal, Reasoning, Coding",
     color: "bg-blue-600",
     logo: "T",
     totalDuration: 100,

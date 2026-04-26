@@ -80,7 +80,7 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
     try {
       await sendEmail({
         to: request.user.email,
-        subject: "Repo Request Received — InternHack",
+        subject: "Repo Request Received, InternHack",
         html: repoRequestSubmittedHtml(request.user.name, request.name, request.owner),
       });
     } catch { /* email failure is non-blocking */ }
@@ -173,7 +173,7 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
     try {
       await sendEmail({
         to: request.user.email,
-        subject: "Your Repo Has Been Approved — InternHack",
+        subject: "Your Repo Has Been Approved, InternHack",
         html: repoRequestApprovedHtml(request.user.name, request.name, request.owner),
       });
     } catch { /* email failure is non-blocking */ }

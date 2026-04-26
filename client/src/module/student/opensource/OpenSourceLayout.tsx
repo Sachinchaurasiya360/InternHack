@@ -29,7 +29,6 @@ function OpenSourceBreadcrumb() {
   const { pathname } = useLocation();
   const segments = pathname.split("/").filter(Boolean);
 
-  // Find the "opensource" segment index and build items from there
   const osIdx = segments.indexOf("opensource");
   if (osIdx < 0) return null;
 
@@ -43,16 +42,17 @@ function OpenSourceBreadcrumb() {
   }));
 
   return (
-    <nav className="flex items-center gap-1.5 text-sm mb-6 flex-wrap">
+    <nav className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest mb-6 flex-wrap px-4 sm:px-8 pt-6">
+      <div className="h-1 w-1 bg-lime-400"></div>
       {items.map((item, i) => (
         <Fragment key={item.path}>
-          {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 shrink-0" />}
+          {i > 0 && <ChevronRight className="w-3 h-3 text-stone-300 dark:text-stone-600 shrink-0" />}
           {item.isLast ? (
-            <span className="text-gray-700 dark:text-gray-300 font-medium">{item.name}</span>
+            <span className="text-stone-900 dark:text-stone-50">{item.name}</span>
           ) : (
             <Link
               to={item.path}
-              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors no-underline"
+              className="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
             >
               {item.name}
             </Link>
@@ -65,9 +65,9 @@ function OpenSourceBreadcrumb() {
 
 export default function OpenSourceLayout() {
   return (
-    <>
+    <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
       <OpenSourceBreadcrumb />
       <Outlet />
-    </>
+    </div>
   );
 }

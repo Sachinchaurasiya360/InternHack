@@ -6,13 +6,13 @@
       "title": "Understanding Google Summer of Code",
       "description": "Before writing a single line of your proposal, understand what GSoC actually is, how the selection works, and what mentors are truly looking for.",
       "level": "Foundation",
-      "mentor_guidance": "Let me tell you something most guides won't: GSoC is not a coding contest. It's a collaboration program. Google pays you a stipend to work on an open source project for 12 weeks, but the real test isn't whether you can code \u2014 it's whether you can communicate, plan, and deliver like a professional developer.\n\nEvery year, around 7,000 students apply. About 1,200 get selected. That's roughly a 17% acceptance rate. But here's the thing \u2014 at least half of those 7,000 applications are low-effort copy-paste proposals that get rejected in the first screening. If you put in genuine work, your actual odds are much better than 17%.\n\nWhat mentors actually look for comes down to three things: (1) Have you contributed to the project before applying? (2) Does your proposal show real technical understanding of the codebase? (3) Is your timeline realistic? That's it. Not how fancy your resume is, not which university you attend, not how many programming languages you list. Evidence, understanding, and planning.",
+      "mentor_guidance": "Let me tell you something most guides won't: GSoC is not a coding contest. It's a collaboration program. Google pays you a stipend to work on an open source project for 12 weeks, but the real test isn't whether you can code, it's whether you can communicate, plan, and deliver like a professional developer.\n\nEvery year, around 7,000 students apply. About 1,200 get selected. That's roughly a 17% acceptance rate. But here's the thing, at least half of those 7,000 applications are low-effort copy-paste proposals that get rejected in the first screening. If you put in genuine work, your actual odds are much better than 17%.\n\nWhat mentors actually look for comes down to three things: (1) Have you contributed to the project before applying? (2) Does your proposal show real technical understanding of the codebase? (3) Is your timeline realistic? That's it. Not how fancy your resume is, not which university you attend, not how many programming languages you list. Evidence, understanding, and planning.",
       "details": [
         "Google Summer of Code (GSoC) is an annual program where Google sponsors students to contribute to open source projects. Each selected student works with a mentor from the org for 12 weeks (or 22 weeks for larger projects) and receives a stipend ranging from $1,500 to $6,600 depending on the project size and your country.",
-        "Organizations apply to Google to participate, and Google selects around 150-200 orgs each year. These orgs then post 'Ideas Lists' \u2014 project proposals they want students to work on. Students choose an org and idea, then submit a detailed proposal.",
+        "Organizations apply to Google to participate, and Google selects around 150-200 orgs each year. These orgs then post 'Ideas Lists', project proposals they want students to work on. Students choose an org and idea, then submit a detailed proposal.",
         "The selection process works like this: orgs review all submitted proposals, rank their top choices, and tell Google how many slots they want. Google allocates slots based on org quality and demand. Your proposal competes only against other proposals to the same org, not against all 7,000 applicants globally.",
-        "GSoC has two project sizes: Medium (~175 hours over 12 weeks) and Large (~350 hours over 22 weeks). Most students choose Medium for their first time. The stipend varies by country \u2014 check the official GSoC site for current amounts.",
-        "The program timeline roughly follows this pattern each year: January \u2014 org applications open. February \u2014 accepted orgs announced. March \u2014 student applications open. April \u2014 student application deadline. May \u2014 accepted students announced + community bonding begins. June-August \u2014 coding period with midterm and final evaluations.",
+        "GSoC has two project sizes: Medium (~175 hours over 12 weeks) and Large (~350 hours over 22 weeks). Most students choose Medium for their first time. The stipend varies by country, check the official GSoC site for current amounts.",
+        "The program timeline roughly follows this pattern each year: January, org applications open. February, accepted orgs announced. March, student applications open. April, student application deadline. May, accepted students announced + community bonding begins. June-August, coding period with midterm and final evaluations.",
         "Mentors evaluate proposals based on: prior contributions to the project, technical depth of the implementation plan, realistic timeline with measurable milestones, evidence of understanding the codebase, and communication quality during the application period."
       ],
       "tips": [
@@ -22,7 +22,7 @@
       ],
       "mistakes": [
         "Thinking GSoC is only about coding ability. Students with strong communication, planning, and collaboration skills regularly beat 'better' coders who submit vague proposals.",
-        "Waiting until March to start preparing. Serious applicants begin contributing to orgs in December or January \u2014 by March, they already have merged PRs and mentor relationships.",
+        "Waiting until March to start preparing. Serious applicants begin contributing to orgs in December or January, by March, they already have merged PRs and mentor relationships.",
         "Applying without understanding that you're competing against proposals to the same org, not globally. Research your specific org's acceptance rate and number of slots."
       ],
       "resources": [
@@ -36,31 +36,31 @@
       "step": 2,
       "id": "choosing-organization",
       "title": "Choosing the Right Organization",
-      "description": "Your org choice determines 80% of your outcome. The best project isn't the most popular one \u2014 it's the one where your skills match, mentors are responsive, and competition is manageable.",
+      "description": "Your org choice determines 80% of your outcome. The best project isn't the most popular one, it's the one where your skills match, mentors are responsive, and competition is manageable.",
       "level": "Foundation",
-      "mentor_guidance": "Here's the advice I give every student I mentor: don't chase brand names. Every year, I see talented students waste their best proposal on Google's own projects, Mozilla, or LLVM \u2014 orgs that get 500+ applications for 10 slots. Meanwhile, a well-maintained library with 50 applicants for 5 slots goes overlooked.\n\nThe smart strategy is to find orgs where your existing skills align with their tech stack, where the mentors are active and responsive, and where the competition is realistic. I've seen students get accepted to their second-choice org with a strong, targeted proposal while getting rejected from their first choice where they were one of 200 applicants.\n\nDon't just browse the Ideas List \u2014 actually check the org's GitHub. When was the last commit? How fast are PRs reviewed? Are there active discussions in issues? If the last merged PR was 3 months ago, your proposal will collect dust. And check the archive: orgs that have participated in 3+ GSoC cycles have experienced mentors who know how to guide students. First-time orgs are riskier.",
+      "mentor_guidance": "Here's the advice I give every student I mentor: don't chase brand names. Every year, I see talented students waste their best proposal on Google's own projects, Mozilla, or LLVM, orgs that get 500+ applications for 10 slots. Meanwhile, a well-maintained library with 50 applicants for 5 slots goes overlooked.\n\nThe smart strategy is to find orgs where your existing skills align with their tech stack, where the mentors are active and responsive, and where the competition is realistic. I've seen students get accepted to their second-choice org with a strong, targeted proposal while getting rejected from their first choice where they were one of 200 applicants.\n\nDon't just browse the Ideas List, actually check the org's GitHub. When was the last commit? How fast are PRs reviewed? Are there active discussions in issues? If the last merged PR was 3 months ago, your proposal will collect dust. And check the archive: orgs that have participated in 3+ GSoC cycles have experienced mentors who know how to guide students. First-time orgs are riskier.",
       "details": [
-        "Browse accepted orgs at summerofcode.withgoogle.com. The list drops in February each year. Start early \u2014 waiting until the application opens puts you weeks behind serious applicants who've been contributing since January.",
-        "Read each org's Ideas List carefully. These aren't random suggestions \u2014 they're mentor-approved project specs that someone specifically wants built. Proposing within the Ideas List is significantly easier than pitching your own idea.",
-        "Match your skills honestly. If the project needs Rust and you've written 200 lines of Rust, that's not a match. You should already be comfortable in the required stack \u2014 GSoC is for building, not learning a new language from scratch.",
+        "Browse accepted orgs at summerofcode.withgoogle.com. The list drops in February each year. Start early, waiting until the application opens puts you weeks behind serious applicants who've been contributing since January.",
+        "Read each org's Ideas List carefully. These aren't random suggestions, they're mentor-approved project specs that someone specifically wants built. Proposing within the Ideas List is significantly easier than pitching your own idea.",
+        "Match your skills honestly. If the project needs Rust and you've written 200 lines of Rust, that's not a match. You should already be comfortable in the required stack, GSoC is for building, not learning a new language from scratch.",
         "Check the org's GitHub activity: when was the last commit? How fast are PRs reviewed? How do maintainers respond to new contributors? Active orgs with welcoming communities are your best bet.",
-        "Orgs that have participated in 3+ GSoC cycles have experienced mentors who know how to guide students effectively. First-time orgs are riskier \u2014 their mentoring process is unproven.",
+        "Orgs that have participated in 3+ GSoC cycles have experienced mentors who know how to guide students effectively. First-time orgs are riskier, their mentoring process is unproven.",
         "You can submit up to 3 proposals to different orgs. Focus on 2 strong proposals rather than spreading across 5+ orgs. Two excellent proposals beat five mediocre ones every time.",
         "Check the GSoC archive for each org's selection rate. Some orgs accept 2 students from 200 applicants. Others accept 8 from 30. The math matters enormously."
       ],
       "tips": [
-        "Pick a project that solves a problem you've personally experienced. If you've filed a bug report or wished for a feature, your proposal will practically write itself \u2014 you already understand the user's pain.",
+        "Pick a project that solves a problem you've personally experienced. If you've filed a bug report or wished for a feature, your proposal will practically write itself, you already understand the user's pain.",
         "Mid-tier orgs (100-500 GitHub stars, 3-5 GSoC slots) have the best acceptance odds. Research the competition before committing.",
         "Reach out to last year's accepted GSoC students for the org. They'll tell you what the mentor is like, how reviews work, and what the real expectations are. Most are happy to help."
       ],
       "mistakes": [
         "Applying to a project requiring skills you plan to learn during the program. Mentors can tell, and they'll pick someone who's already productive in the stack.",
         "Choosing based purely on stipend amount or brand prestige. The stipend doesn't matter if you're rejected from all 3 proposals.",
-        "Submitting 5+ proposals \u2014 each one gets weaker. Two polished proposals beat five rushed ones every single time."
+        "Submitting 5+ proposals, each one gets weaker. Two polished proposals beat five rushed ones every single time."
       ],
       "resources": [
         { "title": "GSoC Organization List (current year)", "url": "https://summerofcode.withgoogle.com/programs/2024/organizations", "type": "tool" },
-        { "title": "GSoC Archive \u2014 past projects and acceptance data", "url": "https://summerofcode.withgoogle.com/archive", "type": "tool" },
+        { "title": "GSoC Archive, past projects and acceptance data", "url": "https://summerofcode.withgoogle.com/archive", "type": "tool" },
         { "title": "Getting Started with GSoC (OpenEMR)", "url": "https://www.openemr.org/blog/getting-started-gsoc", "type": "article" }
       ]
     },
@@ -70,19 +70,19 @@
       "title": "Understanding the Project Idea",
       "description": "Many students fail because they write proposals without understanding the project. Clone the repo, run it locally, read the code your proposal touches, and study past GSoC projects.",
       "level": "Research",
-      "mentor_guidance": "This is where I see the biggest divide between accepted and rejected applicants. Accepted students have actually cloned the repo, built it locally, and traced the code paths their proposal touches. Rejected students write proposals based on the Ideas List description alone \u2014 and it's painfully obvious.\n\nHere's my rule: if you can't run the project locally, you can't contribute to it. Full stop. Building the project proves your dev environment works, gives you hands-on familiarity with the codebase, and often reveals complexity that the Ideas List summary doesn't mention.\n\nWhen I review proposals, I look for specific file paths, function names, and architectural understanding. 'I will improve the API performance' tells me nothing. 'After studying the request pipeline in src/core/pipeline.ts, I identified that the synchronous database calls at line 147 block the event loop. My proposal replaces these with batched async queries using the existing connection pool' \u2014 that tells me this student has actually read the code.\n\nAlso, always read past GSoC project reports for your org. The archive shows what was completed, what was abandoned, and why. You might unknowingly propose something that was already tried and failed two years ago.",
+      "mentor_guidance": "This is where I see the biggest divide between accepted and rejected applicants. Accepted students have actually cloned the repo, built it locally, and traced the code paths their proposal touches. Rejected students write proposals based on the Ideas List description alone, and it's painfully obvious.\n\nHere's my rule: if you can't run the project locally, you can't contribute to it. Full stop. Building the project proves your dev environment works, gives you hands-on familiarity with the codebase, and often reveals complexity that the Ideas List summary doesn't mention.\n\nWhen I review proposals, I look for specific file paths, function names, and architectural understanding. 'I will improve the API performance' tells me nothing. 'After studying the request pipeline in src/core/pipeline.ts, I identified that the synchronous database calls at line 147 block the event loop. My proposal replaces these with batched async queries using the existing connection pool', that tells me this student has actually read the code.\n\nAlso, always read past GSoC project reports for your org. The archive shows what was completed, what was abandoned, and why. You might unknowingly propose something that was already tried and failed two years ago.",
       "details": [
-        "Clone the repo and get it running locally. This is pass/fail \u2014 if you can't build the project, your proposal is theoretical, and mentors know it.",
+        "Clone the repo and get it running locally. This is pass/fail, if you can't build the project, your proposal is theoretical, and mentors know it.",
         "Read the project idea description multiple times. Understand not just what needs to be built, but why it matters, who will use it, and how it fits into the project's roadmap.",
         "Navigate the codebase in the specific area your proposal targets. Trace the data flow from entry points through the modules you'll modify. Name specific files and functions in your proposal.",
         "Read past GSoC project reports for this org. The archive shows what was completed, what was abandoned, and why. You might unknowingly propose something that was already tried and failed.",
         "Read open issues and recent PRs in your target area. This tells you what the current pain points are and what solutions have already been discussed.",
-        "Identify the 3 hardest technical challenges in your project. Address each one in your proposal with a specific approach. This is where most applicants fall short \u2014 they describe what they'll build but not how they'll solve the hard parts.",
+        "Identify the 3 hardest technical challenges in your project. Address each one in your proposal with a specific approach. This is where most applicants fall short, they describe what they'll build but not how they'll solve the hard parts.",
         "Understand the testing framework and CI pipeline. Your proposal should include a testing plan: what tests you'll write, what coverage you're targeting, which edge cases matter."
       ],
       "tips": [
         "Use GitHub's code search or your IDE's 'Go to Definition' to navigate large codebases. Reading code in context is better than skimming files randomly.",
-        "If the org has architectural decision records (ADR) or design docs, read them. They explain why the code is structured the way it is \u2014 this context prevents you from proposing something that contradicts existing design decisions.",
+        "If the org has architectural decision records (ADR) or design docs, read them. They explain why the code is structured the way it is, this context prevents you from proposing something that contradicts existing design decisions.",
         "Take notes as you read. Document the key modules, data flows, and design patterns you discover. These notes become the backbone of your proposal's 'Project Understanding' section."
       ],
       "mistakes": [
@@ -91,8 +91,8 @@
         "Ignoring past GSoC projects. If a similar project was attempted last year and only reached 60% completion, your timeline had better account for the complexity that tripped up the previous student."
       ],
       "resources": [
-        { "title": "GSoC Archive \u2014 past project reports", "url": "https://summerofcode.withgoogle.com/archive", "type": "tool" },
-        { "title": "Sourcegraph \u2014 code search across repositories", "url": "https://sourcegraph.com", "type": "tool" },
+        { "title": "GSoC Archive, past project reports", "url": "https://summerofcode.withgoogle.com/archive", "type": "tool" },
+        { "title": "Sourcegraph, code search across repositories", "url": "https://sourcegraph.com", "type": "tool" },
         { "title": "How to Read Code Like a Pro", "url": "https://www.freecodecamp.org/news/how-to-read-source-code/", "type": "article" }
       ]
     },
@@ -100,9 +100,9 @@
       "step": 4,
       "id": "communicating-with-community",
       "title": "Communicating with the Community",
-      "description": "Most accepted GSoC students have spoken with their mentor before submitting. Not a cold email \u2014 a real technical conversation that shows genuine engagement with the code.",
+      "description": "Most accepted GSoC students have spoken with their mentor before submitting. Not a cold email, a real technical conversation that shows genuine engagement with the code.",
       "level": "Engagement",
-      "mentor_guidance": "As someone who has mentored GSoC students, let me tell you exactly what goes through a mentor's mind when evaluating proposals. If I've never seen your name in our Slack/Discord/mailing list, you're already at a disadvantage. If I've had a technical conversation with you about the codebase, you're on my mental shortlist before I even read your proposal.\n\nHere's how to do this right: Join the org's communication channel. Read 2 weeks of message history before saying anything \u2014 this tells you the community culture, common topics, and who the key maintainers are. Your first message should include a specific technical question that proves you've looked at the code. Not 'how do I get started?' but something like 'I'm looking at the rate limiter in src/middleware/rate.ts. The current sliding window implementation doesn't handle distributed deployments. Would you be open to a proposal that adds Redis-backed rate limiting?'\n\nThat kind of message does three things: it shows you've read the code, it demonstrates technical depth, and it opens a natural conversation about your potential proposal. And please, be concise. Mentors are volunteers with full-time jobs. A 3-sentence message gets a response. A 3-paragraph introduction gets skipped.",
+      "mentor_guidance": "As someone who has mentored GSoC students, let me tell you exactly what goes through a mentor's mind when evaluating proposals. If I've never seen your name in our Slack/Discord/mailing list, you're already at a disadvantage. If I've had a technical conversation with you about the codebase, you're on my mental shortlist before I even read your proposal.\n\nHere's how to do this right: Join the org's communication channel. Read 2 weeks of message history before saying anything, this tells you the community culture, common topics, and who the key maintainers are. Your first message should include a specific technical question that proves you've looked at the code. Not 'how do I get started?' but something like 'I'm looking at the rate limiter in src/middleware/rate.ts. The current sliding window implementation doesn't handle distributed deployments. Would you be open to a proposal that adds Redis-backed rate limiting?'\n\nThat kind of message does three things: it shows you've read the code, it demonstrates technical depth, and it opens a natural conversation about your potential proposal. And please, be concise. Mentors are volunteers with full-time jobs. A 3-sentence message gets a response. A 3-paragraph introduction gets skipped.",
       "details": [
         "Find the org's communication channel: most use IRC, Slack, Discord, Matrix, or a mailing list. Join it and read 2 weeks of message history before posting anything.",
         "Introduce yourself briefly: your name, university, what you're studying, and which project idea interests you. Keep it to 3-4 sentences, not a biography.",
@@ -114,16 +114,16 @@
       ],
       "tips": [
         "Mentors are volunteers with full-time jobs. Be concise, specific, and respectful of their time. Quality of interaction matters more than quantity.",
-        "If a mentor responds enthusiastically to your question \u2014 asking follow-ups, suggesting approaches \u2014 that's a strong signal they want you to apply. Double down on that project.",
+        "If a mentor responds enthusiastically to your question, asking follow-ups, suggesting approaches, that's a strong signal they want you to apply. Double down on that project.",
         "Public conversations are better than private DMs for initial contact. They show the community you're engaged and let other mentors see your interactions too."
       ],
       "mistakes": [
         "Sending a private DM before introducing yourself publicly. This feels like going behind the community's back and can create a negative first impression.",
         "Asking 'can you explain the codebase to me?' Do your own research first. Mentors want to see self-directed learners, not students who need hand-holding.",
-        "Going silent after one exchange and only reappearing when you submit. Mentors notice inconsistent engagement \u2014 it signals low commitment."
+        "Going silent after one exchange and only reappearing when you submit. Mentors notice inconsistent engagement, it signals low commitment."
       ],
       "resources": [
-        { "title": "GSoC Guides \u2014 Contacting Mentors", "url": "https://google.github.io/gsocguides/student/making-first-contact", "type": "docs" },
+        { "title": "GSoC Guides, Contacting Mentors", "url": "https://google.github.io/gsocguides/student/making-first-contact", "type": "docs" },
         { "title": "How to Ask Smart Questions (ESR)", "url": "http://www.catb.org/esr/faqs/smart-questions.html", "type": "article" },
         { "title": "Open Source Communication Best Practices", "url": "https://opensource.guide/how-to-contribute/#communicating-effectively", "type": "article" }
       ]
@@ -132,16 +132,16 @@
       "step": 5,
       "id": "early-contributions",
       "title": "Making Small Contributions First",
-      "description": "A merged PR is worth more than 10 pages of proposal text. Mentors choose contributors they've already seen ship code \u2014 not strangers who claim they can.",
+      "description": "A merged PR is worth more than 10 pages of proposal text. Mentors choose contributors they've already seen ship code, not strangers who claim they can.",
       "level": "Engagement",
-      "mentor_guidance": "I cannot stress this enough: start contributing 6-8 weeks before the application deadline. This is not optional. Applicants with zero contributions are rejected 90%+ of the time, regardless of how well-written their proposal is.\n\nYour first contribution should be small: fix a typo in docs, resolve a 'good first issue', or add a missing test. The goal isn't to impress anyone \u2014 it's to prove you can navigate the codebase, follow the contribution process, and communicate with maintainers. Your second contribution should be more meaningful: a real bug fix, a small feature, or a non-trivial documentation improvement. This demonstrates actual technical ability.\n\nHere's what most students don't realize: getting even one commit merged by a mentor before applying gives you a massive advantage. It means someone on the team has already vouched for your code quality. They've seen how you handle feedback, how you communicate in PRs, and whether you follow through. When that mentor reads your proposal, they're thinking 'I've worked with this person \u2014 they deliver.' That's an incredibly powerful position to be in.\n\nContribute to the specific module your proposal targets. If you're proposing to improve the HTTP client, fix a bug in the HTTP client. This proves you've already explored the relevant code and can work effectively in that area.",
+      "mentor_guidance": "I cannot stress this enough: start contributing 6-8 weeks before the application deadline. This is not optional. Applicants with zero contributions are rejected 90%+ of the time, regardless of how well-written their proposal is.\n\nYour first contribution should be small: fix a typo in docs, resolve a 'good first issue', or add a missing test. The goal isn't to impress anyone, it's to prove you can navigate the codebase, follow the contribution process, and communicate with maintainers. Your second contribution should be more meaningful: a real bug fix, a small feature, or a non-trivial documentation improvement. This demonstrates actual technical ability.\n\nHere's what most students don't realize: getting even one commit merged by a mentor before applying gives you a massive advantage. It means someone on the team has already vouched for your code quality. They've seen how you handle feedback, how you communicate in PRs, and whether you follow through. When that mentor reads your proposal, they're thinking 'I've worked with this person, they deliver.' That's an incredibly powerful position to be in.\n\nContribute to the specific module your proposal targets. If you're proposing to improve the HTTP client, fix a bug in the HTTP client. This proves you've already explored the relevant code and can work effectively in that area.",
       "details": [
         "Start contributing 6-8 weeks before the application deadline. This timeline gives you enough room to get PRs merged, build relationships, and understand the codebase deeply.",
         "Your first contribution should be small: fix a typo in docs, resolve a 'good first issue', or add a missing test. The goal is proving you can navigate the codebase and follow the contribution process.",
         "Your second contribution should be meaningful: a real bug fix, a small feature, or a non-trivial documentation improvement. This demonstrates actual technical ability.",
         "Getting even one commit merged by a mentor before applying gives you a massive advantage. It means someone on the team has already vouched for your code quality.",
         "Contribute to the specific module your proposal targets. If you're proposing to improve the HTTP client, fix a bug in the HTTP client. This proves familiarity with relevant code.",
-        "If your PR isn't merged yet, include it in your proposal anyway \u2014 link the draft and note it's under review. Showing work-in-progress is still vastly better than showing nothing.",
+        "If your PR isn't merged yet, include it in your proposal anyway, link the draft and note it's under review. Showing work-in-progress is still vastly better than showing nothing.",
         "Even a thoughtful, well-researched comment on a complex issue demonstrates understanding. Not every contribution needs to be a pull request."
       ],
       "tips": [
@@ -156,8 +156,8 @@
       ],
       "resources": [
         { "title": "Good First Issues Finder", "url": "https://goodfirstissue.dev", "type": "tool" },
-        { "title": "GSoC Student Guide \u2014 Getting Started", "url": "https://google.github.io/gsocguides/student/", "type": "docs" },
-        { "title": "First Contributions \u2014 practice repo", "url": "https://github.com/firstcontributions/first-contributions", "type": "tool" }
+        { "title": "GSoC Student Guide, Getting Started", "url": "https://google.github.io/gsocguides/student/", "type": "docs" },
+        { "title": "First Contributions, practice repo", "url": "https://github.com/firstcontributions/first-contributions", "type": "tool" }
       ]
     },
     {
@@ -170,11 +170,11 @@
       "details": [
         "Title: Be specific. Not 'Improve XYZ' but 'Add async pipeline support to XYZ CLI for 3x throughput on large datasets'. The title should tell a mentor exactly what you'll build.",
         "Abstract (150-200 words): Problem statement in 2 sentences, your solution in 3 sentences, expected impact in 1 sentence. Zero fluff. A mentor should understand your entire project from this paragraph alone.",
-        "Deliverables: List 3-5 concrete, testable outcomes. Split into Primary (must ship by final evaluation) and Stretch (if time permits). Each deliverable should be independently verifiable \u2014 'Add async support' is vague. 'Implement async pipeline runner benchmarked at 3x throughput for datasets >100MB' is testable.",
+        "Deliverables: List 3-5 concrete, testable outcomes. Split into Primary (must ship by final evaluation) and Stretch (if time permits). Each deliverable should be independently verifiable, 'Add async support' is vague. 'Implement async pipeline runner benchmarked at 3x throughput for datasets >100MB' is testable.",
         "Implementation Plan: Describe your technical approach at the code level. Which modules will you modify? What data structures will you use? What's the API surface? Include diagrams if they help.",
         "Weekly Timeline: Every week from community bonding through final evaluation, with specific milestones. Each week should answer: 'What specific, testable output exists at the end of this week?'",
-        "About Me: University, year, relevant courses, past projects, GitHub, and every contribution you've made to this org. Link your PRs directly. Keep it concise \u2014 2-3 paragraphs maximum.",
-        "Availability: Hours per week, exam schedule, part-time job hours. Be honest \u2014 mentors respect realistic schedules over ambitious promises that lead to missed deadlines."
+        "About Me: University, year, relevant courses, past projects, GitHub, and every contribution you've made to this org. Link your PRs directly. Keep it concise, 2-3 paragraphs maximum.",
+        "Availability: Hours per week, exam schedule, part-time job hours. Be honest, mentors respect realistic schedules over ambitious promises that lead to missed deadlines."
       ],
       "tips": [
         "Show your proposal to a senior student or past GSoC participant before submitting. Fresh eyes catch gaps in logic, unclear explanations, and missing sections.",
@@ -184,10 +184,10 @@
       "mistakes": [
         "Writing a 10-page proposal with only 2 sentences about actual implementation. Mentors are evaluating your technical plan, not your autobiography.",
         "Listing deliverables like 'Improve performance' without measurable targets. How will the mentor know if you succeeded?",
-        "Copying the org's project idea description word-for-word. The Ideas List describes the problem \u2014 your proposal should describe your solution."
+        "Copying the org's project idea description word-for-word. The Ideas List describes the problem, your proposal should describe your solution."
       ],
       "resources": [
-        { "title": "GSoC Student Guide \u2014 Writing a Proposal", "url": "https://google.github.io/gsocguides/student/writing-a-proposal", "type": "docs" },
+        { "title": "GSoC Student Guide, Writing a Proposal", "url": "https://google.github.io/gsocguides/student/writing-a-proposal", "type": "docs" },
         { "title": "Real Accepted GSoC Proposals on GitHub", "url": "https://github.com/skalnik/gsoc-proposal-examples", "type": "example" },
         { "title": "Sympy GSoC Application Template", "url": "https://github.com/sympy/sympy/wiki/GSoC-2023-Application-Template", "type": "example" }
       ]
@@ -196,16 +196,16 @@
       "step": 7,
       "id": "writing-proposal",
       "title": "Writing the Proposal",
-      "description": "Now it's time to write. Each section of your proposal serves a specific purpose. Mentors prefer clear thinking over vague ambition \u2014 be specific, be honest, be concise.",
+      "description": "Now it's time to write. Each section of your proposal serves a specific purpose. Mentors prefer clear thinking over vague ambition, be specific, be honest, be concise.",
       "level": "Writing",
-      "mentor_guidance": "Writing the actual proposal is where all your preparation pays off. You've read the codebase, made contributions, talked to mentors, and studied the project idea. Now you need to translate all of that into a document that convinces a busy volunteer mentor to invest 12 weeks of their time in you.\n\nHere's how I'd approach writing each section:\n\nIntroduction: Start with why this project matters to you personally. Not generic 'I'm passionate about open source' \u2014 something real. 'I've been using this library in my own projects for 6 months, and the lack of async support has been a bottleneck I've worked around three times. I want to fix this for everyone.' That's authentic and immediately tells me you understand the problem from a user's perspective.\n\nProject Understanding: This is where you prove you've read the code. Reference specific modules, explain the current architecture, and identify the limitations your proposal addresses. Show the mentor you understand not just what to build, but why the current implementation works the way it does.\n\nImplementation Plan: Be surgical. 'I will modify src/core/pipeline.ts to replace the synchronous iterator with an async generator. The new AsyncPipeline class will implement the existing Pipeline interface to maintain backward compatibility.' This level of specificity is what separates accepted from rejected proposals.\n\nTimeline: Break it into named phases, not 'Week 1-4: implement features.' Include buffer time. Account for testing, documentation, and code review cycles. Be honest about exam schedules or other commitments. A mentor would rather see '20 hours/week during exams' than a fake '40 hours/week' that produces nothing.",
+      "mentor_guidance": "Writing the actual proposal is where all your preparation pays off. You've read the codebase, made contributions, talked to mentors, and studied the project idea. Now you need to translate all of that into a document that convinces a busy volunteer mentor to invest 12 weeks of their time in you.\n\nHere's how I'd approach writing each section:\n\nIntroduction: Start with why this project matters to you personally. Not generic 'I'm passionate about open source', something real. 'I've been using this library in my own projects for 6 months, and the lack of async support has been a bottleneck I've worked around three times. I want to fix this for everyone.' That's authentic and immediately tells me you understand the problem from a user's perspective.\n\nProject Understanding: This is where you prove you've read the code. Reference specific modules, explain the current architecture, and identify the limitations your proposal addresses. Show the mentor you understand not just what to build, but why the current implementation works the way it does.\n\nImplementation Plan: Be surgical. 'I will modify src/core/pipeline.ts to replace the synchronous iterator with an async generator. The new AsyncPipeline class will implement the existing Pipeline interface to maintain backward compatibility.' This level of specificity is what separates accepted from rejected proposals.\n\nTimeline: Break it into named phases, not 'Week 1-4: implement features.' Include buffer time. Account for testing, documentation, and code review cycles. Be honest about exam schedules or other commitments. A mentor would rather see '20 hours/week during exams' than a fake '40 hours/week' that produces nothing.",
       "details": [
         "Introduction: Explain your motivation and personal connection to the project. Why does this specific problem interest you? What's your experience with the project as a user or contributor? Keep it to 2-3 paragraphs.",
         "Project Understanding: Demonstrate deep familiarity with the codebase. Reference specific modules, files, and functions. Explain the current architecture and why it works the way it does. Identify the specific limitations your proposal addresses.",
         "Implementation Plan: This is the core of your proposal. Describe your technical approach at the code level. Which modules will you modify? What new classes or functions will you create? What's the API design? How does your solution integrate with existing code?",
         "Timeline: Break 12 weeks into named phases (Infrastructure, Implementation, Testing/Polish). Each week should have a specific, testable deliverable. Include at least 1 buffer week. Align major deliverables with the midterm evaluation.",
         "Deliverables: List 3-5 concrete, measurable outcomes. Each should be independently verifiable. Split into Primary (must ship) and Stretch (if time permits).",
-        "Testing Plan: Describe what tests you'll write \u2014 unit tests, integration tests, benchmarks. Which testing framework does the project use? What edge cases will you cover? What coverage target are you aiming for?",
+        "Testing Plan: Describe what tests you'll write, unit tests, integration tests, benchmarks. Which testing framework does the project use? What edge cases will you cover? What coverage target are you aiming for?",
         "Documentation Plan: Which docs will you write or update? API documentation, README updates, tutorials, migration guides? Documentation is part of the deliverable, not an afterthought.",
         "About Me: Briefly describe your background, relevant skills, and contributions to this org. Link every PR you've submitted. Include a skills table with honest self-assessment (Expert/Intermediate/Beginner)."
       ],
@@ -215,9 +215,9 @@
         "Over-estimate time for tasks involving legacy code or unfamiliar APIs. They always take 2-3x longer than you think. A realistic timeline builds more trust than an ambitious one."
       ],
       "mistakes": [
-        "Writing generic statements like 'I will implement the feature as described in the Ideas List.' Mentors already know what's in their Ideas List \u2014 they want to see YOUR approach.",
+        "Writing generic statements like 'I will implement the feature as described in the Ideas List.' Mentors already know what's in their Ideas List, they want to see YOUR approach.",
         "Packing all major features into weeks 10-12. If week 10 slips, everything collapses. Front-load your most important deliverables.",
-        "No concrete deliverable at the midterm evaluation. Your mentor needs to assess 'substantial progress' \u2014 give them something demonstrable by week 6."
+        "No concrete deliverable at the midterm evaluation. Your mentor needs to assess 'substantial progress', give them something demonstrable by week 6."
       ],
       "resources": [
         { "title": "How to Write a Git Commit Message (Chris Beams)", "url": "https://cbea.ms/git-commit/", "type": "article" },
@@ -231,11 +231,11 @@
       "title": "Common Mistakes That Ruin Proposals",
       "description": "These are the patterns I see every year in rejected proposals. Every single one is avoidable if you know what to watch for.",
       "level": "Review",
-      "mentor_guidance": "After reviewing proposals for several years, I can predict rejection within the first 30 seconds of reading. The patterns are that consistent. Let me walk you through the most common failure modes so you can avoid every single one of them.\n\nThe absolute number one reason for rejection: zero contributions before applying. This alone accounts for more rejections than everything else combined. A proposal from someone who has never touched the codebase is a bet on a stranger. A proposal from someone with 2-3 merged PRs is a bet on a proven contributor. No amount of proposal polish compensates for zero prior engagement.\n\nThe second biggest killer is vague deliverables. 'Improve performance' is not testable. 'Reduce parse latency by 40% for inputs >1MB, measured with project benchmarks' is. If your mentor can't verify completion, it's not a deliverable \u2014 it's a wish.\n\nThird: fantasy timelines. 12 weeks feels like a lot until you account for design review, code review cycles, testing, documentation, the week you lose to an upstream breaking change, and the week where you realize your approach doesn't work and need to pivot. A timeline with zero slack is a timeline that will slip.\n\nFourth: copy-pasting the Ideas List. The Ideas List describes the problem. Your proposal should describe YOUR solution \u2014 in your own words, with your own technical analysis. If your proposal reads like a reformatted version of the Ideas List, it tells the mentor you haven't done any original thinking.",
+      "mentor_guidance": "After reviewing proposals for several years, I can predict rejection within the first 30 seconds of reading. The patterns are that consistent. Let me walk you through the most common failure modes so you can avoid every single one of them.\n\nThe absolute number one reason for rejection: zero contributions before applying. This alone accounts for more rejections than everything else combined. A proposal from someone who has never touched the codebase is a bet on a stranger. A proposal from someone with 2-3 merged PRs is a bet on a proven contributor. No amount of proposal polish compensates for zero prior engagement.\n\nThe second biggest killer is vague deliverables. 'Improve performance' is not testable. 'Reduce parse latency by 40% for inputs >1MB, measured with project benchmarks' is. If your mentor can't verify completion, it's not a deliverable, it's a wish.\n\nThird: fantasy timelines. 12 weeks feels like a lot until you account for design review, code review cycles, testing, documentation, the week you lose to an upstream breaking change, and the week where you realize your approach doesn't work and need to pivot. A timeline with zero slack is a timeline that will slip.\n\nFourth: copy-pasting the Ideas List. The Ideas List describes the problem. Your proposal should describe YOUR solution, in your own words, with your own technical analysis. If your proposal reads like a reformatted version of the Ideas List, it tells the mentor you haven't done any original thinking.",
       "details": [
         "Zero contributions before applying: This alone accounts for most rejections. Mentors won't bet 12 weeks of their time on someone who hasn't proven they can write code in the project.",
         "Vague or untestable deliverables: 'Improve performance' is not measurable. Every deliverable needs a concrete success criterion that both you and your mentor can verify.",
-        "Copy-pasting the Ideas List: The Ideas List describes the problem. Your proposal should describe your solution \u2014 in your own words, with your own technical analysis and architectural decisions.",
+        "Copy-pasting the Ideas List: The Ideas List describes the problem. Your proposal should describe your solution, in your own words, with your own technical analysis and architectural decisions.",
         "Fantasy timeline with zero buffer: 12 weeks feels generous until you account for code review cycles, upstream changes, exam weeks, and the inevitable 'this is harder than I thought' moment. Include at least 1 buffer week.",
         "All biography, no implementation: 2 pages about yourself and 3 sentences about the technical approach is exactly backwards. Mentors care about how you'll build it, not where you went to school.",
         "Applying to 5+ organizations: Each additional proposal dilutes the others. Two strong, deeply researched proposals beat five superficial ones. Quality wins.",
@@ -250,45 +250,45 @@
       ],
       "mistakes": [
         "Thinking that a well-written proposal compensates for zero prior contributions. It doesn't. Mentors have been burned too many times by students who talk well but don't deliver.",
-        "Listing technologies on your resume that you've only used in a tutorial. Mentors will ask follow-up questions \u2014 if you can't answer, trust collapses immediately.",
+        "Listing technologies on your resume that you've only used in a tutorial. Mentors will ask follow-up questions, if you can't answer, trust collapses immediately.",
         "Not linking to your GitHub or any code at all. If a mentor can't see your code, they'll assume you can't write it."
       ],
       "resources": [
         { "title": "GSoC Proposal Tips (Kushal Das)", "url": "https://kushaldas.in/posts/the-google-summer-of-code-tips.html", "type": "article" },
         { "title": "Building an Open Source Portfolio", "url": "https://opensource.guide/how-to-contribute/#your-profile-readme", "type": "article" },
-        { "title": "Reddit r/gsoc \u2014 student experiences", "url": "https://reddit.com/r/gsoc", "type": "article" }
+        { "title": "Reddit r/gsoc, student experiences", "url": "https://reddit.com/r/gsoc", "type": "article" }
       ]
     },
     {
       "step": 9,
       "id": "refining-submitting",
       "title": "Improving, Refining, and Submitting",
-      "description": "Share a draft with your mentor 7-10 days before the deadline. Incorporate their feedback. Proofread. Submit 48 hours early \u2014 the portal crashes every year on deadline day.",
+      "description": "Share a draft with your mentor 7-10 days before the deadline. Incorporate their feedback. Proofread. Submit 48 hours early, the portal crashes every year on deadline day.",
       "level": "Final",
-      "mentor_guidance": "The difference between a good proposal and a great proposal is iteration. The first draft is never the final draft. Here's my process for helping students polish their proposals:\n\nShare a Google Doc or PDF draft with your mentor at least one week before the deadline. Ask three specific questions: 'Is the scope right? Is the timeline realistic? Am I missing any technical considerations?' These focused questions get better responses than 'what do you think?'\n\nIncorporate mentor feedback seriously. If they say the scope is too ambitious, cut features \u2014 don't argue. They've seen dozens of proposals and they know what's achievable in 12 weeks. Fighting their feedback is one of the strongest negative signals you can send.\n\nDo multiple revision cycles. A proposal that goes through 3 drafts is dramatically stronger than a first draft submitted at midnight. Read your proposal aloud \u2014 awkward sentences, vague claims, and logical gaps become obvious when you hear them.\n\nAnd please, submit 24-48 hours before the deadline. The GSoC submission portal consistently crashes under load in the final hours. Every year, students lose their spot because they were finalizing at 11:55 PM and the portal went down. Don't gamble your application on server uptime. After submitting, you can still edit until the deadline closes. Use this window to polish, but don't make major structural changes.",
+      "mentor_guidance": "The difference between a good proposal and a great proposal is iteration. The first draft is never the final draft. Here's my process for helping students polish their proposals:\n\nShare a Google Doc or PDF draft with your mentor at least one week before the deadline. Ask three specific questions: 'Is the scope right? Is the timeline realistic? Am I missing any technical considerations?' These focused questions get better responses than 'what do you think?'\n\nIncorporate mentor feedback seriously. If they say the scope is too ambitious, cut features, don't argue. They've seen dozens of proposals and they know what's achievable in 12 weeks. Fighting their feedback is one of the strongest negative signals you can send.\n\nDo multiple revision cycles. A proposal that goes through 3 drafts is dramatically stronger than a first draft submitted at midnight. Read your proposal aloud, awkward sentences, vague claims, and logical gaps become obvious when you hear them.\n\nAnd please, submit 24-48 hours before the deadline. The GSoC submission portal consistently crashes under load in the final hours. Every year, students lose their spot because they were finalizing at 11:55 PM and the portal went down. Don't gamble your application on server uptime. After submitting, you can still edit until the deadline closes. Use this window to polish, but don't make major structural changes.",
       "details": [
         "Share a Google Doc or PDF draft with your mentor at least one week before the deadline. Ask specific questions: 'Is the scope right? Is the timeline realistic? Am I missing any technical considerations?'",
-        "Incorporate mentor feedback seriously. If they say the scope is too ambitious, cut features \u2014 don't argue. They've seen dozens of proposals and know what's achievable in 12 weeks.",
+        "Incorporate mentor feedback seriously. If they say the scope is too ambitious, cut features, don't argue. They've seen dozens of proposals and know what's achievable in 12 weeks.",
         "Do multiple revision cycles. A proposal that goes through 3 drafts is dramatically stronger than a first draft submitted at midnight.",
         "Read your proposal aloud. Awkward sentences, vague claims, and logical gaps become obvious when you hear them. If a sentence doesn't add value, delete it.",
         "Check every link in your proposal. Broken links to your GitHub, PR references, or resources make you look careless. Click each one before submitting.",
         "Submit 24-48 hours before the deadline. The GSoC submission portal consistently crashes under load in the final hours. Don't gamble your application on server uptime.",
         "After submitting, you can still edit until the deadline closes. Use this window to polish minor issues, but don't make major structural changes after your mentor reviewed the draft.",
-        "Once submitted, wait patiently. Don't message mentors asking 'will I be selected?' Results are announced on a specific date \u2014 check the GSoC timeline and be patient."
+        "Once submitted, wait patiently. Don't message mentors asking 'will I be selected?' Results are announced on a specific date, check the GSoC timeline and be patient."
       ],
       "tips": [
         "Ask a friend (even non-technical) to read your proposal. If they can't follow the structure or understand what you're building after reading the abstract, it needs clarity work.",
         "Some orgs post their evaluation rubric or proposal template. If they do, follow it exactly. Deviating from a rubric means reviewers have to hunt for information instead of finding it where expected.",
-        "After submission, continue contributing to the org. Mentors notice applicants who keep engaging even after the deadline \u2014 it signals genuine interest, not just stipend motivation."
+        "After submission, continue contributing to the org. Mentors notice applicants who keep engaging even after the deadline, it signals genuine interest, not just stipend motivation."
       ],
       "mistakes": [
         "Submitting 5 minutes before the deadline. Every year, students lose their spot because the portal went down or their session expired. Don't be that student.",
         "Ignoring mentor feedback and submitting the original draft. If a mentor took time to review your proposal, not incorporating their input signals you won't listen during the program.",
-        "Assuming the mentor will privately tell you if you're selected. They won't \u2014 wait for the official results announcement."
+        "Assuming the mentor will privately tell you if you're selected. They won't, wait for the official results announcement."
       ],
       "resources": [
         { "title": "GSoC Contributor Portal", "url": "https://summerofcode.withgoogle.com", "type": "tool" },
-        { "title": "GSoC Student Guide \u2014 Final Steps", "url": "https://google.github.io/gsocguides/student/", "type": "docs" },
+        { "title": "GSoC Student Guide, Final Steps", "url": "https://google.github.io/gsocguides/student/", "type": "docs" },
         { "title": "Wikimedia GSoC Student Guide", "url": "https://www.mediawiki.org/wiki/Google_Summer_of_Code/Participants", "type": "docs" }
       ]
     }

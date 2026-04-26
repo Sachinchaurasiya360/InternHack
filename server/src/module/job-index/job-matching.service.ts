@@ -142,7 +142,7 @@ export class JobMatchingService {
           matchCount++;
         }
       } catch {
-        // pgvector / embedding columns not set up yet — skip silently
+        // pgvector / embedding columns not set up yet, skip silently
       }
     }
 

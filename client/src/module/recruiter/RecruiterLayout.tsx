@@ -1,21 +1,26 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { NavLink, Link, Outlet, useNavigate, useLocation } from "react-router";
-import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User, Menu, X, Sun, Moon, ChevronDown, BarChart3, Building2, CalendarDays, Clock, Video, CheckSquare, Award, Wallet, Receipt, UserPlus, ShieldCheck, GitBranch, Key } from "lucide-react";
+import { LayoutDashboard, Briefcase, Search, LogOut, ChevronsLeft, ChevronsRight, Users, User, Menu, X, ChevronDown, BarChart3, Building2, CalendarDays, Clock, Video, CheckSquare, Award, Wallet, Receipt, UserPlus, ShieldCheck, GitBranch, Key, UserCircle, Bookmark } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
-import { useThemeStore } from "../../lib/theme.store";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
 
-const RECRUITMENT_ITEMS = [
+type NavItem = {
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  end?: boolean;
+  comingSoon?: boolean;
+};
+
+const RECRUITMENT_ITEMS: NavItem[] = [
   { to: "/recruiters", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/recruiters/jobs", icon: Briefcase, label: "My Jobs" },
   { to: "/recruiters/talent-search", icon: Search, label: "Talent Search" },
-  { to: "/recruiters/talent-pools", icon: Users, label: "Talent Pools" },
-  { to: "/recruiters/campus-drives", icon: School, label: "Campus Drives" },
-  { to: "/recruiters/jobs/create", icon: PlusCircle, label: "Create Job" },
+  { to: "/recruiters/saved", icon: Bookmark, label: "Saved" },
 ];
 
-const HR_ITEMS = [
+const HR_ITEMS: NavItem[] = [
   { to: "/recruiters/hr", icon: BarChart3, label: "HR Dashboard", end: true },
   { to: "/recruiters/hr/employees", icon: Users, label: "Employees" },
   { to: "/recruiters/hr/departments", icon: Building2, label: "Departments" },
@@ -24,29 +29,28 @@ const HR_ITEMS = [
   { to: "/recruiters/hr/interviews", icon: Video, label: "Interviews" },
   { to: "/recruiters/hr/tasks", icon: CheckSquare, label: "Tasks" },
   { to: "/recruiters/hr/performance", icon: Award, label: "Performance" },
-  { to: "/recruiters/hr/payroll", icon: Wallet, label: "Payroll" },
-  { to: "/recruiters/hr/reimbursements", icon: Receipt, label: "Reimbursements" },
+  { to: "/recruiters/hr/payroll", icon: Wallet, label: "Payroll", comingSoon: true },
+  { to: "/recruiters/hr/reimbursements", icon: Receipt, label: "Reimbursements", comingSoon: true },
   { to: "/recruiters/hr/onboarding", icon: UserPlus, label: "Onboarding" },
   { to: "/recruiters/hr/compliance", icon: ShieldCheck, label: "Compliance" },
   { to: "/recruiters/hr/workflows", icon: GitBranch, label: "Workflows" },
   { to: "/recruiters/hr/roles", icon: Key, label: "Roles & Access" },
 ];
 
-const BOTTOM_ITEMS = [
-  { to: "/recruiters/profile", icon: User, label: "Profile" },
-  { to: "/", icon: Home, label: "Home" },
+const ACCOUNT_ITEMS: NavItem[] = [
+  { to: "/recruiters/profile", icon: UserCircle, label: "My Profile" },
 ];
 
 export default function RecruiterLayout() {
   const { user, logout } = useAuthStore();
-  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("recruiter-sidebar-collapsed") === "true";
   });
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hrExpanded, setHrExpanded] = useState(() => localStorage.getItem("recruiter-hr-expanded") !== "false");
-  const location = useLocation();
+  const [imgError, setImgError] = useState(false);
 
   const isHRActive = location.pathname.startsWith("/recruiters/hr");
 
@@ -70,200 +74,240 @@ export default function RecruiterLayout() {
   };
 
   const sidebarWidth = collapsed ? 72 : 256;
+  const displayName = user?.company || user?.name || "Recruiter";
+
+  const avatar = (size: "sm" | "md") => {
+    const dim = size === "sm" ? "w-8 h-8" : "w-9 h-9";
+    const icon = size === "sm" ? "w-4 h-4" : "w-5 h-5";
+    if (user?.profilePic && !imgError) {
+      return (
+        <img
+          src={user.profilePic}
+          alt={user.name}
+          className={`${dim} rounded-md object-cover border border-stone-200 dark:border-white/10`}
+          onError={() => setImgError(true)}
+        />
+      );
+    }
+    return (
+      <div className={`${dim} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center`}>
+        <User className={`${icon} text-stone-500`} />
+      </div>
+    );
+  };
+
+  const renderNavItem = (item: NavItem) => (
+    <li key={item.to}>
+      <NavLink
+        to={item.to}
+        end={item.end}
+        title={collapsed ? item.label : undefined}
+        onClick={() => setMobileOpen(false)}
+        className={({ isActive }) =>
+          `relative flex items-center gap-3 rounded-md text-sm transition-colors no-underline ${
+            collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+          } ${
+            isActive
+              ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 font-bold"
+              : "text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-900 hover:text-stone-900 dark:hover:text-stone-50 font-medium"
+          }`
+        }
+      >
+        {({ isActive }) => (
+          <>
+            {isActive && !collapsed && (
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-lime-400" />
+            )}
+            <item.icon className="w-4 h-4 shrink-0" />
+            {!collapsed && (
+              <>
+                <span className="truncate">{item.label}</span>
+                {item.comingSoon && (
+                  <span className="ml-auto shrink-0 text-[9px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-500 border border-stone-300 dark:border-white/15 px-1.5 py-0.5 leading-none">
+                    soon
+                  </span>
+                )}
+              </>
+            )}
+          </>
+        )}
+      </NavLink>
+    </li>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <SEO title="Recruiter Dashboard" noIndex />
 
-      {/* Navbar — hidden on mobile, mobile top bar replaces it */}
+      {/* Navbar, hidden on mobile, mobile top bar replaces it */}
       <div className="hidden lg:block">
         <Navbar sidebarOffset={sidebarWidth} />
       </div>
 
       {/* Mobile top bar */}
-      <div className="fixed top-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+      <div className="fixed top-0 left-0 right-0 z-40 lg:hidden bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-white/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileOpen(true)}
-            className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label="Open menu"
+            className="p-2 rounded-md text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors border-0 bg-transparent cursor-pointer"
           >
             <Menu className="w-5 h-5" />
           </button>
           <Link to="/" className="flex items-center gap-2 no-underline">
-            <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-lg object-contain" />
-            <span className="text-base font-bold text-gray-950 dark:text-white">InternHack</span>
+            <div className="relative">
+              <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-md object-contain" />
+              <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
+            </div>
+            <span className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              InternHack
+            </span>
           </Link>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
-          <div className="w-8 h-8 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold">
-            {user?.name?.charAt(0)?.toUpperCase() ?? "R"}
-          </div>
-        </div>
+        <Link to="/recruiters/profile" className="no-underline">
+          {avatar("sm")}
+        </Link>
       </div>
 
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-stone-950/60 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 z-50 ${
+        className={`fixed top-0 left-0 h-screen bg-stone-50 dark:bg-stone-950 border-r border-stone-200 dark:border-white/10 flex flex-col transition-all duration-300 z-50 ${
           collapsed ? "w-18" : "w-64"
         } ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        {/* Toggle + User */}
-        <div className={`${collapsed ? "px-3 pt-2 pb-1" : "px-5 pt-3 pb-1"}`}>
-          <div className="flex items-center justify-between mb-2">
+        {/* Mobile close button */}
+        <div className="flex items-center justify-end px-5 pt-4 pb-2 lg:hidden border-b border-stone-200 dark:border-white/10">
+          <button
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+            className="p-1.5 rounded-md text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors border-0 bg-transparent cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Identity + collapse toggle */}
+        <div className={`flex items-center gap-2 border-b border-stone-200 dark:border-white/10 ${collapsed ? "px-3 py-3" : "px-5 py-3"}`}>
+          <Link
+            to="/recruiters/profile"
+            onClick={() => setMobileOpen(false)}
+            title={collapsed ? displayName : undefined}
+            className={`flex items-center gap-3 no-underline min-w-0 ${collapsed ? "justify-center flex-1" : "flex-1"} hover:opacity-80 transition-opacity`}
+          >
+            {avatar("md")}
+            {!collapsed && (
+              <div className="min-w-0 flex-1">
+                <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight">
+                  {displayName}
+                </h2>
+                {user?.company && user?.name && (
+                  <p className="text-xs text-stone-500 truncate leading-tight">{user.name}</p>
+                )}
+              </div>
+            )}
+          </Link>
+          {!collapsed && (
             <button
               onClick={toggleSidebar}
-              className="hidden lg:flex w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              title="Collapse sidebar"
+              className="hidden lg:flex shrink-0 p-1.5 rounded-md text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors border-0 bg-transparent cursor-pointer"
             >
-              {collapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
+              <ChevronsLeft className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-1 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {collapsed ? (
-            <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold mx-auto mb-2">
-              {user?.name?.charAt(0)?.toUpperCase() ?? "R"}
-            </div>
-          ) : (
-            <div className="mb-2">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.company || "Recruiter"}</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.name}</p>
-            </div>
           )}
         </div>
 
-        {/* Nav */}
-        <nav className={`flex-1 ${collapsed ? "px-2" : "px-3"} overflow-y-auto`}>
-          {/* Recruitment section */}
-          {!collapsed && <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 px-3 pt-2 pb-1">Recruitment</p>}
-          <div className="space-y-0.5">
-            {RECRUITMENT_ITEMS.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                title={collapsed ? item.label : undefined}
-                onClick={() => setMobileOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
-                    collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
-                  } ${
-                    isActive
-                      ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
-                  }`
-                }
-              >
-                <item.icon className="w-4 h-4 shrink-0" />
-                {!collapsed && <span className="truncate">{item.label}</span>}
-              </NavLink>
-            ))}
+        {collapsed && (
+          <div className="hidden lg:flex justify-center py-2 border-b border-stone-200 dark:border-white/10">
+            <button
+              onClick={toggleSidebar}
+              title="Expand sidebar"
+              className="p-1.5 rounded-md text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors border-0 bg-transparent cursor-pointer"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Nav groups */}
+        <nav className={`flex-1 overflow-y-auto ${collapsed ? "px-2 py-3" : "px-3 py-3"} space-y-4`}>
+          {/* Recruitment */}
+          <div>
+            {!collapsed ? (
+              <div className="flex items-center gap-2 px-2 mb-1.5">
+                <span className="h-1 w-1 bg-lime-400" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  recruitment
+                </span>
+              </div>
+            ) : (
+              <div className="h-px bg-stone-200 dark:bg-white/10 mx-2 mb-2" />
+            )}
+            <ul className="space-y-0.5">
+              {RECRUITMENT_ITEMS.map(renderNavItem)}
+            </ul>
           </div>
 
-          {/* Divider */}
-          <div className="my-2 border-t border-gray-100 dark:border-gray-800" />
-
-          {/* HR Management section */}
-          {!collapsed ? (
-            <button
-              onClick={toggleHR}
-              className={`flex items-center justify-between w-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors ${
-                isHRActive ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-              }`}
-            >
-              HR Management
-              <ChevronDown className={`w-3 h-3 transition-transform ${hrExpanded ? "" : "-rotate-90"}`} />
-            </button>
-          ) : (
-            <div className="flex justify-center py-1">
-              <div className="w-6 border-t border-gray-200 dark:border-gray-700" />
-            </div>
-          )}
-
-          {(hrExpanded || collapsed) && (
-            <div className="space-y-0.5">
-              {HR_ITEMS.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  title={collapsed ? item.label : undefined}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
-                      collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
-                    } ${
-                      isActive
-                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
-                    }`
-                  }
-                >
-                  <item.icon className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span className="truncate">{item.label}</span>}
-                </NavLink>
-              ))}
-            </div>
-          )}
-
-          {/* Divider */}
-          <div className="my-2 border-t border-gray-100 dark:border-gray-800" />
-
-          {/* Bottom items */}
-          <div className="space-y-0.5">
-            {BOTTOM_ITEMS.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                title={collapsed ? item.label : undefined}
-                onClick={() => setMobileOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
-                    collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
-                  } ${
-                    isActive
-                      ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
-                  }`
-                }
+          {/* HR Management, collapsible */}
+          <div>
+            {!collapsed ? (
+              <button
+                onClick={toggleHR}
+                className="flex items-center gap-2 w-full px-2 mb-1.5 border-0 bg-transparent cursor-pointer"
               >
-                <item.icon className="w-4 h-4 shrink-0" />
-                {!collapsed && <span className="truncate">{item.label}</span>}
-              </NavLink>
-            ))}
+                <span className={`h-1 w-1 ${isHRActive ? "bg-lime-400" : "bg-stone-400"}`} />
+                <span className={`text-[10px] font-mono uppercase tracking-widest ${isHRActive ? "text-stone-900 dark:text-stone-50" : "text-stone-500"}`}>
+                  hr management
+                </span>
+                <ChevronDown className={`w-3 h-3 ml-auto text-stone-500 transition-transform ${hrExpanded ? "" : "-rotate-90"}`} />
+              </button>
+            ) : (
+              <div className="h-px bg-stone-200 dark:bg-white/10 mx-2 mb-2" />
+            )}
+            {(hrExpanded || collapsed) && (
+              <ul className="space-y-0.5">
+                {HR_ITEMS.map(renderNavItem)}
+              </ul>
+            )}
+          </div>
+
+          {/* Account */}
+          <div>
+            {!collapsed ? (
+              <div className="flex items-center gap-2 px-2 mb-1.5">
+                <span className="h-1 w-1 bg-lime-400" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  account
+                </span>
+              </div>
+            ) : (
+              <div className="h-px bg-stone-200 dark:bg-white/10 mx-2 mb-2" />
+            )}
+            <ul className="space-y-0.5">
+              {ACCOUNT_ITEMS.map(renderNavItem)}
+            </ul>
           </div>
         </nav>
 
-        {/* Logout */}
-        <div className={`${collapsed ? "px-2 pb-4 pt-2" : "px-3 pb-5 pt-2"} border-t border-gray-100 dark:border-gray-800 mt-2`}>
+        {/* Footer: logout */}
+        <div className={`border-t border-stone-200 dark:border-white/10 ${collapsed ? "px-2 py-3" : "px-3 py-3"}`}>
           <button
             onClick={handleLogout}
             title={collapsed ? "Logout" : undefined}
-            className={`flex items-center gap-3 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors w-full ${
-              collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+            className={`w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors border-0 bg-transparent cursor-pointer ${
+              collapsed ? "justify-center px-2" : ""
             }`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            {!collapsed && <span>Logout</span>}
+            {!collapsed && <span className="truncate">Logout</span>}
           </button>
         </div>
       </aside>
@@ -274,8 +318,43 @@ export default function RecruiterLayout() {
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
       >
-        <Outlet />
+        <Suspense fallback={<RecruiterRouteLoader />}>
+          <Outlet />
+        </Suspense>
       </main>
+    </div>
+  );
+}
+
+function RecruiterRouteLoader() {
+  return (
+    <div className="max-w-7xl mx-auto">
+      <div className="mt-6 flex items-center gap-2 mb-3">
+        <span className="h-1 w-1 bg-lime-400" />
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          loading
+        </span>
+      </div>
+      <div className="animate-pulse space-y-4">
+        <div className="h-10 w-1/3 rounded bg-stone-100 dark:bg-stone-900" />
+        <div className="h-4 w-2/3 rounded bg-stone-100 dark:bg-stone-900" />
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white dark:bg-stone-950 px-4 py-5">
+              <div className="h-3 w-16 rounded bg-stone-100 dark:bg-stone-900" />
+              <div className="mt-2 h-5 w-10 rounded bg-stone-100 dark:bg-stone-900" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-40 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-950"
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Award, Cpu, ExternalLink, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Award, Cpu, ExternalLink, Menu, X, Radar, MessageCircle } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
@@ -99,6 +99,14 @@ export default function AdminLayout() {
           <GitPullRequest className="w-4 h-4" />
           Repo Requests
         </NavLink>
+        <NavLink to="/admin/signals" className={linkClass} onClick={() => setSidebarOpen(false)}>
+          <Radar className="w-4 h-4" />
+          Funding Signals
+        </NavLink>
+        <NavLink to="/admin/interview-experiences" className={linkClass} onClick={() => setSidebarOpen(false)}>
+          <MessageCircle className="w-4 h-4" />
+          Interview Experiences
+        </NavLink>
         <NavLink to="/admin/broadcast-email" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <Mail className="w-4 h-4" />
           Broadcast Email
@@ -145,7 +153,7 @@ export default function AdminLayout() {
         />
       )}
 
-      {/* Sidebar — desktop: fixed visible, mobile: slide-in overlay */}
+      {/* Sidebar, desktop: fixed visible, mobile: slide-in overlay */}
       <aside
         className={`fixed top-0 left-0 h-screen z-50 w-64 bg-gray-900 border-r border-gray-800 p-6 flex flex-col transition-transform duration-300 lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -154,7 +162,7 @@ export default function AdminLayout() {
         {sidebarContent}
       </aside>
 
-      {/* Main content — offset on desktop, full-width on mobile */}
+      {/* Main content, offset on desktop, full-width on mobile */}
       <main className="flex-1 lg:ml-64 pt-16 lg:pt-0 p-4 sm:p-6 lg:p-8 overflow-auto">
         <Outlet />
       </main>

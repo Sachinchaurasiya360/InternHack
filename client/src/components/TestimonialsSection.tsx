@@ -64,28 +64,28 @@ const thirdColumn = testimonials.slice(6, 9);
 
 export function TestimonialsSection() {
   return (
-    <section className="relative py-24 md:py-32 bg-white dark:bg-[#030303] overflow-hidden">
-      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-rose-500/5 blur-3xl dark:block hidden" />
-
+    <section className="relative py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center justify-center max-w-xl mx-auto mb-12"
+          transition={{ duration: 0.5 }}
+          className="max-w-3xl mb-14"
         >
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-center">
-            <span className="bg-clip-text text-transparent bg-linear-to-b from-gray-900 to-gray-900/80 dark:from-white dark:to-white/80">
-              Loved by
-            </span>{" "}
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-600 via-gray-900 to-rose-600 dark:from-indigo-300 dark:via-white/90 dark:to-rose-300">
-              thousands
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            shipped offers
+          </div>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Real students.{" "}
+            <span className="text-stone-400 dark:text-stone-600">
+              Real offers.
             </span>
           </h2>
-          <p className="text-lg text-gray-500 dark:text-white/40 mt-4 text-center">
-            Students and recruiters trust InternHack to accelerate their careers
-            and hiring.
+          <p className="mt-6 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
+            Nine unedited quotes from people who used the platform and shipped
+            an offer this year.
           </p>
         </motion.div>
 

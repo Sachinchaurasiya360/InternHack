@@ -6,6 +6,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
+import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 
 interface Step { step: number; id: string; title: string; description: string }
@@ -15,7 +16,7 @@ interface Props {
   storageKey: string;
   basePath: string;          // e.g. "/student/opensource/read-codebase"
   title: string;             // e.g. "Reading a Codebase"
-  titleAccent: string;       // e.g. "Codebase" — rendered in gradient
+  titleAccent: string;       // e.g. "Codebase", rendered in gradient
   subtitle: string;
   seoTitle: string;
   seoDescription: string;
@@ -151,7 +152,10 @@ export default function GuideListPage({
                     : "border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50"
                 }`}
               >
-                <button
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"
                 >
@@ -162,7 +166,7 @@ export default function GuideListPage({
                       <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
                     </div>
                   )}
-                </button>
+                </Button>
 
                 <div className="flex-1 min-w-0">
                   <h3 className={`text-sm font-bold mb-0.5 ${

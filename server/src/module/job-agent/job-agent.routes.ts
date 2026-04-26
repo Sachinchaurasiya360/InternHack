@@ -10,7 +10,7 @@ const router = Router();
 router.use(authMiddleware, requireRole("STUDENT"));
 
 // Per-user burst limit on top of the daily usage limit.
-// Gemini calls are expensive — cap at 10 chat requests per minute per user.
+// Gemini calls are expensive, cap at 10 chat requests per minute per user.
 const chatBurstLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,

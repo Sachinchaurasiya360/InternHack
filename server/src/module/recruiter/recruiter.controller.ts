@@ -9,9 +9,7 @@ import {
   evaluateSubmissionSchema,
   applicationFilterSchema,
   talentSearchSchema,
-  createTalentPoolSchema,
-  updateTalentPoolSchema,
-  addPoolMemberSchema,
+  saveCandidateSchema,
 } from "./recruiter.validation.js";
 
 const logger = createLogger("RecruiterController");
@@ -309,135 +307,62 @@ export class RecruiterController {
     }
   }
 
-  // ==================== TALENT POOLS ====================
+  // ==================== SAVED CANDIDATES ====================
 
-  async createTalentPool(req: Request, res: Response) {
+  async getSavedCandidates(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const result = createTalentPoolSchema.safeParse(req.body);
-      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-
-      const pool = await this.recruiterService.createTalentPool(req.user.id, result.data);
-      return res.status(201).json({ message: "Talent pool created successfully", pool });
+      const saved = await this.recruiterService.getSavedCandidates(req.user.id);
+      return res.status(200).json({ saved });
     } catch (error) {
-      logger.error("Failed to create talent pool", error);
+      logger.error("Failed to get saved candidates", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 
-  async getTalentPools(req: Request, res: Response) {
+  async getSavedIds(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const pools = await this.recruiterService.getTalentPools(req.user.id);
-      return res.status(200).json({ pools });
+      const ids = await this.recruiterService.getSavedIds(req.user.id);
+      return res.status(200).json({ ids });
     } catch (error) {
-      logger.error("Failed to get talent pools", error);
+      logger.error("Failed to get saved IDs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 
-  async getTalentPoolById(req: Request, res: Response) {
+  async saveCandidate(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const poolId = parseInt(String(req.params["poolId"]), 10);
-      if (isNaN(poolId)) return res.status(400).json({ message: "Invalid pool ID" });
-
-      const pool = await this.recruiterService.getTalentPoolById(poolId, req.user.id);
-      return res.status(200).json({ pool });
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
-        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
-      }
-      logger.error("Failed to get talent pool by ID", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async updateTalentPool(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const poolId = parseInt(String(req.params["poolId"]), 10);
-      if (isNaN(poolId)) return res.status(400).json({ message: "Invalid pool ID" });
-
-      const result = updateTalentPoolSchema.safeParse(req.body);
-      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-
-      const pool = await this.recruiterService.updateTalentPool(poolId, req.user.id, result.data);
-      return res.status(200).json({ message: "Talent pool updated successfully", pool });
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
-        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
-      }
-      logger.error("Failed to update talent pool", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async deleteTalentPool(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const poolId = parseInt(String(req.params["poolId"]), 10);
-      if (isNaN(poolId)) return res.status(400).json({ message: "Invalid pool ID" });
-
-      await this.recruiterService.deleteTalentPool(poolId, req.user.id);
-      return res.status(200).json({ message: "Talent pool deleted successfully" });
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
-        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
-      }
-      logger.error("Failed to delete talent pool", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async addPoolMember(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const poolId = parseInt(String(req.params["poolId"]), 10);
-      if (isNaN(poolId)) return res.status(400).json({ message: "Invalid pool ID" });
-
-      const result = addPoolMemberSchema.safeParse(req.body);
-      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-
-      const member = await this.recruiterService.addPoolMember(poolId, req.user.id, result.data.studentId, result.data.notes);
-      return res.status(201).json({ message: "Member added to pool", member });
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
-        if (error.message === "Student not found") return res.status(404).json({ message: error.message });
-        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
-      }
-      logger.error("Failed to add pool member", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async removePoolMember(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const poolId = parseInt(String(req.params["poolId"]), 10);
       const studentId = parseInt(String(req.params["studentId"]), 10);
-      if (isNaN(poolId) || isNaN(studentId)) return res.status(400).json({ message: "Invalid ID" });
+      if (isNaN(studentId)) return res.status(400).json({ message: "Invalid student ID" });
 
-      await this.recruiterService.removePoolMember(poolId, req.user.id, studentId);
-      return res.status(200).json({ message: "Member removed from pool" });
+      const result = saveCandidateSchema.safeParse(req.body ?? {});
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+
+      const saved = await this.recruiterService.saveCandidate(req.user.id, studentId, result.data.notes);
+      return res.status(200).json({ message: "Candidate saved", saved });
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message === "Talent pool not found") return res.status(404).json({ message: error.message });
-        if (error.message === "Member not found in pool") return res.status(404).json({ message: error.message });
-        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "Student not found") return res.status(404).json({ message: error.message });
       }
-      logger.error("Failed to remove pool member", error);
+      logger.error("Failed to save candidate", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async unsaveCandidate(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const studentId = parseInt(String(req.params["studentId"]), 10);
+      if (isNaN(studentId)) return res.status(400).json({ message: "Invalid student ID" });
+
+      await this.recruiterService.unsaveCandidate(req.user.id, studentId);
+      return res.status(200).json({ message: "Candidate removed" });
+    } catch (error) {
+      logger.error("Failed to unsave candidate", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

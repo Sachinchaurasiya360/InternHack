@@ -1,5 +1,5 @@
 // ============================================================
-// InternHack AI — Job Discovery Models
+// InternHack AI, Job Discovery Models
 // ============================================================
 
 enum JobSourceType {

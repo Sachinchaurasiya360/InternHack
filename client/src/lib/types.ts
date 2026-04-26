@@ -70,7 +70,6 @@ export interface User {
   subscriptionPlan?: "FREE" | "MONTHLY" | "YEARLY";
   subscriptionStatus?: "ACTIVE" | "EXPIRED";
   subscriptionEndDate?: string;
-  hasAppPassword?: boolean;
 }
 
 export interface CustomFieldDefinition {
@@ -971,68 +970,27 @@ export interface StudentBadge {
   earnedAt: string;
 }
 
-// Talent Pools
-export interface TalentPool {
+// Saved Candidates
+export interface SavedCandidate {
   id: number;
   recruiterId: number;
-  name: string;
-  description?: string;
-  _count?: { members: number };
-  members?: TalentPoolMember[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TalentPoolMember {
-  id: number;
-  poolId: number;
   studentId: number;
-  notes?: string;
-  addedAt: string;
+  notes: string | null;
+  createdAt: string;
   student: {
     id: number;
     name: string;
     email: string;
-    profilePic?: string;
-    college?: string;
-    graduationYear?: number;
+    college: string | null;
+    graduationYear: number | null;
+    location: string | null;
     skills: string[];
-    location?: string;
+    profilePic: string | null;
+    bio: string | null;
+    linkedinUrl: string | null;
+    githubUrl: string | null;
+    portfolioUrl: string | null;
   };
-}
-
-// Campus Drives
-export type CampusDriveStatus = "DRAFT" | "OPEN" | "CLOSED" | "COMPLETED";
-export type CampusRegistrationStatus = "REGISTERED" | "SHORTLISTED" | "REJECTED";
-
-export interface CampusDrive {
-  id: number;
-  recruiterId: number;
-  title: string;
-  description: string;
-  company: string;
-  targetColleges: string[];
-  eligibleBranches: string[];
-  minCGPA?: number;
-  eligibleGraduationYears: number[];
-  registrationDeadline: string;
-  driveDate?: string;
-  status: CampusDriveStatus;
-  jobIds: number[];
-  recruiter?: { id: number; name: string; company?: string };
-  _count?: { registrations: number };
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CampusDriveRegistration {
-  id: number;
-  driveId: number;
-  studentId: number;
-  status: CampusRegistrationStatus;
-  registeredAt: string;
-  student?: { id: number; name: string; email: string; college?: string; graduationYear?: number; profilePic?: string };
-  drive?: CampusDrive;
 }
 
 // Trends
@@ -1108,24 +1066,6 @@ export interface BlogPost {
   publishedAt?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-// ── IT HR Contact ──
-export interface ITHRContact {
-  id: number;
-  name: string;
-  email: string | null;
-  company: string | null;
-  designation: string | null;
-  phone: string | null;
-  linkedinUrl: string | null;
-  source: string;
-  createdAt: string;
-}
-
-export interface HRContactStats {
-  total: number;
-  companies: { name: string; count: number }[];
 }
 
 // ── Email Campaign ──
@@ -1221,5 +1161,185 @@ export interface JobFeedStats {
   total: number;
   unseen: number;
   saved: number;
+}
+
+export type FundingSignalStatus = "ACTIVE" | "STALE" | "ARCHIVED";
+
+export interface FundingSignal {
+  id: number;
+  companyName: string;
+  companyWebsite: string | null;
+  logoUrl: string | null;
+  fundingRound: string | null;
+  fundingAmount: string | null;
+  amountUsd: string | null;
+  announcedAt: string;
+  hqLocation: string | null;
+  industry: string | null;
+  description: string | null;
+  sourceUrl: string;
+  source: string;
+  sourceId: string;
+  investors: string[];
+  tags: string[];
+  careersUrl: string | null;
+  hiringSignal: boolean;
+  status: FundingSignalStatus;
+  scrapedAt: string;
+  lastSeenAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FundingSignalListResponse {
+  signals: FundingSignal[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface FundingSignalSource {
+  id: string;
+  name: string;
+}
+
+export type InterviewSource =
+  | "ON_CAMPUS"
+  | "OFF_CAMPUS"
+  | "REFERRAL"
+  | "LINKEDIN"
+  | "PORTAL"
+  | "OTHER";
+
+export type InterviewDifficulty = "EASY" | "MEDIUM" | "HARD";
+
+export type InterviewOutcome =
+  | "SELECTED"
+  | "REJECTED"
+  | "WITHDRAWN"
+  | "PENDING"
+  | "GHOSTED";
+
+export type InterviewRoundType =
+  | "TECHNICAL"
+  | "CODING"
+  | "DSA"
+  | "SYSTEM_DESIGN"
+  | "HR"
+  | "MANAGERIAL"
+  | "BEHAVIORAL"
+  | "APTITUDE"
+  | "GD"
+  | "OTHER";
+
+export interface InterviewQuestion {
+  prompt: string;
+  topic?: string;
+  difficulty?: InterviewDifficulty;
+}
+
+export interface InterviewRound {
+  name: string;
+  type: InterviewRoundType;
+  durationMins?: number;
+  questions: InterviewQuestion[];
+  notes?: string;
+}
+
+export interface InterviewPrepResource {
+  type: "article" | "book" | "course" | "video" | "other";
+  title: string;
+  url?: string;
+}
+
+export interface InterviewExperienceAuthor {
+  id: number;
+  name: string;
+  profilePic: string | null;
+  college: string | null;
+}
+
+export interface InterviewExperienceCompany {
+  id: number;
+  name: string;
+  slug: string;
+  logo: string | null;
+  city: string;
+  industry: string;
+}
+
+export interface InterviewExperience {
+  id: number;
+  companyId: number;
+  userId: number;
+  role: string;
+  experienceYears: number | null;
+  interviewYear: number;
+  interviewMonth: number | null;
+  source: InterviewSource;
+  difficulty: InterviewDifficulty;
+  outcome: InterviewOutcome;
+  offered: boolean;
+  ctcLpa: number | null;
+  totalRounds: number;
+  overallRating: number;
+  rounds: InterviewRound[];
+  tips: string | null;
+  prepResources: InterviewPrepResource[];
+  isAnonymous: boolean;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  upvotes: number;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  company: InterviewExperienceCompany;
+  user: InterviewExperienceAuthor | null;
+  hasUpvoted?: boolean;
+}
+
+export interface InterviewCompanyListItem extends InterviewExperienceCompany {
+  experienceCount: number;
+  latestAt: string;
+  avgRating: number;
+  reviewCount: number;
+}
+
+export interface InterviewCompanySummary {
+  company: { id: number; name: string; slug: string; logo: string | null };
+  total: number;
+  selectionRate: number | null;
+  avgRounds: number | null;
+  byDifficulty: { difficulty: InterviewDifficulty; count: number }[];
+  byOutcome: { outcome: InterviewOutcome; count: number }[];
+}
+
+export interface InterviewTopQuestion {
+  prompt: string;
+  count: number;
+  topic: string | null;
+  difficulty: string | null;
+}
+
+export interface InterviewListResponse {
+  experiences: InterviewExperience[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface InterviewCompanyListResponse {
+  companies: InterviewCompanyListItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 

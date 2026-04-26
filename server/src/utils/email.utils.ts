@@ -36,13 +36,26 @@ export async function sendEmailBatch(
   const payload = emails.map((e) => ({ from: FROM(), to: e.to, subject: e.subject, html: e.html }));
   const maxRetries = opts.maxRetries ?? 4;
 
+  const parseRetryAfter = (err: unknown): number | null => {
+    if (!err || typeof err !== "object") return null;
+    const headers = (err as { headers?: Record<string, string> }).headers;
+    const raw = headers?.["retry-after"] ?? headers?.["Retry-After"];
+    if (!raw) return null;
+    const seconds = Number(raw);
+    if (Number.isFinite(seconds)) return Math.max(0, seconds * 1000);
+    const date = Date.parse(raw);
+    if (Number.isFinite(date)) return Math.max(0, date - Date.now());
+    return null;
+  };
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const result = await resend.batch.send(payload);
       if (result.error) {
         const status = (result.error as { statusCode?: number }).statusCode;
         if (status === 429 && attempt < maxRetries) {
-          const wait = Math.min(1000 * 2 ** attempt, 8000);
+          const retryAfter = parseRetryAfter(result.error);
+          const wait = retryAfter ?? Math.min(1000 * 2 ** attempt, 8000);
           console.warn(`[Email] batch 429, retrying in ${wait}ms (attempt ${attempt + 1})`);
           await sleep(wait);
           continue;
@@ -55,7 +68,8 @@ export async function sendEmailBatch(
       const msg = err instanceof Error ? err.message : String(err);
       const is429 = /429|rate.?limit/i.test(msg);
       if (is429 && attempt < maxRetries) {
-        const wait = Math.min(1000 * 2 ** attempt, 8000);
+        const retryAfter = parseRetryAfter(err);
+        const wait = retryAfter ?? Math.min(1000 * 2 ** attempt, 8000);
         console.warn(`[Email] batch threw 429, retrying in ${wait}ms`);
         await sleep(wait);
         continue;

@@ -103,6 +103,10 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
     "Order not found": 404,
     "Payment already verified": 409,
     "Invalid payment signature": 400,
+    "Topic not found": 404,
+    "Problem not found": 404,
+    "Question not found": 404,
+    "Pattern not found": 404,
   };
 
   const status = clientErrors[err.message];

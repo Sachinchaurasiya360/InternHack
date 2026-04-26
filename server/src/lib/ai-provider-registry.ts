@@ -49,7 +49,7 @@ export async function initServiceProviders(): Promise<void> {
 export function getProviderForService(service: AIServiceType): AIProvider {
   const entry = serviceCache.get(service);
   if (entry) return entry.provider;
-  // Fallback — should not happen after seed + init
+  // Fallback, should not happen after seed + init
   return new GeminiProvider("gemini-2.5-flash-lite");
 }
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Crown, X, Building2 } from "lucide-react";
+import { Check, Crown, X } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
 import NumberFlow from "@number-flow/react";
@@ -53,15 +53,15 @@ export function PricingSection() {
       ],
       buttonText: "Sign Up Free",
       onAction: () => navigate("/register"),
-      checkColor: "text-green-500",
+      checkColor: "text-stone-500 dark:text-stone-400",
       btnClass:
-        "bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white/80 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-200 dark:border-white/10",
+        "bg-stone-100 dark:bg-white/10 text-stone-900 dark:text-white/90 hover:bg-stone-200 dark:hover:bg-white/15 border border-stone-200 dark:border-white/10",
     },
     {
       id: "pro",
       title: "Pro",
       desc: "Full access to all premium features",
-      monthlyPrice: 333,
+      monthlyPrice: 249,
       annuallyPrice: 2999,
       priceSuffix: "",
       features: [
@@ -79,71 +79,39 @@ export function PricingSection() {
       badge: {
         text: "Recommended",
         icon: Crown,
-        color: "bg-indigo-500",
-        shadow: "shadow-indigo-500/30",
+        color: "bg-lime-400 text-stone-950",
+        shadow: "shadow-lime-400/30",
       },
       onAction: handleGetPro,
-      checkColor: "text-indigo-400",
-      btnClass: "bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100",
-    },
-    {
-      id: "enterprise",
-      title: "Enterprise",
-      desc: "Complete HRMS for your organization",
-      monthlyPrice: 4849,
-      annuallyPrice: 43641,
-      priceSuffix: "",
-      features: [
-        { text: "Everything in Pro plan", included: true },
-        { text: "Employee directory & profiles", included: true },
-        { text: "Leave & attendance management", included: true },
-        { text: "Payroll & reimbursement workflows", included: true },
-        { text: "Hiring pipelines & ATS for recruiters", included: true },
-        { text: "Onboard candidates in one day", included: true },
-        { text: "Performance reviews & goal tracking", included: true },
-        { text: "HR analytics dashboard", included: true },
-        { text: "SSO, compliance & dedicated support", included: true },
-      ],
-      buttonText: "Contact Sales",
-      badge: {
-        text: "HRMS",
-        icon: Building2,
-        color: "bg-violet-500",
-        shadow: "shadow-violet-500/30",
-      },
-      onAction: () => navigate("/for-recruiters"),
-      checkColor: "text-violet-400",
-      btnClass:
-        "bg-violet-500 text-white hover:bg-violet-400 border border-violet-400/20",
+      checkColor: "text-lime-600 dark:text-lime-400",
+      btnClass: "bg-stone-900 dark:bg-white text-white dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-100",
     },
   ];
 
   return (
-    <section className="relative py-24 md:py-32 bg-white dark:bg-[#030303] overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-violet-500/5 blur-3xl dark:block hidden" />
-
+    <section className="relative py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-6"
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
         >
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4">
-            <span className="bg-clip-text text-transparent bg-linear-to-b from-gray-900 to-gray-900/80 dark:from-white dark:to-white/80">
-              Invest in your
-            </span>
-            <br />
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-600 via-gray-900 to-rose-600 dark:from-indigo-300 dark:via-white/90 dark:to-rose-300">
-              career growth
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            pricing
+          </div>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Free to start.{" "}
+            <span className="text-stone-400 dark:text-stone-600">
+              ₹249 to win.
             </span>
           </h2>
-          <p className="text-lg text-gray-500 dark:text-white/40 max-w-xl mx-auto">
-            Unlock premium features to accelerate your placement preparation and
-            stand out from the crowd.
+          <p className="mt-6 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-xl mx-auto leading-relaxed">
+            Use the core stack forever for zero. Unlock the AI-heavy workflows
+            when you are ready to sprint.
           </p>
         </motion.div>
 
@@ -173,8 +141,8 @@ export function PricingSection() {
             className={cn(
               "relative w-12 h-6 rounded-full transition-colors cursor-pointer border-0",
               billPlan === "annually"
-                ? "bg-indigo-500"
-                : "bg-gray-300 dark:bg-white/20"
+                ? "bg-lime-400"
+                : "bg-stone-300 dark:bg-white/20"
             )}
           >
             <span
@@ -198,7 +166,7 @@ export function PricingSection() {
         </motion.div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
           {plans.map((plan, i) => (
             <motion.div
               key={plan.id}
@@ -212,13 +180,12 @@ export function PricingSection() {
                 className={cn(
                   "relative rounded-2xl h-full flex flex-col transition-all",
                   plan.highlighted
-                    ? "border-2 border-indigo-500/40 shadow-2xl shadow-indigo-500/10"
-                    : "border border-gray-200 dark:border-white/8"
+                    ? "border-2 border-lime-400/50 shadow-2xl shadow-lime-400/10 bg-white dark:bg-stone-900"
+                    : "border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900"
                 )}
               >
-                {/* Glow for highlighted */}
                 {plan.highlighted && (
-                  <div className="absolute top-1/2 inset-x-0 mx-auto h-12 w-full bg-indigo-600 rounded-2xl blur-[8rem] -z-10" />
+                  <div className="absolute top-1/2 inset-x-0 mx-auto h-12 w-full bg-lime-400/40 rounded-2xl blur-3xl -z-10" />
                 )}
 
                 {/* Badge */}

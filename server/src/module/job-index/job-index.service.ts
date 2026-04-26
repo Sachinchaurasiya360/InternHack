@@ -217,7 +217,7 @@ export class JobIndexService {
         );
         embedded++;
       } catch {
-        // pgvector / embedding column not set up yet — skip
+        // pgvector / embedding column not set up yet, skip
       }
       await new Promise((r) => setTimeout(r, 50));
     }
@@ -253,7 +253,7 @@ export class JobIndexService {
         await this.generateUserEmbedding(pref.userId);
         count++;
       } catch {
-        // pgvector / embedding column not set up yet — skip
+        // pgvector / embedding column not set up yet, skip
       }
       await new Promise((r) => setTimeout(r, 50));
     }
@@ -275,7 +275,7 @@ export class JobIndexService {
     const limit = params.limit || 10;
     const offset = params.offset || 0;
 
-    // Build Prisma WHERE conditions — use AND for hard filters, be lenient on others
+    // Build Prisma WHERE conditions, use AND for hard filters, be lenient on others
     const where: any = { isActive: true };
 
     // Soft filters applied via AND array (each is optional)
@@ -370,7 +370,7 @@ export class JobIndexService {
       );
       return jobs;
     } catch {
-      // pgvector / embedding column not set up yet — fall back to empty
+      // pgvector / embedding column not set up yet, fall back to empty
       return [];
     }
   }

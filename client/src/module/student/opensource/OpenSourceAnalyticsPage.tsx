@@ -32,6 +32,7 @@ import {
 } from "recharts";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { Button } from "../../../components/ui/button";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
 
 // ─── Theme ──────────────────────────────────────────────────────
@@ -105,9 +106,9 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
                 <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
                 <p className="text-xs text-gray-500">{subtitle}</p>
               </div>
-              <button onClick={onClose} className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+              <Button variant="ghost" mode="icon" onClick={onClose} className="bg-gray-100 hover:bg-gray-200 rounded-xl">
                 <X className="w-4 h-4 text-gray-600" />
-              </button>
+              </Button>
             </div>
             <div className="flex-1 p-5 overflow-auto min-h-0">
               {children}
@@ -133,13 +134,16 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
       >
         <div className="flex items-start justify-between mb-0.5">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <button
+          <Button
+            variant="ghost"
+            mode="icon"
+            size="sm"
             onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
-            className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-indigo-50 flex items-center justify-center transition-colors shrink-0"
+            className="bg-gray-50 hover:bg-indigo-50 shrink-0"
             title="Expand chart"
           >
             <Maximize2 className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" />
-          </button>
+          </Button>
         </div>
         <p className="text-xs text-gray-500 mb-4">{subtitle}</p>
         {children}
@@ -367,9 +371,9 @@ export default function OpenSourceAnalyticsPage() {
             </select>
 
             {hasActiveFilter && (
-              <button onClick={clearFilters} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 ml-auto">
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-indigo-600 hover:text-indigo-800 ml-auto">
                 <X className="w-3.5 h-3.5" /> Clear
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -381,7 +385,7 @@ export default function OpenSourceAnalyticsPage() {
           <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center shadow-sm">
             <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-500 text-sm">No organizations match these filters.</p>
-            <button onClick={clearFilters} className="mt-2 text-sm text-indigo-600 hover:underline">Clear filters</button>
+            <Button variant="primary" mode="link" onClick={clearFilters} className="mt-2 text-indigo-600 hover:underline">Clear filters</Button>
           </div>
         </div>
       )}
@@ -556,17 +560,20 @@ export default function OpenSourceAnalyticsPage() {
           <ChartCard title="Organization Comparison" subtitle="Select 2-4 organizations to compare" index={6} className="lg:col-span-2">
             <div className="flex flex-wrap gap-1.5 mb-4 max-h-24 overflow-y-auto">
               {orgs.slice(0, 60).map((o) => (
-                <button
+                <Button
                   key={o.id}
+                  variant={selectedOrgs.includes(o.id) ? "mono" : "outline"}
+                  size="sm"
+                  shape="circle"
                   onClick={() => toggleOrg(o.id)}
-                  className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                  className={
                     selectedOrgs.includes(o.id)
-                      ? "bg-indigo-600 border-indigo-600 text-white"
+                      ? "bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-600/90"
                       : "bg-gray-100 border-gray-300 text-gray-600 hover:border-indigo-400"
-                  }`}
+                  }
                 >
                   {o.name}
-                </button>
+                </Button>
               ))}
               {orgs.length > 60 && <span className="text-xs text-gray-400 py-1">+{orgs.length - 60} more</span>}
             </div>

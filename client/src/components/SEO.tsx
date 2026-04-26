@@ -53,7 +53,7 @@ export function SEO({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={absoluteOgImage} />
 
-      {/* Canonical — always present */}
+      {/* Canonical, always present */}
       <link rel="canonical" href={effectiveCanonical} />
 
       {/* Robots */}

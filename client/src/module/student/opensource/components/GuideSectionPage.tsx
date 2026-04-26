@@ -6,6 +6,7 @@ import {
   CheckCircle2, Copy, Check, ExternalLink, Lightbulb, Info,
 } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
+import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 
 interface Resource { title: string; url: string; type: string }
@@ -40,13 +41,15 @@ function CodeBlock({ code, label }: { code: string; label?: string }) {
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{label ?? "Command"}</span>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={copy}
-          className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
           {copied ? "Copied" : "Copy"}
-        </button>
+        </Button>
       </div>
       <pre className="p-4 overflow-x-auto bg-gray-950 text-gray-100 text-sm leading-relaxed">
         <code>{code}</code>
@@ -123,25 +126,29 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
-            <button
+            <Button
+              variant="ghost"
+              mode="icon"
               onClick={() => prev && navigate(`${basePath}/${prev.id}`)}
               disabled={!prev}
-              className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-colors"
+              className="bg-gray-50 dark:bg-gray-800 rounded-xl"
               title="Previous"
             >
               <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            </button>
+            </Button>
             <span className="text-xs text-gray-400 dark:text-gray-500 px-2 font-medium tabular-nums">
               {step.step} / {steps.length}
             </span>
-            <button
+            <Button
+              variant="ghost"
+              mode="icon"
               onClick={() => next && navigate(`${basePath}/${next.id}`)}
               disabled={!next}
-              className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-colors"
+              className="bg-gray-50 dark:bg-gray-800 rounded-xl"
               title="Next"
             >
               <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            </button>
+            </Button>
           </div>
         </div>
       </motion.div>
@@ -267,34 +274,35 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           transition={{ duration: 0.4, delay: 0.35 }}
           className="flex items-center justify-between pt-2"
         >
-          <button
+          <Button
+            variant={isDone ? "ghost" : "mono"}
             onClick={toggleComplete}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl transition-colors ${
+            className={
               isDone
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50"
-                : "bg-gray-950 text-white dark:bg-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-100"
-            }`}
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
+                : "rounded-xl"
+            }
           >
             <CheckCircle2 className="w-4 h-4" />
             {isDone ? "Completed" : "Mark as Complete"}
-          </button>
+          </Button>
 
           {next ? (
-            <button
+            <Button
+              variant="outline"
               onClick={() => navigate(`${basePath}/${next.id}`)}
-              className="group inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
+              className="group text-gray-600 dark:text-gray-400 rounded-xl"
             >
               Next Section
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+            </Button>
           ) : (
-            <Link
-              to={basePath}
-              className="group inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors no-underline"
-            >
-              Back to Overview
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
+              <Link to={basePath} className="no-underline">
+                Back to Overview
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </Button>
           )}
         </motion.div>
       </div>

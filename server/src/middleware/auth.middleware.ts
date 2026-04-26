@@ -45,7 +45,7 @@ export async function optionalAuthMiddleware(req: Request, _res: Response, next:
     try {
       const decoded = verifyToken(token);
 
-      // Verify tokenVersion (cached) — silently discard revoked tokens
+      // Verify tokenVersion (cached), silently discard revoked tokens
       let dbVersion = getCachedVersion(decoded.id);
       if (dbVersion === null) {
         const user = await prisma.user.findUnique({

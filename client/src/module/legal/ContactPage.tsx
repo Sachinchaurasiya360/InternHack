@@ -26,7 +26,7 @@ export default function ContactPage() {
               mrsachinchaurasiya@gmail.com
             </a>
             <p className="mt-3">
-              For general enquiries, support requests, feature suggestions, or business partnerships — drop us an
+              For general enquiries, support requests, feature suggestions, or business partnerships, drop us an
               email and we'll respond within 24-48 hours.
             </p>
           </section>
@@ -41,7 +41,7 @@ export default function ContactPage() {
                   rel="noopener noreferrer"
                   className="text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
-                  Twitter / X — @internhack_xyz
+                  Twitter / X, @internhack_xyz
                 </a>
               </li>
               <li>
@@ -51,7 +51,7 @@ export default function ContactPage() {
                   rel="noopener noreferrer"
                   className="text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
-                  LinkedIn — InternHack
+                  LinkedIn, InternHack
                 </a>
               </li>
             </ul>
@@ -60,7 +60,7 @@ export default function ContactPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Support Hours</h2>
             <p>
-              Our team operates Monday to Saturday, 10:00 AM — 7:00 PM IST. We aim to respond to all
+              Our team operates Monday to Saturday, 10:00 AM, 7:00 PM IST. We aim to respond to all
               queries within 24-48 hours during business days.
             </p>
           </section>

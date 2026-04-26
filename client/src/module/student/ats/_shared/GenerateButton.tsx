@@ -1,14 +1,11 @@
 import { Loader2 } from "lucide-react";
 import type React from "react";
+import { Button } from "../../../../components/ui/button";
 
-// Shared action button for the ATS pages that follow the
-// idle → loading → limit-reached state machine. Used by Cover Letter,
-// Resume Generator, and ATS Score pages.
 export interface GenerateButtonProps {
   onClick: () => void;
   loading: boolean;
   limitReached: boolean;
-  /** Extra disable conditions (e.g. missing file) */
   disabled?: boolean;
   loadingLabel: string;
   idleLabel: string;
@@ -29,10 +26,12 @@ export function GenerateButton({
   className = "",
 }: GenerateButtonProps) {
   return (
-    <button
+    <Button
       onClick={onClick}
       disabled={loading || limitReached || disabled}
-      className={`w-full flex items-center justify-center gap-2 py-3.5 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200 active:scale-[0.99] ${className}`}
+      variant="mono"
+      size="lg"
+      className={`w-full h-12 rounded-xl text-sm font-semibold active:scale-[0.99] ${className}`}
     >
       {loading ? (
         <>
@@ -47,6 +46,6 @@ export function GenerateButton({
           {idleLabel}
         </>
       )}
-    </button>
+    </Button>
   );
 }

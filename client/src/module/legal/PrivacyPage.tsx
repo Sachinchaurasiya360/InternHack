@@ -7,7 +7,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
       <SEO
         title="Privacy Policy"
-        description="Privacy Policy for InternHack — how we collect, use, and protect your data."
+        description="Privacy Policy for InternHack, how we collect, use, and protect your data."
       />
       <Navbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 pt-28 pb-16">
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
               <li><strong>Profile Information:</strong> Bio, skills, education, LinkedIn/GitHub/portfolio URLs, projects, achievements, profile photo</li>
               <li><strong>Uploaded Content:</strong> Resumes (stored on AWS S3), cover letters, LaTeX documents</li>
               <li><strong>Usage Data:</strong> Pages visited, features used, AI tool interactions, application history</li>
-              <li><strong>Payment Information:</strong> Processed securely by Dodo Payments — we do not store card details</li>
+              <li><strong>Payment Information:</strong> Processed securely by Dodo Payments, we do not store card details</li>
             </ul>
           </section>
 
@@ -43,9 +43,9 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">3. Third-Party Services</h2>
             <p className="mb-2">We use the following third-party services:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Google OAuth:</strong> For social login — receives your name, email, and profile picture</li>
+              <li><strong>Google OAuth:</strong> For social login, receives your name, email, and profile picture</li>
               <li><strong>Google Gemini AI:</strong> For generating resumes, cover letters, and interview content</li>
-              <li><strong>Dodo Payments:</strong> For payment processing — subject to Dodo Payments' privacy policy</li>
+              <li><strong>Dodo Payments:</strong> For payment processing, subject to Dodo Payments' privacy policy</li>
               <li><strong>AWS S3:</strong> For storing uploaded files (resumes, documents)</li>
               <li><strong>Email Service:</strong> For sending transactional and marketing emails</li>
             </ul>

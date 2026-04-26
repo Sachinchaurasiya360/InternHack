@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, Building2, ArrowRight, Brain, BookOpen, MessageSquare, Search } from "lucide-react";
+import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
@@ -33,17 +33,24 @@ export default function AptitudeCategoriesPage() {
   const overallPct = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
   const totalTopics = categories?.reduce((s, c) => s + c.topics.length, 0) ?? 0;
 
-  // Flatten all topics, optionally filtered by active category tab
-  const allTopics = categories?.flatMap((cat) =>
-    cat.topics.map((t) => ({ ...t, categorySlug: cat.slug, categoryName: cat.name }))
-  ) ?? [];
-  const filteredTopics = (activeTab === "all" ? allTopics : allTopics.filter((t) => t.categorySlug === activeTab))
-    .filter((t) => !topicSearch || t.name.toLowerCase().includes(topicSearch.toLowerCase()));
+  const allTopics =
+    categories?.flatMap((cat) =>
+      cat.topics.map((t) => ({ ...t, categorySlug: cat.slug, categoryName: cat.name })),
+    ) ?? [];
+  const filteredTopics = (activeTab === "all" ? allTopics : allTopics.filter((t) => t.categorySlug === activeTab)).filter(
+    (t) => !topicSearch || t.name.toLowerCase().includes(topicSearch.toLowerCase()),
+  );
 
   if (isLoading) return <LoadingScreen />;
 
+  const CAT_ICON: Record<string, { icon: typeof Brain; color: string; fill: string }> = {
+    aptitude: { icon: Brain, color: "text-orange-600 dark:text-orange-400", fill: "bg-orange-500" },
+    "logical-reasoning": { icon: BookOpen, color: "text-blue-600 dark:text-blue-400", fill: "bg-blue-500" },
+  };
+  const defaultCat = { icon: MessageSquare, color: "text-green-600 dark:text-green-400", fill: "bg-green-500" };
+
   return (
-    <div className="relative pb-12">
+    <div className="relative text-stone-900 dark:text-stone-50 pb-12">
       <SEO
         title="Aptitude Practice - Quantitative, Logical & Verbal"
         description="Practice aptitude questions for placement exams. Categories include quantitative aptitude, logical reasoning, verbal ability, and data interpretation."
@@ -51,198 +58,274 @@ export default function AptitudeCategoriesPage() {
         canonicalUrl={canonicalUrl("/learn/aptitude")}
       />
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-purple-100 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-indigo-100 dark:from-slate-900/20 dark:to-indigo-900/20 rounded-full blur-3xl opacity-40" />
-      </div>
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
+        style={{
+          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundSize: "120px 100%",
+        }}
+      />
 
-      {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 mb-8 mt-2"
-      >
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          {/* Progress ring */}
-          {user && (
-            <CircularProgress progress={overallPct} size={80} progressClassName="stroke-purple-500" />
-          )}
-
-          <div className="flex-1 text-center sm:text-left">
-            <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-1">
-              Aptitude Practice
+      <div className="relative max-w-6xl mx-auto">
+        {/* Editorial header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-2 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
+        >
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              learn / aptitude
+            </div>
+            <h1 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+              Crack the{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">round.</span>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                  aria-hidden
+                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                />
+              </span>
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              {totalQuestions.toLocaleString()} questions across {totalTopics} topics &middot; Quantitative, Logical & Verbal
-              {user && totalAnswered > 0 && (
-                <span className="text-emerald-600 dark:text-emerald-400 font-medium"> &middot; {totalAnswered} answered</span>
-              )}
+            <p className="mt-3 text-sm text-stone-500 max-w-md">
+              Quantitative aptitude, logical reasoning, and verbal ability, practiced in the exact shapes placement papers throw at you.
             </p>
           </div>
-
-          {/* Quick nav */}
-          <div className="flex items-center gap-2">
-            <Link
-              to="/learn/aptitude/companies"
-              className="flex flex-col items-center gap-1 px-4 py-3 rounded-xl text-blue-500 bg-blue-50 dark:bg-blue-900/20 hover:opacity-80 transition-opacity no-underline"
-            >
-              <Building2 className="w-5 h-5" />
-              <span className="text-[10px] font-semibold uppercase tracking-wide opacity-70">Companies</span>
-            </Link>
+          <div className="flex items-center gap-x-4 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 flex-wrap">
+            <span>
+              questions
+              <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
+                {totalQuestions.toLocaleString()}
+              </span>
+            </span>
+            <span>
+              topics
+              <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
+                {totalTopics}
+              </span>
+            </span>
+            {user && (
+              <span>
+                answered
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
+                  {totalAnswered}
+                </span>
+              </span>
+            )}
           </div>
+        </motion.div>
+
+        {/* Companies strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-6"
+        >
+          <Link
+            to="/learn/aptitude/companies"
+            className="group flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
+          >
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
+              <Building2 className="w-4 h-4 text-stone-600 dark:text-stone-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">Company-wise question banks</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
+                tcs / infy / wipro / accenture / cognizant
+              </p>
+            </div>
+            <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </Link>
+        </motion.div>
+
+        {/* Overall progress + category breakdown */}
+        {user && progress && categories && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-5"
+          >
+            <div className="flex items-center gap-5">
+              <CircularProgress
+                progress={overallPct}
+                size={64}
+                strokeWidth={4}
+                progressClassName="stroke-lime-500"
+                trackClassName="stroke-stone-100 dark:stroke-stone-800"
+                labelClassName="text-[11px] font-mono font-bold tabular-nums text-stone-900 dark:text-stone-50"
+              />
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  overall progress
+                </span>
+                <p className="mt-1 text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 tabular-nums">
+                  {totalAnswered.toLocaleString()} / {totalQuestions.toLocaleString()}
+                </p>
+                <div className="w-full h-1 bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-sm mt-2">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${overallPct}%` }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    className="h-full bg-lime-400"
+                  />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Tabs + Search */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8 space-y-4"
+        >
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+            <input
+              type="text"
+              placeholder="Search topics..."
+              value={topicSearch}
+              onChange={(e) => setTopicSearch(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
+              category /
+            </span>
+            {[{ key: "all", label: "All" }, ...(categories?.map((c) => ({ key: c.slug, label: c.name })) ?? [])].map(
+              (tab, i) => {
+                const active = activeTab === tab.key;
+                return (
+                  <motion.button
+                    key={tab.key}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.02, duration: 0.2 }}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                      active
+                        ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                        : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                    }`}
+                  >
+                    {tab.label}
+                  </motion.button>
+                );
+              },
+            )}
+          </div>
+        </motion.div>
+
+        {/* Section header */}
+        <div className="flex items-end justify-between gap-4 mb-6 flex-wrap">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1 w-1 bg-lime-400" />
+              topics / {activeTab === "all" ? "all" : activeTab}
+            </div>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              Practice topics
+            </h2>
+          </div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
+            {filteredTopics.length} topic{filteredTopics.length === 1 ? "" : "s"}
+          </span>
         </div>
 
-        {/* Category breakdown bar */}
-        {user && progress && categories && (
-          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-            <div className="grid grid-cols-3 gap-4">
-              {categories.map((cat) => {
-                const catPct = cat.questionCount > 0 ? Math.round((cat.answeredCount / cat.questionCount) * 100) : 0;
-                const iconConfig = cat.slug === "aptitude"
-                  ? { icon: Brain, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500" }
-                  : cat.slug === "logical-reasoning"
-                  ? { icon: BookOpen, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500" }
-                  : { icon: MessageSquare, color: "text-green-600 dark:text-green-400", bg: "bg-green-500" };
-                const Icon = iconConfig.icon;
-                return (
-                  <div key={cat.id} className="text-center">
-                    <div className="flex items-center justify-center gap-1.5 mb-2">
-                      <Icon className={`w-3.5 h-3.5 ${iconConfig.color}`} />
-                      <span className={`text-xs font-bold uppercase tracking-wider ${iconConfig.color}`}>{cat.name}</span>
-                    </div>
-                    <p className="font-display text-lg font-bold text-gray-950 dark:text-white">
-                      {cat.answeredCount}<span className="text-gray-300 dark:text-gray-600 font-normal">/{cat.questionCount}</span>
-                    </p>
-                    <div className="w-full h-1 bg-gray-100 dark:bg-gray-800 rounded-full mt-2 overflow-hidden">
-                      <div className={`h-full rounded-full ${iconConfig.bg}`} style={{ width: `${catPct}%`, transition: "width 0.6s ease" }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </motion.div>
-
-      {/* Category Tabs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-1.5 mb-6 overflow-x-auto no-scrollbar"
-      >
-        {[
-          { key: "all", label: "All Topics" },
-          ...(categories?.map((c) => ({ key: c.slug, label: c.name })) ?? []),
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              activeTab === tab.key
-                ? "bg-gray-950 text-white dark:bg-white dark:text-gray-950 shadow-sm"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </motion.div>
-
-      {/* Search */}
-      <div className="relative max-w-sm mb-6">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-        <input
-          type="text"
-          placeholder="Search topics..."
-          value={topicSearch}
-          onChange={(e) => setTopicSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-100 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-950/10 dark:focus:ring-white/10 transition-all"
-        />
-      </div>
-
-      {/* Topic List */}
-      <div className="space-y-2.5">
-        {filteredTopics.map((topic, idx) => {
-          const pct = topic.questionCount > 0
-            ? Math.round((topic.answeredCount / topic.questionCount) * 100)
-            : 0;
-          const isComplete = pct === 100 && topic.questionCount > 0;
-
-          return (
-            <motion.div
-              key={topic.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(idx, 10) * 0.03 }}
-            >
-              <Link
-                to={`/learn/aptitude/${topic.slug}`}
-                className="group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg hover:shadow-gray-200/40 dark:hover:shadow-gray-900/40 transition-all duration-300 no-underline"
-              >
-                {/* Progress or number */}
-                {user ? (
-                  <CircularProgress progress={pct} size={44} progressClassName="stroke-purple-500" />
-                ) : (
-                  <div className="w-11 h-11 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-                    <span className="text-sm font-bold text-gray-400 dark:text-gray-500">{idx + 1}</span>
-                  </div>
-                )}
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="text-sm font-semibold text-gray-950 dark:text-white truncate">
-                      {topic.name}
-                    </h3>
-                    {isComplete && user && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    )}
-                  </div>
-
-                  {/* Progress bar or question count */}
-                  {user ? (
-                    <div className="flex items-center gap-3 mt-1.5">
-                      <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${pct}%` }}
-                          transition={{ duration: 0.6, delay: Math.min(idx, 10) * 0.03 }}
-                          className={`h-full rounded-full ${
-                            isComplete ? "bg-emerald-500" : pct > 0 ? "bg-purple-500" : "bg-transparent"
-                          }`}
-                        />
-                      </div>
-                      <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500 shrink-0 tabular-nums">
-                        {topic.answeredCount}/{topic.questionCount}
-                      </span>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{topic.questionCount} questions</p>
-                  )}
-                </div>
-
-                <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </Link>
-            </motion.div>
-          );
-        })}
-
-        {filteredTopics.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
-          >
-            <Brain className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="font-display text-lg font-bold text-gray-950 dark:text-white mb-2">No topics found</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-500 max-w-sm mx-auto">
-              No topics available for this category.
+        {/* Topic list */}
+        {filteredTopics.length === 0 ? (
+          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
+            <Brain className="w-8 h-8 text-stone-400 mx-auto mb-3" />
+            <p className="text-sm text-stone-600 dark:text-stone-400">No topics found.</p>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+              try a different keyword or category
             </p>
-          </motion.div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {filteredTopics.map((topic, idx) => {
+              const pct = topic.questionCount > 0 ? Math.round((topic.answeredCount / topic.questionCount) * 100) : 0;
+              const isComplete = pct === 100 && topic.questionCount > 0;
+              const cfg = CAT_ICON[topic.categorySlug] ?? defaultCat;
+
+              return (
+                <motion.div
+                  key={topic.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(idx, 10) * 0.03 }}
+                >
+                  <Link
+                    to={`/learn/aptitude/${topic.slug}`}
+                    className="group relative flex items-center gap-4 bg-white dark:bg-stone-900 px-5 py-4 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
+                  >
+                    {user ? (
+                      <CircularProgress
+                        progress={pct}
+                        size={44}
+                        strokeWidth={3}
+                        progressClassName={isComplete ? "stroke-lime-500" : "stroke-stone-900 dark:stroke-stone-50"}
+                        trackClassName="stroke-stone-100 dark:stroke-stone-800"
+                        labelClassName="text-[10px] font-mono font-bold tabular-nums text-stone-900 dark:text-stone-50"
+                      />
+                    ) : (
+                      <div className="w-11 h-11 shrink-0 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center">
+                        <span className="text-[11px] font-mono font-bold tabular-nums text-stone-500">
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                          {topic.name}
+                        </h3>
+                        {isComplete && user && (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 shrink-0" />
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className={`text-[10px] font-mono uppercase tracking-widest ${cfg.color}`}>
+                          {topic.categoryName}
+                        </span>
+                        <span className="text-[10px] font-mono text-stone-400">·</span>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+                          {user ? `${topic.answeredCount} / ${topic.questionCount}` : `${topic.questionCount} Qs`}
+                        </span>
+                      </div>
+
+                      {user && (
+                        <div className="w-full h-1 bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-sm mt-2">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ duration: 0.6, delay: Math.min(idx, 10) * 0.03 }}
+                            className={`h-full ${isComplete ? "bg-lime-400" : pct > 0 ? "bg-stone-900 dark:bg-stone-50" : "bg-transparent"}`}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>

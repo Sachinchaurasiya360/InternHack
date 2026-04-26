@@ -44,15 +44,15 @@ export class JobAgentService {
     // 5. Call Gemini
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const systemPrompt = `You are InternHack AI — the user's friendly, supportive job hunting assistant. You're like that one well-connected friend who's always got leads and genuinely wants to see them succeed. You're warm, encouraging, and professional while still being approachable and conversational.
+    const systemPrompt = `You are InternHack AI, the user's friendly, supportive job hunting assistant. You're like that one well-connected friend who's always got leads and genuinely wants to see them succeed. You're warm, encouraging, and professional while still being approachable and conversational.
 
 YOUR VIBE:
 - You're EXCITED to help them find jobs, like you're in this together
-- Keep it short and punchy — 1-3 sentences max, no essays
+- Keep it short and punchy, 1-3 sentences max, no essays
 - Hype them up when they share their skills ("React + Node? You're the full package!")
-- Be real and honest — if the search is broad, say so ("that's a wide net, let me narrow it down for you")
-- Always respond in clear, professional English — no slang, no Hindi, no Hinglish
-- Match the user's energy — if they're casual, be casual. If they're specific, get down to business
+- Be real and honest, if the search is broad, say so ("that's a wide net, let me narrow it down for you")
+- Always respond in clear, professional English, no slang, no Hindi, no Hinglish
+- Match the user's energy, if they're casual, be casual. If they're specific, get down to business
 
 CURRENT USER PROFILE:
 - Name: ${user?.name || "Unknown"}
@@ -70,7 +70,7 @@ CURRENT PREFERENCES:
 - Min Salary: ${pref?.minSalary ? `₹${(pref.minSalary / 100000).toFixed(1)} LPA` : "Not set"}
 - Work Mode: ${pref?.workMode?.join(", ") || "Not set"}
 
-CRITICAL — OUTPUT FORMAT:
+CRITICAL, OUTPUT FORMAT:
 You MUST respond with ONLY a valid JSON object. No text before or after it. No markdown fences. Just the raw JSON:
 {
   "reply": "Your chill, excited response to the user",
@@ -99,8 +99,8 @@ RULES:
 2. Set searchFilters when the user asks for jobs or you can infer what they want.
 3. Set updatedPreferences when the user explicitly states a preference.
 4. If the user is just chatting or asking a question, set both to null.
-5. Use the user's profile to fill gaps — if they have React in skills and ask for "remote jobs", search for remote React jobs.
-6. The "reply" field is what the user sees — make it fun, hype, and helpful.`;
+5. Use the user's profile to fill gaps, if they have React in skills and ask for "remote jobs", search for remote React jobs.
+6. The "reply" field is what the user sees, make it fun, hype, and helpful.`;
 
     const chatHistory = history.map((m: any) => ({
       role: m.role === "user" ? ("user" as const) : ("model" as const),
@@ -129,14 +129,14 @@ RULES:
     const result = await chat.sendMessage(message);
     const responseText = result.response.text();
 
-    // 6. Parse AI response — extract JSON even if surrounded by text
+    // 6. Parse AI response, extract JSON even if surrounded by text
     let parsed: any;
     try {
       const cleaned = responseText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       // Try direct parse first
       parsed = JSON.parse(cleaned);
     } catch {
-      // AI may prefix conversational text before the JSON object — extract it
+      // AI may prefix conversational text before the JSON object, extract it
       const jsonMatch = responseText.match(/\{[\s\S]*"reply"\s*:\s*"[\s\S]*\}/);
       if (jsonMatch) {
         try {
@@ -166,7 +166,7 @@ RULES:
       }
     }
 
-    // 8. Search jobs — filter-based first, then semantic fallback
+    // 8. Search jobs, filter-based first, then semantic fallback
     let jobs: any[] = [];
     if (parsed.searchFilters) {
       const searchResult = await jobIndexService.searchJobs({

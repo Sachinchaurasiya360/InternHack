@@ -1,5 +1,6 @@
 import { CheckCircle2, XCircle, Clock, Code2 } from "lucide-react";
 import type { DsaSubmissionSummary, DsaLanguage } from "../../../../lib/types";
+import { Button } from "../../../../components/ui/button";
 
 const LANG_LABELS: Record<DsaLanguage, string> = { python: "Python", cpp: "C++", java: "Java" };
 
@@ -20,10 +21,12 @@ export function DsaSubmissionHistory({ submissions, onLoadCode }: Props) {
   return (
     <div className="divide-y divide-gray-100 dark:divide-gray-800">
       {submissions.map((sub) => (
-        <button
+        <Button
           key={sub.id}
+          variant="ghost"
+          autoHeight
           onClick={() => onLoadCode(sub.code, sub.language)}
-          className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left"
+          className="w-full justify-start text-left rounded-none gap-3"
         >
           {sub.allPassed ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -46,7 +49,7 @@ export function DsaSubmissionHistory({ submissions, onLoadCode }: Props) {
             </div>
           </div>
           <Code2 className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0" />
-        </button>
+        </Button>
       ))}
     </div>
   );

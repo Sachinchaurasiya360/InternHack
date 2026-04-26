@@ -1,6 +1,6 @@
 # Contributing to InternHack
 
-Thanks for your interest in contributing! InternHack is a full-stack career platform and we welcome contributions of all kinds — bug fixes, new features, docs, and design improvements.
+Thanks for your interest in contributing! InternHack is a full-stack career platform and we welcome contributions of all kinds, bug fixes, new features, docs, and design improvements.
 
 This guide walks you through everything from setting up the project to submitting your first PR.
 
@@ -25,10 +25,10 @@ This guide walks you through everything from setting up the project to submittin
 
 ## Before You Start
 
-1. **Read the README** — Understand what InternHack does and the tech stack
-2. **Browse existing issues** — Look for `good first issue` or `help wanted` labels
-3. **Check open PRs** — Make sure no one else is already working on the same thing
-4. **Use the app** — Visit [internhack.xyz](https://www.internhack.xyz) to understand user flows before touching code
+1. **Read the README**, Understand what InternHack does and the tech stack
+2. **Browse existing issues**, Look for `good first issue` or `help wanted` labels
+3. **Check open PRs**, Make sure no one else is already working on the same thing
+4. **Use the app**, Visit [internhack.xyz](https://www.internhack.xyz) to understand user flows before touching code
 
 ---
 
@@ -112,7 +112,7 @@ npx prisma db push
 ```bash
 cd server
 
-# Seed everything — users, DSA, aptitude, companies, badges, skill tests,
+# Seed everything, users, DSA, aptitude, companies, badges, skill tests,
 # hackathons, open-source repos, gov internships, and blog posts
 npm run seed
 
@@ -121,19 +121,19 @@ npm run seed
 npm run seed:admin
 ```
 
-> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent — you can run it multiple times without creating duplicates. Default login for all seeded users is `Test@1234`.
+> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default login for all seeded users is `Test@1234`.
 
 ### Step 6: Start the dev servers
 
 ```bash
-# Terminal 1 — Backend (port 3000)
+# Terminal 1, Backend (port 3000)
 cd server && npm run dev
 
-# Terminal 2 — Frontend (port 5173)
+# Terminal 2, Frontend (port 5173)
 cd client && npm run dev
 ```
 
-Open **http://localhost:5173** — you're ready to develop!
+Open **http://localhost:5173**, you're ready to develop!
 
 ---
 
@@ -192,12 +192,12 @@ Shared components live in `client/src/components/`. State management uses Zustan
 
 Let's say you want to understand how "Apply to Job" works:
 
-1. **Client route** — Find the page in `App.tsx` → `JobDetailPage`
-2. **API call** — In the page component, look for `api.post("/student/jobs/:id/apply")`
-3. **Server route** — `server/src/module/student/student.routes.ts` → find the POST route
-4. **Controller** — `student.controller.ts` → `applyToJob()` method
-5. **Service** — `student.service.ts` → `applyToJob()` — the actual business logic
-6. **Database** — Check `application` model in `base.prisma`
+1. **Client route**, Find the page in `App.tsx` → `JobDetailPage`
+2. **API call**, In the page component, look for `api.post("/student/jobs/:id/apply")`
+3. **Server route**, `server/src/module/student/student.routes.ts` → find the POST route
+4. **Controller**, `student.controller.ts` → `applyToJob()` method
+5. **Service**, `student.service.ts` → `applyToJob()`, the actual business logic
+6. **Database**, Check `application` model in `base.prisma`
 
 This pattern works for every feature.
 
@@ -232,10 +232,10 @@ git push origin feat/your-feature-name
 
 ### Adding a new API endpoint
 
-1. Create or update `<name>.routes.ts` — define the route with middleware
-2. Create or update `<name>.controller.ts` — handle request/response
-3. Create or update `<name>.service.ts` — write the business logic
-4. Create or update `<name>.validation.ts` — add Zod schemas
+1. Create or update `<name>.routes.ts`, define the route with middleware
+2. Create or update `<name>.controller.ts`, handle request/response
+3. Create or update `<name>.service.ts`, write the business logic
+4. Create or update `<name>.validation.ts`, add Zod schemas
 5. Register routes in `server/src/index.ts` if it's a new module
 
 ### Adding a new client page
@@ -249,7 +249,7 @@ git push origin feat/your-feature-name
 1. Edit the schema in `server/src/database/prisma/schema/`
 2. Run `npx prisma generate` from `server/src/database/`
 3. Run `npx prisma db push` to apply changes
-4. **Do not** create migrations without discussing first — we use `db push` for development
+4. **Do not** create migrations without discussing first, we use `db push` for development
 
 ---
 
@@ -259,14 +259,14 @@ git push origin feat/your-feature-name
 
 - Strict mode is enabled on both client and server
 - Use Zod for all server-side input validation
-- Use proper types — avoid `any` where possible
+- Use proper types, avoid `any` where possible
 
 ### TailwindCSS (v4)
 
 - Use canonical TailwindCSS v4 class names
 - Use `bg-linear-to-*` instead of `bg-gradient-*`
-- Don't use arbitrary values like `text-[17px]` — use the standard scale
-- No gradient backgrounds on icons — use flat colors
+- Don't use arbitrary values like `text-[17px]`, use the standard scale
+- No gradient backgrounds on icons, use flat colors
 
 ### UI conventions
 
@@ -331,18 +331,18 @@ Before opening a PR, verify:
 
 ### Good first issues
 
-Look for issues labeled `good first issue` — these are scoped, well-defined tasks suitable for newcomers.
+Look for issues labeled `good first issue`, these are scoped, well-defined tasks suitable for newcomers.
 
 ### Ideas for contributions
 
-- **Bug fixes** — Found something broken? Fix it!
-- **UI improvements** — Better responsive behavior, accessibility, animations
-- **New learning content** — DSA problems, aptitude questions, skill test questions
-- **Documentation** — Improve code comments, API docs, or this guide
-- **Performance** — Optimize slow queries, reduce bundle size, add caching
-- **Testing** — Add unit or integration tests (we currently have minimal coverage)
-- **Accessibility** — Improve keyboard navigation, screen reader support, ARIA labels
-- **i18n** — Help internationalize the platform for non-English speakers
+- **Bug fixes**, Found something broken? Fix it!
+- **UI improvements**, Better responsive behavior, accessibility, animations
+- **New learning content**, DSA problems, aptitude questions, skill test questions
+- **Documentation**, Improve code comments, API docs, or this guide
+- **Performance**, Optimize slow queries, reduce bundle size, add caching
+- **Testing**, Add unit or integration tests (we currently have minimal coverage)
+- **Accessibility**, Improve keyboard navigation, screen reader support, ARIA labels
+- **i18n**, Help internationalize the platform for non-English speakers
 
 ### Areas where we especially need help
 
@@ -358,10 +358,10 @@ Look for issues labeled `good first issue` — these are scoped, well-defined ta
 
 ## Need Help?
 
-- **Read the codebase guide** — [internhack.xyz/student/opensource/read-codebase](https://www.internhack.xyz/student/opensource/read-codebase) has a step-by-step approach to understanding unfamiliar codebases
-- **Check `.claude/REPO_MAP.md`** — Detailed map of every module, route, and component
-- **Open a discussion** — Ask questions in GitHub Discussions
-- **Open an issue** — If you're unsure about something, ask before building
+- **Read the codebase guide**, [internhack.xyz/student/opensource/read-codebase](https://www.internhack.xyz/student/opensource/read-codebase) has a step-by-step approach to understanding unfamiliar codebases
+- **Check `.claude/REPO_MAP.md`**, Detailed map of every module, route, and component
+- **Open a discussion**, Ask questions in GitHub Discussions
+- **Open an issue**, If you're unsure about something, ask before building
 
 ---
 

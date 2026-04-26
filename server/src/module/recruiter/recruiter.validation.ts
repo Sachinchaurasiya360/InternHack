@@ -101,19 +101,8 @@ export const talentSearchSchema = z.object({
   jobStatus: z.string().optional(),
 });
 
-// ==================== TALENT POOL ====================
+// ==================== SAVED CANDIDATES ====================
 
-export const createTalentPoolSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().max(500).optional(),
-});
-
-export const updateTalentPoolSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  description: z.string().max(500).optional(),
-});
-
-export const addPoolMemberSchema = z.object({
-  studentId: z.number().int().positive(),
+export const saveCandidateSchema = z.object({
   notes: z.string().max(500).optional(),
 });

@@ -2,7 +2,6 @@ import cron from "node-cron";
 import { prisma } from "../../database/db.js";
 import type { BaseScraper } from "./scrapers/base.scraper.js";
 import type { ScrapedJobData } from "./scrapers/base.scraper.js";
-import { RemotiveScraper } from "./scrapers/remotive.scraper.js";
 import { ArbeitnowScraper } from "./scrapers/arbeitnow.scraper.js";
 import { AdzunaScraper } from "./scrapers/adzuna.scraper.js";
 import { LinkedInScraper } from "./scrapers/linkedin.scraper.js";
@@ -24,7 +23,6 @@ export class ScraperService {
 
   constructor() {
     this.scrapers = [
-      new RemotiveScraper(),
       new ArbeitnowScraper(),
       new AdzunaScraper(),
       new LinkedInScraper(),
@@ -168,8 +166,15 @@ export class ScraperService {
   ): Promise<{ created: number; updated: number }> {
     if (jobs.length === 0) return { created: 0, updated: 0 };
 
+    // Dedupe within this scrape run: scrapers occasionally emit the same sourceId
+    // twice, which would collide on the (source, sourceId) unique constraint.
+    // Keep the last occurrence so freshest payload wins.
+    const dedupedMap = new Map<string, ScrapedJobData>();
+    for (const job of jobs) dedupedMap.set(job.sourceId, job);
+    const uniqueJobs = Array.from(dedupedMap.values());
+
     // Batch-fetch all existing jobs for this source in one query
-    const sourceIds = jobs.map((j) => j.sourceId);
+    const sourceIds = uniqueJobs.map((j) => j.sourceId);
     const existing = await prisma.scrapedJob.findMany({
       where: { source, sourceId: { in: sourceIds } },
       select: { id: true, sourceId: true },
@@ -179,10 +184,10 @@ export class ScraperService {
     let created = 0;
     let updated = 0;
 
-    // Process in parallel batches — no transaction needed since ops are independent upserts
+    // Process in parallel batches, no transaction needed since ops are independent upserts
     const BATCH_SIZE = 15;
-    for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
-      const batch = jobs.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < uniqueJobs.length; i += BATCH_SIZE) {
+      const batch = uniqueJobs.slice(i, i + BATCH_SIZE);
       const ops: Promise<unknown>[] = [];
 
       for (const job of batch) {
@@ -266,6 +271,13 @@ export class ScraperService {
 
     if (query.source) {
       where.source = query.source;
+    }
+
+    if (query.tags) {
+      const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
+      if (tagList.length > 0) {
+        where.tags = { hasSome: tagList };
+      }
     }
 
     const skip = (query.page - 1) * query.limit;

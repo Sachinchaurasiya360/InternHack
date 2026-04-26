@@ -1712,12 +1712,12 @@ export class AdminService {
         .replace(/\{\{?\s*email\s*\}?\}/gi, email);
     };
 
-    // Resend supports up to 100 emails per batch.send() call.
-    // Default rate limit is ~2 req/sec, so we throttle to 1 batch / 600ms.
+    // Resend: 5 req/sec team-wide, shared with transactional sendEmail() calls.
+    // Throttle to ~1 batch/sec to leave headroom for concurrent auth/notification emails.
     let sent = 0;
     let failed = 0;
     const batchSize = 100;
-    const throttleMs = 600;
+    const throttleMs = 1200;
 
     for (let i = 0; i < users.length; i += batchSize) {
       const batch = users.slice(i, i + batchSize);
@@ -1886,7 +1886,7 @@ export class AdminService {
     return prisma.adminJob.delete({ where: { id } });
   }
 
-  async getPublicExternalJobs(query: { page: number; limit: number; search?: string }) {
+  async getPublicExternalJobs(query: { page: number; limit: number; search?: string; location?: string; tags?: string }) {
     const now = new Date();
     const where: Record<string, unknown> = {
       isActive: true,
@@ -1896,7 +1896,17 @@ export class AdminService {
       where.OR = [
         { company: { contains: query.search, mode: "insensitive" } },
         { role: { contains: query.search, mode: "insensitive" } },
+        { description: { contains: query.search, mode: "insensitive" } },
       ];
+    }
+    if (query.location) {
+      where.location = { contains: query.location, mode: "insensitive" };
+    }
+    if (query.tags) {
+      const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
+      if (tagList.length) {
+        where.tags = { hasSome: tagList };
+      }
     }
     const [jobs, total] = await Promise.all([
       prisma.adminJob.findMany({

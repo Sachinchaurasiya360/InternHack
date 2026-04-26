@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CheckCircle2, XCircle, ChevronDown, ChevronRight, Clock, HardDrive, AlertTriangle } from "lucide-react";
 import type { DsaExecutionResult } from "../../../../lib/types";
+import { Button } from "../../../../components/ui/button";
 
 interface Props {
   result: DsaExecutionResult | null;
@@ -64,9 +65,10 @@ export function DsaTestResults({ result, isRunning }: Props) {
           const isExpanded = expandedIdx === idx;
           return (
             <div key={idx} className="border border-gray-100 dark:border-gray-800 rounded-lg overflow-hidden">
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setExpandedIdx(isExpanded ? null : idx)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                className="w-full justify-start text-left rounded-none"
               >
                 {tc.passed ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -89,7 +91,7 @@ export function DsaTestResults({ result, isRunning }: Props) {
                   </div>
                 )}
                 {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-              </button>
+              </Button>
 
               {isExpanded && (
                 <div className="px-3 pb-3 space-y-2 border-t border-gray-100 dark:border-gray-800 pt-2">

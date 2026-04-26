@@ -14,7 +14,8 @@ import {
   Users,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
-import { canonicalUrl } from "../../../lib/seo.utils";
+import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
+import { organizationSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import api from "../../../lib/axios";
@@ -135,6 +136,21 @@ export default function YCCompanyDetailPage() {
         keywords={`${company.name}, Y Combinator, YC, ${company.industry || ""}, ${company.tags?.join(", ") || ""}`}
         ogImage={company.smallLogoUrl || undefined}
         canonicalUrl={canonicalUrl(`/yc/${company.slug}`)}
+        structuredData={[
+          organizationSchema({
+            name: company.name,
+            description: company.oneLiner || company.longDescription?.slice(0, 160) || `${company.name} is a Y Combinator company.`,
+            slug: company.slug,
+            website: company.website,
+            city: company.allLocations || undefined,
+            industry: company.industry || undefined,
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: SITE_URL },
+            { name: "Y Combinator", url: `${SITE_URL}/yc` },
+            { name: company.name, url: `${SITE_URL}/yc/${company.slug}` },
+          ]),
+        ]}
       />
 
       {/* Atmospheric background */}

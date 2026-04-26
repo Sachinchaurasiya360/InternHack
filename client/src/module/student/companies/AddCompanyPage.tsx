@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Building2, Loader2, Plus, X } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
+import { Button } from "../../../components/ui/button";
 
 export default function AddCompanyPage() {
   const navigate = useNavigate();
@@ -191,17 +192,16 @@ export default function AddCompanyPage() {
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTech(); } }}
                 placeholder="Type and press Enter"
                 className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500" />
-              <button type="button" onClick={addTech}
-                className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+              <Button type="button" variant="secondary" mode="icon" onClick={addTech}>
                 <Plus className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
             {technologies.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {technologies.map((tech) => (
                   <span key={tech} className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-sm rounded-full">
                     {tech}
-                    <button type="button" onClick={() => removeTech(tech)}><X className="w-3 h-3" /></button>
+                    <Button type="button" variant="ghost" mode="icon" size="sm" className="h-auto w-auto p-0" onClick={() => removeTech(tech)}><X className="w-3 h-3" /></Button>
                   </span>
                 ))}
               </div>
@@ -223,10 +223,10 @@ export default function AddCompanyPage() {
           </label>
         </div>
 
-        <button type="submit" disabled={loading || !form.name.trim() || !form.description.trim() || !form.industry.trim() || !form.city.trim()}
-          className="w-full py-3 bg-black dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
+        <Button type="submit" variant="mono" size="lg" disabled={loading || !form.name.trim() || !form.description.trim() || !form.industry.trim() || !form.city.trim()}
+          className="w-full rounded-xl">
           {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <><Building2 className="w-4 h-4" /> Submit Company</>}
-        </button>
+        </Button>
       </form>
     </div>
   );

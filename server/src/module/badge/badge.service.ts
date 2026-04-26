@@ -176,6 +176,25 @@ export class BadgeService {
           break;
         }
 
+        case "job_apply": {
+          const requiredCount = (params["count"] as number) || 1;
+          const [internal, external] = await Promise.all([
+            prisma.application.count({ where: { studentId } }),
+            prisma.externalJobApplication.count({ where: { studentId } }),
+          ]);
+          earned = internal + external >= requiredCount;
+          break;
+        }
+
+        case "interview_share": {
+          const requiredCount = (params["count"] as number) || 1;
+          const shareCount = await prisma.interviewExperience.count({
+            where: { userId: studentId },
+          });
+          earned = shareCount >= requiredCount;
+          break;
+        }
+
         case "dsa_solve": {
           const requiredCount = (params["count"] as number) || 1;
           const solvedCount = await prisma.studentDsaProgress.count({

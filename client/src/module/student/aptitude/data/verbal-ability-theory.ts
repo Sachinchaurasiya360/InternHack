@@ -67,21 +67,21 @@ export const verbalAbilityTheory: TopicTheory[] = [
           "Identify the error: (A) Each of the boys / (B) have completed / (C) their assignments. / (D) No error.",
         solution:
           "'Each' is a singular indefinite pronoun. When 'each' is the subject, it requires a singular verb. 'Have completed' is a plural verb form. The correct form should be 'has completed.' Additionally, since 'each' is singular, the pronoun should technically be 'his' in formal grammar, but 'their' is widely accepted in modern usage. The primary error is in part (B).",
-        answer: "(B) — 'have completed' should be 'has completed'",
+        answer: "(B), 'have completed' should be 'has completed'",
       },
       {
         problem:
           "Identify the error: (A) The furniture in the rooms / (B) are made of / (C) the finest teak wood. / (D) No error.",
         solution:
           "The subject of this sentence is 'furniture', which is an uncountable noun and always takes a singular verb. The prepositional phrase 'in the rooms' is a modifier and does not affect subject-verb agreement. 'Are made' is a plural verb, which is incorrect. It should be 'is made.'",
-        answer: "(B) — 'are made of' should be 'is made of'",
+        answer: "(B), 'are made of' should be 'is made of'",
       },
       {
         problem:
           "Identify the error: (A) No sooner did he arrive / (B) when it started / (C) raining heavily. / (D) No error.",
         solution:
           "The correct correlative construction is 'No sooner...than', not 'No sooner...when.' 'Hardly/Scarcely' pairs with 'when/before', but 'No sooner' always pairs with 'than.' The correction is: 'No sooner did he arrive than it started raining heavily.'",
-        answer: "(B) — 'when' should be 'than'",
+        answer: "(B), 'when' should be 'than'",
       },
     ],
     commonMistakes: [

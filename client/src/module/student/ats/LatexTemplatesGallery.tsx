@@ -6,6 +6,7 @@ import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
 import api from "../../../lib/axios";
 import { LATEX_TEMPLATES, type LatexTemplate } from "./latex-templates.data";
+import { Button } from "../../../components/ui/button";
 
 const CACHE_VERSION = "v3";
 const CACHE_PREFIX = `latex-tpl-pdf-${CACHE_VERSION}-`;
@@ -128,13 +129,15 @@ function TemplateCard({ template, index }: { template: LatexTemplate; index: num
         )}
         {/* Hover overlay */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/10 dark:bg-black/30">
-          <Link
-            to={`/student/ats/latex-editor?template=${template.id}`}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors no-underline shadow-lg"
-          >
-            <Code2 className="w-4 h-4" />
-            Use Template
-          </Link>
+          <Button asChild variant="primary" size="md" className="rounded-xl bg-indigo-600 hover:bg-indigo-700 shadow-lg">
+            <Link
+              to={`/student/ats/latex-editor?template=${template.id}`}
+              className="no-underline"
+            >
+              <Code2 className="w-4 h-4" />
+              Use Template
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -159,13 +162,15 @@ function TemplateCard({ template, index }: { template: LatexTemplate; index: num
             </span>
           ))}
         </div>
-        <Link
-          to={`/student/ats/latex-editor?template=${template.id}`}
-          className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold bg-gray-950 dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
-        >
-          <Code2 className="w-3.5 h-3.5" />
-          Use Template
-        </Link>
+        <Button asChild variant="mono" size="md" className="w-full rounded-xl">
+          <Link
+            to={`/student/ats/latex-editor?template=${template.id}`}
+            className="no-underline"
+          >
+            <Code2 className="w-3.5 h-3.5" />
+            Use Template
+          </Link>
+        </Button>
       </div>
     </motion.div>
   );
@@ -223,17 +228,15 @@ export default function LatexTemplatesGallery() {
       >
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {CATEGORIES.map((cat) => (
-            <button
+            <Button
               key={cat.value}
+              variant={category === cat.value ? "mono" : "outline"}
+              size="sm"
               onClick={() => setCategory(cat.value)}
-              className={`shrink-0 px-4 py-2 rounded-xl text-xs font-medium transition-all ${
-                category === cat.value
-                  ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-sm"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
+              className="shrink-0 rounded-xl"
             >
               {cat.label}
-            </button>
+            </Button>
           ))}
         </div>
       </motion.div>

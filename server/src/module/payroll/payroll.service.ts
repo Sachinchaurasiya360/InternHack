@@ -44,7 +44,7 @@ export class PayrollService {
       const pf = Math.round(basic * 0.12);
       const esi = grossEarnings <= 21000 ? Math.round(grossEarnings * 0.0075) : 0;
       const profTax = grossEarnings > 15000 ? 200 : 0;
-      const tds = 0; // simplified — real TDS needs annual calculation
+      const tds = 0; // simplified, real TDS needs annual calculation
       const totalDeductions = pf + esi + profTax + tds;
       const netPay = grossEarnings - totalDeductions;
 

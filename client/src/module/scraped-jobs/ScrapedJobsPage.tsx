@@ -7,6 +7,7 @@ import { SEO } from "../../components/SEO";
 import { canonicalUrl } from "../../lib/seo.utils";
 import api from "../../lib/axios";
 import type { ScrapedJob, ScrapedJobSource, Pagination } from "../../lib/types";
+import { Button } from "../../components/ui/button";
 
 export default function ScrapedJobsPage() {
   const [jobs, setJobs] = useState<ScrapedJob[]>([]);
@@ -97,10 +98,14 @@ export default function ScrapedJobsPage() {
               ))}
             </select>
           </div>
-          <button onClick={() => { setPage(1); fetchJobs(); }}
-            className="px-6 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
+          <Button
+            variant="mono"
+            size="lg"
+            onClick={() => { setPage(1); fetchJobs(); }}
+            className="rounded-xl"
+          >
             Search
-          </button>
+          </Button>
         </div>
 
         {loading ? (
@@ -152,11 +157,9 @@ export default function ScrapedJobsPage() {
 
             {pagination && pagination.totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
-                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Previous</button>
+                <Button variant="outline" onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}>Previous</Button>
                 <span className="text-sm text-gray-500">Page {page} of {pagination.totalPages}</span>
-                <button onClick={() => setPage(Math.min(pagination.totalPages, page + 1))} disabled={page === pagination.totalPages}
-                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Next</button>
+                <Button variant="outline" onClick={() => setPage(Math.min(pagination.totalPages, page + 1))} disabled={page === pagination.totalPages}>Next</Button>
               </div>
             )}
           </>

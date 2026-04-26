@@ -10,6 +10,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, CustomFieldDefinition, AssessmentQuestion } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 
 export default function ApplicationProgressPage() {
   const { applicationId } = useParams();
@@ -50,9 +51,9 @@ export default function ApplicationProgressPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
+      <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-gray-500 hover:text-black dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" /> Back
-      </button>
+      </Button>
 
       <div className="mb-6">
         <Link to={`/student/jobs/${application.jobId}`} className="inline-flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors no-underline">
@@ -139,21 +140,18 @@ export default function ApplicationProgressPage() {
                             />
                           )}
                           <div className="flex items-center gap-3">
-                            <button onClick={() => handleSubmitRound(round.id)} disabled={submitting}
-                              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
+                            <Button variant="mono" onClick={() => handleSubmitRound(round.id)} disabled={submitting}>
                               <Send className="w-4 h-4" />
                               {submitting ? "Submitting..." : "Submit Round"}
-                            </button>
-                            <button onClick={() => setActiveRoundId(null)}
-                              className="px-4 py-2 text-sm text-gray-500 hover:text-black dark:hover:text-white">Cancel</button>
+                            </Button>
+                            <Button variant="ghost" onClick={() => setActiveRoundId(null)} className="text-gray-500 hover:text-black dark:hover:text-white">Cancel</Button>
                           </div>
                         </div>
                       )
                     ) : (
-                      <button onClick={() => setActiveRoundId(round.id)}
-                        className="px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
+                      <Button variant="mono" onClick={() => setActiveRoundId(round.id)}>
                         Start Round
-                      </button>
+                      </Button>
                     )}
                   </div>
                 )}
