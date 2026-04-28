@@ -328,7 +328,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title="Red-Black Tree — Insertion"
+      title="Red-Black Tree, Insertion"
       player={player}
       input={
         <InputEditor
@@ -373,7 +373,7 @@ function VisualizeTab() {
               <span className="font-medium text-stone-700 dark:text-stone-300">
                 Current case:
               </span>{" "}
-              {frame?.caseTag ?? "—"}
+              {frame?.caseTag ?? ","}
             </div>
             <div className="italic">
               Height bound:{" "}
@@ -423,7 +423,7 @@ function LearnTab() {
       b: "AVL stores height per node and rebalances aggressively (height difference <= 1). RB stores 1 bit (color) and tolerates up to a 2x imbalance, looser, but cheaper to maintain. RB does fewer rotations on insert/delete.",
     },
     {
-      t: "RB vs AVL — when each wins",
+      t: "RB vs AVL, when each wins",
       b: "Read-heavy workloads -> AVL (tighter balance, faster lookup). Write-heavy / mixed -> RB (fewer rotations on update). Most language stdlibs choose RB: std::map (C++), TreeMap (Java), Linux kernel rb_node (CFS scheduler, EPOLL, virtual memory).",
     },
     {
@@ -432,10 +432,10 @@ function LearnTab() {
     },
     {
       t: "The 3 fix-up cases",
-      b: "Case 1: uncle is RED — recolor parent+uncle BLACK, grandparent RED, continue at grandparent. Case 2: zig-zag — rotate parent to straighten. Case 3: line — rotate grandparent + swap colors. Case 1 is recursive (climbs); Cases 2/3 terminate after at most one rotation pair.",
+      b: "Case 1: uncle is RED, recolor parent+uncle BLACK, grandparent RED, continue at grandparent. Case 2: zig-zag, rotate parent to straighten. Case 3: line, rotate grandparent + swap colors. Case 1 is recursive (climbs); Cases 2/3 terminate after at most one rotation pair.",
     },
     {
-      t: "Production code uses RB — even when AVL would be fine",
+      t: "Production code uses RB, even when AVL would be fine",
       b: "RB's dominance comes from: simpler delete (5 cases vs AVL's deeper rebalancing), 1 color bit (vs full height), and historical inertia (Sedgewick's Left-Leaning RB simplified the implementation in the 2000s).",
     },
   ];
@@ -541,7 +541,7 @@ function TryTab() {
                       : "bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-200 border border-rose-400"
                   }`}
                 >
-                  {correct ? `Correct — ${p.a}` : `Answer: ${p.a}`}
+                  {correct ? `Correct, ${p.a}` : `Answer: ${p.a}`}
                 </span>
               )}
             </div>
@@ -575,7 +575,7 @@ function InsightTab() {
       </Card>
       <Card padded={false} className="overflow-hidden">
         <div className="p-5 pb-3">
-          <SubHeading>RB vs AVL — head-to-head</SubHeading>
+          <SubHeading>RB vs AVL, head-to-head</SubHeading>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -630,7 +630,7 @@ function InsightTab() {
                 std::map / std::set / std::multimap
               </code>
             </strong>{" "}
-            — RB.
+           , RB.
           </li>
           <li>
             <strong className="text-stone-900 dark:text-stone-50">
@@ -639,7 +639,7 @@ function InsightTab() {
                 TreeMap / TreeSet
               </code>
             </strong>{" "}
-            — RB.{" "}
+           , RB.{" "}
             <code className="font-mono text-xs bg-stone-100 dark:bg-stone-800 px-1 rounded">
               HashMap
             </code>{" "}
@@ -652,7 +652,7 @@ function InsightTab() {
                 rb_node
               </code>
             </strong>{" "}
-            — CFS process scheduler, virtual-memory area lookup, EPOLL ready-list, EXT4 directory
+           , CFS process scheduler, virtual-memory area lookup, EPOLL ready-list, EXT4 directory
             indexing.
           </li>
           <li>
@@ -706,7 +706,7 @@ export default function L3_RedBlack({ onQuizComplete }: Props) {
       options: ["BLACK", "RED", "Either, depending on parent", "BLUE"],
       correctIndex: 1,
       explanation:
-        "Inserting RED can only violate invariant 4 (no two reds). Inserting BLACK would violate invariant 5 (equal black-height) almost always — much harder to fix. So new nodes are RED.",
+        "Inserting RED can only violate invariant 4 (no two reds). Inserting BLACK would violate invariant 5 (equal black-height) almost always, much harder to fix. So new nodes are RED.",
     },
     {
       question: "After insert fix-up, what color is the root always set to?",
@@ -732,7 +732,7 @@ export default function L3_RedBlack({ onQuizComplete }: Props) {
       ],
       correctIndex: 1,
       explanation:
-        "AVL has slightly tighter balance and faster lookups. RB does fewer rotations per insert/delete (delete bounded by 3 rotations, vs AVL's O(log n)) — that's why language stdlibs and the Linux kernel choose RB.",
+        "AVL has slightly tighter balance and faster lookups. RB does fewer rotations per insert/delete (delete bounded by 3 rotations, vs AVL's O(log n)), that's why language stdlibs and the Linux kernel choose RB.",
     },
     {
       question:
@@ -740,7 +740,7 @@ export default function L3_RedBlack({ onQuizComplete }: Props) {
       options: ["AVL", "Splay tree", "Red-Black", "Skip list"],
       correctIndex: 2,
       explanation:
-        "Java picks RB for the same reason most stdlibs do: simpler delete + lower rotation overhead. The treeified HashMap caps worst-case bucket lookup at O(log k) — useful against adversarial hash-collision attacks.",
+        "Java picks RB for the same reason most stdlibs do: simpler delete + lower rotation overhead. The treeified HashMap caps worst-case bucket lookup at O(log k), useful against adversarial hash-collision attacks.",
     },
   ];
 
@@ -751,7 +751,7 @@ export default function L3_RedBlack({ onQuizComplete }: Props) {
       lessonNumber={4}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — the production balanced BST. std::map, TreeMap, Linux kernel — all RB."
+      placementRelevance="High, the production balanced BST. std::map, TreeMap, Linux kernel, all RB."
       nextLessonHint="Heaps & Priority Queues"
       onQuizComplete={onQuizComplete}
     />

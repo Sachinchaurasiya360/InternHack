@@ -532,7 +532,7 @@ function VisualizeTab() {
 
 function LearnTab() {
   const sections = [
-    { title: "What is an advanced sliding window?", body: "Fixed-size windows are easy — you slide a ruler of width k across the array. Advanced means the window's width is not fixed; it grows while a condition holds and shrinks the instant the condition breaks. Two pointers, one moving pattern." },
+    { title: "What is an advanced sliding window?", body: "Fixed-size windows are easy, you slide a ruler of width k across the array. Advanced means the window's width is not fixed; it grows while a condition holds and shrinks the instant the condition breaks. Two pointers, one moving pattern." },
     { title: "The grow-shrink loop", body: "Right pointer extends by 1 each outer iteration. If the window now violates the invariant (duplicate char, sum over budget, more than k distinct chars), the left pointer advances until the invariant is restored. Every index is visited at most twice, giving O(n)." },
     { title: "The state you must track", body: "A hash map (character frequency, sum, count of distinct) that updates in O(1) when right adds a char and when left removes one. This auxiliary structure is what lets 'check the condition' stay constant-time." },
     { title: "Classic variants", body: "Longest substring without repeats, minimum window substring (Leetcode hard), longest substring with at most k distinct, smallest subarray with sum >= S, fruit into baskets, permutation-in-string. Same skeleton, different invariant." },
@@ -540,7 +540,7 @@ function LearnTab() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <SectionEyebrow>sliding window — advanced</SectionEyebrow>
+        <SectionEyebrow>sliding window, advanced</SectionEyebrow>
         <SectionTitle>Two pointers, one moving pattern</SectionTitle>
         <Lede>
           Imagine a rubber band stretched across two fingers on a row of beads. The right finger advances bead-by-bead; whenever the beads inside the band break a rule, the left finger catches up until the rule is restored. The band is your window of validity.
@@ -623,7 +623,7 @@ function InsightTab() {
       <Card>
         <SubHeading>Why it is O(n), not O(n²)</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          The inner <InlineCode>while</InlineCode> loop looks scary, but <InlineCode>left</InlineCode> only ever moves forward — never reset. Across the whole scan, <InlineCode>left</InlineCode> advances at most n times, <InlineCode>right</InlineCode> advances at most n times. Total work is 2n, not n x n.
+          The inner <InlineCode>while</InlineCode> loop looks scary, but <InlineCode>left</InlineCode> only ever moves forward, never reset. Across the whole scan, <InlineCode>left</InlineCode> advances at most n times, <InlineCode>right</InlineCode> advances at most n times. Total work is 2n, not n x n.
         </p>
       </Card>
       <Card>

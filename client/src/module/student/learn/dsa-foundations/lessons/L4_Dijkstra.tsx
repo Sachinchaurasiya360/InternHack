@@ -132,7 +132,7 @@ function buildDijkstraFrames(
     const { id: u, d: du } = pq.shift()!;
     f.push(clone({ line: 5, message: `Extract-min: u = ${u}, d = ${du}.`, vars: { u, "d[u]": du } }));
     if (done[u]) {
-      f.push(clone({ line: 6, message: `${u} already finalized — skip.`, vars: { u } }));
+      f.push(clone({ line: 6, message: `${u} already finalized, skip.`, vars: { u } }));
       continue;
     }
     done[u] = true;
@@ -149,14 +149,14 @@ function buildDijkstraFrames(
         relaxEdges.add(`${u}-${v}`);
         relaxEdges.add(`${v}-${u}`);
         pq.push({ id: v, d: alt });
-        f.push(clone({ line: 10, message: `Shorter — dist[${v}] = ${alt}. Push into PQ.`, flashKey: v, vars: { u, v, "dist[v]": alt } }));
+        f.push(clone({ line: 10, message: `Shorter, dist[${v}] = ${alt}. Push into PQ.`, flashKey: v, vars: { u, v, "dist[v]": alt } }));
       } else {
-        f.push(clone({ line: 8, message: `Not shorter — keep dist[${v}] = ${dist[v]}.`, vars: { u, v, "dist[v]": dist[v] } }));
+        f.push(clone({ line: 8, message: `Not shorter, keep dist[${v}] = ${dist[v]}.`, vars: { u, v, "dist[v]": dist[v] } }));
       }
     }
   }
 
-  f.push(clone({ line: 4, message: "PQ empty — Dijkstra complete. All reachable distances finalized." }));
+  f.push(clone({ line: 4, message: "PQ empty, Dijkstra complete. All reachable distances finalized." }));
   return f;
 }
 
@@ -335,7 +335,7 @@ function LearnTab() {
         <SectionTitle>Water flowing through pipes. Cheapest first.</SectionTitle>
         <Lede>
           Imagine you are dropping water at the source and letting it flow through pipes of
-          different lengths. The water reaches each junction at the earliest possible time — that
+          different lengths. The water reaches each junction at the earliest possible time, that
           time is the shortest-path distance.
         </Lede>
       </div>
@@ -362,7 +362,7 @@ function TryTab() {
       <Callout>Run these in the Visualize tab and check the final distances.</Callout>
       {[
         "Classic preset from A: what is dist[D]?  (Verify by stepping through!)",
-        "Shortcut preset from A: what is dist[B]?  (Expected: 2 — via A→C→B, not the direct A-B:10)",
+        "Shortcut preset from A: what is dist[B]?  (Expected: 2, via A→C→B, not the direct A-B:10)",
         "Why can't Dijkstra handle negative weights? Explain in one line.",
       ].map((q, i) => (
         <Card key={i}>
@@ -386,15 +386,15 @@ function InsightTab() {
         <SubHeading>Why non-negative weights?</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           The correctness argument relies on "once extracted, dist[u] is final." If a negative edge
-          existed, a later-extracted vertex could offer a shorter route back through u — breaking
+          existed, a later-extracted vertex could offer a shorter route back through u, breaking
           the invariant. Use Bellman-Ford for graphs with negative edges.
         </p>
       </Card>
       <Card>
         <SubHeading>Interview nuance</SubHeading>
         <ul className="list-disc pl-5 space-y-1.5 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          <li>For unweighted graphs, BFS does the same job in O(V+E) — don't over-engineer.</li>
-          <li>"Lazy" Dijkstra reinserts on relax and skips stale entries — simpler to code than decrease-key.</li>
+          <li>For unweighted graphs, BFS does the same job in O(V+E), don't over-engineer.</li>
+          <li>"Lazy" Dijkstra reinserts on relax and skips stale entries, simpler to code than decrease-key.</li>
           <li>A* = Dijkstra + heuristic; fall back to Dijkstra when h(n) = 0.</li>
         </ul>
       </Card>
@@ -450,7 +450,7 @@ export default function L4_Dijkstra({ onQuizComplete }: Props) {
       question: "After extract-min returns u, we…",
       options: [
         "Update dist[u]",
-        "Mark u finalized — its distance won't change again",
+        "Mark u finalized, its distance won't change again",
         "Add u's edges to MST",
         "Remove u from the graph",
       ],
@@ -474,7 +474,7 @@ export default function L4_Dijkstra({ onQuizComplete }: Props) {
       lessonNumber={5}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="Very high — routing, maps, network protocols."
+      placementRelevance="Very high, routing, maps, network protocols."
       nextLessonHint="Bellman-Ford"
       onQuizComplete={onQuizComplete}
     />

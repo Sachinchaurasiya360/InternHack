@@ -730,7 +730,7 @@ export default function L1_BigO({ onQuizComplete }: Props) {
       options: [
         "O(n) per insertion (because of the copies)",
         "O(log n) per insertion",
-        "O(1) amortized — total work is bounded by 2n",
+        "O(1) amortized, total work is bounded by 2n",
         "O(n²) total",
       ],
       correctIndex: 2,

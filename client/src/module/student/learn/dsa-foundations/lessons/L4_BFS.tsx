@@ -129,7 +129,7 @@ function buildBFSFrames(
   f.push(cloneF({ line: 4, message: `Enqueue source ${source}.`, vars: { u: "-", "|Q|": Q.length } }, [...Q]));
 
   while (Q.length) {
-    f.push(cloneF({ line: 5, message: "Queue not empty — continue.", vars: { "|Q|": Q.length } }, [...Q]));
+    f.push(cloneF({ line: 5, message: "Queue not empty, continue.", vars: { "|Q|": Q.length } }, [...Q]));
     const u = Q.shift()!;
     state[u] = "active";
     f.push(cloneF({ line: 6, message: `Dequeue u = ${u}. Mark active.`, vars: { u, "|Q|": Q.length, [`dist[${u}]`]: dist[u] ?? "∞" } }, [...Q]));
@@ -141,7 +141,7 @@ function buildBFSFrames(
         state[v] = "frontier";
         treeEdges.add(`${u}-${v}`);
         Q.push(v);
-        f.push(cloneF({ line: 9, message: `dist[${v}] was ∞ — set dist[${v}] = ${dist[v]}.`, flashKey: v, vars: { u, v, [`dist[${v}]`]: dist[v] } }, [...Q]));
+        f.push(cloneF({ line: 9, message: `dist[${v}] was ∞, set dist[${v}] = ${dist[v]}.`, flashKey: v, vars: { u, v, [`dist[${v}]`]: dist[v] } }, [...Q]));
         f.push(cloneF({ line: 11, message: `Enqueue ${v}.`, vars: { u, v, "|Q|": Q.length } }, [...Q]));
       } else {
         f.push(cloneF({ line: 8, message: `dist[${v}] already set (${dist[v]}). Skip.`, vars: { u, v, [`dist[${v}]`]: dist[v] } }, [...Q]));
@@ -152,7 +152,7 @@ function buildBFSFrames(
     f.push(cloneF({ line: 5, message: `Finished processing ${u}.`, vars: { u, "|Q|": Q.length } }, [...Q]));
   }
 
-  f.push(cloneF({ line: 5, message: "Queue empty — BFS complete. Distances labeled on every reachable vertex.", vars: {} }, []));
+  f.push(cloneF({ line: 5, message: "Queue empty, BFS complete. Distances labeled on every reachable vertex.", vars: {} }, []));
   return f;
 }
 
@@ -331,9 +331,9 @@ function VisualizeTab() {
 
 function LearnTab() {
   const sections = [
-    { title: "BFS in one line", body: "Explore the graph in wavefront order: first all vertices at distance 1 from the source, then distance 2, then distance 3 — using a FIFO queue to hold the next frontier." },
+    { title: "BFS in one line", body: "Explore the graph in wavefront order: first all vertices at distance 1 from the source, then distance 2, then distance 3, using a FIFO queue to hold the next frontier." },
     { title: "Correctness invariant", body: "When a vertex is dequeued, its dist[v] equals the true shortest distance (in number of edges) from the source. Reason: we enqueue in non-decreasing order of distance." },
-    { title: "Complexity", body: "Each vertex is enqueued and dequeued once — O(V). We scan each adjacency list once — total work O(E). Overall O(V + E) with adjacency list." },
+    { title: "Complexity", body: "Each vertex is enqueued and dequeued once, O(V). We scan each adjacency list once, total work O(E). Overall O(V + E) with adjacency list." },
     { title: "Classic uses", body: "Shortest path in unweighted graphs, level-order tree traversal, finding connected components, bipartiteness test, web crawling." },
   ];
   return (
@@ -343,7 +343,7 @@ function LearnTab() {
         <SectionTitle>Drop a pebble. Watch the ripples spread layer by layer.</SectionTitle>
         <Lede>
           Drop a pebble into water at the source. The ripples spread outwards in rings. Each ring is
-          a "layer" — every node in ring k is exactly k edges from the source. That is BFS.
+          a "layer", every node in ring k is exactly k edges from the source. That is BFS.
         </Lede>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -397,7 +397,7 @@ function InsightTab() {
         <SubHeading>Why a queue (not a stack)?</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           FIFO preserves the layer order. The first time a vertex is discovered is always via the
-          shortest path — because the queue always holds a mix of layer k and layer k+1 nodes, with
+          shortest path, because the queue always holds a mix of layer k and layer k+1 nodes, with
           all layer-k nodes in front. Replace the queue with a stack and you get DFS, where shortest
           paths are not guaranteed.
         </p>
@@ -406,21 +406,21 @@ function InsightTab() {
         <SubHeading>Interview pitfalls</SubHeading>
         <ul className="list-disc pl-5 space-y-1.5 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           <li>BFS shortest path works only for <strong className="text-stone-800 dark:text-stone-200">unweighted</strong> graphs (or all-equal weights). For weighted, use Dijkstra.</li>
-          <li>Always mark a vertex "visited" at enqueue time, not dequeue — else it enters the queue multiple times.</li>
+          <li>Always mark a vertex "visited" at enqueue time, not dequeue, else it enters the queue multiple times.</li>
           <li>Number of BFS tree edges = V − 1 (for connected graph).</li>
         </ul>
       </Card>
       <Card>
         <SubHeading>Stdlib queue choice and the Python <InlineCode>list.pop(0)</InlineCode> trap</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-2">
-          Python: <InlineCode>collections.deque</InlineCode> with <InlineCode>append</InlineCode> + <InlineCode>popleft</InlineCode> — both O(1). Never use <InlineCode>list.pop(0)</InlineCode>: it shifts every other element down, making BFS O(V·E).
+          Python: <InlineCode>collections.deque</InlineCode> with <InlineCode>append</InlineCode> + <InlineCode>popleft</InlineCode>, both O(1). Never use <InlineCode>list.pop(0)</InlineCode>: it shifts every other element down, making BFS O(V·E).
         </p>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Java: <InlineCode>ArrayDeque</InlineCode>. C++: <InlineCode>std::queue</InlineCode>.
         </p>
       </Card>
       <Card>
-        <SubHeading>0-1 BFS — Dijkstra shortcut for binary weights</SubHeading>
+        <SubHeading>0-1 BFS, Dijkstra shortcut for binary weights</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           When edge weights are restricted to {"{0, 1}"}, use a deque: pushFront on weight-0 edges,
           pushBack on weight-1 edges. Same correctness as Dijkstra at O(V+E) instead of O(E log V).
@@ -502,7 +502,7 @@ export default function L4_BFS({ onQuizComplete }: Props) {
       lessonNumber={2}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="Very high — asked in almost every graph interview."
+      placementRelevance="Very high, asked in almost every graph interview."
       nextLessonHint="Depth-First Search"
       onQuizComplete={onQuizComplete}
     />

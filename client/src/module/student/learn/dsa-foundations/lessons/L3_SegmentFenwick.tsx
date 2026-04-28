@@ -166,7 +166,7 @@ function queryRange(
         line: 1, tree: cloneSeg(t), rootId,
         nodeStates: { [id]: "mismatch" },
         arrStates: arr.map((_, i) => i >= ql && i <= qh ? "window" : "default"),
-        message: `[${n.lo},${n.hi}] outside [${ql},${qh}] — skip.`,
+        message: `[${n.lo},${n.hi}] outside [${ql},${qh}], skip.`,
         vars: { ql, qh, lo: n.lo, hi: n.hi },
       });
       return identity(op);
@@ -176,7 +176,7 @@ function queryRange(
         line: 2, tree: cloneSeg(t), rootId,
         nodeStates: { [id]: "done" },
         arrStates: arr.map((_, i) => i >= ql && i <= qh ? "window" : "default"),
-        message: `[${n.lo},${n.hi}] fully inside [${ql},${qh}] — use value ${n.value}.`,
+        message: `[${n.lo},${n.hi}] fully inside [${ql},${qh}], use value ${n.value}.`,
         vars: { ql, qh, hit: n.value },
       });
       return n.value;
@@ -185,7 +185,7 @@ function queryRange(
       line: 3, tree: cloneSeg(t), rootId,
       nodeStates: { [id]: "active" },
       arrStates: arr.map((_, i) => i >= ql && i <= qh ? "window" : "default"),
-      message: `[${n.lo},${n.hi}] partially covers — descend both children.`,
+      message: `[${n.lo},${n.hi}] partially covers, descend both children.`,
       vars: { ql, qh, lo: n.lo, hi: n.hi },
     });
     const Lv = n.left ? rec(n.left) : identity(op);
@@ -636,7 +636,7 @@ function SegViz() {
 
   return (
     <AlgoCanvas
-      title={`Segment Tree — ${segOp} (${op})`}
+      title={`Segment Tree, ${segOp} (${op})`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -753,7 +753,7 @@ function FenwickViz() {
 
   return (
     <AlgoCanvas
-      title={`Fenwick / BIT — ${mode}`}
+      title={`Fenwick / BIT, ${mode}`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -875,7 +875,7 @@ function LearnTab() {
         <SectionTitle>Segment trees and Fenwick trees</SectionTitle>
         <Lede>
           Given an array and many queries of the form "sum/min/max of arr[l..r]" plus occasional
-          updates — both segment trees and Fenwick trees give O(log n) per operation.
+          updates, both segment trees and Fenwick trees give O(log n) per operation.
         </Lede>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -974,7 +974,7 @@ function InsightTab() {
         <SubHeading>Why i &amp; -i works</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           In two's complement, <InlineCode>i &amp; -i</InlineCode> isolates the lowest set bit of i.
-          That bit tells how many elements <InlineCode>bit[i]</InlineCode> is responsible for — the
+          That bit tells how many elements <InlineCode>bit[i]</InlineCode> is responsible for, the
           ranges fit together like a puzzle, covering every prefix in O(log n) pieces.
         </p>
       </div>
@@ -983,7 +983,7 @@ function InsightTab() {
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Competitive programming extends segment trees with lazy propagation (range-update),
           persistent trees (time travel), 2D segment trees, segment trees on trees (Euler tour),
-          and HLD — but everything starts from the basic build/query/update you just saw.
+          and HLD, but everything starts from the basic build/query/update you just saw.
         </p>
       </div>
     </div>
@@ -1021,13 +1021,13 @@ export default function L3_SegmentFenwick({ onQuizComplete }: Props) {
       question: "Time complexity of a range-sum query on a segment tree of size n?",
       options: ["O(1)", "O(log n)", "O(√n)", "O(n)"],
       correctIndex: 1,
-      explanation: "Each query touches O(log n) nodes — the minimal covering set of full sub-ranges.",
+      explanation: "Each query touches O(log n) nodes, the minimal covering set of full sub-ranges.",
     },
     {
       question: "Which range aggregation cannot be handled by a Fenwick tree directly?",
       options: ["sum", "xor", "minimum", "count (additive)"],
       correctIndex: 2,
-      explanation: "Minimum is non-invertible — you cannot subtract back. Segment trees handle it; Fenwick cannot (for arbitrary point updates).",
+      explanation: "Minimum is non-invertible, you cannot subtract back. Segment trees handle it; Fenwick cannot (for arbitrary point updates).",
     },
     {
       question: "For a Fenwick tree, bit[i] stores the aggregate over:",

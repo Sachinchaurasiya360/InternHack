@@ -55,16 +55,16 @@ function buildFrames(a: number, b: number, c: number): Frame[] {
   f.push({ line: 2, vars: { a, b, c, max }, message: `Check: is b (${b}) > max (${max})?` });
   if (b > max) {
     max = b;
-    f.push({ line: 3, vars: { a, b, c, max }, highlightKey: "max", message: `Yes — update max to b = ${b}` });
+    f.push({ line: 3, vars: { a, b, c, max }, highlightKey: "max", message: `Yes, update max to b = ${b}` });
   } else {
-    f.push({ line: 2, vars: { a, b, c, max }, message: `No — keep max = ${max}` });
+    f.push({ line: 2, vars: { a, b, c, max }, message: `No, keep max = ${max}` });
   }
   f.push({ line: 4, vars: { a, b, c, max }, message: `Check: is c (${c}) > max (${max})?` });
   if (c > max) {
     max = c;
-    f.push({ line: 5, vars: { a, b, c, max }, highlightKey: "max", message: `Yes — update max to c = ${c}` });
+    f.push({ line: 5, vars: { a, b, c, max }, highlightKey: "max", message: `Yes, update max to c = ${c}` });
   } else {
-    f.push({ line: 4, vars: { a, b, c, max }, message: `No — keep max = ${max}` });
+    f.push({ line: 4, vars: { a, b, c, max }, message: `No, keep max = ${max}` });
   }
   f.push({ line: 6, vars: { a, b, c, max }, message: `Return max = ${max}` });
   return f;
@@ -129,7 +129,7 @@ function VisualTracer({ frame, a, b, c }: { frame: Frame; a: number; b: number; 
             boxShadow: frame.highlightKey === "max" ? `0 0 0 3px ${THEME.accent}40` : "none",
           }}
         >
-          {max ?? "—"}
+          {max ?? ","}
         </div>
       </div>
 
@@ -193,11 +193,11 @@ function LearnTab() {
     },
     {
       title: "Algorithm vs Program",
-      body: "An algorithm is language-agnostic — pseudocode or English is enough. A program is an algorithm written in a specific language (Python, C++, Java). The same algorithm can be written as many different programs.",
+      body: "An algorithm is language-agnostic, pseudocode or English is enough. A program is an algorithm written in a specific language (Python, C++, Java). The same algorithm can be written as many different programs.",
     },
     {
       title: "Four essential properties",
-      body: "(1) Input — zero or more well-defined inputs. (2) Output — at least one. (3) Definiteness — each step is unambiguous. (4) Finiteness — it terminates. Add correctness and you have the five classical criteria.",
+      body: "(1) Input, zero or more well-defined inputs. (2) Output, at least one. (3) Definiteness, each step is unambiguous. (4) Finiteness, it terminates. Add correctness and you have the five classical criteria.",
     },
     {
       title: "How we trace an algorithm",
@@ -304,7 +304,7 @@ function TryTab() {
                       : "bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-200 border border-rose-500"
                   }`}
                 >
-                  {correct ? `Correct — ${p.answer}` : `Answer: ${p.answer}`}
+                  {correct ? `Correct, ${p.answer}` : `Answer: ${p.answer}`}
                 </span>
               )}
             </div>
@@ -385,7 +385,7 @@ export default function L1_AlgorithmTracer({ onQuizComplete }: Props) {
       ],
       correctIndex: 2,
       explanation:
-        "Tracing is simulating execution by hand and recording what each variable holds after each step — a skill interviewers test directly.",
+        "Tracing is simulating execution by hand and recording what each variable holds after each step, a skill interviewers test directly.",
     },
     {
       question: "Trace findMax(-2, -9, -5). What is returned?",

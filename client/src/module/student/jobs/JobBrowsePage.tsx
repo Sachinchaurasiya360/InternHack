@@ -415,8 +415,8 @@ export default function JobBrowsePage() {
           </div>
         </motion.div>
 
-        {/* External + scraped jobs */}
-        {(filteredExtJobs.length > 0 || scrapedJobs.length > 0) && (
+        {/* External / curated jobs */}
+        {filteredExtJobs.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
@@ -438,11 +438,6 @@ export default function JobBrowsePage() {
                   <ExternalJobCard job={job} />
                 </motion.div>
               ))}
-              {scrapedJobs.map((job, i) => (
-                <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (filteredExtJobs.length + i) * 0.03 }}>
-                  <ScrapedJobCard job={job} />
-                </motion.div>
-              ))}
             </div>
             {extData && extData.totalPages > 1 && (
               <PaginationControls
@@ -451,6 +446,33 @@ export default function JobBrowsePage() {
                 onPageChange={setExtPage}
               />
             )}
+          </motion.div>
+        )}
+
+        {/* Scraped / sourced jobs */}
+        {scrapedJobs.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
+            <div className="flex items-end justify-between gap-4 mb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  <span className="h-1 w-1 bg-lime-400" />
+                  sourced / partners
+                </div>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                  Tech roles from job boards
+                </h2>
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
+                refreshed every 6h
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {scrapedJobs.map((job, i) => (
+                <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+                  <ScrapedJobCard job={job} />
+                </motion.div>
+              ))}
+            </div>
             {scrapedPagination && scrapedPagination.totalPages > 1 && (
               <PaginationControls
                 currentPage={scrPage}

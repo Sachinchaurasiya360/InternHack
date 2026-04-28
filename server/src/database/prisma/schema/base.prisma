@@ -79,6 +79,9 @@ model user {
   repoRequests          repoRequest[]            @relation("UserRepoRequests")
   interviewExperiences  interviewExperience[]    @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
+  roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
+  scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
+  privateRoadmaps       roadmap[]                @relation("UserPrivateRoadmaps")
 
   @@index([role])
   @@index([role, isActive])

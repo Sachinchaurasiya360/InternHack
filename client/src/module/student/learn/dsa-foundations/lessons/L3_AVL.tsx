@@ -161,7 +161,7 @@ function insertAvl(t: Avl, rootId: string | null, v: number, frames: Frame[]): s
         tree: cloneAvl(t),
         rootId,
         nodeStates: { [nodeId]: "mismatch" },
-        message: `${v} duplicate — ignored.`,
+        message: `${v} duplicate, ignored.`,
         vars: { insert: v, duplicate: "yes" },
       });
       return nodeId;
@@ -182,7 +182,7 @@ function insertAvl(t: Avl, rootId: string | null, v: number, frames: Frame[]): s
         tree: cloneAvl(t),
         rootId,
         nodeStates: { [nodeId]: "mismatch" },
-        message: `Imbalance at ${nd.value} (BF=${b}) — LL case -> rotate right.`,
+        message: `Imbalance at ${nd.value} (BF=${b}), LL case -> rotate right.`,
         vars: { node: nd.value, BF: b, case: "LL" },
         rotation: "LL",
       });
@@ -203,7 +203,7 @@ function insertAvl(t: Avl, rootId: string | null, v: number, frames: Frame[]): s
         tree: cloneAvl(t),
         rootId,
         nodeStates: { [nodeId]: "mismatch" },
-        message: `Imbalance at ${nd.value} (BF=${b}) — RR case -> rotate left.`,
+        message: `Imbalance at ${nd.value} (BF=${b}), RR case -> rotate left.`,
         vars: { node: nd.value, BF: b, case: "RR" },
         rotation: "RR",
       });
@@ -224,7 +224,7 @@ function insertAvl(t: Avl, rootId: string | null, v: number, frames: Frame[]): s
         tree: cloneAvl(t),
         rootId,
         nodeStates: { [nodeId]: "mismatch" },
-        message: `LR case at ${nd.value} — left-rotate child, then right-rotate ${nd.value}.`,
+        message: `LR case at ${nd.value}, left-rotate child, then right-rotate ${nd.value}.`,
         vars: { node: nd.value, BF: b, case: "LR" },
         rotation: "LR",
       });
@@ -254,7 +254,7 @@ function insertAvl(t: Avl, rootId: string | null, v: number, frames: Frame[]): s
         tree: cloneAvl(t),
         rootId,
         nodeStates: { [nodeId]: "mismatch" },
-        message: `RL case at ${nd.value} — right-rotate child, then left-rotate ${nd.value}.`,
+        message: `RL case at ${nd.value}, right-rotate child, then left-rotate ${nd.value}.`,
         vars: { node: nd.value, BF: b, case: "RL" },
         rotation: "RL",
       });
@@ -519,11 +519,11 @@ function LearnTab() {
     },
     {
       title: "Four rotation cases",
-      body: "LL, RR, LR, RL — named after where the new value went. LL and RR are single rotations. LR and RL are double (two single rotations stacked).",
+      body: "LL, RR, LR, RL, named after where the new value went. LL and RR are single rotations. LR and RL are double (two single rotations stacked).",
     },
     {
       title: "Why O(log n) is guaranteed",
-      body: "Height of an AVL with n nodes is O(log n) — formally h <= 1.44 * log2(n+2). So insert/delete/search are all strictly O(log n) unlike plain BST.",
+      body: "Height of an AVL with n nodes is O(log n), formally h <= 1.44 * log2(n+2). So insert/delete/search are all strictly O(log n) unlike plain BST.",
     },
     {
       title: "Insert cost",

@@ -26,7 +26,7 @@ import { PracticeTab } from "../PracticeTab";
 const PRACTICE_TOPIC_SLUG: string | null = "graph";
 
 /* ------------------------------------------------------------------ */
-/*  Parse  (used by TryTab only — no GraphCanvas needed)               */
+/*  Parse  (used by TryTab only, no GraphCanvas needed)               */
 /* ------------------------------------------------------------------ */
 
 interface ParsedGraph {
@@ -80,13 +80,13 @@ function buildFrames(
   edges: { from: string; to: string; weight?: number }[],
 ): GraphFrame[] {
   const frames: GraphFrame[] = [
-    { edgeIdx: null, message: "The full graph — no edge highlighted yet. Press play to walk each edge." },
+    { edgeIdx: null, message: "The full graph, no edge highlighted yet. Press play to walk each edge." },
   ];
   edges.forEach((e, i) => {
     const label = e.weight !== undefined ? `${e.from}↔${e.to} (weight ${e.weight})` : `${e.from}↔${e.to}`;
     frames.push({
       edgeIdx: i,
-      message: `Edge ${label} — highlighted in the diagram, matrix cell, and adjacency list entry.`,
+      message: `Edge ${label}, highlighted in the diagram, matrix cell, and adjacency list entry.`,
     });
   });
   frames.push({ edgeIdx: null, message: "All edges walked. Every non-zero cell in the matrix maps to an entry in the adjacency list." });
@@ -263,12 +263,12 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title="Graph Representation — Adjacency Matrix vs Adjacency List"
+      title="Graph Representation, Adjacency Matrix vs Adjacency List"
       player={player}
       input={
         <div className="flex flex-col gap-3">
           <InputEditor
-            label="Edge list (A-B:weight — weight optional)"
+            label="Edge list (A-B:weight, weight optional)"
             value={inputStr}
             placeholder="e.g. A-B:4, B-C:3, A-C:10"
             helper="Comma-separated edges. Toggle directed/undirected below."
@@ -498,15 +498,15 @@ function LearnTab() {
     },
     {
       title: "Adjacency matrix",
-      body: "An n×n boolean or integer matrix M where M[u][v] = 1 (or weight) if edge u→v exists. Space O(V²). Checking 'is there an edge?' is O(1) — but iterating neighbors of v takes O(V).",
+      body: "An n×n boolean or integer matrix M where M[u][v] = 1 (or weight) if edge u→v exists. Space O(V²). Checking 'is there an edge?' is O(1), but iterating neighbors of v takes O(V).",
     },
     {
       title: "Adjacency list",
-      body: "Each vertex stores a list of its neighbors. Space O(V + E) — much smaller for sparse graphs. Iterating neighbors is O(deg(v)). Checking a specific edge is O(deg(v)). BFS/DFS love this layout.",
+      body: "Each vertex stores a list of its neighbors. Space O(V + E), much smaller for sparse graphs. Iterating neighbors is O(deg(v)). Checking a specific edge is O(deg(v)). BFS/DFS love this layout.",
     },
     {
       title: "When to use which?",
-      body: "Dense graph (|E| ≈ V²) or frequent edge queries → matrix. Sparse graph (|E| ≪ V²) or traversal-heavy → list. Real-world graphs (social, web, road) are sparse — lists dominate.",
+      body: "Dense graph (|E| ≈ V²) or frequent edge queries → matrix. Sparse graph (|E| ≪ V²) or traversal-heavy → list. Real-world graphs (social, web, road) are sparse, lists dominate.",
     },
   ];
 
@@ -640,7 +640,7 @@ function InsightTab() {
         <SubHeading>Why representation matters</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           BFS/DFS on adjacency list run in O(V+E). On adjacency matrix they run in O(V²) regardless
-          of how few edges exist — the matrix forces you to scan a whole row for each vertex. For a
+          of how few edges exist, the matrix forces you to scan a whole row for each vertex. For a
           social graph with a billion users and only a few hundred friends each, that is the
           difference between seconds and years.
         </p>
@@ -724,7 +724,7 @@ export default function L4_GraphRepresentation({ onQuizComplete }: Props) {
       ],
       correctIndex: 1,
       explanation:
-        "M[u][v] is a direct lookup — constant time. In a list you must scan u's neighbor list to confirm v is there.",
+        "M[u][v] is a direct lookup, constant time. In a list you must scan u's neighbor list to confirm v is there.",
     },
   ];
 
@@ -735,7 +735,7 @@ export default function L4_GraphRepresentation({ onQuizComplete }: Props) {
       lessonNumber={1}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — every graph problem starts here."
+      placementRelevance="High, every graph problem starts here."
       nextLessonHint="Breadth-First Search"
       onQuizComplete={onQuizComplete}
     />

@@ -439,7 +439,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={`LCA via Binary Lifting — query LCA(${u}, ${v})`}
+      title={`LCA via Binary Lifting, query LCA(${u}, ${v})`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -543,7 +543,7 @@ function VisualizeTab() {
             />
           </div>
         ) : (
-          <Callout>Parse error — enter valid edges like A>B, A>C.</Callout>
+          <Callout>Parse error, enter valid edges like A&gt;B, A&gt;C.</Callout>
         )}
         {parsed && table && (
           <LiftTablePanel
@@ -568,7 +568,7 @@ function LearnTab() {
     { t: "What is LCA?", b: "The Lowest Common Ancestor of nodes u and v in a rooted tree is the deepest node that is an ancestor of both. Equivalent: the unique node where the paths from root-to-u and root-to-v diverge. Shows up everywhere: tree distance, range queries on Euler tour, network routing, version control merge bases." },
     { t: "Why binary lifting?", b: "Naive: walk u up one step at a time until depths match, then walk both up together. O(n) per query. Binary lifting: precompute, for each node v and each k, the 2^k-th ancestor of v. Then any ancestor distance d can be expressed as d = sum of powers of 2, so we jump in O(log n) per query." },
     { t: "Precompute (O(n log n))", b: "up[v][0] = parent[v]. up[v][k] = up[up[v][k-1]][k-1] (the 2^k-th ancestor = the 2^(k-1)-th ancestor of the 2^(k-1)-th ancestor). LOG = ceil(log2 n) levels. Build via BFS so parent-cells exist when child-cells need them." },
-    { t: "Query: 2 phases", b: "(1) Lift the deeper node up to match the other's depth — set bits of the depth difference tell you which 2^k jumps to take. (2) Lift BOTH nodes up in parallel as far as possible WITHOUT meeting. The single step further is the LCA. Both phases take at most O(log n) jumps." },
+    { t: "Query: 2 phases", b: "(1) Lift the deeper node up to match the other's depth, set bits of the depth difference tell you which 2^k jumps to take. (2) Lift BOTH nodes up in parallel as far as possible WITHOUT meeting. The single step further is the LCA. Both phases take at most O(log n) jumps." },
     { t: "Why 'as far as possible without meeting'?", b: "If you lift both to a common ancestor too eagerly, you might overshoot the LCA. Instead, scan k = LOG-1 down to 0; whenever up[u][k] is not equal to up[v][k], jump (we know the LCA is still strictly above). When you cannot jump anywhere without meeting, LCA = parent of where you stopped." },
     { t: "Distance via LCA", b: "dist(u, v) = depth[u] + depth[v] - 2*depth[LCA(u,v)]. With LCA in O(log n) and depths precomputed, you get tree-distance queries in O(log n). Foundation for tree-based DP, kth-ancestor queries, and centroid-decomposition-style techniques." },
   ];
@@ -579,14 +579,14 @@ function LearnTab() {
         <SectionEyebrow>tree ancestor queries</SectionEyebrow>
         <SectionTitle>Binary lifting: teleporting up the tree in log n jumps</SectionTitle>
         <Lede>
-          Climbing a tree one step at a time is slow. Binary lifting precomputes teleporters: from any node you can jump 1, 2, 4, 8, ... steps up in O(1). Any height difference is a sum of these powers — so any ancestor query takes only O(log n) jumps. The same trick generalizes (sparse table) to range-min/max queries on arrays.
+          Climbing a tree one step at a time is slow. Binary lifting precomputes teleporters: from any node you can jump 1, 2, 4, 8, ... steps up in O(1). Any height difference is a sum of these powers, so any ancestor query takes only O(log n) jumps. The same trick generalizes (sparse table) to range-min/max queries on arrays.
         </Lede>
       </div>
 
       <Card>
         <SubHeading>Mental model</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Precompute <InlineCode>up[v][k]</InlineCode> = the 2^k-th ancestor of v for all v and k from 0 to LOG-1. This table has O(n log n) entries and can be built bottom-up in O(n log n). Any ancestor distance d decomposes into set bits — so you hop through at most LOG jumps per query.
+          Precompute <InlineCode>up[v][k]</InlineCode> = the 2^k-th ancestor of v for all v and k from 0 to LOG-1. This table has O(n log n) entries and can be built bottom-up in O(n log n). Any ancestor distance d decomposes into set bits, so you hop through at most LOG jumps per query.
         </p>
       </Card>
 
@@ -611,9 +611,9 @@ function LearnTab() {
 
 function TryTab() {
   const probs = [
-    { q: "On a balanced tree A>B, A>C, B>D, B>E, C>F, C>G, E>H, E>I, G>J — LCA(H, J) = ?", a: "A" },
-    { q: "Same tree — LCA(D, I) = ?", a: "B" },
-    { q: "On the path A>B>C>D>E>F — LCA(C, F) = ?", a: "C" },
+    { q: "On a balanced tree A>B, A>C, B>D, B>E, C>F, C>G, E>H, E>I, G>J, LCA(H, J) = ?", a: "A" },
+    { q: "Same tree, LCA(D, I) = ?", a: "B" },
+    { q: "On the path A>B>C>D>E>F, LCA(C, F) = ?", a: "C" },
     { q: "Tree distance formula given depths and LCA?", a: "depth[u] + depth[v] - 2*depth[LCA]" },
   ];
   const [guesses, setGuesses] = useState<(string | null)[]>(probs.map(() => null));
@@ -712,9 +712,9 @@ function InsightTab() {
       </Card>
 
       <Card>
-        <SubHeading>Sparse table — same trick on arrays</SubHeading>
+        <SubHeading>Sparse table, same trick on arrays</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Binary lifting's array cousin is the sparse table: for an immutable array, precompute <InlineCode>st[i][k]</InlineCode> = min of A[i..i+2^k - 1]. Range-min query [l, r] in O(1) by overlapping two power-of-two ranges. O(n log n) precompute, O(1) per query — the standard for read-only RMQ. Used in the Euler-tour LCA reduction.
+          Binary lifting's array cousin is the sparse table: for an immutable array, precompute <InlineCode>st[i][k]</InlineCode> = min of A[i..i+2^k - 1]. Range-min query [l, r] in O(1) by overlapping two power-of-two ranges. O(n log n) precompute, O(1) per query, the standard for read-only RMQ. Used in the Euler-tour LCA reduction.
         </p>
       </Card>
     </div>
@@ -762,7 +762,7 @@ export default function L7_LCA({ onQuizComplete }: Props) {
       question: "In Phase 2, why do we lift BOTH u and v together as far as possible WITHOUT meeting?",
       options: [
         "It is faster than other orderings",
-        "If we ever met above the true LCA we would overshoot — by stopping just before meeting, the parent of where we stopped is exactly the LCA",
+        "If we ever met above the true LCA we would overshoot, by stopping just before meeting, the parent of where we stopped is exactly the LCA",
         "It saves memory",
         "It is required by the binary-lifting invariant",
       ],
@@ -795,7 +795,7 @@ export default function L7_LCA({ onQuizComplete }: Props) {
       lessonNumber={7}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — LC1483 (Kth Ancestor), tree-distance queries, HLD foundation."
+      placementRelevance="High, LC1483 (Kth Ancestor), tree-distance queries, HLD foundation."
       nextLessonHint="Advanced Graph Algorithms"
       onQuizComplete={onQuizComplete}
     />

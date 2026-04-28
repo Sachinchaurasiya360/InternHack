@@ -89,7 +89,7 @@ const PROBLEMS: Problem[] = [
     statement: "Binary grid with exactly two islands (connected 4-directional groups of 1s). Return the minimum number of 0-cells to flip so the two islands are connected.",
     correctPatterns: ["dfs", "bfs"],
     approaches: [
-      { name: "Brute force", complexity: "O((RC)²)", sketch: "For every pair of island cells, BFS the grid — too slow." },
+      { name: "Brute force", complexity: "O((RC)²)", sketch: "For every pair of island cells, BFS the grid, too slow." },
       { name: "DFS mark one island + multi-source BFS", complexity: "O(R*C)", sketch: "DFS flood-fill island A into a queue. Then multi-source BFS from that queue; first time you touch a cell of island B is the answer.", best: true },
     ],
     edges: [
@@ -104,12 +104,12 @@ const PROBLEMS: Problem[] = [
     statement: "Given start/end times of meetings, return the minimum number of rooms required so no two meetings in the same room overlap.",
     correctPatterns: ["greedy", "stack-queue"],
     approaches: [
-      { name: "Simulate hours", complexity: "O(n * maxTime)", sketch: "Tick time -> track active count — depends on time range, not scalable." },
+      { name: "Simulate hours", complexity: "O(n * maxTime)", sketch: "Tick time -> track active count, depends on time range, not scalable." },
       { name: "Events / sweep line", complexity: "O(n log n)", sketch: "Split each meeting into +1 (start) and -1 (end) events, sort, track running sum max.", best: true },
       { name: "Min-heap of end times", complexity: "O(n log n)", sketch: "Sort by start. Push end into min-heap; if next start >= heap top end, pop (reuse a room). Answer = max heap size." },
     ],
     edges: [
-      "Meetings that end exactly when another starts — do they share a room?",
+      "Meetings that end exactly when another starts, do they share a room?",
       "All meetings overlap (answer = n)",
       "Single meeting",
     ],
@@ -125,8 +125,8 @@ const PROBLEMS: Problem[] = [
       { name: "Patience sort / BS on tails", complexity: "O(n log n)", sketch: "Keep smallest tail seen for every LIS length. For each x, binary-search the replace position.", best: true },
     ],
     edges: [
-      "All elements equal — answer = 1 (strict increase)",
-      "Strictly decreasing — answer = 1",
+      "All elements equal, answer = 1 (strict increase)",
+      "Strictly decreasing, answer = 1",
       "Duplicates scattered",
     ],
   },
@@ -217,7 +217,7 @@ function TwoSumTraceViz({ frame, nums, target }: { frame: TraceFrame; nums: numb
               <span className="font-mono font-bold text-lime-700 dark:text-lime-400">
                 [{frame.found[0]}, {frame.found[1]}]
               </span>
-              {" "} — nums[{frame.found[0]}] + nums[{frame.found[1]}] = {nums[frame.found[0]]} + {nums[frame.found[1]]} = {target}.
+              {" "}, nums[{frame.found[0]}] + nums[{frame.found[1]}] = {nums[frame.found[0]]} + {nums[frame.found[1]]} = {target}.
             </div>
           )}
         </div>
@@ -252,7 +252,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title="Live Walkthrough — Two Sum (hash-map approach)"
+      title="Live Walkthrough, Two Sum (hash-map approach)"
       player={player}
       input={
         <InputEditor
@@ -290,7 +290,7 @@ type Stage = "talk" | "code" | "analyze" | "edges" | "optimize" | "done";
 const STAGES: { id: Stage; label: string; prompt: string }[] = [
   { id: "talk",     label: "1. Talk through",            prompt: "Restate the problem. Name the patterns that apply. Explain why." },
   { id: "code",     label: "2. Pseudocode",              prompt: "Sketch the approach in pseudocode. Focus on the data structure and the loop structure." },
-  { id: "analyze",  label: "3. Analyze complexity",      prompt: "Time and space — best, average, worst. Justify the dominating operation." },
+  { id: "analyze",  label: "3. Analyze complexity",      prompt: "Time and space, best, average, worst. Justify the dominating operation." },
   { id: "edges",    label: "4. Handle edge cases",       prompt: "Empty input? Single element? All duplicates? Integer overflow? Negative numbers?" },
   { id: "optimize", label: "5. Optimize / alternatives", prompt: "Can you go faster? Trade space for time? Are there multiple valid approaches?" },
   { id: "done",     label: "Done",                        prompt: "Review your reasoning before moving to the next problem." },
@@ -409,7 +409,7 @@ function PatternTrainer() {
                   border: `1px solid ${correct ? THEME.success : "#f59e0b"}`,
                 }}
               >
-                {correct ? "Exact match" : "Partial — see highlights"}
+                {correct ? "Exact match" : "Partial, see highlights"}
               </span>
               <button
                 type="button"
@@ -467,7 +467,7 @@ function PatternTrainer() {
         <textarea
           value={scratch}
           onChange={(e) => setScratch(e.target.value)}
-          placeholder="Type your reasoning here... (not saved — for practice only)"
+          placeholder="Type your reasoning here... (not saved, for practice only)"
           rows={4}
           className="w-full px-3 py-2 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 text-sm resize-y focus:outline-none focus:border-stone-400"
         />
@@ -516,9 +516,9 @@ function PatternTrainer() {
 
 function LearnTab() {
   const sections = [
-    { title: "Pattern recognition = fast solving", body: "Senior engineers don't 'invent' a solution — they pattern-match. After you've seen 200 problems, you recognize 'sum-to-target in sorted array' as two-pointer instantly. The art is cataloguing clues: sorted? -> binary search / two-pointer. Subarray? -> sliding window / prefix sums. Optimal count? -> DP." },
-    { title: "One problem, many approaches", body: "Most problems admit 2-4 valid approaches with different trade-offs. Interviews reward listing them and explaining why you'd pick the best. 'Brute force first, then optimize' is a conversation starter — never skip step one." },
-    { title: "Interview mode, 5 stages", body: "(1) Restate + clarify. (2) Pseudocode an approach. (3) Analyze time and space. (4) Walk edge cases. (5) Optimize or discuss alternatives. Miss any stage and you lose signal — even with a correct solution." },
+    { title: "Pattern recognition = fast solving", body: "Senior engineers don't 'invent' a solution, they pattern-match. After you've seen 200 problems, you recognize 'sum-to-target in sorted array' as two-pointer instantly. The art is cataloguing clues: sorted? -> binary search / two-pointer. Subarray? -> sliding window / prefix sums. Optimal count? -> DP." },
+    { title: "One problem, many approaches", body: "Most problems admit 2-4 valid approaches with different trade-offs. Interviews reward listing them and explaining why you'd pick the best. 'Brute force first, then optimize' is a conversation starter, never skip step one." },
+    { title: "Interview mode, 5 stages", body: "(1) Restate + clarify. (2) Pseudocode an approach. (3) Analyze time and space. (4) Walk edge cases. (5) Optimize or discuss alternatives. Miss any stage and you lose signal, even with a correct solution." },
     { title: "What to memorize", body: "Templates for each pattern (sliding window, BFS, DFS, DP 1-D and 2-D, binary search on answer, monotonic stack, union-find, trie). Memorize the skeleton, parameterize the body. Now your job is just to recognize which template fits." },
   ];
   return (
@@ -527,7 +527,7 @@ function LearnTab() {
         <SectionEyebrow>pattern recognition</SectionEyebrow>
         <SectionTitle>Match the problem to a template within seconds</SectionTitle>
         <Lede>
-          Your brain is a look-up table indexed by problem clues. This lesson is the exercise that builds the index. By the end, a glance at a new problem should surface 1-3 candidate patterns within seconds — then you pick, code, and verify.
+          Your brain is a look-up table indexed by problem clues. This lesson is the exercise that builds the index. By the end, a glance at a new problem should surface 1-3 candidate patterns within seconds, then you pick, code, and verify.
         </Lede>
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
@@ -553,16 +553,16 @@ function InsightTab() {
       <Card>
         <SubHeading>The "clue to pattern" cheat sheet</SubHeading>
         <ul className="list-disc pl-5 space-y-1 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          <li>"sorted array" or "log-n hint" — binary search / two-pointer.</li>
-          <li>"contiguous subarray / substring" — sliding window, prefix sums.</li>
-          <li>"minimum number of steps" on a grid — BFS.</li>
-          <li>"count the ways" / "max value" / "can we reach" — DP.</li>
-          <li>"next greater / smaller" — monotonic stack.</li>
-          <li>"parentheses / matching" — stack.</li>
-          <li>"overlapping intervals" — sort + sweep / greedy.</li>
-          <li>"shortest weighted path" (non-negative) — Dijkstra.</li>
-          <li>"connectivity / components" — union-find or DFS.</li>
-          <li>"seen this value before?" — hash set/map.</li>
+          <li>"sorted array" or "log-n hint", binary search / two-pointer.</li>
+          <li>"contiguous subarray / substring", sliding window, prefix sums.</li>
+          <li>"minimum number of steps" on a grid, BFS.</li>
+          <li>"count the ways" / "max value" / "can we reach", DP.</li>
+          <li>"next greater / smaller", monotonic stack.</li>
+          <li>"parentheses / matching", stack.</li>
+          <li>"overlapping intervals", sort + sweep / greedy.</li>
+          <li>"shortest weighted path" (non-negative), Dijkstra.</li>
+          <li>"connectivity / components", union-find or DFS.</li>
+          <li>"seen this value before?", hash set/map.</li>
         </ul>
       </Card>
       <Card>
@@ -574,7 +574,7 @@ function InsightTab() {
       <Card>
         <SubHeading>Next steps after Level 8</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Practice 200+ problems across every pattern. Time-box them: 30 min for mediums, 45 min for hards. Redo missed problems after a week. Do mock interviews out loud — your tongue trips on "I'll use a hash map to achieve O(n)" the first few times, then becomes reflex.
+          Practice 200+ problems across every pattern. Time-box them: 30 min for mediums, 45 min for hards. Redo missed problems after a week. Do mock interviews out loud, your tongue trips on "I'll use a hash map to achieve O(n)" the first few times, then becomes reflex.
         </p>
       </Card>
     </div>

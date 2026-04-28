@@ -494,7 +494,7 @@ export default function PerformancePage() {
               {employeeOptions?.employees?.map((e) => (
                 <option key={e.id} value={e.id}>
                   {e.firstName} {e.lastName}
-                  {e.designation ? ` — ${e.designation}` : ""}
+                  {e.designation ? `, ${e.designation}` : ""}
                 </option>
               ))}
             </select>
@@ -511,7 +511,7 @@ export default function PerformancePage() {
               {employeeOptions?.employees?.map((e) => (
                 <option key={e.id} value={e.id}>
                   {e.firstName} {e.lastName}
-                  {e.designation ? ` — ${e.designation}` : ""}
+                  {e.designation ? `, ${e.designation}` : ""}
                 </option>
               ))}
             </select>

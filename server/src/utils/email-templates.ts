@@ -21,7 +21,7 @@ export function welcomeEmailHtml(name: string): string {
       <td style="padding:28px 24px;">
         <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}! You're in.</h2>
         <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-          Your account is verified and ready to roll. InternHack is packed with tools to fast-track your career &mdash; here's everything you get access to:
+          Your account is verified and ready to roll. InternHack is packed with tools to fast-track your career, here's everything you get access to:
         </p>
         <!-- Learning Hub highlight -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
@@ -29,7 +29,7 @@ export function welcomeEmailHtml(name: string): string {
             <td style="padding:16px 18px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:8px;">
               <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#3730a3;">Learning Hub</p>
               <p style="margin:0;font-size:13px;color:#4338ca;line-height:1.5;">
-                Curated questions and study material crafted by engineers from Google, Amazon, and Meta &mdash; 3,300+ DSA problems, interview prep, SQL practice, aptitude, and 500+ lessons across 12 technologies.
+                Curated questions and study material crafted by engineers from Google, Amazon, and Meta, 3,300+ DSA problems, interview prep, SQL practice, aptitude, and 500+ lessons across 12 technologies.
               </p>
             </td>
           </tr>
@@ -585,7 +585,7 @@ export function milestoneEmailHtml(
           </tr>
         </table>
         <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#71717a;text-align:center;">
-          You're building real momentum. Most people never get this far &mdash; keep stacking wins.
+          You're building real momentum. Most people never get this far, keep stacking wins.
         </p>
       </td>
     </tr>
@@ -656,7 +656,7 @@ export function interviewExperienceApprovedHtml(args: {
             .map(
               (b) =>
                 `<p style="margin:6px 0 0;font-size:13px;color:#365314;line-height:1.5;"><strong>${b.name}</strong>${
-                  b.description ? ` &mdash; ${b.description}` : ""
+                  b.description ? `, ${b.description}` : ""
                 }</p>`,
             )
             .join("")}
@@ -946,6 +946,156 @@ export function atsScoreReportHtml(params: {
 </html>`;
 }
 
+
+export function roadmapWelcomeEmailHtml(args: {
+  name: string;
+  roadmapTitle: string;
+  roadmapSlug: string;
+  hoursPerWeek: number;
+  targetEndDate: Date;
+  weekOneTopics: string[];
+}): string {
+  const firstName = args.name.split(" ")[0] || args.name;
+  const dashboardUrl = "https://www.internhack.xyz/dashboard/roadmaps";
+  const learnUrl = `https://www.internhack.xyz/learn/roadmaps/${args.roadmapSlug}`;
+  const targetStr = args.targetEndDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  const weekOneRows = args.weekOneTopics.length === 0
+    ? '<p style="margin:0;font-size:13px;color:#71717a;">Open your dashboard to see week one.</p>'
+    : args.weekOneTopics.map((slug) => `
+        <tr><td style="padding:8px 12px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:6px;font-size:13px;color:#27272a;">
+          ${slug}
+        </td></tr>
+        <tr><td style="height:6px;"></td></tr>`).join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+      <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">your roadmap is ready</p>
+    </td></tr>
+    <tr><td style="background-color:#ffffff;padding:32px 24px;">
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}, you're enrolled.</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+        You just locked in <strong style="color:#18181b;">${args.roadmapTitle}</strong>. Your personalized PDF is attached. Below is the plan we built for you, and the topics for week one.
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;border:1px solid #e4e4e7;border-radius:10px;overflow:hidden;">
+        <tr>
+          <td style="padding:14px 16px;background-color:#fafafa;border-bottom:1px solid #e4e4e7;">
+            <p style="margin:0;font-size:11px;font-weight:700;color:#71717a;letter-spacing:1px;text-transform:uppercase;">Pace</p>
+            <p style="margin:2px 0 0;font-size:15px;font-weight:700;color:#18181b;">${args.hoursPerWeek} hours per week</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 16px;background-color:#fafafa;">
+            <p style="margin:0;font-size:11px;font-weight:700;color:#71717a;letter-spacing:1px;text-transform:uppercase;">Target finish</p>
+            <p style="margin:2px 0 0;font-size:15px;color:#18181b;">${targetStr}</p>
+          </td>
+        </tr>
+      </table>
+      <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#18181b;">Week 1 topics</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;">
+        ${weekOneRows}
+      </table>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 14px;">
+        <tr><td style="background-color:#0a0a0a;border-radius:8px;">
+          <a href="${dashboardUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">
+            Open my dashboard
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:13px;color:#71717a;text-align:center;">
+        or <a href="${learnUrl}" style="color:#4f46e5;text-decoration:underline;">jump straight to the canvas</a>
+      </p>
+      <p style="margin:18px 0 0;font-size:12px;color:#a1a1aa;text-align:center;">
+        We'll check in on day 10 to see how it's going.
+      </p>
+    </td></tr>
+    <tr><td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+export function roadmapDay10EmailHtml(args: {
+  name: string;
+  roadmapTitle: string;
+  roadmapSlug: string;
+  completedTopics: number;
+  plannedTopics: number;
+  nextTopicSlug: string | null;
+}): string {
+  const firstName = args.name.split(" ")[0] || args.name;
+  const ratio = args.plannedTopics === 0 ? 0 : Math.round((args.completedTopics / args.plannedTopics) * 100);
+  const tier =
+    ratio >= 75 ? { label: "On fire", bg: "#dcfce7", text: "#166534" } :
+    ratio >= 40 ? { label: "Steady", bg: "#fef3c7", text: "#92400e" } :
+    { label: "Ramping up", bg: "#fee2e2", text: "#991b1b" };
+
+  const dashboardUrl = "https://www.internhack.xyz/dashboard/roadmaps";
+  const nextTopicUrl = args.nextTopicSlug
+    ? `https://www.internhack.xyz/learn/roadmaps/${args.roadmapSlug}/${args.nextTopicSlug}`
+    : `https://www.internhack.xyz/learn/roadmaps/${args.roadmapSlug}`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+      <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">10-day check-in</p>
+    </td></tr>
+    <tr><td style="background-color:#ffffff;padding:32px 24px;">
+      <p style="margin:0 0 14px;display:inline-block;padding:4px 10px;background-color:${tier.bg};color:${tier.text};font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;">
+        ${tier.label}
+      </p>
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}, how's it going?</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+        It's been ten days since you started <strong style="color:#18181b;">${args.roadmapTitle}</strong>. Here's where you are.
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:10px;">
+        <tr><td style="padding:18px 20px;">
+          <p style="margin:0 0 4px;font-size:10px;font-weight:700;color:#71717a;letter-spacing:1px;text-transform:uppercase;">progress</p>
+          <p style="margin:0;font-size:36px;font-weight:800;color:#18181b;letter-spacing:-1px;">
+            ${args.completedTopics}<span style="font-size:18px;color:#a1a1aa;font-weight:500;"> / ${args.plannedTopics} topics</span>
+          </p>
+        </td></tr>
+      </table>
+      ${args.nextTopicSlug ? `
+      <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#18181b;">Next up</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;">
+        <tr><td style="padding:14px 16px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:8px;">
+          <p style="margin:0;font-size:14px;font-weight:700;color:#3730a3;">${args.nextTopicSlug}</p>
+          <p style="margin:6px 0 0;font-size:12px;color:#4338ca;">Pick this up when you're ready.</p>
+        </td></tr>
+      </table>` : ""}
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 14px;">
+        <tr><td style="background-color:#0a0a0a;border-radius:8px;">
+          <a href="${nextTopicUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">
+            Resume where I left off
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:13px;color:#71717a;text-align:center;">
+        or <a href="${dashboardUrl}" style="color:#4f46e5;text-decoration:underline;">view full progress</a>
+      </p>
+      <p style="margin:18px 0 0;font-size:12px;color:#a1a1aa;text-align:center;">
+        Need to slow down? Adjust your hours-per-week from the dashboard, we'll recompute the plan.
+      </p>
+    </td></tr>
+    <tr><td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
 
 type ApplicationStatusEmailStatus = "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED";
 

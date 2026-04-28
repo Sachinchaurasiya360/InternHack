@@ -33,6 +33,16 @@
   --secondary: #f3f4f6;
   --muted-fg: #6b7280;
   --border-clr: #e5e7eb;
+
+  /* Engineering / System Design lesson tokens (used by sd lessons) */
+  --eng-font: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --eng-bg: #fafaf9;
+  --eng-bg-subtle: #f5f5f4;
+  --eng-surface: #ffffff;
+  --eng-surface-alt: #fafaf9;
+  --eng-text: #0c0a09;
+  --eng-text-muted: #57534e;
+  --eng-border: #e7e5e4;
 }
 
 .dark {
@@ -41,6 +51,21 @@
   --secondary: #1f2937;
   --muted-fg: #9ca3af;
   --border-clr: #374151;
+
+  --eng-bg: #0c0a09;
+  --eng-bg-subtle: #1c1917;
+  --eng-surface: #1c1917;
+  --eng-surface-alt: #292524;
+  --eng-text: #fafaf9;
+  --eng-text-muted: #a8a29e;
+  --eng-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Card surface used by engineering / system-design lessons */
+.card-eng {
+  background: var(--eng-surface);
+  border: 1px solid var(--eng-border);
+  border-radius: 10px;
 }
 
 /* Smooth theme transitions */

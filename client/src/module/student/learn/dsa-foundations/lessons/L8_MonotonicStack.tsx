@@ -416,8 +416,8 @@ function VisualizeTab() {
 function LearnTab() {
   const sections = [
     { title: "What is a monotonic stack?", body: "A stack in which every element is either strictly >= (decreasing) or <= (increasing) its predecessor. To keep the order we pop offenders before pushing. The pop event carries meaning: the popped element met its match." },
-    { title: "Next-greater pattern", body: "Scan left to right. While the top of the stack is smaller than the current value, pop it — the current value is its next greater. Push the current index. Each index is pushed and popped at most once, giving O(n)." },
-    { title: "Largest rectangle in histogram", body: "Use a monotonic-increasing stack of indices. When a shorter bar arrives, taller bars on the stack are trapped — we can now compute their width (current index minus stack.top minus 1) and area." },
+    { title: "Next-greater pattern", body: "Scan left to right. While the top of the stack is smaller than the current value, pop it, the current value is its next greater. Push the current index. Each index is pushed and popped at most once, giving O(n)." },
+    { title: "Largest rectangle in histogram", body: "Use a monotonic-increasing stack of indices. When a shorter bar arrives, taller bars on the stack are trapped, we can now compute their width (current index minus stack.top minus 1) and area." },
     { title: "Monotonic deque", body: "A double-ended variant used for sliding-window maximum. Pop from the back while maintaining order, pop from the front when the index falls out of the window. O(n) for max over every window of size k." },
   ];
   return (
@@ -426,7 +426,7 @@ function LearnTab() {
         <SectionEyebrow>monotonic stack / queue</SectionEyebrow>
         <SectionTitle>The pop event is where the answer is computed</SectionTitle>
         <Lede>
-          Think of the stack as a queue of people waiting to be answered. Each incoming element fires questions — are you the next greater for anyone waiting? — and the monotonic property guarantees the answer is cheap.
+          Think of the stack as a queue of people waiting to be answered. Each incoming element fires questions, are you the next greater for anyone waiting?, and the monotonic property guarantees the answer is cheap.
         </Lede>
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
@@ -448,7 +448,7 @@ function LearnTab() {
 
 function TryTab() {
   const problems = [
-    { q: "NGE of [2,1,2,4,3,1] — what's result[1]?", a: "2" },
+    { q: "NGE of [2,1,2,4,3,1], what's result[1]?", a: "2" },
     { q: "NGE of [5,4,3,2,1]. How many -1 entries?", a: "5" },
     { q: "Largest rectangle for heights [2,1,5,6,2,3]?", a: "10" },
     { q: "Largest rectangle for heights [6,2,5,4,5,1,6]?", a: "12" },
@@ -512,13 +512,13 @@ function InsightTab() {
       <Card>
         <SubHeading>Pattern signature</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          If a problem asks for the nearest larger or smaller element, the span, or the rectangle bounded by something shorter or taller — reach for a monotonic stack. The pop event is where the answer is computed.
+          If a problem asks for the nearest larger or smaller element, the span, or the rectangle bounded by something shorter or taller, reach for a monotonic stack. The pop event is where the answer is computed.
         </p>
       </Card>
       <Card>
         <SubHeading>Complexity argument</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Every index is pushed exactly once. Each index is popped at most once. So the inner loop's total work across the whole outer loop is at most n. Outer + inner = O(n + n) = O(n). Amortized analysis — the same trick as sliding window.
+          Every index is pushed exactly once. Each index is popped at most once. So the inner loop's total work across the whole outer loop is at most n. Outer + inner = O(n + n) = O(n). Amortized analysis, the same trick as sliding window.
         </p>
       </Card>
       <Card>

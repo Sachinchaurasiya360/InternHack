@@ -25,6 +25,52 @@ export interface LevelEntry {
  */
 export const LEVELS: LevelEntry[] = [
   {
+    id: "level-0",
+    number: 0,
+    title: "Programming Prerequisites",
+    summary:
+      "Start here if you've never thought formally about algorithms. Pseudocode notation, the call stack, and how to read a problem before you code.",
+    topics: ["algorithm", "pseudocode", "variables", "loops", "functions", "edge-cases"],
+    lessons: [
+      {
+        slug: "what-is-an-algorithm",
+        title: "What Is an Algorithm?",
+        summary: "A finite, deterministic sequence of steps that takes input and produces output, illustrated with everyday recipes.",
+        load: lazy(() => import("./lessons/L0_WhatIsAnAlgorithm")),
+      },
+      {
+        slug: "reading-pseudocode",
+        title: "Reading Pseudocode",
+        summary: "Notation cheatsheet (←, for, while, if/else) and the line-by-line trace technique you'll use in every later lesson.",
+        load: lazy(() => import("./lessons/L0_ReadingPseudocode")),
+      },
+      {
+        slug: "variables-memory",
+        title: "Variables, Memory & References",
+        summary: "Primitives copy on assignment, references share, the gotcha behind half of all subtle bugs.",
+        load: lazy(() => import("./lessons/L0_VariablesMemory")),
+      },
+      {
+        slug: "loops-control-flow",
+        title: "Loops & Control Flow",
+        summary: "for, while, break, continue, nested loops, off-by-one bugs, and loop invariants.",
+        load: lazy(() => import("./lessons/L0_LoopsControlFlow")),
+      },
+      {
+        slug: "functions-call-stack",
+        title: "Functions & the Call Stack",
+        summary: "Functions as named recipes, parameters and return values, and the stack frames that make recursion tractable.",
+        load: lazy(() => import("./lessons/L0_FunctionsCallStack")),
+      },
+      {
+        slug: "inputs-constraints",
+        title: "Inputs, Constraints & Edge Cases",
+        summary: "Read the problem first. Identify inputs, outputs, bounds, and the edge cases that break naive code.",
+        load: lazy(() => import("./lessons/L0_InputsConstraints")),
+      },
+    ],
+  },
+  {
     id: "level-1",
     number: 1,
     title: "Foundations",
@@ -75,7 +121,7 @@ export const LEVELS: LevelEntry[] = [
     number: 2,
     title: "Linear Structures",
     summary:
-      "Stacks, queues, linked lists, and hashing — the core data structures behind half of all interview questions.",
+      "Stacks, queues, linked lists, and hashing, the core data structures behind half of all interview questions.",
     topics: ["stacks", "queues", "linked-list", "deque", "hashing"],
     lessons: [
       {
@@ -121,13 +167,13 @@ export const LEVELS: LevelEntry[] = [
     number: 3,
     title: "Trees",
     summary:
-      "From traversals to balanced trees and tries — the tree toolkit that powers indexes, autocomplete, and range queries.",
+      "From traversals to balanced trees and tries, the tree toolkit that powers indexes, autocomplete, and range queries.",
     topics: ["binary-tree", "bst", "avl", "red-black", "heap", "trie", "segment-tree", "b+tree"],
     lessons: [
       {
         slug: "binary-tree-traversals",
         title: "Binary Tree Traversals",
-        summary: "In-order, pre-order, post-order, and level-order — recursive and iterative.",
+        summary: "In-order, pre-order, post-order, and level-order, recursive and iterative.",
         load: lazy(() => import("./lessons/L3_BinaryTreeTraversals")),
       },
       {
@@ -179,7 +225,7 @@ export const LEVELS: LevelEntry[] = [
     number: 4,
     title: "Graphs",
     summary:
-      "Representations, traversals, shortest paths, and minimum spanning trees — graphs unlock the hardest interview problems.",
+      "Representations, traversals, shortest paths, and minimum spanning trees, graphs unlock the hardest interview problems.",
     topics: ["graph", "bfs", "dfs", "topo-sort", "dijkstra", "bellman-ford", "mst"],
     lessons: [
       {
@@ -221,7 +267,7 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "mst",
         title: "Minimum Spanning Trees",
-        summary: "Kruskal and Prim — building the cheapest tree that connects every node.",
+        summary: "Kruskal and Prim, building the cheapest tree that connects every node.",
         load: lazy(() => import("./lessons/L4_MST")),
       },
     ],
@@ -231,7 +277,7 @@ export const LEVELS: LevelEntry[] = [
     number: 5,
     title: "Sorting & Searching",
     summary:
-      "Every classic sort, the O(n log n) lower bound, and binary search — the searches that beat linear scans.",
+      "Every classic sort, the O(n log n) lower bound, and binary search, the searches that beat linear scans.",
     topics: ["sorting", "binary-search", "merge-sort", "quick-sort", "counting-sort"],
     lessons: [
       {
@@ -243,7 +289,7 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "insertion",
         title: "Insertion Sort",
-        summary: "Adaptive O(n²) sort that hits O(n) on nearly-sorted input — the workhorse of small-n hybrids.",
+        summary: "Adaptive O(n²) sort that hits O(n) on nearly-sorted input, the workhorse of small-n hybrids.",
         load: lazy(() => import("./lessons/L5_Insertion")),
       },
       {
@@ -261,7 +307,7 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "non-comparison",
         title: "Non-Comparison Sorts",
-        summary: "Counting, radix, and bucket sort — beating the O(n log n) bound when input is bounded.",
+        summary: "Counting, radix, and bucket sort, beating the O(n log n) bound when input is bounded.",
         load: lazy(() => import("./lessons/L5_NonComparison")),
       },
       {
@@ -283,13 +329,13 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "recursion",
         title: "Recursion",
-        summary: "Base cases, recursive cases, and the call stack — recursion as a problem-solving lens.",
+        summary: "Base cases, recursive cases, and the call stack, recursion as a problem-solving lens.",
         load: lazy(() => import("./lessons/L6_Recursion")),
       },
       {
         slug: "divide-conquer",
         title: "Divide & Conquer",
-        summary: "Split, conquer, combine — and the Master Theorem for solving the recurrences.",
+        summary: "Split, conquer, combine, and the Master Theorem for solving the recurrences.",
         load: lazy(() => import("./lessons/L6_DivideConquer")),
       },
       {
@@ -307,13 +353,13 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "dp-2d",
         title: "Dynamic Programming (2D)",
-        summary: "Grids and string-pair DP — LCS, edit distance, knapsack, and unique paths.",
+        summary: "Grids and string-pair DP, LCS, edit distance, knapsack, and unique paths.",
         load: lazy(() => import("./lessons/L6_DP2D")),
       },
       {
         slug: "greedy",
         title: "Greedy Algorithms",
-        summary: "Local choices that work — interval scheduling, Huffman coding, and the exchange argument.",
+        summary: "Local choices that work, interval scheduling, Huffman coding, and the exchange argument.",
         load: lazy(() => import("./lessons/L6_Greedy")),
       },
     ],
@@ -341,7 +387,7 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "advanced-ds",
         title: "Advanced Data Structures",
-        summary: "B-Trees, Red-Black, Skip Lists, and Bloom Filters — when the basics aren't enough.",
+        summary: "B-Trees, Red-Black, Skip Lists, and Bloom Filters, when the basics aren't enough.",
         load: lazy(() => import("./lessons/L7_AdvancedDS")),
       },
       {
@@ -405,7 +451,7 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "binary-search-answer",
         title: "Binary Search on Answer",
-        summary: "When the answer space is sortable, binary-search the answer — Aggressive Cows, Capacity to Ship.",
+        summary: "When the answer space is sortable, binary-search the answer, Aggressive Cows, Capacity to Ship.",
         load: lazy(() => import("./lessons/L8_BinarySearchAnswer")),
       },
       {
@@ -417,19 +463,19 @@ export const LEVELS: LevelEntry[] = [
       {
         slug: "grid-to-graph",
         title: "Grid → Graph Mapping",
-        summary: "Treat 2D grids as implicit graphs — flood fill, shortest path on a grid, islands counting.",
+        summary: "Treat 2D grids as implicit graphs, flood fill, shortest path on a grid, islands counting.",
         load: lazy(() => import("./lessons/L8_GridToGraph")),
       },
       {
         slug: "dp-state-design",
         title: "DP State Design",
-        summary: "Picking the right state — what to memoize and what to drop — for harder DP problems.",
+        summary: "Picking the right state, what to memoize and what to drop, for harder DP problems.",
         load: lazy(() => import("./lessons/L8_DPStateDesign")),
       },
       {
         slug: "pattern-recognition",
         title: "Pattern Recognition",
-        summary: "Map a new problem to a known technique fast — the meta-skill that separates fast solvers.",
+        summary: "Map a new problem to a known technique fast, the meta-skill that separates fast solvers.",
         load: lazy(() => import("./lessons/L8_PatternRecognition")),
       },
     ],

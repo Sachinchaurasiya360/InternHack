@@ -129,7 +129,7 @@ function buildKahnFrames(ids: string[], edges: { from: string; to: string }[]): 
       if (inDeg[v] === 0) {
         Q.push(v);
         state[v] = "frontier";
-        f.push(clone({ line: 8, message: `in-degree[${v}] hit 0 — enqueue.`, flashKey: v, vars: { u, v } }));
+        f.push(clone({ line: 8, message: `in-degree[${v}] hit 0, enqueue.`, flashKey: v, vars: { u, v } }));
       }
     }
   }
@@ -138,7 +138,7 @@ function buildKahnFrames(ids: string[], edges: { from: string; to: string }[]): 
   f.push(clone({
     line: 9,
     message: isCycle
-      ? `|output| = ${output.length} < |V| = ${ids.length} — CYCLE detected, not a DAG.`
+      ? `|output| = ${output.length} < |V| = ${ids.length}, CYCLE detected, not a DAG.`
       : `All ${ids.length} vertices output. Topological order: ${output.join(" → ")}.`,
     cycle: isCycle,
   }));
@@ -218,14 +218,14 @@ function buildDFSTopoFrames(ids: string[], edges: { from: string; to: string }[]
       if (color[v] === "G") {
         hasCycle = true;
         edgeBack.add(k);
-        f.push(clone({ line: 8, message: `${v} is GRAY — back edge → CYCLE. Graph is NOT a DAG.`, cycle: true, vars: { u, v } }));
+        f.push(clone({ line: 8, message: `${v} is GRAY, back edge → CYCLE. Graph is NOT a DAG.`, cycle: true, vars: { u, v } }));
         return;
       } else if (color[v] === "W") {
         edgeTree.add(k);
         visit(v);
         if (hasCycle) return;
       } else {
-        f.push(clone({ line: 7, message: `${v} is BLACK — already finished, skip.`, vars: { u, v } }));
+        f.push(clone({ line: 7, message: `${v} is BLACK, already finished, skip.`, vars: { u, v } }));
       }
     }
     color[u] = "B";
@@ -383,7 +383,7 @@ function StackViz({ items }: { items: string[] }) {
 function CycleBanner() {
   return (
     <div className="mt-2 px-4 py-2.5 rounded-md border border-rose-500 bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-200 text-sm font-bold text-center">
-      NOT A DAG — topological order does not exist.
+      NOT A DAG, topological order does not exist.
     </div>
   );
 }
@@ -521,7 +521,7 @@ function LearnTab() {
   const sections = [
     { title: "The promise", body: "For a DAG (directed acyclic graph), a topological order is a linear arrangement of vertices such that every edge u→v goes from earlier to later. Examples: course prerequisites, build systems, task schedulers." },
     { title: "Kahn's algorithm (BFS)", body: "Start with all in-degree-0 vertices in a queue. Dequeue one, append to output, and decrement in-degree of each neighbor. Any neighbor hitting 0 enters the queue. If |output| < |V|, a cycle prevented completion." },
-    { title: "DFS-based", body: "Run DFS. As each vertex finishes (turns BLACK), push onto a stack. Reverse the stack at the end. Uses the parenthesis theorem — a vertex with an outgoing edge must finish after its descendants." },
+    { title: "DFS-based", body: "Run DFS. As each vertex finishes (turns BLACK), push onto a stack. Reverse the stack at the end. Uses the parenthesis theorem, a vertex with an outgoing edge must finish after its descendants." },
     { title: "Uniqueness", body: "Topological order is not unique in general. It is unique iff the DAG has a Hamiltonian path (each step has exactly one in-degree-0 or one edge forward)." },
   ];
   return (
@@ -531,7 +531,7 @@ function LearnTab() {
         <SectionTitle>Schedule classes. Respect every prerequisite.</SectionTitle>
         <Lede>
           Imagine your college's prerequisite graph. You can only take a course after its prereqs. A
-          topological order is a valid semester-by-semester schedule — and only exists if there are
+          topological order is a valid semester-by-semester schedule, and only exists if there are
           no circular dependencies.
         </Lede>
       </div>
@@ -555,10 +555,10 @@ function LearnTab() {
 function TryTab() {
   return (
     <div className="flex flex-col gap-3">
-      <Callout>Try the "Has cycle" preset — both algorithms should flag it.</Callout>
+      <Callout>Try the "Has cycle" preset, both algorithms should flag it.</Callout>
       {[
         "On the Course DAG preset, give one valid topo order. (Expected: A, B, C, D, E or A, C, B, D, E)",
-        "Can a topological sort of a DAG be done in O(V+E)? (Expected: Yes — both Kahn and DFS run in O(V+E))",
+        "Can a topological sort of a DAG be done in O(V+E)? (Expected: Yes, both Kahn and DFS run in O(V+E))",
         "What's the minimum number of edges we can remove to make 'Has cycle' preset a DAG? (Expected: 1)",
       ].map((q, i) => (
         <Card key={i}>
@@ -589,7 +589,7 @@ function InsightTab() {
       <Card>
         <SubHeading>Downstream applications</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Shortest/longest path on a DAG in O(V+E) — just relax edges in topological order.
+          Shortest/longest path on a DAG in O(V+E), just relax edges in topological order.
           Dependency resolution (Makefiles, npm install). Instruction scheduling in compilers.
           Spreadsheet cell recalculation.
         </p>
@@ -640,7 +640,7 @@ export default function L4_TopologicalSort({ onQuizComplete }: Props) {
       ],
       correctIndex: 1,
       explanation:
-        "Vertices with in-degree 0 have no prerequisites — they can be first in any valid order.",
+        "Vertices with in-degree 0 have no prerequisites, they can be first in any valid order.",
     },
     {
       question: "In DFS-based topo sort, the topological order is obtained by…",
@@ -670,7 +670,7 @@ export default function L4_TopologicalSort({ onQuizComplete }: Props) {
       lessonNumber={4}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — scheduling, dependency resolution, compiler IR."
+      placementRelevance="High, scheduling, dependency resolution, compiler IR."
       nextLessonHint="Dijkstra's Shortest Path"
       onQuizComplete={onQuizComplete}
     />

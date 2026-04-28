@@ -11,9 +11,13 @@ interface AdzunaJob {
   salary_is_predicted?: boolean;
   description: string;
   created: string;
-  category: { label: string };
+  category: { label: string; tag: string };
   redirect_url: string;
 }
+
+const TECH_CATEGORY_TAG = "it-jobs";
+const NON_TECH_TITLE_DENY = /\b(sales|marketing|hr|human\s+resources|account\s+manager|business\s+development|customer\s+service|recruiter|finance|accounting|legal|operations\s+manager|store\s+manager|admin(istrative)?\s+assistant|teacher|nurse|driver|chef|cleaner|security\s+guard)\b/i;
+const TECH_TITLE_HINT = /\b(developer|engineer|programmer|software|frontend|front-end|backend|back-end|full[-\s]?stack|devops|sre|qa|tester|data|ml|ai|machine\s+learning|cloud|cyber|security|sysadmin|network|database|dba|web|mobile|android|ios|react|node|python|java|golang|rust|c\+\+|architect|tech|it\s+support|technical)\b/i;
 
 interface AdzunaResponse {
   count: number;
@@ -51,7 +55,7 @@ export class AdzunaScraper extends BaseScraper {
       const allJobs: ScrapedJobData[] = [];
 
       for (let page = 1; page <= 3; page++) {
-        const url = `${this.baseUrl}/${String(page)}?app_id=${this.appId}&app_key=${this.appKey}&results_per_page=50`;
+        const url = `${this.baseUrl}/${String(page)}?app_id=${this.appId}&app_key=${this.appKey}&results_per_page=50&category=${TECH_CATEGORY_TAG}`;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -68,6 +72,12 @@ export class AdzunaScraper extends BaseScraper {
         const data = (await response.json()) as AdzunaResponse;
 
         for (const job of data.results) {
+          // Defensive: drop anything the API returned that isn't IT, or has an
+          // obviously non-tech title (e.g., "IT Sales Executive" sneaking in).
+          if (job.category?.tag && job.category.tag !== TECH_CATEGORY_TAG) continue;
+          const title = job.title || "";
+          if (NON_TECH_TITLE_DENY.test(title) && !TECH_TITLE_HINT.test(title)) continue;
+
           let salary: string | undefined;
           if (job.salary_min && job.salary_max) {
             salary = `INR ${String(Math.round(job.salary_min))} - ${String(Math.round(job.salary_max))}`;

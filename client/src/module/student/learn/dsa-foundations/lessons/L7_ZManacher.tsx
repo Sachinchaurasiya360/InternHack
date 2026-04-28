@@ -214,7 +214,7 @@ function buildZFrames(s: string): ZFrame[] {
     }
   }
   f.push({
-    line: 0, vars: { z: `[${z.join(",")}]` }, message: `Done. Z-array = [${z.join(", ")}]. Total work O(n) — each character is visited at most twice.`,
+    line: 0, vars: { z: `[${z.join(",")}]` }, message: `Done. Z-array = [${z.join(", ")}]. Total work O(n), each character is visited at most twice.`,
     s, z: [...z], l, r, i: n - 1,
     states: s.split("").map(() => "done" as CellState), pointers: {},
   });
@@ -352,7 +352,7 @@ function ZViz() {
         <InputEditor
           label="Input string"
           value={s}
-          helper="Up to 18 chars. Watch the Z-box [l, r) get reused — each char visited at most twice → O(n)."
+          helper="Up to 18 chars. Watch the Z-box [l, r) get reused, each char visited at most twice → O(n)."
           presets={[
             { label: "aabcaabxaaaz", value: "aabcaabxaaaz" },
             { label: "aaaaa (max reuse)", value: "aaaaa" },
@@ -512,12 +512,12 @@ function VisualizeTab() {
 
 function LearnTab() {
   const cards = [
-    { t: "Z-array — what it is", b: "z[i] = the length of the longest substring of s starting at index i that matches a prefix of s. By convention z[0] = 0 (or n, depending on style). The Z-array compresses 'how far does s look like its own prefix from this point' for every i." },
-    { t: "Z trick — pattern matching in O(n+m)", b: "To find all occurrences of pattern P in text T, build the Z-array of S = P + '$' + T (where $ is a separator not appearing anywhere). Any index i with z[i] = |P| marks an occurrence of P starting at i − |P| − 1 in T. Same complexity as KMP, often easier to code." },
-    { t: "Why Z is O(n)", b: "The Z-box [l, r) tracks the rightmost-extending substring known to match a prefix. When i lies inside it, we initialize z[i] from z[i-l] for FREE (capped by r-i). Brute-force expansion only happens past r — and the expansion advances r each time, so the TOTAL extension work is bounded by n." },
-    { t: "Manacher — what it is", b: "Computes the longest palindromic substring of s in O(n) (vs the obvious O(n³) or O(n²)). The trick: insert '#' between every character (so 'aba' becomes '#a#b#a#'), turning EVERY palindrome into an odd-length palindrome about a single center. Then exploit reflection-around-known-palindromes the same way Z exploits the Z-box." },
+    { t: "Z-array, what it is", b: "z[i] = the length of the longest substring of s starting at index i that matches a prefix of s. By convention z[0] = 0 (or n, depending on style). The Z-array compresses 'how far does s look like its own prefix from this point' for every i." },
+    { t: "Z trick, pattern matching in O(n+m)", b: "To find all occurrences of pattern P in text T, build the Z-array of S = P + '$' + T (where $ is a separator not appearing anywhere). Any index i with z[i] = |P| marks an occurrence of P starting at i − |P| − 1 in T. Same complexity as KMP, often easier to code." },
+    { t: "Why Z is O(n)", b: "The Z-box [l, r) tracks the rightmost-extending substring known to match a prefix. When i lies inside it, we initialize z[i] from z[i-l] for FREE (capped by r-i). Brute-force expansion only happens past r, and the expansion advances r each time, so the TOTAL extension work is bounded by n." },
+    { t: "Manacher, what it is", b: "Computes the longest palindromic substring of s in O(n) (vs the obvious O(n³) or O(n²)). The trick: insert '#' between every character (so 'aba' becomes '#a#b#a#'), turning EVERY palindrome into an odd-length palindrome about a single center. Then exploit reflection-around-known-palindromes the same way Z exploits the Z-box." },
     { t: "Manacher's symmetry trick", b: "Maintain (C, R) = the rightmost palindrome's center and right boundary. For a new index i < R, its mirror across C is 2C − i. We can SEED p[i] = min(R − i, p[mirror]) before any character comparisons. The exact-O(n) bound comes from the same potential-function argument as Z." },
-    { t: "Z vs KMP — when each wins", b: "Both are O(n + m) for pattern matching. Z is conceptually simpler (no failure function — just a length array). KMP wins when you only have one pass over the text and want minimal extra memory. For multi-pattern matching, neither — use Aho-Corasick. For palindromes, ONLY Manacher gives O(n)." },
+    { t: "Z vs KMP, when each wins", b: "Both are O(n + m) for pattern matching. Z is conceptually simpler (no failure function, just a length array). KMP wins when you only have one pass over the text and want minimal extra memory. For multi-pattern matching, neither, use Aho-Corasick. For palindromes, ONLY Manacher gives O(n)." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -603,7 +603,7 @@ function InsightTab() {
     <div className="flex flex-col gap-4">
       <Card padded={false} className="overflow-hidden">
         <div className="px-5 pt-5 pb-2">
-          <SubHeading>Z vs KMP — head to head</SubHeading>
+          <SubHeading>Z vs KMP, head to head</SubHeading>
         </div>
         <table className="w-full text-sm">
           <thead className="bg-stone-50 dark:bg-stone-950/50">
@@ -616,7 +616,7 @@ function InsightTab() {
           <tbody>
             {[
               ["Time", "O(n + m)", "O(n + m)"],
-              ["Space", "O(n + m)", "O(m) — failure func only"],
+              ["Space", "O(n + m)", "O(m), failure func only"],
               ["Conceptual model", "Length array (z[i])", "Failure function (fall-back jumps)"],
               ["Streaming-friendly", "No (needs whole string)", "Yes (state machine over text)"],
               ["Code length", "~10 lines", "~15 lines"],
@@ -636,11 +636,11 @@ function InsightTab() {
         <SubHeading>String-algorithm zoo</SubHeading>
         <ul className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed space-y-1.5 pl-4 list-disc">
           <li><strong className="text-stone-900 dark:text-stone-100">Single-pattern match</strong>: KMP, Z, or Boyer-Moore. Production = Boyer-Moore variants (used by grep, git diff).</li>
-          <li><strong className="text-stone-900 dark:text-stone-100">Multi-pattern match</strong>: Aho-Corasick — O(n + sum of patterns).</li>
+          <li><strong className="text-stone-900 dark:text-stone-100">Multi-pattern match</strong>: Aho-Corasick, O(n + sum of patterns).</li>
           <li><strong className="text-stone-900 dark:text-stone-100">Approximate match</strong>: Rabin-Karp rolling hash or Levenshtein automaton.</li>
-          <li><strong className="text-stone-900 dark:text-stone-100">Longest palindrome</strong>: Manacher — O(n).</li>
+          <li><strong className="text-stone-900 dark:text-stone-100">Longest palindrome</strong>: Manacher, O(n).</li>
           <li><strong className="text-stone-900 dark:text-stone-100">Substring queries en masse</strong>: suffix array + LCP (Kasai O(n)), or suffix automaton.</li>
-          <li><strong className="text-stone-900 dark:text-stone-100">Periodicity / borders</strong>: Z-array — z[i] = i means s has period i.</li>
+          <li><strong className="text-stone-900 dark:text-stone-100">Periodicity / borders</strong>: Z-array, z[i] = i means s has period i.</li>
         </ul>
       </Card>
 
@@ -651,7 +651,7 @@ function InsightTab() {
         </p>
         <CodeBlock>original_radius = ⌊p[i]/2⌋,   original_start = ⌊(i − p[i])/2⌋</CodeBlock>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-2">
-          The transform doubles the string length but cleans up the case analysis to one loop. No mainstream stdlib ships these — carry them as templates. LeetCode 5, 28, 214, 1392 are the canonical interview problems.
+          The transform doubles the string length but cleans up the case analysis to one loop. No mainstream stdlib ships these, carry them as templates. LeetCode 5, 28, 214, 1392 are the canonical interview problems.
         </p>
       </Card>
 
@@ -723,7 +723,7 @@ export default function L7_ZManacher({ onQuizComplete }: Props) {
       options: [
         "To avoid hashing collisions",
         "Because palindromes only exist at odd lengths",
-        "To handle even and odd palindromes uniformly — every palindrome in the transformed string is odd-length about a single center",
+        "To handle even and odd palindromes uniformly, every palindrome in the transformed string is odd-length about a single center",
         "To reduce memory",
       ],
       correctIndex: 2,
@@ -744,7 +744,7 @@ export default function L7_ZManacher({ onQuizComplete }: Props) {
       lessonNumber={6}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — LC5 longest palindrome, LC28 strStr, LC214 shortest palindrome, LC1392 longest happy prefix."
+      placementRelevance="High, LC5 longest palindrome, LC28 strStr, LC214 shortest palindrome, LC1392 longest happy prefix."
       nextLessonHint="Lowest Common Ancestor"
       onQuizComplete={onQuizComplete}
     />

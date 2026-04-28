@@ -67,7 +67,7 @@ export class SignalsController {
     }
   }
 
-  /** POST /api/signals (admin-only) — manual entry */
+  /** POST /api/signals (admin-only), manual entry */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const parsed = signalCreateSchema.safeParse(req.body);

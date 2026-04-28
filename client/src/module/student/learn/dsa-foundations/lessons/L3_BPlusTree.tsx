@@ -66,14 +66,14 @@ const PSEUDO_INSERT = [
 ];
 
 const PSEUDO_RANGE = [
-  "# Range scan [lo, hi] — the B+ tree advantage",
+  "# Range scan [lo, hi], the B+ tree advantage",
   "function rangeScan(lo, hi):",
   "  leaf ← descend from root looking for lo",
   "  scan keys in this leaf ≥ lo",
   "  while leaf.next exists and leaf.last < hi:",
   "    leaf ← leaf.next       # FOLLOW THE LEAF CHAIN",
   "    collect keys in [lo, hi]",
-  "  return collected   # O(log n + k) — k = matches",
+  "  return collected   # O(log n + k), k = matches",
 ];
 
 let nextId = 0;
@@ -184,7 +184,7 @@ function buildInsertFrames(keys: number[]): BPFrame[] {
       nodes[leftChildId].parent = newRootId;
       nodes[rightChildId].parent = newRootId;
       rootId = newRootId;
-      snap(8, `Root overflowed — create new root holding routing key ${promoteKey}.`, newRootId, "active", "newRoot");
+      snap(8, `Root overflowed, create new root holding routing key ${promoteKey}.`, newRootId, "active", "newRoot");
       return;
     }
     const parentId = nodes[targetId].parent!;
@@ -193,7 +193,7 @@ function buildInsertFrames(keys: number[]): BPFrame[] {
     snap(7, `Promote ${promoteKey} into parent. Parent now has keys [${nodes[parentId].keys.join(",")}].`, parentId, "active", "promote");
     if (nodes[parentId].keys.length > MAX_KEYS) {
       const { promoteKey: pk, rightId: rid } = splitInternal(parentId);
-      snap(6, `Internal overflow — split. New internal sibling holds keys [${nodes[rid].keys.join(",")}]. Promote ${pk}.`, rid, "split");
+      snap(6, `Internal overflow, split. New internal sibling holds keys [${nodes[rid].keys.join(",")}]. Promote ${pk}.`, rid, "split");
       insertWithFixup(parentId, pk, parentId, rid);
     }
   }
@@ -211,7 +211,7 @@ function buildInsertFrames(keys: number[]): BPFrame[] {
     snap(2, `Insert ${key}: descend from root to find target leaf.`, rootId, "active");
     const leafId = descendToLeaf(key);
     if (nodes[leafId].keys.includes(key)) {
-      snap(3, `Key ${key} already in leaf — duplicate, skipping.`, leafId, "compare");
+      snap(3, `Key ${key} already in leaf, duplicate, skipping.`, leafId, "compare");
       continue;
     }
     insertIntoNode(nodes[leafId], key);
@@ -290,19 +290,19 @@ function buildRangeScanFrames(keys: number[], lo: number, hi: number): BPFrame[]
       if (k >= lo && k <= hi) {
         collected.push(k);
         foundAny = true;
-        push(5, `${k} is in [${lo}, ${hi}] — collect. Result: [${collected.join(",")}].`, { [leafId]: "match" }, "result");
+        push(5, `${k} is in [${lo}, ${hi}], collect. Result: [${collected.join(",")}].`, { [leafId]: "match" }, "result");
       }
     }
     const last = leafKeys[leafKeys.length - 1];
     if (last !== undefined && last >= hi) {
-      push(7, `Last key (${last}) ≥ hi (${hi}) — stop. ${foundAny ? "" : "(No matches in this leaf.)"}`, { [leafId]: "match" });
+      push(7, `Last key (${last}) ≥ hi (${hi}), stop. ${foundAny ? "" : "(No matches in this leaf.)"}`, { [leafId]: "match" });
       break;
     }
     if (!finalNodes[leafId].next) {
       push(7, `End of leaf chain reached. Done.`, { [leafId]: "match" });
       break;
     }
-    push(6, `Last key (${last}) < hi (${hi}) — follow leaf.next pointer.`, { [leafId]: "scan" });
+    push(6, `Last key (${last}) < hi (${hi}), follow leaf.next pointer.`, { [leafId]: "scan" });
     leafId = finalNodes[leafId].next;
   }
   push(8, `Range scan complete. ${collected.length} key(s) found in [${lo}, ${hi}]: [${collected.join(", ")}]. Cost: O(log n) descent + O(k) leaf hops.`);
@@ -502,7 +502,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={mode === "insert" ? "B+ Tree — Insert with Split (M = 4)" : `B+ Tree — Range Scan [${lo}, ${hi}]`}
+      title={mode === "insert" ? "B+ Tree, Insert with Split (M = 4)" : `B+ Tree, Range Scan [${lo}, ${hi}]`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -591,7 +591,7 @@ function VisualizeTab() {
               <li>Leaves form a <strong>linked list</strong> (left-to-right).</li>
             </ul>
             <p className="text-xs text-stone-500 italic mt-2 leading-relaxed">
-              Real DB indexes use M = 100–1000 — a 4-level tree indexes ~10⁹ rows in 4 disk reads.
+              Real DB indexes use M = 100–1000, a 4-level tree indexes ~10⁹ rows in 4 disk reads.
             </p>
           </div>
         )}
@@ -614,11 +614,11 @@ function VisualizeTab() {
 function LearnTab() {
   const cards = [
     { t: "What is a B+ tree?", b: "A multi-way search tree of order M where each node holds up to M-1 keys and (for internal nodes) up to M children. Keys live ONLY in the leaves; internal nodes hold routing keys. Leaves form a sorted linked list." },
-    { t: 'Why "+"?', b: "B-tree has data in BOTH internal and leaf nodes. B+ tree concentrates data in leaves only — internal nodes shrink, fanout grows, scans become a leaf-chain walk. The plus is the leaf chain." },
-    { t: "Built for disks", b: "Each node = one disk page (typically 4 KB or 16 KB). With M approximately 256–1000, even 10⁹ rows fit in a 4-level tree — 4 disk seeks per lookup. Internal-node fanout is the whole game when bytes-per-seek is the limiting factor." },
-    { t: "Range queries are the killer feature", b: "SELECT * WHERE id BETWEEN 100 AND 500: descend once (O(log n)), then walk leaf.next pointers collecting matches (O(k)). Plain B-trees would need a tree traversal between every match — orders of magnitude slower for range workloads." },
+    { t: 'Why "+"?', b: "B-tree has data in BOTH internal and leaf nodes. B+ tree concentrates data in leaves only, internal nodes shrink, fanout grows, scans become a leaf-chain walk. The plus is the leaf chain." },
+    { t: "Built for disks", b: "Each node = one disk page (typically 4 KB or 16 KB). With M approximately 256–1000, even 10⁹ rows fit in a 4-level tree, 4 disk seeks per lookup. Internal-node fanout is the whole game when bytes-per-seek is the limiting factor." },
+    { t: "Range queries are the killer feature", b: "SELECT * WHERE id BETWEEN 100 AND 500: descend once (O(log n)), then walk leaf.next pointers collecting matches (O(k)). Plain B-trees would need a tree traversal between every match, orders of magnitude slower for range workloads." },
     { t: "Insert: descend, place, split if overflow", b: "Find the target leaf via routing keys. Insert in sorted position. If the leaf overflows (more than M-1 keys), split into two halves, promote the first key of the right half into the parent, and relink leaf-chain pointers. Splits cascade up; the root may split too, growing the tree by one level." },
-    { t: "Delete is harder", b: "Symmetric to insert: if a node underflows (fewer than ceil(M/2) keys), borrow from a sibling or merge with one. Production code uses lazy delete (mark tombstone) and bulk-rebuild instead — the worst-case rebalance cascade is rarely worth animating." },
+    { t: "Delete is harder", b: "Symmetric to insert: if a node underflows (fewer than ceil(M/2) keys), borrow from a sibling or merge with one. Production code uses lazy delete (mark tombstone) and bulk-rebuild instead, the worst-case rebalance cascade is rarely worth animating." },
   ];
 
   return (
@@ -629,7 +629,7 @@ function LearnTab() {
         <Lede>
           B+ tree = balanced index on top + sorted linked list at the bottom. The tree gets you to
           the right leaf in O(log n); the linked list lets you scan ranges at memory-throughput speed.
-          Every database index you have ever queried — Postgres, MySQL, SQLite, Oracle, MongoDB — is
+          Every database index you have ever queried, Postgres, MySQL, SQLite, Oracle, MongoDB, is
           some flavor of B+ tree.
         </Lede>
       </div>
@@ -660,7 +660,7 @@ function TryTab() {
     { q: "B+ tree of order M = 100. How many keys (max) can you index in 4 levels?", a: "100^4 = 10^8" },
     { q: "Why are internal nodes stripped of data values in a B+ tree (vs a B-tree)?", a: "Higher fanout → shallower tree → fewer disk seeks" },
     { q: "Range query [10, 50] on a B+ tree of 1M keys with M=100. Expected disk seeks?", a: "~3 (descent) + a few leaf hops" },
-    { q: "Insert sequence 1..16 into an empty B+ tree of order 4. After inserting 16, how many splits happened in total?", a: "More than one — try it in the visualizer" },
+    { q: "Insert sequence 1..16 into an empty B+ tree of order 4. After inserting 16, how many splits happened in total?", a: "More than one, try it in the visualizer" },
   ];
   const [g, setG] = useState<(string | null)[]>(probs.map(() => null));
   const [s, setS] = useState<boolean[]>(probs.map(() => false));
@@ -750,11 +750,11 @@ function InsightTab() {
           </table>
         </div>
         <p className="text-xs text-stone-500 mt-3 leading-relaxed">
-          A 5-level B+ tree is essentially universal — even very large indexes fit inside 5–6 levels.
+          A 5-level B+ tree is essentially universal, even very large indexes fit inside 5–6 levels.
         </p>
       </Card>
       <Card>
-        <SubHeading>B-tree vs B+ tree — when each wins</SubHeading>
+        <SubHeading>B-tree vs B+ tree, when each wins</SubHeading>
         <ul className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed list-disc pl-5 space-y-2">
           <li>
             <strong className="text-stone-900 dark:text-stone-50">B-tree:</strong> data inline at
@@ -763,7 +763,7 @@ function InsightTab() {
           </li>
           <li>
             <strong className="text-stone-900 dark:text-stone-50">B+ tree:</strong> ALL data in
-            leaves; internal nodes are just routing — higher fanout, shallower tree. Range queries
+            leaves; internal nodes are just routing, higher fanout, shallower tree. Range queries
             cost O(log n + k) via the leaf chain. The default for almost every modern DB index.
           </li>
         </ul>
@@ -774,14 +774,14 @@ function InsightTab() {
           <li><strong className="text-stone-900 dark:text-stone-50">PostgreSQL:</strong> default index is a B+ tree (page size 8 KB).</li>
           <li><strong className="text-stone-900 dark:text-stone-50">MySQL InnoDB:</strong> clustered index = B+ tree on the primary key; secondary indexes point back to the primary.</li>
           <li><strong className="text-stone-900 dark:text-stone-50">SQLite:</strong> every table and index is a B+ tree.</li>
-          <li><strong className="text-stone-900 dark:text-stone-50">Filesystems:</strong> NTFS, ext4, APFS, XFS — all use B+ tree variants for directory lookup.</li>
+          <li><strong className="text-stone-900 dark:text-stone-50">Filesystems:</strong> NTFS, ext4, APFS, XFS, all use B+ tree variants for directory lookup.</li>
           <li><strong className="text-stone-900 dark:text-stone-50">MongoDB:</strong> WiredTiger storage engine uses B+ trees.</li>
         </ul>
       </Card>
       <Card>
         <SubHeading>The LSM-tree alternative (write-heavy workloads)</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          B+ trees update in place — every write is potentially a random write. Log-Structured Merge
+          B+ trees update in place, every write is potentially a random write. Log-Structured Merge
           trees (LSM) buffer writes in a memtable, periodically flush sorted runs to disk, and merge
           them in the background. Writes become sequential (great for SSDs), reads are slower (must
           check multiple levels). Used in RocksDB, LevelDB, Cassandra, HBase, ScyllaDB. The B+ tree
@@ -813,13 +813,13 @@ export default function L3_BPlusTree({ onQuizComplete }: Props) {
       question: "In a B+ tree, where does the actual data (key→value mapping) live?",
       options: ["In the root", "In internal nodes", "In leaf nodes only", "In a separate hash table"],
       correctIndex: 2,
-      explanation: "Internal nodes hold ROUTING keys only — the data lives exclusively in the leaves. This is the defining 'plus' that distinguishes B+ from B-tree.",
+      explanation: "Internal nodes hold ROUTING keys only, the data lives exclusively in the leaves. This is the defining 'plus' that distinguishes B+ from B-tree.",
     },
     {
       question: "What is the height of a B+ tree of order M = 100 indexing 10⁸ rows?",
       options: ["~7", "~4", "~26", "~14"],
       correctIndex: 1,
-      explanation: "log₁₀₀(10⁸) = 4. So 4 levels suffice — meaning ~4 disk reads per lookup, vs ~26 for a binary tree.",
+      explanation: "log₁₀₀(10⁸) = 4. So 4 levels suffice, meaning ~4 disk reads per lookup, vs ~26 for a binary tree.",
     },
     {
       question: "Why are leaves in a B+ tree linked together?",
@@ -847,7 +847,7 @@ export default function L3_BPlusTree({ onQuizComplete }: Props) {
       question: "Which is NOT typically backed by a B+ tree?",
       options: ["PostgreSQL btree index", "MySQL InnoDB clustered index", "Cassandra's main storage (SSTables)", "SQLite tables and indexes"],
       correctIndex: 2,
-      explanation: "Cassandra (and RocksDB, LevelDB) uses Log-Structured Merge trees, not B+ trees — optimized for write-heavy workloads. The other three are all B+ trees.",
+      explanation: "Cassandra (and RocksDB, LevelDB) uses Log-Structured Merge trees, not B+ trees, optimized for write-heavy workloads. The other three are all B+ trees.",
     },
   ];
 
@@ -858,7 +858,7 @@ export default function L3_BPlusTree({ onQuizComplete }: Props) {
       lessonNumber={8}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="Critical — every database index you've ever queried uses one. System-design must-know."
+      placementRelevance="Critical, every database index you've ever queried uses one. System-design must-know."
       nextLessonHint="Graph Representation"
       onQuizComplete={onQuizComplete}
     />

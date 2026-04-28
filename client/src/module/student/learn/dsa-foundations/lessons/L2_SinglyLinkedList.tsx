@@ -103,7 +103,7 @@ function buildHead(values: number[], newVal: number): Frame[] {
   f.push({ line: 2, vars: { value: newVal, "newNode.next": headId ? nodes[0].value : "null" }, message: "Point newNode.next at current head", nodes, headId, pendingNew: { id: newNode.id, value: newVal, at: -1 }, edgeHighlights: { [`${newNode.id}->${headId ?? "null"}`]: "new" } });
   const nodes2 = [newNode, ...nodes];
   f.push({ line: 3, vars: { head: newVal }, highlightKey: "head", message: "Move head pointer to new node", nodes: nodes2, headId: newNode.id });
-  f.push({ line: 4, vars: { head: newVal }, message: "Done — O(1) insertion at head", nodes: nodes2.map((n) => ({ ...n, state: undefined })), headId: newNode.id });
+  f.push({ line: 4, vars: { head: newVal }, message: "Done, O(1) insertion at head", nodes: nodes2.map((n) => ({ ...n, state: undefined })), headId: newNode.id });
   return f;
 }
 
@@ -113,7 +113,7 @@ function buildInsert(values: number[], k: number, newVal: number): Frame[] {
   f.push({ line: 0, vars: { k, value: newVal }, message: `Insert ${newVal} at position ${k}`, nodes, headId });
   if (k === 0) return buildHead(values, newVal);
   if (!headId || k > nodes.length) {
-    f.push({ line: 0, vars: { k, value: newVal }, message: `Position ${k} is out of range — clamping`, nodes, headId });
+    f.push({ line: 0, vars: { k, value: newVal }, message: `Position ${k} is out of range, clamping`, nodes, headId });
     return f;
   }
   f.push({ line: 1, vars: { k }, message: "k ≠ 0, traverse list to find position", nodes, headId });
@@ -121,18 +121,18 @@ function buildInsert(values: number[], k: number, newVal: number): Frame[] {
   let cur = nodes[0];
   f.push({ line: 2, vars: { k, i, "cur.value": cur.value }, highlightKey: "cur", message: `Start: cur = head (value ${cur.value}), i = 0`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
   while (i < k - 1 && i < nodes.length - 1) {
-    f.push({ line: 3, vars: { k, i, "cur.value": cur.value }, message: `Check: is i (${i}) < k-1 (${k - 1})? Yes — advance`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
+    f.push({ line: 3, vars: { k, i, "cur.value": cur.value }, message: `Check: is i (${i}) < k-1 (${k - 1})? Yes, advance`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
     cur = nodes[i + 1];
     i++;
     f.push({ line: 4, vars: { k, i, "cur.value": cur.value }, highlightKey: "cur", message: `Walked one step: cur = ${cur.value}, i = ${i}`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
   }
-  f.push({ line: 3, vars: { k, i, "cur.value": cur.value }, message: `i = k-1 = ${i} — stop, we're at predecessor of position ${k}`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
+  f.push({ line: 3, vars: { k, i, "cur.value": cur.value }, message: `i = k-1 = ${i}, stop, we're at predecessor of position ${k}`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
   const newNode: NodeView = { id: nid(), value: newVal, state: "new" };
   f.push({ line: 5, vars: { newNode: newVal }, highlightKey: "newNode", message: `Allocate new node (${newVal}) above position`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id, pendingNew: { id: newNode.id, value: newVal, at: i } });
   const next = nodes[i + 1];
   f.push({ line: 6, vars: { "newNode.next": next ? next.value : "null" }, message: `Rewire: newNode.next ← cur.next (${next ? next.value : "null"})`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id, pendingNew: { id: newNode.id, value: newVal, at: i }, edgeHighlights: { [`${newNode.id}->${next?.id ?? "null"}`]: "new" } });
   const nodes2 = [...nodes.slice(0, i + 1), newNode, ...nodes.slice(i + 1)];
-  f.push({ line: 7, vars: { "cur.next": newVal }, message: "Rewire: cur.next ← newNode — insertion complete", nodes: nodes2.map((n) => ({ ...n, state: n.id === newNode.id ? "new" : n.id === cur.id ? "active" : "default" })), headId, edgeHighlights: { [`${cur.id}->${newNode.id}`]: "new" } });
+  f.push({ line: 7, vars: { "cur.next": newVal }, message: "Rewire: cur.next ← newNode, insertion complete", nodes: nodes2.map((n) => ({ ...n, state: n.id === newNode.id ? "new" : n.id === cur.id ? "active" : "default" })), headId, edgeHighlights: { [`${cur.id}->${newNode.id}`]: "new" } });
   f.push({ line: 8, vars: {}, message: "Done", nodes: nodes2.map((n) => ({ ...n, state: undefined })), headId });
   return f;
 }
@@ -146,7 +146,7 @@ function buildDelete(values: number[], k: number): Frame[] {
     return f;
   }
   if (k === 0) {
-    f.push({ line: 1, vars: { k }, message: "k == 0 — advance head to head.next", nodes: nodes.map((n, i) => ({ ...n, state: i === 0 ? "deleted" : "default" })), headId });
+    f.push({ line: 1, vars: { k }, message: "k == 0, advance head to head.next", nodes: nodes.map((n, i) => ({ ...n, state: i === 0 ? "deleted" : "default" })), headId });
     const nodes2 = nodes.slice(1);
     f.push({ line: 1, vars: { head: nodes2[0]?.value ?? "null" }, highlightKey: "head", message: `Old head removed, new head = ${nodes2[0]?.value ?? "null"}`, nodes: nodes2, headId: nodes2[0]?.id ?? null });
     return f;
@@ -155,14 +155,14 @@ function buildDelete(values: number[], k: number): Frame[] {
   let cur = nodes[0];
   f.push({ line: 2, vars: { k, i, "cur.value": cur.value }, highlightKey: "cur", message: "Start: cur = head, i = 0", nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
   while (i < k - 1 && i < nodes.length - 1) {
-    f.push({ line: 3, vars: { k, i, "cur.value": cur.value }, message: `i (${i}) < k-1 (${k - 1})? Yes — advance`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
+    f.push({ line: 3, vars: { k, i, "cur.value": cur.value }, message: `i (${i}) < k-1 (${k - 1})? Yes, advance`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
     cur = nodes[i + 1];
     i++;
     f.push({ line: 4, vars: { k, i, "cur.value": cur.value }, highlightKey: "cur", message: `cur = ${cur.value}, i = ${i}`, nodes: nodes.map((n) => ({ ...n, state: n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id });
   }
   const target = nodes[i + 1];
   if (!target) {
-    f.push({ line: 5, vars: {}, message: "cur.next is null — nothing to delete", nodes, headId });
+    f.push({ line: 5, vars: {}, message: "cur.next is null, nothing to delete", nodes, headId });
     return f;
   }
   f.push({ line: 6, vars: { "cur.next": target.value, "target.next": nodes[i + 2]?.value ?? "null" }, message: `Rewire: cur.next ← target.next (skip over ${target.value})`, nodes: nodes.map((n) => ({ ...n, state: n.id === target.id ? "deleted" : n.id === cur.id ? "active" : "default" })), headId, cursorId: cur.id, edgeHighlights: { [`${cur.id}->${nodes[i + 2]?.id ?? "null"}`]: "new", [`${cur.id}->${target.id}`]: "deleted" } });
@@ -319,7 +319,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={`Singly Linked List — ${op === "head" ? "Insert at Head" : op === "delete" ? "Delete at k" : "Insert at k"}`}
+      title={`Singly Linked List, ${op === "head" ? "Insert at Head" : op === "delete" ? "Delete at k" : "Insert at k"}`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -383,10 +383,10 @@ function VisualizeTab() {
 
 function LearnTab() {
   const sections = [
-    { title: "What is a linked list?", body: "A chain of node objects where each node holds a value and a pointer to the next node. Unlike arrays, memory is not contiguous — each node is allocated separately on the heap." },
+    { title: "What is a linked list?", body: "A chain of node objects where each node holds a value and a pointer to the next node. Unlike arrays, memory is not contiguous, each node is allocated separately on the heap." },
     { title: "The head pointer", body: "A single pointer 'head' marks the start of the list. To access any node you walk from head, following next pointers. Lose head and you lose the list (memory leak in C/C++)." },
-    { title: "Why it beats arrays for inserts", body: "Inserting at the start of an array is O(n) because every element shifts. In a linked list, you rewire two pointers — O(1). The cost is O(n) random access: you cannot jump to index 7 without walking nodes 0..6." },
-    { title: "Rewiring is the whole game", body: "Every operation — insert, delete, reverse — is pointer gymnastics. Draw boxes and arrows on paper. The number 1 bug is forgetting to save a pointer before overwriting it (losing half the list)." },
+    { title: "Why it beats arrays for inserts", body: "Inserting at the start of an array is O(n) because every element shifts. In a linked list, you rewire two pointers, O(1). The cost is O(n) random access: you cannot jump to index 7 without walking nodes 0..6." },
+    { title: "Rewiring is the whole game", body: "Every operation, insert, delete, reverse, is pointer gymnastics. Draw boxes and arrows on paper. The number 1 bug is forgetting to save a pointer before overwriting it (losing half the list)." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -473,7 +473,7 @@ function InsightTab() {
         <SubHeading>The dummy-head trick</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Interviewers love this. Allocate a fake node whose <code className="font-mono">next</code>{" "}
-          points to the real head. Now every deletion has a predecessor — no more "if k == 0" special
+          points to the real head. Now every deletion has a predecessor, no more "if k == 0" special
           case. At the end, return <code className="font-mono">dummy.next</code>.
         </p>
       </Card>
@@ -483,7 +483,7 @@ function InsightTab() {
           <li>OS free-memory lists (kernel heap)</li>
           <li>Adjacency lists in sparse graphs</li>
           <li>Undo history, browser back-stack, MRU caches (as doubly-linked lists)</li>
-          <li>LinkedHashMap buckets (chaining) — see the Hashing lesson</li>
+          <li>LinkedHashMap buckets (chaining), see the Hashing lesson</li>
         </ul>
       </Card>
     </div>
@@ -532,7 +532,7 @@ export default function L2_SinglyLinkedList({ onQuizComplete }: Props) {
       question: "Why can't arrays match linked-list insertion speed at the front?",
       options: [
         "Arrays use more memory",
-        "Arrays must shift every element one position right — O(n)",
+        "Arrays must shift every element one position right, O(n)",
         "Arrays don't support numbers",
         "Arrays are immutable",
       ],

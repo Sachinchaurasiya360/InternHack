@@ -488,7 +488,7 @@ function InsightTab() {
         <SubHeading>Why two tricks, not one</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Union-by-rank alone gives O(log n) per operation. Path compression alone gives O(log n) amortized.
-          Together the proved bound is O(alpha(n)), which is a slowly growing function <= 4 for n below
+          Together the proved bound is O(alpha(n)), which is a slowly growing function &lt;= 4 for n below
           the number of atoms in the observable universe. Effectively constant.
         </p>
       </Card>

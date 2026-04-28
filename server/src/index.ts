@@ -57,6 +57,7 @@ import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
+import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
@@ -64,6 +65,7 @@ import { initServiceProviders } from "./lib/ai-provider-registry.js";
 import { startFollowUpCron } from "./cron/scheduled-emails.js";
 import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
+import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -230,6 +232,7 @@ app.use("/api/hr/workflows", workflowRouter);
 app.use("/api/hr/analytics", hrAnalyticsRouter);
 app.use("/api/email-inbound", emailInboundRouter);
 app.use("/api/milestones", milestoneRouter);
+app.use("/api/roadmaps", roadmapRouter);
 
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
@@ -295,4 +298,7 @@ app.listen(PORT, async () => {
 
   // Start InternHack AI pipeline crons
   startAIPipelineCrons();
+
+  // Start the scheduled-email worker (drains roadmap day-10, future digests)
+  startScheduledEmailWorker();
 });

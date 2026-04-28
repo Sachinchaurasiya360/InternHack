@@ -255,15 +255,33 @@ export class ScraperService {
 
   /** Get scraped jobs with pagination and filters */
   async getScrapedJobs(query: ScrapedJobQuery) {
-    const where: Prisma.scrapedJobWhereInput = { status: "ACTIVE" };
+    // Restrict adzuna rows to the IT category. Older rows (pre-tech-only
+    // scraper) tagged with "Sales Jobs", "HR Jobs", etc. are excluded here
+    // so users only see tech roles even before the 48h expiry sweep clears
+    // them. Other sources (linkedin, arbeitnow) are tech-focused already.
+    const conditions: Prisma.scrapedJobWhereInput[] = [
+      {
+        OR: [
+          { source: { not: "adzuna" } },
+          { tags: { hasSome: ["IT Jobs"] } },
+        ],
+      },
+    ];
 
     if (query.search) {
-      where.OR = [
-        { title: { contains: query.search, mode: "insensitive" } },
-        { description: { contains: query.search, mode: "insensitive" } },
-        { company: { contains: query.search, mode: "insensitive" } },
-      ];
+      conditions.push({
+        OR: [
+          { title: { contains: query.search, mode: "insensitive" } },
+          { description: { contains: query.search, mode: "insensitive" } },
+          { company: { contains: query.search, mode: "insensitive" } },
+        ],
+      });
     }
+
+    const where: Prisma.scrapedJobWhereInput = {
+      status: "ACTIVE",
+      AND: conditions,
+    };
 
     if (query.location) {
       where.location = { contains: query.location, mode: "insensitive" };

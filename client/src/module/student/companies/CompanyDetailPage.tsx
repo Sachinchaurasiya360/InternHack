@@ -230,7 +230,7 @@ export default function CompanyDetailPage() {
                   <div className="flex items-center gap-2">
                     <StarRating rating={Math.round(company.avgRating)} size="sm" />
                     <span className="text-sm font-bold text-stone-900 dark:text-stone-50 tabular-nums">
-                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : "—"}
+                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : ","}
                     </span>
                     <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                       {company.reviewCount} review{company.reviewCount === 1 ? "" : "s"}
@@ -441,7 +441,7 @@ export default function CompanyDetailPage() {
                       Rating
                     </dt>
                     <dd className="text-stone-900 dark:text-stone-50 text-right tabular-nums">
-                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : "—"}
+                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : ","}
                       <span className="text-stone-500 ml-1">/ 5</span>
                     </dd>
                   </div>

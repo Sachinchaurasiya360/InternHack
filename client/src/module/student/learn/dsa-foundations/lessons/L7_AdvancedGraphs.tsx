@@ -720,9 +720,9 @@ function LearnTab() {
   const sections = [
     { title: "SCC definition", body: "A strongly connected component is a maximal subset of vertices where every pair (u, v) has a directed path u to v AND v to u. Equivalent: the induced subgraph on that set is strongly connected." },
     { title: "Kosaraju's idea", body: "Do DFS, note finish times. Reverse all edges. Do DFS again, starting from the vertex with the latest finish. Each DFS tree in the second pass is one SCC. Runs in O(V + E)." },
-    { title: "Why finish order works", body: "In the condensation DAG (SCCs as nodes), a vertex with the latest finish time belongs to a source SCC. On the reversed graph that becomes a sink — DFS from it can only reach its own SCC." },
+    { title: "Why finish order works", body: "In the condensation DAG (SCCs as nodes), a vertex with the latest finish time belongs to a source SCC. On the reversed graph that becomes a sink, DFS from it can only reach its own SCC." },
     { title: "Floyd-Warshall idea", body: "dp[k][i][j] = shortest path from i to j using only {0..k} as intermediates. Transition: dp[k][i][j] = min(dp[k-1][i][j], dp[k-1][i][k] + dp[k-1][k][j]). Flatten the k dimension by updating in place." },
-    { title: "Floyd-Warshall complexity", body: "O(V^3) time, O(V^2) space. Handles negative weights (but not negative cycles — detect via dist[i][i] < 0 after the algorithm)." },
+    { title: "Floyd-Warshall complexity", body: "O(V^3) time, O(V^2) space. Handles negative weights (but not negative cycles, detect via dist[i][i] < 0 after the algorithm)." },
     { title: "When to use which", body: "Dijkstra for single-source non-negative weights. Bellman-Ford for single-source with negative edges. Floyd-Warshall when you need ALL pairs and V is at most a few hundred. Kosaraju/Tarjan for SCC decomposition (often as preprocessing for 2-SAT or implication graphs)." },
   ];
 
@@ -732,7 +732,7 @@ function LearnTab() {
         <SectionEyebrow>graph dp, condensation</SectionEyebrow>
         <SectionTitle>Two classics: structure, then all-pairs distances</SectionTitle>
         <Lede>
-          Kosaraju sees the graph's condensation DAG by poking it in the right order. Floyd-Warshall is three nested loops doing a relaxation everywhere all at once — elegant dynamic programming on graph structure.
+          Kosaraju sees the graph's condensation DAG by poking it in the right order. Floyd-Warshall is three nested loops doing a relaxation everywhere all at once, elegant dynamic programming on graph structure.
         </Lede>
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
@@ -807,14 +807,14 @@ function InsightTab() {
       <Card>
         <SubHeading>Why Kosaraju processes reverse-finish order</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          The vertex with the latest finish in the first DFS lies in a source SCC of the condensation. After reversing, this source becomes a sink — a DFS from it cannot leave its own SCC. Peeling SCCs one at a time from highest finish downward yields all SCCs cleanly.
+          The vertex with the latest finish in the first DFS lies in a source SCC of the condensation. After reversing, this source becomes a sink, a DFS from it cannot leave its own SCC. Peeling SCCs one at a time from highest finish downward yields all SCCs cleanly.
         </p>
       </Card>
 
       <Card>
         <SubHeading>Why Floyd-Warshall's loop order matters</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          k MUST be the outermost loop. Reading <InlineCode>dist[i][k]</InlineCode> and <InlineCode>dist[k][j]</InlineCode> gives the right values — even after in-place updates — because row k and column k are invariant once the k-th iteration begins. Swapping loop order breaks the DP.
+          k MUST be the outermost loop. Reading <InlineCode>dist[i][k]</InlineCode> and <InlineCode>dist[k][j]</InlineCode> gives the right values, even after in-place updates, because row k and column k are invariant once the k-th iteration begins. Swapping loop order breaks the DP.
         </p>
       </Card>
 
@@ -830,7 +830,7 @@ function InsightTab() {
         <ul className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed space-y-1.5 pl-4 list-disc">
           <li><strong className="text-stone-900 dark:text-stone-100">SCC condensation</strong>: collapse each SCC into a single node to get a DAG. Used in 2-SAT, dataflow analysis, deadlock detection.</li>
           <li><strong className="text-stone-900 dark:text-stone-100">Floyd-Warshall for small graphs</strong>: city-routing with up to a few hundred nodes, network reachability matrices.</li>
-          <li><strong className="text-stone-900 dark:text-stone-100">Transitive closure</strong>: replace "shorter path" with "reachability" in Floyd-Warshall — same O(V^3) approach.</li>
+          <li><strong className="text-stone-900 dark:text-stone-100">Transitive closure</strong>: replace "shorter path" with "reachability" in Floyd-Warshall, same O(V^3) approach.</li>
           <li><strong className="text-stone-900 dark:text-stone-100">Social-network SCCs</strong>: in a directed follow graph, an SCC is a friend-clique where everyone transitively follows everyone.</li>
         </ul>
       </Card>
@@ -867,7 +867,7 @@ export default function L7_AdvancedGraphs({ onQuizComplete }: Props) {
       question: "Kosaraju's algorithm runs in:",
       options: ["O(V log V)", "O(V + E)", "O(V * E)", "O(V^2 + E)"],
       correctIndex: 1,
-      explanation: "Two linear DFS passes plus a transpose step — all linear in V+E.",
+      explanation: "Two linear DFS passes plus a transpose step, all linear in V+E.",
     },
     {
       question: "Floyd-Warshall's time complexity is:",
@@ -890,7 +890,7 @@ export default function L7_AdvancedGraphs({ onQuizComplete }: Props) {
         "To avoid revisiting vertices",
       ],
       correctIndex: 1,
-      explanation: "Latest finish is in a source SCC of the condensation. On the reversed graph, a source becomes a sink — DFS from there exactly captures one SCC.",
+      explanation: "Latest finish is in a source SCC of the condensation. On the reversed graph, a source becomes a sink, DFS from there exactly captures one SCC.",
     },
   ];
 
@@ -901,7 +901,7 @@ export default function L7_AdvancedGraphs({ onQuizComplete }: Props) {
       lessonNumber={8}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="Medium — SCC, all-pairs shortest paths, 2-SAT preprocessing."
+      placementRelevance="Medium, SCC, all-pairs shortest paths, 2-SAT preprocessing."
       nextLessonHint="Tarjan's Low-Link"
       onQuizComplete={onQuizComplete}
     />

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Crown, Sparkles, Zap, MessageCircle } from "lucide-react";
+import { Crown, Zap, MessageCircle } from "lucide-react";
 
 interface Props {
   feature: string;
@@ -10,7 +10,7 @@ export function PremiumUpgradeCTA({ feature }: Props) {
     <div className="flex items-center justify-center min-h-[60vh] px-6">
       <div className="max-w-md w-full text-center">
         <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center mx-auto mb-6">
-          <Sparkles className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+          <Crown className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
         </div>
         <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">
           Unlock {feature}

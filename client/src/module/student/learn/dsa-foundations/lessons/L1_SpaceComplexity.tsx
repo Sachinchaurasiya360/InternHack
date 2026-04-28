@@ -130,7 +130,7 @@ function buildRecFact(n0: number): Frame[] {
   };
 
   function go(n: number): number {
-    enter(n, 0, `Call fact(${n}) — push a new stack frame.`);
+    enter(n, 0, `Call fact(${n}), push a new stack frame.`);
     f.push({ line: 1, vars: { n, depth: stack.length }, message: `Check base case: is ${n} ≤ 1?`, stack: [...stack], maxDepth });
     if (n <= 1) {
       exit(n, 1, 2, `Base case hit. fact(${n}) = 1. Pop frame.`);
@@ -146,7 +146,7 @@ function buildRecFact(n0: number): Frame[] {
   const finalAnswer = go(n0);
   f.push({
     line: 3, vars: { n: n0, result: finalAnswer, "max depth": maxDepth },
-    message: `Done. Peak stack depth was ${maxDepth} — that is the auxiliary space O(n).`,
+    message: `Done. Peak stack depth was ${maxDepth}, that is the auxiliary space O(n).`,
     stack: [], maxDepth, result: finalAnswer,
   });
   return f;
@@ -167,7 +167,7 @@ const PSEUDO_ITER_FACT = [
 function buildIterFact(n0: number): Frame[] {
   const f: Frame[] = [];
   const stack: CallRec[] = [{ id: "main", label: "main()" }];
-  f.push({ line: 0, vars: { n: n0 }, message: `Call fact(${n0}) — single frame on the stack.`, stack: [...stack], maxDepth: 1 });
+  f.push({ line: 0, vars: { n: n0 }, message: `Call fact(${n0}), single frame on the stack.`, stack: [...stack], maxDepth: 1 });
   let result = 1;
   f.push({ line: 1, vars: { n: n0, result }, message: `Initialise result = 1.`, stack: [...stack], maxDepth: 1 });
   for (let i = 2; i <= n0; i++) {
@@ -201,7 +201,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={`Factorial — ${isRec ? "Recursive" : "Iterative"}`}
+      title={`Factorial, ${isRec ? "Recursive" : "Iterative"}`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -235,8 +235,8 @@ function VisualizeTab() {
             </label>
             <div className="flex flex-wrap gap-1.5">
               {([
-                ["rec", "Recursive — O(n) stack"],
-                ["iter", "Iterative — O(1) stack"],
+                ["rec", "Recursive, O(n) stack"],
+                ["iter", "Iterative, O(1) stack"],
               ] as const).map(([id, label]) => (
                 <PillButton key={id} onClick={() => setMode(id)} active={mode === id}>
                   <span className="text-xs">{label}</span>
@@ -262,7 +262,7 @@ function VisualizeTab() {
               color: isRec ? THEME.dangerDark : THEME.successDark,
             }}
           >
-            {isRec ? "O(n) — grows with input" : "O(1) — single frame"}
+            {isRec ? "O(n), grows with input" : "O(1), single frame"}
           </div>
           <p className="text-sm text-stone-600 dark:text-stone-400 text-center max-w-xs leading-relaxed">
             Peak stack frames during this trace:{" "}
@@ -297,7 +297,7 @@ function LearnTab() {
     { t: "Variables are O(1)", b: "A fixed number of scalars (counters, accumulators) uses constant memory no matter how big n is." },
     { t: "New arrays are O(size)", b: "If you allocate a helper array of length n, you just added O(n) space." },
     { t: "Recursion costs stack frames", b: "Each unresolved recursive call keeps its locals alive on the call stack. Depth d → O(d) space." },
-    { t: "Data structures count", b: "Hash maps, sets, matrices — their sizes all feed into auxiliary space." },
+    { t: "Data structures count", b: "Hash maps, sets, matrices, their sizes all feed into auxiliary space." },
   ];
 
   return (
@@ -367,7 +367,7 @@ function TryTab() {
       snippet: "for i in 0..n:\n  sum += a[i]",
       options: ["O(1)", "O(n)", "O(n²)"],
       answer: 0,
-      explain: "A single accumulator sum is one scalar — constant auxiliary space.",
+      explain: "A single accumulator sum is one scalar, constant auxiliary space.",
     },
     {
       snippet: "copy ← new array of size n\nfor i in 0..n:\n  copy[i] ← a[i]",
@@ -393,7 +393,7 @@ function TryTab() {
   return (
     <div className="flex flex-col gap-3">
       <Callout>
-        Pick the auxiliary space for each snippet. Input arrays do not count — only new
+        Pick the auxiliary space for each snippet. Input arrays do not count, only new
         allocations and stack frames.
       </Callout>
       {problems.map((p, i) => {

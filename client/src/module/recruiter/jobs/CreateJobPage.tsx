@@ -333,15 +333,15 @@ export default function CreateJobPage() {
 
             {currentStep.key === "review" && (
               <div className="space-y-1">
-                <ReviewItem label="Title" value={form.title || "—"} />
-                <ReviewItem label="Company" value={form.company || "—"} />
-                <ReviewItem label="Location" value={form.location || "—"} />
-                <ReviewItem label="Salary" value={form.salary || "—"} />
+                <ReviewItem label="Title" value={form.title || ","} />
+                <ReviewItem label="Company" value={form.company || ","} />
+                <ReviewItem label="Location" value={form.location || ","} />
+                <ReviewItem label="Salary" value={form.salary || ","} />
                 <ReviewItem label="Deadline" value={form.deadline || "No deadline"} />
                 <ReviewItem label="Tags" value={form.tags || "None"} />
                 <ReviewItem
                   label="Description"
-                  value={form.description ? `${form.description.slice(0, 140)}${form.description.length > 140 ? "…" : ""}` : "—"}
+                  value={form.description ? `${form.description.slice(0, 140)}${form.description.length > 140 ? "…" : ""}` : ","}
                 />
                 <ReviewItem label="Custom fields" value={`${customFields.length} field${customFields.length === 1 ? "" : "s"}`} />
                 <ReviewItem label="Hiring rounds" value={`${rounds.length} round${rounds.length === 1 ? "" : "s"}`} />

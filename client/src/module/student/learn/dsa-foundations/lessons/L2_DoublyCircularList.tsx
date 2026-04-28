@@ -84,10 +84,10 @@ function buildDoublyDemo(values: number[], afterIdx: number, newVal: number): Fr
   if (nxt !== undefined) {
     f.push({ line: 4, vars: { "node.next.prev": newVal }, message: "Rewire node.next.prev ← new", values, slow: afterIdx });
   } else {
-    f.push({ line: 4, vars: {}, message: "node.next is null — skip backward rewire", values, slow: afterIdx });
+    f.push({ line: 4, vars: {}, message: "node.next is null, skip backward rewire", values, slow: afterIdx });
   }
   const values2 = [...values.slice(0, afterIdx + 1), newVal, ...values.slice(afterIdx + 1)];
-  f.push({ line: 6, vars: {}, message: "node.next ← new — insertion complete", values: values2, slow: afterIdx + 1 });
+  f.push({ line: 6, vars: {}, message: "node.next ← new, insertion complete", values: values2, slow: afterIdx + 1 });
   return f;
 }
 
@@ -112,7 +112,7 @@ function buildFloyd(values: number[], cycleStart: number): Frame[] {
     const fa = nextIdx(fast);
     const fb = fa === null ? null : nextIdx(fa);
     if (fa === null || fb === null) {
-      f.push({ line: 7, vars: { result: "false" }, message: "fast reached null — no cycle exists", values, slow, fast, cycleStart: cycleStart >= 0 ? cycleStart : undefined, hasCycle: false });
+      f.push({ line: 7, vars: { result: "false" }, message: "fast reached null, no cycle exists", values, slow, fast, cycleStart: cycleStart >= 0 ? cycleStart : undefined, hasCycle: false });
       return f;
     }
     slow = s1 ?? slow;
@@ -121,7 +121,7 @@ function buildFloyd(values: number[], cycleStart: number): Frame[] {
     f.push({ line: 4, vars: { fast: values[fast] }, highlightKey: "fast", message: `fast moves two steps → ${values[fast]}`, values, slow, fast, cycleStart: cycleStart >= 0 ? cycleStart : undefined, hasCycle: cycleStart >= 0 });
     f.push({ line: 5, vars: { slow: values[slow], fast: values[fast] }, message: `Compare pointers: ${values[slow]} vs ${values[fast]}`, values, slow, fast, cycleStart: cycleStart >= 0 ? cycleStart : undefined, hasCycle: cycleStart >= 0 });
     if (slow === fast) {
-      f.push({ line: 6, vars: { result: "true" }, message: `Pointers meet at ${values[slow]} — cycle confirmed`, values, slow, fast, met: true, cycleStart: cycleStart >= 0 ? cycleStart : undefined, hasCycle: true });
+      f.push({ line: 6, vars: { result: "true" }, message: `Pointers meet at ${values[slow]}, cycle confirmed`, values, slow, fast, met: true, cycleStart: cycleStart >= 0 ? cycleStart : undefined, hasCycle: true });
       return f;
     }
   }
@@ -257,7 +257,7 @@ function VisualizeTab() {
   const frames = useMemo(() => {
     if (mode === "floyd") return buildFloyd(values, Math.min(cycleStart, values.length - 1));
     if (mode === "circular") {
-      return [{ line: 0, vars: { head: values[0], tail: values[values.length - 1] }, message: "Circular list — last node's next wraps to head", values, hasCycle: true } as Frame];
+      return [{ line: 0, vars: { head: values[0], tail: values[values.length - 1] }, message: "Circular list, last node's next wraps to head", values, hasCycle: true } as Frame];
     }
     return buildDoublyDemo(values, Math.min(afterIdx, values.length - 1), newVal);
   }, [mode, listStr, afterIdx, newVal, cycleStart]);
@@ -268,7 +268,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={mode === "floyd" ? "Floyd's Cycle Detection" : mode === "circular" ? "Circular Linked List" : "Doubly Linked List — Insert After"}
+      title={mode === "floyd" ? "Floyd's Cycle Detection" : mode === "circular" ? "Circular Linked List" : "Doubly Linked List, Insert After"}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -340,7 +340,7 @@ function LearnTab() {
     { t: "Doubly linked list", b: "Each node stores prev and next pointers. You can walk either direction. Delete-by-node is O(1) (no need to find predecessor). Extra memory per node." },
     { t: "Circular linked list", b: "The last node's next pointer wraps back to the head. No null terminator. Useful for round-robin scheduling and circular buffers." },
     { t: "Doubly + circular", b: "Combine both: bidirectional traversal with wraparound. Linux's task-scheduler runqueue uses this pattern." },
-    { t: "Floyd's cycle detection", b: "Two pointers, slow (one step) and fast (two steps). If there's a cycle, fast laps slow — they MUST meet. If fast reaches null, no cycle. O(n) time, O(1) space." },
+    { t: "Floyd's cycle detection", b: "Two pointers, slow (one step) and fast (two steps). If there's a cycle, fast laps slow, they MUST meet. If fast reaches null, no cycle. O(n) time, O(1) space." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -349,7 +349,7 @@ function LearnTab() {
         <SectionTitle>Bidirectional walks unlock O(1) deletes</SectionTitle>
         <Lede>
           A singly list can only tell you where to go next. A doubly list can also tell you where you
-          came from. That tiny addition turns "delete this node" from O(n) into O(1) — a huge win
+          came from. That tiny addition turns "delete this node" from O(n) into O(1), a huge win
           for LRU caches and editor undo stacks.
         </Lede>
       </div>
@@ -421,7 +421,7 @@ function InsightTab() {
         <SubHeading>Why Floyd works (the proof)</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Once both pointers enter the cycle, each iteration fast gains 1 step of distance on slow
-          (fast moves 2, slow moves 1). That distance cycles modulo the cycle length L — eventually
+          (fast moves 2, slow moves 1). That distance cycles modulo the cycle length L, eventually
           it hits 0, meaning they collide. Because fast can never "skip over" slow by exactly L while
           entering the cycle, the collision is guaranteed.
         </p>
@@ -480,13 +480,13 @@ export default function L2_DoublyCircularList({ onQuizComplete }: Props) {
       question: "A circular singly linked list has no ___?",
       options: ["Head pointer", "Cycles", "Null terminator", "Values"],
       correctIndex: 2,
-      explanation: "The last node's next loops back to head. There is no null — you must stop based on some other condition (e.g., returning to head).",
+      explanation: "The last node's next loops back to head. There is no null, you must stop based on some other condition (e.g., returning to head).",
     },
     {
       question: "Space complexity of Floyd's cycle detection?",
       options: ["O(1)", "O(log n)", "O(n)", "O(n²)"],
       correctIndex: 0,
-      explanation: "Only two pointers — constant extra space. That's why it beats the HashSet approach (O(n) memory).",
+      explanation: "Only two pointers, constant extra space. That's why it beats the HashSet approach (O(n) memory).",
     },
   ];
 

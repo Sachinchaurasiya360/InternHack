@@ -177,13 +177,13 @@ function BinarySearchAnswerViz({ frame, pkgs, D }: { frame: Frame; pkgs: number[
           <div className="absolute left-4 bottom-0.5 text-[10px] font-mono text-stone-400">{totalLo}</div>
           <div className="absolute right-4 bottom-0.5 text-[10px] font-mono text-stone-400">{totalHi}</div>
         </div>
-        <p className="text-xs text-stone-500 mt-1">Feasible capacities form a suffix — binary search finds the boundary.</p>
+        <p className="text-xs text-stone-500 mt-1">Feasible capacities form a suffix, binary search finds the boundary.</p>
       </div>
 
       {/* Feasibility check */}
       <div>
         <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2 flex items-center gap-2">
-          Feasibility check{frame.mid !== null ? ` — cap=${frame.mid}` : ""}
+          Feasibility check{frame.mid !== null ? `, cap=${frame.mid}` : ""}
           {frame.feasible === true && <span className="text-lime-700 dark:text-lime-400 font-bold">feasible</span>}
           {frame.feasible === false && <span className="text-rose-600 dark:text-rose-400 font-bold">infeasible</span>}
         </div>
@@ -239,7 +239,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title="Capacity to Ship Packages — Binary Search on Answer"
+      title="Capacity to Ship Packages, Binary Search on Answer"
       player={player}
       input={
         <InputEditor
@@ -281,9 +281,9 @@ function VisualizeTab() {
 
 function LearnTab() {
   const sections = [
-    { title: "Two kinds of binary search", body: "Classic binary search runs on a sorted array — you look for an element. Binary search on the answer runs on the answer space itself: you binary-search over all possible answers and at each guess ask: is this guess feasible?" },
+    { title: "Two kinds of binary search", body: "Classic binary search runs on a sorted array, you look for an element. Binary search on the answer runs on the answer space itself: you binary-search over all possible answers and at each guess ask: is this guess feasible?" },
     { title: "When does it work?", body: "You need monotonic feasibility: if capacity c works, then any c' > c also works. Then the set of feasible capacities is a suffix [c*, infinity). Binary-search for c*." },
-    { title: "The three ingredients", body: "(1) Answer bounds [lo, hi]. (2) A feasibility predicate canDo(mid) returning bool. (3) A monotone direction: feasible means try smaller (shrink hi); infeasible means try larger (grow lo). Works for min AND max problems — flip the direction." },
+    { title: "The three ingredients", body: "(1) Answer bounds [lo, hi]. (2) A feasibility predicate canDo(mid) returning bool. (3) A monotone direction: feasible means try smaller (shrink hi); infeasible means try larger (grow lo). Works for min AND max problems, flip the direction." },
     { title: "Classic problems", body: "Capacity to ship packages, split-array largest-sum, koko eating bananas, painter partition, aggressive cows, smallest divisor, magnetic force, allocate books. All reduce to binary-search-on-answer plus greedy feasibility." },
   ];
   return (
@@ -378,7 +378,7 @@ function InsightTab() {
       <Card>
         <SubHeading>Complexity</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Outer binary search: O(log(hi - lo)). Feasibility check: O(n) (one pass). Total: O(n * log(sum)). For ship-packages this is roughly O(n * 30) — blazing fast even when sum is 10^9.
+          Outer binary search: O(log(hi - lo)). Feasibility check: O(n) (one pass). Total: O(n * log(sum)). For ship-packages this is roughly O(n * 30), blazing fast even when sum is 10^9.
         </p>
       </Card>
       <Card>

@@ -177,7 +177,7 @@ function VisualizeTab() {
           label="Bracket string"
           value={str}
           placeholder="e.g. (){[]}"
-          helper="Use ( ) [ ] { } — other characters ignored"
+          helper="Use ( ) [ ] { }, other characters ignored"
           presets={[
             { label: "Balanced", value: "({[]}())" },
             { label: "Unmatched", value: "([)]" },
@@ -247,8 +247,8 @@ function VisualizeTab() {
 
 function LearnTab() {
   const cards = [
-    { t: "LIFO — Last In, First Out", b: "The last thing you pushed is the first thing you pop. Exactly like a stack of plates: you take the top plate off. No random-access in the middle." },
-    { t: "Two operations, both O(1)", b: "push(x) puts x on top; pop() removes and returns top. Peek/top returns without removing. Implemented on top of an array or singly linked list — both give O(1)." },
+    { t: "LIFO, Last In, First Out", b: "The last thing you pushed is the first thing you pop. Exactly like a stack of plates: you take the top plate off. No random-access in the middle." },
+    { t: "Two operations, both O(1)", b: "push(x) puts x on top; pop() removes and returns top. Peek/top returns without removing. Implemented on top of an array or singly linked list, both give O(1)." },
     { t: "Why it fits parentheses", b: "Nesting is last-in-first-out: the most recent '(' must close before any older '(' can. That is literally the definition of a stack." },
     { t: "Call stack, undo, back-button", b: "Every function call pushes a frame. Your text editor's Ctrl+Z is a stack. Your browser's back button is a stack. Once you see LIFO, you see stacks everywhere." },
   ];
@@ -259,7 +259,7 @@ function LearnTab() {
         <SectionTitle>A Pez dispenser of data</SectionTitle>
         <Lede>
           You can only add and remove from the top. That restriction looks like a weakness, but it
-          is precisely what makes stacks fast — and perfectly matched to recursion and nested
+          is precisely what makes stacks fast, and perfectly matched to recursion and nested
           structures.
         </Lede>
       </div>
@@ -333,7 +333,7 @@ function InsightTab() {
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <SubHeading>Beyond brackets — other stack killers</SubHeading>
+        <SubHeading>Beyond brackets, other stack killers</SubHeading>
         <ul className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed space-y-1 pl-4 list-disc">
           <li><strong className="text-stone-900 dark:text-stone-50">Infix to Postfix:</strong> Shunting-yard uses an operator stack</li>
           <li><strong className="text-stone-900 dark:text-stone-50">Evaluate postfix:</strong> push operands, pop for operators</li>
@@ -380,25 +380,25 @@ export default function L2_Stacks({ onQuizComplete }: Props) {
       question: "A stack follows which ordering principle?",
       options: ["First In First Out", "Last In First Out", "Priority based", "Random access"],
       correctIndex: 1,
-      explanation: "LIFO — the most recently pushed element is always the first to be popped.",
+      explanation: "LIFO, the most recently pushed element is always the first to be popped.",
     },
     {
       question: "For the string '(){}[]', after processing all characters, the stack contains how many elements?",
       options: ["0", "3", "6", "Depends on order"],
       correctIndex: 0,
-      explanation: "Every opening bracket is immediately matched by its closing partner in this string — pushes and pops balance. Final stack is empty.",
+      explanation: "Every opening bracket is immediately matched by its closing partner in this string, pushes and pops balance. Final stack is empty.",
     },
     {
       question: 'isBalanced("([)]") returns?',
       options: ["true - counts match", "false - order mismatches", "true - same length", "Undefined"],
       correctIndex: 1,
-      explanation: "When ')' arrives, top is '[' — types don't match. Counting alone is not enough; nesting order matters.",
+      explanation: "When ')' arrives, top is '[', types don't match. Counting alone is not enough; nesting order matters.",
     },
     {
       question: "Time complexity of checking balanced brackets on a length-n string using a stack?",
       options: ["O(1)", "O(log n)", "O(n)", "O(n²)"],
       correctIndex: 2,
-      explanation: "Each character is pushed at most once and popped at most once — O(n) total. Stack operations are O(1).",
+      explanation: "Each character is pushed at most once and popped at most once, O(n) total. Stack operations are O(1).",
     },
   ];
 

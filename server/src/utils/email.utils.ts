@@ -4,14 +4,34 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM = () => process.env.EMAIL_FROM || "InternHack <onboarding@resend.dev>";
 
+export interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType?: string;
+}
+
 export async function sendEmail(options: {
   to: string;
   subject: string;
   html: string;
+  attachments?: EmailAttachment[];
 }): Promise<void> {
   console.log(`[Email] Sending "${options.subject}" to ${options.to}`);
   try {
-    const result = await resend.emails.send({ from: FROM(), ...options });
+    const payload: Parameters<typeof resend.emails.send>[0] = {
+      from: FROM(),
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    };
+    if (options.attachments && options.attachments.length > 0) {
+      payload.attachments = options.attachments.map((a) => ({
+        filename: a.filename,
+        content: a.content,
+        ...(a.contentType ? { contentType: a.contentType } : {}),
+      }));
+    }
+    const result = await resend.emails.send(payload);
     console.log("[Email] Sent successfully:", JSON.stringify(result));
   } catch (err) {
     console.error("[Email] Failed to send:", err);

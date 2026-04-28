@@ -369,7 +369,7 @@ export default function AdminSignalsPage() {
                       {sources.find((x) => x.id === s.source)?.name ?? s.source}
                     </td>
                     <td className="px-4 py-3 text-gray-300">
-                      {s.fundingRound || "—"}
+                      {s.fundingRound || ","}
                       {s.fundingAmount ? (
                         <span className="ml-1 text-emerald-400">{s.fundingAmount}</span>
                       ) : null}

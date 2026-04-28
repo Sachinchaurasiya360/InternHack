@@ -52,6 +52,9 @@ const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/Ds
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
 const DsaFoundationsLevelPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLevelPage"));
 const DsaFoundationsLessonPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLessonPage"));
+const SystemDesignHubPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignHubPage"));
+const SystemDesignLevelPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLevelPage"));
+const SystemDesignLessonPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLessonPage"));
 const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/YCCompanyDetailPage"));
 const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
@@ -190,6 +193,15 @@ const JobAgentPage = lazyWithRetry(() => import("./module/student/job-agent/JobA
 // 404
 const NotFoundPage = lazyWithRetry(() => import("./module/NotFoundPage"));
 
+// Roadmap pages
+const RoadmapsLandingPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapsLandingPage"));
+const RoadmapDetailPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapDetailPage"));
+const RoadmapEnrollPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapEnrollPage"));
+const RoadmapCanvasPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCanvasPage"));
+const RoadmapTopicPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapTopicPage"));
+const RoadmapDashboardPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapDashboardPage"));
+const AiRoadmapWizardPage = lazyWithRetry(() => import("./module/student/roadmap/AiRoadmapWizardPage"));
+
 // Student new feature pages
 const SignalsPage = lazyWithRetry(() => import("./module/student/signals/SignalsPage"));
 const SignalDetailPage = lazyWithRetry(() => import("./module/student/signals/SignalDetailPage"));
@@ -321,6 +333,14 @@ function App() {
           <Route path="/recruiter/login" element={<RecruiterLoginPage />} />
           <Route path="/recruiter/register" element={<RecruiterRegisterPage />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
+          {/* Roadmaps (public + auth) */}
+          <Route path="/roadmaps" element={<RoadmapsLandingPage />} />
+          <Route path="/roadmaps/:slug" element={<RoadmapDetailPage />} />
+          <Route path="/roadmaps/:slug/topics/:topicSlug" element={<RoadmapTopicPage />} />
+          <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
+          <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
+          <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
+          <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           {/* Legal Pages */}
@@ -377,6 +397,9 @@ function App() {
             <Route path="dsa-foundations" element={<DsaFoundationsHubPage />} />
             <Route path="dsa-foundations/:levelId" element={<DsaFoundationsLevelPage />} />
             <Route path="dsa-foundations/:levelId/:lessonSlug" element={<DsaFoundationsLessonPage />} />
+            <Route path="system-design" element={<SystemDesignHubPage />} />
+            <Route path="system-design/:levelId" element={<SystemDesignLevelPage />} />
+            <Route path="system-design/:levelId/:lessonSlug" element={<SystemDesignLessonPage />} />
             <Route path="aptitude" element={<AptitudeCategoriesPage />} />
             <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
             <Route path="aptitude/:slug" element={<AptitudeTheoryPage />} />
@@ -474,6 +497,7 @@ function App() {
             <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="profile" element={<StudentProfilePage />} />
+            <Route path="roadmaps" element={<RoadmapDashboardPage />} />
           </Route>
 
           {/* Recruiter protected routes */}

@@ -86,7 +86,7 @@ function bfsFrames(
 
   while (q.length) {
     const cur = q.shift()!;
-    f.push({ line: 3, vars: { r: cur[0], c: cur[1], d: dist[cur[0]][cur[1]] ?? "-" }, flashKey: "d", message: `Dequeue (${cur[0]},${cur[1]}) — distance ${dist[cur[0]][cur[1]]}.`, dist: dist.map((r) => [...r]), frontier: [...q], current: cur, path: null });
+    f.push({ line: 3, vars: { r: cur[0], c: cur[1], d: dist[cur[0]][cur[1]] ?? "-" }, flashKey: "d", message: `Dequeue (${cur[0]},${cur[1]}), distance ${dist[cur[0]][cur[1]]}.`, dist: dist.map((r) => [...r]), frontier: [...q], current: cur, path: null });
     if (target && cur[0] === target[0] && cur[1] === target[1]) break;
     for (const [dr, dc] of dirs) {
       const nr = cur[0] + dr; const nc = cur[1] + dc;
@@ -96,7 +96,7 @@ function bfsFrames(
       dist[nr][nc] = (dist[cur[0]][cur[1]] ?? 0) + 1;
       parent[nr][nc] = cur;
       q.push([nr, nc]);
-      f.push({ line: 6, vars: { nr, nc, "dist[nr][nc]": dist[nr][nc] ?? "-" }, flashKey: "dist[nr][nc]", message: `Visit (${nr},${nc}) — distance ${dist[nr][nc]}. Enqueue.`, dist: dist.map((r) => [...r]), frontier: [...q], current: cur, path: null });
+      f.push({ line: 6, vars: { nr, nc, "dist[nr][nc]": dist[nr][nc] ?? "-" }, flashKey: "dist[nr][nc]", message: `Visit (${nr},${nc}), distance ${dist[nr][nc]}. Enqueue.`, dist: dist.map((r) => [...r]), frontier: [...q], current: cur, path: null });
     }
   }
 
@@ -285,12 +285,12 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title="Grid to Graph — BFS Wavefront"
+      title="Grid to Graph, BFS Wavefront"
       player={player}
       input={
         <div className="flex flex-col gap-3">
           <InputEditor
-            label="Grid (rows by newlines — '.' empty, '#' wall, 'S' source, 'T' target)"
+            label="Grid (rows by newlines, '.' empty, '#' wall, 'S' source, 'T' target)"
             value={inputStr}
             placeholder={DEFAULT_GRID}
             helper="Or click cells below using the paint tool."
@@ -341,9 +341,9 @@ function VisualizeTab() {
 function LearnTab() {
   const sections = [
     { title: "Every grid is a graph", body: "An R x C grid has R*C nodes (cells). Each cell has up to 4 edges (up/down/left/right) or 8 (including diagonals). Walls simply remove edges. Once you see this, BFS, DFS, Dijkstra, A* all apply without modification." },
-    { title: "BFS gives shortest path by # of edges", body: "When edges are unit-weight (grid moves cost 1), BFS layer-by-layer gives the minimum number of moves. Distances form concentric rings around the source — the famous wavefront." },
+    { title: "BFS gives shortest path by # of edges", body: "When edges are unit-weight (grid moves cost 1), BFS layer-by-layer gives the minimum number of moves. Distances form concentric rings around the source, the famous wavefront." },
     { title: "Multi-source BFS", body: "The rotten-oranges problem: multiple infected cells simultaneously. Push ALL sources into the queue at distance 0 and run ordinary BFS. You get the time each fresh orange rots in one pass." },
-    { title: "Graph thinking beyond grids", body: "Word ladder: words are nodes; an edge joins words differing by exactly one letter. BFS gives the shortest transformation. The 'grid' can be any structured state space — chess positions, slide puzzles, even Rubik's cube." },
+    { title: "Graph thinking beyond grids", body: "Word ladder: words are nodes; an edge joins words differing by exactly one letter. BFS gives the shortest transformation. The 'grid' can be any structured state space, chess positions, slide puzzles, even Rubik's cube." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -351,7 +351,7 @@ function LearnTab() {
         <SectionEyebrow>grid to graph modeling</SectionEyebrow>
         <SectionTitle>The same BFS solves maze, flood fill, and word ladder</SectionTitle>
         <Lede>
-          Stop thinking "I have a grid, I need a custom algorithm." Start thinking "I have a graph; here's its adjacency rule." The same BFS you learned for graphs solves maze shortest path, flood fill, rotten oranges, knight's minimum moves, and word ladders — unchanged.
+          Stop thinking "I have a grid, I need a custom algorithm." Start thinking "I have a graph; here's its adjacency rule." The same BFS you learned for graphs solves maze shortest path, flood fill, rotten oranges, knight's minimum moves, and word ladders, unchanged.
         </Lede>
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
@@ -384,7 +384,7 @@ function TryTab() {
   return (
     <div className="flex flex-col gap-3">
       <Callout>
-        Apply BFS mentally — each node at distance d enqueues distance-(d+1) neighbors.
+        Apply BFS mentally, each node at distance d enqueues distance-(d+1) neighbors.
       </Callout>
       {problems.map((p, i) => {
         const correct = guesses[i].trim() === p.a;
@@ -431,7 +431,7 @@ function InsightTab() {
       <Card>
         <SubHeading>Interview reframing</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          When the interviewer says "in a 2D grid..." — your first move is out loud: "I'll model this as a graph where each cell is a node and edges connect orthogonal neighbors that aren't walls. BFS gives shortest path." This earns credit before you've written a line.
+          When the interviewer says "in a 2D grid...", your first move is out loud: "I'll model this as a graph where each cell is a node and edges connect orthogonal neighbors that aren't walls. BFS gives shortest path." This earns credit before you've written a line.
         </p>
       </Card>
       <Card>

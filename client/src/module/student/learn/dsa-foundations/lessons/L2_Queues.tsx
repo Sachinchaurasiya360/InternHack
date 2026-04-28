@@ -282,7 +282,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={mode === "linear" ? "Queue (FIFO)" : "Circular Queue — Ring Buffer"}
+      title={mode === "linear" ? "Queue (FIFO)" : "Circular Queue, Ring Buffer"}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -365,7 +365,7 @@ function VisualizeTab() {
 
 function LearnTab() {
   const cards = [
-    { t: "FIFO — First In, First Out", b: "The element that has been waiting the longest is served first. Like a line at a coffee shop: join the back, leave the front." },
+    { t: "FIFO, First In, First Out", b: "The element that has been waiting the longest is served first. Like a line at a coffee shop: join the back, leave the front." },
     { t: "Two pointers: front and rear", b: "Front is where you dequeue; rear is where you enqueue. Both operations are O(1) when implemented correctly." },
     { t: "The circular (ring) buffer trick", b: "Array-backed queue with a wraparound: when rear reaches capacity, it wraps to 0. Fixed size, no shifting, O(1) ops. Used in audio drivers, network packet buffers, and producer-consumer pipelines." },
     { t: "When is it full vs empty?", b: "Both can make size==0. Solution: keep a separate size counter (what we do here), or sacrifice one slot so 'full' means rear == (front-1) mod cap." },
@@ -374,7 +374,7 @@ function LearnTab() {
     <div className="flex flex-col gap-5">
       <div>
         <SectionEyebrow>stack vs queue</SectionEyebrow>
-        <SectionTitle>Same O(1) ops — opposite ends</SectionTitle>
+        <SectionTitle>Same O(1) ops, opposite ends</SectionTitle>
         <Lede>
           Stack = newest goes out first (LIFO). Queue = oldest goes out first (FIFO). Both have O(1)
           insert and remove, but from opposite ends.
@@ -400,7 +400,7 @@ function LearnTab() {
 function TryTab() {
   const probs = [
     { q: "Trace: E1, E2, E3, D, E4, D. Final queue contents (front to rear)?", a: "3, 4" },
-    { q: "Circular queue, cap=4. After E1,E2,E3,E4,D,E5 — what's at buf[0]?", a: "5 (wrapped around)" },
+    { q: "Circular queue, cap=4. After E1,E2,E3,E4,D,E5, what's at buf[0]?", a: "5 (wrapped around)" },
     { q: "BFS uses which linear structure?", a: "Queue" },
     { q: "After E7 twice and D once on an empty queue, size?", a: "1" },
   ];
@@ -448,8 +448,8 @@ function InsightTab() {
       <Card>
         <SubHeading>Why circular beats naive array-queue</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          A naive array queue shifts every element left on dequeue — O(n). A circular queue just
-          advances the front index — O(1). Same memory, one line of modulo arithmetic, massive
+          A naive array queue shifts every element left on dequeue, O(n). A circular queue just
+          advances the front index, O(1). Same memory, one line of modulo arithmetic, massive
           speedup. This is the data structure behind your keyboard's typeahead buffer.
         </p>
       </Card>
@@ -491,7 +491,7 @@ export default function L2_Queues({ onQuizComplete }: Props) {
       question: "A queue removes elements in which order?",
       options: ["Last-in first-out", "First-in first-out", "Random", "Priority-based"],
       correctIndex: 1,
-      explanation: "FIFO — elements leave in arrival order. Contrast with a stack (LIFO) or a priority queue (min/max first).",
+      explanation: "FIFO, elements leave in arrival order. Contrast with a stack (LIFO) or a priority queue (min/max first).",
     },
     {
       question: "In a circular queue of capacity 5 with front=3 and size=4, what is rear?",

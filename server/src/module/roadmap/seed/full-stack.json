@@ -1,0 +1,544 @@
+{
+  "slug": "full-stack",
+  "title": "Full-Stack Developer Roadmap",
+  "shortDescription": "Go from zero to job-ready full-stack engineer with curated topics, real projects, and a paced weekly plan.",
+  "description": "A complete, opinionated path from web fundamentals to production-ready full-stack engineering. You will learn frontend (HTML, CSS, JavaScript, React), backend (Node.js, Express, REST), databases (Postgres, Prisma), authentication, deployment, and the production craft that separates working code from shippable software. Each topic is paired with hand-picked free resources, a mini project, and a self-check question.",
+  "level": "ALL_LEVELS",
+  "estimatedHours": 320,
+  "outcomes": [
+    "Build, deploy, and operate a full-stack web application end to end",
+    "Design Postgres schemas and query them safely through an ORM",
+    "Implement JWT authentication and avoid the OWASP Top 10 vulnerabilities",
+    "Containerize and deploy applications with CI/CD pipelines",
+    "Diagnose performance and reliability issues using observability tooling",
+    "Communicate engineering decisions clearly during interviews"
+  ],
+  "prerequisites": [
+    "Comfort using a computer and installing software",
+    "Willingness to read documentation and debug",
+    "About 6 to 10 hours per week for 8 to 16 weeks"
+  ],
+  "tags": ["fullstack", "javascript", "react", "node", "postgres", "career"],
+  "faqs": [
+    { "q": "Do I need a CS degree?", "a": "No. The roadmap was built for self-taught learners. You only need consistency and a project mindset." },
+    { "q": "How long will it take?", "a": "Eight weeks at twenty hours per week, sixteen weeks at ten hours per week. Your weekly plan is generated when you enroll." },
+    { "q": "Is this really free?", "a": "Yes. Every linked resource is free. There is nothing to buy to complete the roadmap." },
+    { "q": "Will I get a certificate?", "a": "Not currently. The intended output is a working capstone project plus a portfolio you can show recruiters." },
+    { "q": "Which language does this teach?", "a": "JavaScript and TypeScript across the stack, with Postgres as the database. Concepts transfer to other stacks." }
+  ],
+  "sections": [
+    {
+      "slug": "cs-foundations",
+      "title": "Computing Foundations",
+      "summary": "The mental model and tools you will use every day as a developer.",
+      "topics": [
+        {
+          "slug": "how-the-web-works",
+          "title": "How the Web Works",
+          "summary": "DNS, HTTP, the request/response cycle, and what really happens when you load a URL.",
+          "estimatedHours": 4,
+          "difficulty": 1,
+          "prerequisiteSlugs": [],
+          "contentMd": "Before you can build for the web you need a model of how it actually works.\n\n- A browser turns a URL into an IP address through DNS\n- It opens a TCP (often TLS-wrapped) connection and sends an HTTP request\n- A server somewhere returns an HTTP response with headers, a status code, and a body\n- The browser then renders HTML, fetches CSS, runs JavaScript, and may fire more requests\n\nMaster the vocabulary: status codes (200, 301, 401, 404, 500), methods (GET, POST, PUT, PATCH, DELETE), headers (Authorization, Content-Type, Cache-Control), cookies, and CORS. Almost every later topic plugs into this model.",
+          "miniProject": "Open the browser DevTools network tab and trace one full page load. Write a short summary of every request that fired and why.",
+          "selfCheck": "Explain to a friend what happens between pressing Enter on a URL and seeing the page.",
+          "resources": [
+            { "kind": "ARTICLE", "title": "How the Internet Works in 5 Minutes", "url": "https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Web_mechanics/How_does_the_Internet_work", "source": "MDN", "isFree": true },
+            { "kind": "VIDEO", "title": "What happens when you type a URL", "url": "https://www.youtube.com/watch?v=AlkDbnbv7dk", "source": "YouTube", "isFree": true },
+            { "kind": "DOCS", "title": "HTTP Overview", "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview", "source": "MDN", "isFree": true },
+            { "kind": "ARTICLE", "title": "DNS in Plain English", "url": "https://howdns.works/", "source": "howdns.works", "isFree": true }
+          ]
+        },
+        {
+          "slug": "git-and-github",
+          "title": "Git and GitHub",
+          "summary": "Version control is non-negotiable. Learn it deliberately, not by memorizing commands.",
+          "estimatedHours": 6,
+          "difficulty": 2,
+          "prerequisiteSlugs": [],
+          "contentMd": "Git tracks every change to your code. GitHub hosts your Git repositories and is where you will collaborate, share work, and apply for jobs. Build a real model of branches, commits, the staging area, and remotes.\n\nFocus areas: clone, branch, commit, push, pull, merge vs rebase, resolving conflicts, opening pull requests, reading diffs, and writing commit messages a future-you can understand.",
+          "miniProject": "Create a public repo, push three commits across two branches, open a PR from one to the other, and merge it. Then deliberately create a merge conflict and resolve it.",
+          "selfCheck": "What is the difference between merge and rebase, and when would you pick one over the other?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Pro Git Book (free)", "url": "https://git-scm.com/book/en/v2", "source": "git-scm.com", "isFree": true },
+            { "kind": "VIDEO", "title": "Git and GitHub for Beginners (Crash Course)", "url": "https://www.youtube.com/watch?v=RGOj5yH7evk", "source": "freeCodeCamp", "isFree": true },
+            { "kind": "ARTICLE", "title": "Conventional Commits", "url": "https://www.conventionalcommits.org/", "source": "conventionalcommits.org", "isFree": true }
+          ]
+        },
+        {
+          "slug": "cli-and-linux",
+          "title": "Command Line and Linux Basics",
+          "summary": "Navigate, edit, and pipe data without leaving the terminal.",
+          "estimatedHours": 4,
+          "difficulty": 2,
+          "prerequisiteSlugs": [],
+          "contentMd": "Most servers run Linux. Most build tools assume a Unix-like shell. The CLI is also the fastest way to do many tasks: filtering logs, scaffolding files, scripting repetitive steps.\n\nLearn: file system navigation, redirection and pipes, environment variables, package managers, ssh, and how to read manual pages without giving up.",
+          "miniProject": "Write a shell one-liner that finds the ten largest files in your home directory.",
+          "selfCheck": "Explain what `grep -r 'TODO' . | wc -l` does, piece by piece.",
+          "resources": [
+            { "kind": "ARTICLE", "title": "The Missing Semester of Your CS Education", "url": "https://missing.csail.mit.edu/", "source": "MIT", "isFree": true },
+            { "kind": "ARTICLE", "title": "Linux Journey", "url": "https://linuxjourney.com/", "source": "linuxjourney.com", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "frontend-foundations",
+      "title": "Frontend Foundations",
+      "summary": "HTML, CSS, JavaScript: the three primitives the web is actually made of.",
+      "topics": [
+        {
+          "slug": "html-css-essentials",
+          "title": "HTML and CSS Essentials",
+          "summary": "Semantic structure, the box model, flexbox, grid, and how layouts actually work.",
+          "estimatedHours": 10,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["how-the-web-works"],
+          "contentMd": "HTML describes meaning. CSS describes appearance. Most production bugs in this layer come from skipping fundamentals: people reach for divs everywhere, fight the cascade, and end up with brittle layouts.\n\nFocus on semantic tags (header, main, article, nav, button), the box model, the difference between block and inline, flexbox for one-dimensional layouts, grid for two-dimensional, and modern color/spacing systems. Resist the urge to install a UI library before you can build a card from scratch.",
+          "miniProject": "Build a responsive landing page with header, hero, feature grid, and footer. Use flexbox for the header and grid for the features. No frameworks.",
+          "selfCheck": "Explain when you would reach for flexbox versus grid.",
+          "resources": [
+            { "kind": "DOCS", "title": "MDN HTML Basics", "url": "https://developer.mozilla.org/en-US/docs/Learn/HTML", "source": "MDN", "isFree": true },
+            { "kind": "DOCS", "title": "MDN CSS Basics", "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS", "source": "MDN", "isFree": true },
+            { "kind": "ARTICLE", "title": "A Complete Guide to Flexbox", "url": "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", "source": "CSS-Tricks", "isFree": true },
+            { "kind": "ARTICLE", "title": "A Complete Guide to Grid", "url": "https://css-tricks.com/snippets/css/complete-guide-grid/", "source": "CSS-Tricks", "isFree": true }
+          ]
+        },
+        {
+          "slug": "javascript-essentials",
+          "title": "JavaScript Essentials",
+          "summary": "Values, types, scope, closures, async, and the runtime model. Without these, frameworks make no sense.",
+          "estimatedHours": 16,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["html-css-essentials"],
+          "contentMd": "Frameworks come and go but the language stays. Build a strong base: primitive vs reference types, equality, scope and hoisting, closures, the event loop, promises, async/await, modules, and the most common array and object methods.\n\nWrite vanilla JavaScript before reaching for React. If you cannot build a small TODO list with the DOM API alone, the next layers will feel like magic in a bad way.",
+          "miniProject": "Build a TODO list in vanilla JavaScript with localStorage persistence. No frameworks.",
+          "selfCheck": "What is a closure and when have you accidentally created one?",
+          "resources": [
+            { "kind": "BOOK", "title": "JavaScript.info", "url": "https://javascript.info/", "source": "javascript.info", "isFree": true },
+            { "kind": "BOOK", "title": "Eloquent JavaScript (free online)", "url": "https://eloquentjavascript.net/", "source": "Marijn Haverbeke", "isFree": true },
+            { "kind": "VIDEO", "title": "What the heck is the event loop anyway?", "url": "https://www.youtube.com/watch?v=8aGhZQkoFbQ", "source": "JSConf", "isFree": true }
+          ]
+        },
+        {
+          "slug": "accessibility-and-responsive",
+          "title": "Accessibility and Responsive Design",
+          "summary": "Build for every viewport and every user. This is non-optional, not an extra credit.",
+          "estimatedHours": 6,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["html-css-essentials"],
+          "contentMd": "Accessible HTML is mostly free if you write semantic markup. Responsive layouts are mostly free if you start mobile-first.\n\nLearn ARIA roles for the cases semantic HTML cannot cover, focus management, color contrast, keyboard navigation, and the basics of how screen readers consume your DOM. Test your pages with the keyboard alone before shipping.",
+          "miniProject": "Audit your previous landing page with Lighthouse and fix every accessibility violation it reports.",
+          "selfCheck": "Why is using a div with onClick worse than a button element?",
+          "resources": [
+            { "kind": "DOCS", "title": "MDN Accessibility", "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility", "source": "MDN", "isFree": true },
+            { "kind": "ARTICLE", "title": "Inclusive Components", "url": "https://inclusive-components.design/", "source": "Heydon Pickering", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "modern-frontend",
+      "title": "Modern Frontend (React)",
+      "summary": "Components, state, data fetching, and the patterns that scale beyond a hello world.",
+      "topics": [
+        {
+          "slug": "react-fundamentals",
+          "title": "React Fundamentals",
+          "summary": "Components, props, state, effects, and the rendering model.",
+          "estimatedHours": 14,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["javascript-essentials"],
+          "contentMd": "React is a library for building UIs out of components. The mental shift from DOM-imperative thinking to declarative rendering is the part most learners skip too fast.\n\nFocus: JSX, props vs state, controlled forms, lifting state up, the dependency array of useEffect, conditional rendering, and lists with stable keys. Write components that you can read in under thirty seconds.",
+          "miniProject": "Rebuild your TODO list as a React app with a custom useTodos hook.",
+          "selfCheck": "When does a component re-render?",
+          "resources": [
+            { "kind": "DOCS", "title": "react.dev (the official tutorial)", "url": "https://react.dev/learn", "source": "react.dev", "isFree": true },
+            { "kind": "ARTICLE", "title": "A Visual Guide to React Mental Models", "url": "https://obedparla.com/code/a-visual-guide-to-react-mental-models/", "source": "obedparla.com", "isFree": true }
+          ]
+        },
+        {
+          "slug": "state-and-data-fetching",
+          "title": "State Management and Data Fetching",
+          "summary": "Server state, client state, caching, and avoiding the useEffect data-fetching trap.",
+          "estimatedHours": 8,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["react-fundamentals"],
+          "contentMd": "Most state in a real app comes from a server. Treat it differently from UI state.\n\nLearn React Query (or TanStack Query) for server state, and a small store like Zustand for genuinely shared client state. Understand cache keys, invalidation, optimistic updates, and why fetching in useEffect is almost always the wrong default.",
+          "miniProject": "Replace fetch-in-useEffect calls in a small app with React Query and add proper loading and error states.",
+          "selfCheck": "Why is server state usually best kept out of useState?",
+          "resources": [
+            { "kind": "DOCS", "title": "TanStack Query", "url": "https://tanstack.com/query/latest", "source": "TanStack", "isFree": true },
+            { "kind": "ARTICLE", "title": "Practical React Query", "url": "https://tkdodo.eu/blog/practical-react-query", "source": "tkdodo.eu", "isFree": true }
+          ]
+        },
+        {
+          "slug": "frontend-testing",
+          "title": "Frontend Testing",
+          "summary": "Unit tests with Vitest and component tests with Testing Library. Test behavior, not implementation.",
+          "estimatedHours": 6,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["react-fundamentals"],
+          "contentMd": "Tests that lock down implementation details rot fast. Tests that lock down user-visible behavior pay rent for years.\n\nLearn the basics of Vitest, Testing Library queries (getByRole, getByLabelText), userEvent for interactions, and how to mock network calls without coupling to internals.",
+          "miniProject": "Write five tests for your TODO app: add a todo, complete a todo, delete a todo, persist across reload, and accessibility (every action reachable by keyboard).",
+          "selfCheck": "What is the difference between getByRole and getByTestId, and which should you reach for first?",
+          "resources": [
+            { "kind": "DOCS", "title": "Testing Library Docs", "url": "https://testing-library.com/docs/", "source": "testing-library.com", "isFree": true },
+            { "kind": "ARTICLE", "title": "Common Mistakes with Testing Library", "url": "https://kentcdodds.com/blog/common-mistakes-with-react-testing-library", "source": "Kent C. Dodds", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "backend-foundations",
+      "title": "Backend Foundations (Node.js + Express)",
+      "summary": "Build HTTP APIs, handle errors, and validate every byte that crosses your boundary.",
+      "topics": [
+        {
+          "slug": "nodejs-and-modules",
+          "title": "Node.js and Modules",
+          "summary": "How Node runs JavaScript outside the browser, ESM vs CJS, and the standard library.",
+          "estimatedHours": 6,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["javascript-essentials"],
+          "contentMd": "Node.js gives you JavaScript on the server with a file system, network, child processes, and streams. The two big learning points are the module system (ESM is the modern default) and asynchronous I/O (callbacks, promises, streams).\n\nLearn how to read package.json, what the engines field means, and how to manage versions with nvm or volta.",
+          "miniProject": "Write a small Node script that reads a CSV file, transforms a column, and writes the result to a new file using streams.",
+          "selfCheck": "What is the difference between ESM and CommonJS, and which does a modern project default to?",
+          "resources": [
+            { "kind": "DOCS", "title": "Node.js Learn", "url": "https://nodejs.org/en/learn/getting-started/introduction-to-nodejs", "source": "nodejs.org", "isFree": true },
+            { "kind": "ARTICLE", "title": "ESM vs CommonJS", "url": "https://nodejs.org/api/esm.html", "source": "nodejs.org", "isFree": true }
+          ]
+        },
+        {
+          "slug": "express-and-rest-apis",
+          "title": "Express and REST APIs",
+          "summary": "Routing, middleware, request lifecycle, and clean controller patterns.",
+          "estimatedHours": 8,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["nodejs-and-modules"],
+          "contentMd": "Express is a small framework with a big middleware ecosystem. Learn the request lifecycle: parsing, auth, validation, controller, response, error handling.\n\nA good module pattern saves you for years: routes wire URL to controller, controllers parse request and call services, services hold business logic and talk to the database. Keep these layers honest.",
+          "miniProject": "Build a small JSON API with five endpoints (GET list, GET one, POST, PATCH, DELETE) on an in-memory store.",
+          "selfCheck": "Why should the controller layer not contain SQL queries?",
+          "resources": [
+            { "kind": "DOCS", "title": "Express Guide", "url": "https://expressjs.com/en/guide/routing.html", "source": "expressjs.com", "isFree": true },
+            { "kind": "ARTICLE", "title": "Best Practices for Node.js Apps", "url": "https://github.com/goldbergyoni/nodebestpractices", "source": "GitHub", "isFree": true }
+          ]
+        },
+        {
+          "slug": "validation-and-errors",
+          "title": "Validation and Error Handling",
+          "summary": "Validate at the boundary, fail clearly, and never trust the client.",
+          "estimatedHours": 4,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["express-and-rest-apis"],
+          "contentMd": "Most production bugs come from data shaped differently than you expected. Validate at the edge with a schema library like Zod and never let unvalidated data leak inward.\n\nDesign error responses with consistent structure: a status code and a message clients can show users. Log the underlying cause server-side. Avoid leaking stack traces in production.",
+          "miniProject": "Add Zod validation and a centralized error handler to your API.",
+          "selfCheck": "Where in the request lifecycle should validation run, and why?",
+          "resources": [
+            { "kind": "DOCS", "title": "Zod", "url": "https://zod.dev/", "source": "zod.dev", "isFree": true },
+            { "kind": "ARTICLE", "title": "Error Handling in Node.js", "url": "https://www.joyent.com/node-js/production/design/errors", "source": "Joyent", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "databases",
+      "title": "Databases (Postgres + Prisma)",
+      "summary": "Relational thinking, indexes, and a typed ORM that keeps your migrations honest.",
+      "topics": [
+        {
+          "slug": "postgres-and-sql",
+          "title": "Postgres and SQL",
+          "summary": "Tables, joins, transactions, and the queries you will write a thousand times.",
+          "estimatedHours": 10,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["express-and-rest-apis"],
+          "contentMd": "Relational databases are still the right default for most products. Learn SQL well, even if you mostly use an ORM.\n\nFocus: SELECT/INSERT/UPDATE/DELETE, JOIN types, GROUP BY and aggregates, transactions, and the difference between a primary key, a foreign key, and an index.",
+          "miniProject": "Design and seed a small blog schema (users, posts, comments) and write five queries against it.",
+          "selfCheck": "What is the difference between an INNER and a LEFT JOIN?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "SQLBolt (interactive)", "url": "https://sqlbolt.com/", "source": "sqlbolt.com", "isFree": true },
+            { "kind": "DOCS", "title": "PostgreSQL Tutorial", "url": "https://www.postgresqltutorial.com/", "source": "postgresqltutorial.com", "isFree": true }
+          ]
+        },
+        {
+          "slug": "prisma-orm",
+          "title": "Prisma ORM",
+          "summary": "Schema-first modeling, migrations, and a typed query API.",
+          "estimatedHours": 6,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["postgres-and-sql"],
+          "contentMd": "Prisma turns a schema file into a typed client. Migrations are version-controlled and reproducible. Learn the relations syntax, transactions, and how to debug a slow query.\n\nThe trap with any ORM is the N+1 query. Always check what SQL it actually runs in your hot paths.",
+          "miniProject": "Port your blog schema to Prisma, create a migration, and rewrite your queries with the Prisma client.",
+          "selfCheck": "What is an N+1 query, and how do you spot one with Prisma?",
+          "resources": [
+            { "kind": "DOCS", "title": "Prisma Docs", "url": "https://www.prisma.io/docs", "source": "prisma.io", "isFree": true },
+            { "kind": "ARTICLE", "title": "Avoiding N+1 with Prisma", "url": "https://www.prisma.io/dataguide/types/relational/what-are-database-indexes", "source": "Prisma Data Guide", "isFree": true }
+          ]
+        },
+        {
+          "slug": "schema-design",
+          "title": "Schema Design and Indexing",
+          "summary": "Make queries fast and data correct. Index the columns you actually filter and join on.",
+          "estimatedHours": 5,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["postgres-and-sql"],
+          "contentMd": "Get the schema right and most other problems shrink. Get it wrong and no amount of caching will save you.\n\nNormalize until queries get awkward, then denormalize on purpose. Indexes are not free: they speed reads and slow writes. Use EXPLAIN ANALYZE to read what the database is actually doing.",
+          "miniProject": "Add indexes to your blog schema where you have foreign keys and any columns you filter by.",
+          "selfCheck": "When would you denormalize on purpose?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Use the Index, Luke!", "url": "https://use-the-index-luke.com/", "source": "use-the-index-luke.com", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "authentication-and-security",
+      "title": "Authentication and Security",
+      "summary": "Sign-in flows, sessions, and the OWASP issues that bite every junior dev.",
+      "topics": [
+        {
+          "slug": "auth-with-jwt",
+          "title": "Authentication with JWT",
+          "summary": "Tokens, signing, expiry, and the difference between auth and authz.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["express-and-rest-apis"],
+          "contentMd": "JWTs encode claims and a signature. They are great for stateless APIs but easy to misuse. Treat them as opaque to the client, sign with a strong secret, set short expirations, and rotate when you can.\n\nUnderstand authentication (who are you) versus authorization (what can you do), and where each check belongs.",
+          "miniProject": "Add register, login, and a protected /me endpoint to your API with hashed passwords and JWT auth.",
+          "selfCheck": "Where should you store a JWT in the browser, and what are the trade-offs?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "JWT Introduction", "url": "https://jwt.io/introduction", "source": "jwt.io", "isFree": true },
+            { "kind": "ARTICLE", "title": "OWASP Auth Cheat Sheet", "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html", "source": "OWASP", "isFree": true }
+          ]
+        },
+        {
+          "slug": "password-and-sessions",
+          "title": "Passwords, Sessions, and OAuth",
+          "summary": "Hash with bcrypt, design sane sessions, and learn the social-login dance.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["auth-with-jwt"],
+          "contentMd": "Never store passwords in plain text. Use bcrypt or argon2. Sessions can be cookie-based with httpOnly and Secure flags, or token-based with refresh rotation. Each has trade-offs.\n\nFor OAuth, focus on the Authorization Code flow with PKCE for public clients. Read the Google or GitHub developer docs end to end before integrating.",
+          "miniProject": "Add Sign in with Google to your app using OAuth.",
+          "selfCheck": "Why is bcrypt slow, and why is that a feature?",
+          "resources": [
+            { "kind": "DOCS", "title": "Google Identity Services", "url": "https://developers.google.com/identity", "source": "Google", "isFree": true },
+            { "kind": "ARTICLE", "title": "Password Storage Cheat Sheet", "url": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html", "source": "OWASP", "isFree": true }
+          ]
+        },
+        {
+          "slug": "common-vulnerabilities",
+          "title": "Common Vulnerabilities (OWASP)",
+          "summary": "XSS, SQL injection, CSRF, and the rest of the foot-gun starter kit.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["auth-with-jwt"],
+          "contentMd": "Most security holes follow a pattern: untrusted input ends up where it should not. Learn the OWASP Top 10 and the defenses for each.\n\nThe good news is that modern frameworks and ORMs prevent most issues if you stay on the well-paved path: parameterized queries, output escaping, CSRF tokens (or SameSite cookies), and a strict Content Security Policy.",
+          "miniProject": "Run your app against an OWASP ZAP automated scan and fix anything reported.",
+          "selfCheck": "Why does Prisma protect you from SQL injection out of the box?",
+          "resources": [
+            { "kind": "DOCS", "title": "OWASP Top 10", "url": "https://owasp.org/www-project-top-ten/", "source": "OWASP", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "apis-integrations",
+      "title": "APIs and Integrations",
+      "summary": "Design clean REST endpoints, handle uploads, and integrate third-party services.",
+      "topics": [
+        {
+          "slug": "rest-design",
+          "title": "REST API Design",
+          "summary": "Resource modeling, status codes, pagination, and versioning that doesn't haunt you later.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["express-and-rest-apis"],
+          "contentMd": "REST is more about discipline than rules. Pick consistent URL shapes, use the right HTTP methods, return useful status codes, and design pagination from day one. If you change a published API, version it.\n\nAlso learn what REST is bad at (real-time, complex graphs) and when you might reach for GraphQL or WebSockets instead.",
+          "miniProject": "Document your blog API with a one-pager: routes, request/response shapes, and pagination strategy.",
+          "selfCheck": "What status code would you return for a successful POST that creates a resource, and what header would you include?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Microsoft REST API Guidelines", "url": "https://github.com/microsoft/api-guidelines/blob/vNext/azure/Guidelines.md", "source": "Microsoft", "isFree": true }
+          ]
+        },
+        {
+          "slug": "file-uploads-and-storage",
+          "title": "File Uploads and Object Storage",
+          "summary": "Multipart uploads, S3, presigned URLs, and validating what users send you.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["rest-design"],
+          "contentMd": "Never let users upload arbitrary files into your app server's disk. Send them to object storage (S3 or equivalent) and serve through a CDN.\n\nValidate file size and content type using magic bytes (not just the extension). Strip metadata where appropriate. For large files prefer presigned URLs so uploads bypass your server.",
+          "miniProject": "Add image upload to your blog using S3 with presigned URLs and a 5 MB limit.",
+          "selfCheck": "Why is checking only the file extension not enough?",
+          "resources": [
+            { "kind": "DOCS", "title": "AWS S3 Presigned URLs", "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html", "source": "AWS", "isFree": true }
+          ]
+        },
+        {
+          "slug": "third-party-integrations",
+          "title": "Third-Party Integrations and Webhooks",
+          "summary": "Calling APIs, retrying safely, and verifying webhook signatures.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["rest-design"],
+          "contentMd": "Real apps glue services together: payments, email, search, analytics. The two skills here are calling APIs reliably (timeouts, retries with backoff, idempotency keys) and accepting webhooks (signature verification, replay protection, idempotent handlers).\n\nNever process a webhook synchronously inside the request that you have to acknowledge.",
+          "miniProject": "Wire transactional email to your app with Resend or a similar provider.",
+          "selfCheck": "Why must webhook handlers be idempotent?",
+          "resources": [
+            { "kind": "DOCS", "title": "Stripe Webhooks Best Practices", "url": "https://stripe.com/docs/webhooks/best-practices", "source": "Stripe", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "devops-deployment",
+      "title": "DevOps and Deployment",
+      "summary": "Take an app from your laptop to the open internet, with a pipeline behind it.",
+      "topics": [
+        {
+          "slug": "env-and-config",
+          "title": "Environments and Configuration",
+          "summary": "Twelve-factor config, secrets, and never committing your .env file.",
+          "estimatedHours": 3,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["express-and-rest-apis"],
+          "contentMd": "Treat config (URLs, keys, flags) as data, not code. Read everything from environment variables. Use a secrets manager in production. Never commit .env files. Have a .env.example checked in so a teammate can boot the app in five minutes.",
+          "miniProject": "Refactor your app to read all config from process.env, with a Zod-validated config module.",
+          "selfCheck": "Why should config be validated at process startup?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "The Twelve-Factor App", "url": "https://12factor.net/", "source": "12factor.net", "isFree": true }
+          ]
+        },
+        {
+          "slug": "docker-basics",
+          "title": "Docker Basics",
+          "summary": "Containers, images, and reproducible local environments.",
+          "estimatedHours": 6,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["env-and-config"],
+          "contentMd": "Docker packages your app and its dependencies into a portable image. Learn Dockerfile basics, multi-stage builds, layer caching, and docker-compose for local stacks (app plus database plus redis, etc.).\n\nA tight, well-structured Dockerfile cuts deploy times and image size dramatically.",
+          "miniProject": "Write a multi-stage Dockerfile for your app and a docker-compose.yml that runs it with Postgres.",
+          "selfCheck": "What is layer caching, and why does the order of Dockerfile commands matter?",
+          "resources": [
+            { "kind": "DOCS", "title": "Docker Docs", "url": "https://docs.docker.com/get-started/", "source": "docker.com", "isFree": true }
+          ]
+        },
+        {
+          "slug": "ci-cd-and-hosting",
+          "title": "CI/CD and Hosting",
+          "summary": "Push to main, ship to prod, with tests gating the deploy.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["docker-basics"],
+          "contentMd": "Continuous integration runs your tests on every push. Continuous deployment ships passing builds automatically. GitHub Actions is a great place to start.\n\nFor hosting, beginner-friendly options for Node apps include Render, Railway, Fly.io, and Vercel for the frontend. Pick one, deploy, and iterate.",
+          "miniProject": "Set up a GitHub Actions workflow that runs your tests on every PR, then deploys main to a hosting provider.",
+          "selfCheck": "Why should CI run on a fresh clone every time?",
+          "resources": [
+            { "kind": "DOCS", "title": "GitHub Actions Quickstart", "url": "https://docs.github.com/en/actions/quickstart", "source": "GitHub", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "production-craft",
+      "title": "Production Craft",
+      "summary": "What separates a working app from one you can confidently run for real users.",
+      "topics": [
+        {
+          "slug": "observability",
+          "title": "Logging, Metrics, and Tracing",
+          "summary": "When something breaks at 2 AM, you want logs and metrics in place already.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["ci-cd-and-hosting"],
+          "contentMd": "Three pillars: structured logs (JSON), metrics (counters and histograms), and traces (one request across services). You do not need a fancy stack to start: a log aggregator and a few key metrics will get you far.\n\nDecide what your golden signals are: latency, errors, saturation, traffic. Alert on those, not on everything.",
+          "miniProject": "Add structured request logging to your API and dashboard error rate and p95 latency.",
+          "selfCheck": "What is a golden signal and which would you alert on first?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Google SRE Book: Monitoring", "url": "https://sre.google/sre-book/monitoring-distributed-systems/", "source": "Google", "isFree": true }
+          ]
+        },
+        {
+          "slug": "performance",
+          "title": "Performance and Caching",
+          "summary": "Measure first, optimize second. Know where to cache and where to leave alone.",
+          "estimatedHours": 5,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["observability"],
+          "contentMd": "Performance work without measurement is theater. Use Lighthouse on the frontend and a profiler or APM on the backend. Common wins: code-split the frontend, lazy-load images, paginate properly, add database indexes, cache idempotent reads.\n\nCaching is one of the two hard problems in computer science. Start with HTTP caching headers and a short TTL.",
+          "miniProject": "Run Lighthouse on your app and ship two changes that measurably improve a real metric.",
+          "selfCheck": "Why is the slowest request often a database query and not the framework?",
+          "resources": [
+            { "kind": "DOCS", "title": "web.dev Performance", "url": "https://web.dev/learn/performance/", "source": "web.dev", "isFree": true }
+          ]
+        },
+        {
+          "slug": "security-hardening",
+          "title": "Security Hardening",
+          "summary": "Headers, rate limits, dependency updates, and least privilege everywhere.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["common-vulnerabilities"],
+          "contentMd": "Layer cheap defenses: helmet for headers, a rate limiter, dependency scanning in CI, and least-privilege database users. Audit secrets in your repo with a tool like gitleaks. Patch promptly when CVEs land in your dependencies.",
+          "miniProject": "Add helmet, a rate limiter, and a Dependabot config to your repo.",
+          "selfCheck": "Why does the principle of least privilege apply to database users, not just humans?",
+          "resources": [
+            { "kind": "DOCS", "title": "Helmet for Express", "url": "https://helmetjs.github.io/", "source": "helmetjs.github.io", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "capstone-and-prep",
+      "title": "Capstone and Job Prep",
+      "summary": "Pull it all together, then position the result for hiring managers.",
+      "topics": [
+        {
+          "slug": "build-a-saas-capstone",
+          "title": "Build a SaaS Capstone",
+          "summary": "Ship a real product end to end. The portfolio piece that gets interviews.",
+          "estimatedHours": 40,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["security-hardening", "ci-cd-and-hosting"],
+          "contentMd": "Pick a small but real problem you understand: a quiz app for your friends, a personal finance tracker, a job-hunting helper. Build it end to end with auth, a database, payments (even a fake button), and a deployment.\n\nWrite a detailed README explaining what it does, why it exists, and a screenshot of the running app. This README is what recruiters will read.",
+          "miniProject": "Ship v1 of your capstone to a public URL with a polished README in the repo.",
+          "selfCheck": "Can a stranger sign up and finish the core flow without you helping?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "How to write a great README", "url": "https://github.com/matiassingers/awesome-readme", "source": "GitHub", "isFree": true }
+          ]
+        },
+        {
+          "slug": "system-design-basics",
+          "title": "System Design Basics",
+          "summary": "Read enough system design to hold a conversation about scaling.",
+          "estimatedHours": 8,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["build-a-saas-capstone"],
+          "contentMd": "You will not design Twitter on day one but interviewers will ask. Learn the vocabulary: load balancers, caching layers, queues, sharding, replication, CAP theorem.\n\nFor most products, the boring answer is correct: a Postgres primary, a read replica or two, a Redis cache, and a queue for background jobs. Knowing when you do not need more is its own skill.",
+          "miniProject": "Sketch the system diagram for your capstone if it had a million users. What changes?",
+          "selfCheck": "Why is sharding usually a last resort, not a first instinct?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "System Design Primer", "url": "https://github.com/donnemartin/system-design-primer", "source": "GitHub", "isFree": true }
+          ]
+        },
+        {
+          "slug": "interview-and-portfolio",
+          "title": "Interview Prep and Portfolio",
+          "summary": "Resume, GitHub, behavioral stories, and the rituals of the technical interview.",
+          "estimatedHours": 8,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["build-a-saas-capstone"],
+          "contentMd": "Treat job hunting like a project. Tighten your resume to one page focused on impact. Pin your best three repos on GitHub. Prepare a small library of behavioral stories using the STAR format. Practice talking through code under mild pressure.\n\nApply more than you think you need to. Track every application and every lesson learned.",
+          "miniProject": "Ship a personal site that links to your capstone, your GitHub, and your resume.",
+          "selfCheck": "Can you tell the story of your capstone in two minutes, ending with what you would build next?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "STAR method for interviews", "url": "https://www.themuse.com/advice/star-interview-method", "source": "The Muse", "isFree": true },
+            { "kind": "ARTICLE", "title": "How to Pass a Programming Interview", "url": "https://triplebyte.com/blog/how-to-pass-a-programming-interview", "source": "Triplebyte", "isFree": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

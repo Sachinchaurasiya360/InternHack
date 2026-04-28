@@ -128,11 +128,11 @@ function buildKruskalFrames(ids: string[], edges: { from: string; to: string; w:
       nodeStates[e.from] = "done";
       nodeStates[e.to] = "done";
       cost += e.w;
-      f.push(clone({ line: 6, message: `Different components — union. Add to MST. Running cost = ${cost}.`, vars: { i: i + 1, cost } }));
+      f.push(clone({ line: 6, message: `Different components, union. Add to MST. Running cost = ${cost}.`, vars: { i: i + 1, cost } }));
     } else {
       sorted[i].status = "rejected";
       rejectedEdges.add(k);
-      f.push(clone({ line: 5, message: `Same component — would create cycle. Reject.`, vars: { i: i + 1 } }));
+      f.push(clone({ line: 5, message: `Same component, would create cycle. Reject.`, vars: { i: i + 1 } }));
     }
     consideringEdge = null;
   }
@@ -207,7 +207,7 @@ function buildPrimFrames(ids: string[], edges: { from: string; to: string; w: nu
       if (inU !== inV) { chosenIdx = i; break; }
     }
     if (chosenIdx === -1) {
-      f.push(clone({ line: 3, message: "No cross-cut edge remaining — graph disconnected." }));
+      f.push(clone({ line: 3, message: "No cross-cut edge remaining, graph disconnected." }));
       break;
     }
     const chosen = cands.splice(chosenIdx, 1)[0];
@@ -367,7 +367,7 @@ function KruskalViz({ ids, edges, inputStr, setInputStr }: {
 
   return (
     <AlgoCanvas
-      title={`Kruskal's — Running cost: ${frame?.cost ?? 0}`}
+      title={`Kruskal's, Running cost: ${frame?.cost ?? 0}`}
       player={player}
       input={
         <InputEditor
@@ -420,7 +420,7 @@ function PrimViz({ ids, edges, inputStr, setInputStr, start, setStart }: {
 
   return (
     <AlgoCanvas
-      title={`Prim's from ${start} — Running cost: ${frame?.cost ?? 0}`}
+      title={`Prim's from ${start}, Running cost: ${frame?.cost ?? 0}`}
       player={player}
       input={
         <div className="flex gap-3 flex-wrap items-end">
@@ -502,7 +502,7 @@ function VisualizeTab() {
 
 function LearnTab() {
   const sections = [
-    { title: "What is an MST?", body: "A minimum spanning tree of a connected, undirected, weighted graph is a subset of edges connecting all vertices with minimum total weight — and no cycles. It has V − 1 edges." },
+    { title: "What is an MST?", body: "A minimum spanning tree of a connected, undirected, weighted graph is a subset of edges connecting all vertices with minimum total weight, and no cycles. It has V − 1 edges." },
     { title: "Kruskal's idea", body: "Greedy by edge: sort all edges ascending, take each if it doesn't create a cycle (check with Union-Find). Works great for sparse graphs. O(E log E)." },
     { title: "Prim's idea", body: "Greedy by vertex: grow a tree starting from any vertex, always adding the cheapest edge that crosses from tree to outside. Works great for dense graphs. O(E log V) with heap." },
     { title: "Cut property", body: "For any cut (partition of vertices), the minimum-weight edge crossing it belongs to some MST. Both Kruskal and Prim are applications of this single theorem." },
@@ -539,11 +539,11 @@ function TryTab() {
   return (
     <div className="flex flex-col gap-3">
       <Callout>
-        Run both Kruskal and Prim on the same preset — they may pick different edges but the total cost is identical.
+        Run both Kruskal and Prim on the same preset, they may pick different edges but the total cost is identical.
       </Callout>
       {[
         "On the 'Small' preset, what is the MST cost? (Expected: 10)",
-        "Run Prim from C — is the set of MST edges the same as from A? (Expected: cost same, edges may differ only if multiple MSTs exist)",
+        "Run Prim from C, is the set of MST edges the same as from A? (Expected: cost same, edges may differ only if multiple MSTs exist)",
         "If all edge weights are distinct, is the MST unique? (Expected: Yes)",
       ].map((q, i) => (
         <Card key={i}>
@@ -564,10 +564,10 @@ function InsightTab() {
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <SubHeading>Kruskal vs Prim — which and when?</SubHeading>
+        <SubHeading>Kruskal vs Prim, which and when?</SubHeading>
         <ul className="list-disc pl-5 space-y-1.5 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          <li>Sparse graph (E ≈ V): Kruskal with Union-Find is simpler and fast — O(E log E).</li>
-          <li>Dense graph (E ≈ V²): Prim with adjacency matrix is O(V²) — often better.</li>
+          <li>Sparse graph (E ≈ V): Kruskal with Union-Find is simpler and fast, O(E log E).</li>
+          <li>Dense graph (E ≈ V²): Prim with adjacency matrix is O(V²), often better.</li>
           <li>Both are optimal. Pick based on code simplicity.</li>
         </ul>
       </Card>
@@ -638,7 +638,7 @@ export default function L4_MST({ onQuizComplete }: Props) {
       options: ["Not guaranteed to exist", "Unique", "Empty", "The same as the graph"],
       correctIndex: 1,
       explanation:
-        "With distinct weights, every cut has a unique minimum edge — and the MST is determined uniquely by the cut property.",
+        "With distinct weights, every cut has a unique minimum edge, and the MST is determined uniquely by the cut property.",
     },
   ];
 
@@ -649,7 +649,7 @@ export default function L4_MST({ onQuizComplete }: Props) {
       lessonNumber={7}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — networking, clustering, approximation algorithms."
+      placementRelevance="High, networking, clustering, approximation algorithms."
       nextLessonHint="Bubble & Selection Sort"
       onQuizComplete={onQuizComplete}
     />

@@ -97,11 +97,11 @@ function buildDeque(ops: DequeOp[]): Frame[] {
   f.push({ line: 0, vars: { size: 0 }, message: "Empty deque", deque: [] });
   for (const op of ops) {
     if (op.kind === "PF") {
-      f.push({ line: 1, vars: { x: op.value, size: dq.length }, message: `pushFront(${op.value}) — insert at left`, deque: [...dq] });
+      f.push({ line: 1, vars: { x: op.value, size: dq.length }, message: `pushFront(${op.value}), insert at left`, deque: [...dq] });
       dq.unshift({ value: op.value! });
       f.push({ line: 1, vars: { size: dq.length }, highlightKey: "size", message: `${op.value} now at front`, deque: dq.map((d, i) => ({ ...d, flash: i === 0 ? "enter" as const : undefined })) });
     } else if (op.kind === "PB") {
-      f.push({ line: 2, vars: { x: op.value, size: dq.length }, message: `pushBack(${op.value}) — insert at right`, deque: [...dq] });
+      f.push({ line: 2, vars: { x: op.value, size: dq.length }, message: `pushBack(${op.value}), insert at right`, deque: [...dq] });
       dq.push({ value: op.value! });
       f.push({ line: 2, vars: { size: dq.length }, highlightKey: "size", message: `${op.value} now at rear`, deque: dq.map((d, i) => ({ ...d, flash: i === dq.length - 1 ? "enter" as const : undefined })) });
     } else if (op.kind === "RF") {
@@ -109,7 +109,7 @@ function buildDeque(ops: DequeOp[]): Frame[] {
         f.push({ line: 3, vars: { error: "empty" }, message: "popFront() on empty deque", deque: [] });
         continue;
       }
-      f.push({ line: 3, vars: { front: dq[0].value }, message: `popFront() — remove ${dq[0].value}`, deque: [...dq] });
+      f.push({ line: 3, vars: { front: dq[0].value }, message: `popFront(), remove ${dq[0].value}`, deque: [...dq] });
       const v = dq.shift()!;
       f.push({ line: 3, vars: { removed: v.value, size: dq.length }, highlightKey: "removed", message: `Removed ${v.value} from front`, deque: [...dq] });
     } else if (op.kind === "RB") {
@@ -117,7 +117,7 @@ function buildDeque(ops: DequeOp[]): Frame[] {
         f.push({ line: 4, vars: { error: "empty" }, message: "popBack() on empty deque", deque: [] });
         continue;
       }
-      f.push({ line: 4, vars: { back: dq[dq.length - 1].value }, message: `popBack() — remove ${dq[dq.length - 1].value}`, deque: [...dq] });
+      f.push({ line: 4, vars: { back: dq[dq.length - 1].value }, message: `popBack(), remove ${dq[dq.length - 1].value}`, deque: [...dq] });
       const v = dq.pop()!;
       f.push({ line: 4, vars: { removed: v.value, size: dq.length }, highlightKey: "removed", message: `Removed ${v.value} from rear`, deque: [...dq] });
     }
@@ -143,18 +143,18 @@ function buildMonotonic(arr: number[], k: number): Frame[] {
     f.push({ line: 3, vars: { i, value: arr[i] }, message: `i = ${i}, consider arr[${i}] = ${arr[i]}`, deque: dqIdx.map((idx) => ({ value: arr[idx], idx })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
 
     if (dqIdx.length > 0 && dqIdx[0] <= i - k) {
-      f.push({ line: 4, vars: { "dq.front": dqIdx[0], threshold: i - k }, message: `Front index ${dqIdx[0]} is out of window — drop it`, deque: dqIdx.map((idx, j) => ({ value: arr[idx], idx, flash: j === 0 ? "pop-violate" as const : undefined })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
+      f.push({ line: 4, vars: { "dq.front": dqIdx[0], threshold: i - k }, message: `Front index ${dqIdx[0]} is out of window, drop it`, deque: dqIdx.map((idx, j) => ({ value: arr[idx], idx, flash: j === 0 ? "pop-violate" as const : undefined })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
       dqIdx.shift();
       f.push({ line: 5, vars: { "dq.size": dqIdx.length }, message: "Front removed", deque: dqIdx.map((idx) => ({ value: arr[idx], idx })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
     }
     while (dqIdx.length > 0 && arr[dqIdx[dqIdx.length - 1]] < arr[i]) {
       const tail = dqIdx[dqIdx.length - 1];
-      f.push({ line: 6, vars: { "dq.back": tail, "arr[back]": arr[tail], current: arr[i] }, message: `arr[${tail}]=${arr[tail]} < arr[${i}]=${arr[i]} — violates invariant, pop`, deque: dqIdx.map((idx, j) => ({ value: arr[idx], idx, flash: j === dqIdx.length - 1 ? "pop-violate" as const : undefined })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
+      f.push({ line: 6, vars: { "dq.back": tail, "arr[back]": arr[tail], current: arr[i] }, message: `arr[${tail}]=${arr[tail]} < arr[${i}]=${arr[i]}, violates invariant, pop`, deque: dqIdx.map((idx, j) => ({ value: arr[idx], idx, flash: j === dqIdx.length - 1 ? "pop-violate" as const : undefined })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
       dqIdx.pop();
       f.push({ line: 7, vars: { "dq.size": dqIdx.length }, message: "Popped", deque: dqIdx.map((idx) => ({ value: arr[idx], idx })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
     }
     dqIdx.push(i);
-    f.push({ line: 8, vars: { pushed: i, "arr[i]": arr[i] }, highlightKey: "pushed", message: `pushBack(${i}) — new value ${arr[i]} joins deque`, deque: dqIdx.map((idx, j) => ({ value: arr[idx], idx, flash: j === dqIdx.length - 1 ? "enter" as const : undefined })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
+    f.push({ line: 8, vars: { pushed: i, "arr[i]": arr[i] }, highlightKey: "pushed", message: `pushBack(${i}), new value ${arr[i]} joins deque`, deque: dqIdx.map((idx, j) => ({ value: arr[idx], idx, flash: j === dqIdx.length - 1 ? "enter" as const : undefined })), array: arr, states: states_i, windowLo: lo, windowHi: hi, i, result: [...result] });
 
     if (i >= k - 1) {
       const maxVal = arr[dqIdx[0]];
@@ -163,7 +163,7 @@ function buildMonotonic(arr: number[], k: number): Frame[] {
       f.push({ line: 9, vars: { "window": `[${lo}..${hi}]`, max: maxVal }, highlightKey: "max", message: `Window [${lo}..${hi}]: max = arr[${dqIdx[0]}] = ${maxVal}`, deque: dqIdx.map((idx) => ({ value: arr[idx], idx })), array: arr, states: stsMax, windowLo: lo, windowHi: hi, i, maxAtStep: dqIdx[0], result: [...result] });
     }
   }
-  f.push({ line: 10, vars: { result: `[${result.join(", ")}]` }, message: `Done — ${result.length} window maxima`, deque: dqIdx.map((idx) => ({ value: arr[idx], idx })), array: arr, states: arr.map((_, j) => j <= n - k ? "done" : "window"), i: n - 1, result: [...result] });
+  f.push({ line: 10, vars: { result: `[${result.join(", ")}]` }, message: `Done, ${result.length} window maxima`, deque: dqIdx.map((idx) => ({ value: arr[idx], idx })), array: arr, states: arr.map((_, j) => j <= n - k ? "done" : "window"), i: n - 1, result: [...result] });
   return f;
 }
 
@@ -262,7 +262,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={mode === "deque" ? "Deque — Double-Ended Queue" : "Monotonic Deque — Sliding Window Max"}
+      title={mode === "deque" ? "Deque, Double-Ended Queue" : "Monotonic Deque, Sliding Window Max"}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -339,7 +339,7 @@ function VisualizeTab() {
         )}
         <div className="w-full">
           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 text-center mb-2">
-            Deque (front {"←"} {"→"} back){mode === "monotonic" ? " — indices of candidates" : ""}
+            Deque (front {"←"} {"→"} back){mode === "monotonic" ? ", indices of candidates" : ""}
           </div>
           <DequeRow items={frame?.deque ?? []} showIdx={mode === "monotonic"} />
         </div>
@@ -362,7 +362,7 @@ function LearnTab() {
   const cards = [
     { t: "Deque = stack + queue", b: "A double-ended queue supports four O(1) ops: pushFront, pushBack, popFront, popBack. Use only pushBack+popFront and you have a queue. Use only pushBack+popBack and you have a stack." },
     { t: "Monotonic deque", b: "A deque whose values are kept strictly increasing (or decreasing) from front to back. Whenever a new value violates the order, pop from the back until the order is restored." },
-    { t: "Sliding-window max in O(n)", b: "The front of a max-monotonic deque is always the max of the current window. Each element enters and leaves the deque once — total work is O(n), not O(nk)." },
+    { t: "Sliding-window max in O(n)", b: "The front of a max-monotonic deque is always the max of the current window. Each element enters and leaves the deque once, total work is O(n), not O(nk)." },
     { t: "Priority queue vs deque", b: "Both can find a max. But heap insert/remove is O(log n); monotonic deque is O(1) amortized when the access pattern is a sliding window. Pick the structure that matches the access pattern." },
   ];
   return (
@@ -397,7 +397,7 @@ function TryTab() {
   const probs = [
     { q: "For arr = [4,3,2,1] and k=2, the window maxima are?", a: "[4, 3, 2]" },
     { q: "For arr = [1,2,3,4] and k=2, the window maxima are?", a: "[2, 3, 4]" },
-    { q: "Each element is pushed at most ___ and popped at most ___ in the monotonic deque algorithm.", a: "1 time each — total work O(n)" },
+    { q: "Each element is pushed at most ___ and popped at most ___ in the monotonic deque algorithm.", a: "1 time each, total work O(n)" },
     { q: "Which four operations define a deque?", a: "pushFront, pushBack, popFront, popBack" },
   ];
   const [guess, setGuess] = useState<(string | null)[]>(probs.map(() => null));
@@ -442,7 +442,7 @@ function InsightTab() {
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <SubHeading>Amortized O(n) — the accounting argument</SubHeading>
+        <SubHeading>Amortized O(n), the accounting argument</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Although one iteration may pop many elements, each element is popped at most once across
           the entire run. Sum total pops ≤ n. Pushes are at most n. Total operations ≤ 2n → O(n).
@@ -497,7 +497,7 @@ export default function L2_DequeSpecial({ onQuizComplete }: Props) {
       question: "In the monotonic deque sliding-window-maximum algorithm, what does the deque store?",
       options: ["Values", "Indices in decreasing order of value", "Indices in increasing order of value", "Window boundaries"],
       correctIndex: 1,
-      explanation: "Indices are stored so we can detect when the front has slid out of the window. They are kept in decreasing order of the values they refer to — the front is always the max.",
+      explanation: "Indices are stored so we can detect when the front has slid out of the window. They are kept in decreasing order of the values they refer to, the front is always the max.",
     },
     {
       question: "Why is the sliding-window-max algorithm using a monotonic deque O(n), not O(nk)?",

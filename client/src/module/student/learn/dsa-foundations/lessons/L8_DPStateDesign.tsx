@@ -202,7 +202,7 @@ function TSPVisualize() {
 
   return (
     <AlgoCanvas
-      title="Bitmask DP — Travelling Salesman (Held-Karp)"
+      title="Bitmask DP, Travelling Salesman (Held-Karp)"
       player={player}
       input={
         <InputEditor
@@ -249,7 +249,7 @@ function TSPVisualize() {
               </div>
             </div>
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">dp[mask][lastCity] — finite entries</div>
+              <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">dp[mask][lastCity], finite entries</div>
               <div className="max-h-72 overflow-y-auto border border-stone-200 dark:border-white/10 rounded-md bg-stone-50 dark:bg-stone-950 p-2">
                 <table className="text-[11px] font-mono border-collapse w-full">
                   <thead>
@@ -348,11 +348,11 @@ function buildSpaceFrames(a: string, b: string): SpaceFrame[] {
     for (let j = 1; j <= m; j++) {
       if (a[i - 1] === b[j - 1]) {
         dp[i][j] = dp[i - 1][j - 1];
-        f.push({ line: 8, vars: { i, j, [`a[${i - 1}]`]: a[i - 1], [`b[${j - 1}]`]: b[j - 1], [`dp[i][j]`]: dp[i][j] ?? "-" }, flashKey: "dp[i][j]", message: `'${a[i - 1]}' == '${b[j - 1]}' — inherit diagonal: dp[${i}][${j}] = ${dp[i][j]}.`, rows: dp.map((r) => [...r]), highlighted: { i, j }, collapsed: false, prev: null, curr: null });
+        f.push({ line: 8, vars: { i, j, [`a[${i - 1}]`]: a[i - 1], [`b[${j - 1}]`]: b[j - 1], [`dp[i][j]`]: dp[i][j] ?? "-" }, flashKey: "dp[i][j]", message: `'${a[i - 1]}' == '${b[j - 1]}', inherit diagonal: dp[${i}][${j}] = ${dp[i][j]}.`, rows: dp.map((r) => [...r]), highlighted: { i, j }, collapsed: false, prev: null, curr: null });
       } else {
         const v = 1 + Math.min(dp[i - 1][j] ?? Infinity, dp[i][j - 1] ?? Infinity, dp[i - 1][j - 1] ?? Infinity);
         dp[i][j] = v;
-        f.push({ line: 10, vars: { i, j, [`dp[i][j]`]: v }, flashKey: "dp[i][j]", message: `'${a[i - 1]}' != '${b[j - 1]}' — 1 + min(up, left, diag) = ${v}.`, rows: dp.map((r) => [...r]), highlighted: { i, j }, collapsed: false, prev: null, curr: null });
+        f.push({ line: 10, vars: { i, j, [`dp[i][j]`]: v }, flashKey: "dp[i][j]", message: `'${a[i - 1]}' != '${b[j - 1]}', 1 + min(up, left, diag) = ${v}.`, rows: dp.map((r) => [...r]), highlighted: { i, j }, collapsed: false, prev: null, curr: null });
       }
     }
   }
@@ -392,7 +392,7 @@ function SpaceVisualize() {
 
   return (
     <AlgoCanvas
-      title="Space Optimization — Edit Distance"
+      title="Space Optimization, Edit Distance"
       player={player}
       input={
         <InputEditor
@@ -515,10 +515,10 @@ function VisualizeTab() {
 
 function LearnTab() {
   const sections = [
-    { title: "State = identity of a subproblem", body: "A DP state is just enough information to decide what to do next. For TSP, 'I'm at city i and have visited set S' — (i, S) — is sufficient. Rest of the past doesn't matter. Pick the smallest tuple that makes the recurrence work." },
+    { title: "State = identity of a subproblem", body: "A DP state is just enough information to decide what to do next. For TSP, 'I'm at city i and have visited set S', (i, S), is sufficient. Rest of the past doesn't matter. Pick the smallest tuple that makes the recurrence work." },
     { title: "Bitmask = tiny sets", body: "When the 'set' in your state has <= ~20 elements, represent it as an integer whose i-th bit is 1 if element i is in the set. Union = OR, test = AND, add = OR. Tables become 2^n x n arrays. Canonical for TSP, subset-sum-with-tracking, assignment problems." },
-    { title: "Space optimization rule of thumb", body: "If dp[i] depends only on dp[i-1] (and maybe dp[i-2]), you only need O(1) or O(2) rows. Replace dp[n][m] with prev[] and curr[] arrays. Space O(n*m) -> O(m). This is free — no algorithmic change, just rewriting the loop." },
-    { title: "Top-down vs bottom-up", body: "Top-down (memoization) mirrors the natural recurrence: recurse + memo. Bottom-up fills the table in dependency order. Bottom-up makes space optimization obvious — you can physically see which rows are needed." },
+    { title: "Space optimization rule of thumb", body: "If dp[i] depends only on dp[i-1] (and maybe dp[i-2]), you only need O(1) or O(2) rows. Replace dp[n][m] with prev[] and curr[] arrays. Space O(n*m) -> O(m). This is free, no algorithmic change, just rewriting the loop." },
+    { title: "Top-down vs bottom-up", body: "Top-down (memoization) mirrors the natural recurrence: recurse + memo. Bottom-up fills the table in dependency order. Bottom-up makes space optimization obvious, you can physically see which rows are needed." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -526,7 +526,7 @@ function LearnTab() {
         <SectionEyebrow>dp state design</SectionEyebrow>
         <SectionTitle>The right state writes the recurrence for you</SectionTitle>
         <Lede>
-          DP problems aren't solved by finding a clever formula — they're solved by choosing the state well. A well-chosen state halves your code. A poorly-chosen state makes the problem feel impossible. Bitmasks and space optimization are two tools for getting the state right.
+          DP problems aren't solved by finding a clever formula, they're solved by choosing the state well. A well-chosen state halves your code. A poorly-chosen state makes the problem feel impossible. Bitmasks and space optimization are two tools for getting the state right.
         </Lede>
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
@@ -560,7 +560,7 @@ function TryTab() {
   return (
     <div className="flex flex-col gap-3">
       <Callout>
-        Work out the state space sizes on paper first — the "state" is the key object in DP.
+        Work out the state space sizes on paper first, the "state" is the key object in DP.
       </Callout>
       {problems.map((p, i) => {
         const correct = normalize(guesses[i]) === normalize(p.a);
@@ -607,16 +607,16 @@ function InsightTab() {
       <Card>
         <SubHeading>Bitmask DP feasibility boundary</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Bitmask on n items: 2^n masks x n transitions = O(n^2 * 2^n) time, O(n * 2^n) space. For n=20: ~4*10^8 ops — feasible. For n=25: 10^10 — too slow. When n creeps above 20, look for problem-specific structure (meet-in-the-middle, SOS DP).
+          Bitmask on n items: 2^n masks x n transitions = O(n^2 * 2^n) time, O(n * 2^n) space. For n=20: ~4*10^8 ops, feasible. For n=25: 10^10, too slow. When n creeps above 20, look for problem-specific structure (meet-in-the-middle, SOS DP).
         </p>
       </Card>
       <Card>
         <SubHeading>Space opt gotchas</SubHeading>
         <ul className="list-disc pl-5 space-y-1 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           <li>0/1 knapsack: reverse the inner loop (j from W down to w) to reuse dp[j-w] from the previous row.</li>
-          <li>Unbounded knapsack: forward inner loop — you WANT to reuse the current row.</li>
+          <li>Unbounded knapsack: forward inner loop, you WANT to reuse the current row.</li>
           <li>If you need to reconstruct the path, keep the full table. Don't collapse.</li>
-          <li>LIS with patience sort collapses O(n^2) DP into O(n log n) — state redesign, not space trick.</li>
+          <li>LIS with patience sort collapses O(n^2) DP into O(n log n), state redesign, not space trick.</li>
         </ul>
       </Card>
       <Card>

@@ -71,6 +71,7 @@ export class SitemapService {
       { loc: `${SITE_URL}/blog`, changefreq: "daily", priority: 0.8, lastmod: now },
       { loc: `${SITE_URL}/for-recruiters`, changefreq: "monthly", priority: 0.6, lastmod: now },
       { loc: `${SITE_URL}/learn`, changefreq: "weekly", priority: 0.9, lastmod: now },
+      { loc: `${SITE_URL}/roadmaps`, changefreq: "weekly", priority: 0.9, lastmod: now },
       { loc: `${SITE_URL}/login`, changefreq: "monthly", priority: 0.3 },
       { loc: `${SITE_URL}/register`, changefreq: "monthly", priority: 0.4 },
       { loc: `${SITE_URL}/terms`, changefreq: "yearly", priority: 0.2 },
@@ -184,6 +185,38 @@ export class SitemapService {
         changefreq: "monthly",
         priority: 0.6,
       });
+    }
+
+    // ── 7b. Published roadmaps (detail + topic deep-dives) ───────
+    const roadmaps = await prisma.roadmap.findMany({
+      where: { isPublished: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+        sections: {
+          select: {
+            topics: { select: { slug: true } },
+          },
+        },
+      },
+    });
+    for (const r of roadmaps) {
+      urls.push({
+        loc: `${SITE_URL}/roadmaps/${r.slug}`,
+        lastmod: toIsoDate(r.updatedAt),
+        changefreq: "weekly",
+        priority: 0.8,
+      });
+      for (const section of r.sections) {
+        for (const topic of section.topics) {
+          urls.push({
+            loc: `${SITE_URL}/roadmaps/${r.slug}/topics/${topic.slug}`,
+            lastmod: toIsoDate(r.updatedAt),
+            changefreq: "monthly",
+            priority: 0.6,
+          });
+        }
+      }
     }
 
     // ── 8. Aptitude topics ───────────────────────────────────────

@@ -224,7 +224,7 @@ function buildPalindrome(text: string): Frame[] {
   });
   while (i < j) {
     f.push({
-      line: 2, vars: { i, j }, message: `i < j — continue inspection.`,
+      line: 2, vars: { i, j }, message: `i < j, continue inspection.`,
       values: [...a], states: a.map((_, k) => (k === i || k === j ? "compare" : k < i || k > j ? "done" : "default")), pointers: { i, j },
     });
     f.push({
@@ -350,9 +350,9 @@ function VisualizeTab() {
   const frame = player.current;
 
   const opLabels: Record<Op, string> = {
-    reverse: "Reverse — two pointer swap",
-    palindrome: "Palindrome — converging pointers",
-    search: "Brute force substring — O(n · m)",
+    reverse: "Reverse, two pointer swap",
+    palindrome: "Palindrome, converging pointers",
+    search: "Brute force substring, O(n · m)",
   };
 
   const CELL_W = 42;
@@ -455,7 +455,7 @@ function LearnTab() {
     <div className="flex flex-col gap-5">
       <div>
         <SectionEyebrow>strings</SectionEyebrow>
-        <SectionTitle>Arrays of characters — with one immutability twist</SectionTitle>
+        <SectionTitle>Arrays of characters, with one immutability twist</SectionTitle>
         <Lede>
           Every algorithm you learned for arrays works on strings: indexing, scanning, two-pointer
           sweeps. The twist is that strings are often <em>immutable</em> in high-level languages
@@ -492,7 +492,7 @@ return -1               # not found`}</CodeBlock>
 function TryTab() {
   const problems = [
     { q: "How many swap operations does reverse('abcdef') perform?", options: ["2", "3", "5", "6"], ans: 1, exp: "n = 6, so ⌊n/2⌋ = 3 swaps (pairs a-f, b-e, c-d)." },
-    { q: "Which of these is NOT a palindrome?", options: ["racecar", "abba", "abcba", "abcda"], ans: 3, exp: "'abcda' reversed is 'adcba' — different." },
+    { q: "Which of these is NOT a palindrome?", options: ["racecar", "abba", "abcba", "abcda"], ans: 3, exp: "'abcda' reversed is 'adcba', different." },
     { q: "Worst-case comparisons of brute-force search for pat 'aab' in 'aaaaab' (n=6, m=3)?", options: ["3", "6", "12", "18"], ans: 2, exp: "Each of the 4 alignments may compare up to m=3 chars, so up to 12 comparisons." },
     { q: "Which approach is O(n) space because strings are immutable in Python?", options: ["In-place reverse with two pointers", "Building a reversed copy via concatenation", "Checking palindrome with two pointers", "Indexing s[i]"], ans: 1, exp: "Creating a new string costs O(n) memory; in-place algorithms over immutable strings copy the whole thing." },
   ];
@@ -564,14 +564,14 @@ function InsightTab() {
         <SubHeading>Better algorithms exist</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           KMP, Z-algorithm, and Rabin-Karp all run in O(n + m) time by avoiding redundant
-          comparisons after a mismatch. You will meet KMP in Level 7 — brute force is the baseline
+          comparisons after a mismatch. You will meet KMP in Level 7, brute force is the baseline
           you improve on.
         </p>
       </Card>
       <Card>
         <SubHeading>Immutable-string trap</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          In Python/Java, <InlineCode>s = s + c</InlineCode> inside a loop is O(n²) — each
+          In Python/Java, <InlineCode>s = s + c</InlineCode> inside a loop is O(n²), each
           iteration copies the whole string. Always use a list/StringBuilder and join at the end.
         </p>
       </Card>
@@ -608,7 +608,7 @@ export default function L1_Strings({ onQuizComplete }: Props) {
       question: "In-place reverse with two pointers has what time and auxiliary space?",
       options: ["O(n), O(n)", "O(n), O(1)", "O(n²), O(1)", "O(log n), O(1)"],
       correctIndex: 1,
-      explanation: "We touch each character once and need only the two pointers — O(n) time, O(1) space.",
+      explanation: "We touch each character once and need only the two pointers, O(n) time, O(1) space.",
     },
     {
       question: "The two-pointer palindrome check halts early when…",

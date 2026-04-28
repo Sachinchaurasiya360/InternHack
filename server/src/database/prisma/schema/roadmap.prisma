@@ -1,0 +1,192 @@
+// ============================================================
+// Roadmap, Career Learning Paths
+// roadmap.sh-style interactive paths with personalized pace,
+// progress tracking, PDF export, and scheduled check-in emails.
+// ============================================================
+
+model roadmap {
+  id               Int                 @id @default(autoincrement())
+  slug             String              @unique
+  title            String
+  shortDescription String
+  description      String
+  level            RoadmapLevel        @default(ALL_LEVELS)
+  estimatedHours   Int
+  coverImage       String?
+  ogImage          String?
+  isPublished      Boolean             @default(false)
+  isPremium        Boolean             @default(false)
+  isAiGenerated    Boolean             @default(false)
+  topicCount       Int                 @default(0)
+  outcomes         String[]            @default([])
+  prerequisites    String[]            @default([])
+  faqs             Json                @default("[]")
+  tags             String[]            @default([])
+  enrolledCount    Int                 @default(0)
+  ownerUserId      Int?
+  owner            user?               @relation("UserPrivateRoadmaps", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  sections         roadmapSection[]
+  enrollments      roadmapEnrollment[]
+
+  @@index([isPublished])
+  @@index([slug])
+  @@index([ownerUserId])
+}
+
+model roadmapSection {
+  id         Int            @id @default(autoincrement())
+  roadmapId  Int
+  roadmap    roadmap        @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  slug       String
+  title      String
+  summary    String
+  orderIndex Int
+  topics     roadmapTopic[]
+
+  @@unique([roadmapId, slug])
+  @@index([roadmapId])
+}
+
+model roadmapTopic {
+  id                Int                    @id @default(autoincrement())
+  sectionId         Int
+  section           roadmapSection         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  slug              String
+  title             String
+  summary           String
+  contentMd         String
+  estimatedHours    Int                    @default(2)
+  difficulty        Int                    @default(2)
+  orderIndex        Int
+  prerequisiteSlugs String[]               @default([])
+  miniProject       String?
+  selfCheck         String?
+  resources         roadmapResource[]
+  progress          roadmapTopicProgress[]
+
+  @@unique([sectionId, slug])
+  @@index([sectionId])
+}
+
+model roadmapResource {
+  id         Int          @id @default(autoincrement())
+  topicId    Int
+  topic      roadmapTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  kind       ResourceKind
+  title      String
+  url        String
+  source     String?
+  isFree     Boolean      @default(true)
+  orderIndex Int          @default(0)
+
+  @@index([topicId])
+}
+
+model roadmapEnrollment {
+  id              Int                    @id @default(autoincrement())
+  userId          Int
+  user            user                   @relation("UserRoadmapEnrollments", fields: [userId], references: [id], onDelete: Cascade)
+  roadmapId       Int
+  roadmap         roadmap                @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  hoursPerWeek    Int                    @default(8)
+  preferredDays   String[]               @default([])
+  startDate       DateTime               @default(now())
+  targetEndDate   DateTime
+  experienceLevel ExperienceLevel        @default(NEW)
+  goal            EnrollmentGoal         @default(JOB_READY)
+  status          EnrollmentStatus       @default(ACTIVE)
+  weeklyPlan      Json                   @default("[]")
+  pdfUrl          String?
+  topicProgress   roadmapTopicProgress[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@unique([userId, roadmapId])
+  @@index([userId])
+  @@index([status])
+}
+
+model roadmapTopicProgress {
+  id           Int                @id @default(autoincrement())
+  enrollmentId Int
+  enrollment   roadmapEnrollment  @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  topicId      Int
+  topic        roadmapTopic       @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  status       RoadmapTopicStatus @default(NOT_STARTED)
+  bookmarked   Boolean            @default(false)
+  notes        String?
+  completedAt  DateTime?
+  updatedAt    DateTime           @updatedAt
+
+  @@unique([enrollmentId, topicId])
+  @@index([enrollmentId])
+  @@index([topicId])
+}
+
+model scheduledEmail {
+  id        Int                @id @default(autoincrement())
+  userId    Int
+  user      user               @relation("UserScheduledEmails", fields: [userId], references: [id], onDelete: Cascade)
+  kind      ScheduledEmailKind
+  payload   Json               @default("{}")
+  sendAt    DateTime
+  sentAt    DateTime?
+  failedAt  DateTime?
+  attempts  Int                @default(0)
+  lastError String?
+  createdAt DateTime           @default(now())
+
+  @@index([sendAt, sentAt])
+  @@index([userId, kind])
+}
+
+enum RoadmapLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ALL_LEVELS
+}
+
+enum ResourceKind {
+  VIDEO
+  ARTICLE
+  DOCS
+  COURSE
+  BOOK
+  PROJECT
+  OTHER
+}
+
+enum ExperienceLevel {
+  NEW
+  SOME
+  EXPERIENCED
+}
+
+enum EnrollmentGoal {
+  JOB_READY
+  SIDE_PROJECT
+  SCHOOL
+  CURIOUS
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+enum RoadmapTopicStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+enum ScheduledEmailKind {
+  ROADMAP_DAY_10
+  ROADMAP_WEEKLY_DIGEST
+}

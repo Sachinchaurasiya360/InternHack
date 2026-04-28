@@ -140,7 +140,7 @@ function buildInsertFrames(initial: number[], toInsert: number, kind: Kind): Fra
       frames.push({
         line: 6, arr: [...a], arrStates: st2,
         nodeStates: { [i]: "swap", [p]: "swap" },
-        message: `${kind === "min" ? "Child smaller" : "Child larger"} — swap ${a[i]} ↔ ${a[p]}.`,
+        message: `${kind === "min" ? "Child smaller" : "Child larger"}, swap ${a[i]} ↔ ${a[p]}.`,
         vars: { i, parent: p, swapped: "yes" },
       });
       i = p;
@@ -435,7 +435,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={`Heap — ${op} (${kind}-heap)`}
+      title={`Heap, ${op} (${kind}-heap)`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -443,7 +443,7 @@ function VisualizeTab() {
             label="Initial array"
             value={input}
             placeholder="e.g. 10, 4, 15, 20, 0"
-            helper={op === "heapify" ? "Any array — will be sift-heapified." : "Array is first heapified; op runs on that heap."}
+            helper={op === "heapify" ? "Any array, will be sift-heapified." : "Array is first heapified; op runs on that heap."}
             presets={[
               { label: "Classic", value: "10, 4, 15, 20, 0, 8, 25, 2" },
               { label: "Sorted asc", value: "1, 2, 3, 4, 5, 6, 7" },
@@ -526,8 +526,8 @@ function VisualizeTab() {
 
 function LearnTab() {
   const items = [
-    { title: "Complete binary tree", body: "Heaps fill level by level, left to right — this lets us store them in an array with zero wasted slots. For index i: parent = ⌊(i−1)/2⌋, children = 2i+1 and 2i+2." },
-    { title: "Heap property", body: "Min-heap: every node ≤ its children, so the minimum is at the root. Max-heap flips the inequality. The heap property is local — no ordering between siblings." },
+    { title: "Complete binary tree", body: "Heaps fill level by level, left to right, this lets us store them in an array with zero wasted slots. For index i: parent = ⌊(i−1)/2⌋, children = 2i+1 and 2i+2." },
+    { title: "Heap property", body: "Min-heap: every node ≤ its children, so the minimum is at the root. Max-heap flips the inequality. The heap property is local, no ordering between siblings." },
     { title: "Three core ops", body: "insert (O(log n) bubble-up), extractMin/Max (O(log n) sift-down), heapify (O(n) bulk build). Together they power Dijkstra, priority queues, heap-sort, and median tricks." },
     { title: "Heap vs BST", body: "A BST supports ordered traversal and range queries; a heap only gives you the extreme. Because heaps don't require full ordering, they are smaller, faster, and fit neatly in an array." },
   ];
@@ -569,7 +569,7 @@ function TryTab() {
   const problems = [
     { q: "Heapify [4,10,3,5,1] into min-heap. Root value?", a: "1" },
     { q: "Min-heap [1,3,5,4,8]. After insert 2, the root is?", a: "1" },
-    { q: "Max-heap [20,15,10,8,7,5]. extractMax — new root is?", a: "15" },
+    { q: "Max-heap [20,15,10,8,7,5]. extractMax, new root is?", a: "15" },
     { q: "Time for heapSort on n items?", a: "O(n log n)" },
   ];
   const [g, setG] = useState<(string | null)[]>(problems.map(() => null));
@@ -640,24 +640,24 @@ function InsightTab() {
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           For 0-indexed heaps: parent(i) = (i−1)/2, left(i) = 2i+1, right(i) = 2i+2. For 1-indexed
           heaps: parent(i) = i/2, left(i) = 2i, right(i) = 2i+1. Interviewers often ask why
-          1-indexed is slightly prettier — these formulas are why.
+          1-indexed is slightly prettier, these formulas are why.
         </p>
       </div>
       <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
         <SubHeading>K-th largest trick</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Maintain a min-heap of size k. For each new element, push it and pop the smallest if size
-          exceeds k. The root is the k-th largest. Time O(n log k), space O(k) — canonical interview
+          exceeds k. The root is the k-th largest. Time O(n log k), space O(k), canonical interview
           pattern.
         </p>
       </div>
       <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
-        <SubHeading>Stdlib priority queues — three traps you must know</SubHeading>
+        <SubHeading>Stdlib priority queues, three traps you must know</SubHeading>
         <ul className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed list-disc pl-5 space-y-2">
           <li>
             <strong className="text-stone-900 dark:text-stone-50">Python <InlineCode>heapq</InlineCode></strong>:{" "}
             min-heap only. For max-heap, push the negated value and negate on pop. There is no{" "}
-            <InlineCode>decrease-key</InlineCode> operation — for Dijkstra, use the lazy pattern
+            <InlineCode>decrease-key</InlineCode> operation, for Dijkstra, use the lazy pattern
             (push duplicate entries, skip stale pops).
           </li>
           <li>
@@ -667,12 +667,12 @@ function InsightTab() {
           </li>
           <li>
             <strong className="text-stone-900 dark:text-stone-50">C++ <InlineCode>std::priority_queue</InlineCode></strong>:{" "}
-            defaults to MAX-heap — opposite of Python and Java. For min-heap pass{" "}
+            defaults to MAX-heap, opposite of Python and Java. For min-heap pass{" "}
             <InlineCode>std::greater&lt;T&gt;</InlineCode>. Porting gotcha #1.
           </li>
           <li>
             <strong className="text-stone-900 dark:text-stone-50">Tie-breaking</strong>: heapq sorts
-            by tuple comparison — <InlineCode>(priority, sequence_no, item)</InlineCode> avoids
+            by tuple comparison, <InlineCode>(priority, sequence_no, item)</InlineCode> avoids
             ordering errors when items are not comparable.
           </li>
         </ul>
@@ -728,7 +728,7 @@ export default function L3_Heaps({ onQuizComplete }: Props) {
       question: "Building a heap from an unsorted array via bottom-up heapify costs:",
       options: ["O(n log n)", "O(n)", "O(log n)", "O(n²)"],
       correctIndex: 1,
-      explanation: "The geometric sum of sift-down heights gives a tight O(n) bound — faster than inserting one-by-one.",
+      explanation: "The geometric sum of sift-down heights gives a tight O(n) bound, faster than inserting one-by-one.",
     },
     {
       question: "To find the kth largest element among n items, a heap-based approach uses:",
@@ -745,7 +745,7 @@ export default function L3_Heaps({ onQuizComplete }: Props) {
       question: "Which operation is NOT O(log n) on a binary heap of n elements?",
       options: ["insert", "extract-min", "peek-min", "decrease-key"],
       correctIndex: 2,
-      explanation: "peek-min is O(1) — it is just the root.",
+      explanation: "peek-min is O(1), it is just the root.",
     },
   ];
 

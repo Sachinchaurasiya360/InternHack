@@ -9,6 +9,7 @@ import {
   FileCode2,
   GraduationCap,
   Layers,
+  Map,
   Palette,
   Play,
   Server,
@@ -17,7 +18,7 @@ import {
 } from "lucide-react";
 
 export type TrackCategory = "practice" | "frontend" | "backend" | "data" | "web3";
-export type TrackKind = "practice" | "lesson";
+export type TrackKind = "practice" | "lesson" | "roadmap";
 
 export interface Track {
   id: string;
@@ -34,10 +35,27 @@ export interface Track {
   stat: string;
   /** If present, used as the glob key prefix in lesson-counts.ts to compute a live lesson count. */
   lessonCountKey?: string;
+  /** Absolute path override. When present, the card links here instead of `/learn/${path}`. */
+  to?: string;
 }
 
 export const TRACKS: Track[] = [
   // ── Practice ──
+  {
+    id: "roadmaps",
+    title: "Career Roadmaps",
+    description:
+      "Free, paced learning paths with curated resources, weekly plans, a personalized PDF, and a 10-day check-in. Start with Full-Stack.",
+    icon: Map,
+    color: "text-lime-600 dark:text-lime-500",
+    bgColor: "bg-lime-50 dark:bg-lime-900/30",
+    borderHover: "hover:border-lime-200 dark:hover:border-lime-800",
+    path: "roadmaps",
+    to: "/roadmaps",
+    kind: "roadmap",
+    category: "practice",
+    stat: "Personalized plan",
+  },
   {
     id: "interview",
     title: "Interview Preparation",
@@ -62,6 +80,20 @@ export const TRACKS: Track[] = [
     bgColor: "bg-lime-50 dark:bg-lime-900/30",
     borderHover: "hover:border-lime-200 dark:hover:border-lime-800",
     path: "dsa-foundations",
+    kind: "lesson",
+    category: "practice",
+    stat: "Animated lessons",
+  },
+  {
+    id: "system-design",
+    title: "System Design",
+    description:
+      "Animated, interactive lessons - HLD vs LLD, requirements, the 4-step framework, scaling, load balancing, caching, DNS, and more.",
+    icon: Server,
+    color: "text-lime-500",
+    bgColor: "bg-lime-50 dark:bg-lime-900/30",
+    borderHover: "hover:border-lime-200 dark:hover:border-lime-800",
+    path: "system-design",
     kind: "lesson",
     category: "practice",
     stat: "Animated lessons",
@@ -148,9 +180,9 @@ export const TRACKS: Track[] = [
     description:
       "Components, hooks, state management, routing, data fetching, and performance - from JSX to interview prep.",
     icon: Code2,
-    color: "text-rose-500",
-    bgColor: "bg-rose-50 dark:bg-rose-900/30",
-    borderHover: "hover:border-rose-200 dark:hover:border-rose-800",
+    color: "text-lime-500",
+    bgColor: "bg-lime-50 dark:bg-lime-900/30",
+    borderHover: "hover:border-lime-200 dark:hover:border-lime-800",
     path: "react",
     kind: "lesson",
     category: "frontend",

@@ -88,7 +88,7 @@ function insertWord(t: Trie, rootId: string, word: string, frames: Frame[]) {
   let cur = rootId;
   frames.push({
     line: 0, trie: cloneTrie(t), rootId, nodeStates: { [cur]: "active" }, edgeStates: {},
-    highlightEdge: null, message: `Insert "${word}" — start at root.`, vars: { word, pos: 0 },
+    highlightEdge: null, message: `Insert "${word}", start at root.`, vars: { word, pos: 0 },
   });
   for (let i = 0; i < word.length; i++) {
     const ch = word[i];
@@ -107,7 +107,7 @@ function insertWord(t: Trie, rootId: string, word: string, frames: Frame[]) {
         nodeStates: { [cur]: "visited", [nextId]: "active" },
         edgeStates: { [`${cur}-${nextId}`]: "match" },
         highlightEdge: `${cur}-${nextId}`,
-        message: `Edge "${ch}" exists — follow it.`,
+        message: `Edge "${ch}" exists, follow it.`,
         vars: { word, pos: i + 1, char: ch },
       });
     } else {
@@ -120,7 +120,7 @@ function insertWord(t: Trie, rootId: string, word: string, frames: Frame[]) {
         nodeStates: { [cur]: "visited", [nextId]: "active" },
         edgeStates: { [`${cur}-${nextId}`]: "frontier" },
         highlightEdge: `${cur}-${nextId}`,
-        message: `Edge "${ch}" missing — create new node.`,
+        message: `Edge "${ch}" missing, create new node.`,
         vars: { word, pos: i + 1, char: ch, created: "yes" },
       });
     }
@@ -141,7 +141,7 @@ function searchWord(t: Trie, rootId: string, word: string, frames: Frame[]) {
   frames.push({
     line: 0, trie: cloneTrie(t), rootId,
     nodeStates: { [cur]: "active" }, edgeStates: {}, highlightEdge: null,
-    message: `Search "${word}" — start at root.`, vars: { word, pos: 0 },
+    message: `Search "${word}", start at root.`, vars: { word, pos: 0 },
   });
   for (let i = 0; i < word.length; i++) {
     const ch = word[i];
@@ -150,7 +150,7 @@ function searchWord(t: Trie, rootId: string, word: string, frames: Frame[]) {
       frames.push({
         line: 2, trie: cloneTrie(t), rootId,
         nodeStates: { [cur]: "mismatch" }, edgeStates: {}, highlightEdge: null,
-        message: `No edge "${ch}" — "${word}" is NOT in the trie.`,
+        message: `No edge "${ch}", "${word}" is NOT in the trie.`,
         vars: { word, pos: i, result: "not found" },
       });
       return;
@@ -170,8 +170,8 @@ function searchWord(t: Trie, rootId: string, word: string, frames: Frame[]) {
     nodeStates: { [cur]: t[cur].end ? "done" : "mismatch" },
     edgeStates: {}, highlightEdge: null,
     message: t[cur].end
-      ? `"${word}" found — node is end-of-word.`
-      : `Reached node but it is NOT an end-of-word marker — only a prefix.`,
+      ? `"${word}" found, node is end-of-word.`
+      : `Reached node but it is NOT an end-of-word marker, only a prefix.`,
     vars: { word, result: t[cur].end ? "found" : "prefix only" },
   });
 }
@@ -190,7 +190,7 @@ function prefixCollect(t: Trie, rootId: string, prefix: string, frames: Frame[])
       frames.push({
         line: 2, trie: cloneTrie(t), rootId,
         nodeStates: { [cur]: "mismatch" }, edgeStates: {}, highlightEdge: null,
-        message: `No edge "${ch}" — no words share prefix "${prefix}".`,
+        message: `No edge "${ch}", no words share prefix "${prefix}".`,
         vars: { prefix, result: "none" },
       });
       return;
@@ -424,7 +424,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={`Trie — ${op} "${query}"`}
+      title={`Trie, ${op} "${query}"`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -490,9 +490,9 @@ function VisualizeTab() {
 
 function LearnTab() {
   const items = [
-    { title: "Edges carry characters", body: "Unlike BSTs (values live in nodes), in a trie the characters live on the edges. A path from root spells out a prefix — and if it ends at a flagged node, it spells a full word." },
+    { title: "Edges carry characters", body: "Unlike BSTs (values live in nodes), in a trie the characters live on the edges. A path from root spells out a prefix, and if it ends at a flagged node, it spells a full word." },
     { title: "End-of-word flag", body: "A node itself does not know whether it terminates a word. The boolean end on each node marks that. This is why do and done can coexist on the same branch." },
-    { title: "Prefix power", body: "Auto-complete, IP-routing tables, word filters, genome prefix search — all built on tries. Time complexity for any op is O(L) where L is the word length — independent of how many words are stored." },
+    { title: "Prefix power", body: "Auto-complete, IP-routing tables, word filters, genome prefix search, all built on tries. Time complexity for any op is O(L) where L is the word length, independent of how many words are stored." },
     { title: "Space tradeoff", body: "Tries can use a lot of pointers (26 children per node for lowercase English). Compressed variants (radix/Patricia trees) merge chains of single-child nodes to save space." },
   ];
 
@@ -503,7 +503,7 @@ function LearnTab() {
         <SectionTitle>Strings stored by sharing common prefixes</SectionTitle>
         <Lede>
           A trie stores strings by sharing common prefixes in the tree structure. Two words that
-          share a prefix share that path — the branch diverges exactly where the words differ.
+          share a prefix share that path, the branch diverges exactly where the words differ.
         </Lede>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -530,7 +530,7 @@ function LearnTab() {
 
 function TryTab() {
   const problems = [
-    { q: "Trie stores {cat, car}. Search 'ca' — result?", a: "prefix only" },
+    { q: "Trie stores {cat, car}. Search 'ca', result?", a: "prefix only" },
     { q: "Store {do, done, dot}. Distinct nodes (incl. root)?", a: "6" },
     { q: "Prefix 'ap' in {app, apple, ask, april}. How many words?", a: "3" },
     { q: "Time to insert a word of length L into a trie?", a: "O(L)" },
@@ -540,7 +540,7 @@ function TryTab() {
 
   return (
     <div className="flex flex-col gap-3">
-      <Callout>Draw each trie on paper first — the answers pop out.</Callout>
+      <Callout>Draw each trie on paper first, the answers pop out.</Callout>
       {problems.map((p, i) => {
         const gv = (g[i] ?? "").replace(/\s+/g, "").toLowerCase();
         const correct = gv === p.a.replace(/\s+/g, "").toLowerCase();
@@ -600,7 +600,7 @@ function InsightTab() {
       <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
         <SubHeading>Space engineering</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          A naive trie stores an array of 26 pointers per node — most are null. Options: use a hash
+          A naive trie stores an array of 26 pointers per node, most are null. Options: use a hash
           map per node (saves memory, slower constant), or switch to a radix tree that collapses
           single-child chains into edges labeled with strings.
         </p>
@@ -669,7 +669,7 @@ export default function L3_Tries({ onQuizComplete }: Props) {
       question: "Time complexity to insert a word of length L into a trie with N words (worst case)?",
       options: ["O(L)", "O(N)", "O(N + L)", "O(L · log N)"],
       correctIndex: 0,
-      explanation: "Each character descends one level — independent of how many other words are already stored.",
+      explanation: "Each character descends one level, independent of how many other words are already stored.",
     },
     {
       question: "Why does each trie node need an explicit end-of-word flag?",
@@ -686,7 +686,7 @@ export default function L3_Tries({ onQuizComplete }: Props) {
       question: "Best use case for a trie over a hash-set of strings:",
       options: ["Exact membership queries", "Prefix and auto-complete queries", "Sorting words", "Counting duplicates"],
       correctIndex: 1,
-      explanation: "Tries give prefix queries and auto-complete for free — hash-sets cannot.",
+      explanation: "Tries give prefix queries and auto-complete for free, hash-sets cannot.",
     },
     {
       question: "For a trie over lowercase English, how many children does each node have (array representation)?",

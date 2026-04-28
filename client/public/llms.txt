@@ -7,7 +7,7 @@
 - [Homepage](https://www.internhack.xyz/): Product overview and entry points for students and recruiters.
 - [Internship and Job Board](https://www.internhack.xyz/jobs): Curated internships and entry-level roles, searchable by role, location, and stack.
 - [AI ATS Resume Scorer](https://www.internhack.xyz/ats): Upload a resume and a job description, get an instant ATS score, keyword gaps, and rewrite suggestions.
-- [Career Roadmaps](https://www.internhack.xyz/roadmap): Step-by-step learning paths for frontend, backend, full-stack, data, and more.
+- [Career Roadmaps](https://www.internhack.xyz/roadmaps): Free, paced learning paths with personalized weekly plans, curated free resources, PDF export on enrollment, and a 10-day progress check-in. The Full-Stack roadmap is published at https://www.internhack.xyz/roadmaps/full-stack and covers web fundamentals through job prep.
 - [Company Explorer](https://www.internhack.xyz/companies): Research employers, tech stacks, and current openings.
 - [DSA Practice Tracker](https://www.internhack.xyz/dsa): Organized data structures and algorithms problems with progress tracking.
 - [Blog and Guides](https://www.internhack.xyz/blog): Interview prep, career advice, coding tutorials.

@@ -340,7 +340,7 @@ function buildBridgeFrames(
       const k = edgeKey(u, v);
       if (disc[v] === undefined) {
         edgeStates[k] = "tree";
-        snap(6, `${u} — ${v}: tree edge. Recurse.`, { u, v });
+        snap(6, `${u}, ${v}: tree edge. Recurse.`, { u, v });
         dfs(v, u);
         childCount++;
         low[u] = Math.min(low[u]!, low[v]!);
@@ -355,7 +355,7 @@ function buildBridgeFrames(
           edgeStates[k] = "bridge";
           snap(
             8,
-            `low[${v}]=${low[v]} > disc[${u}]=${disc[u]} → BRIDGE: ${u} — ${v}.`,
+            `low[${v}]=${low[v]} > disc[${u}]=${disc[u]} → BRIDGE: ${u}, ${v}.`,
             { bridge: `${u}-${v}` },
             "bridge",
           );
@@ -378,7 +378,7 @@ function buildBridgeFrames(
           low[u] = newLow;
           snap(
             10,
-            `${u} — ${v}: back edge (v already visited). low[${u}] = min(prev, disc[${v}]=${disc[v]}) = ${low[u]}.`,
+            `${u}, ${v}: back edge (v already visited). low[${u}] = min(prev, disc[${v}]=${disc[v]}) = ${low[u]}.`,
             { u, v, "low[u]": low[u]! },
             "low[u]",
           );
@@ -651,7 +651,7 @@ function SCCSection() {
 
   return (
     <AlgoCanvas
-      title="Tarjan SCC — low-link technique (directed graph)"
+      title="Tarjan SCC, low-link technique (directed graph)"
       player={player}
       pseudocode={
         <PseudocodePanel lines={TARJAN_PSEUDO} activeLine={frame?.line} />
@@ -808,7 +808,7 @@ function BridgeSection() {
 
   return (
     <AlgoCanvas
-      title="Bridges and Articulation Points — low-link technique (undirected)"
+      title="Bridges and Articulation Points, low-link technique (undirected)"
       player={player}
       pseudocode={
         <PseudocodePanel lines={BRIDGE_PSEUDO} activeLine={frame?.line} />
@@ -897,7 +897,7 @@ function BridgeSection() {
                 Tests
               </div>
               <p className="text-[11px] text-stone-500 leading-relaxed">
-                Bridge: low[v] &gt; disc[u] for tree edge u — v
+                Bridge: low[v] &gt; disc[u] for tree edge u, v
               </p>
               <p className="text-[11px] text-stone-500 leading-relaxed">
                 AP (non-root): low[v] ≥ disc[u]
@@ -975,12 +975,12 @@ function VisualizeTab() {
 
 function LearnTab() {
   const cards = [
-    { t: "The low-link insight", b: "DFS gives every vertex a discovery time disc[u]. The low-link low[u] = the smallest disc reachable from u's DFS subtree using AT MOST ONE back edge. This single number captures whether u's subtree can 'climb back up' the DFS tree — and that's what tells us about cycles, SCCs, bridges, and articulation points." },
-    { t: "Why one structure solves four problems", b: "Tarjan's 1972 paper showed that disc + low let you compute (1) Strongly Connected Components in O(V+E), (2) Bridges in O(V+E), (3) Articulation points in O(V+E), (4) Biconnected components in O(V+E). All from one DFS — same code skeleton, different post-processing." },
+    { t: "The low-link insight", b: "DFS gives every vertex a discovery time disc[u]. The low-link low[u] = the smallest disc reachable from u's DFS subtree using AT MOST ONE back edge. This single number captures whether u's subtree can 'climb back up' the DFS tree, and that's what tells us about cycles, SCCs, bridges, and articulation points." },
+    { t: "Why one structure solves four problems", b: "Tarjan's 1972 paper showed that disc + low let you compute (1) Strongly Connected Components in O(V+E), (2) Bridges in O(V+E), (3) Articulation points in O(V+E), (4) Biconnected components in O(V+E). All from one DFS, same code skeleton, different post-processing." },
     { t: "Tarjan SCC vs Kosaraju", b: "Both find SCCs in O(V+E). Kosaraju does TWO DFS passes (one on G, one on its transpose in finish-time order). Tarjan does ONE pass. Both give the same SCCs. Tarjan is more cache-friendly; Kosaraju is conceptually simpler to teach." },
-    { t: "Bridge", b: "An edge whose removal increases the number of connected components. In a road network, a bridge is a road whose closure splits two regions. Test: tree edge u to v is a bridge iff low[v] > disc[u] — meaning v's subtree has NO back edge skipping over u." },
+    { t: "Bridge", b: "An edge whose removal increases the number of connected components. In a road network, a bridge is a road whose closure splits two regions. Test: tree edge u to v is a bridge iff low[v] > disc[u], meaning v's subtree has NO back edge skipping over u." },
     { t: "Articulation point (cut vertex)", b: "A vertex whose removal disconnects the graph. Two cases: (a) non-root u is AP iff some child v has low[v] >= disc[u]; (b) root is AP iff it has 2 or more DFS children. Used in network reliability, biconnected component decomposition, social-network influence." },
-    { t: "Why directed needs SCC, undirected needs bridges/AP", b: "In a directed graph, mutual reachability defines equivalence classes — those are SCCs. In an undirected graph, every traversable pair is mutually reachable, so the question shifts to FRAGILITY: which edges or vertices are critical to keeping the graph connected." },
+    { t: "Why directed needs SCC, undirected needs bridges/AP", b: "In a directed graph, mutual reachability defines equivalence classes, those are SCCs. In an undirected graph, every traversable pair is mutually reachable, so the question shifts to FRAGILITY: which edges or vertices are critical to keeping the graph connected." },
   ];
 
   return (
@@ -989,7 +989,7 @@ function LearnTab() {
         <SectionEyebrow>one dfs, four problems</SectionEyebrow>
         <SectionTitle>Mental model: the swiss-army DFS</SectionTitle>
         <Lede>
-          Tarjan's low-link is the swiss-army DFS: a single recursive walk over the graph that, by tracking <InlineCode>disc</InlineCode> and <InlineCode>low</InlineCode> per vertex, simultaneously answers questions about cycles, components, and structural fragility. The technique is one of the most-reused ideas in graph algorithms — once you internalize <InlineCode>low</InlineCode>, four classical problems become trivial.
+          Tarjan's low-link is the swiss-army DFS: a single recursive walk over the graph that, by tracking <InlineCode>disc</InlineCode> and <InlineCode>low</InlineCode> per vertex, simultaneously answers questions about cycles, components, and structural fragility. The technique is one of the most-reused ideas in graph algorithms, once you internalize <InlineCode>low</InlineCode>, four classical problems become trivial.
         </Lede>
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
@@ -1013,7 +1013,7 @@ function LearnTab() {
 
 function TryTab() {
   const probs = [
-    { q: "On the SCC directed graph A>B, B>C, C>A, B>D, D>E, E>F, F>D, G>F, G>H, H>G — how many SCCs are there?", a: "3" },
+    { q: "On the SCC directed graph A>B, B>C, C>A, B>D, D>E, E>F, F>D, G>F, G>H, H>G, how many SCCs are there?", a: "3" },
     { q: "Removing a bridge always increases the connected-component count by how many?", a: "1" },
     { q: "True/False: A graph with NO bridges has a Eulerian circuit.", a: "False (need all even degrees too)" },
     { q: "The path A-B, B-C, C-D, D-E has how many bridges? How many APs?", a: "4 bridges, 3 APs (B, C, D)" },
@@ -1069,7 +1069,7 @@ function InsightTab() {
       <Card>
         <SubHeading>Why the bridge test is low[v] &gt; disc[u]</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          For a tree edge u to v, <InlineCode>low[v]</InlineCode> is the smallest disc reachable from v's subtree via at most one back edge. If <InlineCode>low[v] &gt; disc[u]</InlineCode>, then v's subtree has NO back edge that skips over u — meaning the only path from v's subtree to anywhere above u is THROUGH the edge (u, v) itself. Removing it disconnects the subtree. Hence: bridge.
+          For a tree edge u to v, <InlineCode>low[v]</InlineCode> is the smallest disc reachable from v's subtree via at most one back edge. If <InlineCode>low[v] &gt; disc[u]</InlineCode>, then v's subtree has NO back edge that skips over u, meaning the only path from v's subtree to anywhere above u is THROUGH the edge (u, v) itself. Removing it disconnects the subtree. Hence: bridge.
         </p>
       </Card>
 
@@ -1108,7 +1108,7 @@ function InsightTab() {
         <SubHeading>Where this lands in interviews and production</SubHeading>
         <ul className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed space-y-1.5 pl-4 list-disc">
           <li><strong className="text-stone-900 dark:text-stone-100">SCC condensation</strong>: collapse each SCC into a single node to get a DAG. Used in 2-SAT, dataflow analysis, deadlock detection.</li>
-          <li><strong className="text-stone-900 dark:text-stone-100">Critical Connections in a Network</strong> (LeetCode 1192): literally find all bridges — Tarjan's low-link is the intended solution.</li>
+          <li><strong className="text-stone-900 dark:text-stone-100">Critical Connections in a Network</strong> (LeetCode 1192): literally find all bridges, Tarjan's low-link is the intended solution.</li>
           <li><strong className="text-stone-900 dark:text-stone-100">Network reliability</strong>: ISP backbone analysis. Bridges are single points of failure.</li>
           <li><strong className="text-stone-900 dark:text-stone-100">Compiler dataflow</strong>: SCCs of a call graph identify mutual recursion sets that must be analyzed together.</li>
           <li><strong className="text-stone-900 dark:text-stone-100">Social networks</strong>: an SCC of the follows graph is a friend-clique where everyone transitively follows everyone.</li>
@@ -1152,19 +1152,19 @@ export default function L7_TarjanLowLink({ onQuizComplete }: Props) {
         "The depth of u from the root",
       ],
       correctIndex: 1,
-      explanation: "low[u] is the cycle-detection signal: if low[u] equals disc[u], u's subtree has no path to an ancestor — so u is the root of an SCC (in directed) or a fragile joint (in undirected).",
+      explanation: "low[u] is the cycle-detection signal: if low[u] equals disc[u], u's subtree has no path to an ancestor, so u is the root of an SCC (in directed) or a fragile joint (in undirected).",
     },
     {
       question: "An edge (u, v) in an undirected DFS is a BRIDGE iff:",
       options: ["low[v] = disc[v]", "low[v] > disc[u]", "low[v] = disc[u]", "v is the parent of u"],
       correctIndex: 1,
-      explanation: "If low[v] > disc[u], v's subtree has no back edge skipping over u, so the only escape is through the (u,v) edge — removing it disconnects the subtree.",
+      explanation: "If low[v] > disc[u], v's subtree has no back edge skipping over u, so the only escape is through the (u,v) edge, removing it disconnects the subtree.",
     },
     {
       question: "How many DFS passes does Kosaraju's SCC algorithm need vs Tarjan's?",
       options: ["1 vs 1", "2 vs 1", "1 vs 2", "Both need 3"],
       correctIndex: 1,
-      explanation: "Kosaraju runs DFS on G to get a finish-time order, then DFS on the transpose in reverse-finish order. Tarjan does a single DFS using disc/low — same O(V+E), one pass.",
+      explanation: "Kosaraju runs DFS on G to get a finish-time order, then DFS on the transpose in reverse-finish order. Tarjan does a single DFS using disc/low, same O(V+E), one pass.",
     },
     {
       question: "A root vertex of a DFS tree is an articulation point iff:",
@@ -1175,13 +1175,13 @@ export default function L7_TarjanLowLink({ onQuizComplete }: Props) {
         "It has back edges",
       ],
       correctIndex: 1,
-      explanation: "If the DFS root has just one child subtree, removing it leaves that subtree connected (just rooted at its child). With 2 or more child subtrees, removing the root splits them — articulation.",
+      explanation: "If the DFS root has just one child subtree, removing it leaves that subtree connected (just rooted at its child). With 2 or more child subtrees, removing the root splits them, articulation.",
     },
     {
       question: "After SCC condensation (collapse each SCC to one node), the resulting graph is always:",
       options: ["A tree", "A DAG", "Disconnected", "Strongly connected"],
       correctIndex: 1,
-      explanation: "By definition of SCC, no two SCCs are mutually reachable. So the condensation has no directed cycle — it is a DAG. This is foundational for 2-SAT, dataflow analysis, and topological reasoning over cyclic graphs.",
+      explanation: "By definition of SCC, no two SCCs are mutually reachable. So the condensation has no directed cycle, it is a DAG. This is foundational for 2-SAT, dataflow analysis, and topological reasoning over cyclic graphs.",
     },
   ];
 
@@ -1192,7 +1192,7 @@ export default function L7_TarjanLowLink({ onQuizComplete }: Props) {
       lessonNumber={9}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — LC1192 (Critical Connections), 2-SAT, network-reliability questions."
+      placementRelevance="High, LC1192 (Critical Connections), 2-SAT, network-reliability questions."
       nextLessonHint="Maximum Flow"
       onQuizComplete={onQuizComplete}
     />

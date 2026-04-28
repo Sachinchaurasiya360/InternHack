@@ -1321,7 +1321,7 @@ export default function CompanyListPage() {
               <EmptyState
                 icon={<MessageCircle className="w-5 h-5" />}
                 title="No interview experiences yet"
-                hint="be the first to share — earn a badge"
+                hint="be the first to share, earn a badge"
               />
             ) : (
               <>

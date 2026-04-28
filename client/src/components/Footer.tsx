@@ -99,7 +99,7 @@ export function Footer() {
               <ul className="space-y-3">
                 <li><Link to="/jobs" className={linkClass}>Jobs</Link></li>
                 <li><Link to="/external-jobs" className={linkClass}>External jobs</Link></li>
-                <li><Link to="/learn" className={linkClass}>Roadmaps</Link></li>
+                <li><Link to="/roadmaps" className={linkClass}>Roadmaps</Link></li>
                 <li><Link to="/companies" className={linkClass}>Companies</Link></li>
                 <li><Link to="/ats-score" className={linkClass}>ATS scorer</Link></li>
                 <li><Link to="/opensource" className={linkClass}>Open source</Link></li>

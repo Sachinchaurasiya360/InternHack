@@ -85,7 +85,7 @@ function buildChaining(keys: number[], size: number): Frame[] {
     f.push({ line: 1, vars: { key: k, h, formula: `${k} mod ${size} = ${h}` }, highlightKey: "h", message: `Hash: ${k} mod ${size} = ${h}`, chains: chains.map((c) => [...c]), slots: [], probeTrail: [], cursor: h, loadFactor: n / size, currentKey: k });
     f.push({ line: 2, vars: { bucket: h, "bucket.size": chains[h].length }, message: `Look at bucket ${h} (has ${chains[h].length} node${chains[h].length === 1 ? "" : "s"})`, chains: chains.map((c) => [...c]), slots: [], probeTrail: [], cursor: h, loadFactor: n / size, currentKey: k });
     const dup = chains[h].includes(k);
-    f.push({ line: 3, vars: { duplicate: String(dup) }, message: dup ? `${k} already in bucket — skip` : `${k} not present — append`, chains: chains.map((c) => [...c]), slots: [], probeTrail: [], cursor: h, loadFactor: n / size, currentKey: k });
+    f.push({ line: 3, vars: { duplicate: String(dup) }, message: dup ? `${k} already in bucket, skip` : `${k} not present, append`, chains: chains.map((c) => [...c]), slots: [], probeTrail: [], cursor: h, loadFactor: n / size, currentKey: k });
     if (!dup) {
       chains[h].push(k);
       n++;
@@ -103,7 +103,7 @@ function buildProbing(keys: number[], size: number): Frame[] {
   f.push({ line: 0, vars: { tableSize: size }, message: `Empty table of size ${size} (linear probing)`, chains: [], slots: [...slots], probeTrail: [], loadFactor: 0 });
   for (const k of keys) {
     if (n >= size) {
-      f.push({ line: 0, vars: { key: k, err: "full" }, message: `Table full — cannot insert ${k}`, chains: [], slots: [...slots], probeTrail: [], loadFactor: 1, currentKey: k });
+      f.push({ line: 0, vars: { key: k, err: "full" }, message: `Table full, cannot insert ${k}`, chains: [], slots: [...slots], probeTrail: [], loadFactor: 1, currentKey: k });
       continue;
     }
     f.push({ line: 0, vars: { key: k }, message: `Insert key ${k}`, chains: [], slots: [...slots], probeTrail: [], loadFactor: n / size, currentKey: k });
@@ -116,16 +116,16 @@ function buildProbing(keys: number[], size: number): Frame[] {
       const pos = (h + i) % size;
       trail.push(pos);
       if (slots[pos] === null) {
-        f.push({ line: 3, vars: { i, pos, "slot": "empty" }, message: `slot[${pos}] empty — place ${k} here`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: pos, loadFactor: n / size, currentKey: k });
+        f.push({ line: 3, vars: { i, pos, "slot": "empty" }, message: `slot[${pos}] empty, place ${k} here`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: pos, loadFactor: n / size, currentKey: k });
         slots[pos] = k;
         n++;
         f.push({ line: 6, vars: { pos, value: k }, highlightKey: "pos", message: `Placed ${k} at index ${pos}`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: pos, justInserted: pos, loadFactor: n / size, currentKey: k });
         break;
       } else if (slots[pos] === k) {
-        f.push({ line: 4, vars: { i, pos, existing: k }, message: `slot[${pos}] already has ${k} — skip`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: pos, loadFactor: n / size, currentKey: k });
+        f.push({ line: 4, vars: { i, pos, existing: k }, message: `slot[${pos}] already has ${k}, skip`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: pos, loadFactor: n / size, currentKey: k });
         break;
       } else {
-        f.push({ line: 3, vars: { i, pos, existing: slots[pos] ?? "null" }, message: `slot[${pos}] occupied by ${slots[pos]} — collision, probe next`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: pos, loadFactor: n / size, currentKey: k });
+        f.push({ line: 3, vars: { i, pos, existing: slots[pos] ?? "null" }, message: `slot[${pos}] occupied by ${slots[pos]}, collision, probe next`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: pos, loadFactor: n / size, currentKey: k });
         i++;
         f.push({ line: 5, vars: { i }, highlightKey: "i", message: `Advance probe: i = ${i}, next pos = ${(h + i) % size}`, chains: [], slots: [...slots], probeTrail: [...trail], cursor: (h + i) % size, loadFactor: n / size, currentKey: k });
       }
@@ -291,7 +291,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={`Hashing — ${strategy === "chaining" ? "Separate Chaining" : "Linear Probing"}`}
+      title={`Hashing, ${strategy === "chaining" ? "Separate Chaining" : "Linear Probing"}`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -347,8 +347,8 @@ function LearnTab() {
     { t: "Hash function", b: "A deterministic map from keys to array indices. 'key mod size' is the simplest. Good hash functions distribute keys uniformly across buckets." },
     { t: "Collisions are inevitable", b: "By pigeonhole: if you have more keys than buckets, two keys must collide. Hash tables handle this, not avoid it." },
     { t: "Separate chaining", b: "Each bucket holds a linked list. Collisions append to the list. Simple, lookup = O(1 + α) on average. Wastes some pointer memory." },
-    { t: "Linear probing (open addressing)", b: "On collision, try next slot, then next, then next. Keys live in the table itself — cache-friendly. Performance degrades sharply when α → 1." },
-    { t: "Load factor α = n / size", b: "The occupancy ratio. For chaining α can exceed 1. For probing you want α ≤ 0.7 — above that, resize and rehash everything." },
+    { t: "Linear probing (open addressing)", b: "On collision, try next slot, then next, then next. Keys live in the table itself, cache-friendly. Performance degrades sharply when α → 1." },
+    { t: "Load factor α = n / size", b: "The occupancy ratio. For chaining α can exceed 1. For probing you want α ≤ 0.7, above that, resize and rehash everything." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -385,7 +385,7 @@ function TryTab() {
     { q: "Table size 7. Keys: 50, 700, 76, 85, 92, 73, 101. Compute 50 mod 7 and 700 mod 7.", a: "50→1, 700→0" },
     { q: "With linear probing, keys 10, 20, 30 into size 5. Where does 20 land?", a: "Index 1 (10→0, 20 probes 0, then lands at 1)" },
     { q: "Table size 11, separate chaining, 33 keys inserted uniformly. Load factor?", a: "33/11 = 3.0" },
-    { q: "Why is probing poor when α > 0.7?", a: "Primary clustering — long runs cause every probe to visit many occupied cells, turning O(1) into O(n)" },
+    { q: "Why is probing poor when α > 0.7?", a: "Primary clustering, long runs cause every probe to visit many occupied cells, turning O(1) into O(n)" },
   ];
   const [guess, setGuess] = useState<(string | null)[]>(probs.map(() => null));
   const [show, setShow] = useState<boolean[]>(probs.map(() => false));
@@ -432,7 +432,7 @@ function InsightTab() {
         <SubHeading>Why prime table sizes?</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           With 'key mod size', if size has many divisors (like powers of 2), input keys sharing those
-          divisors collide systematically. A prime has no small divisors — the modulo spreads keys more
+          divisors collide systematically. A prime has no small divisors, the modulo spreads keys more
           evenly. Java's HashMap uses power-of-two sizes + a bit-mixing step to compensate.
         </p>
       </Card>
@@ -480,7 +480,7 @@ export default function L2_Hashing({ onQuizComplete }: Props) {
       question: "Primary clustering is a weakness of which collision resolution method?",
       options: ["Separate chaining", "Linear probing", "Quadratic probing", "Double hashing"],
       correctIndex: 1,
-      explanation: "Linear probing creates contiguous runs of filled cells that grow and merge — future insertions must traverse these runs, degrading performance.",
+      explanation: "Linear probing creates contiguous runs of filled cells that grow and merge, future insertions must traverse these runs, degrading performance.",
     },
     {
       question: "In a hash table with separate chaining, n keys and m buckets, average search cost is?",
@@ -508,7 +508,7 @@ export default function L2_Hashing({ onQuizComplete }: Props) {
       lessonNumber={6}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="Hash maps power two-sum, group-anagrams, LRU cache — almost every interview uses one."
+      placementRelevance="Hash maps power two-sum, group-anagrams, LRU cache, almost every interview uses one."
       nextLessonHint="Binary Tree Traversals"
       onQuizComplete={onQuizComplete}
     />

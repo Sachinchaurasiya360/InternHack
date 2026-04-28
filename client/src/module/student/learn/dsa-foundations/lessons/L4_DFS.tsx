@@ -174,15 +174,15 @@ function buildDFSFrames(
       d[v] = time;
       meta[v] = { d: time };
       recStack.push({ u: v, ni: 0 });
-      f.push(clone({ line: 9, message: `${v} is WHITE — Tree edge. Recurse into ${v}. d[${v}] = ${time}.`, vars: { time, u, v }, flashKey: v }));
+      f.push(clone({ line: 9, message: `${v} is WHITE, Tree edge. Recurse into ${v}. d[${v}] = ${time}.`, vars: { time, u, v }, flashKey: v }));
     } else if (color[v] === "G") {
       edgeLabels[k] = "B";
       edgeBack.add(k);
-      f.push(clone({ line: 11, message: `${v} is GRAY (ancestor on stack) — Back edge. Cycle detected.`, vars: { time, u, v } }));
+      f.push(clone({ line: 11, message: `${v} is GRAY (ancestor on stack), Back edge. Cycle detected.`, vars: { time, u, v } }));
     } else {
       const isF = d[u] < d[v];
       edgeLabels[k] = isF ? "F" : "C";
-      f.push(clone({ line: 13, message: `${v} is BLACK — ${isF ? "Forward" : "Cross"} edge.`, vars: { time, u, v } }));
+      f.push(clone({ line: 13, message: `${v} is BLACK, ${isF ? "Forward" : "Cross"} edge.`, vars: { time, u, v } }));
     }
   }
 
@@ -400,9 +400,9 @@ function VisualizeTab() {
 function LearnTab() {
   const sections = [
     { title: "DFS in one line", body: "Go as deep as possible, then backtrack. Uses a stack (implicit via recursion, or explicit). Each vertex gets a discovery time d[] and finish time f[]." },
-    { title: "Edge classification (directed)", body: "Tree edge — discovers a WHITE vertex. Back edge — reaches a GRAY ancestor (implies cycle). Forward edge — reaches a BLACK descendant. Cross edge — reaches a Black non-descendant." },
+    { title: "Edge classification (directed)", body: "Tree edge, discovers a WHITE vertex. Back edge, reaches a GRAY ancestor (implies cycle). Forward edge, reaches a BLACK descendant. Cross edge, reaches a Black non-descendant." },
     { title: "Parenthesis theorem", body: "For any two vertices u, v: intervals [d[u], f[u]] and [d[v], f[v]] are either disjoint or nested. This is what makes DFS timestamps so useful." },
-    { title: "Complexity", body: "O(V + E) with adjacency list — same as BFS. DFS is the workhorse for topological sort, SCC, bridge finding, and many more." },
+    { title: "Complexity", body: "O(V + E) with adjacency list, same as BFS. DFS is the workhorse for topological sort, SCC, bridge finding, and many more." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -437,8 +437,8 @@ function TryTab() {
       <Callout>Open the Visualize tab and check these traces.</Callout>
       {[
         "On preset 'With back edge' (A>B, B>C, C>A, C>D) from A, which edge is the back edge?  (Expected: C>A)",
-        "On preset 'DAG diamond' from A, list the finish order.  (Expected: D, B, C, A — typical left-first)",
-        "Can DFS on an undirected graph produce a forward edge?  (Expected: No — only tree and back edges)",
+        "On preset 'DAG diamond' from A, list the finish order.  (Expected: D, B, C, A, typical left-first)",
+        "Can DFS on an undirected graph produce a forward edge?  (Expected: No, only tree and back edges)",
       ].map((q, i) => (
         <Card key={i}>
           <div className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
@@ -514,7 +514,7 @@ export default function L4_DFS({ onQuizComplete }: Props) {
       options: ["Tree", "Forward", "Cross", "Back"],
       correctIndex: 3,
       explanation:
-        "A back edge connects a descendant to an ancestor still on the recursion stack — definitive proof of a cycle.",
+        "A back edge connects a descendant to an ancestor still on the recursion stack, definitive proof of a cycle.",
     },
     {
       question: "Time complexity of DFS using adjacency list?",
@@ -544,7 +544,7 @@ export default function L4_DFS({ onQuizComplete }: Props) {
       ],
       correctIndex: 1,
       explanation:
-        "In undirected DFS, every non-tree edge must be a back edge — forward and cross edges cannot occur.",
+        "In undirected DFS, every non-tree edge must be a back edge, forward and cross edges cannot occur.",
     },
   ];
 
@@ -555,7 +555,7 @@ export default function L4_DFS({ onQuizComplete }: Props) {
       lessonNumber={3}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="Very high — foundation of topo sort, SCC, cycle detection."
+      placementRelevance="Very high, foundation of topo sort, SCC, cycle detection."
       nextLessonHint="Topological Sort"
       onQuizComplete={onQuizComplete}
     />

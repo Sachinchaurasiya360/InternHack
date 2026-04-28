@@ -1,0 +1,527 @@
+{
+  "slug": "ai-engineer",
+  "title": "AI Engineer Roadmap",
+  "shortDescription": "Go from Python and statistics to shipping production-grade LLM and ML applications, with real projects at every step.",
+  "description": "An opinionated path for engineers who want to build with AI, not just consume it. You will learn the math and Python you actually need, classical machine learning, deep learning with PyTorch, the transformer stack that powers modern LLMs, retrieval-augmented generation, agents and tool use, and the production craft (evals, serving, cost) that separates a demo from a deployed product. Every topic is paired with curated free resources, a mini project, and a self-check question.",
+  "level": "ALL_LEVELS",
+  "estimatedHours": 320,
+  "outcomes": [
+    "Read modern AI papers and explain what is going on in plain language",
+    "Build, train, and evaluate small models in PyTorch",
+    "Ship production LLM apps with RAG, tool use, and proper evals",
+    "Reason about cost, latency, and reliability for AI systems",
+    "Identify and mitigate hallucinations, bias, and safety issues",
+    "Hold your own in an AI engineer interview"
+  ],
+  "prerequisites": [
+    "Comfort with at least one programming language",
+    "High-school math (algebra, basic stats). We refresh the rest",
+    "About 6 to 12 hours per week for 10 to 16 weeks"
+  ],
+  "tags": ["ai", "machine-learning", "llm", "deep-learning", "rag", "career"],
+  "faqs": [
+    { "q": "Do I need a math degree?", "a": "No. You need enough linear algebra, calculus, and statistics to follow what's happening. We point you to free, focused refreshers." },
+    { "q": "Do I need a GPU?", "a": "Not really. Free tiers like Google Colab and Kaggle Notebooks are enough for everything in this roadmap." },
+    { "q": "Will I be ready for an AI engineer job?", "a": "If you finish the roadmap and ship the capstones, you will have a portfolio that competes with most bootcamp grads and many junior AI engineers." },
+    { "q": "Should I learn ML before LLMs, or start with LLMs?", "a": "We do both, in order. Starting with LLMs is fun but you hit a ceiling fast without the ML and deep-learning foundations. The sequence is intentional." },
+    { "q": "Is this really free?", "a": "Yes. Every linked resource is free." }
+  ],
+  "sections": [
+    {
+      "slug": "ai-foundations",
+      "title": "Foundations: Python and Math",
+      "summary": "The minimum viable Python, numerical libraries, and math you need to read and write modern AI code.",
+      "topics": [
+        {
+          "slug": "python-for-ai",
+          "title": "Python for AI",
+          "summary": "The slice of Python that ML code actually uses: types, functions, generators, dataclasses, and the standard library you will touch every day.",
+          "estimatedHours": 6,
+          "difficulty": 1,
+          "prerequisiteSlugs": [],
+          "contentMd": "AI code is mostly Python, but it is not the Python you might write for a Django app. You will see lots of vectors, tensors, generators, decorators, and a Jupyter-friendly style.\n\nFocus areas:\n- Types and type hints (typing, TypedDict, Protocol)\n- List, dict, and set comprehensions\n- Generators and itertools\n- dataclasses and Pydantic models for structured data\n- Context managers and the with statement\n- Reading scientific Python style without flinching\n\nIf you already know Python, this should be a fast refresher. If you are new, do not skip it. The rest of the roadmap assumes this is comfortable.",
+          "miniProject": "Take a CSV file of any size, write a Python script that streams it line by line, applies a transformation to one column, and writes the output without ever loading the whole file into memory.",
+          "selfCheck": "What does a generator do that a list does not, and when is that the right tool?",
+          "resources": [
+            { "kind": "BOOK", "title": "Python crash course (free online)", "url": "https://learnpythonthehardway.org/python3/", "source": "Learn Python the Hard Way", "isFree": true },
+            { "kind": "DOCS", "title": "Python tutorial", "url": "https://docs.python.org/3/tutorial/", "source": "Python.org", "isFree": true },
+            { "kind": "VIDEO", "title": "Modern Python features in 5 minutes", "url": "https://www.youtube.com/watch?v=hvTSmYWHYhI", "source": "YouTube", "isFree": true },
+            { "kind": "DOCS", "title": "PEP 484 type hints", "url": "https://peps.python.org/pep-0484/", "source": "PEP", "isFree": true }
+          ]
+        },
+        {
+          "slug": "numpy-and-pandas",
+          "title": "NumPy and pandas",
+          "summary": "The two libraries everything else is built on. Vectorized thinking, broadcasting, and dataframe ergonomics.",
+          "estimatedHours": 8,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["python-for-ai"],
+          "contentMd": "NumPy gives you fast, vectorized arrays. pandas gives you tabular data manipulation. Almost every ML library wraps or interoperates with these two.\n\nKey concepts:\n- Vectorization: write loops as array operations and watch your code get 100x faster\n- Broadcasting: how arrays of different shapes combine\n- pandas Series, DataFrame, indexing, groupby, merge, and pivot\n- Reading and writing CSV, parquet, and JSON\n- Memory dtypes: when to use float32 instead of float64\n\nWriting NumPy code without explicit Python loops takes practice. Force yourself to do it.",
+          "miniProject": "Load a public dataset (Iris, Titanic, or NYC taxi rides). Compute summary statistics, group by a categorical column, and produce a small report. Avoid Python for-loops over rows.",
+          "selfCheck": "Why is np.dot(a, b) often hundreds of times faster than a Python for-loop that multiplies and sums?",
+          "resources": [
+            { "kind": "DOCS", "title": "NumPy quickstart", "url": "https://numpy.org/doc/stable/user/quickstart.html", "source": "NumPy", "isFree": true },
+            { "kind": "DOCS", "title": "10 minutes to pandas", "url": "https://pandas.pydata.org/docs/user_guide/10min.html", "source": "pandas", "isFree": true },
+            { "kind": "ARTICLE", "title": "From Python to NumPy", "url": "https://www.labri.fr/perso/nrougier/from-python-to-numpy/", "source": "Nicolas Rougier", "isFree": true }
+          ]
+        },
+        {
+          "slug": "math-essentials",
+          "title": "Math you actually need",
+          "summary": "Linear algebra, calculus, and probability, focused on what matters for ML and LLMs.",
+          "estimatedHours": 12,
+          "difficulty": 3,
+          "prerequisiteSlugs": [],
+          "contentMd": "You do not need a math degree, but you need to be fluent enough to read papers and debug models. Focus on the parts that actually appear in code.\n\nLinear algebra:\n- Vectors, matrices, dot products, matrix multiplication\n- Eigenvalues and decompositions (SVD, PCA)\n- Why everything in deep learning is a matrix multiply\n\nCalculus:\n- Derivatives and gradients\n- Chain rule (this is what backpropagation is)\n- Partial derivatives in higher dimensions\n\nProbability and statistics:\n- Random variables, expectation, variance\n- Bayes' rule (read it three times)\n- Distributions: normal, Bernoulli, categorical\n- Hypothesis testing basics\n\nWatch 3Blue1Brown's series on linear algebra and on neural networks. They build the right intuitions visually.",
+          "miniProject": "Implement, from scratch in NumPy, a function that takes a list of vectors and returns the matrix of pairwise cosine similarities. No external libraries beyond NumPy.",
+          "selfCheck": "What does the gradient of a loss function tell you, and why does gradient descent move in the negative direction of it?",
+          "resources": [
+            { "kind": "VIDEO", "title": "Essence of linear algebra", "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab", "source": "3Blue1Brown", "isFree": true },
+            { "kind": "VIDEO", "title": "Neural networks from scratch", "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi", "source": "3Blue1Brown", "isFree": true },
+            { "kind": "BOOK", "title": "Mathematics for machine learning (free)", "url": "https://mml-book.github.io/", "source": "Deisenroth, Faisal, Ong", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "machine-learning-essentials",
+      "title": "Classical Machine Learning",
+      "summary": "The mental model and core algorithms behind every modern AI system.",
+      "topics": [
+        {
+          "slug": "ml-mental-model",
+          "title": "How ML actually works",
+          "summary": "Supervised vs unsupervised, training vs inference, and why the bias-variance tradeoff matters in real life.",
+          "estimatedHours": 6,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["math-essentials"],
+          "contentMd": "Most of machine learning fits in a small mental frame: you have data, you assume a function shape, you find parameters that minimize a loss, you check generalization on held-out data. Everything else is variation.\n\nLearn:\n- The training loop: data, model, loss, optimizer, eval\n- Train, validation, test split (and why you must not peek at test)\n- Bias-variance tradeoff and overfitting in plain language\n- Cross-validation when data is small\n- Why scaling and feature engineering can dominate model choice\n\nThe boring framework above is most of the job. Everything fancy plugs into it.",
+          "miniProject": "Predict house prices on the California housing dataset using a linear model. Split into train/val/test properly. Beat the dataset's mean as your baseline.",
+          "selfCheck": "Explain to a non-ML friend why training error going down does not always mean the model is improving.",
+          "resources": [
+            { "kind": "COURSE", "title": "Machine learning specialization", "url": "https://www.coursera.org/specializations/machine-learning-introduction", "source": "Coursera (audit free)", "isFree": true },
+            { "kind": "ARTICLE", "title": "A few useful things to know about ML", "url": "https://homes.cs.washington.edu/~pedrod/papers/cacm12.pdf", "source": "Pedro Domingos", "isFree": true }
+          ]
+        },
+        {
+          "slug": "supervised-models",
+          "title": "Linear, logistic, trees, and ensembles",
+          "summary": "The classical models you will reach for first, and the intuition for why they work.",
+          "estimatedHours": 10,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["ml-mental-model"],
+          "contentMd": "Before reaching for a transformer, see how far you can get with a logistic regression. The answer is often surprisingly far.\n\nLearn the intuitions and when to reach for each:\n- Linear and logistic regression\n- Decision trees and random forests\n- Gradient boosted trees (XGBoost, LightGBM)\n- k-Nearest Neighbors and k-Means\n\nFocus on what each model assumes about the data, what it does well, and how to tell when it is wrong. Read scikit-learn's documentation, it is genuinely excellent.",
+          "miniProject": "On any tabular Kaggle dataset, compare logistic regression, random forest, and XGBoost. Report which wins and write two paragraphs on why.",
+          "selfCheck": "When would you prefer XGBoost over a deep neural network on tabular data, and why?",
+          "resources": [
+            { "kind": "DOCS", "title": "scikit-learn user guide", "url": "https://scikit-learn.org/stable/user_guide.html", "source": "scikit-learn", "isFree": true },
+            { "kind": "BOOK", "title": "Introduction to statistical learning (free)", "url": "https://www.statlearning.com/", "source": "James, Witten, Hastie, Tibshirani", "isFree": true }
+          ]
+        },
+        {
+          "slug": "evaluation-and-metrics",
+          "title": "Evaluation and metrics",
+          "summary": "If you cannot measure, you cannot improve. Pick the metric that matches the business question.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["supervised-models"],
+          "contentMd": "Choosing the wrong metric is one of the most common ways AI projects fail.\n\nFor classification:\n- Accuracy and why it is misleading on imbalanced data\n- Precision, recall, F1, and the tradeoff\n- ROC-AUC and PR-AUC\n- Confusion matrices, read them out loud\n\nFor regression:\n- MAE, MSE, RMSE, R squared\n\nFor ranking and retrieval:\n- nDCG, MRR, recall@k, MAP\n\nFor LLMs:\n- Exact match, F1, BLEU, ROUGE (and why these are weak)\n- LLM-as-judge, human eval, and golden datasets\n\nGet comfortable answering 'what does success look like' before training a single model.",
+          "miniProject": "On an imbalanced binary classification dataset (fraud detection works well), build two models. Optimize one for accuracy, one for F1. Show how their behaviors differ.",
+          "selfCheck": "Your fraud model has 99% accuracy. Your boss is excited. Why might you not be?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Choosing the right metric for an ML problem", "url": "https://towardsdatascience.com/the-5-classification-evaluation-metrics-you-must-know-aa97784ff226", "source": "Towards Data Science", "isFree": true },
+            { "kind": "DOCS", "title": "scikit-learn metrics", "url": "https://scikit-learn.org/stable/modules/model_evaluation.html", "source": "scikit-learn", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "deep-learning",
+      "title": "Deep Learning",
+      "summary": "Neural networks, PyTorch, and the architectures that power modern AI.",
+      "topics": [
+        {
+          "slug": "neural-networks-from-scratch",
+          "title": "Neural networks from scratch",
+          "summary": "Build a small neural net by hand so the math stops being magic.",
+          "estimatedHours": 10,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["math-essentials", "supervised-models"],
+          "contentMd": "Until you have implemented backprop yourself once, deep learning is going to feel like a black box. So, do it.\n\nFollow Karpathy's Zero to Hero series, which builds micrograd (a tiny autograd engine) and then a small neural net from scratch. Pause the videos, code along, do not just watch.\n\nKey concepts:\n- Forward pass and computational graphs\n- Backpropagation and the chain rule (this is just the chain rule)\n- Activation functions: ReLU, sigmoid, softmax\n- Loss functions for classification and regression\n- Stochastic gradient descent and why batch size matters",
+          "miniProject": "Implement a 2-layer neural network in pure NumPy. Train it on MNIST. No PyTorch, no TensorFlow. When it works, you have earned the right to use a framework.",
+          "selfCheck": "Walk through one full step of backpropagation on a simple network with two weights. What does each gradient represent?",
+          "resources": [
+            { "kind": "VIDEO", "title": "Neural networks: zero to hero", "url": "https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ", "source": "Andrej Karpathy", "isFree": true },
+            { "kind": "BOOK", "title": "Neural networks and deep learning (free)", "url": "http://neuralnetworksanddeeplearning.com/", "source": "Michael Nielsen", "isFree": true }
+          ]
+        },
+        {
+          "slug": "pytorch-fundamentals",
+          "title": "PyTorch fundamentals",
+          "summary": "The framework most modern AI is written in. Tensors, autograd, modules, and training loops.",
+          "estimatedHours": 8,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["neural-networks-from-scratch"],
+          "contentMd": "PyTorch is the lingua franca of modern AI research and a huge chunk of production. Get comfortable.\n\nFocus:\n- Tensors and operations (it is mostly NumPy with autograd and GPU support)\n- nn.Module and the standard layer toolbox\n- Autograd and how gradients flow\n- The standard training loop pattern (forward, loss, backward, step, zero_grad)\n- DataLoader and Dataset abstractions\n- Moving things between CPU and GPU\n\nFollow PyTorch's official tutorials end to end. Do not skim.",
+          "miniProject": "Re-implement your MNIST classifier in PyTorch with a DataLoader, a real nn.Module, and a proper training loop. Compare time and accuracy to your NumPy version.",
+          "selfCheck": "What does optimizer.zero_grad() do, and what happens if you forget it?",
+          "resources": [
+            { "kind": "DOCS", "title": "PyTorch tutorials", "url": "https://pytorch.org/tutorials/beginner/basics/intro.html", "source": "PyTorch", "isFree": true },
+            { "kind": "VIDEO", "title": "Practical deep learning for coders", "url": "https://course.fast.ai/", "source": "fast.ai", "isFree": true }
+          ]
+        },
+        {
+          "slug": "cnns-rnns-transformers",
+          "title": "CNNs, RNNs, and Transformers",
+          "summary": "The three architectures you must understand. Mostly transformers, but the others still matter.",
+          "estimatedHours": 14,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["pytorch-fundamentals"],
+          "contentMd": "Architectures are the alphabet of deep learning. You do not need to memorize all of them, but you need fluency in three.\n\nCNNs (convolutional neural networks):\n- Why convolutions work well for images\n- Pooling, stride, padding\n- Read about ResNet and transfer learning\n\nRNNs and LSTMs:\n- Sequence modeling before transformers\n- Vanishing gradients and why LSTMs help\n- They still appear in production sometimes\n\nTransformers:\n- Attention is all you need: read the paper, then read it again\n- Self-attention, multi-head attention\n- Position encodings\n- The encoder-decoder split, encoder-only (BERT), decoder-only (GPT)\n\nKarpathy's nanoGPT walkthrough is the most concrete way to learn the transformer.",
+          "miniProject": "Use Karpathy's nanoGPT to train a tiny character-level language model on a corpus of your choice (Shakespeare, your tweets, or a book). Get it to produce coherent-looking text.",
+          "selfCheck": "What is the role of attention in a transformer, and why does it scale better than RNNs to long sequences?",
+          "resources": [
+            { "kind": "VIDEO", "title": "Let's build GPT from scratch", "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY", "source": "Andrej Karpathy", "isFree": true },
+            { "kind": "ARTICLE", "title": "The illustrated transformer", "url": "https://jalammar.github.io/illustrated-transformer/", "source": "Jay Alammar", "isFree": true },
+            { "kind": "ARTICLE", "title": "Attention is all you need (paper)", "url": "https://arxiv.org/abs/1706.03762", "source": "Vaswani et al.", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "data-and-features",
+      "title": "Data, Features, and Embeddings",
+      "summary": "Real-world AI is mostly data work. Cleaning, structuring, and turning things into vectors.",
+      "topics": [
+        {
+          "slug": "data-cleaning-feature-engineering",
+          "title": "Data cleaning and feature engineering",
+          "summary": "The unglamorous skill that decides most ML projects.",
+          "estimatedHours": 6,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["numpy-and-pandas"],
+          "contentMd": "Most of an ML engineer's time is spent making data usable. Embrace it.\n\nLearn:\n- Handling missing values (drop, impute, model)\n- Categorical encodings (one-hot, target, embedding)\n- Numerical scaling (standard, min-max, robust)\n- Outlier handling\n- Feature crosses and aggregations\n- Time-based features for temporal data\n- Data leakage: the most expensive bug in ML\n\nA strong baseline with great features beats a fancy model with mediocre features almost every time.",
+          "miniProject": "Take a raw, messy dataset (e.g., a Kaggle competition's training data). Document every cleaning and feature decision in a notebook, then train a model on the cleaned data.",
+          "selfCheck": "What is data leakage, give a concrete example, and how do you guard against it?",
+          "resources": [
+            { "kind": "BOOK", "title": "Feature engineering for machine learning (free chapters)", "url": "https://www.oreilly.com/library/view/feature-engineering-for/9781491953235/", "source": "O'Reilly", "isFree": true },
+            { "kind": "ARTICLE", "title": "Tidy data", "url": "https://vita.had.co.nz/papers/tidy-data.pdf", "source": "Hadley Wickham", "isFree": true }
+          ]
+        },
+        {
+          "slug": "embeddings-and-vectors",
+          "title": "Embeddings and vector representations",
+          "summary": "Why everything in modern AI is a vector, and how to use that.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["math-essentials", "cnns-rnns-transformers"],
+          "contentMd": "Embeddings turn discrete things (words, images, products, users) into vectors in a space where similar things are close.\n\nFocus:\n- Word2Vec and the basic idea of embeddings\n- Sentence embeddings via transformer encoders\n- Cosine similarity vs Euclidean distance\n- Embeddings for retrieval, clustering, classification, and recommendation\n- Multimodal embeddings (CLIP) and why they are wild\n\nOnce you internalize the embedding view of the world, a lot of AI engineering becomes 'turn it into a vector and ask questions of the vector space'.",
+          "miniProject": "Use the OpenAI embeddings API or a free model (sentence-transformers) to embed a list of articles. Build a 'find similar' tool by ranking cosine similarity.",
+          "selfCheck": "Why does cosine similarity often work better than Euclidean distance for high-dimensional embeddings?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "The illustrated word2vec", "url": "https://jalammar.github.io/illustrated-word2vec/", "source": "Jay Alammar", "isFree": true },
+            { "kind": "DOCS", "title": "sentence-transformers", "url": "https://www.sbert.net/", "source": "SBERT", "isFree": true }
+          ]
+        },
+        {
+          "slug": "vector-databases",
+          "title": "Vector databases and ANN search",
+          "summary": "Storing and searching billions of embeddings without melting your laptop.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["embeddings-and-vectors"],
+          "contentMd": "When you have more than a few thousand embeddings, brute-force similarity search stops being fun. You reach for an approximate nearest neighbor (ANN) index.\n\nLearn:\n- The tradeoff: ANN is faster but slightly less accurate\n- HNSW, IVF-PQ, ScaNN: pick one to understand deeply\n- Vector databases: pgvector, Weaviate, Qdrant, Pinecone, Milvus\n- Hybrid search: combining vector similarity with keyword (BM25) search\n- Metadata filtering on top of vector search\n\nFor most apps, pgvector on Postgres is enough. Start there.",
+          "miniProject": "Set up pgvector locally. Embed 10k Wikipedia paragraphs, store them, and build a search API that returns top-5 matches for a query.",
+          "selfCheck": "Why is hybrid search (vector + keyword) often better than vector search alone for production RAG?",
+          "resources": [
+            { "kind": "DOCS", "title": "pgvector", "url": "https://github.com/pgvector/pgvector", "source": "GitHub", "isFree": true },
+            { "kind": "ARTICLE", "title": "Faiss tutorial", "url": "https://www.pinecone.io/learn/series/faiss/", "source": "Pinecone Learn", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "nlp-and-llms",
+      "title": "NLP and Large Language Models",
+      "summary": "From tokenization to fine-tuning, the modern LLM stack.",
+      "topics": [
+        {
+          "slug": "tokenization-and-attention",
+          "title": "Tokenization and attention, deeply",
+          "summary": "What an LLM actually sees and how it decides what to pay attention to.",
+          "estimatedHours": 6,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["cnns-rnns-transformers"],
+          "contentMd": "LLMs do not read text. They read token IDs. The tokenizer is a quiet but enormous part of how an LLM behaves.\n\nLearn:\n- Byte-pair encoding (BPE) and SentencePiece\n- Why models have a fixed vocabulary and what happens out of vocabulary\n- Why some words cost more tokens than others\n- Self-attention from first principles, then with multi-head\n- KV cache and why inference scales the way it does\n\nKarpathy's tokenizer video is gold here.",
+          "miniProject": "Pick three sentences with the same meaning but different writing styles. Tokenize each with tiktoken (OpenAI's tokenizer). Report token counts and what surprised you.",
+          "selfCheck": "Why might 'Hello world!' and 'hello world!' tokenize to different numbers of tokens, and why does that matter for cost?",
+          "resources": [
+            { "kind": "VIDEO", "title": "Let's build the GPT tokenizer", "url": "https://www.youtube.com/watch?v=zduSFxRajkE", "source": "Andrej Karpathy", "isFree": true },
+            { "kind": "DOCS", "title": "Hugging Face NLP course", "url": "https://huggingface.co/learn/nlp-course/chapter1/1", "source": "Hugging Face", "isFree": true }
+          ]
+        },
+        {
+          "slug": "prompt-engineering",
+          "title": "Prompt engineering, seriously",
+          "summary": "The skill that does not get the respect it deserves. Specific patterns that reliably work.",
+          "estimatedHours": 5,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["tokenization-and-attention"],
+          "contentMd": "Prompt engineering is real engineering. The same model can produce wildly different output depending on how you ask.\n\nFocus on patterns that survive in production:\n- Clear role + task + format + constraints structure\n- Few-shot examples and when they help vs hurt\n- Chain of thought and step-by-step prompting\n- Self-consistency and majority voting\n- Structured output (JSON mode, schema)\n- Guardrails and refusal-handling\n\nKeep a prompt journal. Save what works. The portable knowledge here is bigger than any single model.",
+          "miniProject": "Pick a real task (e.g., extracting structured info from emails). Iterate through five prompt variants. Track accuracy on a small test set. Pick a winner with data.",
+          "selfCheck": "Why does adding 'let's think step by step' often improve LLM output on reasoning tasks?",
+          "resources": [
+            { "kind": "DOCS", "title": "OpenAI prompt engineering guide", "url": "https://platform.openai.com/docs/guides/prompt-engineering", "source": "OpenAI", "isFree": true },
+            { "kind": "DOCS", "title": "Anthropic prompt engineering", "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", "source": "Anthropic", "isFree": true },
+            { "kind": "ARTICLE", "title": "Prompting guide", "url": "https://www.promptingguide.ai/", "source": "promptingguide.ai", "isFree": true }
+          ]
+        },
+        {
+          "slug": "fine-tuning-and-lora",
+          "title": "Fine-tuning, LoRA, and instruction tuning",
+          "summary": "When prompts are not enough, you customize the weights. Practically and on a budget.",
+          "estimatedHours": 8,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["pytorch-fundamentals", "tokenization-and-attention"],
+          "contentMd": "You probably do not need to fine-tune. Try prompting + RAG first. But when you need to, the modern toolkit lets you do it cheaply.\n\nLearn:\n- Full fine-tuning vs PEFT vs LoRA\n- LoRA's intuition: train a tiny adapter, freeze the base\n- Hugging Face Transformers + PEFT for cheap fine-tuning\n- Instruction tuning and supervised fine-tuning datasets\n- Quick mention of RLHF and DPO so the words do not scare you\n\nFine-tune a small open model (Llama 3 8B or smaller) on Colab. Deal with OOMs once and you will respect the engineering.",
+          "miniProject": "Fine-tune a small model (Phi-3-mini or smaller) on a domain dataset of your choice using LoRA. Compare its outputs to the base model on three sample prompts.",
+          "selfCheck": "Why is LoRA so much cheaper than full fine-tuning, and when does the quality difference matter?",
+          "resources": [
+            { "kind": "DOCS", "title": "Hugging Face PEFT", "url": "https://huggingface.co/docs/peft/index", "source": "Hugging Face", "isFree": true },
+            { "kind": "ARTICLE", "title": "LoRA: low-rank adaptation", "url": "https://arxiv.org/abs/2106.09685", "source": "Hu et al.", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "building-ai-products",
+      "title": "Building AI Products",
+      "summary": "Wire LLMs into real applications with retrieval, tools, and agents.",
+      "topics": [
+        {
+          "slug": "llm-apis",
+          "title": "LLM APIs in production code",
+          "summary": "Calling OpenAI, Anthropic, and Gemini reliably, with retries, streaming, and structured output.",
+          "estimatedHours": 5,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["prompt-engineering"],
+          "contentMd": "Almost every AI product is built on top of one or more LLM APIs. Master the boring engineering around them.\n\nFocus:\n- Authentication and SDK basics (OpenAI, Anthropic, Google)\n- Streaming responses for snappy UX\n- Structured outputs (function calling, JSON schema)\n- Retries with backoff for 429/5xx\n- Cost tracking by tokens and model\n- Idempotency for retried requests\n- Picking the right model: cost vs quality vs latency\n\nThe Anthropic and OpenAI docs are excellent. Read them end to end before you build.",
+          "miniProject": "Build a Node.js or Python service with one endpoint that wraps an LLM, supports streaming, retries on 429, and returns structured JSON.",
+          "selfCheck": "Why must you handle the 429 rate-limit response with backoff rather than retrying immediately?",
+          "resources": [
+            { "kind": "DOCS", "title": "Anthropic API reference", "url": "https://docs.anthropic.com/en/api/getting-started", "source": "Anthropic", "isFree": true },
+            { "kind": "DOCS", "title": "OpenAI API reference", "url": "https://platform.openai.com/docs/api-reference", "source": "OpenAI", "isFree": true },
+            { "kind": "DOCS", "title": "Gemini API quickstart", "url": "https://ai.google.dev/gemini-api/docs/quickstart", "source": "Google AI", "isFree": true }
+          ]
+        },
+        {
+          "slug": "rag-pipelines",
+          "title": "Retrieval-augmented generation (RAG)",
+          "summary": "The single most useful pattern in applied AI right now. Build it from primitives, then use a framework.",
+          "estimatedHours": 8,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["embeddings-and-vectors", "vector-databases", "llm-apis"],
+          "contentMd": "RAG is how you get an LLM to answer using your data, without fine-tuning.\n\nThe core loop:\n1. Chunk your documents (smartly, not too small, not too big)\n2. Embed the chunks and store them in a vector DB\n3. Embed the user question and retrieve top-k similar chunks\n4. Stuff the retrieved chunks into the prompt as context\n5. Have the LLM answer, citing its sources\n\nGetting RAG actually good in production is harder than the demo:\n- Chunking strategies (fixed size, semantic, parent-child)\n- Hybrid search and reranking (Cohere reranker, BM25 + vector)\n- Query rewriting and expansion\n- Source citation and grounding\n- Evals: did the retrieved context contain the answer?\n\nBuild it from scratch first, then optionally use LangChain or LlamaIndex.",
+          "miniProject": "Build a RAG chatbot over a folder of documents (your own notes, a textbook, or open data). Implement chunking, embedding, vector search, and answer generation. Show citations in the UI.",
+          "selfCheck": "Why does a chunk size of 4000 tokens often hurt retrieval quality? What about 100 tokens?",
+          "resources": [
+            { "kind": "DOCS", "title": "LangChain RAG tutorial", "url": "https://python.langchain.com/docs/tutorials/rag/", "source": "LangChain", "isFree": true },
+            { "kind": "DOCS", "title": "LlamaIndex RAG guide", "url": "https://docs.llamaindex.ai/en/stable/getting_started/concepts/", "source": "LlamaIndex", "isFree": true },
+            { "kind": "ARTICLE", "title": "12 RAG pain points and solutions", "url": "https://towardsdatascience.com/12-rag-pain-points-and-proposed-solutions-43709939a28c", "source": "Towards Data Science", "isFree": true }
+          ]
+        },
+        {
+          "slug": "agents-and-tools",
+          "title": "Agents, tool use, and multi-step workflows",
+          "summary": "When the LLM stops just generating text and starts doing things.",
+          "estimatedHours": 7,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["llm-apis", "rag-pipelines"],
+          "contentMd": "Agents are LLMs that loop, decide what to do next, and call tools. They are powerful and they are easy to misuse.\n\nKey ideas:\n- Tool use (function calling): give the model a JSON schema of available tools\n- The ReAct pattern: thought, action, observation, repeat\n- Planning vs reactive agents\n- When agents help (genuinely open-ended tasks) and when they hurt (you should have written code)\n- Reliability: timeouts, max iterations, fallbacks, observability\n- Frameworks: LangGraph, OpenAI Agents SDK, Anthropic Computer Use\n\nStart with explicit, hand-rolled loops. Reach for a framework only when the explicit version is genuinely too noisy.",
+          "miniProject": "Build an agent that, given a question, decides whether to use web search, a calculator, or your private RAG index. Cap it at 5 iterations and log every decision.",
+          "selfCheck": "Why should every agent have a hard iteration cap, even for tasks you expect to finish in 2 steps?",
+          "resources": [
+            { "kind": "DOCS", "title": "LangGraph quickstart", "url": "https://langchain-ai.github.io/langgraph/", "source": "LangChain", "isFree": true },
+            { "kind": "DOCS", "title": "OpenAI function calling", "url": "https://platform.openai.com/docs/guides/function-calling", "source": "OpenAI", "isFree": true },
+            { "kind": "ARTICLE", "title": "Building effective agents", "url": "https://www.anthropic.com/research/building-effective-agents", "source": "Anthropic", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "production-ai",
+      "title": "Production AI Engineering",
+      "summary": "Make your AI cheap, fast, observable, and trustworthy.",
+      "topics": [
+        {
+          "slug": "serving-and-latency",
+          "title": "Serving models and managing latency",
+          "summary": "From a notebook to a product users will actually wait for.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["pytorch-fundamentals", "llm-apis"],
+          "contentMd": "Productionizing AI is mostly about engineering, not models.\n\nFor model APIs:\n- Caching of identical requests\n- Streaming for perceived latency\n- Parallelizing independent calls\n- Choosing between hosted APIs vs self-hosted models\n\nFor self-hosted:\n- ONNX, TorchScript, TensorRT for inference\n- vLLM, TGI for fast LLM serving\n- Batching for throughput\n- Model quantization (int8, int4) for memory\n\nMost AI startups should start with hosted APIs. Self-host only when economics or privacy require it.",
+          "miniProject": "Deploy a small model behind a FastAPI endpoint, add caching, and benchmark requests-per-second with and without caching.",
+          "selfCheck": "When does it make economic sense to self-host an open model instead of paying a hosted API per token?",
+          "resources": [
+            { "kind": "DOCS", "title": "vLLM", "url": "https://docs.vllm.ai/en/latest/", "source": "vLLM", "isFree": true },
+            { "kind": "DOCS", "title": "Hugging Face TGI", "url": "https://huggingface.co/docs/text-generation-inference/index", "source": "Hugging Face", "isFree": true }
+          ]
+        },
+        {
+          "slug": "evals-and-observability",
+          "title": "Evals, monitoring, and continuous improvement",
+          "summary": "If you cannot measure quality, you cannot improve it. Build evals before you ship.",
+          "estimatedHours": 5,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["evaluation-and-metrics", "llm-apis"],
+          "contentMd": "LLM apps drift. Models change. Users surprise you. Evals are how you find out before users do.\n\nLayered evaluation:\n- Unit-level: golden datasets with expected outputs (regression tests for prompts)\n- LLM-as-judge for harder-to-grade tasks\n- A/B testing in production for high-traffic apps\n- Human review for the most subjective tasks\n\nObservability:\n- Log every prompt, response, and metadata (with PII redaction)\n- Track token usage by feature\n- Alert on error rates and latency p95/p99\n- Tools: LangSmith, Helicone, Arize, your own database\n\nThe team that ships fastest is the one that can answer 'is this prompt better than what we had yesterday' in five minutes.",
+          "miniProject": "Add a simple eval harness to your RAG bot from earlier. 20 question-answer pairs, run them against your prompt, score with an LLM-as-judge, and report a metric.",
+          "selfCheck": "What is LLM-as-judge, and why do you still need a small set of human-graded examples to trust the judge?",
+          "resources": [
+            { "kind": "DOCS", "title": "OpenAI evals", "url": "https://github.com/openai/evals", "source": "OpenAI", "isFree": true },
+            { "kind": "ARTICLE", "title": "Your AI product needs evals", "url": "https://hamel.dev/blog/posts/evals/", "source": "Hamel Husain", "isFree": true }
+          ]
+        },
+        {
+          "slug": "cost-and-quotas",
+          "title": "Cost, caching, and rate limits",
+          "summary": "AI is expensive. Real engineering shows up in the bill.",
+          "estimatedHours": 3,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["llm-apis"],
+          "contentMd": "AI features are easy to ship and hard to keep affordable. Build for cost from day one.\n\nLearn:\n- Token counting and per-feature cost attribution\n- Prompt caching (Anthropic and OpenAI both support it)\n- Semantic cache for near-identical queries\n- Cheaper model fallback for non-critical tasks (e.g., a small model judges if a big model is needed)\n- Rate limit budgets per user to prevent abuse\n- Observability for cost spikes\n\nA single buggy retry loop can wipe out a month of margin in an hour. Guardrails matter.",
+          "miniProject": "Add prompt caching to a real LLM call, then measure the cost reduction across 100 requests with overlapping context.",
+          "selfCheck": "Why is prompt caching often a 30 to 90 percent cost reduction for RAG-style apps?",
+          "resources": [
+            { "kind": "DOCS", "title": "Anthropic prompt caching", "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching", "source": "Anthropic", "isFree": true },
+            { "kind": "DOCS", "title": "OpenAI prompt caching", "url": "https://platform.openai.com/docs/guides/prompt-caching", "source": "OpenAI", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "safety-and-responsibility",
+      "title": "Safety and Responsible AI",
+      "summary": "The parts that make adults trust your product.",
+      "topics": [
+        {
+          "slug": "hallucinations-and-grounding",
+          "title": "Hallucinations and grounding",
+          "summary": "Why LLMs make things up and what you can do about it.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["rag-pipelines"],
+          "contentMd": "An LLM does not know what it does not know. Treat every output as a confident claim that may be wrong.\n\nMitigations:\n- Ground in retrieved context (RAG) and require citation\n- Force structured outputs that are easier to validate\n- Use temperature 0 for deterministic tasks\n- Have a separate verifier model double-check critical outputs\n- Reject confident-sounding answers when retrieval finds nothing\n- Display sources prominently to the user\n\nThe goal is not perfection, it is calibration. A wrong answer with low confidence is recoverable. A wrong answer with high confidence is dangerous.",
+          "miniProject": "Add a 'confidence' signal to your RAG bot's responses. When retrieval similarity is low, force the bot to say 'I don't know' instead of guessing.",
+          "selfCheck": "Why does forcing the model to cite sources reduce hallucination, even though it can fabricate citations?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Hallucination is inevitable", "url": "https://arxiv.org/abs/2401.11817", "source": "Xu et al.", "isFree": true },
+            { "kind": "ARTICLE", "title": "Reducing hallucinations in LLM apps", "url": "https://www.anthropic.com/news/reduce-hallucinations", "source": "Anthropic", "isFree": true }
+          ]
+        },
+        {
+          "slug": "privacy-bias-redteaming",
+          "title": "Privacy, bias, and red teaming",
+          "summary": "PII handling, bias mitigation, and adversarial testing.",
+          "estimatedHours": 4,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["llm-apis"],
+          "contentMd": "Three families of issues that bite production AI apps:\n\nPrivacy:\n- Never log raw user PII (names, emails, IDs) with prompts\n- Be careful with vendor data retention policies\n- Differential privacy for training data when applicable\n\nBias and fairness:\n- Models inherit and sometimes amplify training data bias\n- Test outputs on inputs that vary protected attributes\n- Pay attention to disparate impact in deployed systems\n\nRed teaming:\n- Adversarial prompt testing (jailbreaks, prompt injection)\n- Treating the LLM's input as untrusted (it is)\n- Defense in depth: input filtering, output filtering, system-prompt hardening\n\nThis is also where regulation lives (GDPR, EU AI Act). Know enough to ask the right questions of legal.",
+          "miniProject": "Run 20 jailbreak attempts (from public lists) against your LLM app. Document which succeeded and harden your system prompt to defend.",
+          "selfCheck": "What is prompt injection, give one example, and what is one defense?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "OWASP top 10 for LLMs", "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/", "source": "OWASP", "isFree": true },
+            { "kind": "ARTICLE", "title": "Prompt injection explained", "url": "https://simonwillison.net/2023/Apr/14/worst-that-can-happen/", "source": "Simon Willison", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "capstone",
+      "title": "Capstone Projects",
+      "summary": "Put it all together. Build the thing recruiters and hiring managers want to see.",
+      "topics": [
+        {
+          "slug": "rag-chatbot-capstone",
+          "title": "Capstone: RAG product",
+          "summary": "Pick a real domain you care about. Ship a RAG product with proper evals, citations, and observability.",
+          "estimatedHours": 24,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["rag-pipelines", "evals-and-observability", "hallucinations-and-grounding"],
+          "contentMd": "Pick a corpus you actually care about: your university's coursework, a sport's stats, a public-policy area, a research field, your favorite book series. Build a chatbot that uses it well.\n\nMust-haves for the capstone:\n- A real frontend (deployed)\n- RAG with chunking, hybrid retrieval, reranking\n- Cited sources clickable from the UI\n- An eval set of at least 30 question-answer pairs\n- Observability: log every interaction\n- A README that explains the data, the architecture, and what you would do next\n\nThis is what you will demo in interviews.",
+          "miniProject": "Ship the capstone to a public URL. Write a 3-page README. Post it on LinkedIn.",
+          "selfCheck": "Could a stranger arrive at your URL, ask a question, and trust the answer? If not, what's missing?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "How to write a great README", "url": "https://github.com/matiassingers/awesome-readme", "source": "GitHub", "isFree": true }
+          ]
+        },
+        {
+          "slug": "agent-capstone",
+          "title": "Capstone: tool-using agent",
+          "summary": "An agent that does something useful with three or more tools, reliably.",
+          "estimatedHours": 18,
+          "difficulty": 5,
+          "prerequisiteSlugs": ["agents-and-tools", "evals-and-observability"],
+          "contentMd": "Build an agent that does a real task. Examples:\n- 'Research this company' agent that uses web search, then summarizes\n- 'Plan my week' agent that uses calendar + todo + weather\n- 'Code-review buddy' that runs a small set of static checks then comments\n\nMust-haves:\n- At least three tools the agent can call\n- A hard iteration cap and timeout\n- Logging of every tool call with inputs and outputs\n- A small eval set: scripted scenarios with expected behavior\n- Graceful failure when a tool errors\n\nThis is the project that signals you can build production AI.",
+          "miniProject": "Ship the agent capstone to a public URL or as an open-source CLI. Demo it on three real scenarios.",
+          "selfCheck": "What is your agent's worst behavior on adversarial inputs, and how do you prevent it?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Building effective agents", "url": "https://www.anthropic.com/research/building-effective-agents", "source": "Anthropic", "isFree": true }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "career",
+      "title": "Career and Interview Prep",
+      "summary": "Convert the work you did into offers.",
+      "topics": [
+        {
+          "slug": "ai-portfolio",
+          "title": "AI portfolio that gets clicks",
+          "summary": "Resume, GitHub, and personal site, tuned for AI engineer roles.",
+          "estimatedHours": 5,
+          "difficulty": 2,
+          "prerequisiteSlugs": ["rag-chatbot-capstone"],
+          "contentMd": "AI hiring managers look at a few things in this order: GitHub, personal site, resume, then interview signal. Make all four crisp.\n\nGitHub:\n- Pin your three best projects (capstones from this roadmap go here)\n- Each has a clear README with screenshots and a live URL\n- A clean profile README with one sentence about you\n\nPersonal site:\n- Single page is fine\n- Above the fold: name, role you want, your three projects\n- Link to LinkedIn, GitHub, resume PDF\n\nResume:\n- One page, projects-forward (not just employers)\n- Quantify outcomes wherever possible\n- Tailor a line or two per application",
+          "miniProject": "Ship a personal site that links to your two AI capstones, your GitHub, and your resume. Get one human to review it.",
+          "selfCheck": "If a recruiter has 30 seconds with your portfolio, what is the one thing they should walk away knowing?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "Pin your best repos", "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/pinning-items-to-your-profile", "source": "GitHub", "isFree": true }
+          ]
+        },
+        {
+          "slug": "system-design-for-ai",
+          "title": "System design for AI products",
+          "summary": "How to talk about scaling, cost, and reliability for AI features in interviews.",
+          "estimatedHours": 6,
+          "difficulty": 4,
+          "prerequisiteSlugs": ["serving-and-latency", "rag-pipelines"],
+          "contentMd": "AI system design is regular system design with a few extra concerns: model choice, evals, cost, and latency.\n\nPractice answering:\n- 'Design a customer-support chatbot for a SaaS company'\n- 'Design a code-completion product like GitHub Copilot'\n- 'Design a recommendations system using LLM-based ranking'\n\nFor each, talk through:\n- Data and embeddings\n- Vector index choice and operations\n- Hosted vs self-hosted models\n- Caching layers and cost guards\n- Eval and monitoring\n- Failure modes (rate limits, hallucinations, drift)\n\nWhiteboard one design every other day for two weeks.",
+          "miniProject": "Write a 2-page system design doc for one of your capstones, treating it like an internal design review at a company you'd want to work at.",
+          "selfCheck": "When does it make sense to fine-tune your own model vs combine prompt engineering and RAG with a frontier API?",
+          "resources": [
+            { "kind": "ARTICLE", "title": "System design primer", "url": "https://github.com/donnemartin/system-design-primer", "source": "GitHub", "isFree": true },
+            { "kind": "ARTICLE", "title": "Designing ML systems (free chapter)", "url": "https://huyenchip.com/ml-interviews-book/", "source": "Chip Huyen", "isFree": true }
+          ]
+        },
+        {
+          "slug": "interview-prep",
+          "title": "Interview prep for AI roles",
+          "summary": "What companies actually ask, and how to be ready.",
+          "estimatedHours": 8,
+          "difficulty": 3,
+          "prerequisiteSlugs": ["ai-portfolio", "system-design-for-ai"],
+          "contentMd": "AI engineer interviews mix four buckets:\n- Coding (still a thing, often Python and DSA)\n- ML and DL fundamentals (be ready to explain backprop, attention, evaluation)\n- Applied AI / LLM systems (RAG, agents, evals)\n- Behavioral (use STAR for stories about your capstones)\n\nPrepare:\n- 5 STAR stories (impact, conflict, ambiguity, failure, leadership)\n- 30 fundamental ML/DL questions answered out loud\n- 5 system design walkthroughs of common AI products\n- Mock interviews: pramp.com is free\n\nApply more than you think you should. The hit rate is low even for strong candidates.",
+          "miniProject": "Do three mock interviews. Iterate. Track what you got wrong and review the next day.",
+          "selfCheck": "Can you explain self-attention and a transformer block from memory in under 5 minutes?",
+          "resources": [
+            { "kind": "BOOK", "title": "ML interviews book (free)", "url": "https://huyenchip.com/ml-interviews-book/", "source": "Chip Huyen", "isFree": true },
+            { "kind": "ARTICLE", "title": "Pramp free mock interviews", "url": "https://www.pramp.com/", "source": "Pramp", "isFree": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -406,28 +406,28 @@ function VisualizeTab() {
     if (op === "insert") {
       const idx = Math.max(0, Math.min(base.length, Number.isFinite(p1) ? Math.floor(p1) : 0));
       const val = Number.isFinite(p2) ? p2 : 0;
-      return { pseudo: PSEUDO_INSERT, frames: buildInsert(base, idx, val), helper: "Format: index : value — e.g. 2 : 99" };
+      return { pseudo: PSEUDO_INSERT, frames: buildInsert(base, idx, val), helper: "Format: index : value, e.g. 2 : 99" };
     }
     if (op === "delete") {
       const idx = Math.max(0, Math.min(Math.max(0, base.length - 1), Number.isFinite(p1) ? Math.floor(p1) : 0));
-      return { pseudo: PSEUDO_DELETE, frames: buildDelete(base, idx), helper: "Format: index — e.g. 2" };
+      return { pseudo: PSEUDO_DELETE, frames: buildDelete(base, idx), helper: "Format: index, e.g. 2" };
     }
     if (op === "linear") {
       const target = Number.isFinite(p1) ? p1 : 0;
-      return { pseudo: PSEUDO_LINEAR, frames: buildLinear(base, target), helper: "Format: target — e.g. 30" };
+      return { pseudo: PSEUDO_LINEAR, frames: buildLinear(base, target), helper: "Format: target, e.g. 30" };
     }
     const target = Number.isFinite(p1) ? p1 : 0;
-    return { pseudo: PSEUDO_BINARY, frames: buildBinary(base, target), helper: "Format: target — e.g. 30 (array is auto-sorted)" };
+    return { pseudo: PSEUDO_BINARY, frames: buildBinary(base, target), helper: "Format: target, e.g. 30 (array is auto-sorted)" };
   }, [op, base, paramStr]);
 
   const player = useStepPlayer(frames);
   const frame = player.current;
 
   const opLabels: Record<Op, string> = {
-    insert: "Insert — O(n)",
-    delete: "Delete — O(n)",
-    linear: "Linear Search — O(n)",
-    binary: "Binary Search — O(log n)",
+    insert: "Insert, O(n)",
+    delete: "Delete, O(n)",
+    linear: "Linear Search, O(n)",
+    binary: "Binary Search, O(log n)",
   };
 
   return (
@@ -524,7 +524,7 @@ function LearnTab() {
         <Lede>
           An array is a block of same-sized cells placed side-by-side in RAM. Because every cell
           is at a known offset from the array's starting address, the CPU can compute{" "}
-          <InlineCode>base + i × size</InlineCode> in a single step — that is why indexing is O(1).
+          <InlineCode>base + i × size</InlineCode> in a single step, that is why indexing is O(1).
         </Lede>
       </div>
 
@@ -559,7 +559,7 @@ function LearnTab() {
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           Static arrays have a fixed capacity chosen at creation. Dynamic arrays (C++{" "}
           <InlineCode>vector</InlineCode>, Java <InlineCode>ArrayList</InlineCode>, Python{" "}
-          <InlineCode>list</InlineCode>) grow by allocating a bigger block and copying — amortised
+          <InlineCode>list</InlineCode>) grow by allocating a bigger block and copying, amortised
           O(1) append.
         </p>
       </Card>
@@ -574,7 +574,7 @@ function LearnTab() {
 function TryTab() {
   const problems = [
     { q: "Given a = [5,10,15,20], how many shifts does insertAt(a, 1, 99) perform?", options: ["0", "1", "3", "4"], ans: 2, exp: "Elements at indices 1, 2, 3 (three elements) must move right." },
-    { q: "Linear search on an array of size 8 for an element at index 5 makes how many comparisons in the worst observed case?", options: ["1", "4", "6", "8"], ans: 2, exp: "We compare index 0, 1, 2, 3, 4, 5 — that is 6 comparisons before the match." },
+    { q: "Linear search on an array of size 8 for an element at index 5 makes how many comparisons in the worst observed case?", options: ["1", "4", "6", "8"], ans: 2, exp: "We compare index 0, 1, 2, 3, 4, 5, that is 6 comparisons before the match." },
     { q: "Binary search on 16 elements needs at most how many comparisons?", options: ["2", "4", "8", "16"], ans: 1, exp: "log₂(16) = 4. Each step halves the window." },
     { q: "Which operation is O(1) on a dynamic array most of the time?", options: ["Insert at front", "Insert at back", "Delete at front", "Search"], ans: 1, exp: "Back-insert just writes at the end (amortised O(1) with occasional resize)." },
   ];
@@ -635,9 +635,9 @@ function InsightTab() {
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <SubHeading>Cache locality — arrays' secret advantage</SubHeading>
+        <SubHeading>Cache locality, arrays' secret advantage</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Because array cells sit next to each other, scanning them is blazing fast — the CPU
+          Because array cells sit next to each other, scanning them is blazing fast, the CPU
           prefetches neighbouring memory. A linked list with the same O(n) loop can be 5–10×
           slower in practice.
         </p>
@@ -695,7 +695,7 @@ export default function L1_Arrays({ onQuizComplete }: Props) {
         "Modern CPUs memorise all array values",
       ],
       correctIndex: 1,
-      explanation: "Indexing is pure address arithmetic — no loop, no search. That is the defining advantage of arrays.",
+      explanation: "Indexing is pure address arithmetic, no loop, no search. That is the defining advantage of arrays.",
     },
     {
       question: "Which operation is not O(n) in the worst case on a plain array?",
@@ -707,7 +707,7 @@ export default function L1_Arrays({ onQuizComplete }: Props) {
       question: "Binary search requires the array to be…",
       options: ["Non-empty", "Sorted", "Unique", "Numeric"],
       correctIndex: 1,
-      explanation: "Without sorted order, 'the target is larger — go right' is meaningless. Binary search relies on the sorted invariant.",
+      explanation: "Without sorted order, 'the target is larger, go right' is meaningless. Binary search relies on the sorted invariant.",
     },
     {
       question: "insertAt([1,2,3,4,5], 0, 9) performs how many element shifts?",

@@ -22,7 +22,7 @@ import {
   THEME,
 } from "../../../../../components/dsa-theory/primitives";
 
-/* No practice tab — practiceSlug is null */
+/* No practice tab, practiceSlug is null */
 
 /* ------------------------------------------------------------------ */
 /*  Parse directed weighted edges  A>B:w  (negative allowed)          */
@@ -142,14 +142,14 @@ function buildBFFrames(
         edgeRowStates[ei] = "relaxed";
         relaxEdges.add(`${e.from}-${e.to}`);
         updatedAny = true;
-        f.push(clone({ line: 6, message: `Relax — dist[${e.to}] = ${du} + ${e.w} = ${dist[e.to]}.`, flashKey: e.to, vars: { pass, "d[v]": dist[e.to] } }));
+        f.push(clone({ line: 6, message: `Relax, dist[${e.to}] = ${du} + ${e.w} = ${dist[e.to]}.`, flashKey: e.to, vars: { pass, "d[v]": dist[e.to] } }));
       } else {
         edgeRowStates[ei] = "skipped";
       }
     }
     f.push(clone({ line: 3, message: `Pass ${pass} complete.`, vars: { pass } }));
     if (!updatedAny) {
-      f.push(clone({ line: 3, message: `Pass ${pass}: zero relaxations — early terminate (saves ${totalPasses - pass} passes).`, vars: { pass, savedPasses: totalPasses - pass } }));
+      f.push(clone({ line: 3, message: `Pass ${pass}: zero relaxations, early terminate (saves ${totalPasses - pass} passes).`, vars: { pass, savedPasses: totalPasses - pass } }));
       break;
     }
   }
@@ -167,7 +167,7 @@ function buildBFFrames(
     if (du !== undefined && du + e.w < (dist[e.to] ?? Infinity)) {
       neg = true;
       edgeRowStates[ei] = "relaxed";
-      f.push(clone({ line: 10, message: `RELAXATION ON V-TH PASS — NEGATIVE CYCLE detected on ${e.from}→${e.to}.`, negCycle: true, vars: { u: e.from, v: e.to, w: e.w } }));
+      f.push(clone({ line: 10, message: `RELAXATION ON V-TH PASS, NEGATIVE CYCLE detected on ${e.from}→${e.to}.`, negCycle: true, vars: { u: e.from, v: e.to, w: e.w } }));
       break;
     } else {
       edgeRowStates[ei] = "skipped";
@@ -366,7 +366,7 @@ function VisualizeTab() {
         <Callout className="w-full">{frame?.message ?? "Press play to run Bellman-Ford."}</Callout>
         {frame?.negCycle && (
           <div className="mt-1 px-4 py-2.5 rounded-md border border-rose-500 bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-200 text-sm font-bold text-center">
-            NEGATIVE CYCLE DETECTED — shortest paths are undefined for vertices reachable from the cycle.
+            NEGATIVE CYCLE DETECTED, shortest paths are undefined for vertices reachable from the cycle.
           </div>
         )}
       </div>
@@ -382,8 +382,8 @@ function LearnTab() {
   const sections = [
     { title: "Why not just Dijkstra?", body: "Dijkstra fails on negative-weight edges. Bellman-Ford works for any weights, including negative, and even detects negative-weight cycles reachable from the source." },
     { title: "The V−1 trick", body: "Any shortest path has at most V−1 edges (otherwise it visits a vertex twice, which can be shortened unless there's a negative cycle). So V−1 relaxation passes are enough." },
-    { title: "Relaxation pass", body: "In each pass, examine every edge once. Each pass extends the distance of shortest paths by at least one more edge. Slow but exhaustive — O(V·E)." },
-    { title: "Negative-cycle detection", body: "After V−1 passes, distances are final — unless a negative cycle lets us keep improving. A V-th pass that still relaxes any edge proves a negative cycle exists." },
+    { title: "Relaxation pass", body: "In each pass, examine every edge once. Each pass extends the distance of shortest paths by at least one more edge. Slow but exhaustive, O(V·E)." },
+    { title: "Negative-cycle detection", body: "After V−1 passes, distances are final, unless a negative cycle lets us keep improving. A V-th pass that still relaxes any edge proves a negative cycle exists." },
   ];
   return (
     <div className="flex flex-col gap-5">
@@ -392,7 +392,7 @@ function LearnTab() {
         <SectionTitle>Brute force every edge V−1 times. Survive negatives.</SectionTitle>
         <Lede>
           Instead of being clever about which vertex to relax next (Dijkstra), Bellman-Ford just
-          sweeps all edges V−1 times. Brute force — but it handles every weight sign and detects
+          sweeps all edges V−1 times. Brute force, but it handles every weight sign and detects
           currency-arbitrage-style cycles.
         </Lede>
       </div>
@@ -416,7 +416,7 @@ function LearnTab() {
 function TryTab() {
   return (
     <div className="flex flex-col gap-3">
-      <Callout>Try the "Neg cycle" preset — the algorithm will report it on the final pass.</Callout>
+      <Callout>Try the "Neg cycle" preset, the algorithm will report it on the final pass.</Callout>
       {[
         "Complexity of Bellman-Ford? (Expected: O(V·E))",
         "On the 'No cycle' preset from A, what's dist[D]? (Expected: -2, via A→B→C→D = 1+2-5)",
@@ -451,7 +451,7 @@ function InsightTab() {
         <SubHeading>Edge order matters (for speed)</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           A lucky edge ordering can converge in far fewer than V−1 passes. Ordering by topological
-          sort order on a DAG finishes in one pass — the basis of the O(V+E) DAG shortest-path
+          sort order on a DAG finishes in one pass, the basis of the O(V+E) DAG shortest-path
           algorithm.
         </p>
       </Card>
@@ -479,7 +479,7 @@ export default function L4_BellmanFord({ onQuizComplete }: Props) {
       options: ["O(V + E)", "O(V log V)", "O(V · E)", "O(E log V)"],
       correctIndex: 2,
       explanation:
-        "V−1 passes × O(E) per pass = O(V·E). Much slower than Dijkstra — but handles negative weights.",
+        "V−1 passes × O(E) per pass = O(V·E). Much slower than Dijkstra, but handles negative weights.",
     },
     {
       question: "After V−1 passes, if a V-th pass still relaxes some edge, we conclude…",
@@ -521,7 +521,7 @@ export default function L4_BellmanFord({ onQuizComplete }: Props) {
       lessonNumber={6}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="Medium — arbitrage, routing protocols."
+      placementRelevance="Medium, arbitrage, routing protocols."
       nextLessonHint="Minimum Spanning Trees"
       onQuizComplete={onQuizComplete}
     />

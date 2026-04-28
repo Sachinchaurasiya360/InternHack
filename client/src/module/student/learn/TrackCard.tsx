@@ -26,7 +26,7 @@ export const TrackCard = React.memo(function TrackCard({ track, index }: TrackCa
       transition={{ delay, duration: 0.4 }}
     >
       <Link
-        to={`/learn/${track.path}`}
+        to={track.to ?? `/learn/${track.path}`}
         className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline"
       >
         <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">

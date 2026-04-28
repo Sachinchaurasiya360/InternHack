@@ -31,7 +31,7 @@ export class InterviewExperienceController {
     }
   }
 
-  /** GET /api/interviews/companies — directory of companies with experiences */
+  /** GET /api/interviews/companies, directory of companies with experiences */
   async listCompanies(req: Request, res: Response, next: NextFunction) {
     try {
       const parsed = listCompaniesSchema.safeParse(req.query);

@@ -132,7 +132,7 @@ function bstInsert(tree: BST, rootId: string | null, v: number, frames: Frame[])
         tree: cloneTree(tree),
         rootId,
         nodeStates: { [curId]: "mismatch" },
-        message: `${v} already exists — duplicate ignored.`,
+        message: `${v} already exists, duplicate ignored.`,
         vars: { insert: v, duplicate: "yes" },
       });
       return rootId as string;
@@ -184,7 +184,7 @@ function bstInsert(tree: BST, rootId: string | null, v: number, frames: Frame[])
     tree: cloneTree(tree),
     rootId: n.id,
     nodeStates: { [n.id]: "done" },
-    message: `Tree empty — ${v} becomes root.`,
+    message: `Tree empty, ${v} becomes root.`,
     vars: { insert: v, placed: "yes" },
   });
   return n.id;
@@ -262,7 +262,7 @@ function bstDelete(
       tree: cloneTree(tree),
       rootId,
       nodeStates: {},
-      message: `Tree empty — nothing to delete.`,
+      message: `Tree empty, nothing to delete.`,
       vars: { delete: v, found: "no" },
     });
     return null;
@@ -317,7 +317,7 @@ function bstDelete(
       nodeStates: Object.fromEntries(
         path.map((p) => [p, "mismatch" as CellState]),
       ),
-      message: `${v} not in tree — nothing to delete.`,
+      message: `${v} not in tree, nothing to delete.`,
       vars: { delete: v, found: "no" },
     });
     return rootId;
@@ -332,7 +332,7 @@ function bstDelete(
       tree: cloneTree(tree),
       rootId,
       nodeStates: { ...pathStates(path, curId, "swap") },
-      message: `Case 1: ${v} is a leaf — remove it directly.`,
+      message: `Case 1: ${v} is a leaf, remove it directly.`,
       vars: { delete: v, case: "1: leaf" },
     });
     if (parentId === null) {
@@ -373,7 +373,7 @@ function bstDelete(
       tree: cloneTree(tree),
       rootId,
       nodeStates: { ...pathStates(path, curId, "swap"), [childId]: "active" },
-      message: `Case 2: ${v} has one child (${tree[childId].value}) — splice the child up.`,
+      message: `Case 2: ${v} has one child (${tree[childId].value}), splice the child up.`,
       vars: { delete: v, case: "2: one child", child: tree[childId].value },
     });
     if (parentId === null) {
@@ -415,7 +415,7 @@ function bstDelete(
     tree: cloneTree(tree),
     rootId,
     nodeStates: { ...pathStates(path, curId, "swap") },
-    message: `Case 3: ${v} has two children — find inorder successor (smallest in right subtree).`,
+    message: `Case 3: ${v} has two children, find inorder successor (smallest in right subtree).`,
     vars: { delete: v, case: "3: two children" },
   });
   let succParentId = curId;
@@ -491,7 +491,7 @@ const INSERT_PSEUDO = [
   "function insert(root, v):",
   "  if root is null: return Node(v)",
   "  if v == root.value: return root",
-  "  # duplicate — BSTs disallow",
+  "  # duplicate, BSTs disallow",
   "  if v < root.value: root.left <- insert(root.left, v)",
   "  else: root.right <- insert(root.right, v)",
   "  return root",
@@ -513,14 +513,14 @@ const DELETE_PSEUDO = [
   "  walk down comparing v with root.value",
   "  follow left/right child until v found",
   "  if not found: return root unchanged",
-  "  # node found — dispatch on number of children",
-  "  Case 1 — leaf: detach from parent",
+  "  # node found, dispatch on number of children",
+  "  Case 1, leaf: detach from parent",
   "  return updated tree",
   "  # one-child case",
-  "  Case 2 — one child: parent -> child (splice up)",
+  "  Case 2, one child: parent -> child (splice up)",
   "  return updated tree",
   "  # two-children case",
-  "  Case 3 — two children: find inorder successor",
+  "  Case 3, two children: find inorder successor",
   "    walk right once, then left until null",
   "    successor value found",
   "    copy successor's value into target node",
@@ -791,7 +791,7 @@ function VisualizeTab() {
         )}
       </div>
       <AlgoCanvas
-        title={`BST — ${mode}`}
+        title={`BST, ${mode}`}
         player={player}
         input={
           <InputEditor
@@ -884,8 +884,8 @@ function LearnTab() {
 
 function TryTab() {
   const problems = [
-    { q: "Insert [5,3,7,1,4] — what is the inorder output?", a: "1,3,4,5,7" },
-    { q: "Insert 8 into {5,3,7,6,9} — 8 becomes which node's left/right child?", a: "9-left" },
+    { q: "Insert [5,3,7,1,4], what is the inorder output?", a: "1,3,4,5,7" },
+    { q: "Insert 8 into {5,3,7,6,9}, 8 becomes which node's left/right child?", a: "9-left" },
     { q: "Search 15 in {10,5,20,3,7,15,25}. How many comparisons?", a: "3" },
     { q: "Delete 10 from {10,5,20,3,7,15,25}. New root value (inorder successor)?", a: "15" },
   ];
@@ -975,7 +975,7 @@ function InsightTab() {
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           The number of structurally distinct BSTs with n keys is the <em>n-th Catalan number</em>{" "}
           C(n) = (2n)! / ((n+1)! * n!). A classic interview question: how many BSTs on keys{" "}
-          {"{1..n}"} have a specific property — start from this identity.
+          {"{1..n}"} have a specific property, start from this identity.
         </p>
       </Card>
     </div>
@@ -1024,14 +1024,14 @@ export default function L3_BST({ onQuizComplete }: Props) {
       options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
       correctIndex: 2,
       explanation:
-        "If the tree degenerates into a chain (insert sorted data), search traverses every node — O(n).",
+        "If the tree degenerates into a chain (insert sorted data), search traverses every node, O(n).",
     },
     {
-      question: "Inserting 6, 2, 8, 1, 4 in order — what is the inorder traversal?",
+      question: "Inserting 6, 2, 8, 1, 4 in order, what is the inorder traversal?",
       options: ["[1,2,4,6,8]", "[6,2,8,1,4]", "[1,4,2,8,6]", "[1,2,6,4,8]"],
       correctIndex: 0,
       explanation:
-        "BST inorder is always sorted ascending — regardless of insertion order.",
+        "BST inorder is always sorted ascending, regardless of insertion order.",
     },
     {
       question: "When deleting a node with two children, the standard replacement is:",

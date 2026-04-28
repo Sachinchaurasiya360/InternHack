@@ -1206,6 +1206,166 @@ export interface FundingSignalSource {
   name: string;
 }
 
+// ── Roadmap ─────────────────────────────────────────────────────────────
+export type RoadmapLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS";
+export type ResourceKind = "VIDEO" | "ARTICLE" | "DOCS" | "COURSE" | "BOOK" | "PROJECT" | "OTHER";
+export type ExperienceLevel = "NEW" | "SOME" | "EXPERIENCED";
+export type EnrollmentGoal = "JOB_READY" | "SIDE_PROJECT" | "SCHOOL" | "CURIOUS";
+export type EnrollmentStatus = "ACTIVE" | "PAUSED" | "COMPLETED" | "ABANDONED";
+export type RoadmapTopicStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
+export type DayOfWeek = "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN";
+
+export interface RoadmapResource {
+  id: number;
+  topicId: number;
+  kind: ResourceKind;
+  title: string;
+  url: string;
+  source: string | null;
+  isFree: boolean;
+  orderIndex: number;
+}
+
+export interface RoadmapTopic {
+  id: number;
+  sectionId: number;
+  slug: string;
+  title: string;
+  summary: string;
+  contentMd: string;
+  estimatedHours: number;
+  difficulty: number;
+  orderIndex: number;
+  prerequisiteSlugs: string[];
+  miniProject: string | null;
+  selfCheck: string | null;
+  resources: RoadmapResource[];
+}
+
+export interface RoadmapSection {
+  id: number;
+  roadmapId: number;
+  slug: string;
+  title: string;
+  summary: string;
+  orderIndex: number;
+  topics: RoadmapTopic[];
+}
+
+export interface Roadmap {
+  id: number;
+  slug: string;
+  title: string;
+  shortDescription: string;
+  description: string;
+  level: RoadmapLevel;
+  estimatedHours: number;
+  coverImage: string | null;
+  ogImage: string | null;
+  isPublished: boolean;
+  isPremium: boolean;
+  topicCount: number;
+  outcomes: string[];
+  prerequisites: string[];
+  faqs: { q: string; a: string }[];
+  tags: string[];
+  enrolledCount: number;
+  sections: RoadmapSection[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RoadmapListItem {
+  id: number;
+  slug: string;
+  title: string;
+  shortDescription: string;
+  level: RoadmapLevel;
+  estimatedHours: number;
+  coverImage: string | null;
+  ogImage: string | null;
+  topicCount: number;
+  enrolledCount: number;
+  tags: string[];
+  updatedAt: string;
+}
+
+export interface WeeklyPlanWeek {
+  week: number;
+  startDate: string;
+  endDate: string;
+  topicSlugs: string[];
+  totalHours: number;
+}
+
+export interface RoadmapTopicProgress {
+  id: number;
+  enrollmentId: number;
+  topicId: number;
+  status: RoadmapTopicStatus;
+  bookmarked: boolean;
+  notes: string | null;
+  completedAt: string | null;
+  updatedAt: string;
+}
+
+export interface RoadmapEnrollmentSummary {
+  totalTopics: number;
+  completedTopics: number;
+  inProgressTopics: number;
+  bookmarkedTopics: number;
+  percentComplete: number;
+  hoursDone: number;
+  hoursTotal: number;
+}
+
+export interface RoadmapEnrollment {
+  id: number;
+  userId: number;
+  roadmapId: number;
+  hoursPerWeek: number;
+  preferredDays: DayOfWeek[];
+  startDate: string;
+  targetEndDate: string;
+  experienceLevel: ExperienceLevel;
+  goal: EnrollmentGoal;
+  status: EnrollmentStatus;
+  weeklyPlan: WeeklyPlanWeek[];
+  pdfUrl: string | null;
+  topicProgress: RoadmapTopicProgress[];
+  roadmap: Roadmap;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RoadmapEnrollmentListItem {
+  id: number;
+  userId: number;
+  roadmapId: number;
+  hoursPerWeek: number;
+  startDate: string;
+  targetEndDate: string;
+  status: EnrollmentStatus;
+  topicProgress: RoadmapTopicProgress[];
+  roadmap: {
+    id: number;
+    slug: string;
+    title: string;
+    shortDescription: string;
+    coverImage: string | null;
+    topicCount: number;
+    estimatedHours: number;
+  };
+  createdAt: string;
+}
+
+export interface EnrollInput {
+  hoursPerWeek: number;
+  preferredDays: DayOfWeek[];
+  experienceLevel: ExperienceLevel;
+  goal: EnrollmentGoal;
+}
+
 export type InterviewSource =
   | "ON_CAMPUS"
   | "OFF_CAMPUS"

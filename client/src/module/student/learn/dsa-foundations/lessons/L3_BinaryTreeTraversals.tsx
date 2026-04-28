@@ -712,7 +712,7 @@ function VisualizeTab() {
         ))}
       </div>
       <AlgoCanvas
-        title={`Traversal — ${mode === "levelorder" ? "BFS" : mode}`}
+        title={`Traversal, ${mode === "levelorder" ? "BFS" : mode}`}
         player={player}
         input={
           <InputEditor

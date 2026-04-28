@@ -204,7 +204,7 @@ function Metric({ label, value, tint }: { label: string; value: string | number 
         {label}
       </div>
       <div className="font-mono text-lg font-extrabold text-stone-900 dark:text-stone-50">
-        {value ?? "—"}
+        {value ?? ","}
       </div>
     </div>
   );
@@ -229,7 +229,7 @@ function parseArray(s: string): number[] {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Two Pointer — Pair sum on a sorted array                          */
+/*  Two Pointer, Pair sum on a sorted array                          */
 /* ------------------------------------------------------------------ */
 
 const PSEUDO_PAIR = [
@@ -295,7 +295,7 @@ function buildPair(arr: number[], target: number): Frame[] {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Sliding Window — max sum of k consecutive                         */
+/*  Sliding Window, max sum of k consecutive                         */
 /* ------------------------------------------------------------------ */
 
 const PSEUDO_WINDOW = [
@@ -406,8 +406,8 @@ function VisualizeTab() {
   const frame = player.current;
 
   const modeLabels: Record<Mode, string> = {
-    pair: "Two Pointer — Pair Sum (sorted)",
-    window: "Sliding Window — Max Sum of k",
+    pair: "Two Pointer, Pair Sum (sorted)",
+    window: "Sliding Window, Max Sum of k",
   };
 
   return (
@@ -504,7 +504,7 @@ function LearnTab() {
         <SectionEyebrow>two patterns, one idea</SectionEyebrow>
         <SectionTitle>Avoid the nested loop. Maintain an invariant.</SectionTitle>
         <Lede>
-          The brute force for many array problems is a double loop — O(n²). Both two-pointer and
+          The brute force for many array problems is a double loop, O(n²). Both two-pointer and
           sliding-window turn those into a single linear sweep by keeping useful information as
           you move. The trick is the <em>invariant</em>: a guarantee that stays true each step
           and prunes the search space.
@@ -525,7 +525,7 @@ function LearnTab() {
         <SubHeading>Sliding Window</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
           A contiguous sub-range [left..right] moves across the array, adding the entering element
-          and removing the leaving one — each update is O(1). Fixed-size windows are easy;
+          and removing the leaving one, each update is O(1). Fixed-size windows are easy;
           variable-size ones expand when a condition holds and shrink when it breaks.
         </p>
       </Card>
@@ -572,7 +572,7 @@ function LearnTab() {
 function TryTab() {
   const problems = [
     {
-      q: "Sorted array [1,3,5,7,9], target = 10 — which pair of values sums to 10?",
+      q: "Sorted array [1,3,5,7,9], target = 10, which pair of values sums to 10?",
       options: ["1 + 8", "3 + 7", "2 + 8", "4 + 5"],
       ans: 1,
       exp: "3 and 7 are both in the array; their sum is 10. Two-pointer finds them immediately.",
@@ -587,7 +587,7 @@ function TryTab() {
       q: "When you slide a window of size k by one step, how many arithmetic operations update the sum?",
       options: ["0", "O(1): one add, one subtract", "O(k)", "O(n)"],
       ans: 1,
-      exp: "Remove the leaving element, add the entering one — two operations, regardless of k.",
+      exp: "Remove the leaving element, add the entering one, two operations, regardless of k.",
     },
     {
       q: "Two-pointer pair-sum requires the array to be…",
@@ -738,7 +738,7 @@ export default function L1_TwoPointerWindow({ onQuizComplete }: Props) {
         "It works only on sorted arrays",
       ],
       correctIndex: 1,
-      explanation: "Sharing elements between adjacent windows is the whole insight — you update in O(1) instead of recomputing.",
+      explanation: "Sharing elements between adjacent windows is the whole insight, you update in O(1) instead of recomputing.",
     },
   ];
 

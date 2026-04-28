@@ -267,7 +267,7 @@ function buildEKFrames(preset: Preset): EKFrame[] {
     }
 
     if (!found) {
-      snap(3, `BFS could not reach ${sink} in the residual graph. No augmenting path exists. DONE — max flow = ${totalFlow}.`, { totalFlow, iter: iteration }, [], undefined);
+      snap(3, `BFS could not reach ${sink} in the residual graph. No augmenting path exists. DONE, max flow = ${totalFlow}.`, { totalFlow, iter: iteration }, [], undefined);
       break;
     }
 
@@ -545,7 +545,7 @@ function VisualizeTab() {
 
   return (
     <AlgoCanvas
-      title={`Max-Flow (Edmonds-Karp) — ${preset.source} → ${preset.sink}`}
+      title={`Max-Flow (Edmonds-Karp), ${preset.source} → ${preset.sink}`}
       player={player}
       input={
         <div className="flex flex-col gap-3">
@@ -620,7 +620,7 @@ function LearnTab() {
         <SectionEyebrow>pipes, residuals, and cuts</SectionEyebrow>
         <SectionTitle>Mental model: pipes from reservoir to sink</SectionTitle>
         <Lede>
-          Imagine pipes from a reservoir (source) to a sink. Each pipe has a flow capacity. Max-flow asks: what is the most you can push through? The clever trick is the residual graph — at any moment you can send flow backward against any pipe that is already carrying flow, which is mathematically a way of cancelling and rerouting. Edmonds-Karp finds the right augmentations in BFS order.
+          Imagine pipes from a reservoir (source) to a sink. Each pipe has a flow capacity. Max-flow asks: what is the most you can push through? The clever trick is the residual graph, at any moment you can send flow backward against any pipe that is already carrying flow, which is mathematically a way of cancelling and rerouting. Edmonds-Karp finds the right augmentations in BFS order.
         </Lede>
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
@@ -644,9 +644,9 @@ function LearnTab() {
 
 function TryTab() {
   const probs = [
-    { q: "On the CLRS preset S>A:10, S>C:10, A>B:4, A>C:2, A>D:8, B>T:10, C>D:9, D>B:6, D>T:10 — what is the max flow S to T?", a: "19" },
-    { q: "On 'Two paths' S>A:5, S>B:5, A>T:5, B>T:5 — max flow?", a: "10" },
-    { q: "On 'Bottleneck' S>A:100, A>B:1, B>T:100 — max flow?", a: "1" },
+    { q: "On the CLRS preset S>A:10, S>C:10, A>B:4, A>C:2, A>D:8, B>T:10, C>D:9, D>B:6, D>T:10, what is the max flow S to T?", a: "19" },
+    { q: "On 'Two paths' S>A:5, S>B:5, A>T:5, B>T:5, max flow?", a: "10" },
+    { q: "On 'Bottleneck' S>A:100, A>B:1, B>T:100, max flow?", a: "1" },
     { q: "Why does max-flow equal min-cut intuitively?", a: "Every flow path crosses the cut, so flow is at most cut capacity. The augmenting-path algorithm's stopping condition gives equality." },
   ];
   const [guesses, setGuesses] = useState<(string | null)[]>(probs.map(() => null));
@@ -699,7 +699,7 @@ function InsightTab() {
     <div className="flex flex-col gap-4">
       <Card padded={false} className="overflow-hidden">
         <div className="px-5 pt-5 pb-2">
-          <SubHeading>Algorithm zoo — when to use which</SubHeading>
+          <SubHeading>Algorithm zoo, when to use which</SubHeading>
         </div>
         <table className="w-full text-sm">
           <thead className="bg-stone-50 dark:bg-stone-950/50">
@@ -730,7 +730,7 @@ function InsightTab() {
       <Card>
         <SubHeading>Min-cut from saturated edges</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          After max-flow finishes, do one more BFS from the source in the residual graph. Let S = vertices reachable from source. Then T = V minus S (and t is in T). The min cut is exactly the set of original edges (u, v) with u in S and v in T — and they are ALL saturated in the final flow. This gives you both the max-flow value AND the witnessing min cut for free.
+          After max-flow finishes, do one more BFS from the source in the residual graph. Let S = vertices reachable from source. Then T = V minus S (and t is in T). The min cut is exactly the set of original edges (u, v) with u in S and v in T, and they are ALL saturated in the final flow. This gives you both the max-flow value AND the witnessing min cut for free.
         </p>
       </Card>
 
@@ -746,9 +746,9 @@ function InsightTab() {
       </Card>
 
       <Card>
-        <SubHeading>Stdlib — almost no language has it built in</SubHeading>
+        <SubHeading>Stdlib, almost no language has it built in</SubHeading>
         <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-          Max-flow is rare in stdlibs because the right choice depends on the graph. <strong className="text-stone-900 dark:text-stone-100">NetworkX</strong> has <InlineCode>nx.maximum_flow(G, s, t)</InlineCode> (default = preflow-push) and <InlineCode>nx.minimum_cut</InlineCode>. <strong className="text-stone-900 dark:text-stone-100">SciPy</strong>: <InlineCode>scipy.sparse.csgraph.maximum_flow</InlineCode>. <strong className="text-stone-900 dark:text-stone-100">Boost Graph Library</strong>: full menu (Edmonds-Karp, push-relabel, boykov-kolmogorov). For competitive programming, always carry a Dinic's template — Edmonds-Karp is easier to debug but Dinic's is faster on dense unit-capacity graphs.
+          Max-flow is rare in stdlibs because the right choice depends on the graph. <strong className="text-stone-900 dark:text-stone-100">NetworkX</strong> has <InlineCode>nx.maximum_flow(G, s, t)</InlineCode> (default = preflow-push) and <InlineCode>nx.minimum_cut</InlineCode>. <strong className="text-stone-900 dark:text-stone-100">SciPy</strong>: <InlineCode>scipy.sparse.csgraph.maximum_flow</InlineCode>. <strong className="text-stone-900 dark:text-stone-100">Boost Graph Library</strong>: full menu (Edmonds-Karp, push-relabel, boykov-kolmogorov). For competitive programming, always carry a Dinic's template, Edmonds-Karp is easier to debug but Dinic's is faster on dense unit-capacity graphs.
         </p>
       </Card>
     </div>
@@ -829,7 +829,7 @@ export default function L7_MaxFlow({ onQuizComplete }: Props) {
       lessonNumber={10}
       tabs={tabs}
       quiz={quiz}
-      placementRelevance="High — bipartite matching, image segmentation, scheduling, system design."
+      placementRelevance="High, bipartite matching, image segmentation, scheduling, system design."
       nextLessonHint="Monotonic Stack"
       onQuizComplete={onQuizComplete}
     />
