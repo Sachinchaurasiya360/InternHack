@@ -58,13 +58,20 @@ export class AuthController {
 
   async googleAuth(req: Request, res: Response) {
     try {
-      const { credential, role } = req.body as { credential?: string; role?: string };
-      if (!credential) {
+      const { credential, accessToken, role } = req.body as {
+        credential?: string;
+        accessToken?: string;
+        role?: string;
+      };
+      if (!credential && !accessToken) {
         return res.status(400).json({ message: "Google credential is required" });
       }
 
       const validRole = role === "RECRUITER" ? "RECRUITER" as const : "STUDENT" as const;
-      const data = await this.authService.googleAuth({ credential, role: validRole });
+      const input: { credential?: string; accessToken?: string; role: typeof validRole } = { role: validRole };
+      if (credential) input.credential = credential;
+      if (accessToken) input.accessToken = accessToken;
+      const data = await this.authService.googleAuth(input);
       setTokenCookie(res, data.token);
       return res.status(200).json({ message: "Google authentication successful", ...data });
     } catch (error) {

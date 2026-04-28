@@ -6,7 +6,7 @@ export interface LessonEntry {
   title: string;
   summary: string;
   /** Lazy-loaded lesson component. */
-  load: LazyExoticComponent<ComponentType<unknown>>;
+  load: LazyExoticComponent<ComponentType<{ onQuizComplete?: (score: number) => void }>>;
 }
 
 export interface LevelEntry {

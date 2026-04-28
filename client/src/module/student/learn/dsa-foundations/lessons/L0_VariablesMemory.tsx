@@ -24,8 +24,6 @@ import {
   THEME,
 } from "../../../../../components/dsa-theory/primitives";
 
-const PRACTICE_TOPIC_SLUG: string | null = null;
-
 /* ------------------------------------------------------------------ */
 /*  Learn                                                              */
 /* ------------------------------------------------------------------ */
@@ -422,7 +420,7 @@ function VisualizeTab() {
   const primPlayer = useStepPlayer(primFrames, 900);
   const refPlayer = useStepPlayer(refFrames, 900);
 
-  const activePlayer = scenario === "primitive" ? primPlayer : refPlayer;
+  const activePlayer = (scenario === "primitive" ? primPlayer : refPlayer) as typeof primPlayer;
   const pseudo = scenario === "primitive" ? PRIM_PSEUDO : REF_PSEUDO;
 
   return (

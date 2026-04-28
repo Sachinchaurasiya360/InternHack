@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { BookOpen, Globe, Pause, Play, RotateCcw, Zap } from "lucide-react";
 import EngineeringLessonShell from "@/components/engineering/EngineeringLessonShell";
 import type { EngTabDef, EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell";

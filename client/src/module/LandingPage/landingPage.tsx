@@ -1,7 +1,6 @@
 import { Navbar } from "../../components/Navbar"
 import { Footer } from "../../components/Footer"
 import { HeroGeometric } from "../../components/ui/shape-landing-hero"
-import { DemoVideoSection } from "../../components/DemoVideoSection"
 import { AudienceSection } from "../../components/AudienceSection"
 import { FeaturesSection } from "../../components/FeaturesSection"
 import { HowItWorksSection } from "../../components/HowItWorksSection"
@@ -27,7 +26,7 @@ export default function LandingPage(){
             />
             <Navbar/>
             <HeroGeometric/>
-            <DemoVideoSection/>
+            {/* <DemoVideoSection/> */}
             <AudienceSection/>
             <FeaturesSection/>
             <HowItWorksSection/>

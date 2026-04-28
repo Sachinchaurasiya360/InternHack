@@ -18,7 +18,6 @@ import {
   CodeBlock,
   InlineCode,
   Lede,
-  PillButton,
   SectionEyebrow,
   SectionTitle,
   SubHeading,
@@ -128,7 +127,7 @@ function parseInput(s: string): { pkgs: number[]; D: number } | null {
   return { pkgs, D };
 }
 
-function BinarySearchAnswerViz({ frame, pkgs, D }: { frame: Frame; pkgs: number[]; D: number }) {
+function BinarySearchAnswerViz({ frame, pkgs, D: _D }: { frame: Frame; pkgs: number[]; D: number }) {
   const totalLo = Math.max(...pkgs);
   const totalHi = pkgs.reduce((a, b) => a + b, 0);
   const range = Math.max(1, totalHi - totalLo);

@@ -207,7 +207,7 @@ function DequeRow({ items, showIdx }: { items: { value: number; idx?: number; fl
 /*  Array bars for monotonic mode                                        */
 /* ------------------------------------------------------------------ */
 
-function ArrayBarsSimple({ values, states, windowLo, windowHi, iCur }: {
+function ArrayBarsSimple({ values, states, windowLo: _windowLo, windowHi: _windowHi, iCur }: {
   values: number[];
   states: ("default" | "window" | "done" | "match")[];
   windowLo?: number;

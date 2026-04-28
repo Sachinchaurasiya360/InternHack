@@ -132,7 +132,7 @@ const PSEUDO_LCA = [
 ];
 
 function buildLCAFrames(
-  rootId: string,
+  _rootId: string,
   nodes: Record<string, TNode>,
   table: LiftTable,
   uOrig: string,

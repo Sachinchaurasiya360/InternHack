@@ -23,8 +23,6 @@ import {
   THEME,
 } from "../../../../../components/dsa-theory/primitives";
 
-const PRACTICE_TOPIC_SLUG: string | null = null;
-
 /* ------------------------------------------------------------------ */
 /*  Frame type                                                          */
 /* ------------------------------------------------------------------ */

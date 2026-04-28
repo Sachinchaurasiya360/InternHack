@@ -108,7 +108,7 @@ function MiniBars({
 
 function OutputStrip({
   values,
-  states,
+  states: _states,
   pointers,
 }: {
   values: (number | null)[];

@@ -14,7 +14,6 @@ import {
 import {
   Callout,
   Card,
-  CodeBlock,
   InlineCode,
   Lede,
   SectionEyebrow,
@@ -22,8 +21,6 @@ import {
   SubHeading,
   THEME,
 } from "../../../../../components/dsa-theory/primitives";
-
-const PRACTICE_TOPIC_SLUG: string | null = null;
 
 /* ------------------------------------------------------------------ */
 /*  Learn                                                              */

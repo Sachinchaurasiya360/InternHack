@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import {
-  Building2,
   MapPin,
   Globe,
   Users,

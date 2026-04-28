@@ -47,7 +47,6 @@ function StackColumn({
 }) {
   const w = width ?? 110;
   const boxH = 40;
-  const gap = 4;
   const visItems = [...items].reverse(); // top of stack first
   return (
     <div className="flex flex-col items-center gap-1">

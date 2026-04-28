@@ -13,7 +13,6 @@ import {
   sectionDesc,
   staggerContainer,
   cardEntrance,
-  cardHover,
 } from "./_shared/styles";
 
 const OK = "#10b981";
@@ -129,7 +128,7 @@ function Definition() {
                     S{i + 1}
                   </div>
                   {holds && (
-                    <div style={{ fontSize: "0.65rem", color: WARN, marginTop: 3, fontFamily: mono }}>
+                    <div style={{ fontSize: "0.65rem", color: WARN, marginTop: 3, fontFamily: MONO }}>
                       holds session
                     </div>
                   )}
@@ -298,12 +297,12 @@ function KillServer() {
                   {isDead ? "DOWN" : "HEALTHY"}
                 </div>
                 {holdsSession && !isDead && (
-                  <div style={{ fontSize: "0.65rem", color: WARN, marginTop: 2, fontFamily: mono }}>
+                  <div style={{ fontSize: "0.65rem", color: WARN, marginTop: 2, fontFamily: MONO }}>
                     has your session
                   </div>
                 )}
                 {holdsSession && isDead && (
-                  <div style={{ fontSize: "0.65rem", color: SD, marginTop: 2, fontFamily: mono }}>
+                  <div style={{ fontSize: "0.65rem", color: SD, marginTop: 2, fontFamily: MONO }}>
                     session lost
                   </div>
                 )}

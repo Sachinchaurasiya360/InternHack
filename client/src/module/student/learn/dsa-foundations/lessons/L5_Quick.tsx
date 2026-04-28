@@ -16,7 +16,6 @@ import {
   Callout,
   Card,
   Lede,
-  PillButton,
   SectionEyebrow,
   SectionTitle,
   SubHeading,

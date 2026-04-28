@@ -6,7 +6,6 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  Loader2,
   Wand2,
   Plus,
   X,

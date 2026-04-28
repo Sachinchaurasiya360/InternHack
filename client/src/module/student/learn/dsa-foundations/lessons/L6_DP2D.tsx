@@ -20,7 +20,6 @@ import {
   SectionEyebrow,
   SectionTitle,
   SubHeading,
-  THEME,
 } from "../../../../../components/dsa-theory/primitives";
 import { PracticeTab } from "../PracticeTab";
 

@@ -15,8 +15,6 @@ import {
 import {
   Callout,
   Card,
-  CodeBlock,
-  InlineCode,
   Lede,
   PillButton,
   SectionEyebrow,

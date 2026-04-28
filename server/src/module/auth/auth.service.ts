@@ -49,7 +49,8 @@ interface LoginInput {
 }
 
 interface GoogleAuthInput {
-  credential: string;
+  credential?: string;
+  accessToken?: string;
   role?: UserRole;
 }
 
@@ -117,17 +118,48 @@ export class AuthService {
   }
 
   async googleAuth(data: GoogleAuthInput) {
-    const ticket = await this.googleClient.verifyIdToken({
-      idToken: data.credential,
-      audience: process.env["GOOGLE_CLIENT_ID"] ?? "",
-    });
+    let email: string | undefined;
+    let name: string | undefined;
+    let picture: string | undefined;
 
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
+    if (data.credential) {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken: data.credential,
+        audience: process.env["GOOGLE_CLIENT_ID"] ?? "",
+      });
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) {
+        throw new Error("Invalid Google token");
+      }
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+    } else if (data.accessToken) {
+      const resp = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${data.accessToken}` },
+      });
+      if (!resp.ok) {
+        throw new Error("Invalid Google token");
+      }
+      const info = (await resp.json()) as {
+        email?: string;
+        name?: string;
+        picture?: string;
+        email_verified?: boolean;
+      };
+      if (!info.email || info.email_verified === false) {
+        throw new Error("Invalid Google token");
+      }
+      email = info.email;
+      name = info.name;
+      picture = info.picture;
+    } else {
       throw new Error("Invalid Google token");
     }
 
-    const { email, name, picture } = payload;
+    if (!email) {
+      throw new Error("Invalid Google token");
+    }
 
     // Block personal emails for recruiter signups
     if (data.role === "RECRUITER") {

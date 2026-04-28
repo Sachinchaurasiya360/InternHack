@@ -310,12 +310,6 @@ function StageArt({ stage, idx }: { stage: typeof ZOOM_STAGES[number]; idx: numb
 }
 
 function SystemDiagram() {
-  const node = (label: string, sub: string, icon: React.ReactNode, color: string): React.CSSProperties => ({
-    border: `2px solid ${color}`, borderRadius: 8, background: `${color}18`,
-    padding: "10px 12px", display: "flex", flexDirection: "column",
-    alignItems: "center", gap: 4, minWidth: 90,
-  });
-
   return (
     <svg viewBox="0 0 560 280" width="100%" style={{ maxWidth: 620 }}>
       <defs>

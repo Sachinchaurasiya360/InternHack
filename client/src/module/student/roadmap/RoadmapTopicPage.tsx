@@ -11,8 +11,6 @@ import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import { useAuthStore } from "../../../lib/auth.store";
 import type {
-  RoadmapEnrollment,
-  RoadmapEnrollmentSummary,
   RoadmapResource,
   RoadmapTopic,
   RoadmapTopicStatus,

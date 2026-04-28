@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
-  Zap, Database, Clock, AlertTriangle, Check, X, Layers, RefreshCw, Trash2,
+  Zap, Clock, AlertTriangle, Layers, RefreshCw, Trash2,
 } from "lucide-react";
 import EngineeringLessonShell from "@/components/engineering/EngineeringLessonShell";
 import type { EngTabDef, EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell";
@@ -13,7 +13,6 @@ import {
   sectionDesc,
   staggerContainer,
   cardEntrance,
-  cardHover,
 } from "./_shared/styles";
 
 const OK = "#10b981";

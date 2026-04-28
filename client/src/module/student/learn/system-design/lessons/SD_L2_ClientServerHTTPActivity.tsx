@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Network, Send, Inbox, Monitor, Server, Code2, FileText, Hash,
+  Network, Send, Inbox, Code2, FileText,
   Check, X, Play, Pause, RotateCcw, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import EngineeringLessonShell from "@/components/engineering/EngineeringLessonShell";

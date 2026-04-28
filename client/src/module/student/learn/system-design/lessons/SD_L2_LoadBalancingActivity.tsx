@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Share2, Shuffle, Activity, Heart, Play, Pause, RotateCcw,
-  Check, AlertTriangle,
+  AlertTriangle,
 } from "lucide-react";
 import EngineeringLessonShell from "@/components/engineering/EngineeringLessonShell";
 import type { EngTabDef, EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell";

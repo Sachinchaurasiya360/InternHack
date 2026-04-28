@@ -238,7 +238,7 @@ function FourStepCanvas() {
             <div style={{ fontSize: "0.7rem", fontFamily: MONO, color: "var(--eng-text-muted)", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 6 }}>
               CONCRETE EXAMPLE
             </div>
-            <div style={{ fontSize: "0.85rem", color: "var(--eng-text)", lineHeight: 1.55, fontFamily: mono }}>
+            <div style={{ fontSize: "0.85rem", color: "var(--eng-text)", lineHeight: 1.55, fontFamily: MONO }}>
               {step.example}
             </div>
           </div>

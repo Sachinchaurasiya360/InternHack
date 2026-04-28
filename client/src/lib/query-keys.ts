@@ -180,7 +180,7 @@ export const queryKeys = {
   // Funding Signals
   signals: {
     all: ["signals"] as const,
-    list: (params?: Record<string, string | number | boolean>) =>
+    list: (params?: Record<string, string | number | boolean | undefined>) =>
       ["signals", "list", params] as const,
     detail: (id: number) => ["signals", "detail", id] as const,
     sources: () => ["signals", "sources"] as const,

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Globe, Compass, FileStack, Play, Pause, RotateCcw,
-  Check, Server, Cloud, ChevronRight, ChevronLeft,
+  Compass, FileStack, Play, Pause, RotateCcw,
+  Cloud, ChevronRight, ChevronLeft,
 } from "lucide-react";
 import EngineeringLessonShell from "@/components/engineering/EngineeringLessonShell";
 import type { EngTabDef, EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell";
@@ -62,12 +62,6 @@ function DNSAnimation() {
   }, [playing, step]);
 
   function getHop(id: string) { return HOPS.find((h) => h.id === id)!; }
-  function endpoint(h: Hop, toward: "left" | "right") {
-    // side = where the box SITS. Edge points are the facing sides.
-    const y = h.y + 28;
-    if (h.side === "left")  return { x: toward === "right" ? h.x + 140 : h.x, y };
-    return { x: toward === "right" ? h.x + 140 : h.x, y };
-  }
 
   const current = step >= 0 ? STEPS[step] : null;
   const currentFrom = current ? getHop(current.from) : null;

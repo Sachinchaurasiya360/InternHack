@@ -45,8 +45,8 @@ function MemoryCells({
     <div className="flex gap-0.5">
       {values.map((v, i) => {
         const st = states?.[i];
-        let bg = THEME.bg;
-        let border = THEME.border;
+        let bg: string = THEME.bg;
+        let border: string = THEME.border;
         if (st === "match") { bg = `${THEME.success}14`; border = THEME.success; }
         else if (st === "mismatch") { bg = `${THEME.danger}14`; border = THEME.danger; }
         else if (st === "window") { bg = "rgba(139,92,246,0.1)"; border = "#8b5cf6"; }

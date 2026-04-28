@@ -135,7 +135,6 @@ export default function InterviewExperienceDetailPage() {
   const authorName = experience.isAnonymous
     ? "Anonymous student"
     : experience.user?.name ?? "Unknown";
-  const authorInitial = authorName.charAt(0).toUpperCase();
   const dateLabel =
     experience.interviewMonth && experience.interviewYear
       ? `${MONTHS[experience.interviewMonth - 1]} ${String(experience.interviewYear)}`

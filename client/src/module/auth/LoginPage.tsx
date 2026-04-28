@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
-import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
+import { GoogleAuthButton } from "../../components/GoogleAuthButton";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -17,13 +17,11 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+  const handleGoogleSuccess = async (accessToken: string) => {
     setError("");
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/google", {
-        credential: credentialResponse.credential,
-      });
+      const { data } = await api.post("/auth/google", { accessToken });
       login(data.user);
       if (returnTo) {
         navigate(returnTo);
@@ -97,7 +95,7 @@ export default function LoginPage() {
         ]}
       />
 
-      <div className="relative flex items-start lg:items-center justify-center px-6 pt-24 pb-12 lg:py-0 overflow-x-hidden">
+      <div className="relative flex items-start lg:items-center justify-center px-6 pt-24 pb-12 lg:py-0">
         <Link
           to="/"
           className="absolute top-6 left-6 flex items-center gap-2 text-sm no-underline text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
@@ -133,18 +131,12 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div className="w-full overflow-hidden rounded-md [&>div]:w-full [&_iframe]:w-full! [&>div>div]:w-full [&>div>div>div]:w-full">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setError("Google sign-in failed")}
-                size="large"
-                text="signin_with"
-                shape="rectangular"
-                theme="outline"
-                logo_alignment="center"
-                useOneTap={false}
-              />
-            </div>
+            <GoogleAuthButton
+              label="Continue with Google"
+              onAccessToken={handleGoogleSuccess}
+              onError={() => setError("Google sign-in failed")}
+              disabled={loading}
+            />
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

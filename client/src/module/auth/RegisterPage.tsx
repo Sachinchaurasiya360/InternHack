@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
-import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
+import { GoogleAuthButton } from "../../components/GoogleAuthButton";
 
 const PERSONAL_EMAIL_DOMAINS = [
   "gmail.com", "yahoo.com", "yahoo.in", "hotmail.com", "outlook.com",
@@ -45,14 +45,11 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+  const handleGoogleSuccess = async (accessToken: string) => {
     setError("");
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/google", {
-        credential: credentialResponse.credential,
-        role,
-      });
+      const { data } = await api.post("/auth/google", { accessToken, role });
       login(data.user);
       redirectAfterAuth(data.user.role);
     } catch (err: unknown) {
@@ -172,18 +169,12 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="[&>div]:w-full [&_iframe]:w-full! [&>div>div]:w-full">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setError("Google sign-up failed")}
-                size="large"
-                width={400}
-                text="signup_with"
-                shape="rectangular"
-                theme="outline"
-                logo_alignment="center"
-              />
-            </div>
+            <GoogleAuthButton
+              label={isRecruiter ? "Sign up with Google Workspace" : "Continue with Google"}
+              onAccessToken={handleGoogleSuccess}
+              onError={() => setError("Google sign-up failed")}
+              disabled={loading}
+            />
             {isRecruiter && (
               <p className="text-xs font-mono text-amber-600 dark:text-amber-400">
                 only company google workspace accounts are accepted.
