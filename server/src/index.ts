@@ -78,6 +78,13 @@ for (const key of REQUIRED_ENV) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+process.on("unhandledRejection", (reason) => {
+  console.error("[process] unhandledRejection:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("[process] uncaughtException:", err);
+});
+
 const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env["PORT"] || 3000;

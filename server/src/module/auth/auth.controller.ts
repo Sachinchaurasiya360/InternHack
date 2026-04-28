@@ -64,6 +64,13 @@ export class AuthController {
         role?: string;
       };
       if (!credential && !accessToken) {
+        console.warn("[auth/google] empty body", {
+          contentType: req.headers["content-type"],
+          contentLength: req.headers["content-length"],
+          bodyType: typeof req.body,
+          bodyKeys: req.body && typeof req.body === "object" ? Object.keys(req.body) : null,
+          rawBody: req.body,
+        });
         return res.status(400).json({ message: "Google credential is required" });
       }
 
