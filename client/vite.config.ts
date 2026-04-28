@@ -39,24 +39,35 @@ const PRERENDER_ROUTES = [
   '/learn/exam-prep',
 ]
 
+// Vercel's build container is missing Chrome's system libs (libnspr4.so, etc.),
+// so puppeteer can't launch and the prerender plugin hard-fails the build.
+// Skip the plugin on Vercel and rely on local prerendering (or skip SEO snapshot
+// for that deploy). Override via SKIP_PRERENDER=1 to disable elsewhere.
+const skipPrerender =
+  process.env.SKIP_PRERENDER === '1' || process.env.VERCEL === '1'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    prerender({
-      routes: PRERENDER_ROUTES,
-      renderer: '@prerenderer/renderer-puppeteer',
-      rendererOptions: {
-        // Give React.lazy() chunks and react-helmet enough time to commit
-        // <title>, meta, and JSON-LD before snapshotting. Serial rendering
-        // avoids chunk-load races that cause sporadic empty captures.
-        renderAfterTime: 4500,
-        maxConcurrentRoutes: 1,
-        headless: true,
-        timeout: 30000,
-      },
-    }),
+    ...(skipPrerender
+      ? []
+      : [
+          prerender({
+            routes: PRERENDER_ROUTES,
+            renderer: '@prerenderer/renderer-puppeteer',
+            rendererOptions: {
+              // Give React.lazy() chunks and react-helmet enough time to commit
+              // <title>, meta, and JSON-LD before snapshotting. Serial rendering
+              // avoids chunk-load races that cause sporadic empty captures.
+              renderAfterTime: 4500,
+              maxConcurrentRoutes: 1,
+              headless: true,
+              timeout: 30000,
+            },
+          }),
+        ]),
   ],
   resolve: {
     alias: {
