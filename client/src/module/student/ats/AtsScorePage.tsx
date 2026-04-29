@@ -198,6 +198,7 @@ function ScoreCircle({
 export default function AtsScorePage() {
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -275,6 +276,16 @@ export default function AtsScorePage() {
     }
     return () => timers.forEach(clearTimeout);
   }, [loading]);
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl("");
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -431,13 +442,24 @@ export default function AtsScorePage() {
                         )}
                       </div>
                       {file ? (
-                        <div className="text-center">
+                        <div className="text-center space-y-3">
                           <p className="text-sm font-bold text-stone-900 dark:text-stone-50 max-w-60 truncate mx-auto">
                             {file.name}
                           </p>
                           <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
                             {(file.size / 1024).toFixed(1)} kb · pdf
                           </p>
+                          {previewUrl && (
+                            <div className="w-full max-w-xs mx-auto border border-stone-200 dark:border-white/10 rounded-md overflow-hidden bg-white dark:bg-stone-950">
+                              <div className="aspect-[3/4] w-full">
+                                <iframe
+                                  src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                                  title="Resume preview"
+                                  className="w-full h-full"
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="text-center">
