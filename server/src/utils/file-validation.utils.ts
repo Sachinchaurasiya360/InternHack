@@ -1,7 +1,6 @@
 import { readFile, unlink } from "fs/promises";
 
-/** Validate file content matches expected MIME types by checking magic bytes */
-export async function validateFileContent(
+async function validateFileContent(
   filePath: string,
   allowedMimes: string[],
 ): Promise<{ valid: boolean; detectedMime: string | undefined }> {

@@ -1,23 +1,13 @@
 import type { Request, Response, NextFunction } from "express";
-import { prisma } from "../../database/db.js";
-import { getPlanTier } from "../../config/usage-limits.js";
+import { isPremiumUser } from "../../utils/premium.utils.js";
 import { jobFeedService } from "./job-feed.service.js";
 import { updatePreferencesSchema, feedQuerySchema } from "./job-feed.validation.js";
 
 export class JobFeedController {
-  private async checkPremium(userId: number): Promise<boolean> {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
-    });
-    if (!user) return false;
-    return getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate) === "PREMIUM";
-  }
-
   getFeed = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
-      if (!(await this.checkPremium(req.user.id))) {
+      if (!(await isPremiumUser(req.user.id))) {
         res.status(403).json({ message: "InternHack AI is a premium feature. Upgrade to access personalized job recommendations.", upgradeUrl: "/student/checkout" });
         return;
       }
@@ -30,7 +20,7 @@ export class JobFeedController {
   getPreferences = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
-      if (!(await this.checkPremium(req.user.id))) {
+      if (!(await isPremiumUser(req.user.id))) {
         res.status(403).json({ message: "InternHack AI is a premium feature.", upgradeUrl: "/student/checkout" });
         return;
       }
@@ -42,7 +32,7 @@ export class JobFeedController {
   updatePreferences = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
-      if (!(await this.checkPremium(req.user.id))) {
+      if (!(await isPremiumUser(req.user.id))) {
         res.status(403).json({ message: "InternHack AI is a premium feature.", upgradeUrl: "/student/checkout" });
         return;
       }
@@ -90,7 +80,7 @@ export class JobFeedController {
   getSaved = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
-      if (!(await this.checkPremium(req.user.id))) {
+      if (!(await isPremiumUser(req.user.id))) {
         res.status(403).json({ message: "InternHack AI is a premium feature.", upgradeUrl: "/student/checkout" });
         return;
       }

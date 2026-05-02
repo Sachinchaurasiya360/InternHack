@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
+import { parsePagination } from "../../utils/pagination.utils.js";
 
 export class DsaController {
   constructor(private dsaService: DsaService) {}
@@ -21,8 +22,7 @@ export class DsaController {
     try {
       const { slug } = req.params;
       const studentId = req.user?.id;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 50;
+      const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const difficulty = req.query.difficulty as string | undefined;
       const search = req.query.search as string | undefined;
       const topic = await this.dsaService.getTopicBySlug(slug, studentId, page, limit, difficulty, search);
@@ -104,8 +104,7 @@ export class DsaController {
     try {
       const { company } = req.params;
       const studentId = req.user?.id;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 50;
+      const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const result = await this.dsaService.getCompanyProblems(company, studentId, page, limit);
       res.json(result);
     } catch (err) {
@@ -126,8 +125,7 @@ export class DsaController {
     try {
       const { pattern } = req.params;
       const studentId = req.user?.id;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 50;
+      const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const result = await this.dsaService.getPatternProblems(pattern, studentId, page, limit);
       res.json(result);
     } catch (err) {

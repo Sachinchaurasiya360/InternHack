@@ -4,16 +4,8 @@ import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { switchServiceProvider } from "../../lib/ai-provider-registry.js";
+import { slugify, slugifyWithSuffix } from "../../utils/slug.utils.js";
 import type { Prisma, UserRole, JobStatus, AdminTier, AIServiceType, AIProviderType } from "@prisma/client";
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim();
-}
 
 interface CreateCompanyInput {
   name: string;
@@ -641,7 +633,7 @@ export class AdminService {
   }
 
   async createCompany(adminId: number, input: CreateCompanyInput) {
-    let slug = generateSlug(input.name);
+    let slug = slugify(input.name);
     const existing = await prisma.company.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now()}`;
@@ -850,7 +842,7 @@ export class AdminService {
 
       if (status === "APPROVED" && contribution.type === "NEW_COMPANY") {
         const data = contribution.data as Record<string, unknown>;
-        let slug = generateSlug(data["name"] as string);
+        let slug = slugify(data["name"] as string);
         const existing = await tx.company.findUnique({ where: { slug } });
         if (existing) slug = `${slug}-${Date.now()}`;
 
@@ -1167,7 +1159,7 @@ export class AdminService {
   }
 
   async createDsaTopic(input: { name: string; description?: string | undefined; orderIndex: number }) {
-    const slug = generateSlug(input.name);
+    const slug = slugify(input.name);
     return prisma.dsaTopic.create({
       data: { name: input.name, slug, description: input.description ?? null, orderIndex: input.orderIndex },
     });
@@ -1177,7 +1169,7 @@ export class AdminService {
     const topic = await prisma.dsaTopic.findUnique({ where: { id: topicId } });
     if (!topic) throw new Error("DSA topic not found");
     const data: Prisma.dsaTopicUpdateInput = {};
-    if (input.name !== undefined) { data.name = input.name; data.slug = generateSlug(input.name); }
+    if (input.name !== undefined) { data.name = input.name; data.slug = slugify(input.name); }
     if (input.description !== undefined) data.description = input.description ?? null;
     if (input.orderIndex !== undefined) data.orderIndex = input.orderIndex;
     return prisma.dsaTopic.update({ where: { id: topicId }, data });
@@ -1282,7 +1274,7 @@ export class AdminService {
   }
 
   async createAptitudeCategory(input: { name: string; description?: string | undefined; orderIndex?: number | undefined }) {
-    const slug = generateSlug(input.name);
+    const slug = slugify(input.name);
     return prisma.aptitudeCategory.create({
       data: {
         name: input.name,
@@ -1297,7 +1289,7 @@ export class AdminService {
     const category = await prisma.aptitudeCategory.findUnique({ where: { id: categoryId } });
     if (!category) throw new Error("Aptitude category not found");
     const data: Prisma.aptitudeCategoryUpdateInput = {};
-    if (input.name !== undefined) { data.name = input.name; data.slug = generateSlug(input.name); }
+    if (input.name !== undefined) { data.name = input.name; data.slug = slugify(input.name); }
     if (input.description !== undefined) data.description = input.description ?? null;
     if (input.orderIndex !== undefined) data.orderIndex = input.orderIndex;
     return prisma.aptitudeCategory.update({ where: { id: categoryId }, data });
@@ -1310,7 +1302,7 @@ export class AdminService {
   }
 
   async createAptitudeTopic(input: { name: string; description?: string | undefined; orderIndex?: number | undefined; sourceUrl?: string | undefined; categoryId: number }) {
-    const slug = generateSlug(input.name);
+    const slug = slugify(input.name);
     return prisma.aptitudeTopic.create({
       data: {
         name: input.name,
@@ -1327,7 +1319,7 @@ export class AdminService {
     const topic = await prisma.aptitudeTopic.findUnique({ where: { id: topicId } });
     if (!topic) throw new Error("Aptitude topic not found");
     const data: Prisma.aptitudeTopicUpdateInput = {};
-    if (input.name !== undefined) { data.name = input.name; data.slug = generateSlug(input.name); }
+    if (input.name !== undefined) { data.name = input.name; data.slug = slugify(input.name); }
     if (input.description !== undefined) data.description = input.description ?? null;
     if (input.orderIndex !== undefined) data.orderIndex = input.orderIndex;
     if (input.sourceUrl !== undefined) data.sourceUrl = input.sourceUrl || null;
@@ -1826,19 +1818,12 @@ export class AdminService {
 
   // ==================== ADMIN EXTERNAL JOBS ====================
 
-  private generateSlug(company?: string, role?: string): string {
-    const base = [company, role].filter(Boolean).join(" ") || "job";
-    const slug = base.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    const suffix = Math.random().toString(36).slice(2, 6);
-    return `${slug}-${suffix}`;
-  }
-
   async createExternalJob(data: {
     company?: string; role?: string; description?: string;
     salary?: string; location?: string; applyLink?: string; tags?: string[];
   }) {
     const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000); // 10 days
-    const slug = this.generateSlug(data.company, data.role);
+    const slug = slugifyWithSuffix([data.company, data.role].filter(Boolean).join(" "), "job");
     return prisma.adminJob.create({
       data: {
         slug,

@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { ScraperService } from "./scraper.service.js";
+import { parsePagination } from "../../utils/pagination.utils.js";
 
 const scraperService = new ScraperService();
 
@@ -7,8 +8,7 @@ export class ScraperController {
   /** GET /api/scraped-jobs */
   async getScrapedJobs(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = Number(req.query["page"]) || 1;
-      const limit = Math.min(Number(req.query["limit"]) || 12, 50);
+      const { page, limit } = parsePagination(req, { defaultLimit: 12, maxLimit: 50 });
       const search = req.query["search"] ? String(req.query["search"]) : undefined;
       const location = req.query["location"] ? String(req.query["location"]) : undefined;
       const source = req.query["source"] ? String(req.query["source"]) : undefined;

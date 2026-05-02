@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { slugify } from "../../utils/slug.utils.js";
 import type { Prisma } from "@prisma/client";
 
 interface ListPublishedParams {
@@ -21,16 +22,11 @@ const authorSelect = { id: true, name: true, profilePic: true } as const;
 
 export class BlogService {
   async generateSlug(title: string): Promise<string> {
-    let slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-
+    let slug = slugify(title);
     const existing = await prisma.blogPost.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now()}`;
     }
-
     return slug;
   }
 

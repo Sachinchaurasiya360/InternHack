@@ -7,8 +7,9 @@ import {
   suggestEditSchema,
   addContactSchema,
 } from "./company.validation.js";
-import { getPlanTier, type PlanTier } from "../../config/usage-limits.js";
-import { prisma } from "../../database/db.js";
+import type { PlanTier } from "../../config/usage-limits.js";
+import { getUserTier } from "../../utils/premium.utils.js";
+import { parsePagination } from "../../utils/pagination.utils.js";
 
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
@@ -21,14 +22,7 @@ export class CompanyController {
         return;
       }
 
-      let tier: PlanTier = "FREE";
-      if (req.user) {
-        const user = await prisma.user.findUnique({
-          where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
-        });
-        if (user) tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
-      }
+      const tier: PlanTier = req.user ? await getUserTier(req.user.id) : "FREE";
 
       const data = await this.companyService.listCompanies(
         result.data as Parameters<CompanyService["listCompanies"]>[0],
@@ -68,8 +62,7 @@ export class CompanyController {
       }
 
       const sort = (req.query["sort"] as string) || "latest";
-      const page = Math.max(1, parseInt(String(req.query["page"] || "1"), 10));
-      const limit = Math.min(50, Math.max(1, parseInt(String(req.query["limit"] || "20"), 10)));
+      const { page, limit } = parsePagination(req, { defaultLimit: 20, maxLimit: 50 });
       const result = await this.companyService.getCompanyReviews(slug, sort, page, limit);
       res.json(result);
     } catch (err) {

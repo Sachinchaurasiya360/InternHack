@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { GeminiProvider } from "../../lib/providers/gemini.provider.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
+import { slugify } from "../../utils/slug.utils.js";
 import type { AiGenerateInput } from "./roadmap.validation.js";
 
 // ── Output schema (what the AI must return) ────────────────────────────────
@@ -45,14 +46,7 @@ const aiRoadmapSchema = z.object({
 export type GeneratedRoadmap = z.infer<typeof aiRoadmapSchema>;
 
 // ── Slug helpers ───────────────────────────────────────────────────────────
-const slugify = (s: string): string =>
-  s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
+const slugifyPart = (s: string): string => slugify(s, 60);
 
 /**
  * Generate a personalized roadmap using Gemini, then validate the response
@@ -93,19 +87,19 @@ export function slugifyRoadmap(generated: GeneratedRoadmap): {
 } {
   const usedSectionSlugs = new Set<string>();
   const sections = generated.sections.map((section, sIdx) => {
-    let slug = slugify(section.title) || `section-${sIdx + 1}`;
+    let slug = slugifyPart(section.title) || `section-${sIdx + 1}`;
     let n = 1;
     while (usedSectionSlugs.has(slug)) {
-      slug = `${slugify(section.title) || "section"}-${++n}`;
+      slug = `${slugifyPart(section.title) || "section"}-${++n}`;
     }
     usedSectionSlugs.add(slug);
 
     const usedTopicSlugs = new Set<string>();
     const topics = section.topics.map((topic, tIdx) => {
-      let tslug = slugify(topic.title) || `topic-${tIdx + 1}`;
+      let tslug = slugifyPart(topic.title) || `topic-${tIdx + 1}`;
       let m = 1;
       while (usedTopicSlugs.has(tslug)) {
-        tslug = `${slugify(topic.title) || "topic"}-${++m}`;
+        tslug = `${slugifyPart(topic.title) || "topic"}-${++m}`;
       }
       usedTopicSlugs.add(tslug);
       return { ...topic, slug: tslug };
@@ -118,7 +112,7 @@ export function slugifyRoadmap(generated: GeneratedRoadmap): {
 }
 
 export function buildRoadmapSlug(userId: number, title: string): string {
-  const base = slugify(title) || "roadmap";
+  const base = slugifyPart(title) || "roadmap";
   const stamp = Date.now().toString(36);
   return `ai-${userId}-${base}-${stamp}`.slice(0, 100);
 }

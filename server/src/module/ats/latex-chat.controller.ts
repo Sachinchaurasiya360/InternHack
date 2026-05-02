@@ -3,7 +3,7 @@ import type { LatexChatService } from "./latex-chat.service.js";
 import { latexChatSchema, latexJDOptimizeSchema } from "./latex-chat.validation.js";
 import { prisma } from "../../database/db.js";
 import type { UsageAction } from "@prisma/client";
-import { getPlanTier } from "../../config/usage-limits.js";
+import { isPremiumUser } from "../../utils/premium.utils.js";
 
 export class LatexChatController {
   constructor(private readonly chatService: LatexChatService) {}
@@ -15,7 +15,7 @@ export class LatexChatController {
         return;
       }
 
-      const isPremium = await this.checkPremium(req.user.id);
+      const isPremium = await isPremiumUser(req.user.id);
       if (!isPremium) {
         res.status(403).json({ message: "Premium subscription required to use AI Resume Assistant" });
         return;
@@ -46,7 +46,7 @@ export class LatexChatController {
         return;
       }
 
-      const isPremium = await this.checkPremium(req.user.id);
+      const isPremium = await isPremiumUser(req.user.id);
       if (!isPremium) {
         res.status(403).json({ message: "Premium subscription required to use AI Resume Assistant" });
         return;
@@ -72,14 +72,5 @@ export class LatexChatController {
     } catch (err) {
       next(err);
     }
-  }
-
-  private async checkPremium(userId: number): Promise<boolean> {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
-    });
-    if (!user) return false;
-    return getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate) === "PREMIUM";
   }
 }

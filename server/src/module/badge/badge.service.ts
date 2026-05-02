@@ -1,12 +1,6 @@
 import { prisma } from "../../database/db.js";
+import { slugify } from "../../utils/slug.utils.js";
 import type { Prisma, BadgeCategory } from "@prisma/client";
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
 
 interface CreateBadgeInput {
   name: string;
@@ -53,7 +47,7 @@ export class BadgeService {
   // ==================== ADMIN CRUD ====================
 
   async createBadge(input: CreateBadgeInput) {
-    let slug = input.slug || generateSlug(input.name);
+    let slug = input.slug || slugify(input.name);
     const existing = await prisma.badge.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now()}`;
@@ -80,7 +74,7 @@ export class BadgeService {
     if (input.name !== undefined) {
       data.name = input.name;
       if (!input.slug) {
-        data.slug = generateSlug(input.name);
+        data.slug = slugify(input.name);
       }
     }
     if (input.slug !== undefined) data.slug = input.slug;

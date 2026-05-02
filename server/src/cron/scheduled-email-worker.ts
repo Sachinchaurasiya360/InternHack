@@ -130,10 +130,3 @@ export function startScheduledEmailWorker(schedule = "*/5 * * * *"): void {
   });
   console.log(`[ScheduledEmail] Worker scheduled with cadence "${schedule}"`);
 }
-
-export function stopScheduledEmailWorker(): void {
-  if (cronJob) {
-    cronJob.stop();
-    cronJob = null;
-  }
-}

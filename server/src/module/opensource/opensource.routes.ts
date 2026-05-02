@@ -5,6 +5,7 @@ import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
+import { parsePagination } from "../../utils/pagination.utils.js";
 
 export const opensourceRouter = Router();
 
@@ -109,8 +110,7 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
 // List all repo requests
 opensourceRouter.get("/requests/all", authMiddleware, requireRole("ADMIN"), async (req, res, next) => {
   try {
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
+    const { page, limit, skip } = parsePagination(req);
     const status = req.query.status as string | undefined;
 
     const where: Record<string, unknown> = {};
@@ -123,7 +123,7 @@ opensourceRouter.get("/requests/all", authMiddleware, requireRole("ADMIN"), asyn
         where,
         include: { user: { select: { id: true, name: true, email: true, profilePic: true } } },
         orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
+        skip,
         take: limit,
       }),
       prisma.repoRequest.count({ where }),

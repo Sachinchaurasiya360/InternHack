@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import type { AdminService } from "./admin.service.js";
 import { setTokenCookie } from "../../utils/cookie.utils.js";
 import { createLogger } from "../../utils/logger.js";
+import { parsePagination } from "../../utils/pagination.utils.js";
 
 const logger = createLogger("AdminController");
 import {
@@ -259,8 +260,7 @@ export class AdminController {
 
   async listCompanies(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = parseInt(String(req.query["page"] || "1"), 10);
-      const limit = parseInt(String(req.query["limit"] || "20"), 10);
+      const { page, limit } = parsePagination(req);
       const data = await this.adminService.listAllCompanies(page, limit);
       res.json(data);
     } catch (err) {
@@ -340,8 +340,7 @@ export class AdminController {
   async listReviews(req: Request, res: Response, next: NextFunction) {
     try {
       const status = req.query["status"] as string | undefined;
-      const page = parseInt(String(req.query["page"] || "1"), 10);
-      const limit = parseInt(String(req.query["limit"] || "20"), 10);
+      const { page, limit } = parsePagination(req);
       const data = await this.adminService.listAllReviews(status, page, limit);
       res.json(data);
     } catch (err) {
@@ -374,8 +373,7 @@ export class AdminController {
   async listContributions(req: Request, res: Response, next: NextFunction) {
     try {
       const status = req.query["status"] as string | undefined;
-      const page = parseInt(String(req.query["page"] || "1"), 10);
-      const limit = parseInt(String(req.query["limit"] || "20"), 10);
+      const { page, limit } = parsePagination(req);
       const data = await this.adminService.listContributions(status, page, limit);
       res.json(data);
     } catch (err) {

@@ -149,5 +149,3 @@ export class JobMatchingService {
     return matchCount;
   }
 }
-
-export const jobMatchingService = new JobMatchingService();

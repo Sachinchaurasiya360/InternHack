@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { slugify } from "../../utils/slug.utils.js";
 
 interface CreateDepartmentData {
   name: string;
@@ -13,10 +14,6 @@ interface UpdateDepartmentData {
   parentId?: number | null | undefined;
   headId?: number | null | undefined;
   isActive?: boolean | undefined;
-}
-
-function slugify(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 export class DepartmentService {

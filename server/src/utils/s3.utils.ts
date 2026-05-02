@@ -37,8 +37,7 @@ export async function uploadToS3(
   return `${getBucketUrl()}/${key}`;
 }
 
-/** Generate a pre-signed URL for private S3 objects (1 hour expiry) */
-export async function getSignedS3Url(key: string, expiresIn = 3600): Promise<string> {
+async function getSignedS3Url(key: string, expiresIn = 3600): Promise<string> {
   const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
   return getSignedUrl(s3Client, command, { expiresIn });
 }

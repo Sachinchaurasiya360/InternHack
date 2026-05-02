@@ -47,10 +47,3 @@ export function startFollowUpCron(schedule = "0 9 * * *"): void {
   });
   console.log(`[FollowUpCron] Scheduled daily at "${schedule}"`);
 }
-
-export function stopFollowUpCron(): void {
-  if (cronJob) {
-    cronJob.stop();
-    cronJob = null;
-  }
-}

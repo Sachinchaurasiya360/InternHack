@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { AptitudeService } from "./aptitude.service.js";
+import { parsePagination } from "../../utils/pagination.utils.js";
 
 export class AptitudeController {
   constructor(private service: AptitudeService) {}
@@ -17,8 +18,7 @@ export class AptitudeController {
   async getTopicQuestions(req: Request, res: Response, next: NextFunction) {
     try {
       const slug = req.params.slug as string;
-      const page = Math.max(1, parseInt(String(req.query.page ?? "1")) || 1);
-      const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? "10")) || 10));
+      const { page, limit } = parsePagination(req, { defaultLimit: 10, maxLimit: 50 });
       const studentId = req.user?.id;
       const result = await this.service.getTopicQuestions(slug, page, limit, studentId);
       if (!result) return res.status(404).json({ error: "Topic not found" });
@@ -53,8 +53,7 @@ export class AptitudeController {
   async getCompanyQuestions(req: Request, res: Response, next: NextFunction) {
     try {
       const name = req.params.name as string;
-      const page = parseInt(String(req.query.page ?? "1")) || 1;
-      const limit = parseInt(String(req.query.limit ?? "10")) || 10;
+      const { page, limit } = parsePagination(req, { defaultLimit: 10 });
       const studentId = req.user?.id;
       const result = await this.service.getCompanyQuestions(name, page, limit, studentId);
       res.json(result);
