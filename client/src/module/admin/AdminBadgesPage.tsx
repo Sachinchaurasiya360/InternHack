@@ -322,7 +322,7 @@ export default function AdminBadgesPage() {
                         {badge.iconUrl ? (
                           <img
                             src={badge.iconUrl}
-                            alt=""
+                            alt={badge.name}
                             className="w-8 h-8 rounded-lg object-cover"
                           />
                         ) : (
@@ -342,9 +342,8 @@ export default function AdminBadgesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`text-xs font-medium px-2 py-1 rounded-md ${
-                          CATEGORY_COLORS[badge.category]
-                        }`}
+                        className={`text-xs font-medium px-2 py-1 rounded-md ${CATEGORY_COLORS[badge.category]
+                          }`}
                       >
                         {badge.category}
                       </span>
