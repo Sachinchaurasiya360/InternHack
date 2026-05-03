@@ -22,7 +22,7 @@ const prepResourceSchema = z.object({
   url: z.string().trim().url().max(500).optional(),
 });
 
-export const createExperienceSchema = z.object({
+const createExperienceBaseSchema = z.object({
   companyId: z.coerce.number().int().positive().optional(),
   companyName: z.string().trim().min(1).max(200).optional(),
   role: z.string().trim().min(2).max(120),
@@ -40,12 +40,14 @@ export const createExperienceSchema = z.object({
   tips: z.string().trim().max(4000).optional(),
   prepResources: z.array(prepResourceSchema).max(20).default([]),
   isAnonymous: z.boolean().default(false),
-}).refine((d) => d.companyId !== undefined || (d.companyName && d.companyName.length > 0), {
-  message: "Either companyId or companyName is required",
-  path: ["companyName"],
 });
 
-export const updateExperienceSchema = createExperienceSchema.unwrap().partial().extend({
+export const createExperienceSchema = createExperienceBaseSchema.refine(
+  (d) => d.companyId !== undefined || (d.companyName && d.companyName.length > 0),
+  { message: "Either companyId or companyName is required", path: ["companyName"] }
+);
+
+export const updateExperienceSchema = createExperienceBaseSchema.partial().extend({
   companyId: z.coerce.number().int().positive().optional(),
   companyName: z.string().trim().min(1).max(200).optional(),
   status: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
