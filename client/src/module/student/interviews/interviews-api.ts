@@ -7,6 +7,8 @@ import type {
   InterviewTopQuestion,
   InterviewRound,
   InterviewPrepResource,
+  InterviewOutcome,
+  InterviewDifficulty,
 } from "../../../lib/types";
 
 export interface ListExperiencesQuery {

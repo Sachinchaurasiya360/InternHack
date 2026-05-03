@@ -239,15 +239,15 @@ export default function InterviewsDirectoryPage() {
             >
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-300 overflow-hidden">
-                  {e.company.logo ? (
+                  {e.company?.logo ? (
                     <img src={e.company.logo} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    e.company.name.charAt(0).toUpperCase()
+                    (e.company?.name ?? e.companyName ?? "?").charAt(0).toUpperCase()
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
-                    {e.company.name} · {e.role}
+                    {e.company?.name ?? e.companyName ?? "Unknown"} · {e.role}
                   </h3>
                   <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                     <span>{String(e.interviewYear)}</span>
@@ -282,7 +282,7 @@ export default function InterviewsDirectoryPage() {
               <div className="pt-3 border-t border-stone-200 dark:border-white/10 mt-3 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 <span className="inline-flex items-center gap-1">
                   <Building2 className="w-3 h-3" />
-                  {e.company.city}
+                  {e.company?.city ?? "—"}
                 </span>
                 <span>{timeAgo(e.createdAt)}</span>
               </div>

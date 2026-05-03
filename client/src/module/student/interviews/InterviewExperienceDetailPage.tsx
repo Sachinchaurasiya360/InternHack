@@ -139,7 +139,8 @@ export default function InterviewExperienceDetailPage() {
     experience.interviewMonth && experience.interviewYear
       ? `${MONTHS[experience.interviewMonth - 1]} ${String(experience.interviewYear)}`
       : String(experience.interviewYear);
-  const companyInitial = experience.company.name.charAt(0).toUpperCase();
+  const companyInitial = experience.company?.name.charAt(0).toUpperCase() ?? (experience.companyName?.charAt(0).toUpperCase() ?? "?");
+  const companyDisplayName = experience.company?.name ?? experience.companyName ?? "Unknown company";
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -152,7 +153,7 @@ export default function InterviewExperienceDetailPage() {
     },
     itemReviewed: {
       "@type": "Organization",
-      name: experience.company.name,
+      name: companyDisplayName,
     },
     datePublished: experience.createdAt,
     author: { "@type": "Person", name: authorName },
@@ -161,7 +162,7 @@ export default function InterviewExperienceDetailPage() {
   return (
     <div className="pb-16">
       <SEO
-        title={`${experience.company.name} ${experience.role} interview experience`}
+        title={`${companyDisplayName} ${experience.role} interview experience`}
         noIndex
       />
       <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
@@ -184,7 +185,7 @@ export default function InterviewExperienceDetailPage() {
         <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 md:p-8 mb-4">
           <div className="flex items-start gap-4 flex-wrap">
             <div className="w-14 h-14 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-xl font-bold text-stone-700 dark:text-stone-300 overflow-hidden">
-              {experience.company.logo ? (
+              {experience.company?.logo ? (
                 <img
                   src={experience.company.logo}
                   alt=""
@@ -197,7 +198,7 @@ export default function InterviewExperienceDetailPage() {
             <div className="flex-1 min-w-0">
               <Kicker>interview experience</Kicker>
               <h1 className="mt-2 text-2xl md:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
-                {experience.company.name} · {experience.role}
+                {companyDisplayName} · {experience.role}
               </h1>
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 <span className="inline-flex items-center gap-1">
@@ -444,20 +445,22 @@ export default function InterviewExperienceDetailPage() {
               </dl>
             </div>
 
-            <Link
-              to={`/student/companies/${experience.company.slug}`}
-              className="block bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
-            >
-              <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
-                About the company
-              </div>
-              <div className="text-sm font-semibold text-stone-900 dark:text-stone-50">
-                {experience.company.name}
-              </div>
-              <div className="text-xs text-stone-500 mt-0.5">
-                {experience.company.city} · {experience.company.industry}
-              </div>
-            </Link>
+            {experience.company ? (
+              <Link
+                to={`/student/companies/${experience.company.slug}`}
+                className="block bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
+              >
+                <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
+                  About the company
+                </div>
+                <div className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+                  {experience.company.name}
+                </div>
+                <div className="text-xs text-stone-500 mt-0.5">
+                  {experience.company.city} · {experience.company.industry}
+                </div>
+              </Link>
+            ) : null}
           </div>
         </div>
 
