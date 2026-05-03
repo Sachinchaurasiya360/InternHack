@@ -1,6 +1,6 @@
 # InternHack
 
-**Prepare. Practice. Placed.**, An open-source, full-stack career platform that helps students land jobs through AI-powered tools, structured learning, and recruiter dashboards.
+**Prepare. Practice. Placed.**, An open-source, full-stack career platform that helps students land jobs through AI-powered tools, structured learning, and recruiter dashboards. InternHack brings together job discovery, skill development, and hiring workflows into a single unified platform, enabling students to seamlessly move from learning to applying. It provides AI-powered tools such as resume scoring, job matching, and mock interviews to enhance preparation and improve outcomes. Recruiters can efficiently manage job postings, evaluate candidates, and streamline multi-round hiring processes. With dedicated features for students, recruiters, and administrators, InternHack aims to make the hiring ecosystem more accessible, efficient, and data-driven.
 
 Live at **[internhack.xyz](https://www.internhack.xyz)**
 
