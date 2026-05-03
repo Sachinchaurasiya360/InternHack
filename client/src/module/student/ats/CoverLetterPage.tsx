@@ -283,15 +283,30 @@ export default function CoverLetterPage() {
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                 />
-                <p
-                  className={`mt-1.5 text-[10px] font-mono uppercase tracking-widest tabular-nums ${
-                    jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS
-                      ? "text-amber-600 dark:text-amber-400"
-                      : "text-stone-500"
-                  }`}
-                >
-                  {jobDescription.length} / {JD_MIN_CHARS} min
-                </p>
+                <div className="mt-1.5 flex flex-col gap-1">
+                  <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest tabular-nums">
+                    <span className={jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}>
+                      {jobDescription.length === 0 
+                        ? `${JD_MIN_CHARS} characters minimum`
+                        : jobDescription.length < JD_MIN_CHARS
+                        ? `${JD_MIN_CHARS - jobDescription.length} more characters needed`
+                        : "Ready to generate"}
+                    </span>
+                    <span className="text-stone-500">
+                      {jobDescription.length} / {JD_MIN_CHARS} min
+                    </span>
+                  </div>
+                  {jobDescription.length >= JD_MIN_CHARS && jobDescription.length < 200 && (
+                    <p className="text-[10px] text-stone-500 mt-0.5 normal-case tracking-normal font-sans">
+                       Longer job descriptions produce better-tailored cover letters. Aim for 200+ chars.
+                    </p>
+                  )}
+                  {jobDescription.length > 5000 && (
+                    <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5 normal-case tracking-normal font-sans">
+                       Very long descriptions may be truncated. Consider keeping it under 5000 chars.
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
