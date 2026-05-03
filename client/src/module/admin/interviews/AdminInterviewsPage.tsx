@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   MessageCircle,
@@ -8,11 +8,14 @@ import {
   ExternalLink,
   RefreshCw,
   ArrowUp,
+  Link2,
+  Search,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { queryKeys } from "../../../lib/query-keys";
-import type { InterviewExperience, InterviewListResponse } from "../../../lib/types";
+import api from "../../../lib/axios";
+import type { InterviewExperience, InterviewExperienceCompany, InterviewListResponse } from "../../../lib/types";
 import {
   deleteExperience,
   listExperiences,
@@ -31,6 +34,7 @@ export default function AdminInterviewsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState<InterviewExperience | null>(null);
+  const [linkTarget, setLinkTarget] = useState<InterviewExperience | null>(null);
 
   const queryParams = useMemo(
     () => ({
@@ -172,7 +176,11 @@ export default function AdminInterviewsPage() {
                 experiences.map((e) => (
                   <tr key={e.id} className="hover:bg-gray-800/50 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-white">{e.company.name}</div>
+                      <div className="font-medium text-white">
+                        {e.company?.name ?? (
+                          <span className="text-amber-400 italic">{e.companyName ?? "—"}</span>
+                        )}
+                      </div>
                       <div className="text-xs text-gray-500">{e.role}</div>
                     </td>
                     <td className="px-4 py-3 text-gray-300">
@@ -212,6 +220,15 @@ export default function AdminInterviewsPage() {
                         >
                           <ExternalLink className="w-4 h-4" />
                         </button>
+                        {!e.companyId ? (
+                          <button
+                            onClick={() => setLinkTarget(e)}
+                            className="p-1.5 text-gray-400 hover:text-amber-400 hover:bg-gray-800 rounded transition-colors"
+                            title="Link company"
+                          >
+                            <Link2 className="w-4 h-4" />
+                          </button>
+                        ) : null}
                         {e.status !== "APPROVED" ? (
                           <button
                             onClick={() => approveMutation.mutate(e.id)}
@@ -295,6 +312,17 @@ export default function AdminInterviewsPage() {
           }}
         />
       ) : null}
+
+      {linkTarget ? (
+        <LinkCompanyModal
+          experience={linkTarget}
+          onClose={() => setLinkTarget(null)}
+          onLinked={() => {
+            setLinkTarget(null);
+            invalidate();
+          }}
+        />
+      ) : null}
     </div>
   );
 }
@@ -316,7 +344,7 @@ function PreviewModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
           <div>
             <h2 className="text-lg font-bold text-white">
-              {experience.company.name} · {experience.role}
+              {experience.company?.name ?? experience.companyName ?? "Unknown company"} · {experience.role}
             </h2>
             <div className="text-xs text-gray-500 mt-0.5">
               {experience.interviewYear} · {experience.difficulty} · {experience.outcome}
@@ -385,6 +413,98 @@ function PreviewModal({
           >
             Approve
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LinkCompanyModal({
+  experience,
+  onClose,
+  onLinked,
+}: {
+  experience: InterviewExperience;
+  onClose: () => void;
+  onLinked: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<InterviewExperienceCompany[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!query.trim()) { setResults([]); return; }
+    const t = setTimeout(async () => {
+      try {
+        const res = await api.get<{ companies: InterviewExperienceCompany[] }>("/companies", {
+          params: { search: query, limit: 8 },
+        });
+        setResults(res.data.companies ?? []);
+      } catch { setResults([]); }
+    }, 250);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  const link = async (company: InterviewExperienceCompany) => {
+    setSaving(true);
+    try {
+      await updateExperience(experience.id, { companyId: company.id });
+      toast.success(`Linked to ${company.name}`);
+      onLinked();
+    } catch {
+      toast.error("Failed to link company");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+      <div className="bg-gray-900 border border-gray-800 rounded-lg w-full max-w-md">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+          <div>
+            <h2 className="text-base font-bold text-white">Link company</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Submitted as: <span className="text-amber-400">{experience.companyName ?? "—"}</span>
+            </p>
+          </div>
+          <button onClick={onClose} className="p-1 text-gray-400 hover:text-white transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="p-5">
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search company..."
+              autoFocus
+              className="w-full pl-9 pr-3 py-2 bg-gray-950 border border-gray-700 rounded-lg text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+          <div className="space-y-1 max-h-64 overflow-y-auto">
+            {results.map((c) => (
+              <button
+                key={c.id}
+                disabled={saving}
+                onClick={() => link(c)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer border-0 disabled:opacity-50"
+              >
+                <div className="w-8 h-8 rounded bg-gray-700 flex items-center justify-center shrink-0 text-xs font-bold text-gray-300 overflow-hidden">
+                  {c.logo ? <img src={c.logo} alt="" className="w-full h-full object-cover" /> : c.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-white font-medium truncate">{c.name}</div>
+                  <div className="text-xs text-gray-500 truncate">{c.city} · {c.industry}</div>
+                </div>
+              </button>
+            ))}
+            {query.trim() && results.length === 0 ? (
+              <p className="text-xs text-gray-500 text-center py-4">No companies found</p>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>

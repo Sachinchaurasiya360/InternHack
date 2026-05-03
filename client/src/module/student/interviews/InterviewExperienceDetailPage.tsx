@@ -171,6 +171,15 @@ export default function InterviewExperienceDetailPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mt-6"
       >
+        <div className="mb-4">
+          <Link
+            to="/student/interviews"
+            className="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
+          >
+            <ArrowLeft className="w-4 h-4" /> All experiences
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 md:p-8 mb-4">
           <div className="flex items-start gap-4 flex-wrap">
@@ -452,14 +461,7 @@ export default function InterviewExperienceDetailPage() {
           </div>
         </div>
 
-        <div className="mt-10">
-          <Link
-            to="/student/interviews"
-            className="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
-          >
-            <ArrowLeft className="w-4 h-4" /> All experiences
-          </Link>
-        </div>
+
       </motion.div>
     </div>
   );

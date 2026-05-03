@@ -1252,7 +1252,8 @@ model milestoneEmail {
 // Moderated via ReviewStatus. Upvotes float the most useful submissions.
 model interviewExperience {
   id              Int                 @id @default(autoincrement())
-  companyId       Int
+  companyId       Int?
+  companyName     String?
   userId          Int
   role            String
   experienceYears Int?
@@ -1275,7 +1276,7 @@ model interviewExperience {
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
-  company         company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company         company?            @relation(fields: [companyId], references: [id], onDelete: SetNull)
   user            user                @relation("UserInterviewExperiences", fields: [userId], references: [id], onDelete: Cascade)
   upvoteRecords   interviewExperienceUpvote[]
 

@@ -7,7 +7,7 @@ const questionSchema = z.object({
 });
 
 const roundSchema = z.object({
-  name: z.string().trim().min(1).max(120),
+  name: z.string().trim().max(120).optional(),
   type: z
     .enum(["TECHNICAL", "CODING", "DSA", "SYSTEM_DESIGN", "HR", "MANAGERIAL", "BEHAVIORAL", "APTITUDE", "GD", "OTHER"])
     .default("TECHNICAL"),
@@ -23,10 +23,11 @@ const prepResourceSchema = z.object({
 });
 
 export const createExperienceSchema = z.object({
-  companyId: z.coerce.number().int().positive(),
+  companyId: z.coerce.number().int().positive().optional(),
+  companyName: z.string().trim().min(1).max(200).optional(),
   role: z.string().trim().min(2).max(120),
   experienceYears: z.coerce.number().int().min(0).max(30).optional(),
-  interviewYear: z.coerce.number().int().min(2000).max(2100),
+  interviewYear: z.coerce.number().int().min(2000).max(2100).optional(),
   interviewMonth: z.coerce.number().int().min(1).max(12).optional(),
   source: z.enum(["ON_CAMPUS", "OFF_CAMPUS", "REFERRAL", "LINKEDIN", "PORTAL", "OTHER"]).default("ON_CAMPUS"),
   difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).default("MEDIUM"),
@@ -34,14 +35,19 @@ export const createExperienceSchema = z.object({
   offered: z.boolean().default(false),
   ctcLpa: z.coerce.number().min(0).max(500).optional(),
   totalRounds: z.coerce.number().int().min(1).max(20),
-  overallRating: z.coerce.number().int().min(1).max(5),
+  overallRating: z.coerce.number().int().min(1).max(5).default(3),
   rounds: z.array(roundSchema).min(1).max(20),
   tips: z.string().trim().max(4000).optional(),
   prepResources: z.array(prepResourceSchema).max(20).default([]),
   isAnonymous: z.boolean().default(false),
+}).refine((d) => d.companyId !== undefined || (d.companyName && d.companyName.length > 0), {
+  message: "Either companyId or companyName is required",
+  path: ["companyName"],
 });
 
-export const updateExperienceSchema = createExperienceSchema.partial().extend({
+export const updateExperienceSchema = createExperienceSchema.unwrap().partial().extend({
+  companyId: z.coerce.number().int().positive().optional(),
+  companyName: z.string().trim().min(1).max(200).optional(),
   status: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
 });
 

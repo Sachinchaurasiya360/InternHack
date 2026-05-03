@@ -7,9 +7,6 @@ import type {
   InterviewTopQuestion,
   InterviewRound,
   InterviewPrepResource,
-  InterviewSource,
-  InterviewDifficulty,
-  InterviewOutcome,
 } from "../../../lib/types";
 
 export interface ListExperiencesQuery {
@@ -27,18 +24,11 @@ export interface ListExperiencesQuery {
 }
 
 export interface CreateExperiencePayload {
-  companyId: number;
+  companyId?: number;
+  companyName?: string;
   role: string;
   experienceYears?: number;
-  interviewYear: number;
-  interviewMonth?: number;
-  source: InterviewSource;
-  difficulty: InterviewDifficulty;
-  outcome: InterviewOutcome;
-  offered: boolean;
-  ctcLpa?: number;
   totalRounds: number;
-  overallRating: number;
   rounds: InterviewRound[];
   tips?: string;
   prepResources?: InterviewPrepResource[];

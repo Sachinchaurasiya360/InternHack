@@ -1402,7 +1402,7 @@ export interface InterviewQuestion {
 }
 
 export interface InterviewRound {
-  name: string;
+  name?: string;
   type: InterviewRoundType;
   durationMins?: number;
   questions: InterviewQuestion[];
@@ -1433,7 +1433,8 @@ export interface InterviewExperienceCompany {
 
 export interface InterviewExperience {
   id: number;
-  companyId: number;
+  companyId: number | null;
+  companyName: string | null;
   userId: number;
   role: string;
   experienceYears: number | null;
@@ -1455,7 +1456,7 @@ export interface InterviewExperience {
   views: number;
   createdAt: string;
   updatedAt: string;
-  company: InterviewExperienceCompany;
+  company: InterviewExperienceCompany | null;
   user: InterviewExperienceAuthor | null;
   hasUpvoted?: boolean;
 }

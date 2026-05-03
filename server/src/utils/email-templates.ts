@@ -1215,3 +1215,366 @@ export function applicationStatusEmailHtml(args: {
 </body>
 </html>`;
 }
+
+function escapeCertificateText(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+export function internshipCertificateDocumentHtml(args: {
+  recipientName: string;
+  role: string;
+  certificateNo: string;
+  issueDate: string;
+  workDates?: string;
+  organization?: string;
+  logoDataUri?: string;
+  signatoryName?: string;
+  signatoryTitle?: string;
+  signatureDataUri?: string;
+}): string {
+  const organization = args.organization || "InternHack";
+  const signatoryName = args.signatoryName || "Sachin Chaurasiya";
+  const signatoryTitle = args.signatoryTitle || "Founder";
+  const logo = args.logoDataUri
+    ? `<img src="${args.logoDataUri}" alt="${organization} logo" class="brand-logo" />`
+    : `<div class="brand-mark">IH</div>`;
+  const signatureImg = args.signatureDataUri
+    ? `<img src="${args.signatureDataUri}" alt="Signature" class="sig-img" />`
+    : "";
+
+  const name = escapeCertificateText(args.recipientName);
+  const role = escapeCertificateText(args.role);
+  const certificateNo = escapeCertificateText(args.certificateNo);
+  const issueDate = escapeCertificateText(args.issueDate);
+  const workDates = args.workDates ? escapeCertificateText(args.workDates) : "";
+  const org = escapeCertificateText(organization);
+  const signer = escapeCertificateText(signatoryName);
+  const signerTitle = escapeCertificateText(signatoryTitle);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Internship Certificate - ${name}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #e5e7eb;
+      color: #111827;
+      font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+    .certificate {
+      width: min(1120px, 100%);
+      aspect-ratio: 1.414 / 1;
+      background: #ffffff;
+      border: 1px solid #111827;
+      padding: 28px;
+      position: relative;
+      box-shadow: 0 24px 70px rgba(17, 24, 39, 0.18);
+    }
+    .inner {
+      height: 100%;
+      border: 4px double #111827;
+      padding: 44px 56px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .inner::before,
+    .inner::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border: 1px solid #d1d5db;
+      transform: rotate(45deg);
+    }
+    .inner::before { top: -132px; left: -132px; }
+    .inner::after { right: -132px; bottom: -132px; }
+    .topline {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+    .brand-logo {
+      width: 58px;
+      height: 58px;
+      border-radius: 0;
+      object-fit: contain;
+      background: transparent;
+    }
+    .brand-mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #0a0a0a;
+      color: #ffffff;
+      font-weight: 800;
+    }
+    .brand-name {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    .cert-no {
+      text-align: right;
+      font-size: 12px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    .eyebrow {
+      margin: 18px 0 8px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #2563eb;
+    }
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 700;
+      letter-spacing: 0;
+      color: #111827;
+    }
+    .presented {
+      margin: 32px 0 8px;
+      color: #6b7280;
+      font-size: 15px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .recipient {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(40px, 5.5vw, 68px);
+      color: #0f172a;
+      border-bottom: 2px solid #111827;
+      min-width: min(620px, 86%);
+      padding-bottom: 8px;
+      letter-spacing: 0;
+    }
+    .copy {
+      max-width: 800px;
+      margin: 26px auto 0;
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.65;
+      color: #374151;
+    }
+    .copy strong { color: #111827; }
+    .footer-website {
+      text-align: left;
+      align-self: end;
+    }
+    .footer-website .website-link {
+      display: block;
+      font-size: 18px;
+      font-weight: 800;
+      color: #2563eb;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .footer-website span {
+      display: block;
+      font-size: 11px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+    }
+    .footer {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      align-items: end;
+      margin-top: auto;
+      padding-top: 34px;
+      position: relative;
+      z-index: 1;
+    }
+    .signature {
+      border-top: 2px solid #111827;
+      padding-top: 10px;
+      text-align: left;
+    }
+    .signature.right { text-align: right; }
+    .signature p {
+      margin: 0;
+      color: #111827;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .signature span {
+      display: block;
+      margin-top: 3px;
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .sig-img {
+      display: block;
+      height: 52px;
+      max-width: 160px;
+      object-fit: contain;
+      margin-bottom: 6px;
+    }
+    @media print {
+      body { background: #ffffff; padding: 0; }
+      .certificate { box-shadow: none; width: 100%; }
+    }
+    @media (max-width: 760px) {
+      body { padding: 14px; }
+      .certificate { aspect-ratio: auto; }
+      .inner { padding: 28px 20px; }
+      .topline,
+      .footer {
+        grid-template-columns: 1fr;
+        display: grid;
+      }
+      .topline,
+      .cert-no,
+      .signature,
+      .signature.right {
+        text-align: center;
+        justify-content: center;
+      }
+      .brand { justify-content: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="certificate" aria-label="Internship certificate">
+    <section class="inner">
+      <header class="topline">
+        <div class="brand">
+          ${logo}
+          <div>
+            <p class="brand-name">${org}</p>
+          </div>
+        </div>
+        <div class="cert-no">
+          <strong>Certificate No.</strong><br />
+          ${certificateNo}
+        </div>
+      </header>
+
+      <p class="eyebrow">Certificate of Internship</p>
+      <h1>Certificate of Completion</h1>
+
+      <p class="presented">This certificate is proudly presented to</p>
+      <h2 class="recipient">${name}</h2>
+
+      <p class="copy">
+        This is to certify that <strong>${name}</strong> has successfully completed an internship
+        with <strong>${org}</strong> as a <strong>${role}</strong>${workDates ? `, from <strong>${workDates}</strong>` : ""}.
+        Throughout this period, the recipient demonstrated outstanding commitment, analytical thinking,
+        and made meaningful professional contributions to data-focused work.
+      </p>
+
+      <footer class="footer">
+        <div class="footer-website">
+          <a href="https://internhack.xyz" class="website-link">internhack.xyz</a>
+          <span>Official Career Platform</span>
+        </div>
+        <div class="signature right">
+          ${signatureImg}
+          <p>${signer}</p>
+          <span>${signerTitle}</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+export function internshipCertificateEmailHtml(args: {
+  recipientName: string;
+  role: string;
+  certificateNo: string;
+  issueDate: string;
+}): string {
+  const firstName = escapeCertificateText(args.recipientName.split(" ")[0] || args.recipientName);
+  const role = escapeCertificateText(args.role);
+  const certificateNo = escapeCertificateText(args.certificateNo);
+  const issueDate = escapeCertificateText(args.issueDate);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your InternHack internship certificate</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;">
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:0;">InternHack</h1>
+        <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#60a5fa;text-transform:uppercase;">internship certificate</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#ffffff;padding:32px 24px;">
+        <p style="margin:0 0 14px;display:inline-block;padding:4px 10px;background-color:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:4px;">
+          Certificate issued
+        </p>
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Hi ${firstName}, your certificate is attached.</h2>
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+          Congratulations on completing your internship work with InternHack as a <strong style="color:#18181b;">${role}</strong>. The certificate HTML file is attached to this email.
+        </p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;border:1px solid #e4e4e7;border-radius:8px;background-color:#fafafa;">
+          <tr>
+            <td style="padding:16px 18px;">
+              <p style="margin:0 0 4px;font-size:11px;font-weight:800;color:#71717a;text-transform:uppercase;letter-spacing:1px;">Certificate number</p>
+              <p style="margin:0 0 12px;font-size:16px;font-weight:800;color:#18181b;">${certificateNo}</p>
+              <p style="margin:0 0 4px;font-size:11px;font-weight:800;color:#71717a;text-transform:uppercase;letter-spacing:1px;">Issue date</p>
+              <p style="margin:0;font-size:15px;color:#18181b;">${issueDate}</p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;line-height:1.5;">
+          This certificate was generated by InternHack. Keep the certificate number for reference.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}

@@ -107,15 +107,19 @@ export class InterviewExperienceService {
   }
 
   async create(userId: number, input: CreateExperienceInput) {
-    const company = await prisma.company.findUnique({
-      where: { id: input.companyId },
-      select: { id: true },
-    });
-    if (!company) throw new Error("Company not found");
+    // Validate company if companyId provided
+    if (input.companyId) {
+      const company = await prisma.company.findUnique({
+        where: { id: input.companyId },
+        select: { id: true },
+      });
+      if (!company) throw new Error("Company not found");
+    }
 
     const row = await prisma.interviewExperience.create({
       data: {
-        companyId: input.companyId,
+        companyId: input.companyId ?? null,
+        companyName: input.companyName ?? null,
         userId,
         role: input.role,
         experienceYears: input.experienceYears ?? null,
@@ -148,6 +152,8 @@ export class InterviewExperienceService {
     if (!viewerIsAdmin && existing.userId !== viewerId) throw new Error("Forbidden");
 
     const data: Prisma.interviewExperienceUpdateInput = {};
+    if (input.companyId !== undefined) data.companyId = input.companyId ?? null;
+    if (input.companyName !== undefined) data.companyName = input.companyName ?? null;
     if (input.role !== undefined) data.role = input.role;
     if (input.experienceYears !== undefined) data.experienceYears = input.experienceYears;
     if (input.interviewYear !== undefined) data.interviewYear = input.interviewYear;

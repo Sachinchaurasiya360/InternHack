@@ -1,18 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import { Plus, Trash2, GripVertical, Building2, Search, Send, Info } from "lucide-react";
 import toast from "../../../components/ui/toast";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import type {
-  InterviewDifficulty,
   InterviewExperienceCompany,
-  InterviewOutcome,
   InterviewPrepResource,
   InterviewRound,
   InterviewRoundType,
-  InterviewSource,
 } from "../../../lib/types";
 import { createExperience } from "./interviews-api";
 
@@ -30,12 +27,10 @@ const ROUND_TYPES: { value: InterviewRoundType; label: string }[] = [
 ];
 
 const emptyRound = (): InterviewRound => ({
-  name: "",
   type: "TECHNICAL",
   questions: [{ prompt: "" }],
 });
 
-const currentYear = new Date().getFullYear();
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -77,21 +72,14 @@ export default function ShareInterviewPage() {
   const [searchParams] = useSearchParams();
   const prefillSlug = searchParams.get("company");
 
-  const [companyQuery, setCompanyQuery] = useState("");
+  // companyName = free-text typed by user; selectedCompany = optional match from search
+  const [companyName, setCompanyName] = useState("");
   const [companyResults, setCompanyResults] = useState<InterviewExperienceCompany[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<InterviewExperienceCompany | null>(null);
   const [companyOpen, setCompanyOpen] = useState(false);
 
   const [role, setRole] = useState("");
   const [experienceYears, setExperienceYears] = useState<number | "">(0);
-  const [interviewYear, setInterviewYear] = useState<number>(currentYear);
-  const [interviewMonth, setInterviewMonth] = useState<number | "">("");
-  const [source, setSource] = useState<InterviewSource>("ON_CAMPUS");
-  const [difficulty, setDifficulty] = useState<InterviewDifficulty>("MEDIUM");
-  const [outcome, setOutcome] = useState<InterviewOutcome>("PENDING");
-  const [offered, setOffered] = useState(false);
-  const [ctcLpa, setCtcLpa] = useState<number | "">("");
-  const [overallRating, setOverallRating] = useState<number>(3);
   const [tips, setTips] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
 
@@ -100,16 +88,16 @@ export default function ShareInterviewPage() {
 
   const [submitting, setSubmitting] = useState(false);
 
-  // Company search with debounce
+  // Company search with debounce (optional — for pre-linking)
   useEffect(() => {
-    if (!companyQuery.trim() || selectedCompany?.name === companyQuery) {
+    if (!companyName.trim() || selectedCompany?.name === companyName) {
       setCompanyResults([]);
       return;
     }
     const timer = setTimeout(async () => {
       try {
         const res = await api.get<{ companies: InterviewExperienceCompany[] }>("/companies", {
-          params: { search: companyQuery, limit: 8 },
+          params: { search: companyName, limit: 8 },
         });
         setCompanyResults(res.data.companies ?? []);
       } catch {
@@ -117,7 +105,7 @@ export default function ShareInterviewPage() {
       }
     }, 250);
     return () => clearTimeout(timer);
-  }, [companyQuery, selectedCompany]);
+  }, [companyName, selectedCompany]);
 
   // Prefill company from ?company=slug
   useEffect(() => {
@@ -129,7 +117,7 @@ export default function ShareInterviewPage() {
         );
         if (res.data.company) {
           setSelectedCompany(res.data.company);
-          setCompanyQuery(res.data.company.name);
+          setCompanyName(res.data.company.name);
         }
       } catch {
         // silently ignore prefill failures
@@ -198,37 +186,27 @@ export default function ShareInterviewPage() {
     setPrepResources((prev) => prev.filter((_, idx) => idx !== i));
 
   const canSubmit = useMemo(() => {
-    if (!selectedCompany) return false;
+    if (!companyName.trim()) return false;
     if (!role.trim()) return false;
-    if (!interviewYear) return false;
     for (const r of rounds) {
-      if (!r.name.trim()) return false;
       if (r.questions.length === 0) return false;
       for (const q of r.questions) if (!q.prompt.trim()) return false;
     }
     return true;
-  }, [selectedCompany, role, interviewYear, rounds]);
+  }, [companyName, role, rounds]);
 
   const submit = async () => {
-    if (!canSubmit || !selectedCompany) {
-      toast.error("Fill in the company, role, and at least one round with a question");
+    if (!canSubmit) {
+      toast.error("Fill in the company name, role, and at least one round with a question");
       return;
     }
     setSubmitting(true);
     try {
       const payload = {
-        companyId: selectedCompany.id,
+        ...(selectedCompany ? { companyId: selectedCompany.id } : { companyName: companyName.trim() }),
         role: role.trim(),
         experienceYears: experienceYears === "" ? undefined : Number(experienceYears),
-        interviewYear,
-        interviewMonth: interviewMonth === "" ? undefined : Number(interviewMonth),
-        source,
-        difficulty,
-        outcome,
-        offered,
-        ctcLpa: ctcLpa === "" ? undefined : Number(ctcLpa),
         totalRounds,
-        overallRating,
         rounds: rounds.map((r) => ({
           ...r,
           questions: r.questions.filter((q) => q.prompt.trim().length > 0),
@@ -265,7 +243,7 @@ export default function ShareInterviewPage() {
           Share your story.
         </h1>
         <p className="mt-3 text-sm text-stone-500 max-w-xl">
-          Help juniors who'll interview at {selectedCompany?.name ?? "this company"} next year. Your submission goes to moderation before it's public. Anonymous by default.
+          Help juniors who'll interview at {companyName || "this company"} next year. Your submission goes to moderation before it's public. Anonymous by default.
         </p>
       </motion.div>
 
@@ -276,16 +254,16 @@ export default function ShareInterviewPage() {
             1. Company & role
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Company" required hint="Search existing companies">
+            <Field label="Company" required hint="Type the company name — we'll try to match it automatically">
               <div className="relative">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                   <input
                     type="text"
-                    value={companyQuery}
+                    value={companyName}
                     onFocus={() => setCompanyOpen(true)}
                     onChange={(e) => {
-                      setCompanyQuery(e.target.value);
+                      setCompanyName(e.target.value);
                       setSelectedCompany(null);
                       setCompanyOpen(true);
                     }}
@@ -301,7 +279,7 @@ export default function ShareInterviewPage() {
                         type="button"
                         onClick={() => {
                           setSelectedCompany(c);
-                          setCompanyQuery(c.name);
+                          setCompanyName(c.name);
                           setCompanyOpen(false);
                         }}
                         className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors cursor-pointer border-0 bg-transparent"
@@ -328,15 +306,7 @@ export default function ShareInterviewPage() {
               </div>
               {selectedCompany ? (
                 <p className="text-xs text-lime-700 dark:text-lime-400 mt-1.5 flex items-center gap-1">
-                  <Building2 className="w-3 h-3" /> Selected: {selectedCompany.name}
-                </p>
-              ) : null}
-              {!selectedCompany && companyQuery && companyResults.length === 0 ? (
-                <p className="text-xs text-stone-500 mt-1.5">
-                  Not listed?{" "}
-                  <Link to="/student/companies/add" className="underline">
-                    Add company first
-                  </Link>
+                  <Building2 className="w-3 h-3" /> Linked to: {selectedCompany.name}
                 </p>
               ) : null}
             </Field>
@@ -349,47 +319,6 @@ export default function ShareInterviewPage() {
                 placeholder="SDE Intern"
                 className={inputClass}
               />
-            </Field>
-
-            <Field label="Interview year" required>
-              <input
-                type="number"
-                min={2000}
-                max={currentYear + 1}
-                value={interviewYear}
-                onChange={(e) => setInterviewYear(Number(e.target.value))}
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Interview month">
-              <select
-                value={interviewMonth}
-                onChange={(e) =>
-                  setInterviewMonth(e.target.value === "" ? "" : Number(e.target.value))
-                }
-                className={inputClass}
-              >
-                <option value="">Any</option>
-                {[
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ].map((m, i) => (
-                  <option key={m} value={i + 1}>
-                    {m}
-                  </option>
-                ))}
-              </select>
             </Field>
 
             <Field label="Experience (years)" hint="0 for interns / freshers">
@@ -405,97 +334,6 @@ export default function ShareInterviewPage() {
               />
             </Field>
 
-            <Field label="Source">
-              <select
-                value={source}
-                onChange={(e) => setSource(e.target.value as InterviewSource)}
-                className={inputClass}
-              >
-                <option value="ON_CAMPUS">On-campus</option>
-                <option value="OFF_CAMPUS">Off-campus</option>
-                <option value="REFERRAL">Referral</option>
-                <option value="LINKEDIN">LinkedIn</option>
-                <option value="PORTAL">Portal (Naukri, Instahyre)</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </Field>
-          </div>
-        </div>
-
-        {/* Outcome */}
-        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
-          <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-50 mb-4">
-            2. Outcome
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Difficulty">
-              <select
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value as InterviewDifficulty)}
-                className={inputClass}
-              >
-                <option value="EASY">Easy</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HARD">Hard</option>
-              </select>
-            </Field>
-            <Field label="Outcome">
-              <select
-                value={outcome}
-                onChange={(e) => setOutcome(e.target.value as InterviewOutcome)}
-                className={inputClass}
-              >
-                <option value="SELECTED">Selected</option>
-                <option value="REJECTED">Rejected</option>
-                <option value="WITHDRAWN">Withdrawn</option>
-                <option value="PENDING">Pending / in progress</option>
-                <option value="GHOSTED">Ghosted</option>
-              </select>
-            </Field>
-            <Field label="Overall rating (1-5)">
-              <div className="flex gap-1.5">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => setOverallRating(n)}
-                    className={`w-10 h-10 rounded-md text-sm font-bold border transition-colors cursor-pointer ${
-                      n <= overallRating
-                        ? "bg-lime-400 border-lime-400 text-stone-900"
-                        : "bg-transparent border-stone-200 dark:border-white/10 text-stone-400 hover:border-stone-400"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
-              </div>
-            </Field>
-            <Field label="CTC / Stipend (LPA)" hint="Optional, helps freshers benchmark">
-              <input
-                type="number"
-                min={0}
-                step="0.5"
-                value={ctcLpa}
-                onChange={(e) => setCtcLpa(e.target.value === "" ? "" : Number(e.target.value))}
-                placeholder="e.g. 12"
-                className={inputClass}
-              />
-            </Field>
-            <div className="flex items-center gap-2 pt-6">
-              <input
-                id="offered"
-                type="checkbox"
-                checked={offered}
-                onChange={(e) => setOffered(e.target.checked)}
-                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20"
-              />
-              <label
-                htmlFor="offered"
-                className="text-sm text-stone-700 dark:text-stone-300 cursor-pointer"
-              >
-                Received an offer
-              </label>
-            </div>
           </div>
         </div>
 
@@ -503,7 +341,7 @@ export default function ShareInterviewPage() {
         <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-50">
-              3. Rounds ({totalRounds})
+              2. Rounds ({totalRounds})
             </h2>
             <button
               type="button"
@@ -539,16 +377,7 @@ export default function ShareInterviewPage() {
                   ) : null}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                  <Field label="Round name" required>
-                    <input
-                      type="text"
-                      value={r.name}
-                      onChange={(e) => updateRound(i, "name", e.target.value)}
-                      placeholder="e.g. Technical Round 1"
-                      className={inputClass}
-                    />
-                  </Field>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                   <Field label="Type">
                     <select
                       value={r.type}
@@ -598,7 +427,7 @@ export default function ShareInterviewPage() {
                     {r.questions.map((q, j) => (
                       <div
                         key={j}
-                        className="grid grid-cols-1 md:grid-cols-[1fr_140px_120px_40px] gap-2"
+                        className="grid grid-cols-1 md:grid-cols-[1fr_40px] gap-2"
                       >
                         <input
                           type="text"
@@ -607,23 +436,6 @@ export default function ShareInterviewPage() {
                           placeholder="e.g. Find the longest increasing subsequence"
                           className={inputClass}
                         />
-                        <input
-                          type="text"
-                          value={q.topic ?? ""}
-                          onChange={(e) => updateQuestion(i, j, "topic", e.target.value)}
-                          placeholder="Topic"
-                          className={inputClass}
-                        />
-                        <select
-                          value={q.difficulty ?? ""}
-                          onChange={(e) => updateQuestion(i, j, "difficulty", e.target.value)}
-                          className={inputClass}
-                        >
-                          <option value="">Difficulty</option>
-                          <option value="EASY">Easy</option>
-                          <option value="MEDIUM">Medium</option>
-                          <option value="HARD">Hard</option>
-                        </select>
                         <button
                           type="button"
                           onClick={() => removeQuestion(i, j)}
@@ -657,7 +469,7 @@ export default function ShareInterviewPage() {
         {/* Tips + Resources */}
         <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
           <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-50 mb-4">
-            4. Tips & preparation
+            3. Tips & preparation
           </h2>
           <div className="space-y-4">
             <Field label="Tips for future candidates" hint="What would you tell your past self?">
