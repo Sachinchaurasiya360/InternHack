@@ -1,293 +1,452 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, ExternalLink, Trophy, ChevronDown, X,
-  Code2, Globe, Calendar, Layers, Tag, ChevronLeft, ChevronRight,
-  Users, Mail, MessageSquare, Lightbulb, BookOpen,
+  Search,
+  ExternalLink,
+  Trophy,
+  ChevronDown,
+  X,
+  Code2,
+  Globe,
+  Calendar,
+  Layers,
+  Tag,
+  Users,
+  Mail,
+  MessageSquare,
+  Lightbulb,
+  BookOpen,
+  ArrowUpRight,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import { Button } from "../../../components/ui/button";
+import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
 
-// ─── Styles ──────────────────────────────────────────────────────
-const CATEGORY_COLORS: Record<string, string> = {
-  "Science and medicine": "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  "Security": "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  "End user applications": "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  "Programming languages": "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
-  "Development tools": "bg-slate-50 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
-  "Media": "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  "Operating systems": "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-  "Other": "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
-  "Data": "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
-  "Infrastructure and cloud": "bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
-  "Web": "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
-  "Social and communication": "bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
-  "Artificial Intelligence": "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-};
+const cardBase =
+  "group relative flex h-full w-full flex-col rounded-md border border-stone-200 bg-white p-5 text-left transition-colors hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:hover:border-white/30";
 
-// ─── Modal ──────────────────────────────────────────────────────
-function GSoCOrgModal({ org, onClose }: { org: GSoCOrganization; onClose: () => void }) {
+function EditorialLabel({ children }: { children: ReactNode }) {
+  return (
+    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+      <span className="h-1 w-1 bg-lime-400" />
+      {children}
+    </div>
+  );
+}
+
+function OrgMark({ org }: { org: GSoCOrganization }) {
+  if (org.imageUrl) {
+    return (
+      <img
+        src={org.imageUrl}
+        alt={org.name}
+        className="h-10 w-10 shrink-0 rounded-md border border-stone-200 bg-stone-50 object-contain p-1 dark:border-white/10 dark:bg-stone-800"
+      />
+    );
+  }
+
+  return (
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-stone-200 bg-stone-100 text-sm font-bold text-stone-900 dark:border-white/10 dark:bg-stone-800 dark:text-stone-50">
+      {org.name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+function MetaChip({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:border-white/10 dark:text-stone-400">
+      <span className="text-stone-400">{icon}</span>
+      {children}
+    </span>
+  );
+}
+
+function PlainChip({ children, accent = false }: { children: ReactNode; accent?: boolean }) {
+  return (
+    <span
+      className={
+        accent
+          ? "rounded-md bg-lime-400 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-stone-950"
+          : "rounded bg-stone-100 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-stone-600 dark:bg-stone-800 dark:text-stone-400"
+      }
+    >
+      {children}
+    </span>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="rounded-md border border-dashed border-stone-300 py-20 text-center dark:border-white/10">
+      <div className="inline-flex flex-col items-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-400 dark:border-white/10 dark:bg-stone-900">
+          <Trophy className="h-5 w-5" />
+        </div>
+        <p className="text-sm font-medium text-stone-700 dark:text-stone-300">No organizations found</p>
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          try different search criteria
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FilterDropdown({
+  label,
+  icon,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  icon: ReactNode;
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="relative group">
+      <button
+        type="button"
+        className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-stone-300 bg-white px-3 text-xs font-mono uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
+      >
+        <span className="text-stone-400">{icon}</span>
+        <span>{label}</span>
+        <span className="max-w-28 truncate font-bold normal-case tracking-normal text-stone-900 dark:text-stone-50">
+          {value}
+        </span>
+        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+      </button>
+      <div className="absolute left-0 top-full z-20 mt-1 hidden max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl group-hover:block dark:border-white/10 dark:bg-stone-900">
+        {options.map((opt) => {
+          const active = opt === value;
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onChange(opt)}
+              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${
+                active
+                  ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                  : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
+              }`}
+            >
+              <span className="truncate">{opt}</span>
+              {active && <span className="h-1 w-1 bg-lime-400" />}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
+  const years = [...org.yearsParticipated].sort((a, b) => b - a);
+
+  return (
+    <button type="button" onClick={onClick} className={cardBase}>
+      <div className="mb-3 flex items-start gap-3">
+        <OrgMark org={org} />
+        <div className="min-w-0 flex-1">
+          <h3 className="line-clamp-1 text-base font-bold leading-tight tracking-tight text-stone-900 dark:text-stone-50">
+            {org.name}
+          </h3>
+          <span className="mt-0.5 block truncate text-xs font-mono uppercase tracking-widest text-stone-500">
+            {org.category || "organization"}
+          </span>
+        </div>
+        <PlainChip accent>{org.totalProjects} GSoC projects</PlainChip>
+      </div>
+
+      <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
+        {org.description}
+      </p>
+
+      <div className="mb-3 flex flex-wrap gap-1.5">
+        <MetaChip icon={<Calendar className="h-3 w-3" />}>
+          {years[0] ?? "new"}
+          {years.length > 1 && <span className="ml-1 text-stone-400">+{years.length - 1}</span>}
+        </MetaChip>
+        <MetaChip icon={<Layers className="h-3 w-3" />}>
+          {org.technologies.length || 0} tech
+        </MetaChip>
+      </div>
+
+      {org.technologies.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-1">
+          {org.technologies.slice(0, 4).map((tech) => (
+            <PlainChip key={tech}>{tech}</PlainChip>
+          ))}
+          {org.technologies.length > 4 && <PlainChip>+{org.technologies.length - 4}</PlainChip>}
+        </div>
+      )}
+
+      <div className="mt-auto flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          inspect org
+        </span>
+        <ArrowUpRight className="h-4 w-4 text-stone-400 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-lime-500" />
+      </div>
+    </button>
+  );
+}
+
+interface GSoCOrgModalProps {
+  org: GSoCOrganization;
+  onClose: () => void;
+  githubRepos: { title: string; url: string }[];
+  gsocPageUrl: string | null;
+  reposLoading: boolean;
+}
+function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
   const activeYear = selectedYear || (years[0] ? String(years[0]) : null);
   const yearData = activeYear && org.projectsData ? org.projectsData[activeYear] : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/50 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        transition={{ duration: 0.18 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: "spring", duration: 0.4 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl max-h-[85vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col"
+        className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-md border border-stone-200 bg-white shadow-2xl dark:border-white/10 dark:bg-stone-900"
       >
-        {/* Header */}
-        <div className="flex items-start justify-between p-6 pb-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-b border-amber-100 dark:border-amber-800 shrink-0">
-          <div className="flex items-center gap-4 min-w-0">
-            {org.imageUrl ? (
-              <img src={org.imageUrl} alt={org.name} className="w-12 h-12 rounded-xl object-contain border border-amber-200 dark:border-amber-700 bg-white p-1" />
-            ) : (
-              <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 flex items-center justify-center shrink-0 shadow-sm">
-                <span className="text-amber-600 font-bold text-xl">{org.name.charAt(0)}</span>
-              </div>
-            )}
+        <div className="flex items-start justify-between gap-4 border-b border-stone-200 px-5 py-4 dark:border-white/10">
+          <div className="flex min-w-0 items-center gap-3">
+            <OrgMark org={org} />
             <div className="min-w-0">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">{org.name}</h3>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${CATEGORY_COLORS[org.category] ?? "bg-gray-50 text-gray-600"}`}>{org.category}</span>
-                <span className="text-[10px] text-gray-500">{org.totalProjects} projects across {years.length} years</span>
-              </div>
+              <EditorialLabel>gsoc organization</EditorialLabel>
+              <h2 className="mt-1 line-clamp-1 text-base font-bold text-stone-900 dark:text-stone-50">
+                {org.name}
+              </h2>
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500">
+                {org.totalProjects} projects / {years.length} years
+              </p>
             </div>
           </div>
-          <Button variant="ghost" mode="icon" size="sm" onClick={onClose} className="text-gray-400 shrink-0 ml-2">
-            <X className="w-4 h-4" />
-          </Button>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-stone-500 transition-colors hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
-        {/* Body */}
-        <div className="p-6 space-y-5 overflow-y-auto flex-1">
-          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{org.description}</p>
+        <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
+          <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">{org.description}</p>
 
-          {/* Technologies */}
+          <div className="flex flex-wrap gap-1.5">
+            <MetaChip icon={<Globe className="h-3 w-3" />}>{org.category}</MetaChip>
+            <MetaChip icon={<Trophy className="h-3 w-3" />}>{org.totalProjects} projects</MetaChip>
+          </div>
+
           {org.technologies.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Layers className="w-3.5 h-3.5 text-blue-500" />
-                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Technologies</span>
+            <section>
+              <div className="mb-2 flex items-center gap-1.5">
+                <span className="h-1 w-1 bg-lime-400" />
+                <p className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <Layers className="h-3 w-3" />
+                  technologies
+                </p>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {org.technologies.map((t) => (
-                  <span key={t} className="px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded-lg border border-blue-100 dark:border-blue-800">{t}</span>
+                {org.technologies.map((tech) => (
+                  <PlainChip key={tech}>{tech}</PlainChip>
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Topics */}
           {org.topics.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Tag className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Topics</span>
+            <section>
+              <div className="mb-2 flex items-center gap-1.5">
+                <span className="h-1 w-1 bg-lime-400" />
+                <p className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <Tag className="h-3 w-3" />
+                  topics
+                </p>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {org.topics.map((t) => (
-                  <span key={t} className="px-2 py-0.5 bg-gray-50 dark:bg-gray-800 text-gray-500 text-xs rounded-full border border-gray-100 dark:border-gray-700">#{t}</span>
+                {org.topics.map((topic) => (
+                  <span key={topic} className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-mono text-stone-600 dark:bg-white/5 dark:text-stone-400">
+                    #{topic}
+                  </span>
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Projects by Year */}
           {org.projectsData && years.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Calendar className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Projects by Year</span>
+            <section>
+              <div className="mb-2 flex items-center gap-1.5">
+                <span className="h-1 w-1 bg-lime-400" />
+                <p className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <Calendar className="h-3 w-3" />
+                  projects by year
+                </p>
               </div>
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {years.map((y) => (
-                  <Button
-                    key={y}
-                    variant={String(y) === activeYear ? "mono" : "outline"}
-                    size="sm"
-                    shape="circle"
-                    onClick={() => setSelectedYear(String(y))}
-                    className={
-                      String(y) === activeYear
-                        ? "bg-amber-500 text-white border-amber-500 hover:bg-amber-500/90"
-                        : "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/50"
-                    }
-                  >
-                    {y} ({org.projectsData![String(y)]?.num_projects || 0})
-                  </Button>
-                ))}
+              <div className="mb-3 flex flex-wrap gap-1.5">
+                {years.map((year) => {
+                  const active = String(year) === activeYear;
+                  return (
+                    <button
+                      key={year}
+                      type="button"
+                      onClick={() => setSelectedYear(String(year))}
+                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
+                        active
+                          ? "border-lime-400 bg-lime-400 text-stone-950"
+                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
+                      }`}
+                    >
+                      {year} ({org.projectsData?.[String(year)]?.num_projects || 0})
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Project list */}
               {yearData?.projects && yearData.projects.length > 0 && (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {yearData.projects.map((p, i) => (
-                    <div key={i} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
-                      <div className="flex items-start justify-between gap-2">
+                <div className="max-h-52 space-y-2 overflow-y-auto">
+                  {yearData.projects.map((project, index) => (
+                    <div key={`${project.title}-${index}`} className="rounded-md border border-stone-200 bg-stone-50 p-3 dark:border-white/10 dark:bg-stone-950">
+                      <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <h5 className="text-xs font-semibold text-gray-900 dark:text-white">{p.title}</h5>
-                          <p className="text-[11px] text-gray-500 mt-0.5">
-                            <Users className="w-3 h-3 inline mr-1" />{p.student_name}
+                          <h5 className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                            {project.title}
+                          </h5>
+                          <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-wider text-stone-500">
+                            <Users className="h-3 w-3" />
+                            {project.student_name}
                           </p>
                         </div>
-                        {p.code_url && (
-                          <a href={p.code_url} target="_blank" rel="noopener noreferrer" className="shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
-                            <Code2 className="w-3.5 h-3.5" />
+                        {project.code_url && (
+                          <a
+                            href={project.code_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 text-stone-400 transition-colors hover:text-lime-500"
+                            aria-label="View project code"
+                          >
+                            <Code2 className="h-4 w-4" />
                           </a>
                         )}
                       </div>
-                      {p.short_description && (
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{p.short_description}</p>
+                      {project.short_description && (
+                        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-stone-600 dark:text-stone-400">
+                          {project.short_description}
+                        </p>
                       )}
                     </div>
                   ))}
                 </div>
               )}
-            </div>
+            </section>
           )}
 
-          {/* Links */}
-          <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex flex-wrap gap-2">
             {org.contactEmail && (
-              <a href={org.contactEmail} className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline transition-colors">
-                <Mail className="w-3 h-3" /> Contact
+              <a href={`mailto:${org.contactEmail}`} className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                <Mail className="h-3 w-3" />
+                Contact
               </a>
             )}
             {org.mailingList && (
-              <a href={org.mailingList} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline transition-colors">
-                <MessageSquare className="w-3 h-3" /> Mailing List
+              <a href={org.mailingList} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                <MessageSquare className="h-3 w-3" />
+                Mailing List
               </a>
             )}
             {org.ideasUrl && (
-              <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline transition-colors">
-                <Lightbulb className="w-3 h-3" /> Project Ideas
+              <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                <Lightbulb className="h-3 w-3" />
+                Project Ideas
               </a>
             )}
             {org.guideUrl && (
-              <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline transition-colors">
-                <BookOpen className="w-3 h-3" /> Contributor Guide
+              <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                <BookOpen className="h-3 w-3" />
+                Contributor Guide
               </a>
             )}
           </div>
 
-          {/* CTAs */}
-          <div className="pt-2 border-t border-gray-100 dark:border-gray-800 flex gap-3">
+          {reposLoading && (
+            <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime-400" />
+              finding github repos...
+            </div>
+          )}
+          {!reposLoading && githubRepos.length > 0 && (
+            <section>
+              <div className="mb-2 flex items-center gap-1.5">
+                <span className="h-1 w-1 bg-lime-400" />
+                <p className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <Code2 className="h-3 w-3" />
+                  github repos
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                {githubRepos.map((repo) => (
+                  <a
+                    key={repo.url}
+                    href={repo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-3 rounded-md border border-stone-200 bg-stone-50 px-3 py-2 no-underline transition-colors hover:border-stone-400 hover:bg-stone-100 dark:border-white/10 dark:bg-stone-950 dark:hover:border-white/30"
+                  >
+                    <span className="line-clamp-1 font-mono text-[11px] tracking-wide text-stone-700 dark:text-stone-300">
+                      {repo.url.replace("https://github.com/", "")}
+                    </span>
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0 text-stone-400" />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <div className="grid gap-2 border-t border-stone-100 pt-4 sm:grid-cols-2 dark:border-white/5">
             <a
-              href={org.url} target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+              href={org.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2 rounded-md bg-stone-900 px-4 py-3 text-sm font-bold text-stone-50 no-underline transition-colors hover:bg-stone-800 dark:bg-stone-50 dark:text-stone-900 dark:hover:bg-stone-200"
             >
-              <Globe className="w-4 h-4" />
               Website
-              <ExternalLink className="w-3 h-3 opacity-70" />
+              <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
-              href="https://summerofcode.withgoogle.com" target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 text-sm font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors no-underline border border-amber-200 dark:border-amber-700"
+              href={gsocPageUrl ?? "https://summerofcode.withgoogle.com"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2 rounded-md bg-lime-400 px-4 py-3 text-sm font-bold text-stone-950 no-underline transition-colors hover:bg-lime-300"
             >
-              <Trophy className="w-4 h-4" />
               GSoC Page
-              <ExternalLink className="w-3 h-3 opacity-70" />
+              <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
           </div>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
-// ─── Card ────────────────────────────────────────────────────────
-function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
-  const years = [...org.yearsParticipated].sort((a, b) => b - a);
-  return (
-    <button
-      onClick={onClick}
-      className="text-left w-full bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-amber-200 dark:hover:border-amber-700 transition-all p-5 group"
-    >
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="flex items-center gap-3 min-w-0">
-          {org.imageUrl ? (
-            <img src={org.imageUrl} alt={org.name} className="w-10 h-10 rounded-lg object-contain border border-gray-100 dark:border-gray-700 bg-white p-0.5" />
-          ) : (
-            <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 flex items-center justify-center shrink-0">
-              <span className="text-amber-600 font-bold text-sm">{org.name.charAt(0)}</span>
-            </div>
-          )}
-          <div className="min-w-0">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">{org.name}</h4>
-            <span className={`inline-block mt-0.5 px-1.5 py-0.5 text-[10px] font-medium rounded ${CATEGORY_COLORS[org.category] ?? "bg-gray-50 text-gray-500"}`}>{org.category}</span>
-          </div>
-        </div>
-        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-800 shrink-0">
-          {org.totalProjects} projects
-        </span>
-      </div>
-
-      <p className="text-xs text-gray-500 line-clamp-2 mb-3 leading-relaxed">{org.description}</p>
-
-      {/* Tech chips */}
-      <div className="flex flex-wrap gap-1 mb-3">
-        {org.technologies.slice(0, 4).map((t) => (
-          <span key={t} className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-medium rounded">{t}</span>
-        ))}
-        {org.technologies.length > 4 && (
-          <span className="px-1.5 py-0.5 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 text-[10px] rounded">+{org.technologies.length - 4}</span>
-        )}
-      </div>
-
-      {/* Year pills */}
-      <div className="flex items-center justify-between">
-        <div className="flex gap-1">
-          {years.slice(0, 4).map((y) => (
-            <span key={y} className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold rounded">{y}</span>
-          ))}
-          {years.length > 4 && (
-            <span className="px-1.5 py-0.5 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 text-[10px] rounded">+{years.length - 4}</span>
-          )}
-        </div>
-        <ExternalLink className="w-3.5 h-3.5 text-gray-300 group-hover:text-amber-500 transition-colors" />
-      </div>
-    </button>
-  );
-}
-
-// ─── Filter Dropdown ─────────────────────────────────────────────
-function FilterDropdown({
-  label, icon, value, options, onChange,
-}: { label: string; icon: React.ReactNode; value: string; options: string[]; onChange: (v: string) => void }) {
-  return (
-    <div className="relative group">
-      <Button variant="outline" size="sm">
-        {icon}
-        <span className="hidden sm:inline text-xs text-gray-400 dark:text-gray-500">{label}:</span>
-        <span className="font-medium text-gray-900 dark:text-white text-xs truncate max-w-[100px]">{value}</span>
-        <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-      </Button>
-      <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[180px] max-h-[260px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
-        {options.map((opt) => (
-          <Button
-            key={opt} variant="ghost" size="sm" onClick={() => onChange(opt)}
-            className={`w-full justify-start ${value === opt ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}
-          >
-            {opt}
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Page ────────────────────────────────────────────────────────
 export default function GSoCReposPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -296,214 +455,226 @@ export default function GSoCReposPage() {
   const [selectedYear, setSelectedYear] = useState("All");
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
+  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
 
-  // Debounce search
-  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-  const handleSearch = (val: string) => {
-    setSearch(val);
+  const handleSearch = (value: string) => {
+    setSearch(value);
     if (timer) clearTimeout(timer);
-    setTimer(setTimeout(() => { setDebouncedSearch(val); setPage(1); }, 400));
+    setTimer(
+      setTimeout(() => {
+        setDebouncedSearch(value);
+        setPage(1);
+      }, 400)
+    );
   };
 
-  // Fetch stats for filter options
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
-    queryFn: () => api.get("/gsoc/stats").then((r) => r.data),
+    queryFn: () => api.get("/gsoc/stats").then((res) => res.data),
     staleTime: Infinity,
   });
 
-  // Build query params
   const params: Record<string, string | number> = { page, limit };
-  if (debouncedSearch) params["search"] = debouncedSearch;
-  if (selectedCategory !== "All") params["category"] = selectedCategory;
-  if (selectedTech !== "All") params["technology"] = selectedTech;
-  if (selectedYear !== "All") params["year"] = parseInt(selectedYear);
+  if (debouncedSearch) params.search = debouncedSearch;
+  if (selectedCategory !== "All") params.category = selectedCategory;
+  if (selectedTech !== "All") params.technology = selectedTech;
+  if (selectedYear !== "All") params.year = parseInt(selectedYear, 10);
 
-  // Fetch organizations
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.gsoc.list(params),
-    queryFn: () => api.get("/gsoc/organizations", { params }).then((r) => r.data),
+    queryFn: () => api.get("/gsoc/organizations", { params }).then((res) => res.data),
   });
 
   const organizations: GSoCOrganization[] = data?.organizations ?? [];
   const pagination = data?.pagination ?? { page: 1, total: 0, totalPages: 1 };
 
-  // Fetch full org detail when modal opens
   const { data: detailData } = useQuery({
     queryKey: queryKeys.gsoc.detail(selectedOrg?.slug ?? ""),
-    queryFn: () => api.get(`/gsoc/organizations/${selectedOrg!.slug}`).then((r) => r.data),
+    queryFn: () => api.get(`/gsoc/organizations/${selectedOrg!.slug}`).then((res) => res.data),
     enabled: !!selectedOrg,
   });
 
   const detailOrg: GSoCOrganization | null = detailData?.organization ?? selectedOrg;
 
-  // Filter options from stats
-  const categoryOptions = ["All", ...(stats?.categories.map((c) => c.name) ?? [])];
-  const yearOptions = ["All", ...(stats?.years.map((y) => String(y.year)) ?? [])];
-  const techOptions = ["All", ...(stats?.technologies.slice(0, 30).map((t) => t.name) ?? [])];
+  const { data: reposData, isLoading: reposLoading } = useQuery({
+    queryKey: queryKeys.gsoc.repos(selectedOrg?.slug ?? ""),
+    queryFn: () => api.get(`/gsoc/organizations/${selectedOrg!.slug}/repos`).then((res) => res.data),
+    enabled: !!selectedOrg,
+    staleTime: 1000 * 60 * 60,
+  });
+  const githubRepos: { title: string; url: string }[] = reposData?.githubRepos ?? [];
+  const gsocPageUrl: string | null = reposData?.gsocPageUrl ?? null;
+  const categoryOptions = ["All", ...(stats?.categories.map((category) => category.name) ?? [])];
+  const yearOptions = ["All", ...(stats?.years.map((year) => String(year.year)) ?? [])];
+  const techOptions = ["All", ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? [])];
+
+  const hasFilters =
+    Boolean(debouncedSearch) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
 
   const clearFilters = () => {
-    setSearch(""); setDebouncedSearch(""); setSelectedCategory("All"); setSelectedTech("All"); setSelectedYear("All"); setPage(1);
+    setSearch("");
+    setDebouncedSearch("");
+    setSelectedCategory("All");
+    setSelectedTech("All");
+    setSelectedYear("All");
+    setPage(1);
   };
 
-  const hasFilters = debouncedSearch || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
-
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-yellow-950/20 border border-amber-100 dark:border-amber-800 mb-8 p-8">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-amber-200/30 dark:from-amber-700/20 to-transparent rounded-bl-full pointer-events-none" />
-        <div className="relative">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg">
-              <Trophy className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GSoC Organizations</h1>
-              <p className="text-sm text-amber-700 dark:text-amber-400">Google Summer of Code - {stats?.total ?? "520"}+ accepted organizations</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mb-6 leading-relaxed">
-            Browse every organization that has been accepted into Google Summer of Code from 2016 to 2026. Find the right org, explore their past projects, and start contributing early.
-          </p>
-          {/* Stats */}
-          <div className="flex flex-wrap gap-3">
-            {[
-              { label: "Organizations", value: stats?.total ?? "-" },
-              { label: "Categories", value: stats?.categories.length ?? "-" },
-              { label: "Years", value: "2016–2026" },
-              { label: "Technologies", value: stats?.technologies.length ?? "-" },
-            ].map((s) => (
-              <div key={s.label} className="bg-white/70 dark:bg-gray-900/70 rounded-xl px-4 py-2 border border-amber-100 dark:border-amber-800">
-                <p className="text-lg font-bold text-gray-900 dark:text-white leading-none">{s.value}</p>
-                <p className="text-[11px] text-gray-500 mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+      <SEO
+        title="GSoC Organizations, Explore Google Summer of Code Orgs"
+        description="Browse Google Summer of Code organizations, past projects, technologies, topics, and contributor links."
+        keywords="GSoC, Google Summer of Code, open source organizations, student open source"
+        canonicalUrl={canonicalUrl("/student/opensource/gsoc")}
+      />
 
-      {/* Filter bar */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text" value={search} onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Search organizations, technologies, topics…"
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-300 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
-          />
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
+        <div className="mb-8">
+          <EditorialLabel>learning / open source / gsoc</EditorialLabel>
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="mb-1.5 text-2xl font-bold leading-tight tracking-tight text-stone-900 dark:text-stone-50 sm:text-3xl">
+                Explore GSoC{" "}
+                <span className="relative inline-block">
+                  <span className="relative z-10">organizations.</span>
+                  <motion.span
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                    aria-hidden
+                    className="absolute bottom-0.5 left-0 right-0 z-0 h-2.5 origin-left bg-lime-400 sm:h-3"
+                  />
+                </span>
+              </h1>
+              <p className="max-w-2xl text-sm text-stone-600 dark:text-stone-400">
+                Search accepted organizations, study their past projects, and find a community where your stack fits.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <span>
+                <span className="text-stone-900 dark:text-stone-50">{stats?.total ?? "-"}</span> orgs
+              </span>
+              <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+              <span>
+                <span className="text-stone-900 dark:text-stone-50">{stats?.categories.length ?? "-"}</span> categories
+              </span>
+              <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+              <span>
+                <span className="text-lime-600 dark:text-lime-400">2016-2026</span> years
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <FilterDropdown label="Category" icon={<Globe className="w-3.5 h-3.5" />}
-            value={selectedCategory} options={categoryOptions} onChange={(v) => { setSelectedCategory(v); setPage(1); }} />
-          <FilterDropdown label="Year" icon={<Calendar className="w-3.5 h-3.5" />}
-            value={selectedYear} options={yearOptions} onChange={(v) => { setSelectedYear(v); setPage(1); }} />
-          <FilterDropdown label="Tech" icon={<Code2 className="w-3.5 h-3.5" />}
-            value={selectedTech} options={techOptions} onChange={(v) => { setSelectedTech(v); setPage(1); }} />
+
+        <div className="mb-6 flex flex-col gap-2 sm:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => handleSearch(event.target.value)}
+              placeholder="Search organizations, technologies, topics..."
+              className="w-full rounded-md border border-stone-300 bg-white py-3 pl-11 pr-4 text-sm text-stone-900 transition-colors placeholder:text-stone-400 focus:border-lime-400 focus:outline-none dark:border-white/10 dark:bg-stone-900 dark:text-stone-50 dark:placeholder:text-stone-600"
+            />
+          </div>
+          <FilterDropdown
+            icon={<Globe className="h-3.5 w-3.5" />}
+            label="category"
+            value={selectedCategory}
+            options={categoryOptions}
+            onChange={(value) => {
+              setSelectedCategory(value);
+              setPage(1);
+            }}
+          />
+          <FilterDropdown
+            icon={<Calendar className="h-3.5 w-3.5" />}
+            label="year"
+            value={selectedYear}
+            options={yearOptions}
+            onChange={(value) => {
+              setSelectedYear(value);
+              setPage(1);
+            }}
+          />
+          <FilterDropdown
+            icon={<Code2 className="h-3.5 w-3.5" />}
+            label="tech"
+            value={selectedTech}
+            options={techOptions}
+            onChange={(value) => {
+              setSelectedTech(value);
+              setPage(1);
+            }}
+          />
           {hasFilters && (
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              type="button"
               onClick={clearFilters}
-              className="text-gray-500"
+              className="inline-flex items-center gap-1 rounded-md border-0 bg-transparent px-3 py-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 transition-colors hover:text-red-500"
             >
-              <X className="w-3.5 h-3.5" />
-              Clear
-            </Button>
+              <X className="h-3 w-3" />
+              clear
+            </button>
           )}
         </div>
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span> organizations
+            {hasFilters && (
+              <>
+                {" "} / <span className="text-stone-900 dark:text-stone-50">filtered</span>
+              </>
+            )}
+            {pagination.totalPages > 1 && <> / page {pagination.page} of {pagination.totalPages}</>}
+          </p>
+        </div>
+
+        {isLoading ? (
+          <LoadingScreen compact />
+        ) : organizations.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <motion.div layout className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence mode="popLayout">
+              {organizations.map((org, index) => (
+                <motion.div
+                  key={org.id}
+                  layout
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: index * 0.02, duration: 0.25 }}
+                >
+                  <GSoCOrgCard org={org} onClick={() => setSelectedOrg(org)} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        <PaginationControls
+          currentPage={page}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          showingInfo={{ total: pagination.total, limit }}
+        />
+
       </div>
 
-      {/* Result count */}
-      <p className="text-sm text-gray-400 mb-5">
-        Showing <span className="font-semibold text-gray-900 dark:text-white">{organizations.length}</span> of {pagination.total} organizations
-        {pagination.totalPages > 1 && <span> - page {pagination.page} of {pagination.totalPages}</span>}
-      </p>
-
-      {/* Grid */}
-      {isLoading ? (
-        <LoadingScreen />
-      ) : organizations.length === 0 ? (
-        <div className="text-center py-16 bg-gray-50 dark:bg-gray-950 rounded-2xl">
-          <Trophy className="w-10 h-10 text-gray-200 dark:text-gray-700 mx-auto mb-3" />
-          <p className="text-sm text-gray-500 font-medium">No organizations match your filters</p>
-          <p className="text-xs text-gray-400 mt-1">Try adjusting or clearing your filters</p>
-        </div>
-      ) : (
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence mode="popLayout">
-            {organizations.map((org) => (
-              <motion.div
-                key={org.id} layout
-                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }}
-              >
-                <GSoCOrgCard org={org} onClick={() => setSelectedOrg(org)} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      )}
-
-      {/* Pagination */}
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <Button
-            variant="outline"
-            mode="icon"
-            size="sm"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-            const start = Math.max(1, Math.min(page - 2, pagination.totalPages - 4));
-            const p = start + i;
-            if (p > pagination.totalPages) return null;
-            return (
-              <Button
-                key={p}
-                variant={p === page ? "mono" : "outline"}
-                size="sm"
-                onClick={() => setPage(p)}
-                className={p === page ? "bg-amber-500 text-white hover:bg-amber-500/90" : ""}
-              >
-                {p}
-              </Button>
-            );
-          })}
-          <Button
-            variant="outline"
-            mode="icon"
-            size="sm"
-            onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-            disabled={page === pagination.totalPages}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-
-      {/* Tip banner */}
-      <div className="mt-8 p-5 rounded-2xl bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800">
-        <div className="flex items-start gap-3">
-          <Trophy className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">Pro Tip: Contribute Before Applying</p>
-            <p className="text-xs text-amber-700 dark:text-amber-400 mt-1 leading-relaxed">
-              The best GSoC proposals come from students who have already submitted small PRs to the org. Visit the org website, find a <code className="bg-amber-100 dark:bg-amber-800 px-1 rounded text-xs">good first issue</code>, and submit a fix before the application window opens (Jan–Mar each year).
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Modal */}
       <AnimatePresence>
         {detailOrg && selectedOrg && (
-          <GSoCOrgModal org={detailOrg} onClose={() => setSelectedOrg(null)} />
-        )}
+        <GSoCOrgModal
+          org={detailOrg}
+          onClose={() => setSelectedOrg(null)}
+          githubRepos={githubRepos}
+          gsocPageUrl={gsocPageUrl}
+          reposLoading={reposLoading}
+        />
+      )}
       </AnimatePresence>
     </div>
   );

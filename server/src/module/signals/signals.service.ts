@@ -6,6 +6,7 @@ import type { FundingSignalData } from "./sources/base.source.js";
 import { YcLaunchesSource } from "./sources/yc-launches.source.js";
 import { TechCrunchSource } from "./sources/techcrunch.source.js";
 import { HnHiringSource } from "./sources/hn-hiring.source.js";
+import { ExaFundingSource } from "./sources/exa-funding.source.js";
 
 interface SignalsQuery {
   page: number;
@@ -70,6 +71,7 @@ export class SignalsService {
       new YcLaunchesSource(),
       new TechCrunchSource(),
       new HnHiringSource(),
+      new ExaFundingSource(),
     ];
   }
 

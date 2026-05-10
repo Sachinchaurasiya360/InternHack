@@ -453,7 +453,10 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
       });
 
       for (const [sIdx, section] of sections.entries()) {
-        await tx.roadmapSection.create({
+        // Create section + topics first (no resources) to avoid a three-level
+        // nested-create FK violation where resources reference a topicId that
+        // hasn't been committed yet within the same transaction batch.
+        const createdSection = await tx.roadmapSection.create({
           data: {
             roadmapId: roadmap.id,
             slug: section.slug,
@@ -472,20 +475,28 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
                 prerequisiteSlugs: topic.prerequisiteSlugs ?? [],
                 miniProject: topic.miniProject ?? null,
                 selfCheck: topic.selfCheck ?? null,
-                resources: {
-                  create: topic.resources.map((r, rIdx) => ({
-                    kind: r.kind,
-                    title: r.title,
-                    url: r.url,
-                    source: r.source ?? null,
-                    isFree: true,
-                    orderIndex: rIdx,
-                  })),
-                },
               })),
             },
           },
+          include: { topics: { orderBy: { orderIndex: "asc" } } },
         });
+
+        // Second pass: create resources now that topicIds are known
+        for (const [tIdx, topic] of section.topics.entries()) {
+          if (!topic.resources?.length) continue;
+          const createdTopic = createdSection.topics[tIdx];
+          await tx.roadmapResource.createMany({
+            data: topic.resources.map((r, rIdx) => ({
+              topicId: createdTopic.id,
+              kind: r.kind,
+              title: r.title,
+              url: r.url,
+              source: r.source ?? null,
+              isFree: true,
+              orderIndex: rIdx,
+            })),
+          });
+        }
       }
 
       const created = await tx.roadmapEnrollment.create({

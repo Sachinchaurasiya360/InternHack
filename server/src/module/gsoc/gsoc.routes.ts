@@ -85,6 +85,28 @@ gsocRouter.get("/organizations/:slug", async (req, res, next) => {
   }
 });
 
+// Public: Exa-powered enrichment — GitHub repos + org-specific GSoC page (served from DB)
+gsocRouter.get("/organizations/:slug/repos", async (req, res, next) => {
+  try {
+    const parsed = gsocSlugSchema.safeParse(req.params);
+    if (!parsed.success) { res.status(400).json({ message: "Invalid slug" }); return; }
+
+    const org = await prisma.gsocOrganization.findUnique({
+      where: { slug: parsed.data.slug },
+      select: { projectsData: true },
+    });
+    if (!org) { res.status(404).json({ message: "Organization not found" }); return; }
+
+    const pd = (org.projectsData as Record<string, unknown> | null) ?? {};
+    const githubRepos = (pd["_githubRepos"] as { title: string; url: string }[] | undefined) ?? [];
+    const gsocPageUrl = (pd["_gsocPageUrl"] as string | null | undefined) ?? null;
+
+    res.json({ githubRepos, gsocPageUrl });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Public: stats for filters
 gsocRouter.get("/stats", async (_req, res, next) => {
   try {

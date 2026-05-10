@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "tsx src/database/seeds/seed.ts",
+    "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
     "seed:admin": "tsx src/database/seed-admin.ts"
   },
   "keywords": [],

@@ -15,48 +15,28 @@ export interface Grant {
 }
 
 export type GrantCategory =
-  | "DeFi"
-  | "Infrastructure"
+  | "Web3"
   | "Gaming"
   | "Education"
-  | "Public Goods"
-  | "Security"
-  | "Data & AI"
-  | "Metaverse"
-  | "Privacy"
-  | "Identity"
-  | "Government India"
-  | "State Government"
-  | "International Research"
+  | "Government"
+  | "Research"
   | "Global Youth"
   | "University"
   | "Accelerator"
   | "Climate"
-  | "AI & Deep Tech"
-  | "Science"
-  | "Corporate Innovation";
+  | "AI & Deep Tech";
 
 export const GRANT_CATEGORIES: GrantCategory[] = [
-  "Government India",
-  "State Government",
+  "Government",
   "AI & Deep Tech",
   "Climate",
   "Accelerator",
   "University",
   "Global Youth",
-  "International Research",
-  "Science",
-  "Corporate Innovation",
-  "DeFi",
-  "Infrastructure",
-  "Public Goods",
+  "Research",
+  "Web3",
   "Education",
   "Gaming",
-  "Security",
-  "Data & AI",
-  "Metaverse",
-  "Privacy",
-  "Identity",
 ];
 
 export const grants: Grant[] = [
@@ -68,7 +48,7 @@ export const grants: Grant[] = [
     description:
       "The ESP funds open-source public goods that benefit the broader Ethereum ecosystem. It supports core protocol research, client development, developer tools, standards, testing infrastructure, and applied cryptography. In Q1 2025, the Foundation distributed over $32M across 94 projects.",
     fundingAmount: "Up to $250,000+",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Ethereum", "Open Source", "Research", "Developer Tools"],
     website: "https://esp.ethereum.foundation",
     eligibility: [
@@ -93,7 +73,7 @@ export const grants: Grant[] = [
     description:
       "The Polygon Community Treasury deploys $1 billion in POL tokens over ten years to back high-signal founders building on Polygon. The program allocates 100 million POL per year and offers multiple tracks including direct funding and consumer crypto grants.",
     fundingAmount: "100M POL/year",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Polygon", "L2", "dApps", "Consumer Crypto"],
     website: "https://polygon.technology/grow",
     eligibility: [
@@ -118,7 +98,7 @@ export const grants: Grant[] = [
     description:
       "The Solana Foundation connects builders to funding through milestone-based grants for public goods, convertible grants for commercial projects, and direct investments. It supports open-source contributions and novel proofs of concept on Solana.",
     fundingAmount: "$200 - $10,000+",
-    category: "Public Goods",
+    category: "Web3",
     tags: ["Solana", "Public Goods", "Mobile", "DeFi"],
     website: "https://solana.org/grants-funding",
     eligibility: [
@@ -143,7 +123,7 @@ export const grants: Grant[] = [
     description:
       "Chainlink provides funding to developers, researchers, and teams to strengthen the network and accelerate adoption of connected smart contracts. It supports core tooling, data provisioning, integrations, research, and social impact initiatives.",
     fundingAmount: "$5,000 - $500,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Chainlink", "Oracles", "Integrations", "Research"],
     website: "https://chain.link/community",
     eligibility: [
@@ -168,7 +148,7 @@ export const grants: Grant[] = [
     description:
       "The Uniswap Foundation allocates $30M over two years for large-scale projects across six categories. Unichain grants offer up to $7,500 for qualifying DeFi projects. A $40K Hook Incubator prize is also available.",
     fundingAmount: "$7,500 - $30M pool",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Uniswap", "DeFi", "Protocol", "Governance"],
     website: "https://www.uniswapfoundation.org/grants",
     eligibility: [
@@ -193,9 +173,9 @@ export const grants: Grant[] = [
     description:
       "Aave Grants DAO provides funding through rapid grants for smaller initiatives and community grants for larger projects. The program is funded by the Aave DAO treasury with approximately $2M per quarter.",
     fundingAmount: "$100,000 - $500,000",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Aave", "DeFi", "Governance", "Lending"],
-    website: "https://aavegrants.org",
+    website: "https://aavegrants.org/how-do-i-apply",
     eligibility: [
       "Projects that benefit the Aave ecosystem",
       "Rapid grants up to $100K with expedited process",
@@ -218,7 +198,7 @@ export const grants: Grant[] = [
     description:
       "Optimism's signature funding mechanism operates on the principle that it's easier to agree on what was useful than what will be useful. The program allocates OP tokens retroactively to projects that have already demonstrated value.",
     fundingAmount: "16M OP per round",
-    category: "Public Goods",
+    category: "Web3",
     tags: ["Optimism", "L2", "Retroactive Funding", "Public Goods"],
     website: "https://www.opgrants.io",
     eligibility: [
@@ -243,7 +223,7 @@ export const grants: Grant[] = [
     description:
       "Arbitrum Foundation supports builders with milestone-based funding for adoption, technical structures, and community building. Specialized programs include the $1M Trailblazer AI Grant and ArbiFuel gas sponsorship.",
     fundingAmount: "$20,000 - $150,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Arbitrum", "L2", "AI", "Gaming"],
     website: "https://arbitrum.foundation/grants",
     eligibility: [
@@ -268,7 +248,7 @@ export const grants: Grant[] = [
     description:
       "The W3F provides strategic funding aligned with Polkadot's product-centric vision. The Decentralized Futures program distributes $20M USD and 5M DOT tokens to support new initiatives for ecosystem growth.",
     fundingAmount: "$20M + 5M DOT pool",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Polkadot", "Parachain", "Core Protocol", "Interoperability"],
     website: "https://grants.web3.foundation",
     eligibility: [
@@ -318,7 +298,7 @@ export const grants: Grant[] = [
     description:
       "The ATOM Accelerator DAO empowers innovators and developers to drive the future of the Cosmos Hub by providing strategic funding. The Interchain Foundation separately funds core Interchain Stack development.",
     fundingAmount: "$10,000 - $1,000,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Cosmos", "IBC", "Interoperability", "Protocol"],
     website: "https://www.atomaccelerator.com/our-programs/grants",
     eligibility: [
@@ -343,7 +323,7 @@ export const grants: Grant[] = [
     description:
       "Filecoin Foundation awards grants for projects fostering a more decentralized foundation for humanity's information. The ProPGF program runs in batches, with $4M per batch for open-source projects.",
     fundingAmount: "$5,000 - $50,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Filecoin", "Decentralized Storage", "IPFS", "Open Source"],
     website: "https://fil.org/grants",
     eligibility: [
@@ -368,7 +348,7 @@ export const grants: Grant[] = [
     description:
       "A $200M+ fund accelerating development, growth, and innovation across the Avalanche ecosystem. Composed of contributions from Avalanche Foundation, Ava Labs, Polychain Capital, and others. Over 100 projects funded since 2021.",
     fundingAmount: "$200M+ fund",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Avalanche", "Subnets", "Enterprise", "DeFi"],
     website: "https://www.blizzard.fund",
     eligibility: [
@@ -393,7 +373,7 @@ export const grants: Grant[] = [
     description:
       "BNB Chain offers Builder Grants up to $200K for projects developing open-source tools and public goods within the ecosystem. YZi Labs (formerly Binance Labs) additionally runs a 10-week in-person residency in Silicon Valley.",
     fundingAmount: "Up to $200,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["BNB Chain", "DeFi", "GameFi", "AI"],
     website: "https://www.bnbchain.org/en/grants",
     eligibility: [
@@ -418,7 +398,7 @@ export const grants: Grant[] = [
     description:
       "The Sui Foundation funds developers, educators, and community members with a $50M grant initiative. Offers Developer Grants, Ecosystem Funding, RFPs, and Academic Research Awards.",
     fundingAmount: "$10,000 - $100,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Sui", "Move Language", "Developer Tools", "Research"],
     website: "https://sui.io/request-for-proposals",
     eligibility: [
@@ -443,7 +423,7 @@ export const grants: Grant[] = [
     description:
       "Aptos supports original ideas that expand its ecosystem - from developer tools to applications and public goods. Includes an Ecosystem Grants track and a Payments track for wallet and payment infrastructure.",
     fundingAmount: "$5,000 - $150,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Aptos", "Move Language", "Payments", "Public Goods"],
     website: "https://aptosnetwork.com/grants",
     eligibility: [
@@ -468,7 +448,7 @@ export const grants: Grant[] = [
     description:
       "Starknet offers tiered grants: Seed Grants provide early-stage non-dilutive funding, Growth Grants support later-stage teams. A $4M Africa venture fund supports blockchain startups building on Starknet.",
     fundingAmount: "$25,000 - $1,000,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Starknet", "ZK-Rollups", "Cairo", "L2"],
     website: "https://www.starknet.io/grants",
     eligibility: [
@@ -518,7 +498,7 @@ export const grants: Grant[] = [
     description:
       "One of the world's largest decentralized grant programs, having distributed over $150M across 2,000+ funded proposals through community voting. The community proposes ideas, evaluates them, and votes on funding.",
     fundingAmount: "Up to 2,000,000 ADA",
-    category: "Public Goods",
+    category: "Web3",
     tags: ["Cardano", "DAO", "Community Voting", "Decentralized"],
     website: "https://projectcatalyst.io",
     eligibility: [
@@ -543,7 +523,7 @@ export const grants: Grant[] = [
     description:
       "The HBAR Foundation provides grants to accelerate development and adoption of the Hedera network. The Hedera Council approved an additional 7 billion HBAR grant allocation. Covers DeFi, sustainability, fintech, gaming, and education.",
     fundingAmount: "7B HBAR allocated",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Hedera", "Enterprise", "Sustainability", "Fintech"],
     website: "https://hedera.foundation",
     eligibility: [
@@ -568,7 +548,7 @@ export const grants: Grant[] = [
     description:
       "One of the largest public goods funding mechanisms in Web3, using Quadratic Funding to distribute matching pools. Over $4.29M distributed across 2025 OSS rounds. Community-driven with 100% of funds going to projects.",
     fundingAmount: "$4.29M+ per year",
-    category: "Public Goods",
+    category: "Web3",
     tags: ["Gitcoin", "Quadratic Funding", "Open Source", "Community"],
     website: "https://grants.gitcoin.co",
     eligibility: [
@@ -618,7 +598,7 @@ export const grants: Grant[] = [
     description:
       "The DFINITY program catalyzes growth of the Internet Computer ecosystem. Over 560 grants disbursed to 433+ teams totaling more than $10M. Three-tiered system for different project scales.",
     fundingAmount: "$5,000 / $25,000 / $100,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Internet Computer", "ICP", "Canisters", "Web3"],
     website: "https://dfinity.org/grants",
     eligibility: [
@@ -643,7 +623,7 @@ export const grants: Grant[] = [
     description:
       "The Tezos Foundation funds non-profit, commons-enhancing projects addressing ecosystem needs. 43 initiatives totaling $9.81M approved in a recent biannual period. Covers baking, developer experience, education, privacy, and security.",
     fundingAmount: "Up to $50,000 (small grants)",
-    category: "Security",
+    category: "Web3",
     tags: ["Tezos", "Formal Verification", "Privacy", "Education"],
     website: "https://grants.tezos.foundation",
     eligibility: [
@@ -668,7 +648,7 @@ export const grants: Grant[] = [
     description:
       "The Base Ecosystem Fund invests in next-gen onchain projects. Base Batches is an 8-week virtual accelerator. Fast retroactive grants of 1-5 ETH are available for already-shipped projects building on Base.",
     fundingAmount: "$10K - $50K + 1-5 ETH retro",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Base", "L2", "Coinbase", "Onchain"],
     website: "https://docs.base.org/get-started/get-funded",
     eligibility: [
@@ -693,7 +673,7 @@ export const grants: Grant[] = [
     description:
       "Algorand's fully community-driven xGov system allows a community-elected council to review all grant proposals. The Accelerator provides up to $50K in initial funding. India-specific Startup Lab offers infrastructure resources.",
     fundingAmount: "Up to $50,000",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Algorand", "xGov", "Startups", "India"],
     website: "https://algorand.co/entrepreneurs/startup-programs",
     eligibility: [
@@ -718,7 +698,7 @@ export const grants: Grant[] = [
     description:
       "The Compound Grants Program provides funding for projects benefiting the Compound protocol. In 2025, ~$9M in COMP was transferred to fund an 18-month Compound Foundation, plus ~$8.42M DAI for protocol operations.",
     fundingAmount: "~$9M pool (18 months)",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Compound", "DeFi", "Lending", "Governance"],
     website: "https://compound.finance",
     eligibility: [
@@ -743,7 +723,7 @@ export const grants: Grant[] = [
     description:
       "LEGO (Lido Ecosystem Grants Organization) funds individuals, projects, and initiatives benefiting Lido. Grants are categorized as sandgrains, pebbles, boulders, and mountains by size. 2026 budget proposed at $60M.",
     fundingAmount: "15,000 LDO/quarter",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Lido", "Liquid Staking", "Ethereum", "DAO"],
     website: "https://lido.fi/lego",
     eligibility: [
@@ -768,7 +748,7 @@ export const grants: Grant[] = [
     description:
       "MakerDAO (now Sky Protocol) funds projects that increase DAI/USDS adoption, support emerging economies, and open new markets. Milestone-based distribution ensures accountability.",
     fundingAmount: "5,000 - 50,000 DAI",
-    category: "DeFi",
+    category: "Web3",
     tags: ["MakerDAO", "Stablecoin", "DAI", "Financial Inclusion"],
     website: "https://vote.makerdao.com",
     eligibility: [
@@ -793,7 +773,7 @@ export const grants: Grant[] = [
     description:
       "A $25M grant initiative supporting community developers building Web3 projects. Each project can receive up to $50K in Alchemy platform credits for building DeFi protocols, NFT marketplaces, or any Web3 project.",
     fundingAmount: "Up to $50,000 (credits)",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Alchemy", "Developer Platform", "API", "Beginner Friendly"],
     website: "https://www.alchemy.com/developer-grant-program",
     eligibility: [
@@ -818,7 +798,7 @@ export const grants: Grant[] = [
     description:
       "An employee-led DAO issuing grants to developers worldwide, funded at $2.4M per year. It funds open-source projects adding value to the MetaMask ecosystem including wallet extensions, Snaps, and decentralized identity.",
     fundingAmount: "$2.4M/year total",
-    category: "Identity",
+    category: "Web3",
     tags: ["MetaMask", "Wallet", "Snaps", "ConsenSys"],
     website: "https://metamaskgrants.org",
     eligibility: [
@@ -843,7 +823,7 @@ export const grants: Grant[] = [
     description:
       "Funds software development projects leveraging the XRP Ledger. Since 2021, over 140 projects from 28 countries have received grants covering sustainability, digital identity, game-fi, and financial solutions.",
     fundingAmount: "$10,000 - $200,000",
-    category: "DeFi",
+    category: "Web3",
     tags: ["XRPL", "Ripple", "Payments", "Identity"],
     website: "https://xrplgrants.org",
     eligibility: [
@@ -868,7 +848,7 @@ export const grants: Grant[] = [
     description:
       "An open-application program distributing awards based on community input for projects on Stellar and Soroban. Also offers an Enterprise Fund for venture investments and bug bounties up to $250K.",
     fundingAmount: "Up to $150,000 in XLM",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Stellar", "Soroban", "Cross-border", "Fintech"],
     website: "https://communityfund.stellar.org",
     eligibility: [
@@ -943,7 +923,7 @@ export const grants: Grant[] = [
     description:
       "Funds protocol development, tooling, dApp development, and growth initiatives. Over $5M allocated in Wave 1. Community grants managed by Graph AdvocatesDAO support smaller contributions up to $20K.",
     fundingAmount: "Up to $20,000 (community)",
-    category: "Data & AI",
+    category: "Web3",
     tags: ["The Graph", "Indexing", "APIs", "Data"],
     website: "https://thegraph.com/grants",
     eligibility: [
@@ -968,7 +948,7 @@ export const grants: Grant[] = [
     description:
       "Two programs: OceanDAO distributes 180M OCEAN ($140M) for community-curated grants. Ocean Shipyard provides $30K-$75K grants for 3-6 month projects plus technical assistance and marketing support.",
     fundingAmount: "$30,000 - $75,000",
-    category: "Data & AI",
+    category: "Web3",
     tags: ["Ocean", "Data Economy", "AI", "Data Markets"],
     website: "https://oceanprotocol.com/build/shipyard",
     eligibility: [
@@ -993,7 +973,7 @@ export const grants: Grant[] = [
     description:
       "The Celo Foundation supports projects committed to building a financial system creating conditions for prosperity for all. Offers retroactive funding, grants, and sustainable revenue models. GoodBuilders Program offers year-long mentorship.",
     fundingAmount: "Varies by program",
-    category: "Public Goods",
+    category: "Web3",
     tags: ["Celo", "Financial Inclusion", "Mobile-First", "ReFi"],
     website: "https://docs.celo.org/build-on-celo/fund-your-project",
     eligibility: [
@@ -1018,7 +998,7 @@ export const grants: Grant[] = [
     description:
       "Community-governed grants across eight categories including Core Unit, Platform, In-world Building, and Community Experiences. DAO holds 222M MANA on a 10-year vesting schedule. Proposals voted on over 7-day windows.",
     fundingAmount: "Up to $240,000",
-    category: "Metaverse",
+    category: "Web3",
     tags: ["Decentraland", "Metaverse", "Virtual Worlds", "DAO"],
     website: "https://decentraland.org/dao/grants",
     eligibility: [
@@ -1043,7 +1023,7 @@ export const grants: Grant[] = [
     description:
       "Game Maker Fund offers $5K-$30K per game for content creation. DAO distributed 200K USDC across 38 grants in 20 countries. Open Metaverse Accelerator (with Brinc) provides $50M for 100 startups.",
     fundingAmount: "$5,000 - $250,000",
-    category: "Metaverse",
+    category: "Web3",
     tags: ["Sandbox", "Metaverse", "Game Making", "Creator Economy"],
     website: "https://www.sandbox.game",
     eligibility: [
@@ -1068,7 +1048,7 @@ export const grants: Grant[] = [
     description:
       "The ENS Ecosystem Working Group funds builders of ENS-specific or ENS-centric projects. Budget of 836K USDC through April 2025. Also sponsors Gitcoin Grants rounds ($50K) and Growth Grants ($10K retroactive awards).",
     fundingAmount: "$10,000 - $836,000 budget",
-    category: "Identity",
+    category: "Web3",
     tags: ["ENS", "Domain Names", "Identity", "Ethereum"],
     website: "https://basics.ensdao.org/ens-ecosystem-wg",
     eligibility: [
@@ -1093,7 +1073,7 @@ export const grants: Grant[] = [
     description:
       "Funds independent teams for major development and public-good work in the Zcash ecosystem. Funded by 8% of mining rewards through November 2028. Coinholder-Directed Retroactive Grants Program for community voting.",
     fundingAmount: "8% of block rewards",
-    category: "Privacy",
+    category: "Web3",
     tags: ["Zcash", "Privacy", "Zero-Knowledge", "Mining"],
     website: "https://zcashcommunitygrants.org",
     eligibility: [
@@ -1118,7 +1098,7 @@ export const grants: Grant[] = [
     description:
       "A $3M grants program targeting DeFi developers across network development, community development, and research & analytics. Funds aggregation products, AMMs, wallets, L2 protocols, educational materials, and data analytics.",
     fundingAmount: "$3M total pool",
-    category: "DeFi",
+    category: "Web3",
     tags: ["1inch", "DEX Aggregator", "DeFi", "Research"],
     website: "https://1inch.io/foundation",
     eligibility: [
@@ -1143,7 +1123,7 @@ export const grants: Grant[] = [
     description:
       "A $1M grants program funding contributions that improve the Radicle ecosystem for decentralized, open-source collaboration. Seed Grants up to $50K for small contributions; Tree Grants up to $500K for larger projects.",
     fundingAmount: "$50,000 - $500,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Radicle", "Open Source", "Git", "Decentralized"],
     website: "https://github.com/radicle-dev/radicle-grants",
     eligibility: [
@@ -1168,7 +1148,7 @@ export const grants: Grant[] = [
     description:
       "Multiple grant tracks: Navigators (Season 3) distributes 2.3M MINA for zkApp development. Core Grants fund public goods infrastructure via RFPs. Builders Grants support solving real-world problems with Mina.",
     fundingAmount: "Up to 100,000 MINA",
-    category: "Privacy",
+    category: "Web3",
     tags: ["Mina", "ZK-SNARKs", "zkApps", "Lightweight"],
     website: "https://minaprotocol.com/grants-wip",
     eligibility: [
@@ -1193,7 +1173,7 @@ export const grants: Grant[] = [
     description:
       "Up to 200M FTM (~$120M) to help developers migrate to Sonic technology. Sonic Labs accelerator mentored by Andre Cronje. Additional 335M FTM incentive program with Gitcoin Grants.",
     fundingAmount: "~$120M total fund",
-    category: "DeFi",
+    category: "Web3",
     tags: ["Fantom", "Sonic", "DeFi", "High Performance"],
     website: "https://blog.fantom.foundation/how-to-get-funding-on-fantom",
     eligibility: [
@@ -1218,7 +1198,7 @@ export const grants: Grant[] = [
     description:
       "Financial support, technical assistance, co-marketing, mentorship, and strategic guidance for startups in the Moonbeam ecosystem. Three tiers from under $50K to $3M for mature projects.",
     fundingAmount: "Up to $3,000,000",
-    category: "Infrastructure",
+    category: "Web3",
     tags: ["Moonbeam", "Polkadot", "EVM", "Cross-Chain"],
     website: "https://moonbeam.network/build/grants",
     eligibility: [
@@ -1268,7 +1248,7 @@ export const grants: Grant[] = [
     description:
       "A $50M grant initiative with dual focus: $25M toward real-world asset (RWA) tokenization and $25M toward EVM and AI-driven innovation. Strong focus on Chainweb EVM tooling.",
     fundingAmount: "$50M total",
-    category: "Data & AI",
+    category: "Web3",
     tags: ["Kadena", "RWA", "AI", "Chainweb"],
     website: "https://kadena.io",
     eligibility: [
@@ -1293,7 +1273,7 @@ export const grants: Grant[] = [
     description:
       "Harmony established a $300M+ treasury fund for grants, DAOs, bounties, and investments. Structured as 6-week programs focused on driving mainnet utility, decentralized community building, and cryptographic innovations.",
     fundingAmount: "$50,000 - $250,000",
-    category: "Privacy",
+    category: "Web3",
     tags: ["Harmony", "Cross-Border", "Privacy", "Sharding"],
     website: "https://open.harmony.one/300m-on-bounties-grants-daos",
     eligibility: [
@@ -1311,7 +1291,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── Government India ──────────────────────────────────────────────
+  // â”€â”€ Government India â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 51,
@@ -1319,9 +1299,9 @@ export const grants: Grant[] = [
     organization: "Biotechnology Industry Research Assistance Council",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
-      "The Biotechnology Ignition Grant (BIG) supports biotech startups and entrepreneurs at the proof-of-concept stage. It funds innovative ideas in healthcare, agriculture, industrial biotech, and clean energy with equity-free grants up to ₹50 Lakhs over 18 months.",
-    fundingAmount: "Up to ₹50 Lakhs",
-    category: "Government India",
+      "The Biotechnology Ignition Grant (BIG) supports biotech startups and entrepreneurs at the proof-of-concept stage. It funds innovative ideas in healthcare, agriculture, industrial biotech, and clean energy with equity-free grants up to â‚¹50 Lakhs over 18 months.",
+    fundingAmount: "Up to â‚¹50 Lakhs",
+    category: "Government",
     tags: ["Biotech", "Healthcare", "Agriculture", "India"],
     website: "https://birac.nic.in",
     eligibility: [
@@ -1345,20 +1325,20 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "The Startup India Seed Fund Scheme (SISFS) provides financial assistance to startups for proof of concept, prototype development, product trials, market entry, and commercialization. It operates through selected incubators across India.",
-    fundingAmount: "Up to ₹50 Lakhs",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹50 Lakhs",
+    category: "Government",
     tags: ["Seed Fund", "Incubator", "Commercialization", "India"],
     website: "https://seedfund.startupindia.gov.in",
     eligibility: [
       "DPIIT-recognized startups not older than 2 years",
       "Must apply through an approved incubator",
-      "Grants up to ₹20 Lakhs for validation; loans up to ₹50 Lakhs for commercialization",
-      "Must not have received more than ₹10 Lakhs from any other central/state scheme",
+      "Grants up to â‚¹20 Lakhs for validation; loans up to â‚¹50 Lakhs for commercialization",
+      "Must not have received more than â‚¹10 Lakhs from any other central/state scheme",
     ],
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "₹945 Crore corpus supporting 3,600+ startups",
+      "â‚¹945 Crore corpus supporting 3,600+ startups",
       "Operates through 300+ approved incubators",
       "Both grant and convertible debenture options",
     ],
@@ -1370,8 +1350,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
       "NIDHI-PRAYAS (Promoting and Accelerating Young and Aspiring Innovators and Startups) supports innovators to translate their ideas into prototypes. Located in Technology Business Incubators, it provides grants, mentorship, and access to fabrication labs.",
-    fundingAmount: "Up to ₹10 Lakhs",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹10 Lakhs",
+    category: "Government",
     tags: ["Prototyping", "Innovation", "DST", "India"],
     website: "https://nidhi.dst.gov.in/schemes-programmes/nidhiprayas/",
     eligibility: [
@@ -1395,8 +1375,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
       "The Atal New India Challenge (ANIC) invites startups and MSMEs to create market-ready products addressing national challenges. It provides grants for product development in areas like healthcare, mobility, space, agriculture, and clean energy.",
-    fundingAmount: "Up to ₹1 Crore",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹1 Crore",
+    category: "Government",
     tags: ["Deep Tech", "National Challenges", "NITI Aayog", "India"],
     website: "https://aim.gov.in/atal-new-india-challenge.php",
     eligibility: [
@@ -1420,8 +1400,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "Technology Incubation and Development of Entrepreneurs (TIDE 2.0) by MeitY supports tech startups through financial grants and incubation. It focuses on IoT, AI, blockchain, robotics, and other emerging technologies across India.",
-    fundingAmount: "Up to ₹7 Crores",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹7 Crores",
+    category: "Government",
     tags: ["MeitY", "IoT", "AI", "Blockchain", "India"],
     website: "https://meity.gov.in",
     eligibility: [
@@ -1445,8 +1425,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "The SERB Core Research Grant (CRG) funds investigator-driven basic and applied research proposals in all areas of science and engineering. It supports projects for 3 years with grants covering equipment, consumables, travel, and manpower.",
-    fundingAmount: "Up to ₹50 Lakhs/year",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹50 Lakhs/year",
+    category: "Government",
     tags: ["Research", "Science", "Engineering", "SERB", "India"],
     website: "https://anrf.gov.in/page/english/research_grants",
     eligibility: [
@@ -1470,10 +1450,10 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
       "CSIR recognizes innovative ideas from school students and young researchers. Through its innovation programs and the CSIR-Tech Innovation Fund, it supports early-stage innovations with grants, mentorship, and commercialization assistance.",
-    fundingAmount: "Up to ₹10 Lakhs",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹10 Lakhs",
+    category: "Government",
     tags: ["CSIR", "Innovation", "Students", "Research", "India"],
-    website: "https://csir.res.in",
+    website: "https://www.csir.res.in/en/awards/csir-innovation-award-school-children-application",
     eligibility: [
       "Indian students and young researchers",
       "Innovations with commercial or societal impact",
@@ -1495,8 +1475,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=i",
     description:
       "iDEX engages startups and innovators to solve defence and aerospace challenges. Through the Defence Innovation Organisation (DIO), it provides grants for developing indigenous defence technologies across domains like AI, cybersecurity, and autonomous systems.",
-    fundingAmount: "Up to ₹1.5 Crore",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹1.5 Crore",
+    category: "Government",
     tags: ["Defence", "Aerospace", "Innovation", "India"],
     website: "https://idex.gov.in",
     eligibility: [
@@ -1521,9 +1501,9 @@ export const grants: Grant[] = [
     description:
       "Accelerating Growth of New India's Innovations (AGNIi) connects innovators with markets and funding. It acts as a bridge between Indian innovators, industry, and government to scale and commercialize indigenous technologies.",
     fundingAmount: "Project-based",
-    category: "Government India",
+    category: "Government",
     tags: ["Commercialization", "Innovation", "PSA", "India"],
-    website: "https://www.investindia.gov.in/agnii",
+    website: "https://www.psa.gov.in/agnii-who-we-are",
     eligibility: [
       "Indian innovators with market-ready technologies",
       "Solutions addressing national challenges in health, agriculture, energy, or water",
@@ -1545,8 +1525,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "MeitY Startup Hub is the nodal entity for MeitY's startup initiatives, managing programs like SAMRIDH and Digital India GENESIS. It provides equity-free grants, mentorship, and market access to tech startups across India.",
-    fundingAmount: "Up to ₹25 Lakhs",
-    category: "Government India",
+    fundingAmount: "Up to â‚¹25 Lakhs",
+    category: "Government",
     tags: ["MeitY", "Digital India", "Tech Startups", "India"],
     website: "https://msh.meity.gov.in",
     eligibility: [
@@ -1564,7 +1544,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── State Government ──────────────────────────────────────────────
+  // â”€â”€ State Government â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 61,
@@ -1573,15 +1553,15 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
       "Karnataka's IT startup policy offers subsidies, grants, and incentives to tech startups. It provides reimbursement of rent, patent costs, quality testing, marketing, and cloud hosting. Startups also get procurement preference in government tenders.",
-    fundingAmount: "Up to ₹50 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹50 Lakhs",
+    category: "Government",
     tags: ["Karnataka", "IT", "Subsidies", "India"],
-    website: "https://startup.karnataka.gov.in",
+    website: "https://www.missionstartupkarnataka.org/funding",
     eligibility: [
       "Startups registered in Karnataka with valid DPIIT recognition",
       "Must be operational within Karnataka's jurisdiction",
       "Less than 5 years old at time of application",
-      "Annual turnover below ₹10 Crore",
+      "Annual turnover below â‚¹10 Crore",
     ],
     status: "Active",
     ecosystem: "India",
@@ -1598,8 +1578,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
       "Kerala Startup Mission is the nodal agency for startup activities in Kerala. It runs incubation programs, innovation grants, and seed funding through its network of incubators. It has supported 4,000+ startups since inception.",
-    fundingAmount: "Up to ₹30 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹30 Lakhs",
+    category: "Government",
     tags: ["Kerala", "Incubation", "Innovation", "India"],
     website: "https://startupmission.kerala.gov.in",
     eligibility: [
@@ -1623,10 +1603,10 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
       "The Student and Knowledge-driven Innovation Promotion Program (SKIPP) supports student entrepreneurs in West Bengal. It provides seed grants, mentorship, and incubation support for innovative ideas from college students.",
-    fundingAmount: "Up to ₹25 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹25 Lakhs",
+    category: "Government",
     tags: ["West Bengal", "Students", "Innovation", "India"],
-    website: "https://wbmsme.gov.in",
+    website: "https://msme.wb.gov.in",
     eligibility: [
       "Students enrolled in West Bengal educational institutions",
       "Innovative ideas with commercial potential",
@@ -1648,8 +1628,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
       "T-Hub in Hyderabad is India's largest technology incubator. It provides funding, mentorship, corporate connections, and international market access to startups across healthcare, fintech, sustainability, and deep tech domains.",
-    fundingAmount: "Up to ₹25 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹25 Lakhs",
+    category: "Government",
     tags: ["Telangana", "Incubation", "Deep Tech", "India"],
     website: "https://t-hub.co",
     eligibility: [
@@ -1673,8 +1653,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "Maharashtra State Innovation Society (MSINS) runs Startup Yatra to discover grassroots innovators across Maharashtra. Selected startups receive grants, incubation, and government procurement opportunities through the Maharashtra Startup Policy.",
-    fundingAmount: "Up to ₹15 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹15 Lakhs",
+    category: "Government",
     tags: ["Maharashtra", "Grassroots", "Innovation", "India"],
     website: "https://msins.in",
     eligibility: [
@@ -1698,8 +1678,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
       "iCreate is Gujarat's international centre for entrepreneurship and technology. It provides grants, residential incubation, prototyping labs, and market access to hardware and IoT startups. The program runs 6-month cohorts.",
-    fundingAmount: "Up to ₹10 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹10 Lakhs",
+    category: "Government",
     tags: ["Gujarat", "Hardware", "IoT", "Prototyping", "India"],
     website: "https://icreate.org.in",
     eligibility: [
@@ -1723,21 +1703,21 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
       "StartupTN, the nodal agency for Tamil Nadu's startup ecosystem, provides seed grants, mentorship, and market access. The state policy offers grants for prototyping, patent filing, and marketing to DPIIT-recognized startups.",
-    fundingAmount: "Up to ₹30 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹30 Lakhs",
+    category: "Government",
     tags: ["Tamil Nadu", "Seed Grant", "Patents", "India"],
     website: "https://startuptn.in",
     eligibility: [
       "DPIIT-recognized startups registered in Tamil Nadu",
       "Less than 5 years old",
       "Must be incubated at an approved Tamil Nadu incubator",
-      "Revenue below ₹25 Crore annually",
+      "Revenue below â‚¹25 Crore annually",
     ],
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Patent cost reimbursement up to ₹10 Lakhs",
-      "Marketing support up to ₹5 Lakhs",
+      "Patent cost reimbursement up to â‚¹10 Lakhs",
+      "Marketing support up to â‚¹5 Lakhs",
       "Free co-working space at TIDEL parks",
     ],
   },
@@ -1748,8 +1728,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "iStart is Rajasthan's flagship startup initiative providing sustenance allowance, seed grants, and incubation support. It offers monthly stipends to founding teams and connects startups with government departments for pilot projects.",
-    fundingAmount: "Up to ₹25 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹25 Lakhs",
+    category: "Government",
     tags: ["Rajasthan", "iStart", "Stipend", "India"],
     website: "https://istart.rajasthan.gov.in",
     eligibility: [
@@ -1761,7 +1741,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Monthly sustenance allowance of ₹20,000 per co-founder",
+      "Monthly sustenance allowance of â‚¹20,000 per co-founder",
       "Government pilot project opportunities",
       "18,000+ startups registered on iStart platform",
     ],
@@ -1773,8 +1753,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
       "Andhra Pradesh Innovation Society supports startups through grants, incubation, and innovation challenges. It runs sector-specific programs in agritech, healthtech, and edtech with funding support and government market access.",
-    fundingAmount: "Up to ₹15 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹15 Lakhs",
+    category: "Government",
     tags: ["Andhra Pradesh", "Agritech", "Healthtech", "India"],
     website: "https://apis.ap.gov.in",
     eligibility: [
@@ -1798,8 +1778,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:
       "Punjab's startup and innovation policy provides financial support through seed grants, infrastructure subsidies, and patent reimbursement. The scheme operates through Punjab Infotech and state-designated incubators.",
-    fundingAmount: "Up to ₹10 Lakhs",
-    category: "State Government",
+    fundingAmount: "Up to â‚¹10 Lakhs",
+    category: "Government",
     tags: ["Punjab", "Seed Grant", "Infrastructure", "India"],
     website: "https://punjabinfotech.in",
     eligibility: [
@@ -1811,13 +1791,13 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Rent and infrastructure subsidy up to ₹5 Lakhs",
+      "Rent and infrastructure subsidy up to â‚¹5 Lakhs",
       "Patent filing reimbursement",
       "Access to Punjab's IT parks at subsidized rates",
     ],
   },
 
-  // ── International Research ────────────────────────────────────────
+  // â”€â”€ International Research â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 71,
@@ -1827,7 +1807,7 @@ export const grants: Grant[] = [
     description:
       "The Fulbright-Nehru Fellowship enables Indian students, scholars, and professionals to study, research, or teach at US institutions. It covers tuition, living expenses, travel, and health insurance for periods ranging from 4 to 9 months.",
     fundingAmount: "Up to $50,000",
-    category: "International Research",
+    category: "Research",
     tags: ["USA", "Research", "Fellowship", "Academic"],
     website: "https://usief.org.in",
     eligibility: [
@@ -1851,8 +1831,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
       "The Wellcome Trust funds bold research to improve health. Its grants support discovery research, technology development, and interventions across biomedical science, population health, humanities, and social science.",
-    fundingAmount: "Up to £3M",
-    category: "International Research",
+    fundingAmount: "Up to Â£3M",
+    category: "Research",
     tags: ["UK", "Biomedical", "Health Research", "Discovery"],
     website: "https://wellcome.org/grant-funding",
     eligibility: [
@@ -1864,7 +1844,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "UK",
     highlights: [
-      "One of the world's largest research funders (£16B+ endowment)",
+      "One of the world's largest research funders (Â£16B+ endowment)",
       "Open to researchers from any country",
       "Flexible funding for 3-8 year projects",
     ],
@@ -1877,7 +1857,7 @@ export const grants: Grant[] = [
     description:
       "Grand Challenges Explorations funds bold ideas with potential to solve persistent global health and development challenges. It provides seed funding with a simple 2-page application for unconventional approaches.",
     fundingAmount: "Up to $100,000",
-    category: "International Research",
+    category: "Research",
     tags: ["Global Health", "Innovation", "Seed Funding", "Global"],
     website: "https://gcgh.grandchallenges.org",
     eligibility: [
@@ -1902,7 +1882,7 @@ export const grants: Grant[] = [
     description:
       "CERN Openlab offers summer student positions and research associateships for students interested in computing, physics, and engineering. Participants work on cutting-edge projects in data science, machine learning, and quantum computing.",
     fundingAmount: "Stipend + travel",
-    category: "International Research",
+    category: "Research",
     tags: ["Physics", "Computing", "Switzerland", "Research"],
     website: "https://openlab.cern",
     eligibility: [
@@ -1926,10 +1906,10 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
       "DAAD offers research grants for doctoral candidates, postdocs, and academics to conduct research at German universities and institutions. Grants cover monthly stipend, health insurance, and travel allowance.",
-    fundingAmount: "€1,000-€1,300/month",
-    category: "International Research",
+    fundingAmount: "â‚¬1,000-â‚¬1,300/month",
+    category: "Research",
     tags: ["Germany", "Doctoral", "Academic", "Research"],
-    website: "https://www.daad.de/en",
+    website: "https://www.daad.de/go/en/stipa57742121",
     eligibility: [
       "Graduates and PhD students from all countries",
       "Must have a confirmed research supervisor at a German institution",
@@ -1951,8 +1931,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
       "Marie Curie Fellowships support experienced researchers with cross-border and cross-sector mobility. The Postdoctoral Fellowships fund 1-2 year research projects at European or global institutions with generous living and mobility allowances.",
-    fundingAmount: "€5,080/month + allowances",
-    category: "International Research",
+    fundingAmount: "â‚¬5,080/month + allowances",
+    category: "Research",
     tags: ["EU", "Postdoctoral", "Mobility", "Research"],
     website: "https://marie-sklodowska-curie-actions.ec.europa.eu",
     eligibility: [
@@ -1977,7 +1957,7 @@ export const grants: Grant[] = [
     description:
       "Switzerland offers excellence scholarships for foreign researchers and artists to conduct doctoral or postdoctoral research at Swiss public universities. Monthly stipend, tuition waiver, health insurance, and housing allowance included.",
     fundingAmount: "CHF 1,920/month",
-    category: "International Research",
+    category: "Research",
     tags: ["Switzerland", "Doctoral", "Postdoctoral", "Excellence"],
     website: "https://www.sbfi.admin.ch/en/swiss-government-excellence-scholarships",
     eligibility: [
@@ -2001,8 +1981,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
       "The Humboldt Research Fellowship supports highly qualified researchers from abroad to carry out long-term research at German institutions. It provides monthly stipends, travel allowances, and language courses for 6-24 month stays.",
-    fundingAmount: "€2,670/month",
-    category: "International Research",
+    fundingAmount: "â‚¬2,670/month",
+    category: "Research",
     tags: ["Germany", "Postdoctoral", "Senior Research", "Long-term"],
     website: "https://www.humboldt-foundation.de",
     eligibility: [
@@ -2026,8 +2006,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=J",
     description:
       "JSPS Postdoctoral Fellowships invite young researchers from abroad to conduct collaborative research in Japan. The program covers round-trip airfare, monthly stipend, research allowance, and overseas travel insurance.",
-    fundingAmount: "¥362,000/month",
-    category: "International Research",
+    fundingAmount: "Â¥362,000/month",
+    category: "Research",
     tags: ["Japan", "Postdoctoral", "Collaborative Research", "Science"],
     website: "https://www.jsps.go.jp/english",
     eligibility: [
@@ -2039,7 +2019,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "Japan",
     highlights: [
-      "Research allowance of ¥150,000/year",
+      "Research allowance of Â¥150,000/year",
       "Round-trip airfare included",
       "Access to Japan's top research universities",
     ],
@@ -2051,8 +2031,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "Newton International Fellowships enable early-career postdoctoral researchers from overseas to work at UK research institutions for 2 years. The program aims to attract the best researchers globally to build lasting connections with UK science.",
-    fundingAmount: "£24,000/year + research expenses",
-    category: "International Research",
+    fundingAmount: "Â£24,000/year + research expenses",
+    category: "Research",
     tags: ["UK", "Postdoctoral", "Royal Society", "Science"],
     website: "https://royalsociety.org/grants-schemes-awards/grants/newton-international",
     eligibility: [
@@ -2065,12 +2045,12 @@ export const grants: Grant[] = [
     ecosystem: "UK",
     highlights: [
       "2-year fully funded research position in UK",
-      "£8,000 research expenses per year",
-      "Follow-up funding of £6,000/year for 10 years",
+      "Â£8,000 research expenses per year",
+      "Follow-up funding of Â£6,000/year for 10 years",
     ],
   },
 
-  // ── Global Youth ──────────────────────────────────────────────────
+  // â”€â”€ Global Youth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 81,
@@ -2107,7 +2087,7 @@ export const grants: Grant[] = [
     fundingAmount: "Fully funded",
     category: "Global Youth",
     tags: ["Africa", "Leadership", "Fellowship", "US Government"],
-    website: "https://yali.state.gov",
+    website: "https://www.mandelawashingtonfellowship.org",
     eligibility: [
       "Young Africans aged 25-35 from sub-Saharan Africa",
       "Track record of leadership in business, civic engagement, or public management",
@@ -2179,7 +2159,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "Resolution supports young social entrepreneurs (18-25) tackling poverty, inequality, and injustice. Fellows receive funding for 12 months, plus mentoring, legal support, and connections to scale their ventures.",
-    fundingAmount: "£18,000/year",
+    fundingAmount: "Â£18,000/year",
     category: "Global Youth",
     tags: ["Social Enterprise", "Youth", "UK", "Poverty"],
     website: "https://www.resolutionfoundation.org",
@@ -2323,7 +2303,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── University ────────────────────────────────────────────────────
+  // â”€â”€ University â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 91,
@@ -2432,7 +2412,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=O",
     description:
       "The Oxford Foundry is the University of Oxford's entrepreneurship centre. It offers accelerator programs, grants, and mentorship to Oxford students and alumni building impactful ventures.",
-    fundingAmount: "Up to £25,000",
+    fundingAmount: "Up to Â£25,000",
     category: "University",
     tags: ["Oxford", "Entrepreneurship", "UK", "Accelerator"],
     website: "https://www.sbs.ox.ac.uk/oxford-foundry",
@@ -2457,7 +2437,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Society for Innovation and Entrepreneurship (SINE) at IIT Bombay incubates technology startups. It provides seed funding, lab access, mentorship, and campus infrastructure to startups founded by IIT Bombay community members.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "University",
     tags: ["IIT Bombay", "Incubation", "Tech Startups", "India"],
     website: "https://www.sineiitb.org",
@@ -2482,7 +2462,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Foundation for Innovation and Technology Transfer (FITT) at IIT Delhi supports startups through incubation, seed funding, and technology transfer. It bridges academia and industry to commercialize research innovations.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "University",
     tags: ["IIT Delhi", "Tech Transfer", "Incubation", "India"],
     website: "https://fitt-iitd.in",
@@ -2507,7 +2487,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Science and Technology Entrepreneurs Park (STEP) at IISc Bangalore provides incubation, seed funding, and mentorship to deep tech startups. It leverages IISc's world-class research to build science-based companies.",
-    fundingAmount: "Up to ₹10 Lakhs",
+    fundingAmount: "Up to â‚¹10 Lakhs",
     category: "University",
     tags: ["IISc", "Deep Tech", "Research", "Bangalore", "India"],
     website: "https://www.fsid-iisc.in",
@@ -2576,7 +2556,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── Accelerator ───────────────────────────────────────────────────
+  // â”€â”€ Accelerator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 101,
@@ -2759,8 +2739,8 @@ export const grants: Grant[] = [
     organization: "Founders Factory",
     logo: "https://placehold.co/100x100/EEE/999?text=F",
     description:
-      "Founders Factory partners with large corporations to build and accelerate startups. It offers 6-month programs with dedicated engineering, design, and growth teams to help startups scale, plus investment of up to £250K.",
-    fundingAmount: "Up to £250,000",
+      "Founders Factory partners with large corporations to build and accelerate startups. It offers 6-month programs with dedicated engineering, design, and growth teams to help startups scale, plus investment of up to Â£250K.",
+    fundingAmount: "Up to Â£250,000",
     category: "Accelerator",
     tags: ["Corporate Partnership", "UK", "Scaling", "Accelerator"],
     website: "https://foundersfactory.com",
@@ -2774,7 +2754,7 @@ export const grants: Grant[] = [
     ecosystem: "UK",
     highlights: [
       "Dedicated engineering and design support",
-      "Corporate partners include L'Oréal, Aviva, Guardian",
+      "Corporate partners include L'OrÃ©al, Aviva, Guardian",
       "Also builds ventures from scratch (studio model)",
     ],
   },
@@ -2810,7 +2790,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
       "Chiratae Ventures' Sonic Program is India's leading early-stage startup program. It provides seed funding, mentorship from successful entrepreneurs, and access to Chiratae's network for Indian tech startups.",
-    fundingAmount: "Up to ₹1 Crore",
+    fundingAmount: "Up to â‚¹1 Crore",
     category: "Accelerator",
     tags: ["India", "Seed", "Tech Startups", "VC"],
     website: "https://chiratae.com",
@@ -2829,7 +2809,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── Climate ───────────────────────────────────────────────────────
+  // â”€â”€ Climate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 111,
@@ -2863,7 +2843,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
       "EIT Climate-KIC accelerates climate innovation across Europe. Its startup accelerator provides grants, coaching, and market access to cleantech ventures tackling decarbonization, sustainable materials, and circular economy.",
-    fundingAmount: "Up to €95,000",
+    fundingAmount: "Up to â‚¬95,000",
     category: "Climate",
     tags: ["EU", "Cleantech", "Decarbonization", "Accelerator"],
     website: "https://www.climate-kic.org",
@@ -2877,7 +2857,7 @@ export const grants: Grant[] = [
     ecosystem: "EU",
     highlights: [
       "Europe's largest climate innovation network",
-      "3-stage program: €15K → €30K → €50K",
+      "3-stage program: â‚¬15K â†’ â‚¬30K â†’ â‚¬50K",
       "4,500+ startups supported since 2010",
     ],
   },
@@ -3012,8 +2992,8 @@ export const grants: Grant[] = [
     organization: "Royal Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
-      "The Earthshot Prize, founded by Prince William, awards £1M each to 5 winners annually who develop solutions to environmental challenges. Categories: Protect & Restore Nature, Clean Air, Revive Oceans, Build a Waste-Free World, Fix Climate.",
-    fundingAmount: "£1,000,000",
+      "The Earthshot Prize, founded by Prince William, awards Â£1M each to 5 winners annually who develop solutions to environmental challenges. Categories: Protect & Restore Nature, Clean Air, Revive Oceans, Build a Waste-Free World, Fix Climate.",
+    fundingAmount: "Â£1,000,000",
     category: "Climate",
     tags: ["Prize", "Environment", "UK", "Nature"],
     website: "https://earthshotprize.org",
@@ -3026,7 +3006,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "UK",
     highlights: [
-      "5 winners each receive £1M annually until 2030",
+      "5 winners each receive Â£1M annually until 2030",
       "Global visibility and media coverage",
       "Founded by Prince William, Royal Foundation",
     ],
@@ -3082,7 +3062,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── AI & Deep Tech ────────────────────────────────────────────────
+  // â”€â”€ AI & Deep Tech â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 121,
@@ -3335,7 +3315,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── Science ───────────────────────────────────────────────────────
+  // â”€â”€ Science â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 131,
@@ -3345,7 +3325,7 @@ export const grants: Grant[] = [
     description:
       "Schmidt Science Fellows is a postdoctoral program that supports the next generation of science leaders. Fellows pivot from their PhD discipline to a new field, gaining breadth and building bridges across scientific domains.",
     fundingAmount: "$100,000/year",
-    category: "Science",
+    category: "Research",
     tags: ["Postdoctoral", "Interdisciplinary", "Leadership", "Global"],
     website: "https://schmidtsciencefellows.org",
     eligibility: [
@@ -3370,7 +3350,7 @@ export const grants: Grant[] = [
     description:
       "The Simons Foundation advances the frontiers of research in mathematics and the basic sciences. Its grants support collaboration, curiosity-driven research, and investigations into the fundamental laws of nature.",
     fundingAmount: "Up to $500,000",
-    category: "Science",
+    category: "Research",
     tags: ["Mathematics", "Physics", "Basic Science", "Collaboration"],
     website: "https://www.simonsfoundation.org",
     eligibility: [
@@ -3395,7 +3375,7 @@ export const grants: Grant[] = [
     description:
       "HHMI Investigators are among the most accomplished biomedical researchers in the world. HHMI provides long-term, flexible funding so investigators can take risks and pursue the most important questions in biology and medicine.",
     fundingAmount: "Up to $1M+/year",
-    category: "Science",
+    category: "Research",
     tags: ["Biomedical", "Biology", "Long-term", "Elite"],
     website: "https://www.hhmi.org/programs/biomedical-research",
     eligibility: [
@@ -3420,7 +3400,7 @@ export const grants: Grant[] = [
     description:
       "The Moore Foundation's science program supports curiosity-driven research in physics, astronomy, and data-driven discovery. Its grants fund major research initiatives, instrumentation, and emerging fields of science.",
     fundingAmount: "Up to $5M",
-    category: "Science",
+    category: "Research",
     tags: ["Physics", "Astronomy", "Data Science", "Instrumentation"],
     website: "https://www.moore.org/programs/science",
     eligibility: [
@@ -3445,7 +3425,7 @@ export const grants: Grant[] = [
     description:
       "CZI Science funds research to cure, prevent, or manage all diseases by end of century. It supports single-cell biology, infectious disease, neurodegeneration, and AI for biology through grants, tools, and data platforms.",
     fundingAmount: "Up to $500,000",
-    category: "Science",
+    category: "Research",
     tags: ["Biomedicine", "AI for Biology", "Single-cell", "Open Science"],
     website: "https://chanzuckerberg.com/science",
     eligibility: [
@@ -3470,7 +3450,7 @@ export const grants: Grant[] = [
     description:
       "The Kavli Foundation supports basic research in astrophysics, nanoscience, neuroscience, and theoretical physics. It funds Kavli Institutes worldwide and awards the prestigious Kavli Prizes biennially.",
     fundingAmount: "Up to $1M",
-    category: "Science",
+    category: "Research",
     tags: ["Astrophysics", "Nanoscience", "Neuroscience", "Theoretical Physics"],
     website: "https://kavlifoundation.org",
     eligibility: [
@@ -3495,7 +3475,7 @@ export const grants: Grant[] = [
     description:
       "Sloan Research Fellowships honor early-career scholars of outstanding promise. Fellows receive $75,000 over 2 years to be used flexibly to advance their research. It's one of the most prestigious awards for young scientists.",
     fundingAmount: "$75,000",
-    category: "Science",
+    category: "Research",
     tags: ["Early Career", "Prestigious", "STEM", "USA"],
     website: "https://sloan.org/fellowships",
     eligibility: [
@@ -3520,7 +3500,7 @@ export const grants: Grant[] = [
     description:
       "The Packard Fellowship provides $875,000 over 5 years to early-career scientists and engineers. It's one of the largest nongovernmental fellowships, giving fellows the freedom to pursue creative research directions.",
     fundingAmount: "$875,000",
-    category: "Science",
+    category: "Research",
     tags: ["Early Career", "Engineering", "Science", "Prestigious"],
     website: "https://www.packard.org/what-we-fund/science/packard-fellowships-for-science-and-engineering",
     eligibility: [
@@ -3545,12 +3525,12 @@ export const grants: Grant[] = [
     description:
       "BWF provides career development awards at the interface of basic biomedical science and adjacent disciplines. Programs support researchers in infectious disease, climate change & health, and regulatory science.",
     fundingAmount: "Up to $500,000",
-    category: "Science",
+    category: "Research",
     tags: ["Biomedical", "Career Development", "Infectious Disease", "USA"],
     website: "https://www.bwfund.org",
     eligibility: [
       "Researchers at US and Canadian institutions",
-      "Must be at career transition stage (postdoc → faculty or early faculty)",
+      "Must be at career transition stage (postdoc â†’ faculty or early faculty)",
       "Multiple programs with different eligibility requirements",
       "Annual deadlines varying by program",
     ],
@@ -3570,7 +3550,7 @@ export const grants: Grant[] = [
     description:
       "The Keck Foundation funds large-scale research projects that are too novel or risky for traditional funding. It supports medical research, science & engineering, and education with major grants to accredited institutions.",
     fundingAmount: "Up to $5M",
-    category: "Science",
+    category: "Research",
     tags: ["High-risk", "Medical Research", "Engineering", "Large-scale"],
     website: "https://www.wmkeck.org",
     eligibility: [
@@ -3588,7 +3568,7 @@ export const grants: Grant[] = [
     ],
   },
 
-  // ── Corporate Innovation ──────────────────────────────────────────
+  // â”€â”€ Corporate Innovation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   {
     id: 141,
@@ -3598,7 +3578,7 @@ export const grants: Grant[] = [
     description:
       "Google for Startups Cloud Program provides cloud credits, technical mentorship, and business support to early-stage startups. Eligible startups receive up to $200,000 in Google Cloud credits over 2 years.",
     fundingAmount: "Up to $200,000 cloud credits",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["Google Cloud", "Credits", "Startups", "Technical Support"],
     website: "https://cloud.google.com/startup",
     eligibility: [
@@ -3623,7 +3603,7 @@ export const grants: Grant[] = [
     description:
       "AWS Activate provides startups with free cloud credits, technical support, and training to build on AWS. The program offers different tiers from self-funded startups to VC-backed companies with up to $100,000 in credits.",
     fundingAmount: "Up to $100,000 credits",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["AWS", "Cloud Credits", "Startups", "Infrastructure"],
     website: "https://aws.amazon.com/activate",
     eligibility: [
@@ -3648,7 +3628,7 @@ export const grants: Grant[] = [
     description:
       "Microsoft for Startups Founders Hub provides free Azure credits, GitHub Enterprise, Visual Studio, and technical mentorship. It's open to all startups globally, regardless of funding stage or background.",
     fundingAmount: "Up to $150,000 credits",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["Microsoft", "Azure", "GitHub", "Startups"],
     website: "https://www.microsoft.com/en-us/startups",
     eligibility: [
@@ -3661,7 +3641,7 @@ export const grants: Grant[] = [
     ecosystem: "Global",
     highlights: [
       "No application gatekeeping - open to all startups",
-      "Credits: $1K → $5K → $25K → $150K as you grow",
+      "Credits: $1K â†’ $5K â†’ $25K â†’ $150K as you grow",
       "Includes OpenAI API credits for AI startups",
     ],
   },
@@ -3673,7 +3653,7 @@ export const grants: Grant[] = [
     description:
       "Cisco's Country Digital Acceleration and Innovation Fund invests in startups and projects driving digital transformation. It supports networking, security, IoT, and collaboration technology innovations worldwide.",
     fundingAmount: "Up to $250,000",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["Cisco", "Networking", "IoT", "Security", "Digital"],
     website: "https://www.cisco.com/site/us/en/about/purpose/social-impact/cisco-foundation.html",
     eligibility: [
@@ -3698,7 +3678,7 @@ export const grants: Grant[] = [
     description:
       "IBM's startup programs provide cloud credits, technical mentorship, and go-to-market support. The Hyper Protect Accelerator focuses on healthcare and fintech startups needing enterprise-grade security and compliance.",
     fundingAmount: "Up to $120,000",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["IBM", "Healthcare", "Fintech", "Enterprise", "Security"],
     website: "https://developer.ibm.com/startups",
     eligibility: [
@@ -3723,7 +3703,7 @@ export const grants: Grant[] = [
     description:
       "Salesforce Ventures' Impact Fund invests in enterprise cloud startups focused on sustainability, equality, and social impact. It provides funding plus access to Salesforce's ecosystem of customers and partners.",
     fundingAmount: "Up to $500,000",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["Salesforce", "Impact", "Enterprise", "Cloud", "ESG"],
     website: "https://www.salesforce.com/ventures",
     eligibility: [
@@ -3747,8 +3727,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "SAP.iO runs accelerator foundries in 10+ cities worldwide, supporting B2B startups building on or integrating with SAP technologies. It provides equity-free support, SAP technology access, and customer introductions.",
-    fundingAmount: "Up to €250,000 in value",
-    category: "Corporate Innovation",
+    fundingAmount: "Up to â‚¬250,000 in value",
+    category: "Accelerator",
     tags: ["SAP", "B2B", "Enterprise", "ERP", "Accelerator"],
     website: "https://www.sap.com/partners.html",
     eligibility: [
@@ -3773,7 +3753,7 @@ export const grants: Grant[] = [
     description:
       "The Qualcomm Innovation Fellowship (QIF) awards PhD students working on breakthrough research in mobile, wireless, computing, and semiconductor technologies. Fellows receive funding and mentorship from Qualcomm engineers.",
     fundingAmount: "Up to $100,000",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["Qualcomm", "PhD", "Mobile", "Wireless", "Research"],
     website: "https://www.qualcomm.com/research/university-relations/innovation-fellowship",
     eligibility: [
@@ -3798,7 +3778,7 @@ export const grants: Grant[] = [
     description:
       "The Adobe Fund for Design supports projects that expand access to creativity and design education. It funds nonprofits, universities, and individuals creating tools, curricula, and programs that empower underrepresented communities.",
     fundingAmount: "Up to $25,000",
-    category: "Corporate Innovation",
+    category: "Accelerator",
     tags: ["Adobe", "Design", "Education", "Creativity", "Diversity"],
     website: "https://developer.adobe.com/fund-for-design/",
     eligibility: [
@@ -3822,8 +3802,8 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
       "The Robert Bosch Foundation funds research and innovation projects in healthcare, education, sustainability, and international understanding. It also supports startups through Bosch's corporate venture activities and research partnerships.",
-    fundingAmount: "Up to €200,000",
-    category: "Corporate Innovation",
+    fundingAmount: "Up to â‚¬200,000",
+    category: "Accelerator",
     tags: ["Bosch", "Sustainability", "Healthcare", "Education", "EU"],
     website: "https://www.bosch-stiftung.de/en",
     eligibility: [
@@ -3836,7 +3816,7 @@ export const grants: Grant[] = [
     ecosystem: "Germany",
     highlights: [
       "One of Europe's largest corporate foundations",
-      "€1.2B+ distributed since 1964",
+      "â‚¬1.2B+ distributed since 1964",
       "Supports research, education, and international dialogue",
     ],
   },

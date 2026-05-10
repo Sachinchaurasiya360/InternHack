@@ -9,7 +9,6 @@ import {
   Clock,
   MapPin,
   ArrowUpRight,
-  Briefcase,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { queryKeys } from "../../../lib/query-keys";
@@ -41,7 +40,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
 }
 
 export default function SignalsPage() {
-  const kind: SignalKind = "all";
+  const kind: SignalKind = "funding";
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [source, setSource] = useState("");
@@ -290,12 +289,7 @@ const SignalCard = ({ signal, sourceLabel }: SignalCardProps) => {
             {signal.hqLocation}
           </span>
         ) : null}
-        {signal.hiringSignal ? (
-          <span className="inline-flex items-center gap-1 text-stone-900 dark:text-stone-50">
-            <Briefcase className="w-3 h-3" />
-            Likely hiring
-          </span>
-        ) : null}
+
       </div>
     </motion.div>
   );
