@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,6 +40,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import { Button } from "../../../components/ui/button";
 import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { SkillTest, SkillTestAttempt, VerifiedSkill, TestDifficulty } from "../../../lib/types";
@@ -124,12 +125,46 @@ function MetaChip({ icon, children, className = "" }: { icon?: React.ReactNode; 
 
 function formatAttemptDate(date?: string) {
   if (!date) return "date unknown";
-  return new Date(date).toLocaleDateString("en-US", {
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "date unknown";
+  return parsed.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
 }
+
+const AttemptHistoryItem = memo(function AttemptHistoryItem({
+  attempt,
+}: {
+  attempt: SkillTestAttempt;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-md border border-stone-200 dark:border-white/10 px-3 py-2">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2">
+          {attempt.passed ? (
+            <CheckCircle2 className="w-4 h-4 text-lime-600 dark:text-lime-400 shrink-0" />
+          ) : (
+            <XCircle className="w-4 h-4 text-red-500 dark:text-red-400 shrink-0" />
+          )}
+          <span className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+            {attempt.score}%
+          </span>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+            {attempt.passed ? "passed" : "failed"}
+          </span>
+        </div>
+        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+          {formatAttemptDate(attempt.completedAt ?? attempt.startedAt)}
+        </p>
+      </div>
+      <span className="text-xs font-mono uppercase tracking-widest text-stone-500 shrink-0">
+        proctor {attempt.proctoringScore ?? 100}%
+      </span>
+    </div>
+  );
+});
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -388,23 +423,27 @@ export default function SkillVerificationPage() {
                           </div>
                         </div>
                         {!v && test && (
-                          <a
-                            href={`/test/${test.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-2 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline shrink-0"
-                          >
-                            take test <ArrowUpRight className="w-3 h-3" />
-                          </a>
+                          <Button asChild variant="outline" size="sm" className="font-mono uppercase tracking-widest shrink-0 hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900">
+                            <a
+                              href={`/test/${test.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="no-underline"
+                            >
+                              take test <ArrowUpRight className="w-3 h-3" />
+                            </a>
+                          </Button>
                         )}
                       </div>
 
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        autoHeight
                         onClick={() => setExpandedHistorySkill(historyOpen ? null : skillKey)}
-                        className="w-full flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/[0.02] text-left hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+                        className="w-full rounded-none flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/[0.02] text-left hover:bg-stone-100 dark:hover:bg-white/[0.04]"
                       >
-                        <span className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
+                        <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
                           <History className="w-3.5 h-3.5 text-stone-400" />
                           attempt history
                           <span className="text-stone-400">({recentAttempts.length})</span>
@@ -414,7 +453,7 @@ export default function SkillVerificationPage() {
                         ) : (
                           <ChevronRight className="w-4 h-4 text-stone-400" />
                         )}
-                      </button>
+                      </Button>
 
                       <AnimatePresence initial={false}>
                         {historyOpen && (
@@ -432,32 +471,10 @@ export default function SkillVerificationPage() {
                                 </p>
                               ) : (
                                 recentAttempts.map((attempt) => (
-                                  <div
+                                  <AttemptHistoryItem
                                     key={attempt.id}
-                                    className="flex items-center justify-between gap-3 rounded-md border border-stone-200 dark:border-white/10 px-3 py-2"
-                                  >
-                                    <div className="min-w-0">
-                                      <div className="flex items-center gap-2">
-                                        {attempt.passed ? (
-                                          <CheckCircle2 className="w-4 h-4 text-lime-600 dark:text-lime-400 shrink-0" />
-                                        ) : (
-                                          <XCircle className="w-4 h-4 text-red-500 dark:text-red-400 shrink-0" />
-                                        )}
-                                        <span className="text-sm font-semibold text-stone-900 dark:text-stone-50">
-                                          {attempt.score}%
-                                        </span>
-                                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                                          {attempt.passed ? "passed" : "failed"}
-                                        </span>
-                                      </div>
-                                      <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1">
-                                        {formatAttemptDate(attempt.completedAt ?? attempt.startedAt)}
-                                      </p>
-                                    </div>
-                                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 shrink-0">
-                                      proctor {attempt.proctoringScore ?? 100}%
-                                    </span>
-                                  </div>
+                                    attempt={attempt}
+                                  />
                                 ))
                               )}
                             </div>
