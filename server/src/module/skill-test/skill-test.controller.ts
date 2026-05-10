@@ -93,12 +93,10 @@ export class SkillTestController {
 
       const parsed = submitTestSchema.safeParse(req.body);
       if (!parsed.success) {
-        res
-          .status(400)
-          .json({
-            error: "Validation failed",
-            details: parsed.error.flatten(),
-          });
+        res.status(400).json({
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
         return;
       }
 
@@ -112,6 +110,22 @@ export class SkillTestController {
     } catch (err) {
       if (err instanceof Error && err.message === "Test not found") {
         res.status(404).json({ error: err.message });
+        return;
+      }
+      // Return 403 if submission arrives after server-side expiry
+      if (err instanceof Error && err.message === "TEST_EXPIRED") {
+        res
+          .status(403)
+          .json({ error: "Time is up. Your session has expired." });
+        return;
+      }
+      // Return 400 if student tries to submit without starting the test first
+      if (err instanceof Error && err.message === "NO_OPEN_SESSION") {
+        res
+          .status(400)
+          .json({
+            error: "No active test session found. Please start the test first.",
+          });
         return;
       }
       next(err);
@@ -163,12 +177,10 @@ export class SkillTestController {
     try {
       const parsed = createTestSchema.safeParse(req.body);
       if (!parsed.success) {
-        res
-          .status(400)
-          .json({
-            error: "Validation failed",
-            details: parsed.error.flatten(),
-          });
+        res.status(400).json({
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
         return;
       }
 
@@ -176,11 +188,9 @@ export class SkillTestController {
       res.status(201).json({ test });
     } catch (err) {
       if (err instanceof Error && err.message.includes("Unique constraint")) {
-        res
-          .status(409)
-          .json({
-            error: "A test for this skill and difficulty already exists",
-          });
+        res.status(409).json({
+          error: "A test for this skill and difficulty already exists",
+        });
         return;
       }
       next(err);
@@ -197,12 +207,10 @@ export class SkillTestController {
 
       const parsed = addQuestionsSchema.safeParse(req.body);
       if (!parsed.success) {
-        res
-          .status(400)
-          .json({
-            error: "Validation failed",
-            details: parsed.error.flatten(),
-          });
+        res.status(400).json({
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
         return;
       }
 

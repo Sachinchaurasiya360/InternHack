@@ -106,8 +106,11 @@ export class SkillTestService {
       const storedIds: number[] = (existingSession.answers as any[]).map(
         (a: any) => a.questionId,
       );
-      const questions = test.questions
-        .filter((q) => storedIds.includes(q.id))
+      // Restore questions in original session order, not test.questions order
+      const questionById = new Map(test.questions.map((q) => [q.id, q]));
+      const questions = storedIds
+        .map((id) => questionById.get(id))
+        .filter((q): q is (typeof test.questions)[number] => Boolean(q))
         .map(({ correctIndex, ...rest }) => rest);
 
       return {
@@ -176,32 +179,38 @@ export class SkillTestService {
     });
     if (!test) throw new Error("Test not found");
 
-    // Enforce server-side expiry — reject if student submits after time is up
+    // Require an open session — prevents bypassing the timer by skipping /start
     const session = await prisma.skillTestAttempt.findFirst({
       where: { testId, studentId, completedAt: null },
       orderBy: { startedAt: "desc" },
     });
 
-    if (session) {
-      const expiresAt = new Date(
-        session.startedAt.getTime() + test.timeLimitSecs * 1000,
-      );
-      if (new Date() > expiresAt) {
-        await prisma.skillTestAttempt.update({
-          where: { id: session.id },
-          data: { completedAt: new Date(), autoTerminated: true },
-        });
-        throw new Error("TEST_EXPIRED");
-      }
+    if (!session) {
+      throw new Error("NO_OPEN_SESSION");
     }
 
-    // Grade answers - total is the served subset, not the full pool
-    const questionMap = new Map(test.questions.map((q) => [q.id, q]));
-    let correctCount = 0;
-    const totalQuestions = Math.min(
-      QUESTIONS_PER_SESSION,
-      test.questions.length,
+    const expiresAt = new Date(
+      session.startedAt.getTime() + test.timeLimitSecs * 1000,
     );
+    if (new Date() > expiresAt) {
+      await prisma.skillTestAttempt.update({
+        where: { id: session.id },
+        data: { completedAt: new Date(), autoTerminated: true },
+      });
+      throw new Error("TEST_EXPIRED");
+    }
+
+    // Grade only questions from the stored session subset
+    const servedIds = new Set(
+      (session.answers as Array<{ questionId: number }>).map(
+        (a) => a.questionId,
+      ),
+    );
+    const questionMap = new Map(
+      test.questions.filter((q) => servedIds.has(q.id)).map((q) => [q.id, q]),
+    );
+    let correctCount = 0;
+    const totalQuestions = servedIds.size;
 
     const gradedAnswers = answers.map((ans) => {
       const question = questionMap.get(ans.questionId);
@@ -233,33 +242,19 @@ export class SkillTestService {
     const proctoringScore = this.calculateProctoringScore(proctorLog);
     const autoTerminated = !!(proctorLog && (proctorLog as any).terminated);
 
-    // Create attempt
-    const attempt = session
-      ? await prisma.skillTestAttempt.update({
-          where: { id: session.id },
-          data: {
-            score,
-            passed,
-            answers: gradedAnswers,
-            proctorLog: proctorLog ?? null,
-            proctoringScore,
-            autoTerminated,
-            completedAt: new Date(),
-          },
-        })
-      : await prisma.skillTestAttempt.create({
-          data: {
-            testId,
-            studentId,
-            score,
-            passed,
-            answers: gradedAnswers,
-            proctorLog: proctorLog ?? null,
-            proctoringScore,
-            autoTerminated,
-            completedAt: new Date(),
-          },
-        });
+    // Update the existing session with graded results
+    const attempt = await prisma.skillTestAttempt.update({
+      where: { id: session.id },
+      data: {
+        score,
+        passed,
+        answers: gradedAnswers,
+        proctorLog: proctorLog ?? null,
+        proctoringScore,
+        autoTerminated,
+        completedAt: new Date(),
+      },
+    });
 
     // If passed, upsert verifiedSkill
     if (passed) {
