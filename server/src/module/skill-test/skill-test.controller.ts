@@ -49,12 +49,12 @@ export class SkillTestController {
       if (err instanceof Error && err.message === "Test not found") {
         res.status(404).json({ error: err.message }); return;
       }
-      if (err instanceof Error && err.message.includes("Cooldown active")) {
-        res.status(429).json({ 
-          error: err.message, 
-          retryAfter: (err as any).retryAfter 
-        }); return;
-      }
+      if (err instanceof Error && (err as any).status === 429) {
+  res.status(429).json({ 
+    error: err.message, 
+    retryAfter: (err as any).retryAfter 
+  }); return;
+}
       next(err);
     }
   }

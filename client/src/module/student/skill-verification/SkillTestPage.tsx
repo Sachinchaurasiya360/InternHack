@@ -369,14 +369,20 @@ export default function SkillTestPage() {
             </ul>
           </div>
 
-          <Button
-            size="lg"
-            onClick={handleStart}
-            className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-          >
-            <Maximize className="w-4 h-4" />
-            Start Proctored Test
-          </Button>
+          {retryAfter && new Date() < retryAfter ? (
+  <div className="w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+    ⏳ Cooldown active! Retry available at {retryAfter.toLocaleTimeString()}
+  </div>
+) : (
+  <Button
+    size="lg"
+    onClick={handleStart}
+    className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+  >
+    <Maximize className="w-4 h-4" />
+    Start Proctored Test
+  </Button>
+)}
         </motion.div>
       </div>
       </div>
