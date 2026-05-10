@@ -34,6 +34,18 @@ import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CoverLetterTone, UsageStats } from "../../../lib/types";
 
+const LANGUAGES = [
+  { code: "en", label: "English", default: true },
+  { code: "es", label: "Spanish" },
+  { code: "fr", label: "French" },
+  { code: "de", label: "German" },
+  { code: "pt", label: "Portuguese" },
+  { code: "it", label: "Italian" },
+  { code: "hi", label: "Hindi" },
+  { code: "ja", label: "Japanese" },
+  { code: "zh", label: "Chinese (Simplified)" },
+];
+
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   { id: "professional", label: "Professional", description: "Formal and confident" },
   { id: "friendly", label: "Friendly", description: "Warm and approachable" },
@@ -91,6 +103,15 @@ export default function CoverLetterPage() {
   const [keySkills, setKeySkills] = useState("");
   const [tone, setTone] = useState<CoverLetterTone>("professional");
   const [useProfile, setUseProfile] = useState(false);
+  
+  // Multilingual state initialized from localStorage
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("coverLetterLanguage") || "en";
+    }
+    return "en";
+  });
+
   const [coverLetter, setCoverLetter] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -108,6 +129,11 @@ export default function CoverLetterPage() {
 
   const clUsage = usageData?.usage.find((u) => u.action === "COVER_LETTER");
   const limitReached = clUsage ? clUsage.used >= clUsage.limit : false;
+
+  // Persist language selection
+  useEffect(() => {
+    localStorage.setItem("coverLetterLanguage", language);
+  }, [language]);
 
   const profileSummary = useMemo(() => {
     if (!user) return null;
@@ -140,6 +166,8 @@ export default function CoverLetterPage() {
       });
     }, 1500);
 
+    const selectedLanguageName = LANGUAGES.find((lang) => lang.code === language)?.label || "English";
+
     try {
       const { data } = await api.post("/ats/cover-letter", {
         jobDescription: jobDescription.trim(),
@@ -147,6 +175,8 @@ export default function CoverLetterPage() {
         companyName: companyName.trim() || undefined,
         keySkills: keySkills.trim() || undefined,
         tone,
+        language: selectedLanguageName,
+        languageCode: language,
         useProfile,
       });
       setCoverLetter(data.coverLetter);
@@ -348,42 +378,71 @@ export default function CoverLetterPage() {
             </div>
           </div>
 
-          {/* ─── Tone card ─── */}
+          {/* ─── Language & Tone card ─── */}
           <div className={cardCls}>
-            <CardHeader kicker="step 02" title="Tone" />
-            <div className="p-5">
-              <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
-                {TONES.map((t, i) => {
-                  const isActive = tone === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setTone(t.id)}
-                      className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
-                        isActive
-                          ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
-                          : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
-                      }`}
-                    >
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest ${
-                          isActive ? "text-lime-400" : "text-stone-500"
+            <CardHeader kicker="step 02" title="Language & Tone" />
+            <div className="p-5 space-y-5">
+              
+              {/* Multilingual Support Dropdown */}
+              <div>
+                <label className={labelCls}>
+                  <MessageSquare className="w-3 h-3" /> language
+                </label>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className={`${inputCls} appearance-none bg-no-repeat`}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                    backgroundPosition: "right 0.5rem center",
+                    backgroundSize: "1.5em 1.5em",
+                  }}
+                >
+                  {LANGUAGES.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className={labelCls}>
+                  <Wand2 className="w-3 h-3" /> tone
+                </label>
+                <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                  {TONES.map((t, i) => {
+                    const isActive = tone === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setTone(t.id)}
+                        className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
+                          isActive
+                            ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                            : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
                         }`}
                       >
-                        / {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="text-sm font-bold">{t.label}</span>
-                      <span
-                        className={`text-[11px] ${
-                          isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
-                        }`}
-                      >
-                        {t.description}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${
+                            isActive ? "text-lime-400" : "text-stone-500"
+                          }`}
+                        >
+                          / {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-sm font-bold">{t.label}</span>
+                        <span
+                          className={`text-[11px] ${
+                            isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+                          }`}
+                        >
+                          {t.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
