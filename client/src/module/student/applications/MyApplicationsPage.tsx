@@ -1,3 +1,4 @@
+
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X } from "lucide-react";
@@ -8,7 +9,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { Application } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
-
+import toast from "@/components/ui/toast";
 interface ExternalApplication {
   id: number;
   studentId: number;
@@ -219,8 +220,9 @@ export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [page, setPage] = useState(1);
-
+   const [page, setPage] = useState(1);
+  const [withdrawId, setWithdrawId] = useState<number | null>(null);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
     return () => clearTimeout(t);
@@ -263,26 +265,67 @@ export default function MyApplicationsPage() {
 
   const handleWithdraw = useCallback(
     async (id: number) => {
-      if (!confirm("Are you sure you want to withdraw this application?")) return;
-      try {
-        await api.delete(`/student/applications/${id}`);
-        queryClient.setQueryData<Application[]>(queryKeys.applications.mine(), (old) =>
-          (old ?? []).map((a) => (a.id === id ? { ...a, status: "WITHDRAWN" as const } : a))
-        );
-      } catch {
-        alert("Failed to withdraw");
-      }
+      setWithdrawId(id);
+      setShowWithdrawModal(true);
     },
-    [queryClient]
+    []
   );
 
+  const confirmWithdraw = useCallback(
+    async () => {
+      if (!withdrawId) return;
+      setShowWithdrawModal(false);
+      try {
+        await api.delete(`/student/applications/${withdrawId}`);
+        queryClient.setQueryData<Application[]>(queryKeys.applications.mine(), (old) =>
+          (old ?? []).map((a) => (a.id === withdrawId ? { ...a, status: "WITHDRAWN" as const } : a))
+        );
+        toast.success("Application withdrawn successfully");
+      } catch {
+        toast.error("Failed to withdraw application");
+      } finally {
+        setWithdrawId(null);
+      }
+    },
+    [withdrawId, queryClient]
+  );
   if (isLoading) return <LoadingScreen />;
+
+  const WithdrawModal = () => (
+    showWithdrawModal ? (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 max-w-sm w-full mx-4 space-y-4">
+          <h3 className="text-base font-bold text-stone-900 dark:text-stone-50">
+            Withdraw Application?
+          </h3>
+          <p className="text-sm text-stone-500">
+            Are you sure you want to withdraw this application? This action cannot be undone.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowWithdrawModal(false)}
+              className="flex-1 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 hover:border-stone-400 transition-colors bg-transparent cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmWithdraw}
+              className="flex-1 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-white bg-red-500 hover:bg-red-600 transition-colors cursor-pointer border-0"
+            >
+              Withdraw
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : null
+  );
 
   const hasSearch = search.trim().length > 0;
 
   return (
     <div className="relative pb-16">
       <SEO title="My Applications" noIndex />
+      <WithdrawModal />
 
       {/* Header */}
       <motion.div
