@@ -76,10 +76,41 @@ export function buildWeeklyPlan(
   return { plan, targetEndDate };
 }
 
-export async function listPublishedRoadmaps(opts: { page: number; limit: number; level?: string | undefined }) {
+export async function listPublishedRoadmaps(opts: {
+  page: number;
+  limit: number;
+  level?: string | undefined;
+  search?: string | undefined;
+  tag?: string | undefined;
+  category?: string | undefined;
+}) {
   const where: Prisma.roadmapWhereInput = { isPublished: true };
-  if (opts.level) {
+  const andConditions: Prisma.roadmapWhereInput[] = [];
+
+  if (opts.level && opts.level !== "ALL_LEVELS") {
     where.level = opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS";
+  }
+  if (opts.tag) {
+    andConditions.push({ tags: { has: opts.tag } });
+  }
+  if (opts.category) {
+    andConditions.push({ tags: { has: opts.category } });
+  }
+  if (opts.search) {
+    const s = opts.search.trim();
+    if (s) {
+      andConditions.push({
+        OR: [
+          { title: { contains: s, mode: "insensitive" } },
+          { shortDescription: { contains: s, mode: "insensitive" } },
+          { tags: { has: s } },
+        ],
+      });
+    }
+  }
+
+  if (andConditions.length > 0) {
+    where.AND = andConditions;
   }
 
   const [roadmaps, total] = await Promise.all([
