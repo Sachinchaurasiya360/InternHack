@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const FROM = () => process.env.EMAIL_FROM || "InternHack <onboarding@resend.dev>";
 
@@ -16,6 +16,10 @@ export async function sendEmail(options: {
   html: string;
   attachments?: EmailAttachment[];
 }): Promise<void> {
+  if (!resend) {
+    console.warn(`[Email] RESEND_API_KEY not set — skipping email "${options.subject}" to ${options.to}`);
+    return;
+  }
   console.log(`[Email] Sending "${options.subject}" to ${options.to}`);
   try {
     const payload: Parameters<typeof resend.emails.send>[0] = {
@@ -51,6 +55,10 @@ export async function sendEmailBatch(
   opts: { maxRetries?: number } = {},
 ): Promise<{ sent: number; failed: number; errors: string[] }> {
   if (emails.length === 0) return { sent: 0, failed: 0, errors: [] };
+  if (!resend) {
+    console.warn("[Email] RESEND_API_KEY not set — skipping batch send");
+    return { sent: 0, failed: 0, errors: [] };
+  }
   if (emails.length > 100) throw new Error("Resend batch supports max 100 emails per call");
 
   const payload = emails.map((e) => ({ from: FROM(), to: e.to, subject: e.subject, html: e.html }));

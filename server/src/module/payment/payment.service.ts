@@ -13,12 +13,14 @@ type PlanKey = "pro";
 type BillingKey = "monthly" | "yearly";
 
 export class PaymentService {
-  private dodo: DodoPayments;
+  private dodo: DodoPayments | null;
 
   constructor() {
     const apiKey = process.env["DODO_PAYMENTS_API_KEY"];
     if (!apiKey) {
-      throw new Error("DODO_PAYMENTS_API_KEY must be set in environment variables");
+      console.warn("[Payment] DODO_PAYMENTS_API_KEY not set — payment features will be unavailable.");
+      this.dodo = null;
+      return;
     }
 
     const environment = (process.env["DODO_PAYMENTS_ENVIRONMENT"] ?? "test_mode") as
@@ -30,6 +32,11 @@ export class PaymentService {
       webhookKey: process.env["DODO_PAYMENTS_WEBHOOK_KEY"] ?? null,
       environment,
     });
+  }
+
+  private requireDodo(): DodoPayments {
+    if (!this.dodo) throw new Error("Payment service is not configured. Set DODO_PAYMENTS_API_KEY in your environment.");
+    return this.dodo;
   }
 
   // ── Create a Dodo checkout session ─────────────────────────────
@@ -54,7 +61,7 @@ export class PaymentService {
 
     const subscriptionPlan = billingUpper; // MONTHLY or YEARLY
 
-    const session = await this.dodo.checkoutSessions.create({
+    const session = await this.requireDodo().checkoutSessions.create({
       product_cart: [{ product_id: productId, quantity: 1 }],
       customer: { email: user.email, name: dbUser?.name ?? undefined },
       return_url: process.env["DODO_RETURN_URL"] ?? undefined,
@@ -87,7 +94,7 @@ export class PaymentService {
 
   // ── Handle Dodo webhook events ─────────────────────────────────
   async handleWebhook(rawBody: string, headers: Record<string, string>) {
-    const event = this.dodo.webhooks.unwrap(rawBody, { headers });
+    const event = this.requireDodo().webhooks.unwrap(rawBody, { headers });
 
     switch (event.type) {
       case "payment.succeeded": {
@@ -269,7 +276,7 @@ export class PaymentService {
 
   // ── Check checkout session status (for client polling) ─────────
   async getCheckoutStatus(sessionId: string) {
-    const status = await this.dodo.checkoutSessions.retrieve(sessionId);
+    const status = await this.requireDodo().checkoutSessions.retrieve(sessionId);
     return status;
   }
 }

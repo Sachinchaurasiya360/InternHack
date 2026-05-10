@@ -182,7 +182,7 @@ export default function JobAgentPage() {
       <SEO title="InternHack AI" noIndex />
 
       {/* Editorial header */}
-      <div className="shrink-0 border-b border-stone-200 dark:border-white/10 px-4 sm:px-8 pt-6 pb-4 bg-stone-50 dark:bg-stone-950">
+      <div className="shrink-0 px-4 sm:px-8 pt-6 pb-4 bg-stone-50 dark:bg-stone-950">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-1 w-1 bg-lime-400"></div>
