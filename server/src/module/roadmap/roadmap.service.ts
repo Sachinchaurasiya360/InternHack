@@ -178,7 +178,7 @@ export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {
           slug: true,
           title: true,
           orderIndex: true,
-          roadmap: { select: { slug: true, title: true, isPublished: true } },
+          roadmap: { select: { slug: true, title: true, isPublished: true, ownerUserId: true } },
         },
       },
     },

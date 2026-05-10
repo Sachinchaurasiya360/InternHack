@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { authMiddleware, optionalAuthMiddleware } from "../../middleware/auth.middleware.js";
 import {
   downloadPdf,
   enroll,
@@ -35,8 +35,9 @@ roadmapRouter.post(
 
 // ── Public ────────────────────────────────────────────────────────────────
 roadmapRouter.get("/", getRoadmaps);
-roadmapRouter.get("/:slug", getRoadmap);
-roadmapRouter.get("/:slug/topics/:topicSlug", getTopic);
+roadmapRouter.get("/:slug", optionalAuthMiddleware, getRoadmap);
+roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
+
 
 // ── Auth: enrollment ──────────────────────────────────────────────────────
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
