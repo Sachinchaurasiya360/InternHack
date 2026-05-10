@@ -98,13 +98,13 @@ cd client && npm install
 Prisma config lives at `server/src/database/prisma.config.ts`, so **run all Prisma commands from `server/src/database/`**:
 
 ```bash
-cd server/src/database
+cd server
 
 # Generate the Prisma client
-npx prisma generate
+npx prisma generate --config src/database/prisma.config.ts
 
 # Push the schema to your database (creates all tables)
-npx prisma db push
+npx prisma db push  --config src/database/prisma.config.ts
 ```
 
 ### Step 5: Seed data (optional but recommended)
