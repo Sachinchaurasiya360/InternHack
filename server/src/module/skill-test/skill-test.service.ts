@@ -38,7 +38,7 @@ export class SkillTestService {
 
     // Strip correctIndex from questions
     const sanitizedQuestions = test.questions.map(
-      ({ correctIndex, ...rest }) => rest
+      ({ correctIndex , ...rest }) => rest
     );
 
     // Check if student already has this skill verified
@@ -64,13 +64,30 @@ export class SkillTestService {
     };
   }
 
-  async startTest(testId: number) {
+  async startTest(testId: number, studentId: number) {
     const test = await prisma.skillTest.findUnique({
       where: { id: testId },
       include: { questions: true },
     });
 
     if (!test || !test.isActive) throw new Error("Test not found");
+
+    //  Cooldown check - 12 hours between retakes
+    const lastAttempt = await prisma.skillTestAttempt.findFirst({
+      where: { testId, studentId },
+      orderBy: { completedAt: "desc" },
+    });
+
+    if (lastAttempt?.completedAt) {
+      const hoursSince = (Date.now() - lastAttempt.completedAt.getTime()) / (1000 * 60 * 60);
+      if (hoursSince < 12) {
+        const retryAfter = new Date(lastAttempt.completedAt.getTime() + 12 * 60 * 60 * 1000);
+        throw Object.assign(new Error("Cooldown active. Please wait before retaking."), {
+          status: 429,
+          retryAfter,
+        });
+      }
+    }
 
     // Shuffle and pick a random subset
     const pool = shuffle([...test.questions]);
@@ -89,6 +106,7 @@ export class SkillTestService {
       totalPool: test.questions.length,
       questionsCount: selected.length,
       questions: sanitizedQuestions,
+      retryAfter: null, // null means no cooldown active
     };
   }
 

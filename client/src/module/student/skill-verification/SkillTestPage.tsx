@@ -77,6 +77,7 @@ export default function SkillTestPage() {
   const [started, setStarted] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [retryAfter, setRetryAfter] = useState<Date | null>(null); 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const submittingRef = useRef(false);
@@ -134,7 +135,12 @@ export default function SkillTestPage() {
       setStarted(true);
       await proctor.requestFullscreen();
     } catch (err: any) {
-      toast.error(err?.response?.data?.error ?? "Failed to start test");
+      if (err?.response?.status === 429) {
+        setRetryAfter(new Date(err.response.data.retryAfter));
+        toast.error("Cooldown active! Please wait before retaking.");
+      } else {
+        toast.error(err?.response?.data?.error ?? "Failed to start test");
+      }
     }
   }, [testId, proctor]);
 
@@ -501,18 +507,25 @@ export default function SkillTestPage() {
             Close Tab
           </Button>
           {!result.passed && (
-            <Button
-              size="lg"
-              onClick={() => {
-                setResult(null);
-                setAnswers({});
-                setCurrentQ(0);
-                setStarted(false);
-              }}
-              className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-            >
-              Try Again
-            </Button>
+            retryAfter && new Date() < retryAfter ? (
+              <div className="flex-1 text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+                ⏳ Retry available at {retryAfter.toLocaleTimeString()}
+              </div>
+            ) : (
+              <Button
+                size="lg"
+                onClick={() => {
+                  setResult(null);
+                  setAnswers({});
+                  setCurrentQ(0);
+                  setStarted(false);
+                  setRetryAfter(null);
+                }}
+                className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+              >
+                Try Again
+              </Button>
+            )
           )}
         </div>
       </div>

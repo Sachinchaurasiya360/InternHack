@@ -38,14 +38,22 @@ export class SkillTestController {
 
   async startTest(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) { res.status(401).json({ error: "Authentication required" }); return; }
+      
       const testId = parseInt(String(req.params["id"]), 10);
       if (isNaN(testId)) { res.status(400).json({ error: "Invalid test ID" }); return; }
 
-      const test = await this.service.startTest(testId);
+      const test = await this.service.startTest(testId, req.user.id);
       res.json(test);
     } catch (err) {
       if (err instanceof Error && err.message === "Test not found") {
         res.status(404).json({ error: err.message }); return;
+      }
+      if (err instanceof Error && err.message.includes("Cooldown active")) {
+        res.status(429).json({ 
+          error: err.message, 
+          retryAfter: (err as any).retryAfter 
+        }); return;
       }
       next(err);
     }
