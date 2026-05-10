@@ -18,6 +18,9 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { RoadmapListItem, RoadmapEnrollmentListItem } from "../../../lib/types";
+import { useSearchParams } from "react-router";
+import { useDebounce } from "../../../hooks/useDebounce";
+import { X } from "lucide-react";
 
 interface ListResponse {
   roadmaps: RoadmapListItem[];
@@ -53,21 +56,37 @@ export default function RoadmapsLandingPage() {
   const { isAuthenticated, user } = useAuthStore();
   const isStudent = isAuthenticated && user?.role === "STUDENT";
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [roadmaps, setRoadmaps] = useState<RoadmapListItem[]>([]);
   const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
+
+  // Filter states from URL
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+  const debouncedSearch = useDebounce(searchInput, 400);
+  
+  const level = (searchParams.get("level") || "ALL_LEVELS") as any;
+  const tag = searchParams.get("tag") || "";
+  const category = searchParams.get("category") || "";
 
   useEffect(() => {
     let mounted = true;
-    api.get<ListResponse>("/roadmaps", { params: { page: 1, limit: 50 } })
+    setLoading(true);
+    
+    const params: any = { page: 1, limit: 100 };
+    if (debouncedSearch) params.search = debouncedSearch;
+    if (level && level !== "ALL_LEVELS") params.level = level;
+    if (tag) params.tag = tag;
+    if (category) params.category = category;
+
+    api.get<ListResponse>("/roadmaps", { params })
       .then((res) => mounted && setRoadmaps(res.data.roadmaps))
       .catch(() => mounted && setError("Could not load roadmaps. Please try again."))
       .finally(() => mounted && setLoading(false));
     return () => { mounted = false; };
-  }, []);
+  }, [debouncedSearch, level, tag, category]);
 
   useEffect(() => {
     if (!isStudent) return;
@@ -78,6 +97,33 @@ export default function RoadmapsLandingPage() {
     return () => { mounted = false; };
   }, [isStudent]);
 
+  // Sync search input with URL when typing
+  useEffect(() => {
+    const newParams = new URLSearchParams(searchParams);
+    if (debouncedSearch) newParams.set("search", debouncedSearch);
+    else newParams.delete("search");
+    
+    // Only update if it actually changed to avoid unnecessary history entries
+    if (newParams.toString() !== searchParams.toString()) {
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [debouncedSearch, setSearchParams, searchParams]);
+
+  const updateFilter = (key: string, value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value && value !== "ALL_LEVELS") {
+      newParams.set(key, value);
+    } else {
+      newParams.delete(key);
+    }
+    setSearchParams(newParams, { replace: true });
+  };
+
+  const clearFilters = () => {
+    setSearchInput("");
+    setSearchParams({}, { replace: true });
+  };
+
   // Index of slugs the student is already enrolled in
   const enrolledBySlug = useMemo(() => {
     const map = new Map<string, RoadmapEnrollmentListItem>();
@@ -85,17 +131,34 @@ export default function RoadmapsLandingPage() {
     return map;
   }, [enrollments]);
 
-  // Filtered + grouped: separate "in progress" from "available"
+  // Secondary client-side filtering for ultra-smooth UX while API loads
   const filtered = useMemo(() => {
-    const needle = search.trim().toLowerCase();
-    if (!needle) return roadmaps;
-    return roadmaps.filter(
-      (r) =>
-        r.title.toLowerCase().includes(needle) ||
-        r.shortDescription.toLowerCase().includes(needle) ||
-        r.tags.some((t) => t.toLowerCase().includes(needle)),
-    );
-  }, [roadmaps, search]);
+    let result = roadmaps;
+    const needle = debouncedSearch.trim().toLowerCase();
+    
+    if (needle) {
+      result = result.filter(
+        (r) =>
+          r.title.toLowerCase().includes(needle) ||
+          r.shortDescription.toLowerCase().includes(needle) ||
+          r.tags.some((t) => t.toLowerCase().includes(needle)),
+      );
+    }
+    
+    if (level && level !== "ALL_LEVELS") {
+      result = result.filter(r => r.level === level);
+    }
+    
+    if (tag) {
+      result = result.filter(r => r.tags.includes(tag));
+    }
+
+    if (category) {
+      result = result.filter(r => r.tags.includes(category));
+    }
+    
+    return result;
+  }, [roadmaps, debouncedSearch, level, tag, category]);
 
   const inProgress = filtered.filter((r) => enrolledBySlug.has(r.slug));
   const available = filtered.filter((r) => !enrolledBySlug.has(r.slug));
@@ -225,29 +288,96 @@ export default function RoadmapsLandingPage() {
             </Link>
           </motion.div>
 
-          {/* Search */}
+          {/* Search & Filters */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.4 }}
-            className="mb-10"
+            className="mb-10 space-y-6"
           >
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" aria-hidden />
               <input
                 type="text"
-                placeholder="Search roadmaps..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search roadmaps by title, tech, or keywords..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 aria-label="Search roadmaps"
-                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+                className="w-full pl-11 pr-12 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400/20 focus:border-lime-400 transition-all text-base text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 shadow-sm"
               />
+              {searchInput && (
+                <button
+                  onClick={() => setSearchInput("")}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
-            {search && (
-              <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                {filtered.length} match{filtered.length === 1 ? "" : "es"}
+
+            <div className="flex flex-col gap-4">
+              {/* Category Filters */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mr-2">Category:</span>
+                {["Frontend", "Backend", "Fullstack", "AI", "Mobile", "DevOps", "Blockchain"].map((cat) => (
+                  <FilterChip
+                    key={cat}
+                    label={cat}
+                    active={category === cat}
+                    onClick={() => updateFilter("category", category === cat ? "" : cat)}
+                  />
+                ))}
+              </div>
+
+              {/* Tags Filters */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mr-2">Tags:</span>
+                {["React", "Node.js", "Python", "System Design", "AWS", "SQL"].map((t) => (
+                  <FilterChip
+                    key={t}
+                    label={t}
+                    active={tag === t}
+                    onClick={() => updateFilter("tag", tag === t ? "" : t)}
+                  />
+                ))}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                {/* Level Filters */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mr-2">Level:</span>
+                  {["ALL_LEVELS", "BEGINNER", "INTERMEDIATE", "ADVANCED"].map((l) => (
+                    <FilterChip
+                      key={l}
+                      label={l.replace("_", " ")}
+                      active={level === l}
+                      onClick={() => updateFilter("level", l)}
+                    />
+                  ))}
+                </div>
+
+                {(searchInput || tag || category || (level && level !== "ALL_LEVELS")) && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-[10px] font-mono uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors flex items-center gap-1"
+                  >
+                    <X className="w-3 h-3" />
+                    Clear all filters
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-stone-200 dark:border-white/5">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                {loading ? "Updating results..." : (
+                  <>
+                    Showing <span className="text-stone-900 dark:text-stone-50 font-bold">{filtered.length}</span> roadmap{filtered.length === 1 ? "" : "s"}
+                    {(searchInput || tag || category || level !== "ALL_LEVELS") && " matching filters"}
+                  </>
+                )}
               </p>
-            )}
+            </div>
           </motion.div>
 
           {/* Sections */}
@@ -457,5 +587,20 @@ function RoadmapCard({
         </div>
       </Link>
     </motion.div>
+  );
+}
+
+function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${
+        active
+          ? "bg-lime-400 text-stone-950 font-bold border border-lime-500 shadow-sm"
+          : "bg-white dark:bg-stone-900 text-stone-500 hover:text-stone-900 dark:hover:text-stone-300 border border-stone-200 dark:border-white/10"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
