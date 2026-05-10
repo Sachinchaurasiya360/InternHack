@@ -10,6 +10,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { ExternalJob, Job, Pagination, ScrapedJob } from "../../../lib/types";
+import { BookmarkButton } from "../../../components/BookmarkButton";
 
 const FILTER_TAGS = [
   "Frontend", "Backend", "Full Stack", "Python", "Java", "DevOps",
@@ -43,11 +44,22 @@ const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: Exte
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
     <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={cardBase}>
-      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
-        <span className="h-1 w-1 bg-lime-400" />
-        external
-      </span>
-      <div className="flex items-start gap-3 mb-3 pr-16">
+      <div className="absolute top-3 right-3 flex items-center gap-3 z-10">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
+          <span className="h-1 w-1 bg-lime-400" />
+          external
+        </span>
+        <BookmarkButton
+          entityId={job.id.toString()}
+          entityType="EXTERNAL_JOB"
+          title={job.role}
+          url={job.slug ? `/jobs/ext/${job.slug}` : undefined}
+          data={{ company: job.company, location: job.location }}
+          className="bg-transparent hover:bg-stone-100 dark:hover:bg-stone-800 p-1.5"
+          iconClassName="w-4 h-4"
+        />
+      </div>
+      <div className="flex items-start gap-3 mb-3 pr-24">
         <CompanyMark label={job.company || "?"} />
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
@@ -92,11 +104,22 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: Scrape
       rel="noopener noreferrer"
       className={cardBase}
     >
-      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
-        <span className="h-1 w-1 bg-lime-400" />
-        {job.source}
-      </span>
-      <div className="flex items-start gap-3 mb-3 pr-20">
+      <div className="absolute top-3 right-3 flex items-center gap-3 z-10">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
+          <span className="h-1 w-1 bg-lime-400" />
+          {job.source}
+        </span>
+        <BookmarkButton
+          entityId={job.id.toString()}
+          entityType="EXTERNAL_JOB"
+          title={job.title}
+          url={job.applicationUrl}
+          data={{ company: job.company, location: job.location, source: job.source }}
+          className="bg-transparent hover:bg-stone-100 dark:hover:bg-stone-800 p-1.5"
+          iconClassName="w-4 h-4"
+        />
+      </div>
+      <div className="flex items-start gap-3 mb-3 pr-28">
         <CompanyMark label={job.company || "?"} />
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
@@ -520,7 +543,18 @@ export default function JobBrowsePage() {
                 {(data?.jobs ?? []).map((job, i) => (
                   <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                     <Link to={`/jobs/${job.id}`} className={cardBase}>
-                      <div className="flex items-start gap-3 mb-3">
+                      <div className="absolute top-3 right-3 z-10">
+                        <BookmarkButton
+                          entityId={job.id.toString()}
+                          entityType="JOB"
+                          title={job.title}
+                          url={`/jobs/${job.id}`}
+                          data={{ company: job.company, location: job.location }}
+                          className="bg-transparent hover:bg-stone-100 dark:hover:bg-stone-800 p-1.5"
+                          iconClassName="w-4 h-4"
+                        />
+                      </div>
+                      <div className="flex items-start gap-3 mb-3 pr-10">
                         <CompanyMark label={job.company || "C"} />
                         <div className="flex-1 min-w-0">
                           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">

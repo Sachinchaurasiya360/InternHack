@@ -23,6 +23,7 @@ import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Link } from "react-router";
+import { BookmarkButton } from "../../../components/BookmarkButton";
 
 type HackathonStatus = "upcoming" | "ongoing" | "past";
 type LocationType = "virtual" | "in-person" | "hybrid";
@@ -452,7 +453,13 @@ function HackathonCard({
           </div>
 
           {/* Bottom CTA */}
-          <div className="flex items-center justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+            <BookmarkButton
+              entityId={hackathon.id.toString()}
+              entityType="HACKATHON"
+              title={hackathon.name}
+              url={`/student/grants/hackathons`}
+            />
             <span className="flex items-center gap-1 text-sm font-medium text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
               Details
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -514,12 +521,20 @@ function HackathonDetailModal({
               <p className="text-sm text-gray-500 dark:text-gray-500">{hackathon.organizer}</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
-          >
-            <X className="w-4 h-4 text-gray-500 dark:text-gray-500" />
-          </button>
+          <div className="flex items-center gap-2">
+            <BookmarkButton
+              entityId={hackathon.id.toString()}
+              entityType="HACKATHON"
+              title={hackathon.name}
+              url={`/student/grants/hackathons`}
+            />
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
+            >
+              <X className="w-4 h-4 text-gray-500 dark:text-gray-500" />
+            </button>
+          </div>
         </div>
 
         <div className="px-6 py-6 space-y-6">

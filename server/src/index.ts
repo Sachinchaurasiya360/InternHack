@@ -37,6 +37,7 @@ import { professorRouter } from "./module/professor/professor.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
+import { bookmarkRouter } from "./module/bookmark/bookmark.routes.js";
 // ── HR Modules ──
 import { rbacRouter } from "./module/rbac/rbac.routes.js";
 import { departmentRouter } from "./module/department/department.routes.js";
@@ -217,6 +218,7 @@ app.use("/api/professors", professorRouter);
 app.use("/api/internships", internshipRouter);
 app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
+app.use("/api/student/bookmarks", bookmarkRouter);
 
 // ── InternHack AI Routes ──
 app.use("/api/job-feed", jobFeedRouter);

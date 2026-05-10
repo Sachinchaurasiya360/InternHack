@@ -31,6 +31,7 @@ import ReviewCard from "./ReviewCard";
 import ReviewForm from "./ReviewForm";
 import SuggestEditModal from "./SuggestEditModal";
 import InterviewExperienceSection from "./InterviewExperienceSection";
+import { BookmarkButton } from "../../../components/BookmarkButton";
 
 const SIZE_LABELS: Record<string, string> = {
   STARTUP: "Startup (1-10)",
@@ -183,16 +184,19 @@ export default function CompanyDetailPage() {
             <div className="mt-4 flex flex-col sm:flex-row sm:items-start gap-5">
               <CompanyLogo src={company.logo} label={company.name} />
               <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
-                    {company.name}
-                  </h1>
-                  {company.hiringStatus && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400 border border-lime-300/70 dark:border-lime-500/30 bg-lime-50/60 dark:bg-lime-500/5 rounded-md">
-                      <span className="h-1 w-1 bg-lime-500" />
-                      hiring
-                    </span>
-                  )}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
+                      {company.name}
+                    </h1>
+                    {company.hiringStatus && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400 border border-lime-300/70 dark:border-lime-500/30 bg-lime-50/60 dark:bg-lime-500/5 rounded-md">
+                        <span className="h-1 w-1 bg-lime-500" />
+                        hiring
+                      </span>
+                    )}
+                  </div>
+                  <BookmarkButton entityId={company.id.toString()} entityType="COMPANY" />
                 </div>
                 <p className="mt-2 text-sm text-stone-500">
                   {company.industry || "Company"} · {company.city}

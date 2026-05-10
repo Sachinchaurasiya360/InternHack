@@ -82,6 +82,7 @@ model user {
   roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                @relation("UserPrivateRoadmaps")
+  bookmarks             bookmark[]               @relation("UserBookmarks")
 
   @@index([role])
   @@index([role, isActive])
@@ -633,6 +634,23 @@ model dsaBookmark {
 
   @@unique([studentId, problemId])
   @@index([studentId])
+}
+
+model bookmark {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  entityId    String   // ID or slug of the bookmarked item
+  entityType  String   // Type of entity (e.g., 'JOB', 'HACKATHON', 'COMPANY', 'EXTERNAL_JOB')
+  title       String?  // Cached title for display
+  url         String?  // URL to the item
+  data        Json?    // Optional additional data needed for UI rendering (e.g., logo, location)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        user     @relation("UserBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entityId, entityType])
+  @@index([userId, entityType])
+  @@index([createdAt])
 }
 
 model dsaTestCase {
