@@ -66,12 +66,6 @@ export interface User {
   isProfilePublic?: boolean;
   projects?: ProjectItem[];
   achievements?: AchievementItem[];
-  
-  // Gamification & Streaks
-  currentStreak?: number;
-  longestStreak?: number;
-  lastActivityDate?: string;
-
   createdAt?: string;
   subscriptionPlan?: "FREE" | "MONTHLY" | "YEARLY";
   subscriptionStatus?: "ACTIVE" | "EXPIRED";

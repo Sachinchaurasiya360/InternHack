@@ -16,7 +16,6 @@ import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
 import { BadgesSection } from "../badges/BadgesSection";
-import { GamificationStats } from "./GamificationStats";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 
 interface ProfileData {
@@ -750,7 +749,6 @@ export default function StudentProfilePage() {
           {user?.id && (
             <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible">
               <BadgesSection studentId={user.id} />
-              <GamificationStats user={user} />
             </motion.div>
           )}
         </aside>
