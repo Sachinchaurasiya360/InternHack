@@ -8,6 +8,9 @@ import {
   HelpCircle,
   ArrowUpRight,
   CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  History,
   Search,
   Code,
   FileCode,
@@ -33,12 +36,13 @@ import {
   FlaskConical,
   Paintbrush,
   X,
+  XCircle,
   type LucideIcon,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
-import type { SkillTest, VerifiedSkill, TestDifficulty } from "../../../lib/types";
+import type { SkillTest, SkillTestAttempt, VerifiedSkill, TestDifficulty } from "../../../lib/types";
 
 /* ------------------------------------------------------------------ */
 /*  Skill icon + color mapping                                         */
@@ -118,6 +122,15 @@ function MetaChip({ icon, children, className = "" }: { icon?: React.ReactNode; 
   );
 }
 
+function formatAttemptDate(date?: string) {
+  if (!date) return "date unknown";
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -126,6 +139,7 @@ export default function SkillVerificationPage() {
   const [tab, setTab] = useState<"my-skills" | "browse">("browse");
   const [search, setSearch] = useState("");
   const [diffFilter, setDiffFilter] = useState<TestDifficulty | "ALL">("ALL");
+  const [expandedHistorySkill, setExpandedHistorySkill] = useState<string | null>(null);
 
   const { data: tests = [], isLoading: loadingTests } = useQuery({
     queryKey: queryKeys.skillTests.list(),
@@ -143,13 +157,29 @@ export default function SkillVerificationPage() {
     },
   });
 
-  const isLoading = loadingTests || loadingVerified;
+  const { data: attempts = [], isLoading: loadingAttempts } = useQuery({
+    queryKey: queryKeys.skillTests.myAttempts(),
+    queryFn: async () => {
+      const res = await api.get("/skill-tests/my-attempts");
+      return res.data.attempts as SkillTestAttempt[];
+    },
+  });
+
+  const isLoading = loadingTests || loadingVerified || loadingAttempts;
 
   const verifiedMap = new Map(verified.map((v) => [v.skillName.toLowerCase(), v]));
   const userSkills = user?.skills ?? [];
 
   const testsBySkill = new Map<string, SkillTest>();
   for (const t of tests) testsBySkill.set(t.skillName.toLowerCase(), t);
+
+  const attemptsBySkill = new Map<string, SkillTestAttempt[]>();
+  for (const attempt of attempts) {
+    const skillKey = attempt.test.skillName.toLowerCase();
+    const skillAttempts = attemptsBySkill.get(skillKey) ?? [];
+    skillAttempts.push(attempt);
+    attemptsBySkill.set(skillKey, skillAttempts);
+  }
 
   const filteredTests = tests.filter((t) => {
     if (
@@ -316,53 +346,124 @@ export default function SkillVerificationPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userSkills.map((skill, i) => {
-                  const v = verifiedMap.get(skill.toLowerCase());
-                  const test = testsBySkill.get(skill.toLowerCase());
+                  const skillKey = skill.toLowerCase();
+                  const v = verifiedMap.get(skillKey);
+                  const test = testsBySkill.get(skillKey);
+                  const recentAttempts = attemptsBySkill.get(skillKey)?.slice(0, 3) ?? [];
+                  const historyOpen = expandedHistorySkill === skillKey;
                   return (
                     <motion.div
                       key={skill}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
-                      className="group relative bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5 hover:border-stone-400 dark:hover:border-white/30 transition-colors flex items-center justify-between gap-3"
+                      className="group relative bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors overflow-hidden"
                     >
-                      {v && (
-                        <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
-                          <span className="h-1 w-1 bg-lime-400" />
-                          verified
-                        </span>
-                      )}
-                      <div className="flex items-center gap-3 min-w-0 pr-20">
-                        <SkillMark skill={skill} verified={!!v} />
-                        <div className="min-w-0">
-                          <p className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate capitalize">
-                            {skill.replace(/-/g, " ")}
-                          </p>
-                          {v ? (
-                            <p className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 mt-0.5">
-                              score {v.score}%
+                      <div className="relative p-5 flex items-center justify-between gap-3">
+                        {v && (
+                          <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
+                            <span className="h-1 w-1 bg-lime-400" />
+                            verified
+                          </span>
+                        )}
+                        <div className="flex items-center gap-3 min-w-0 pr-20">
+                          <SkillMark skill={skill} verified={!!v} />
+                          <div className="min-w-0">
+                            <p className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate capitalize">
+                              {skill.replace(/-/g, " ")}
                             </p>
-                          ) : test ? (
-                            <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5">
-                              {test._count?.questions ?? 0} questions ready
-                            </p>
-                          ) : (
-                            <p className="text-xs font-mono uppercase tracking-widest text-stone-400 mt-0.5">
-                              no test yet
-                            </p>
-                          )}
+                            {v ? (
+                              <p className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 mt-0.5">
+                                score {v.score}%
+                              </p>
+                            ) : test ? (
+                              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5">
+                                {test._count?.questions ?? 0} questions ready
+                              </p>
+                            ) : (
+                              <p className="text-xs font-mono uppercase tracking-widest text-stone-400 mt-0.5">
+                                no test yet
+                              </p>
+                            )}
+                          </div>
                         </div>
+                        {!v && test && (
+                          <a
+                            href={`/test/${test.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-2 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline shrink-0"
+                          >
+                            take test <ArrowUpRight className="w-3 h-3" />
+                          </a>
+                        )}
                       </div>
-                      {!v && test && (
-                        <a
-                          href={`/test/${test.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-2 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline shrink-0"
-                        >
-                          take test <ArrowUpRight className="w-3 h-3" />
-                        </a>
-                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => setExpandedHistorySkill(historyOpen ? null : skillKey)}
+                        className="w-full flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/[0.02] text-left hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+                      >
+                        <span className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
+                          <History className="w-3.5 h-3.5 text-stone-400" />
+                          attempt history
+                          <span className="text-stone-400">({recentAttempts.length})</span>
+                        </span>
+                        {historyOpen ? (
+                          <ChevronDown className="w-4 h-4 text-stone-400" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-stone-400" />
+                        )}
+                      </button>
+
+                      <AnimatePresence initial={false}>
+                        {historyOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-5 pb-5 pt-3 space-y-2 border-t border-stone-100 dark:border-white/5">
+                              {recentAttempts.length === 0 ? (
+                                <p className="text-xs text-stone-500 dark:text-stone-400">
+                                  No attempts recorded for this skill yet.
+                                </p>
+                              ) : (
+                                recentAttempts.map((attempt) => (
+                                  <div
+                                    key={attempt.id}
+                                    className="flex items-center justify-between gap-3 rounded-md border border-stone-200 dark:border-white/10 px-3 py-2"
+                                  >
+                                    <div className="min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        {attempt.passed ? (
+                                          <CheckCircle2 className="w-4 h-4 text-lime-600 dark:text-lime-400 shrink-0" />
+                                        ) : (
+                                          <XCircle className="w-4 h-4 text-red-500 dark:text-red-400 shrink-0" />
+                                        )}
+                                        <span className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+                                          {attempt.score}%
+                                        </span>
+                                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                                          {attempt.passed ? "passed" : "failed"}
+                                        </span>
+                                      </div>
+                                      <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1">
+                                        {formatAttemptDate(attempt.completedAt ?? attempt.startedAt)}
+                                      </p>
+                                    </div>
+                                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 shrink-0">
+                                      proctor {attempt.proctoringScore ?? 100}%
+                                    </span>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.div>
                   );
                 })}
