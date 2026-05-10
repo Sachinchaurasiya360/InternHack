@@ -11,6 +11,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { BadgesSection } from "../badges/BadgesSection";
+import { GamificationStats } from "./GamificationStats";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
 
@@ -261,10 +262,13 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
-          {/* Badges */}
+          {/* Badges & Streaks */}
           <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
             <BadgesSection studentId={profile.id} />
+          </motion.div>
+          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">
+            <GamificationStats user={profile as any} />
           </motion.div>
         </div>
 
