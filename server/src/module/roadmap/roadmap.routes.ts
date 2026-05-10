@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { aiRoadmapLimiter } from "../../middleware/rate-limit.middleware.js";
 import {
   downloadPdf,
   enroll,
@@ -16,7 +17,7 @@ import {
 export const roadmapRouter = Router();
 
 // ── AI generation (registered BEFORE /:slug to avoid conflicts) ──────────
-roadmapRouter.post("/ai/generate", authMiddleware, postAiGenerate);
+roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, postAiGenerate);
 
 // ── Authenticated "me" routes (also BEFORE /:slug) ────────────────────────
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
