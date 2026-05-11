@@ -274,4 +274,21 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
       missing: Array.isArray(obj["missing"]) ? obj["missing"].filter((s): s is string => typeof s === "string") : [],
     };
   }
+
+  async getScoreHistory(studentId: number) {
+    // latest 30, reversed to chronological order
+    const rows = await prisma.atsScore.findMany({
+      where: { studentId },
+      select: {
+        id: true,
+        overallScore: true,
+        jobTitle: true,
+        resumeUrl: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 30,
+    });
+    return rows.reverse();
+  }
 }
