@@ -42,6 +42,7 @@ import type {
   RoadmapEnrollmentSummary,
   RoadmapTopic,
   RoadmapTopicStatus,
+  RoadmapResource,
 } from "../../../lib/types";
 
 interface EnrollmentResponse {
@@ -428,6 +429,11 @@ export default function RoadmapCanvasPage() {
   const handleNodeClick = useCallback((topicId: number) => {
     setDrawerTopicId(topicId);
   }, []);
+
+  const allTopics = useMemo(() => {
+    if (!data) return [];
+    return data.enrollment.roadmap.sections.flatMap((s) => s.topics);
+  }, [data]);
 
   const { nodes, edges } = useMemo<{
     nodes: Node<TopicNodeData | SectionLabelData>[];
@@ -958,7 +964,7 @@ export default function RoadmapCanvasPage() {
                         resources
                       </p>
                       <ul className="space-y-1">
-                        {drawerTopic.resources.map((r, i) => (
+                        {drawerTopic.resources.map((r: RoadmapResource, i: number) => (
                           <motion.li
                             key={r.id}
                             initial={{ opacity: 0, x: 8 }}
