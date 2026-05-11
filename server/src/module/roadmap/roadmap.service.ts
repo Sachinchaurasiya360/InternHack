@@ -149,8 +149,8 @@ export async function listPublishedRoadmaps(opts: {
 }
 
 export async function getRoadmapBySlug(slug: string) {
-  return prisma.roadmap.findFirst({
-    where: { slug, isPublished: true },
+  return prisma.roadmap.findUnique({
+    where: { slug },
     include: {
       sections: {
         orderBy: { orderIndex: "asc" },
@@ -169,7 +169,7 @@ export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {
   return prisma.roadmapTopic.findFirst({
     where: {
       slug: topicSlug,
-      section: { roadmap: { slug: roadmapSlug, isPublished: true } },
+      section: { roadmap: { slug: roadmapSlug } },
     },
     include: {
       resources: { orderBy: { orderIndex: "asc" } },
@@ -178,7 +178,7 @@ export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {
           slug: true,
           title: true,
           orderIndex: true,
-          roadmap: { select: { slug: true, title: true } },
+          roadmap: { select: { slug: true, title: true, isPublished: true, ownerUserId: true } },
         },
       },
     },
