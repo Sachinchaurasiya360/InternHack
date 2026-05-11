@@ -27,7 +27,6 @@ const FEATURES: Feature[] = [
     icon: FileCheck,
     href: "/ats-score",
     stat: "54k resumes scored",
-    span: "double",
   },
   {
     title: "Smart Job Board",
@@ -63,7 +62,6 @@ const FEATURES: Feature[] = [
     icon: GitBranch,
     href: "/opensource",
     stat: "520+ orgs",
-    span: "double",
   },
 ];
 
@@ -112,37 +110,36 @@ export function FeaturesSection() {
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-2xl overflow-hidden"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 bg-transparent"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
         >
-          {FEATURES.map((f) => (
+          {FEATURES.slice(0, 6).map((f) => (
             <motion.div
               key={f.title}
               variants={cardVariants}
-              className={f.span === "double" ? "md:col-span-2" : ""}
             >
               <Link to={f.href} className="no-underline block group h-full">
-                <div className="relative h-full flex flex-col p-8 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors">
+                <div className="relative h-full flex flex-col p-8 bg-white dark:bg-stone-950 hover:bg-lime-50 dark:hover:bg-stone-900 transition-colors rounded-2xl shadow-xl border border-stone-200 dark:border-white/10 hover:shadow-2xl hover:-translate-y-1 duration-200">
                   <div className="flex items-center justify-between mb-8">
-                    <div className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400">
-                      <f.icon className="w-4.5 h-4.5" strokeWidth={2} />
+                    <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-lime-400/20 border border-lime-400/30 text-lime-700 dark:text-lime-400 shadow-sm">
+                      <f.icon className="w-6 h-6" strokeWidth={2} />
                     </div>
                     <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
                       {f.stat}
                     </span>
                   </div>
 
-                  <h3 className="text-xl md:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
+                  <h3 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight mb-2">
                     {f.title}
                   </h3>
-                  <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 leading-relaxed flex-1">
+                  <p className="text-base text-stone-600 dark:text-stone-400 leading-relaxed flex-1">
                     {f.desc}
                   </p>
 
-                  <span className="mt-8 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 group-hover:gap-2.5 transition-all">
+                  <span className="mt-8 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400 group-hover:gap-2.5 transition-all">
                     open
                     <ArrowRight className="w-3.5 h-3.5" />
                   </span>

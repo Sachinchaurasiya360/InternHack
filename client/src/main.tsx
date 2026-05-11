@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router'
 import { ThemeProvider } from './components/ThemeProvider'
 import { setAuthQueryClient } from './lib/auth.store'
 import './index.css'
+import './App.css'
 import App from './App.tsx'
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string || ''
