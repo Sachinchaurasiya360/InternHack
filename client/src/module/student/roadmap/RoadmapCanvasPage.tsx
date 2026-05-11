@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import ReactFlow, {
   Background,
@@ -31,6 +31,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
 import { Button } from "../../../components/ui/button";
 import { Navbar } from "../../../components/Navbar";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
@@ -324,6 +325,9 @@ export default function RoadmapCanvasPage() {
   const [enrollmentId, setEnrollmentId] = useState<number | null>(null);
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  // Track previous percentComplete so we only fire the modal on the transition to 100
+  const prevPercentRef = useRef<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -347,6 +351,17 @@ export default function RoadmapCanvasPage() {
       mounted = false;
     };
   }, [slug, navigate]);
+
+  // ── Fire completion modal when progress first reaches 100% ──────────────
+  useEffect(() => {
+    if (!data) return;
+    const pct = data.summary.percentComplete;
+    // Only show if this is a fresh transition (not already 100 on initial load)
+    if (prevPercentRef.current !== null && prevPercentRef.current < 100 && pct === 100) {
+      setShowCompletionModal(true);
+    }
+    prevPercentRef.current = pct;
+  }, [data]);
 
   const allTopics = useMemo(() => {
     if (!data) return [] as RoadmapTopic[];
@@ -932,6 +947,14 @@ export default function RoadmapCanvasPage() {
           </>
         )}
       </AnimatePresence>
+
+      {/* ─── Roadmap Completion Modal ─────────────────────────────────── */}
+      {showCompletionModal && (
+        <RoadmapCompletionModal
+          roadmapName={data.enrollment.roadmap.title}
+          onClose={() => setShowCompletionModal(false)}
+        />
+      )}
       </div>
     </div>
   );
