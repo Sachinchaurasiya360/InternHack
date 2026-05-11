@@ -81,6 +81,7 @@ const LatexTemplatesGallery = lazyWithRetry(() => import("./module/student/ats/L
 const ResumeGeneratorPage = lazyWithRetry(() => import("./module/student/ats/ResumeGeneratorPage"));
 const AddCompanyPage = lazyWithRetry(() => import("./module/student/companies/AddCompanyPage"));
 const StudentProfilePage = lazyWithRetry(() => import("./module/student/profile/StudentProfilePage"));
+const BookmarksPage = lazyWithRetry(() => import("./module/student/bookmarks/BookmarksPage"));
 const PublicProfilePage = lazyWithRetry(() => import("./module/student/profile/PublicProfilePage"));
 const RepoDiscoveryPage = lazyWithRetry(() => import("./module/student/opensource/RepoDiscoveryPage"));
 const GSoCReposPage = lazyWithRetry(() => import("./module/student/opensource/GSoCReposPage"));
@@ -497,6 +498,7 @@ function App() {
             <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="profile" element={<StudentProfilePage />} />
+            <Route path="bookmarks" element={<BookmarksPage />} />
             <Route path="roadmaps" element={<RoadmapDashboardPage />} />
           </Route>
 

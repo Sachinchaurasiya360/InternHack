@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Lock, BrainCircuit, Radar } from "lucide-react";
+import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Lock, BrainCircuit, Radar, Bookmark } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
 type NavItem = {
@@ -23,6 +23,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/student/signals", icon: Radar, label: "Funding Signals" },
       { to: "/student/applications", icon: FileText, label: "My Applications" },
       { to: "/student/companies", icon: Building2, label: "Explore Companies" },
+      { to: "/student/bookmarks", icon: Bookmark, label: "My Bookmarks" },
     ],
   },
   {

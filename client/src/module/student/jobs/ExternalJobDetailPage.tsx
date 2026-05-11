@@ -16,6 +16,8 @@ import { Button } from "../../../components/ui/button";
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
+import { BookmarkButton } from "../../../components/BookmarkButton";
+
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -131,7 +133,7 @@ export default function ExternalJobDetailPage() {
       <SEO
         title={`${job.role || "Job"} at ${job.company || "Company"}`}
         description={job.description?.slice(0, 160) || ""}
-        canonicalUrl={canonicalUrl(`/jobs/${job.slug || job.id}`)}
+        canonicalUrl={canonicalUrl(`/jobs/ext/${job.slug || job.id}`)}
         structuredData={[
           jobPostingSchema({
             title: job.role || "Job",
@@ -141,12 +143,12 @@ export default function ExternalJobDetailPage() {
             salary: job.salary || undefined,
             deadline: job.expiresAt || null,
             createdAt: job.createdAt,
-            id: job.id,
+            id: job.id.toString(),
           }),
           breadcrumbSchema([
             { name: "Home", url: SITE_URL },
             { name: "Jobs", url: `${SITE_URL}/jobs` },
-            { name: job.role || "Job", url: `${SITE_URL}/jobs/${job.slug || job.id}` },
+            { name: job.role || "Job", url: `${SITE_URL}/jobs/ext/${job.slug || job.id}` },
           ]),
         ]}
       />
@@ -169,7 +171,17 @@ export default function ExternalJobDetailPage() {
 
           {/* Header */}
           <motion.div variants={fadeUp} className="mb-8">
-            <Kicker>external / posting</Kicker>
+            <div className="flex items-center justify-between">
+              <Kicker>external / posting</Kicker>
+              <BookmarkButton
+                entityId={job.id.toString()}
+                entityType="EXTERNAL_JOB"
+                title={job.role}
+                url={`/jobs/ext/${job.slug || job.id}`}
+                data={{ company: job.company, location: job.location }}
+                className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10"
+              />
+            </div>
             <div className="mt-4 flex items-start gap-4">
               <CompanyMark label={job.company || "?"} size="lg" />
               <div className="flex-1 min-w-0">

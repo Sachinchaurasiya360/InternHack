@@ -11,6 +11,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { Job } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { BookmarkButton } from "../../../components/BookmarkButton";
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.07 } } };
@@ -161,7 +162,10 @@ export default function JobDetailPage() {
                 </h1>
                 <p className="mt-2 text-sm text-stone-500">{job.company}</p>
               </div>
-              <div className="shrink-0">{ctaButton}</div>
+              <div className="shrink-0 flex items-center gap-3">
+                <BookmarkButton entityId={job.id.toString()} entityType="JOB" />
+                {ctaButton}
+              </div>
             </div>
 
             {/* Meta row */}
