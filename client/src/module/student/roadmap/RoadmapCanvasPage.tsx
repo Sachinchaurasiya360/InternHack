@@ -29,6 +29,8 @@ import {
   Flame,
   ChevronRight,
   BookOpen,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -323,7 +325,8 @@ export default function RoadmapCanvasPage() {
   const [loading, setLoading] = useState(true);
   const [enrollmentId, setEnrollmentId] = useState<number | null>(null);
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
-  const [downloading, setDownloading] = useState(false);
+  const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
+  const [pdfTheme, setPdfTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     let mounted = true;
@@ -527,23 +530,24 @@ export default function RoadmapCanvasPage() {
     }
   };
 
-  const downloadPdf = async () => {
+  const downloadPdf = async (theme: "light" | "dark") => {
     if (!enrollmentId) return;
-    setDownloading(true);
+    setDownloading(theme);
     try {
-      const res = await api.get(`/roadmaps/me/enrollments/${enrollmentId}/pdf`, {
-        responseType: "blob",
-      });
+      const res = await api.get(
+        `/roadmaps/me/enrollments/${enrollmentId}/pdf?theme=${theme}`,
+        { responseType: "blob" },
+      );
       const url = URL.createObjectURL(res.data as Blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${slug}-roadmap.pdf`;
+      a.download = `${slug}-roadmap${theme === "dark" ? "-dark" : ""}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
       toast.error("Could not download PDF");
     } finally {
-      setDownloading(false);
+      setDownloading(null);
     }
   };
 
@@ -652,19 +656,37 @@ export default function RoadmapCanvasPage() {
             />
           </div>
 
-          <button
-            type="button"
-            onClick={downloadPdf}
-            disabled={downloading}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-lime-400 text-stone-950 text-xs font-bold rounded-md hover:bg-lime-300 transition-colors disabled:opacity-60 cursor-pointer border-0"
-          >
-            {downloading ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Download className="w-3.5 h-3.5" />
-            )}
-            PDF
-          </button>
+          {/* PDF export — split light / dark */}
+          <div className="flex items-center rounded-md overflow-hidden border border-lime-400/40">
+            {/* Theme toggle */}
+            <button
+              type="button"
+              onClick={() => setPdfTheme((t) => (t === "light" ? "dark" : "light"))}
+              title={`Switch to ${pdfTheme === "light" ? "dark" : "light"} PDF`}
+              className="inline-flex items-center px-2 py-2 bg-stone-800 text-stone-300 hover:bg-stone-700 hover:text-stone-50 transition-colors border-0 cursor-pointer border-r border-lime-400/30"
+            >
+              {pdfTheme === "light" ? (
+                <Sun className="w-3.5 h-3.5" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-lime-400" />
+              )}
+            </button>
+            {/* Download button */}
+            <button
+              type="button"
+              onClick={() => downloadPdf(pdfTheme)}
+              disabled={downloading !== null}
+              title={`Export ${pdfTheme} PDF`}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-lime-400 text-stone-950 text-xs font-bold hover:bg-lime-300 transition-colors disabled:opacity-60 cursor-pointer border-0"
+            >
+              {downloading !== null ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              PDF{pdfTheme === "dark" && <span className="ml-0.5 opacity-70">·dark</span>}
+            </button>
+          </div>
         </div>
 
         {/* Animated progress strip */}
