@@ -10,4 +10,5 @@ problems
 codejeet-data.ts
 codejeet-data.json
 process-codejeet.ts
-seed*.ts
+seeds/seed-gsoc-repos.ts
+seeds/seed-roadmap.ts

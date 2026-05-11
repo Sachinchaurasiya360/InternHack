@@ -122,6 +122,17 @@ npm run seed:admin
 ```
 
 > The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default login for all seeded users is `Test@1234`.
+>
+> Seeded accounts:
+> | Email | Role |
+> |---|---|
+> | `admin@internhack.xyz` | Admin |
+> | `recruiter@internhack.xyz` | Recruiter |
+> | `aarav@example.com` | Student |
+> | `priya@example.com` | Student |
+> | `rohan@example.com` | Student |
+> | `sneha@example.com` | Student |
+> | `arjun@example.com` | Student |
 
 ### Step 6: Start the dev servers
 

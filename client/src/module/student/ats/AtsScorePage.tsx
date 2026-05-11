@@ -374,7 +374,17 @@ export default function AtsScorePage() {
             resume / ats score
           </div>
           <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
-            Score your resume.
+            Score your{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10">resume.</span>
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                aria-hidden
+                className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+              />
+            </span>
           </h1>
           <p className="mt-3 text-sm text-stone-500 max-w-md">
             Upload a PDF, add a target role, and get an ATS score with keyword gaps and concrete rewrite suggestions.
