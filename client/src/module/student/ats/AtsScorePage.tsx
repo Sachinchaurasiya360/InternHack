@@ -216,6 +216,7 @@ export default function AtsScorePage() {
 
   const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
   const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
+  const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
   const [currentStep, setCurrentStep] = useState(-1);
   const [analysisComplete, setAnalysisComplete] = useState(false);
@@ -287,9 +288,25 @@ export default function AtsScorePage() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
+  const validateFile = (file: File): string | null => {
+    if (file.size > MAX_SIZE) {
+      return `File is ${(file.size / 1024 / 1024).toFixed(1)} MB. Max 10 MB.`;
+    }
+    if (file.type !== "application/pdf") {
+      return "Only PDF files are allowed.";
+    }
+    return null;
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
+      const error = validateFile(selected);
+      if (error) {
+        toast.error(error);
+        e.target.value = "";
+        return;
+      }
       setFile(selected);
       setResumeUrl("");
       setResult(null);
@@ -304,10 +321,9 @@ export default function AtsScorePage() {
     setIsDragging(false);
     const dropped = e.dataTransfer.files[0];
     if (!dropped) return;
-    if (dropped.type !== "application/pdf") {
-      const msg = "Only PDF files are supported. Please drop a .pdf resume.";
-      setError(msg);
-      toast.error(msg);
+    const error = validateFile(dropped);
+    if (error) {
+      toast.error(error);
       return;
     }
     setFile(dropped);
