@@ -63,6 +63,15 @@ export async function getRoadmap(req: Request, res: Response, next: NextFunction
       res.status(404).json({ message: "Roadmap not found" });
       return;
     }
+
+    if (!roadmap.isPublished) {
+      const user = req.user;
+      if (!user || (user.role !== "ADMIN" && user.id !== roadmap.ownerUserId)) {
+        res.status(404).json({ message: "Roadmap not found" });
+        return;
+      }
+    }
+
     res.json({ roadmap });
   } catch (err) {
     next(err);
@@ -81,11 +90,21 @@ export async function getTopic(req: Request, res: Response, next: NextFunction) 
       res.status(404).json({ message: "Topic not found" });
       return;
     }
+
+    if (!topic.section.roadmap.isPublished) {
+      const user = req.user;
+      if (!user || (user.role !== "ADMIN" && user.id !== topic.section.roadmap.ownerUserId)) {
+        res.status(404).json({ message: "Topic not found" });
+        return;
+      }
+    }
+
     res.json({ topic });
   } catch (err) {
     next(err);
   }
 }
+
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
 export async function enroll(req: Request, res: Response, next: NextFunction) {
