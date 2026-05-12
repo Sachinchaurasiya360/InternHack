@@ -112,6 +112,7 @@ export default function CoverLetterPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
   const letterRef = useRef<HTMLDivElement>(null);
+  const userPickedTone = useRef(false);
 
   const user = useAuthStore((s) => s.user);
 
@@ -153,7 +154,9 @@ export default function CoverLetterPage() {
   const hasProfileData = profileSummary && profileSummary.length > 0;
 
   // Auto-select tone based on job description keywords
+  // Auto-select tone based on job description keywords
   useEffect(() => {
+    if (userPickedTone.current) return;
     if (!jobDescription || jobDescription.length < 30) return;
     const jd = jobDescription.toLowerCase();
     if (
@@ -172,8 +175,11 @@ export default function CoverLetterPage() {
       )
     ) {
       setTone("creative");
+    } else if (
+      /startup|founder|mission|seed|series\s[a-c]|early.stage/.test(jd)
+    ) {
+      setTone("startup");
     }
-    // else keep current selection
   }, [jobDescription]);
 
   const handleGenerate = async () => {
@@ -437,7 +443,10 @@ export default function CoverLetterPage() {
                     <button
                       key={t.id}
                       type="button"
-                      onClick={() => setTone(t.id)}
+                      onClick={() => {
+                        userPickedTone.current = true;
+                        setTone(t.id);
+                      }}
                       className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
                         isActive
                           ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
