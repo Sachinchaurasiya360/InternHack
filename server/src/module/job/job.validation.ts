@@ -47,7 +47,7 @@ export const createJobSchema = z.object({
   company: z.string(),
   status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).default("DRAFT"),
   customFields: z.array(customFieldDefinitionSchema).default([]),
-  deadline: z.string().datetime().optional(),
+  deadline: z.iso.datetime().optional(),
   tags: z.array(z.string()).default([]),
 });
 
