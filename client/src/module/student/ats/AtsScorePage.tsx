@@ -717,7 +717,12 @@ export default function AtsScorePage() {
         </div>
 
         {/* ─── Right column: Results ─── */}
-        <div className="lg:col-span-3">
+        <div
+          className="lg:col-span-3"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           <AnimatePresence mode="wait">
             {/* Empty state */}
             {!result && !loading && (
@@ -896,7 +901,6 @@ export default function AtsScorePage() {
                 transition={{ duration: 0.4 }}
                 className="space-y-6"
                 role="region"
-                aria-live="polite"
                 aria-label={`ATS analysis complete. Overall score ${result.overallScore} out of 100.`}
               >
                 {/* Score Header */}
