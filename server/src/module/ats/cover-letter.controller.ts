@@ -58,6 +58,17 @@ export class CoverLetterController {
 
       const coverLetter = await this.coverLetterService.generate(result.data, profile, req.user.id);
 
+      // Auto-save — non-fatal, never fail generation if save fails
+      await this.coverLetterService.saveGenerated(req.user.id, {
+        jobTitle:       result.data.jobTitle,
+        companyName:    result.data.companyName,
+        jobDescription: result.data.jobDescription,
+        content:        coverLetter,
+        tone:           result.data.tone ?? "professional",
+        useProfile:     result.data.useProfile ?? false,
+        keySkills:      result.data.keySkills,
+      }).catch(() => {});
+
       await prisma.usageLog.create({ data: { userId: req.user.id, action: "COVER_LETTER" as UsageAction } });
 
       const usage = req.usageInfo
@@ -65,6 +76,55 @@ export class CoverLetterController {
         : undefined;
 
       res.json({ message: "Cover letter generated successfully", coverLetter, usage });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const history = await this.coverLetterService.getHistory(req.user.id);
+      res.json({ history });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getOne(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const letter = await this.coverLetterService.getOne(
+        Number(req.params["id"]),
+        req.user.id
+      );
+      if (!letter) {
+        res.status(404).json({ message: "Not found" });
+        return;
+      }
+      res.json({ letter });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deleteOne(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      await this.coverLetterService.deleteOne(
+        Number(req.params["id"]),
+        req.user.id
+      );
+      res.json({ success: true });
     } catch (err) {
       next(err);
     }

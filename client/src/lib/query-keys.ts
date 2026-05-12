@@ -22,6 +22,10 @@ export const queryKeys = {
     all: ["ats"] as const,
     usage: () => ["ats", "usage"] as const,
   },
+  coverLetter: {
+  history: ()           => ["cover-letter", "history"] as const,
+  detail:  (id: number) => ["cover-letter", "detail", id] as const,
+},
 
   // Companies
   companies: {

@@ -1,3 +1,4 @@
+import CoverLetterHistoryPanel from "./CoverLetterHistoryPanel";
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -150,6 +151,7 @@ export default function CoverLetterPage() {
         useProfile,
       });
       setCoverLetter(data.coverLetter);
+      queryClient.invalidateQueries({ queryKey: queryKeys.coverLetter.history() });
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
     } catch (err) {
       const msg =
@@ -170,6 +172,24 @@ export default function CoverLetterPage() {
       toast.error("Failed to copy");
     }
   };
+  const handleLoadFromHistory = (letter: {
+  jobTitle: string;
+  companyName: string;
+  jobDescription: string;
+  content: string;
+  tone: string;
+  useProfile: boolean;
+  keySkills: string;
+}) => {
+  setJobTitle(letter.jobTitle);
+  setCompanyName(letter.companyName);
+  setJobDescription(letter.jobDescription);
+  setCoverLetter(letter.content);
+  setTone(letter.tone as CoverLetterTone);
+  setUseProfile(letter.useProfile);
+  setKeySkills(letter.keySkills);
+  setError("");
+};
 
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const downloadMenuRef = useRef<HTMLDivElement>(null);
@@ -497,6 +517,13 @@ export default function CoverLetterPage() {
               </AnimatePresence>
             </div>
           </div>
+          </div>
+
+          <CoverLetterHistoryPanel onLoad={handleLoadFromHistory} />
+
+          <button
+            type="button"
+            onClick={handleGenerate}
 
           <button
             type="button"

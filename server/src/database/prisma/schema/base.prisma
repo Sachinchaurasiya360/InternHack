@@ -48,6 +48,7 @@ model user {
   adminProfile          adminProfile?             @relation("AdminProfile")
   applications          application[]             @relation("StudentApplications")
   atsScores             atsScore[]                @relation("StudentAtsScores")
+  coverLetters          generatedCoverLetter[]    @relation("StudentCoverLetters")
   blogPosts             blogPost[]                @relation("BlogAuthor")
   createdCompanies      company[]                 @relation("UserCreatedCompanies")
   addedContacts         companyContact[]          @relation("UserAddedContacts")
