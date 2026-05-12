@@ -521,9 +521,7 @@ export default function CoverLetterPage() {
 
           <CoverLetterHistoryPanel onLoad={handleLoadFromHistory} />
 
-          <button
-            type="button"
-            onClick={handleGenerate}
+          
 
           <button
             type="button"
