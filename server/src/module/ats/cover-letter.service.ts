@@ -78,7 +78,7 @@ export class CoverLetterService {
       formal:
         "Use measured, precise language. Prefer structured paragraphs with clear logical progression. Avoid casual contractions. Match the tone of executive or senior-track communication.",
       concise:
-        "Be extremely brief and direct. Use short sentences. Cut all filler. Aim for 200 words maximum. Every sentence must earn its place.",
+        "Be extremely brief and direct. Use short sentences. Cut all filler. Write 1-2 short paragraphs maximum, targeting 150-200 words. Ignore the default paragraph count and word limit — brevity is the priority. Every sentence must earn its place.",
       startup:
         "Use bold, mission-driven language. Show that you understand the startup's vision and want to help build something meaningful. Be direct, energetic, and avoid corporate speak.",
     };

@@ -112,7 +112,7 @@ export default function CoverLetterPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
   const letterRef = useRef<HTMLDivElement>(null);
-  const userPickedTone = useRef(false);
+  const [toneManuallySelected, setToneManuallySelected] = useState(false);
 
   const user = useAuthStore((s) => s.user);
 
@@ -154,9 +154,8 @@ export default function CoverLetterPage() {
   const hasProfileData = profileSummary && profileSummary.length > 0;
 
   // Auto-select tone based on job description keywords
-  // Auto-select tone based on job description keywords
   useEffect(() => {
-    if (userPickedTone.current) return;
+    if (toneManuallySelected) return;
     if (!jobDescription || jobDescription.length < 30) return;
     const jd = jobDescription.toLowerCase();
     if (
@@ -180,7 +179,7 @@ export default function CoverLetterPage() {
     ) {
       setTone("startup");
     }
-  }, [jobDescription]);
+  }, [jobDescription, toneManuallySelected]);
 
   const handleGenerate = async () => {
     if (jobDescription.trim().length < JD_MIN_CHARS) {
@@ -379,7 +378,7 @@ export default function CoverLetterPage() {
                   </div>
                   {jobDescription.length >= JD_MIN_CHARS &&
                     jobDescription.length < 200 && (
-                      <p className="text-[10px] text-stone-500 mt-0.5 normal-case tracking-normal font-sans">
+                      <p className="text-xs text-stone-500 mt-0.5 normal-case tracking-normal font-sans">
                         Longer job descriptions produce better-tailored cover
                         letters. Aim for 200+ chars.
                       </p>
@@ -444,8 +443,8 @@ export default function CoverLetterPage() {
                       key={t.id}
                       type="button"
                       onClick={() => {
-                        userPickedTone.current = true;
                         setTone(t.id);
+                        setToneManuallySelected(true);
                       }}
                       className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
                         isActive
