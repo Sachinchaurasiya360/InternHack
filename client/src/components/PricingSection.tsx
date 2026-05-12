@@ -178,11 +178,9 @@ export function PricingSection() {
               <motion.div
                 whileHover={{ y: -4 }}
                 className={cn(
-                  "relative rounded-2xl h-full flex flex-col transition-all duration-300",
-                  plan.highlighted
+"relative rounded-2xl h-full flex flex-col transition-all duration-300"                  plan.highlighted
                     ? "border-2 border-lime-400/50 shadow-2xl shadow-lime-400/10 bg-white dark:bg-stone-900"
-                    : "border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 hover:border-lime-400/40 hover:shadow-2xl hover:shadow-lime-400/10 hover:-translate-y-1"
-                )}
+: "border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 hover:border-lime-400/40 hover:shadow-2xl hover:shadow-lime-400/10 hover:-translate-y-1"                )}
               >
                 {plan.highlighted && (
                   <div className="absolute top-1/2 inset-x-0 mx-auto h-12 w-full bg-lime-400/40 rounded-2xl blur-3xl -z-10" />
