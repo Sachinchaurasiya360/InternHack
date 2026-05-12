@@ -1,9 +1,16 @@
-import type { GenerateCoverLetterInput, UserProfile } from "./cover-letter.validation.js";
+import type {
+  GenerateCoverLetterInput,
+  UserProfile,
+} from "./cover-letter.validation.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 
 export class CoverLetterService {
-  async generate(input: GenerateCoverLetterInput, profile?: UserProfile, userId?: number): Promise<string> {
+  async generate(
+    input: GenerateCoverLetterInput,
+    profile?: UserProfile,
+    userId?: number,
+  ): Promise<string> {
     const provider = getProviderForService("COVER_LETTER");
     const prompt = this.buildPrompt(input, profile);
     const response = await provider.generateText(prompt);
@@ -18,7 +25,8 @@ export class CoverLetterService {
     if (profile.bio) parts.push(`About: ${profile.bio}`);
     if (profile.college) {
       let edu = `Education: ${profile.college}`;
-      if (profile.graduationYear) edu += ` (Graduation: ${String(profile.graduationYear)})`;
+      if (profile.graduationYear)
+        edu += ` (Graduation: ${String(profile.graduationYear)})`;
       parts.push(edu);
     }
     if (profile.company) {
@@ -27,13 +35,15 @@ export class CoverLetterService {
       parts.push(work);
     }
     if (profile.location) parts.push(`Location: ${profile.location}`);
-    if (profile.skills.length > 0) parts.push(`Skills: ${profile.skills.join(", ")}`);
+    if (profile.skills.length > 0)
+      parts.push(`Skills: ${profile.skills.join(", ")}`);
 
     if (profile.projects.length > 0) {
       parts.push("Projects:");
       for (const p of profile.projects) {
         let line = `  - ${p.title}: ${p.description}`;
-        if (p.techStack.length > 0) line += ` [Tech: ${p.techStack.join(", ")}]`;
+        if (p.techStack.length > 0)
+          line += ` [Tech: ${p.techStack.join(", ")}]`;
         parts.push(line);
       }
     }
@@ -50,14 +60,31 @@ export class CoverLetterService {
     return parts.join("\n");
   }
 
-  private buildPrompt(input: GenerateCoverLetterInput, profile?: UserProfile): string {
+  private buildPrompt(
+    input: GenerateCoverLetterInput,
+    profile?: UserProfile,
+  ): string {
     const toneInstructions: Record<string, string> = {
-      professional: "Use a formal, professional tone. Be confident and direct. Avoid overly casual language.",
-      friendly: "Use a warm, approachable tone while staying professional. Show enthusiasm naturally without being overly formal.",
-      enthusiastic: "Use an energetic, passionate tone. Express genuine excitement about the role and company. Be dynamic and engaging.",
+      professional:
+        "Use a formal, professional tone. Be confident and direct. Avoid overly casual language.",
+      friendly:
+        "Use a warm, approachable tone while staying professional. Show enthusiasm naturally without being overly formal.",
+      enthusiastic:
+        "Use an energetic, passionate tone. Express genuine excitement about the role and company. Be dynamic and engaging.",
+      technical:
+        "Use precise technical language. Name specific tools, frameworks, and methodologies where relevant. Assume the reader is an engineer or technical hiring manager, not HR. Demonstrate depth of knowledge.",
+      creative:
+        "Use a distinctive, expressive voice. Lead with a hook or narrative. Show personality through word choice. Avoid corporate clichés. Make the letter memorable.",
+      formal:
+        "Use measured, precise language. Prefer structured paragraphs with clear logical progression. Avoid casual contractions. Match the tone of executive or senior-track communication.",
+      concise:
+        "Be extremely brief and direct. Use short sentences. Cut all filler. Aim for 200 words maximum. Every sentence must earn its place.",
+      startup:
+        "Use bold, mission-driven language. Show that you understand the startup's vision and want to help build something meaningful. Be direct, energetic, and avoid corporate speak.",
     };
 
-    const toneGuide = toneInstructions[input.tone] ?? toneInstructions["professional"];
+    const toneGuide =
+      toneInstructions[input.tone] ?? toneInstructions["professional"];
 
     const profileBlock = profile
       ? `\nCANDIDATE PROFILE:\n${this.buildProfileSection(profile)}\n`
@@ -77,7 +104,7 @@ ${profileBlock}${input.keySkills ? `CANDIDATE'S KEY SKILLS & EXPERIENCE:\n${inpu
 
 INSTRUCTIONS:
 - Write a 3-4 paragraph cover letter
-- ${profile ? `Use the candidate's name "${profile.name}" to sign the letter` : "End with \"Sincerely,\" followed by a blank line (the user will add their name)"}
+- ${profile ? `Use the candidate's name "${profile.name}" to sign the letter` : 'End with "Sincerely," followed by a blank line (the user will add their name)'}
 - ${input.companyName ? `Address it to the hiring team at ${input.companyName}` : "Address it to 'Dear Hiring Manager'"}
 - Open with a strong hook that shows genuine interest in the role
 - Highlight relevant skills and experience that match the job requirements
