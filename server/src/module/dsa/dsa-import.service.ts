@@ -189,14 +189,24 @@ async function buildPreview(
   source: "LEETCODE_USERNAME" | "CSV",
   username?: string,
 ) {
+  // Deduplicate rows by problemId to prevent duplicate stats from skewed/duplicate CSV rows
+  const uniqueRowsMap = new Map<number, typeof rows[0]>();
+  for (const r of rows) {
+    if (!uniqueRowsMap.has(r.problemId)) {
+      uniqueRowsMap.set(r.problemId, r);
+    }
+  }
+  const uniqueRows = Array.from(uniqueRowsMap.values());
+  const matchedCount = uniqueRows.length;
+
   // Find already-solved problem IDs for this user
   const existingSolved = await prisma.studentDsaProgress.findMany({
-    where: { studentId: userId, solved: true, problemId: { in: rows.map((r) => r.problemId) } },
+    where: { studentId: userId, solved: true, problemId: { in: uniqueRows.map((r) => r.problemId) } },
     select: { problemId: true },
   });
   const solvedSet = new Set(existingSolved.map((s: { problemId: number }) => s.problemId));
 
-  const newRows = rows.filter((r) => !solvedSet.has(r.problemId));
+  const newRows = uniqueRows.filter((r) => !solvedSet.has(r.problemId));
 
   // Last import info
   const lastImport = await prisma.leetcodeImportLog.findFirst({
@@ -231,8 +241,8 @@ async function buildPreview(
   });
 
   return {
-    matched: rows.length,
-    unmatched: submissionsMap.size - rows.length,
+    matched: matchedCount,
+    unmatched: submissionsMap.size - matchedCount,
     alreadySolved: solvedSet.size,
     newSolves: newRows.length,
     token,
@@ -346,6 +356,7 @@ export class DsaImportService {
 
   // ── Confirm & bulk insert ──────────────────────────────────────────────────
   async confirmImport(userId: number, token: string) {
+    await checkRateLimit(userId);
     evictExpired();
     const pending = pendingImports.get(token);
     if (!pending) throw Object.assign(new Error("TOKEN_EXPIRED"), { code: "TOKEN_EXPIRED" });
@@ -357,24 +368,28 @@ export class DsaImportService {
       return { imported: 0, skipped: 0, importedAt: new Date().toISOString() };
     }
 
-    const result = await prisma.studentDsaProgress.createMany({
-      data: pending.rows.map((r) => ({
-        studentId: userId,
-        problemId: r.problemId,
-        solved: true,
-        solvedAt: r.solvedAt,
-      })),
-      skipDuplicates: true,
-    });
+    const result = await prisma.$transaction(async (tx) => {
+      const created = await tx.studentDsaProgress.createMany({
+        data: pending.rows.map((r) => ({
+          studentId: userId,
+          problemId: r.problemId,
+          solved: true,
+          solvedAt: r.solvedAt,
+        })),
+        skipDuplicates: true,
+      });
 
-    await prisma.leetcodeImportLog.create({
-      data: {
-        userId,
-        username: pending.username ?? null,
-        source: pending.source,
-        matched: pending.rows.length,
-        imported: result.count,
-      },
+      await tx.leetcodeImportLog.create({
+        data: {
+          userId,
+          username: pending.username ?? null,
+          source: pending.source,
+          matched: pending.rows.length,
+          imported: created.count,
+        },
+      });
+
+      return created;
     });
 
     return {

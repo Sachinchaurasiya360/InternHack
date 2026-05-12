@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -7,7 +7,8 @@ import {
 } from "lucide-react";
 import api from "../../../../lib/axios";
 import { queryKeys } from "../../../../lib/query-keys";
-import type { LeetcodeImportPreview, LeetcodeImportResult } from "../../../../lib/types";
+import type { LeetcodeImportPreview, LeetcodeImportResult, LeetcodeImportPreviewItem } from "../../../../lib/types";
+import { Button } from "../../../../components/ui/button";
 
 // Feature flag — mirrors server env
 const IMPORT_ENABLED = import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
@@ -98,6 +99,26 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const isCsv =
+      file.type === "text/csv" ||
+      file.type === "application/vnd.ms-excel" ||
+      file.name.toLowerCase().endsWith(".csv");
+    if (!isCsv) {
+      setErrorMsg("Please upload a valid CSV file.");
+      setStep("error");
+      e.target.value = "";
+      return;
+    }
+
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      setErrorMsg("CSV must be 5 MB or smaller.");
+      setStep("error");
+      e.target.value = "";
+      return;
+    }
+
     setCsvFileName(file.name);
     const reader = new FileReader();
     reader.onload = (ev) => setCsvText(ev.target?.result as string ?? "");
@@ -124,7 +145,7 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.2 }}
             className="relative bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-white/10 shadow-2xl w-full max-w-lg"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-white/10">
@@ -139,12 +160,16 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   Import from LeetCode
                 </h2>
               </div>
-              <button
+              <Button
+                variant="ghost"
+                mode="icon"
+                size="sm"
+                aria-label="Close import modal"
                 onClick={handleClose}
-                className="p-1.5 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors"
+                className="p-1.5 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             {/* Body */}
@@ -156,8 +181,10 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   {/* Method tabs */}
                   <div className="grid grid-cols-2 gap-2">
                     {(["username", "csv"] as Method[]).map((m) => (
-                      <button
+                      <Button
                         key={m}
+                        variant={method === m ? "mono" : "outline"}
+                        size="md"
                         onClick={() => { setMethod(m); setErrorMsg(""); }}
                         className={`flex items-center justify-center gap-2 py-2.5 rounded-md text-xs font-medium border transition-all cursor-pointer ${
                           method === m
@@ -167,7 +194,7 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                       >
                         {m === "username" ? <User className="w-3.5 h-3.5" /> : <FileText className="w-3.5 h-3.5" />}
                         {m === "username" ? "LeetCode Username" : "CSV Upload"}
-                      </button>
+                      </Button>
                     ))}
                   </div>
 
@@ -182,8 +209,8 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                         type="text"
                         placeholder="e.g. neal_wu"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && canPreview && handlePreview()}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && canPreview && handlePreview()}
                         className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-white/10 rounded-md text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:border-lime-400 transition-colors"
                       />
                       <p className="mt-2 text-[10px] text-stone-500 dark:text-stone-400">
@@ -198,16 +225,17 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                       <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
                         / upload csv file
                       </label>
-                      <button
+                      <Button
                         id="lc-csv-upload-btn"
+                        variant="dashed"
                         onClick={() => fileRef.current?.click()}
-                        className="w-full flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed border-stone-300 dark:border-white/10 rounded-md hover:border-lime-400 dark:hover:border-lime-500 transition-colors cursor-pointer bg-stone-50 dark:bg-stone-800"
+                        className="w-full flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed border-stone-300 dark:border-white/10 rounded-md hover:border-lime-400 dark:hover:border-lime-500 transition-colors cursor-pointer bg-stone-50 dark:bg-stone-800 h-auto"
                       >
                         <Upload className="w-6 h-6 text-stone-400" />
                         <span className="text-xs text-stone-600 dark:text-stone-400">
                           {csvFileName ? csvFileName : "Click to choose a CSV file"}
                         </span>
-                      </button>
+                      </Button>
                       <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden" onChange={handleFileChange} />
                       <p className="mt-2 text-[10px] text-stone-500 dark:text-stone-400">
                         CSV must have a <code className="font-mono">Slug</code> or <code className="font-mono">Title</code> column.{" "}
@@ -227,15 +255,16 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   )}
 
                   {/* CTA */}
-                  <button
+                  <Button
                     id="lc-preview-btn"
+                    variant="mono"
                     onClick={handlePreview}
                     disabled={!canPreview}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold bg-stone-900 dark:bg-stone-50 text-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold bg-stone-900 dark:bg-stone-50 text-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
                   >
                     Preview Import
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </>
               )}
 
@@ -284,7 +313,7 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                           / preview ({preview.preview.length} shown)
                         </p>
                         <div className="max-h-44 overflow-y-auto space-y-1 pr-1">
-                          {preview.preview.map((item) => (
+                          {preview.preview.map((item: LeetcodeImportPreviewItem) => (
                             <div key={item.problemId} className="flex items-center gap-3 py-1.5 px-2 rounded-md bg-stone-50 dark:bg-stone-800/50">
                               <span className={`text-[10px] font-mono shrink-0 ${DIFF_COLOR[item.difficulty] ?? "text-stone-400"}`}>
                                 {item.difficulty[0]}
@@ -312,28 +341,30 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                       )}
 
                       <div className="flex gap-3">
-                        <button
+                        <Button
+                          variant="outline"
                           onClick={() => setStep("input")}
                           className="flex-1 py-2.5 rounded-md text-sm font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
                         >
                           Back
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           id="lc-confirm-import-btn"
+                          variant="primary"
                           onClick={handleConfirm}
                           className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold bg-lime-500 hover:bg-lime-400 text-stone-950 transition-colors cursor-pointer"
                         >
                           Import {preview.newSolves} problems
                           <ArrowRight className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
                     </>
                   )}
 
                   {preview.newSolves === 0 && (
-                    <button onClick={handleClose} className="w-full py-2.5 rounded-md text-sm font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 transition-colors">
+                    <Button variant="outline" onClick={handleClose} className="w-full py-2.5 rounded-md text-sm font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 transition-colors cursor-pointer">
                       Done
-                    </button>
+                    </Button>
                   )}
                 </>
               )}
@@ -354,19 +385,21 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                     </p>
                   </div>
                   <div className="flex gap-3 w-full">
-                    <button
+                    <Button
+                      variant="outline"
                       onClick={() => { reset(); }}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-md text-xs font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-md text-xs font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 transition-colors cursor-pointer"
                     >
                       <RefreshCw className="w-3.5 h-3.5" /> Re-import
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       id="lc-import-done-btn"
+                      variant="mono"
                       onClick={handleClose}
-                      className="flex-1 py-2.5 rounded-md text-sm font-semibold bg-stone-900 dark:bg-stone-50 text-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-200 transition-colors"
+                      className="flex-1 py-2.5 rounded-md text-sm font-semibold bg-stone-900 dark:bg-stone-50 text-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-200 transition-colors cursor-pointer"
                     >
                       Done
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
