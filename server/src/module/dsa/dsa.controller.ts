@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { syncLeetCodeSolvedProblems } from "./leetcode.service.js";
 
 export class DsaController {
   constructor(private dsaService: DsaService) {}
@@ -176,6 +177,23 @@ export class DsaController {
       if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
       const history = await this.dsaService.getSubmissionHistory(userId, problemId);
       res.json(history);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async syncLeetCode(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const { leetcodeUsername } = req.body;
+      if (!leetcodeUsername) { res.status(400).json({ message: "LeetCode username is required" }); return; }
+      const result = await syncLeetCodeSolvedProblems(userId, leetcodeUsername);
+      res.json({
+        success: true,
+        message: `Successfully synced ${result.syncedCount} problems from LeetCode.`,
+        data: result,
+      });
     } catch (err) {
       next(err);
     }
