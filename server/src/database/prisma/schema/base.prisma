@@ -7,14 +7,14 @@ datasource db {
 }
 
 model user {
-  id                    Int                       @id @default(autoincrement())
+  id                    Int                         @id @default(autoincrement())
   name                  String
-  email                 String                    @unique
+  email                 String                      @unique
   password              String
-  role                  UserRole                  @default(STUDENT)
-  isActive              Boolean                   @default(true)
-  isProfilePublic       Boolean                   @default(false)
-  isVerified            Boolean                   @default(false)
+  role                  UserRole                    @default(STUDENT)
+  isActive              Boolean                     @default(true)
+  isProfilePublic       Boolean                     @default(false)
+  isVerified            Boolean                     @default(false)
   verificationOtp       String?
   otpExpiresAt          DateTime?
   resetPasswordOtp      String?
@@ -22,62 +22,62 @@ model user {
   contactNo             String?
   profilePic            String?
   coverImage            String?
-  resumes               String[]                  @default([])
+  resumes               String[]                    @default([])
   company               String?
   designation           String?
-  createdAt             DateTime                  @default(now())
-  updatedAt             DateTime                  @updatedAt
-  subscriptionPlan      SubscriptionPlan          @default(FREE)
-  subscriptionStatus    SubscriptionStatus        @default(EXPIRED)
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+  subscriptionPlan      SubscriptionPlan            @default(FREE)
+  subscriptionStatus    SubscriptionStatus          @default(EXPIRED)
   subscriptionStartDate DateTime?
   subscriptionEndDate   DateTime?
   bio                   String?
   college               String?
   graduationYear        Int?
-  skills                String[]                  @default([])
+  skills                String[]                    @default([])
   linkedinUrl           String?
   githubUrl             String?
   portfolioUrl          String?
   location              String?
   jobStatus             String?
-  projects              Json                      @default("[]")
-  achievements          Json                      @default("[]")
+  projects              Json                        @default("[]")
+  achievements          Json                        @default("[]")
   leetcodeUrl           String?
-  tokenVersion          Int                       @default(0)
-  adminActivityLogs     adminActivityLog[]        @relation("AdminActivityLogs")
-  adminProfile          adminProfile?             @relation("AdminProfile")
-  applications          application[]             @relation("StudentApplications")
-  atsScores             atsScore[]                @relation("StudentAtsScores")
-  blogPosts             blogPost[]                @relation("BlogAuthor")
-  createdCompanies      company[]                 @relation("UserCreatedCompanies")
-  addedContacts         companyContact[]          @relation("UserAddedContacts")
-  reviewedContributions companyContribution[]     @relation("AdminReviewedContributions")
-  contributions         companyContribution[]     @relation("UserContributions")
-  companyReviews        companyReview[]           @relation("UserReviews")
-  dsaBookmarks          dsaBookmark[]             @relation("StudentDsaBookmarks")
-  emailCampaigns        emailCampaign[]           @relation("UserEmailCampaigns")
-  employeeProfile       employee?                 @relation("EmployeeUser")
-  postedJobs            job[]                     @relation("RecruiterJobs")
-  payments              payment[]                 @relation("UserPayments")
-  createdSkillTests     skillTest[]               @relation("SkillTestCreator")
-  skillTestAttempts     skillTestAttempt[]        @relation("StudentSkillTestAttempts")
-  aptitudeProgress      studentAptitudeProgress[] @relation("StudentAptitudeProgress")
-  studentBadges         studentBadge[]            @relation("StudentBadges")
-  dsaProgress           studentDsaProgress[]      @relation("StudentDsaProgress")
-  dsaSubmissions        dsaSubmission[]           @relation("StudentDsaSubmissions")
-  sqlProgress           studentSqlProgress[]      @relation("StudentSqlProgress")
-  savedCandidates       savedCandidate[]          @relation("RecruiterSavedCandidates")
-  savedByRecruiters     savedCandidate[]          @relation("StudentSavedByRecruiters")
-  usageLogs             usageLog[]                @relation("UserUsageLogs")
-  customRoles           userCustomRole[]          @relation("UserCustomRoles")
-  verifiedSkills        verifiedSkill[]           @relation("StudentVerifiedSkills")
-  jobPreference         userJobPreference?        @relation("UserJobPreferences")
-  jobMatches            jobMatch[]                @relation("UserJobMatches")
-  agentConversations    jobAgentConversation[]    @relation("UserAgentConversations")
-  milestoneEmails       milestoneEmail[]          @relation("StudentMilestoneEmails")
-  externalApplications  externalJobApplication[] @relation("StudentExternalApplications")
-  repoRequests          repoRequest[]            @relation("UserRepoRequests")
-  interviewExperiences  interviewExperience[]    @relation("UserInterviewExperiences")
+  tokenVersion          Int                         @default(0)
+  adminActivityLogs     adminActivityLog[]          @relation("AdminActivityLogs")
+  adminProfile          adminProfile?               @relation("AdminProfile")
+  applications          application[]               @relation("StudentApplications")
+  atsScores             atsScore[]                  @relation("StudentAtsScores")
+  blogPosts             blogPost[]                  @relation("BlogAuthor")
+  createdCompanies      company[]                   @relation("UserCreatedCompanies")
+  addedContacts         companyContact[]            @relation("UserAddedContacts")
+  reviewedContributions companyContribution[]       @relation("AdminReviewedContributions")
+  contributions         companyContribution[]       @relation("UserContributions")
+  companyReviews        companyReview[]             @relation("UserReviews")
+  dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
+  emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
+  employeeProfile       employee?                   @relation("EmployeeUser")
+  postedJobs            job[]                       @relation("RecruiterJobs")
+  payments              payment[]                   @relation("UserPayments")
+  createdSkillTests     skillTest[]                 @relation("SkillTestCreator")
+  skillTestAttempts     skillTestAttempt[]          @relation("StudentSkillTestAttempts")
+  aptitudeProgress      studentAptitudeProgress[]   @relation("StudentAptitudeProgress")
+  studentBadges         studentBadge[]              @relation("StudentBadges")
+  dsaProgress           studentDsaProgress[]        @relation("StudentDsaProgress")
+  dsaSubmissions        dsaSubmission[]             @relation("StudentDsaSubmissions")
+  sqlProgress           studentSqlProgress[]        @relation("StudentSqlProgress")
+  savedCandidates       savedCandidate[]            @relation("RecruiterSavedCandidates")
+  savedByRecruiters     savedCandidate[]            @relation("StudentSavedByRecruiters")
+  usageLogs             usageLog[]                  @relation("UserUsageLogs")
+  customRoles           userCustomRole[]            @relation("UserCustomRoles")
+  verifiedSkills        verifiedSkill[]             @relation("StudentVerifiedSkills")
+  jobPreference         userJobPreference?          @relation("UserJobPreferences")
+  jobMatches            jobMatch[]                  @relation("UserJobMatches")
+  agentConversations    jobAgentConversation[]      @relation("UserAgentConversations")
+  milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
+  externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
+  repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
   roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
@@ -296,45 +296,45 @@ model fundingSignal {
 }
 
 model fundingSignalLog {
-  id              Int      @id @default(autoincrement())
-  source          String
-  status          String
-  signalsFound    Int      @default(0)
-  signalsCreated  Int      @default(0)
-  signalsUpdated  Int      @default(0)
-  error           String?
-  duration        Int
-  createdAt       DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  source         String
+  status         String
+  signalsFound   Int      @default(0)
+  signalsCreated Int      @default(0)
+  signalsUpdated Int      @default(0)
+  error          String?
+  duration       Int
+  createdAt      DateTime @default(now())
 }
 
 model company {
-  id              Int              @id @default(autoincrement())
-  name            String
-  slug            String           @unique
-  logo            String?
-  description     String
-  mission         String?
-  industry        String
-  size            CompanySize
-  city            String
-  state           String?
-  address         String?
-  officeLocations Json             @default("[]")
-  website         String?
-  socialLinks     Json             @default("{}")
-  technologies    String[]         @default([])
-  hiringStatus    Boolean          @default(false)
-  foundedYear     Int?
-  photos          String[]         @default([])
-  avgRating       Float            @default(0)
-  reviewCount     Int              @default(0)
-  isApproved      Boolean          @default(false)
-  createdById     Int
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  createdBy       user             @relation("UserCreatedCompanies", fields: [createdById], references: [id])
-  contacts        companyContact[]
-  reviews         companyReview[]
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  slug                 String                @unique
+  logo                 String?
+  description          String
+  mission              String?
+  industry             String
+  size                 CompanySize
+  city                 String
+  state                String?
+  address              String?
+  officeLocations      Json                  @default("[]")
+  website              String?
+  socialLinks          Json                  @default("{}")
+  technologies         String[]              @default([])
+  hiringStatus         Boolean               @default(false)
+  foundedYear          Int?
+  photos               String[]              @default([])
+  avgRating            Float                 @default(0)
+  reviewCount          Int                   @default(0)
+  isApproved           Boolean               @default(false)
+  createdById          Int
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  createdBy            user                  @relation("UserCreatedCompanies", fields: [createdById], references: [id])
+  contacts             companyContact[]
+  reviews              companyReview[]
   interviewExperiences interviewExperience[]
 
   @@index([city])
@@ -457,23 +457,23 @@ model opensourceRepo {
 }
 
 model repoRequest {
-  id          Int                @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   name        String
   owner       String
   description String
   language    String
   url         String
-  domain      RepoDomain         @default(WEB)
-  difficulty  RepoDifficulty     @default(BEGINNER)
-  techStack   String[]           @default([])
-  tags        String[]           @default([])
+  domain      RepoDomain        @default(WEB)
+  difficulty  RepoDifficulty    @default(BEGINNER)
+  techStack   String[]          @default([])
+  tags        String[]          @default([])
   reason      String
-  status      RepoRequestStatus  @default(PENDING)
+  status      RepoRequestStatus @default(PENDING)
   adminNote   String?
   userId      Int
-  user        user               @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  user        user              @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   @@index([status])
   @@index([userId])
@@ -961,20 +961,20 @@ model aiRequestLog {
 }
 
 model adminJob {
-  id           Int                       @id @default(autoincrement())
+  id           Int                      @id @default(autoincrement())
   company      String?
   role         String?
   description  String?
   salary       String?
   location     String?
   applyLink    String?
-  tags         String[]                  @default([])
+  tags         String[]                 @default([])
   expiresAt    DateTime
-  isActive     Boolean                   @default(true)
-  createdAt    DateTime                  @default(now())
-  updatedAt    DateTime                  @updatedAt
-  slug         String?                   @unique
-  applications externalJobApplication[]  @relation("AdminJobApplications")
+  isActive     Boolean                  @default(true)
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  slug         String?                  @unique
+  applications externalJobApplication[] @relation("AdminJobApplications")
 
   @@index([isActive, expiresAt])
 }
@@ -1144,6 +1144,7 @@ enum AIServiceType {
   RESUME_GEN
   LATEX_CHAT
   EMAIL_CHAT
+  AI_ROADMAP_GENERATION
 }
 
 enum ScrapedJobStatus {
@@ -1291,9 +1292,9 @@ model interviewExperience {
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
-  company         company?            @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  user            user                @relation("UserInterviewExperiences", fields: [userId], references: [id], onDelete: Cascade)
-  upvoteRecords   interviewExperienceUpvote[]
+  company       company?                    @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  user          user                        @relation("UserInterviewExperiences", fields: [userId], references: [id], onDelete: Cascade)
+  upvoteRecords interviewExperienceUpvote[]
 
   @@index([companyId, status])
   @@index([status])
@@ -1308,8 +1309,8 @@ model interviewExperienceUpvote {
   userId       Int
   createdAt    DateTime @default(now())
 
-  experience   interviewExperience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
-  user         user                @relation("UserInterviewUpvotes", fields: [userId], references: [id], onDelete: Cascade)
+  experience interviewExperience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  user       user                @relation("UserInterviewUpvotes", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([experienceId, userId])
   @@index([experienceId])
