@@ -227,7 +227,7 @@ export default function AtsScorePage() {
   const analyzeMutation = useMutation({
     mutationFn: async (): Promise<{ score: AtsScore; emailQueued: boolean }> => {
       let url = resumeUrl;
-      if (file && !resumeUrl) {
+      if (file) {
         const formData = new FormData();
         formData.append("file", file);
         const uploadRes = await api.post("/upload/profile-resume", formData, {
