@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
@@ -123,6 +123,14 @@ export default function LoginPage() {
           <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">
             Sign in to pick up where you left off.
           </p>
+
+          <Link
+            to="/"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-stone-50 no-underline transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to home
+          </Link>
 
           <div className="mt-8 space-y-5">
             {error && (
