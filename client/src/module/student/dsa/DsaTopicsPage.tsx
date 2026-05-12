@@ -15,7 +15,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
-
+import { LeetCodeSync } from "./components/LeetCodeSync";
 const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
 
@@ -65,8 +65,8 @@ export default function DsaTopicsPage() {
 
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
-    activeTab === "medium-hard" ? "Medium,Hard" :
-    undefined;
+      activeTab === "medium-hard" ? "Medium,Hard" :
+        undefined;
 
   const filterKey = `${difficultyParam ?? ""}|${debouncedSearch}`;
   const { data: topicsData, isLoading } = useQuery({
@@ -287,11 +287,10 @@ export default function DsaTopicsPage() {
                 <button
                   key={tab.key}
                   onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                    active
-                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                    : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                    }`}
                 >
                   {tab.label}
                 </button>
