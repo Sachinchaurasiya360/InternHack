@@ -201,5 +201,6 @@ export const queryKeys = {
     pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
+    importStatus: () => ["dsa", "import-status"] as const,
   },
 };

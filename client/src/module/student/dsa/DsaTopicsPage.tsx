@@ -4,20 +4,22 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target,
+  Lock, Search, BookOpen, TrendingUp, Target, Download,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaTopicsResponse, DsaProgress } from "../../../lib/types";
+import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
+import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 
 const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
+const IMPORT_ENABLED = import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
 
 type DifficultyTab = "all" | "easy" | "medium-hard";
 
@@ -51,6 +53,7 @@ export default function DsaTopicsPage() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
   const [showGate, setShowGate] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [page, setPage] = useState(1);
   const [topicSearch, setTopicSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -89,6 +92,13 @@ export default function DsaTopicsPage() {
     queryFn: () => api.get<DsaProgress>("/dsa/my-progress").then((r) => r.data),
     enabled: !!user,
     staleTime: 15 * 24 * 60 * 60 * 1000,
+  });
+
+  const { data: importStatus } = useQuery({
+    queryKey: queryKeys.dsa.importStatus(),
+    queryFn: () => api.get<LeetcodeImportStatus>("/dsa/import/status").then((r) => r.data),
+    enabled: !!user && IMPORT_ENABLED,
+    staleTime: 5 * 60 * 1000,
   });
 
   const totalProblems = uniqueProblems;
@@ -147,13 +157,25 @@ export default function DsaTopicsPage() {
                 Data structures and algorithms, organized by topic. Curated for interviews, tracked by you.
               </p>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
-              <span>
-                <span className="text-stone-900 dark:text-stone-50 tabular-nums">{totalSolved}</span>
-                <span className="text-stone-400 dark:text-stone-600"> / {totalProblems.toLocaleString()} solved</span>
-              </span>
-              <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-              <span className="text-lime-600 dark:text-lime-400 tabular-nums">{overallPct}% complete</span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                <span>
+                  <span className="text-stone-900 dark:text-stone-50 tabular-nums">{totalSolved}</span>
+                  <span className="text-stone-400 dark:text-stone-600"> / {totalProblems.toLocaleString()} solved</span>
+                </span>
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                <span className="text-lime-600 dark:text-lime-400 tabular-nums">{overallPct}% complete</span>
+              </div>
+              {user && IMPORT_ENABLED && (
+                <button
+                  id="lc-import-open-btn"
+                  onClick={() => setShowImport(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-lime-400 dark:hover:border-lime-500 hover:text-lime-600 dark:hover:text-lime-400 transition-colors bg-white dark:bg-stone-900"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Import from LeetCode
+                </button>
+              )}
             </div>
           </div>
         </motion.div>
@@ -188,6 +210,30 @@ export default function DsaTopicsPage() {
             </div>
           ))}
         </motion.div>
+
+        {/* "Already imported" banner */}
+        {user && IMPORT_ENABLED && importStatus?.lastImport && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between gap-3 px-4 py-2.5 mb-4 rounded-md bg-lime-50 dark:bg-lime-950/20 border border-lime-200 dark:border-lime-800"
+          >
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400 shrink-0" />
+              <span className="text-[11px] text-stone-700 dark:text-stone-300">
+                Imported{importStatus.lastImport.username ? ` from @${importStatus.lastImport.username}` : " via CSV"} on{" "}
+                {new Date(importStatus.lastImport.importedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                {" "}· {importStatus.lastImport.imported} problems
+              </span>
+            </div>
+            <button
+              onClick={() => setShowImport(true)}
+              className="text-[10px] font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400 hover:underline shrink-0 cursor-pointer"
+            >
+              re-import
+            </button>
+          </motion.div>
+        )}
 
         {/* Difficulty breakdown (logged-in) */}
         {user && progress && (
@@ -428,6 +474,7 @@ export default function DsaTopicsPage() {
       </div>
 
       <LoginGate open={showGate} onClose={() => setShowGate(false)} />
+      <LeetcodeImportModal open={showImport} onClose={() => setShowImport(false)} />
     </div>
   );
 }
