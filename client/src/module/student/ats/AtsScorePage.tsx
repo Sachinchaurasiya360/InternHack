@@ -38,6 +38,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
+/** Recharts custom tooltip — renders score, date, role, and resume name on dot hover. */
 function ScoreTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;

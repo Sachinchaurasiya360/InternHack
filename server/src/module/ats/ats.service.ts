@@ -310,8 +310,8 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
     };
   }
 
+  /** Returns the latest 30 ATS scores for a student, sorted oldest-first for charting. */
   async getScoreHistory(studentId: number) {
-    // latest 30, reversed to chronological order
     const rows = await prisma.atsScore.findMany({
       where: { studentId },
       select: {

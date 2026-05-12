@@ -145,6 +145,7 @@ export class AtsController {
     await sendEmail({ to: user.email, subject, html });
   }
 
+  /** GET /api/ats/history — returns the authenticated student's recent score history. */
   async getScoreHistory(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
