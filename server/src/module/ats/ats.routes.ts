@@ -28,6 +28,7 @@ export const atsRouter = Router();
 atsRouter.use(authMiddleware, requireRole("STUDENT"));
 
 atsRouter.get("/usage", (req, res, next) => atsController.getUsageStats(req, res, next));
+atsRouter.get("/history", (req, res, next) => atsController.getScoreHistory(req, res, next));
 atsRouter.post("/score", usageLimit("ATS_SCORE"), (req, res, next) => atsController.scoreResume(req, res, next));
 atsRouter.post("/cover-letter", usageLimit("COVER_LETTER"), (req, res, next) => coverLetterController.generate(req, res, next));
 atsRouter.get("/cover-letter/history", (req, res, next) => coverLetterController.getHistory(req, res, next));

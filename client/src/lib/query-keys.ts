@@ -21,6 +21,7 @@ export const queryKeys = {
   ats: {
     all: ["ats"] as const,
     usage: () => ["ats", "usage"] as const,
+    history: () => ["ats", "history"] as const,
   },
   coverLetter: {
   history: ()           => ["cover-letter", "history"] as const,
