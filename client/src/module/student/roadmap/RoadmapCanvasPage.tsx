@@ -11,6 +11,8 @@ import ReactFlow, {
   Handle,
   type NodeProps,
   ReactFlowProvider,
+  useNodesState,
+  useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,6 +31,11 @@ import {
   Flame,
   ChevronRight,
   BookOpen,
+  LayoutTemplate,
+  GitCommit,
+  Network,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -64,6 +71,8 @@ interface SectionLabelData {
   index: number;
   total: number;
   completed: number;
+  isCollapsed?: boolean;
+  onToggle?: () => void;
 }
 
 // ─── Custom node: section banner (decorative, no handles) ─────────────────
@@ -78,7 +87,7 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: baseDelay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="select-none pointer-events-none w-120"
+      className="select-none w-120"
     >
       {/* Decorative spine break */}
       <div className="flex items-center gap-2 mb-5 px-2">
@@ -129,6 +138,16 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             {data.title}
           </p>
         </div>
+
+        {data.onToggle && (
+          <button
+            type="button"
+            onClick={data.onToggle}
+            className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors pointer-events-auto mr-2 cursor-pointer"
+          >
+            {data.isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+          </button>
+        )}
 
         <div className="text-right shrink-0">
           <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-stone-400 mb-0.5">
@@ -348,6 +367,17 @@ export default function RoadmapCanvasPage() {
   const [enrollmentId, setEnrollmentId] = useState<number | null>(null);
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">("LINEAR");
+  const [collapsedSections, setCollapsedSections] = useState<Set<number>>(new Set());
+
+  const toggleSection = useCallback((id: number) => {
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   // Track previous percentComplete so we only fire the modal on the transition to 100
   const prevPercentRef = useRef<number | null>(null);
@@ -435,18 +465,15 @@ export default function RoadmapCanvasPage() {
     return data.enrollment.roadmap.sections.flatMap((s) => s.topics);
   }, [data]);
 
-  const { nodes, edges } = useMemo<{
-    nodes: Node<TopicNodeData | SectionLabelData>[];
-    edges: Edge[];
-  }>(() => {
-    if (!data) return { nodes: [], edges: [] };
+  const [nodes, setNodes, onNodesChange] = useNodesState<TopicNodeData | SectionLabelData>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  useEffect(() => {
+    if (!data) return;
 
     const slugToTopicId = new Map<string, number>();
     for (const t of allTopics) slugToTopicId.set(t.slug, t.id);
 
-    // ── Vertical spine layout ────────────────────────────────────────────
-    // Topic node = w-72 (288px). Centered around x=0 ⇒ x = -144.
-    // Section banner = w-120 (480px). Centered around x=0 ⇒ x = -240.
     const TOPIC_NODE_WIDTH = 288;
     const TOPIC_X = -TOPIC_NODE_WIDTH / 2;
     const SECTION_BANNER_X = -240;
@@ -454,8 +481,8 @@ export default function RoadmapCanvasPage() {
     const ROW_HEIGHT = 110;
     const SECTION_GAP = 70;
 
-    const nodes: Node<TopicNodeData | SectionLabelData>[] = [];
-    const edges: Edge[] = [];
+    const newNodes: Node<TopicNodeData | SectionLabelData>[] = [];
+    const newEdges: Edge[] = [];
     const sections = data.enrollment.roadmap.sections;
 
     let cursorY = 0;
@@ -463,12 +490,12 @@ export default function RoadmapCanvasPage() {
     let prevSectionLastTopicId: number | null = null;
 
     sections.forEach((section, sIdx) => {
+      const isCollapsed = collapsedSections.has(section.id);
       const completedInSection = section.topics.filter(
         (t) => progressByTopicId.get(t.id)?.status === "COMPLETED",
       ).length;
 
-      // Section banner
-      nodes.push({
+      newNodes.push({
         id: `section-${section.id}`,
         type: "sectionLabel",
         position: { x: SECTION_BANNER_X, y: cursorY },
@@ -477,17 +504,18 @@ export default function RoadmapCanvasPage() {
           index: sIdx,
           total: section.topics.length,
           completed: completedInSection,
+          isCollapsed,
+          onToggle: () => toggleSection(section.id),
         },
-        draggable: false,
-        selectable: false,
+        draggable: viewMode === "GRAPH",
+        selectable: viewMode === "GRAPH",
       });
       cursorY += SECTION_HEADER_HEIGHT;
 
       const firstTopicInSection = section.topics[0];
 
-      // Bridge edge from previous section's last topic to this section's first topic
-      if (prevSectionLastTopicId && firstTopicInSection) {
-        edges.push({
+      if (prevSectionLastTopicId && firstTopicInSection && !isCollapsed) {
+        newEdges.push({
           id: `bridge-${prevSectionLastTopicId}-${firstTopicInSection.id}`,
           source: String(prevSectionLastTopicId),
           target: String(firstTopicInSection.id),
@@ -501,71 +529,71 @@ export default function RoadmapCanvasPage() {
         });
       }
 
-      section.topics.forEach((topic, tIdx) => {
-        const p = progressByTopicId.get(topic.id);
-        nodes.push({
-          id: String(topic.id),
-          type: "topic",
-          position: { x: TOPIC_X, y: cursorY },
-          data: {
-            topic,
-            status: p?.status ?? "NOT_STARTED",
-            bookmarked: p?.bookmarked ?? false,
-            isNext: topic.id === nextTopicId,
-            index: globalIdx,
-            onClick: () => handleNodeClick(topic.id),
-          },
-        });
-        globalIdx += 1;
-        cursorY += ROW_HEIGHT;
-
-        // Sequential edges within a section
-        if (tIdx > 0) {
-          const prev = section.topics[tIdx - 1];
-          const prevDone =
-            progressByTopicId.get(prev.id)?.status === "COMPLETED";
-          const isFrontier = prevDone && topic.id === nextTopicId;
-          edges.push({
-            id: `e${prev.id}-${topic.id}`,
-            source: String(prev.id),
-            target: String(topic.id),
-            type: "smoothstep",
-            animated: isFrontier,
-            style: {
-              stroke: prevDone ? "#84cc16" : "#d6d3d1",
-              strokeWidth: prevDone ? 2 : 1.5,
+      if (!isCollapsed) {
+        section.topics.forEach((topic, tIdx) => {
+          const p = progressByTopicId.get(topic.id);
+          newNodes.push({
+            id: String(topic.id),
+            type: "topic",
+            position: viewMode === "GRAPH" ? { x: TOPIC_X + (Math.random() * 100 - 50), y: cursorY + (Math.random() * 50 - 25) } : { x: TOPIC_X, y: cursorY },
+            data: {
+              topic,
+              status: p?.status ?? "NOT_STARTED",
+              bookmarked: p?.bookmarked ?? false,
+              isNext: topic.id === nextTopicId,
+              index: globalIdx,
+              onClick: () => handleNodeClick(topic.id),
             },
+            draggable: viewMode === "GRAPH",
           });
-        }
+          globalIdx += 1;
+          cursorY += ROW_HEIGHT;
 
-        // Cross-section prereq edges (dashed)
-        for (const preSlug of topic.prerequisiteSlugs ?? []) {
-          const preId = slugToTopicId.get(preSlug);
-          if (preId && preId !== topic.id) {
-            edges.push({
-              id: `p${preId}-${topic.id}`,
-              source: String(preId),
+          if (tIdx > 0) {
+            const prev = section.topics[tIdx - 1];
+            const prevDone = progressByTopicId.get(prev.id)?.status === "COMPLETED";
+            const isFrontier = prevDone && topic.id === nextTopicId;
+            newEdges.push({
+              id: `e${prev.id}-${topic.id}`,
+              source: String(prev.id),
               target: String(topic.id),
               type: "smoothstep",
-              animated: false,
+              animated: isFrontier,
               style: {
-                stroke: "#a8a29e",
-                strokeWidth: 1.25,
-                strokeDasharray: "4 4",
-                opacity: 0.45,
+                stroke: prevDone ? "#84cc16" : "#d6d3d1",
+                strokeWidth: prevDone ? 2 : 1.5,
               },
             });
           }
-        }
-      });
 
-      prevSectionLastTopicId =
-        section.topics[section.topics.length - 1]?.id ?? prevSectionLastTopicId;
+          for (const preSlug of topic.prerequisiteSlugs ?? []) {
+            const preId = slugToTopicId.get(preSlug);
+            if (preId && preId !== topic.id) {
+              newEdges.push({
+                id: `p${preId}-${topic.id}`,
+                source: String(preId),
+                target: String(topic.id),
+                type: "smoothstep",
+                animated: false,
+                style: {
+                  stroke: "#a8a29e",
+                  strokeWidth: 1.25,
+                  strokeDasharray: "4 4",
+                  opacity: 0.45,
+                },
+              });
+            }
+          }
+        });
+      }
+
+      prevSectionLastTopicId = !isCollapsed ? (section.topics[section.topics.length - 1]?.id ?? prevSectionLastTopicId) : prevSectionLastTopicId;
       cursorY += SECTION_GAP;
     });
 
-    return { nodes, edges };
-  }, [data, allTopics, progressByTopicId, nextTopicId, handleNodeClick]);
+    setNodes(newNodes);
+    setEdges(newEdges);
+  }, [data, allTopics, progressByTopicId, nextTopicId, handleNodeClick, viewMode, collapsedSections, setNodes, setEdges]);
 
   const drawerTopic = useMemo(() => {
     if (!drawerTopicId || !data) return null;
@@ -692,6 +720,29 @@ export default function RoadmapCanvasPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-5 shrink-0">
+            <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
+              <button
+                onClick={() => setViewMode("LINEAR")}
+                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "LINEAR" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
+                title="Linear View"
+              >
+                <GitCommit className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("GRID")}
+                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRID" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
+                title="Grid View"
+              >
+                <LayoutTemplate className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("GRAPH")}
+                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRAPH" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
+                title="Graph View"
+              >
+                <Network className="w-4 h-4" />
+              </button>
+            </div>
               <Stat
                 icon={Target}
                 label="progress"
@@ -771,6 +822,8 @@ export default function RoadmapCanvasPage() {
             <ReactFlow
               nodes={nodes}
               edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
               nodeTypes={nodeTypes}
               fitView={false}
               defaultViewport={{ x: 0, y: 0, zoom: 1 }}
