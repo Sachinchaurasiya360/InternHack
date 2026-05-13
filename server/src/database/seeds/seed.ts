@@ -296,6 +296,13 @@ async function seedCompanies() {
     { name: "CyberShield Security", slug: "cybershield-security", description: "Cybersecurity firm offering threat detection, penetration testing, and compliance services.", industry: "Cybersecurity", size: "MEDIUM" as const, city: "Delhi", state: "Delhi", website: "https://cybershield.example.com", technologies: ["Python", "Go", "Rust", "Elasticsearch"], hiringStatus: true, foundedYear: 2018 },
     { name: "EduTech Pro", slug: "edutech-pro", description: "EdTech startup building adaptive learning platforms for K-12 and higher education.", industry: "Education Technology", size: "STARTUP" as const, city: "Bangalore", state: "Karnataka", website: "https://edutechpro.example.com", technologies: ["React", "Node.js", "MongoDB", "AI/ML"], hiringStatus: true, foundedYear: 2022 },
     { name: "HealthBridge Systems", slug: "healthbridge-systems", description: "Healthcare IT company building EHR systems and telemedicine platforms.", industry: "Healthcare IT", size: "LARGE" as const, city: "Noida", state: "Uttar Pradesh", website: "https://healthbridge.example.com", technologies: ["Java", "Spring Boot", "Angular", "PostgreSQL"], hiringStatus: true, foundedYear: 2012 },
+    // extra testcases added to match seedInterviewExperiences()
+    { name: "Google", slug: "google", description: "Global technology company specializing in internet services, cloud computing, AI, and digital advertising products.", industry: "Technology", size: "ENTERPRISE" as const, city: "Bangalore", state: "Karnataka", website: "https://google.com", technologies: ["Go", "C++", "Python", "Kubernetes", "TensorFlow"], hiringStatus: true, foundedYear: 1998 },
+    { name: "Microsoft", slug: "microsoft", description: "Multinational technology corporation developing software, cloud computing platforms, and AI-powered productivity solutions.", industry: "Technology", size: "ENTERPRISE" as const, city: "Hyderabad", state: "Telangana", website: "https://microsoft.com", technologies: ["C#", ".NET", "Azure", "TypeScript", "React"], hiringStatus: true, foundedYear: 1975 },
+    { name: "Amazon", slug: "amazon", description: "Global e-commerce and cloud computing company known for AWS, logistics innovation, and scalable distributed systems.", industry: "E-Commerce", size: "ENTERPRISE" as const, city: "Hyderabad", state: "Telangana", website: "https://amazon.com", technologies: ["Java", "AWS", "DynamoDB", "React", "Node.js"], hiringStatus: true, foundedYear: 1994 },
+    { name: "Flipkart", slug: "flipkart", description: "Indian e-commerce giant providing online shopping, digital payments, and supply chain technology solutions.", industry: "E-Commerce", size: "LARGE" as const, city: "Bangalore", state: "Karnataka", website: "https://flipkart.com", technologies: ["Java", "Spring Boot", "React", "Kafka", "Redis"], hiringStatus: true, foundedYear: 2007 },
+    { name: "Adobe", slug: "adobe", description: "Software company known for creative tools, digital media products, and experience cloud solutions.", industry: "Software", size: "LARGE" as const, city: "Noida", state: "Uttar Pradesh", website: "https://adobe.com", technologies: ["Java", "C++", "React", "Adobe Experience Cloud", "Python"], hiringStatus: true, foundedYear: 1982 },
+    { name: "Atlassian", slug: "atlassian", description: "Enterprise software company building collaboration and productivity tools like Jira, Confluence, and Trello.", industry: "Software", size: "LARGE" as const, city: "Bangalore", state: "Karnataka", website: "https://atlassian.com", technologies: ["Java", "Kotlin", "React", "AWS", "PostgreSQL"], hiringStatus: true, foundedYear: 2002 },
   ];
 
   let count = 0;
@@ -1046,13 +1053,31 @@ async function seedInterviewExperiences() {
   let count = 0;
   for (const e of experiences) {
     const existing = await prisma.interviewExperience.findFirst({
-      where: { companyName: e.companyName, role: e.role, userId: student.id },
+      where: {
+  companyId: companyMap[e.companyName]!,
+  role: e.role,
+  userId: student.id,
+},
     });
     if (!existing) {
       await prisma.interviewExperience.create({
         data: {
-          ...e,
-          companyId: companyMap[e.companyName] ?? null,
+          role: e.role,
+          experienceYears: e.experienceYears,
+          interviewYear: e.interviewYear,
+          interviewMonth: e.interviewMonth,
+          source: e.source,
+          difficulty: e.difficulty,
+          outcome: e.outcome,
+          offered: e.offered,
+          ctcLpa: e.ctcLpa,
+          totalRounds: e.totalRounds,
+          overallRating: e.overallRating,
+          tips: e.tips,
+          status: e.status,
+          upvotes: e.upvotes,
+          views: e.views,
+          companyId: companyMap[e.companyName]!,
           userId: student.id,
           rounds: e.rounds,
           prepResources: e.prepResources,
