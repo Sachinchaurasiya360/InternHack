@@ -28,6 +28,29 @@ import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore, UsageStats } from "../../../lib/types";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+
+/** Recharts custom tooltip — renders score, date, role, and resume name on dot hover. */
+function ScoreTooltip({ active, payload }: any) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="bg-stone-900 border border-white/10 rounded-md px-3 py-2 text-[11px] font-mono text-stone-300 shadow-xl">
+      <div className="text-stone-500 mb-1">{d.fullDate}</div>
+      <div>Role: {d.jobTitle}</div>
+      <div className="truncate max-w-[200px]">Resume: {d.resumeName}</div>
+      <div className="text-lime-400 font-bold mt-1">Score: {d.score}/100</div>
+    </div>
+  );
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   formatting: "Formatting",
@@ -81,7 +104,8 @@ const SCORE_TIERS: ScoreTier[] = [
   },
 ];
 const getScoreTier = (score: number): ScoreTier =>
-  SCORE_TIERS.find((t) => score >= t.min) ?? SCORE_TIERS[SCORE_TIERS.length - 1]!;
+  SCORE_TIERS.find((t) => score >= t.min) ??
+  SCORE_TIERS[SCORE_TIERS.length - 1]!;
 
 const JD_MAX_CHARS = 5000;
 const JD_WARN_CHARS = 4500;
@@ -100,8 +124,7 @@ const cardCls =
   "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
 const sectionKickerCls =
   "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
-const sectionTitleCls =
-  "text-sm font-bold text-stone-900 dark:text-stone-50";
+const sectionTitleCls = "text-sm font-bold text-stone-900 dark:text-stone-50";
 const inputCls =
   "w-full px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
 
@@ -214,6 +237,45 @@ export default function AtsScorePage() {
     refetchOnWindowFocus: true,
   });
 
+  const { data: historyData } = useQuery({
+    queryKey: queryKeys.ats.history(),
+    queryFn: () => api.get("/ats/history").then((r) => r.data.history),
+    staleTime: 60_000,
+  });
+
+  const scoreHistory = (historyData ?? []) as {
+    id: number;
+    overallScore: number;
+    jobTitle: string | null;
+    resumeUrl: string;
+    createdAt: string;
+  }[];
+
+  const chartData = scoreHistory.map((h) => {
+    const resumeName = decodeURIComponent(
+      (h.resumeUrl.split("?")[0] ?? h.resumeUrl).split("/").pop() ??
+        "resume.pdf",
+    );
+    return {
+      key: h.createdAt,
+      date: new Date(h.createdAt).toLocaleDateString("en-IN", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+      }),
+      fullDate: new Date(h.createdAt).toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      score: h.overallScore,
+      jobTitle: h.jobTitle ?? "General",
+      resumeName,
+    };
+  });
+
   const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
   const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
   const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -225,9 +287,12 @@ export default function AtsScorePage() {
   const [emailSent, setEmailSent] = useState(false);
 
   const analyzeMutation = useMutation({
-    mutationFn: async (): Promise<{ score: AtsScore; emailQueued: boolean }> => {
+    mutationFn: async (): Promise<{
+      score: AtsScore;
+      emailQueued: boolean;
+    }> => {
       let url = resumeUrl;
-      if (file && !resumeUrl) {
+      if (file) {
         const formData = new FormData();
         formData.append("file", file);
         const uploadRes = await api.post("/upload/profile-resume", formData, {
@@ -252,11 +317,15 @@ export default function AtsScorePage() {
       setCurrentStep(ANALYSIS_STEPS.length - 1);
       setAnalysisComplete(true);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.ats.history() });
     },
     onError: (err: unknown) => {
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        (err instanceof Error ? err.message : "Failed to analyze resume. Please try again.");
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ||
+        (err instanceof Error
+          ? err.message
+          : "Failed to analyze resume. Please try again.");
       setError(msg);
       toast.error(msg);
     },
@@ -361,9 +430,21 @@ export default function AtsScorePage() {
   };
 
   const TABS: { id: ResultTab; label: string; icon: React.ReactNode }[] = [
-    { id: "suggestions", label: "Suggestions", icon: <Lightbulb className="w-3.5 h-3.5" /> },
-    { id: "breakdown", label: "Breakdown", icon: <BarChart2 className="w-3.5 h-3.5" /> },
-    { id: "keywords", label: "Keywords", icon: <Search className="w-3.5 h-3.5" /> },
+    {
+      id: "suggestions",
+      label: "Suggestions",
+      icon: <Lightbulb className="w-3.5 h-3.5" />,
+    },
+    {
+      id: "breakdown",
+      label: "Breakdown",
+      icon: <BarChart2 className="w-3.5 h-3.5" />,
+    },
+    {
+      id: "keywords",
+      label: "Keywords",
+      icon: <Search className="w-3.5 h-3.5" />,
+    },
   ];
 
   const showUploadForm = !result;
@@ -403,7 +484,8 @@ export default function AtsScorePage() {
             </span>
           </h1>
           <p className="mt-3 text-sm text-stone-500 max-w-md">
-            Upload a PDF, add a target role, and get an ATS score with keyword gaps and concrete rewrite suggestions.
+            Upload a PDF, add a target role, and get an ATS score with keyword
+            gaps and concrete rewrite suggestions.
           </p>
         </div>
         {atsUsage && (
@@ -413,13 +495,92 @@ export default function AtsScorePage() {
             </span>
             <span className="text-sm font-bold tabular-nums text-stone-900 dark:text-stone-50">
               {atsUsage.used}
-              <span className="text-stone-400 dark:text-stone-600 font-normal"> / {atsUsage.limit}</span>
+              <span className="text-stone-400 dark:text-stone-600 font-normal">
+                {" "}
+                / {atsUsage.limit}
+              </span>
             </span>
           </div>
         )}
       </motion.div>
 
       <AtsToolsNav />
+
+      {/* ─── Score Progression Chart ─── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className={`${cardCls} mb-6`}
+      >
+        <CardHeader
+          kicker="progress"
+          title="Score over time"
+          right={
+            chartData.length > 0 ? (
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                {chartData.length}{" "}
+                {chartData.length === 1 ? "analysis" : "analyses"}
+              </span>
+            ) : null
+          }
+        />
+        <div className="p-5">
+          {chartData.length <= 1 ? (
+            <div className="flex items-center gap-3 py-4 text-sm text-stone-500">
+              <TrendingUp className="w-4 h-4 text-lime-500" />
+              {chartData.length === 0
+                ? "Analyze your first resume to start tracking progress."
+                : "Run one more analysis to start tracking your progress."}
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={chartData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(120,113,108,0.15)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="key"
+                  tickFormatter={(val: string) =>
+                    new Date(val).toLocaleDateString("en-IN", {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  }
+                  tick={{
+                    fontSize: 10,
+                    fontFamily: "monospace",
+                    fill: "#78716c",
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  tick={{
+                    fontSize: 10,
+                    fontFamily: "monospace",
+                    fill: "#78716c",
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip content={<ScoreTooltip />} cursor={false} />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="#a3e635"
+                  strokeWidth={2}
+                  dot={{ fill: "#a3e635", strokeWidth: 0, r: 4 }}
+                  activeDot={{ r: 7, fill: "#a3e635" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </motion.div>
 
       {/* ─── Main grid ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
@@ -549,7 +710,9 @@ export default function AtsScorePage() {
                         onChange={(e) => {
                           const next = e.target.value.slice(0, JD_MAX_CHARS);
                           if (e.target.value.length > JD_MAX_CHARS) {
-                            toast.error(`Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`);
+                            toast.error(
+                              `Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`,
+                            );
                           }
                           setJobDescription(next);
                         }}
@@ -567,7 +730,8 @@ export default function AtsScorePage() {
                             : "text-stone-500"
                         }`}
                       >
-                        {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
+                        {jobDescription.length.toLocaleString()} /{" "}
+                        {JD_MAX_CHARS.toLocaleString()}
                       </div>
                     </div>
                   </div>
@@ -650,14 +814,18 @@ export default function AtsScorePage() {
                     <div className="border-t border-stone-200 dark:border-white/10 -mx-5 px-5 pt-4 space-y-2.5">
                       {jobTitle && (
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-mono uppercase tracking-widest text-stone-500">target role</span>
+                          <span className="font-mono uppercase tracking-widest text-stone-500">
+                            target role
+                          </span>
                           <span className="font-bold text-stone-900 dark:text-stone-50 truncate ml-4 max-w-40">
                             {jobTitle}
                           </span>
                         </div>
                       )}
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-mono uppercase tracking-widest text-stone-500">jd length</span>
+                        <span className="font-mono uppercase tracking-widest text-stone-500">
+                          jd length
+                        </span>
                         <span className="font-bold text-stone-900 dark:text-stone-50 tabular-nums">
                           {jobDescription.length.toLocaleString()} chars
                         </span>
@@ -678,7 +846,9 @@ export default function AtsScorePage() {
                         disabled={loading}
                         className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-md text-xs font-bold bg-lime-400 text-stone-950 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
                       >
-                        <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+                        <RefreshCw
+                          className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
+                        />
                         Re-analyze
                       </button>
                     </div>
@@ -699,7 +869,9 @@ export default function AtsScorePage() {
                               key={key}
                               className="bg-white dark:bg-stone-900 p-3 text-left"
                             >
-                              <p className={`text-xl font-bold tracking-tight tabular-nums ${tier.text}`}>
+                              <p
+                                className={`text-xl font-bold tracking-tight tabular-nums ${tier.text}`}
+                              >
                                 {score}
                               </p>
                               <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
@@ -745,12 +917,19 @@ export default function AtsScorePage() {
                     <span className="font-bold text-stone-900 dark:text-stone-50">
                       Analyze resume
                     </span>{" "}
-                    to get your ATS score, keyword analysis, and rewrite suggestions.
+                    to get your ATS score, keyword analysis, and rewrite
+                    suggestions.
                   </p>
                   <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                     {[
-                      { label: "6 categories", icon: <BarChart2 className="w-3 h-3" /> },
-                      { label: "ai powered", icon: <ScanSearch className="w-3 h-3" /> },
+                      {
+                        label: "6 categories",
+                        icon: <BarChart2 className="w-3 h-3" />,
+                      },
+                      {
+                        label: "ai powered",
+                        icon: <ScanSearch className="w-3 h-3" />,
+                      },
                       { label: "instant", icon: <Zap className="w-3 h-3" /> },
                     ].map((tag) => (
                       <div
@@ -800,7 +979,8 @@ export default function AtsScorePage() {
                     {ANALYSIS_STEPS.map((step, i) => {
                       const Icon = step.icon;
                       const isDone =
-                        i < currentStep || (i === currentStep && analysisComplete);
+                        i < currentStep ||
+                        (i === currentStep && analysisComplete);
                       const isCurrent = i === currentStep && !analysisComplete;
                       const isPending = i > currentStep;
                       return (
@@ -831,7 +1011,11 @@ export default function AtsScorePage() {
                             ) : isCurrent ? (
                               <motion.div
                                 animate={{ rotate: 360 }}
-                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "linear",
+                                }}
                               >
                                 <Icon className="w-3.5 h-3.5" />
                               </motion.div>
@@ -905,7 +1089,9 @@ export default function AtsScorePage() {
                     kicker="result"
                     title="Overall ATS score"
                     right={
-                      <span className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}>
+                      <span
+                        className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
+                      >
                         / {overallTier.label.toLowerCase()}
                       </span>
                     }
@@ -991,41 +1177,49 @@ export default function AtsScorePage() {
                           transition={{ duration: 0.18 }}
                           className="space-y-2.5"
                         >
-                          {Object.entries(result.categoryScores).map(([key, score]) => {
-                            const Icon = CATEGORY_ICONS[key] ?? BarChart2;
-                            const tier = getScoreTier(score);
-                            return (
-                              <div
-                                key={key}
-                                className="flex items-center gap-3 p-3.5 bg-stone-50/60 dark:bg-stone-950/40 border border-stone-200 dark:border-white/10 rounded-md"
-                              >
-                                <div className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10">
-                                  <Icon className="w-4 h-4 text-stone-600 dark:text-stone-400" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex justify-between items-center mb-1.5">
-                                    <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
-                                      {CATEGORY_LABELS[key] ?? key}
-                                    </span>
-                                    <span className={`text-sm font-bold tabular-nums ${tier.text}`}>
-                                      {score}
-                                      <span className="text-stone-400 dark:text-stone-600 text-xs font-normal">
-                                        /100
+                          {Object.entries(result.categoryScores).map(
+                            ([key, score]) => {
+                              const Icon = CATEGORY_ICONS[key] ?? BarChart2;
+                              const tier = getScoreTier(score);
+                              return (
+                                <div
+                                  key={key}
+                                  className="flex items-center gap-3 p-3.5 bg-stone-50/60 dark:bg-stone-950/40 border border-stone-200 dark:border-white/10 rounded-md"
+                                >
+                                  <div className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10">
+                                    <Icon className="w-4 h-4 text-stone-600 dark:text-stone-400" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex justify-between items-center mb-1.5">
+                                      <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                                        {CATEGORY_LABELS[key] ?? key}
                                       </span>
-                                    </span>
-                                  </div>
-                                  <div className="h-1.5 bg-stone-200 dark:bg-white/10 rounded-full overflow-hidden">
-                                    <motion.div
-                                      initial={{ width: 0 }}
-                                      animate={{ width: `${String(score)}%` }}
-                                      transition={{ duration: 0.9, delay: 0.1, ease: "easeOut" }}
-                                      className={`h-full rounded-full ${tier.bar}`}
-                                    />
+                                      <span
+                                        className={`text-sm font-bold tabular-nums ${tier.text}`}
+                                      >
+                                        {score}
+                                        <span className="text-stone-400 dark:text-stone-600 text-xs font-normal">
+                                          /100
+                                        </span>
+                                      </span>
+                                    </div>
+                                    <div className="h-1.5 bg-stone-200 dark:bg-white/10 rounded-full overflow-hidden">
+                                      <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${String(score)}%` }}
+                                        transition={{
+                                          duration: 0.9,
+                                          delay: 0.1,
+                                          ease: "easeOut",
+                                        }}
+                                        className={`h-full rounded-full ${tier.bar}`}
+                                      />
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            },
+                          )}
                         </motion.div>
                       )}
 
@@ -1060,7 +1254,8 @@ export default function AtsScorePage() {
                             <div>
                               <div className={sectionKickerCls + " mb-3"}>
                                 <span className="h-1 w-1 bg-orange-500" />
-                                missing · {result.keywordAnalysis.missing.length}
+                                missing ·{" "}
+                                {result.keywordAnalysis.missing.length}
                               </div>
                               <div className="flex flex-wrap gap-1.5">
                                 {result.keywordAnalysis.missing.map((kw) => (
