@@ -29,8 +29,6 @@ import {
   Flame,
   ChevronRight,
   BookOpen,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -349,7 +347,7 @@ export default function RoadmapCanvasPage() {
   const [loading, setLoading] = useState(true);
   const [enrollmentId, setEnrollmentId] = useState<number | null>(null);
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
-  const [downloading, setDownloading] = useState(false);
+  const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   // Track previous percentComplete so we only fire the modal on the transition to 100
   const prevPercentRef = useRef<number | null>(null);
@@ -743,8 +741,8 @@ export default function RoadmapCanvasPage() {
 
             <button
               type="button"
-              onClick={downloadPdf}
-              disabled={downloading}
+              onClick={() => downloadPdf("light")}
+              disabled={downloading !== null}
               className="inline-flex items-center gap-1.5 px-3 py-2 bg-lime-400 text-stone-950 text-xs font-bold rounded-md hover:bg-lime-300 transition-colors disabled:opacity-60 cursor-pointer border-0"
             >
               {downloading ? (
