@@ -511,6 +511,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
         for (const [tIdx, topic] of section.topics.entries()) {
           if (!topic.resources?.length) continue;
           const createdTopic = createdSection.topics[tIdx];
+          if (!createdTopic) continue;
           await tx.roadmapResource.createMany({
             data: topic.resources.map((r, rIdx) => ({
               topicId: createdTopic.id,

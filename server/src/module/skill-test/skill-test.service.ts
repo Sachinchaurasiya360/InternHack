@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { Prisma } from "@prisma/client";
 
 const QUESTIONS_PER_SESSION = 20;
 
@@ -268,7 +269,7 @@ export class SkillTestService {
         score,
         passed,
         answers: gradedAnswers,
-        proctorLog: proctorLog ?? null,
+        proctorLog: (proctorLog as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
         proctoringScore,
         autoTerminated,
         completedAt: new Date(),

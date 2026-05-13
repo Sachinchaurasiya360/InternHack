@@ -4,7 +4,7 @@ import type {
 } from "./cover-letter.validation.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../../database/db.js";
 
 export class CoverLetterService {
   async generate(

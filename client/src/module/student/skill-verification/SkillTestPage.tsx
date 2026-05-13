@@ -358,9 +358,6 @@ export default function SkillTestPage() {
               </p>
             )}
 
-          
-        </motion.div>
-      </div>
             <div className="grid grid-cols-2 gap-3">
               {[
                 {
@@ -591,6 +588,7 @@ export default function SkillTestPage() {
               </Button>
             )
           )}
+        </div>
         </div>
       </div>
     );

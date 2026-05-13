@@ -623,7 +623,6 @@ export default function CoverLetterPage() {
               </AnimatePresence>
             </div>
           </div>
-          </div>
 
           <CoverLetterHistoryPanel onLoad={handleLoadFromHistory} />
 
