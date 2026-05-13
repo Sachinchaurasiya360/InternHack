@@ -22,6 +22,7 @@ interface JobQuery {
   company?: string | undefined;
   status?: string | undefined;
   tags?: string | undefined;
+  includeExpired?: boolean | undefined;
 }
 
 
@@ -48,6 +49,7 @@ export class JobService {
 
   async getJobs(query: JobQuery) {
     const where: Prisma.jobWhereInput = {};
+    const andFilters: Prisma.jobWhereInput[] = [];
 
     if (query.status) {
       where.status = query.status as "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
@@ -56,11 +58,19 @@ export class JobService {
     }
 
     if (query.search) {
-      where.OR = [
-        { title: { contains: query.search, mode: "insensitive" } },
-        { description: { contains: query.search, mode: "insensitive" } },
-        { company: { contains: query.search, mode: "insensitive" } },
-      ];
+      andFilters.push({
+        OR: [
+          { title: { contains: query.search, mode: "insensitive" } },
+          { description: { contains: query.search, mode: "insensitive" } },
+          { company: { contains: query.search, mode: "insensitive" } },
+        ],
+      });
+    }
+
+    if (!query.includeExpired) {
+      andFilters.push({
+        OR: [{ deadline: null }, { deadline: { gte: new Date() } }],
+      });
     }
 
     if (query.location) {
@@ -73,6 +83,10 @@ export class JobService {
 
     if (query.tags) {
       where.tags = { hasSome: query.tags.split(",").map((t) => t.trim()) };
+    }
+
+    if (andFilters.length > 0) {
+      where.AND = andFilters;
     }
 
     const skip = (query.page - 1) * query.limit;

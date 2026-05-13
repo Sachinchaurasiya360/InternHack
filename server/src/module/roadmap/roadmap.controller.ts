@@ -7,6 +7,7 @@ import {
   enrollmentIdParam,
   enrollmentTopicParams,
   listQuerySchema,
+  pdfThemeQuery,
   recomputePaceSchema,
   roadmapSlugParam,
   topicSlugParam,
@@ -340,6 +341,10 @@ export async function downloadPdf(req: Request, res: Response, next: NextFunctio
       validationError(res, params.error.flatten().fieldErrors);
       return;
     }
+
+    const themeQuery = pdfThemeQuery.safeParse(req.query);
+    const theme = themeQuery.success ? themeQuery.data.theme : "light";
+
     const enrollment = await getEnrollmentForUser({
       userId: req.user!.id,
       enrollmentId: params.data.id,
@@ -361,6 +366,7 @@ export async function downloadPdf(req: Request, res: Response, next: NextFunctio
     }[]) ?? [];
 
     const pdfBuffer = await generateRoadmapPdf({
+      theme,
       user: { name: userRecord?.name ?? "Learner" },
       roadmap: {
         title: enrollment.roadmap.title,
@@ -401,10 +407,11 @@ export async function downloadPdf(req: Request, res: Response, next: NextFunctio
       })),
     });
 
+    const suffix = theme === "dark" ? "-dark" : "";
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${enrollment.roadmap.slug}-roadmap.pdf"`,
+      `attachment; filename="${enrollment.roadmap.slug}-roadmap${suffix}.pdf"`,
     );
     res.send(pdfBuffer);
   } catch (err) {
@@ -504,6 +511,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
         for (const [tIdx, topic] of section.topics.entries()) {
           if (!topic.resources?.length) continue;
           const createdTopic = createdSection.topics[tIdx];
+          if (!createdTopic) continue;
           await tx.roadmapResource.createMany({
             data: topic.resources.map((r, rIdx) => ({
               topicId: createdTopic.id,

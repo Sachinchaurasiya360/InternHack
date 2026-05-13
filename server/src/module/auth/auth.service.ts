@@ -30,7 +30,7 @@ interface UpdateProfileInput {
   designation?: string;
   bio?: string;
   college?: string;
-  graduationYear?: number;
+  graduationYear?: number | null;
   skills?: string[];
   location?: string;
   linkedinUrl?: string;
