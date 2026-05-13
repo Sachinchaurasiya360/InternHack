@@ -134,6 +134,7 @@ export interface Round {
   assessmentQuestions?: AssessmentQuestion[];
   timeLimitSecs?: number | null;
   autoGrade?: boolean;
+  activateAt?: string | null;
   _count?: { roundSubmissions: number };
   createdAt: string;
   updatedAt: string;
