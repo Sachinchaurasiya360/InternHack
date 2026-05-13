@@ -80,6 +80,7 @@ export default function SkillTestPage() {
   const [started, setStarted] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [retryAfter, setRetryAfter] = useState<Date | null>(null); 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const submittingRef = useRef(false);
@@ -142,7 +143,12 @@ export default function SkillTestPage() {
       setStarted(true);
       await proctor.requestFullscreen();
     } catch (err: any) {
-      toast.error(err?.response?.data?.error ?? "Failed to start test");
+      if (err?.response?.status === 429) {
+        setRetryAfter(new Date(err.response.data.retryAfter));
+        toast.error("Cooldown active! Please wait before retaking.");
+      } else {
+        toast.error(err?.response?.data?.error ?? "Failed to start test");
+      }
     }
   }, [testId, proctor]);
 
@@ -352,6 +358,9 @@ export default function SkillTestPage() {
               </p>
             )}
 
+          
+        </motion.div>
+      </div>
             <div className="grid grid-cols-2 gap-3">
               {[
                 {
@@ -411,14 +420,20 @@ export default function SkillTestPage() {
               </ul>
             </div>
 
-            <Button
-              size="lg"
-              onClick={handleStart}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-            >
-              <Maximize className="w-4 h-4" />
-              Start Proctored Test
-            </Button>
+            {retryAfter && new Date() < retryAfter ? (
+  <div className="w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+    ⏳ Cooldown active! Retry available at {retryAfter.toLocaleTimeString()}
+  </div>
+) : (
+  <Button
+    size="lg"
+    onClick={handleStart}
+    className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+  >
+    <Maximize className="w-4 h-4" />
+    Start Proctored Test
+  </Button>
+)}
           </motion.div>
         </div>
       </div>
@@ -543,17 +558,24 @@ export default function SkillTestPage() {
             })}
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 pt-2 pb-8">
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={closeTab}
-              className="flex-1 rounded-xl"
-            >
-              Close Tab
-            </Button>
-            {!result.passed && (
+        {/* Actions */}
+        {/* Actions */}
+        <div className="flex gap-3 pt-2 pb-8">
+          <Button
+            size="lg"
+            variant="secondary"
+            onClick={closeTab}
+            className="flex-1 rounded-xl"
+          >
+            Close Tab
+          </Button>
+
+          {!result.passed && (
+            retryAfter && new Date() < retryAfter ? (
+              <div className="flex-1 text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+                ⏳ Retry available at {retryAfter.toLocaleTimeString()}
+              </div>
+            ) : (
               <Button
                 size="lg"
                 onClick={() => {
@@ -561,13 +583,14 @@ export default function SkillTestPage() {
                   setAnswers({});
                   setCurrentQ(0);
                   setStarted(false);
+                  setRetryAfter(null);
                 }}
                 className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
               >
                 Try Again
               </Button>
-            )}
-          </div>
+            )
+          )}
         </div>
       </div>
     );

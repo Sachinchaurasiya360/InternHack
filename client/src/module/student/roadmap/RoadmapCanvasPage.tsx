@@ -36,6 +36,8 @@ import {
   Network,
   ChevronDown,
   ChevronUp,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -623,9 +625,9 @@ export default function RoadmapCanvasPage() {
     }
   };
 
-  const downloadPdf = async () => {
+  const downloadPdf = async (theme: "light" | "dark") => {
     if (!enrollmentId) return;
-    setDownloading(true);
+    setDownloading(theme);
     try {
       const res = await api.get(
         `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
@@ -636,13 +638,13 @@ export default function RoadmapCanvasPage() {
       const url = URL.createObjectURL(res.data as Blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${slug}-roadmap.pdf`;
+      a.download = `${slug}-roadmap${theme === "dark" ? "-dark" : ""}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
       toast.error("Could not download PDF");
     } finally {
-      setDownloading(false);
+      setDownloading(null);
     }
   };
 

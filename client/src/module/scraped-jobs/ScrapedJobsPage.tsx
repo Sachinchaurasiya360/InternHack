@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Search, MapPin, DollarSign, Building2, ExternalLink, Globe, Filter } from "lucide-react";
+import { LocationDropdown } from "../../components/ui/LocationDropdown";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
 import { canonicalUrl } from "../../lib/seo.utils";
@@ -81,13 +82,14 @@ export default function ScrapedJobsPage() {
               className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm dark:bg-gray-800 dark:text-white"
               placeholder="Search by title, company, or keywords..." />
           </div>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && fetchJobs()}
-              className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm w-full sm:w-44 dark:bg-gray-800 dark:text-white"
-              placeholder="Location" />
-          </div>
+          <LocationDropdown
+            id="job-location-filter"
+            value={location}
+            onChange={(val) => { setLocation(val); setPage(1); }}
+            onSearch={() => { setPage(1); fetchJobs(); }}
+            placeholder="Location"
+            className="w-full sm:w-52"
+          />
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <select value={source} onChange={(e) => { setSource(e.target.value); setPage(1); }}
