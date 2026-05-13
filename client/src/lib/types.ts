@@ -277,7 +277,7 @@ export interface LatexChatResponse {
 }
 
 // Cover Letter
-export type CoverLetterTone = "professional" | "friendly" | "enthusiastic";
+export type CoverLetterTone = "professional" | "friendly" | "enthusiastic" | "technical" | "creative" | "formal" | "concise" | "startup";
 
 export interface CoverLetterInput {
   jobDescription: string;

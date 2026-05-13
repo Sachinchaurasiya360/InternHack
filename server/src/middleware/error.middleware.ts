@@ -44,7 +44,7 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
       userId: (req as unknown as { user?: { id: number } }).user?.id ?? null,
       ipAddress: (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.ip || null,
       userAgent: req.headers["user-agent"] || null,
-      requestBody: sanitizeBody(req.body),
+      requestBody: sanitizeBody(req.body) ?? Prisma.DbNull,
     },
   }).catch((dbErr) => {
     console.error("[ErrorLog] Failed to write:", dbErr);
