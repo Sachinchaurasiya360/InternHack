@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -49,6 +49,7 @@ function CircularProgress({ progress }: { progress: number }) {
 
 export default function DsaTopicsPage() {
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
   const [showGate, setShowGate] = useState(false);
   const [page, setPage] = useState(1);
@@ -258,6 +259,16 @@ export default function DsaTopicsPage() {
             </Link>
           ))}
         </motion.div>
+
+        {/* LeetCode Sync — only for logged-in students */}
+        {user && (
+          <LeetCodeSync
+            onSyncSuccess={() => {
+              queryClient.invalidateQueries({ queryKey: queryKeys.dsa.topics("") });
+              queryClient.invalidateQueries({ queryKey: queryKeys.dsa.progress() });
+            }}
+          />
+        )}
 
         {/* Filters + search */}
         <motion.div

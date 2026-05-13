@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { toast } from 'react-hot-toast'; // or whatever toast library the project uses
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import api from '../../../../lib/axios';
 
 export const LeetCodeSync = ({ onSyncSuccess }: { onSyncSuccess: () => void }) => {
