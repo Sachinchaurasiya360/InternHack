@@ -16,6 +16,8 @@ import {
   Camera,
   Ban,
   Shield,
+  FileText,
+  Trophy,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
@@ -358,33 +360,50 @@ export default function SkillTestPage() {
               </p>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                {
-                  label: "Time Limit",
-                  value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
-                  icon: Clock,
-                },
-                {
-                  label: "Pass Score",
-                  value: `${test.passThreshold}%`,
-                  icon: CheckCircle2,
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
-                >
-                  <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                    {item.value}
-                  </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                    {item.label}
-                  </p>
-                </div>
-              ))}
-            </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+  {[
+    {
+      label: "Time Limit",
+      value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
+      icon: Clock,
+    },
+    {
+      label: "Pass Score",
+      value: `${test.passThreshold}%`,
+      icon: CheckCircle2,
+    },
+    {
+      label: "Questions",
+      value: test.questionsPerSession ?? "—",
+      icon: FileText,
+    },
+    {
+      label: "Best Attempt",
+      value:
+        test.bestAttempt !== null &&
+        test.bestAttempt !== undefined
+          ? `${test.bestAttempt}%`
+          : "—",
+      icon: Trophy,
+    },
+  ].map((item) => (
+    <div
+      key={item.label}
+      className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
+    >
+      <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+
+      <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+        {item.value}
+      </p>
+
+      <p className="text-[11px] text-gray-500 dark:text-gray-400">
+        {item.label}
+      </p>
+    </div>
+  ))}
+</div>  
+             
 
             {test.existingVerification && (
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3 text-center">
