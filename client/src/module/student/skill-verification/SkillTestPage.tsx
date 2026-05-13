@@ -342,10 +342,10 @@ export default function SkillTestPage() {
                 {test.title}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                {test.skillName.replace("-", " ")}
+                {test.skillName.replace(/-/g, " ")}
               </p>
             </div>
-
+                    
             {test.description && (
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                 {test.description}
