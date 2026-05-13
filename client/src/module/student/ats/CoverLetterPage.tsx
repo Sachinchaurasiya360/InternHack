@@ -35,9 +35,26 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { CoverLetterTone, UsageStats } from "../../../lib/types";
 
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
-  { id: "professional", label: "Professional", description: "Formal and confident" },
+  {
+    id: "professional",
+    label: "Professional",
+    description: "Formal and confident",
+  },
   { id: "friendly", label: "Friendly", description: "Warm and approachable" },
-  { id: "enthusiastic", label: "Enthusiastic", description: "Energetic and passionate" },
+  {
+    id: "enthusiastic",
+    label: "Enthusiastic",
+    description: "Energetic and passionate",
+  },
+  { id: "technical", label: "Technical", description: "Precise, stack-aware" },
+  {
+    id: "creative",
+    label: "Creative",
+    description: "Narrative and expressive",
+  },
+  { id: "formal", label: "Formal", description: "Executive and measured" },
+  { id: "concise", label: "Concise", description: "Short and direct" },
+  { id: "startup", label: "Startup", description: "Bold and mission-driven" },
 ];
 
 const GENERATION_STEPS = [
@@ -53,8 +70,7 @@ const cardCls =
   "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
 const sectionKickerCls =
   "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
-const sectionTitleCls =
-  "text-sm font-bold text-stone-900 dark:text-stone-50";
+const sectionTitleCls = "text-sm font-bold text-stone-900 dark:text-stone-50";
 const inputCls =
   "w-full px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
 const labelCls =
@@ -96,6 +112,7 @@ export default function CoverLetterPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
   const letterRef = useRef<HTMLDivElement>(null);
+  const [toneManuallySelected, setToneManuallySelected] = useState(false);
 
   const user = useAuthStore((s) => s.user);
 
@@ -112,19 +129,63 @@ export default function CoverLetterPage() {
   const profileSummary = useMemo(() => {
     if (!user) return null;
     const parts: string[] = [];
-    if (user.skills && user.skills.length > 0) parts.push(user.skills.join(", "));
-    if (user.college) parts.push(user.college + (user.graduationYear ? ` (${String(user.graduationYear)})` : ""));
-    if (user.company) parts.push(user.company + (user.designation ? ` - ${user.designation}` : ""));
-    if (user.projects && user.projects.length > 0) parts.push(`${String(user.projects.length)} project${user.projects.length > 1 ? "s" : ""}`);
-    if (user.achievements && user.achievements.length > 0) parts.push(`${String(user.achievements.length)} achievement${user.achievements.length > 1 ? "s" : ""}`);
+    if (user.skills && user.skills.length > 0)
+      parts.push(user.skills.join(", "));
+    if (user.college)
+      parts.push(
+        user.college +
+          (user.graduationYear ? ` (${String(user.graduationYear)})` : ""),
+      );
+    if (user.company)
+      parts.push(
+        user.company + (user.designation ? ` - ${user.designation}` : ""),
+      );
+    if (user.projects && user.projects.length > 0)
+      parts.push(
+        `${String(user.projects.length)} project${user.projects.length > 1 ? "s" : ""}`,
+      );
+    if (user.achievements && user.achievements.length > 0)
+      parts.push(
+        `${String(user.achievements.length)} achievement${user.achievements.length > 1 ? "s" : ""}`,
+      );
     return parts;
   }, [user]);
 
   const hasProfileData = profileSummary && profileSummary.length > 0;
 
+  // Auto-select tone based on job description keywords
+  useEffect(() => {
+    if (toneManuallySelected) return;
+    if (!jobDescription || jobDescription.length < 30) return;
+    const jd = jobDescription.toLowerCase();
+    if (
+      /\bvp\b|vice president|director|executive|c-suite|cto|ceo|cfo/.test(jd)
+    ) {
+      setTone("formal");
+    } else if (
+      /engineer|developer|architect|backend|frontend|fullstack|devops|sre|infrastructure/.test(
+        jd,
+      )
+    ) {
+      setTone("technical");
+    } else if (
+      /designer|creative|brand|content|copywriter|narrative|storytelling/.test(
+        jd,
+      )
+    ) {
+      setTone("creative");
+    } else if (
+      /startup|founder|mission|seed|series\s[a-c]|early.stage/.test(jd)
+    ) {
+      setTone("startup");
+    }
+  }, [jobDescription, toneManuallySelected]);
+
   const handleGenerate = async () => {
     if (jobDescription.trim().length < JD_MIN_CHARS) {
-      toast.error(`Job description must be at least ${JD_MIN_CHARS} characters`);
+      toast.error(
+        `Job description must be at least ${JD_MIN_CHARS} characters`,
+      );
       return;
     }
 
@@ -177,7 +238,10 @@ export default function CoverLetterPage() {
   useEffect(() => {
     if (!showDownloadMenu) return;
     const handleClick = (e: MouseEvent) => {
-      if (downloadMenuRef.current && !downloadMenuRef.current.contains(e.target as Node)) {
+      if (
+        downloadMenuRef.current &&
+        !downloadMenuRef.current.contains(e.target as Node)
+      ) {
         setShowDownloadMenu(false);
       }
     };
@@ -218,7 +282,7 @@ export default function CoverLetterPage() {
         new Paragraph({
           children: [new TextRun({ text: line, font: "Georgia", size: 24 })],
           spacing: { after: 120 },
-        })
+        }),
     );
 
     const doc = new Document({
@@ -231,7 +295,11 @@ export default function CoverLetterPage() {
 
   return (
     <div className="relative pb-16">
-      <SEO title="Cover Letter Builder - InternHack" description="Generate AI-powered cover letters tailored to any job" noIndex />
+      <SEO
+        title="Cover Letter Builder - InternHack"
+        description="Generate AI-powered cover letters tailored to any job"
+        noIndex
+      />
 
       {/* ─── Editorial header ─── */}
       <motion.div
@@ -249,7 +317,8 @@ export default function CoverLetterPage() {
             Write your cover letter.
           </h1>
           <p className="mt-3 text-sm text-stone-500 max-w-md">
-            Paste a job description, pick a tone, and get a tailored letter you can copy, edit, or export as PDF or DOCX.
+            Paste a job description, pick a tone, and get a tailored letter you
+            can copy, edit, or export as PDF or DOCX.
           </p>
         </div>
         {clUsage && (
@@ -259,7 +328,10 @@ export default function CoverLetterPage() {
             </span>
             <span className="text-sm font-bold tabular-nums text-stone-900 dark:text-stone-50">
               {clUsage.used}
-              <span className="text-stone-400 dark:text-stone-600 font-normal"> / {clUsage.limit}</span>
+              <span className="text-stone-400 dark:text-stone-600 font-normal">
+                {" "}
+                / {clUsage.limit}
+              </span>
             </span>
           </div>
         )}
@@ -275,7 +347,8 @@ export default function CoverLetterPage() {
             <div className="p-5 space-y-4">
               <div>
                 <label className={labelCls}>
-                  <AlignLeft className="w-3 h-3" /> job description <span className="text-red-500">*</span>
+                  <AlignLeft className="w-3 h-3" /> job description{" "}
+                  <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   className={`${inputCls} min-h-35 resize-y`}
@@ -285,25 +358,35 @@ export default function CoverLetterPage() {
                 />
                 <div className="mt-1.5 flex flex-col gap-1">
                   <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest tabular-nums">
-                    <span className={jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}>
-                      {jobDescription.length === 0 
+                    <span
+                      className={
+                        jobDescription.length > 0 &&
+                        jobDescription.length < JD_MIN_CHARS
+                          ? "text-amber-600 dark:text-amber-400"
+                          : "text-emerald-600 dark:text-emerald-400"
+                      }
+                    >
+                      {jobDescription.length === 0
                         ? `${JD_MIN_CHARS} characters minimum`
                         : jobDescription.length < JD_MIN_CHARS
-                        ? `${JD_MIN_CHARS - jobDescription.length} more characters needed`
-                        : "Ready to generate"}
+                          ? `${JD_MIN_CHARS - jobDescription.length} more characters needed`
+                          : "Ready to generate"}
                     </span>
                     <span className="text-stone-500">
                       {jobDescription.length} / {JD_MIN_CHARS} min
                     </span>
                   </div>
-                  {jobDescription.length >= JD_MIN_CHARS && jobDescription.length < 200 && (
-                    <p className="text-[10px] text-stone-500 mt-0.5 normal-case tracking-normal font-sans">
-                       Longer job descriptions produce better-tailored cover letters. Aim for 200+ chars.
-                    </p>
-                  )}
+                  {jobDescription.length >= JD_MIN_CHARS &&
+                    jobDescription.length < 200 && (
+                      <p className="text-xs text-stone-500 mt-0.5 normal-case tracking-normal font-sans">
+                        Longer job descriptions produce better-tailored cover
+                        letters. Aim for 200+ chars.
+                      </p>
+                    )}
                   {jobDescription.length > 5000 && (
                     <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5 normal-case tracking-normal font-sans">
-                       Very long descriptions may be truncated. Consider keeping it under 5000 chars.
+                      Very long descriptions may be truncated. Consider keeping
+                      it under 5000 chars.
                     </p>
                   )}
                 </div>
@@ -352,14 +435,17 @@ export default function CoverLetterPage() {
           <div className={cardCls}>
             <CardHeader kicker="step 02" title="Tone" />
             <div className="p-5">
-              <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                 {TONES.map((t, i) => {
                   const isActive = tone === t.id;
                   return (
                     <button
                       key={t.id}
                       type="button"
-                      onClick={() => setTone(t.id)}
+                      onClick={() => {
+                        setTone(t.id);
+                        setToneManuallySelected(true);
+                      }}
                       className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
                         isActive
                           ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
@@ -376,7 +462,9 @@ export default function CoverLetterPage() {
                       <span className="text-sm font-bold">{t.label}</span>
                       <span
                         className={`text-[11px] ${
-                          isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+                          isActive
+                            ? "text-stone-300 dark:text-stone-600"
+                            : "text-stone-500"
                         }`}
                       >
                         {t.description}
@@ -404,7 +492,9 @@ export default function CoverLetterPage() {
                 type="button"
                 onClick={() => {
                   if (!hasProfileData) {
-                    toast.error("Complete your profile first to use this feature");
+                    toast.error(
+                      "Complete your profile first to use this feature",
+                    );
                     return;
                   }
                   setUseProfile(!useProfile);
@@ -417,11 +507,13 @@ export default function CoverLetterPage() {
                       : "border-stone-300 dark:border-white/10 bg-stone-50/60 dark:bg-stone-950/40 hover:border-stone-400 dark:hover:border-white/20"
                 }`}
               >
-                <div className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${
-                  useProfile && hasProfileData
-                    ? "bg-lime-400 text-stone-950"
-                    : "bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-500"
-                }`}>
+                <div
+                  className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${
+                    useProfile && hasProfileData
+                      ? "bg-lime-400 text-stone-950"
+                      : "bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-500"
+                  }`}
+                >
                   <User className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -429,15 +521,23 @@ export default function CoverLetterPage() {
                     Pull from profile
                   </p>
                   <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
-                    {hasProfileData ? "include skills, projects, achievements" : "complete profile to enable"}
+                    {hasProfileData
+                      ? "include skills, projects, achievements"
+                      : "complete profile to enable"}
                   </p>
                 </div>
-                <div className={`w-9 h-5 relative transition-colors shrink-0 rounded-sm ${
-                  useProfile && hasProfileData ? "bg-lime-400" : "bg-stone-200 dark:bg-white/10"
-                }`}>
-                  <div className={`absolute top-0.5 w-4 h-4 bg-white dark:bg-stone-50 shadow-sm transition-all rounded-xs ${
-                    useProfile && hasProfileData ? "left-4.5" : "left-0.5"
-                  }`} />
+                <div
+                  className={`w-9 h-5 relative transition-colors shrink-0 rounded-sm ${
+                    useProfile && hasProfileData
+                      ? "bg-lime-400"
+                      : "bg-stone-200 dark:bg-white/10"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-0.5 w-4 h-4 bg-white dark:bg-stone-50 shadow-sm transition-all rounded-xs ${
+                      useProfile && hasProfileData ? "left-4.5" : "left-0.5"
+                    }`}
+                  />
                 </div>
               </button>
 
@@ -456,7 +556,10 @@ export default function CoverLetterPage() {
                           <div className="flex items-start gap-2">
                             <Code2 className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
                             <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-relaxed">
-                              {user.skills.slice(0, 6).join(", ")}{user.skills.length > 6 ? ` +${String(user.skills.length - 6)} more` : ""}
+                              {user.skills.slice(0, 6).join(", ")}
+                              {user.skills.length > 6
+                                ? ` +${String(user.skills.length - 6)} more`
+                                : ""}
                             </p>
                           </div>
                         )}
@@ -464,7 +567,10 @@ export default function CoverLetterPage() {
                           <div className="flex items-start gap-2">
                             <GraduationCap className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
                             <p className="text-[11px] text-stone-600 dark:text-stone-400">
-                              {user.college}{user.graduationYear ? ` (${String(user.graduationYear)})` : ""}
+                              {user.college}
+                              {user.graduationYear
+                                ? ` (${String(user.graduationYear)})`
+                                : ""}
                             </p>
                           </div>
                         )}
@@ -501,7 +607,11 @@ export default function CoverLetterPage() {
           <button
             type="button"
             onClick={handleGenerate}
-            disabled={loading || jobDescription.trim().length < JD_MIN_CHARS || limitReached}
+            disabled={
+              loading ||
+              jobDescription.trim().length < JD_MIN_CHARS ||
+              limitReached
+            }
             className="group w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
@@ -594,7 +704,14 @@ export default function CoverLetterPage() {
                             {isDone ? (
                               <CheckCircle className="w-3.5 h-3.5" />
                             ) : isActive ? (
-                              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}>
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "linear",
+                                }}
+                              >
                                 <Icon className="w-3.5 h-3.5" />
                               </motion.div>
                             ) : (
@@ -620,7 +737,19 @@ export default function CoverLetterPage() {
                           {isActive && (
                             <div className="flex gap-1">
                               {[0, 0.15, 0.3].map((delay) => (
-                                <motion.div key={delay} className="w-1.5 h-1.5 rounded-full bg-lime-400" animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.8, repeat: Infinity, delay }} />
+                                <motion.div
+                                  key={delay}
+                                  className="w-1.5 h-1.5 rounded-full bg-lime-400"
+                                  animate={{
+                                    scale: [1, 1.4, 1],
+                                    opacity: [0.5, 1, 0.5],
+                                  }}
+                                  transition={{
+                                    duration: 0.8,
+                                    repeat: Infinity,
+                                    delay,
+                                  }}
+                                />
                               ))}
                             </div>
                           )}
@@ -685,14 +814,16 @@ export default function CoverLetterPage() {
                                 onClick={handleDownloadPdf}
                                 className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-0 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-stone-500" /> PDF
+                                <FileText className="w-3.5 h-3.5 text-stone-500" />{" "}
+                                PDF
                               </button>
                               <button
                                 type="button"
                                 onClick={handleDownloadDocx}
                                 className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-t border-stone-200 dark:border-white/10 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-stone-500" /> DOCX
+                                <FileText className="w-3.5 h-3.5 text-stone-500" />{" "}
+                                DOCX
                               </button>
                             </motion.div>
                           )}
@@ -740,8 +871,14 @@ export default function CoverLetterPage() {
                   </p>
                   <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                     {[
-                      { label: "ai powered", icon: <Wand2 className="w-3 h-3" /> },
-                      { label: "3 tones", icon: <MessageSquare className="w-3 h-3" /> },
+                      {
+                        label: "ai powered",
+                        icon: <Wand2 className="w-3 h-3" />,
+                      },
+                      {
+                        label: "8 tones",
+                        icon: <MessageSquare className="w-3 h-3" />,
+                      },
                       { label: "instant", icon: <Zap className="w-3 h-3" /> },
                     ].map((tag) => (
                       <div
@@ -778,7 +915,9 @@ export default function CoverLetterPage() {
                   <div className="w-14 h-14 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-center justify-center mx-auto mb-4">
                     <AlertCircle className="w-6 h-6 text-red-500" />
                   </div>
-                  <p className="text-sm text-stone-700 dark:text-stone-300 mb-5 max-w-sm mx-auto">{error}</p>
+                  <p className="text-sm text-stone-700 dark:text-stone-300 mb-5 max-w-sm mx-auto">
+                    {error}
+                  </p>
                   <button
                     type="button"
                     onClick={handleGenerate}
