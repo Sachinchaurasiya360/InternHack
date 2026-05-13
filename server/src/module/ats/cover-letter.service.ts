@@ -4,6 +4,7 @@ import type {
 } from "./cover-letter.validation.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
+import { prisma } from "../../lib/prisma.js";
 
 export class CoverLetterService {
   async generate(
@@ -16,6 +17,62 @@ export class CoverLetterService {
     const response = await provider.generateText(prompt);
     logAIRequest("COVER_LETTER", response, true, undefined, userId);
     return response.text.trim();
+  }
+
+  async saveGenerated(
+    studentId: number,
+    data: {
+      jobTitle?: string;
+      companyName?: string;
+      jobDescription: string;
+      content: string;
+      tone: string;
+      useProfile: boolean;
+      keySkills?: string;
+    }
+  ) {
+    const excerpt = data.content.slice(0, 120).replace(/\n/g, " ").trim();
+    return prisma.generatedCoverLetter.create({
+      data: {
+        studentId,
+        jobTitle:       data.jobTitle       ?? null,
+        companyName:    data.companyName    ?? null,
+        jobDescription: data.jobDescription,
+        content:        data.content,
+        tone:           data.tone,
+        useProfile:     data.useProfile,
+        keySkills:      data.keySkills      ?? null,
+        excerpt,
+      },
+    });
+  }
+
+  async getHistory(studentId: number) {
+    return prisma.generatedCoverLetter.findMany({
+      where:   { studentId },
+      orderBy: { createdAt: "desc" },
+      take:    20,
+      select: {
+        id:          true,
+        jobTitle:    true,
+        companyName: true,
+        tone:        true,
+        excerpt:     true,
+        createdAt:   true,
+      },
+    });
+  }
+
+  async getOne(id: number, studentId: number) {
+    return prisma.generatedCoverLetter.findFirst({
+      where: { id, studentId },
+    });
+  }
+
+  async deleteOne(id: number, studentId: number) {
+    return prisma.generatedCoverLetter.deleteMany({
+      where: { id, studentId },
+    });
   }
 
   private buildProfileSection(profile: UserProfile): string {
