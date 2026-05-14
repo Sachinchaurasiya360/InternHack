@@ -282,6 +282,7 @@ export default function AtsScorePage() {
 
   const [currentStep, setCurrentStep] = useState(-1);
   const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [analysisRunId, setAnalysisRunId] = useState(0);
   const [analyzedFileName, setAnalyzedFileName] = useState("");
   const [analyzedFileSize, setAnalyzedFileSize] = useState(0);
   const [emailSent, setEmailSent] = useState(false);
@@ -334,10 +335,8 @@ export default function AtsScorePage() {
   const loading = analyzeMutation.isPending;
 
   useEffect(() => {
-    if (!loading) {
-      if (currentStep >= 0) setAnalysisComplete(true);
-      return;
-    }
+    if (analysisRunId === 0 || !loading) return;
+
     setAnalysisComplete(false);
     setCurrentStep(0);
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -345,7 +344,7 @@ export default function AtsScorePage() {
       timers.push(setTimeout(() => setCurrentStep(i), i * 2200));
     }
     return () => timers.forEach(clearTimeout);
-  }, [loading]);
+  }, [analysisRunId, loading]);
 
   useEffect(() => {
     if (!file) {
@@ -410,6 +409,7 @@ export default function AtsScorePage() {
     setActiveTab("suggestions");
     setAnalysisComplete(false);
     setCurrentStep(0);
+    setAnalysisRunId((id) => id + 1);
     if (file) {
       setAnalyzedFileName(file.name);
       setAnalyzedFileSize(file.size);
