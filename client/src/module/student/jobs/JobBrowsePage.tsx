@@ -10,6 +10,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { ExternalJob, Job, Pagination, ScrapedJob } from "../../../lib/types";
+import { Button } from "../../../components/ui/button";
 
 const FILTER_TAGS = [
   "Frontend", "Backend", "Full Stack", "Python", "Java", "DevOps",
@@ -504,7 +505,7 @@ export default function JobBrowsePage() {
             </div>
           </div>
         ) : (data?.jobs ?? []).length === 0 ? (
-          ) : (data?.jobs ?? []).length === 0 ? (
+          
   <motion.div
     initial={{ opacity: 0, y: 12 }}
     animate={{ opacity: 1, y: 0 }}
@@ -517,7 +518,7 @@ export default function JobBrowsePage() {
       <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
         No jobs match your filters
       </p>
-      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
         try adjusting your search or filters
       </p>
     </div>
