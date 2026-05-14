@@ -1,3 +1,4 @@
+import { LATEX_TEMPLATES } from "./latex-templates.data";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -116,7 +117,7 @@ export default function ResumeGeneratorPage() {
   const [previewError, setPreviewError] = useState<string | null>(null);
   const prevBlobUrl = useRef<string | null>(null);
   const hasAutoCompiled = useRef(false);
-
+const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
   const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
@@ -164,7 +165,9 @@ export default function ResumeGeneratorPage() {
         jobTitle: jobTitle.trim() || undefined,
         keySkills: keySkills.trim() || undefined,
         useProfile: useProfile && !!hasProfileData,
+        templateId: selectedTemplateId,
       });
+      
       setLatexCode(data.latex);
       setPhase("editor");
       setPdfUrl(null);
@@ -522,6 +525,32 @@ export default function ResumeGeneratorPage() {
                   </div>
                 </div>
 
+                {/* ─── Template Picker ─── */}
+<div className={cardCls}>
+  <CardHeader kicker="step 03" title="Choose template" />
+  <div className="p-5">
+    <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+      {LATEX_TEMPLATES.map((tpl) => (
+        <button
+          key={tpl.id}
+          type="button"
+          onClick={() => setSelectedTemplateId(tpl.id)}
+          className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
+            selectedTemplateId === tpl.id
+              ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
+              : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
+          }`}
+        >
+          <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
+          <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-2">{tpl.description}</p>
+          <span className="inline-block mt-1.5 text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500">
+            {tpl.category}
+          </span>
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
                 {error && (
                   <div className="flex items-start gap-2.5 p-4 bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 rounded-md text-sm border border-red-200 dark:border-red-900/40">
                     <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
