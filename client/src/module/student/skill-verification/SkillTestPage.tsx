@@ -214,8 +214,25 @@ export default function SkillTestPage() {
  useEffect(() => {
   if (!started || result) return;
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    const key = event.key.toLowerCase();
+ const handleKeyDown = (event: KeyboardEvent) => {
+  const target = event.target as HTMLElement | null;
+
+  const isEditable =
+    !!target &&
+    (target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.isContentEditable);
+
+  if (
+    isEditable ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey
+  ) {
+    return;
+  }
+
+  const key = event.key.toLowerCase();
     const questions = questionsRef.current;
     const qIndex = currentQRef.current;
     const current = questions[qIndex];
