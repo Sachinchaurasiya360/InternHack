@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import ActivityCalendar from "react-activity-calendar";
+import { ActivityCalendar } from "react-activity-calendar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../../../../lib/axios";
 import { queryKeys } from "../../../../lib/query-keys";
@@ -105,12 +105,14 @@ export function DsaHeatmap() {
               labels={{
                 totalCount: `{{count}} problems solved in ${year}`,
               }}
-              hideColorLegend={true}
-              hideTotalCount={true}
-              renderBlock={(block, activity) =>
-                React.cloneElement(block, {
-                  title: `${activity.count} problems solved on ${new Date(activity.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`,
-                })
+              showColorLegend={false}
+              showTotalCount={false}
+              renderBlock={(block: React.ReactElement, activity: { date: string; count: number; level: number }) =>
+                React.cloneElement(
+                  block,
+                  {},
+                  <title>{`${activity.count} problems solved on ${new Date(activity.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}</title>
+                )
               }
             />
           )}
