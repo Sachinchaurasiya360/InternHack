@@ -15,6 +15,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
+import { DsaHeatmap } from "./components/DsaHeatmap";
 
 const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
@@ -232,6 +233,17 @@ export default function DsaTopicsPage() {
                 </div>
               );
             })}
+          </motion.div>
+        )}
+
+        {/* Heatmap (logged-in) */}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.09 }}
+          >
+            <DsaHeatmap />
           </motion.div>
         )}
 
