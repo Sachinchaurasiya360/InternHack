@@ -134,6 +134,7 @@ export interface Round {
   assessmentQuestions?: AssessmentQuestion[];
   timeLimitSecs?: number | null;
   autoGrade?: boolean;
+  activateAt?: string | null;
   _count?: { roundSubmissions: number };
   createdAt: string;
   updatedAt: string;
@@ -1149,6 +1150,8 @@ export interface JobAgentMessage {
   content: string;
   timestamp: string;
   jobCount?: number;
+  jobIds?: number[];
+  jobs?: JobFeedMatch["job"][];
 }
 
 export interface JobAgentResponse {

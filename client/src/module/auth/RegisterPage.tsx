@@ -147,22 +147,20 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setRole("STUDENT")}
-                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${
-                    role === "STUDENT"
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
                       ? "bg-lime-400 text-stone-950"
                       : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
+                    }`}
                 >
                   Student
                 </button>
                 <button
                   type="button"
                   onClick={() => setRole("RECRUITER")}
-                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${
-                    role === "RECRUITER"
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
                       ? "bg-lime-400 text-stone-950"
                       : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
+                    }`}
                 >
                   Recruiter
                 </button>

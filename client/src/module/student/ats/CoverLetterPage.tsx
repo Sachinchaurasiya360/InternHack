@@ -67,6 +67,8 @@ const GENERATION_STEPS = [
 
 const JD_MIN_CHARS = 50;
 
+const STORAGE_KEY = "cover_letter_draft";
+
 const cardCls =
   "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
 const sectionKickerCls =
@@ -108,12 +110,16 @@ export default function CoverLetterPage() {
   const [keySkills, setKeySkills] = useState("");
   const [tone, setTone] = useState<CoverLetterTone>("professional");
   const [useProfile, setUseProfile] = useState(false);
-  const [coverLetter, setCoverLetter] = useState("");
-  const [loading, setLoading] = useState(false);
+
+const [coverLetter, setCoverLetter] = useState("");
+const [originalCoverLetter, setOriginalCoverLetter] = useState("");
+const [isModified, setIsModified] = useState(false);
+
+const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
-  const letterRef = useRef<HTMLDivElement>(null);
-  const [toneManuallySelected, setToneManuallySelected] = useState(false);
+const letterRef = useRef<HTMLDivElement>(null);
+const [toneManuallySelected, setToneManuallySelected] = useState(false);
 
   const user = useAuthStore((s) => s.user);
 
@@ -181,26 +187,24 @@ export default function CoverLetterPage() {
       setTone("startup");
     }
   }, [jobDescription, toneManuallySelected]);
+  
+ const handleGenerate = async () => {
+  if (jobDescription.trim().length < JD_MIN_CHARS) {
+    toast.error(`Job description must be at least ${JD_MIN_CHARS} characters`);
+    return;
+  }
 
-  const handleGenerate = async () => {
-    if (jobDescription.trim().length < JD_MIN_CHARS) {
-      toast.error(
-        `Job description must be at least ${JD_MIN_CHARS} characters`,
-      );
-      return;
-    }
+  setLoading(true);
+  setError("");
+  setCoverLetter("");
+  setCurrentStep(0);
 
-    setLoading(true);
-    setError("");
-    setCoverLetter("");
-    setCurrentStep(0);
-
-    const stepInterval = setInterval(() => {
-      setCurrentStep((s) => {
-        if (s < GENERATION_STEPS.length - 1) return s + 1;
-        return s;
-      });
-    }, 1500);
+  const stepInterval = setInterval(() => {
+    setCurrentStep((s) => {
+      if (s < GENERATION_STEPS.length - 1) return s + 1;
+      return s;
+    });
+  }, 1500);
 
     try {
       const { data } = await api.post("/ats/cover-letter", {
@@ -212,8 +216,18 @@ export default function CoverLetterPage() {
         useProfile,
       });
       setCoverLetter(data.coverLetter);
-      queryClient.invalidateQueries({ queryKey: queryKeys.coverLetter.history() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+setOriginalCoverLetter(data.coverLetter);
+setIsModified(false);
+
+localStorage.setItem(STORAGE_KEY, data.coverLetter);
+
+queryClient.invalidateQueries({
+  queryKey: queryKeys.coverLetter.history(),
+});
+
+queryClient.invalidateQueries({
+  queryKey: queryKeys.ats.usage(),
+});
     } catch (err) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data
@@ -224,6 +238,7 @@ export default function CoverLetterPage() {
       setLoading(false);
     }
   };
+
 
   const handleCopy = async () => {
     try {
@@ -253,21 +268,42 @@ export default function CoverLetterPage() {
 };
 
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
-  const downloadMenuRef = useRef<HTMLDivElement>(null);
+const downloadMenuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!showDownloadMenu) return;
-    const handleClick = (e: MouseEvent) => {
-      if (
-        downloadMenuRef.current &&
-        !downloadMenuRef.current.contains(e.target as Node)
-      ) {
-        setShowDownloadMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [showDownloadMenu]);
+useEffect(() => {
+  const savedDraft = localStorage.getItem(STORAGE_KEY);
+
+  if (savedDraft) {
+    setCoverLetter(savedDraft);
+    setIsModified(true);
+  }
+}, []);
+
+useEffect(() => {
+  if (coverLetter.trim()) {
+    localStorage.setItem(STORAGE_KEY, coverLetter);
+  }
+}, [coverLetter]);
+
+useEffect(() => {
+  if (!showDownloadMenu) return;
+
+  const handleClick = (e: MouseEvent) => {
+    if (
+      downloadMenuRef.current &&
+      !downloadMenuRef.current.contains(e.target as Node)
+    ) {
+      setShowDownloadMenu(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClick);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClick);
+  };
+}, [showDownloadMenu]);
+  
 
   const handleDownloadPdf = async () => {
     if (!coverLetter) return;
@@ -824,6 +860,20 @@ export default function CoverLetterPage() {
                         >
                           <Download className="w-3 h-3" /> Download
                         </button>
+
+                        <button
+  type="button"
+  onClick={() => {
+    setCoverLetter(originalCoverLetter);
+    setIsModified(false);
+    localStorage.setItem(STORAGE_KEY, originalCoverLetter);
+  }}
+  disabled={!isModified}
+  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  Reset
+</button>
+
                         <AnimatePresence>
                           {showDownloadMenu && (
                             <motion.div
@@ -856,11 +906,16 @@ export default function CoverLetterPage() {
                     </div>
                   }
                 />
-                <div className="p-6" ref={letterRef}>
+                <div className="p-6">
                   <textarea
                     className="w-full min-h-100 text-sm text-stone-700 dark:text-stone-300 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
                     value={coverLetter}
-                    onChange={(e) => setCoverLetter(e.target.value)}
+                   onChange={(e) => {
+  const updatedValue = e.target.value;
+
+  setCoverLetter(updatedValue);
+  setIsModified(updatedValue !== originalCoverLetter);
+}}
                   />
                 </div>
               </motion.div>
