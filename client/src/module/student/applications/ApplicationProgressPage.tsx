@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { ArrowLeft, CheckCircle, Clock, Circle, Send, ExternalLink } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock, Circle, Send, ExternalLink, Calendar as CalendarIcon, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
@@ -11,6 +11,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { Application, CustomFieldDefinition, AssessmentQuestion } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
+import { googleCalendarUrl, downloadICS } from "../../../lib/calendar";
 
 export default function ApplicationProgressPage() {
   const { applicationId } = useParams();
@@ -60,9 +61,39 @@ export default function ApplicationProgressPage() {
           {application.job?.title} <ExternalLink className="w-5 h-5" />
         </Link>
         <p className="text-gray-500">{application.job?.company}</p>
-        <span className={`inline-block mt-2 px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
-          {application.status}
-        </span>
+        <div className="flex items-center gap-3 mt-2">
+          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
+            {application.status}
+          </span>
+          {application.job?.deadline && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 flex items-center gap-1">
+                <Clock className="w-4 h-4" /> Deadline: {new Date(application.job.deadline).toLocaleDateString()}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs flex items-center gap-1"
+                onClick={() => window.open(googleCalendarUrl({
+                  title: `${application.job?.title} @ ${application.job?.company} — Application Deadline`,
+                  details: `Applied via InternHack: https://internhack.xyz/student/applications/${application.id}\\nCompany: ${application.job?.company}\\nRole: ${application.job?.title}\\nLocation: ${application.job?.location || "Remote"}`,
+                  start: new Date(application.job.deadline!),
+                  end: new Date(new Date(application.job.deadline!).getTime() + 30 * 60000),
+                }), '_blank')}
+              >
+                <CalendarIcon className="w-3 h-3" /> Google Calendar
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs flex items-center gap-1"
+                onClick={() => downloadICS(`/student/applications/${application.id}/calendar.ics?type=deadline`, 'deadline.ics').catch(() => toast.error('Failed to download .ics file'))}
+              >
+                <Download className="w-3 h-3" /> .ics
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Round Progress Timeline */}
@@ -98,6 +129,34 @@ export default function ApplicationProgressPage() {
                   }`}>
                     {isCompleted ? "Completed" : isActive ? "In Progress" : "Pending"}
                   </span>
+                  {round.activateAt && (
+                    <div className="flex items-center gap-2 ml-auto">
+                      <span className="text-sm text-gray-500 flex items-center gap-1">
+                        <Clock className="w-4 h-4" /> {new Date(round.activateAt).toLocaleString()}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs flex items-center gap-1"
+                        onClick={() => window.open(googleCalendarUrl({
+                          title: `${application.job?.title} @ ${application.job?.company} — ${round.name}`,
+                          details: `Applied via InternHack: https://internhack.xyz/student/applications/${application.id}\\nCompany: ${application.job?.company}\\nRole: ${application.job?.title}\\nLocation: ${application.job?.location || "Remote"}\\n${round.name}`,
+                          start: new Date(round.activateAt!),
+                          end: new Date(new Date(round.activateAt!).getTime() + 60 * 60000),
+                        }), '_blank')}
+                      >
+                        <CalendarIcon className="w-3 h-3" /> Google Calendar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs flex items-center gap-1"
+                        onClick={() => downloadICS(`/student/applications/${application.id}/calendar.ics?type=round&roundId=${round.id}`, `round-${round.id}.ics`).catch(() => toast.error('Failed to download .ics file'))}
+                      >
+                        <Download className="w-3 h-3" /> .ics
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {round.description && <p className="text-sm text-gray-500 ml-8 mb-2">{round.description}</p>}
