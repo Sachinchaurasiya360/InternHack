@@ -135,6 +135,14 @@ export class AuthService {
       name = payload.name;
       picture = payload.picture;
     } else if (data.accessToken) {
+      const tokenInfoResp = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${encodeURIComponent(data.accessToken)}`);
+      if (!tokenInfoResp.ok) {
+        throw new Error("Invalid Google token");
+      }
+      const tokenInfo = await tokenInfoResp.json() as { aud?: string; azp?: string };
+      if (tokenInfo.aud !== process.env["GOOGLE_CLIENT_ID"] && tokenInfo.azp !== process.env["GOOGLE_CLIENT_ID"]) {
+        throw new Error("Invalid Google token");
+      }
       const resp = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
         headers: { Authorization: `Bearer ${data.accessToken}` },
       });
