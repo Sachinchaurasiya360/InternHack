@@ -947,7 +947,7 @@ export default function AtsScorePage() {
                   <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-full overflow-hidden">
                     <motion.div
                       className="h-full bg-lime-400 rounded-full"
-                      animate={{ x: ["-100%", "100%"] }}
+                      animate={{ x: ["-100%", "250%"] }}
                       transition={{
                         duration: 1.5,
                         repeat: Infinity,
