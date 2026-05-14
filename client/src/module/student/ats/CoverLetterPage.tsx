@@ -35,6 +35,7 @@ import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CoverLetterTone, UsageStats } from "../../../lib/types";
 
+
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   {
     id: "professional",
@@ -230,6 +231,9 @@ export default function CoverLetterPage() {
         companyName: companyName.trim() || undefined,
         keySkills: keySkills.trim() || undefined,
         tone,
+        length,
+        targetWords:
+          length=== "short" ? 150 : length === "medium" ? 300 : 500,
         useProfile,
       });
       setCoverLetter(data.coverLetter);
@@ -522,13 +526,13 @@ export default function CoverLetterPage() {
   <CardHeader kicker="step 03" title="Length" />
   <div className="p-5">
     <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10">
-      {Object.entries(LENGTHS).map(([key, l], i) => {
-        const isActive = length === key;
+      {LENGTHS.map((l, i) => {
+        const isActive = length === l.id;
         return (
           <button
-            key={key}
+            key={l.id}
             type="button"
-            onClick={() => setLength(key)}
+            onClick={() => setLength(l.id)}
             className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
               isActive
                 ? "bg-stone-900 text-stone-50 dark:text-stone-50"
@@ -560,7 +564,7 @@ export default function CoverLetterPage() {
           {/* ─── Profile toggle ─── */}
           <div className={cardCls}>
             <CardHeader
-              kicker="step 03"
+              kicker="step 04"
               title="Use my profile"
               right={
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
