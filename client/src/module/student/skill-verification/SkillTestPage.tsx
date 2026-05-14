@@ -380,10 +380,9 @@ export default function SkillTestPage() {
     {
       label: "Best Attempt",
       value:
-        test.bestAttempt !== null &&
-        test.bestAttempt !== undefined
-          ? `${test.bestAttempt}%`
-          : "—",
+  test.bestAttempt?.score !== undefined
+    ? `${test.bestAttempt.score}%`
+    : "—",
       icon: Trophy,
     },
   ].map((item) => (
