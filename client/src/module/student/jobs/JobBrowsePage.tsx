@@ -504,11 +504,34 @@ export default function JobBrowsePage() {
             </div>
           </div>
         ) : (data?.jobs ?? []).length === 0 ? (
-          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-            <p className="text-sm text-stone-600 dark:text-stone-400">No jobs found.</p>
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">try different search criteria</p>
-          </div>
-        ) : (
+          ) : (data?.jobs ?? []).length === 0 ? (
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4"
+  >
+    <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
+      <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
+    </div>
+    <div>
+      <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
+        No jobs match your filters
+      </p>
+      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+        try adjusting your search or filters
+      </p>
+    </div>
+    {hasFilters && (
+      <button
+        type="button"
+        onClick={clearAll}
+        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+      >
+        <X className="w-3.5 h-3.5" /> Clear filters
+      </button>
+    )}
+  </motion.div>
+) : (
           <>
             <div className="relative">
               {isFetching && (
