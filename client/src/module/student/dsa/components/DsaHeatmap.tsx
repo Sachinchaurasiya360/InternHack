@@ -88,33 +88,38 @@ export function DsaHeatmap() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-6 overflow-x-auto">
-        <div className="min-w-[700px]">
+      <div className="rounded-lg border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4 sm:p-6 flex flex-col items-center overflow-hidden">
+        <div className="w-full flex justify-center [&_.react-activity-calendar]:w-full [&_svg]:w-full [&_svg]:h-auto [&_svg]:max-w-[850px]">
           {isLoading ? (
-            <div className="h-[120px] flex items-center justify-center">
+            <div className="h-[120px] flex items-center justify-center w-full">
               <span className="text-sm font-mono text-stone-400">Loading history...</span>
             </div>
           ) : (
-            <ActivityCalendar
-              data={heatmapData}
-              theme={{
-                light: ["#f5f5f4", "#d9f99d", "#a3e635", "#65a30d", "#3f6212"],
-                dark: ["#1c1917", "#d9f99d", "#a3e635", "#65a30d", "#3f6212"],
-              }}
-              colorScheme={theme === "dark" ? "dark" : "light"}
-              labels={{
-                totalCount: `{{count}} problems solved in ${year}`,
-              }}
-              showColorLegend={false}
-              showTotalCount={false}
-              renderBlock={(block: React.ReactElement, activity: { date: string; count: number; level: number }) =>
-                React.cloneElement(
-                  block,
-                  {},
-                  <title>{`${activity.count} problems solved on ${new Date(activity.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}</title>
-                )
-              }
-            />
+            <div className="w-full flex justify-center">
+              <ActivityCalendar
+                data={heatmapData}
+                theme={{
+                  light: ["#f5f5f4", "#d9f99d", "#a3e635", "#65a30d", "#3f6212"],
+                  dark: ["#1c1917", "#d9f99d", "#a3e635", "#65a30d", "#3f6212"],
+                }}
+                colorScheme={theme === "dark" ? "dark" : "light"}
+                blockSize={14}
+                blockMargin={4}
+                fontSize={14}
+                labels={{
+                  totalCount: `{{count}} problems solved in ${year}`,
+                }}
+                showColorLegend={false}
+                showTotalCount={false}
+                renderBlock={(block: React.ReactElement, activity: { date: string; count: number; level: number }) =>
+                  React.cloneElement(
+                    block,
+                    {},
+                    <title>{`${activity.count} problems solved on ${new Date(activity.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}</title>
+                  )
+                }
+              />
+            </div>
           )}
         </div>
         
