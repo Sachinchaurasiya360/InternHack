@@ -1154,6 +1154,7 @@ export interface JobPreferences {
 }
 
 export interface JobAgentMessage {
+  id?: string;
   role: "user" | "assistant";
   content: string;
   timestamp: string;
