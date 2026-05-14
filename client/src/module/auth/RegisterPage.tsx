@@ -310,7 +310,7 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
   const studentStats = [
     { value: "300", suffix: "+", label: "interview q's" },
     { value: "11", suffix: "", label: "coding tracks" },
-    { value: "14", suffix: "t", label: "resume templates" },
+    { value: "14", suffix: "", label: "resume templates" },
   ];
   const recruiterStats = [
     { value: "7", suffix: "d", label: "free trial" },
@@ -320,7 +320,7 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
   const stats = isRecruiter ? recruiterStats : studentStats;
 
   return (
-    <div className="hidden lg:flex relative flex-col justify-between p-12 xl:p-16 bg-stone-900 overflow-hidden">
+    <div className="hidden lg:flex relative flex-col justify-center p-12 xl:p-16 bg-stone-900 overflow-hidden">
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none opacity-[0.06]"
@@ -339,18 +339,6 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
           backgroundSize: "120px 100%",
         }}
       />
-
-      <div className="relative">
-        <Link to="/" className="inline-flex items-center gap-2.5 no-underline">
-          <div className="relative">
-            <img src="/logo.png" alt="InternHack" className="h-8 w-8 rounded-md object-contain" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
-          </div>
-          <span className="text-base font-bold tracking-tight text-stone-50">
-            InternHack
-          </span>
-        </Link>
-      </div>
 
       <div className="relative max-w-lg">
         <motion.div
@@ -405,12 +393,12 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
             </div>
           ))}
         </div>
-      </div>
 
-      <div className="relative text-xs font-mono text-stone-500">
-        {isRecruiter
-          ? "no card required. cancel any time."
-          : "free for students. always."}
+        <div className="mt-8 relative text-xs font-mono text-stone-500">
+          {isRecruiter
+            ? "no card required. cancel any time."
+            : "free for students. always."}
+        </div>
       </div>
     </div>
   );
