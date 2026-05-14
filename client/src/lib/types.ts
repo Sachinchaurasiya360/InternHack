@@ -1149,6 +1149,8 @@ export interface JobAgentMessage {
   content: string;
   timestamp: string;
   jobCount?: number;
+  jobIds?: number[];
+  jobs?: JobFeedMatch["job"][];
 }
 
 export interface JobAgentResponse {
