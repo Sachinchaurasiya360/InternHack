@@ -138,6 +138,7 @@ export default function JobBrowsePage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [debouncedLocation, setDebouncedLocation] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [hideExpired, setHideExpired] = useState(true);
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
@@ -152,18 +153,24 @@ export default function JobBrowsePage() {
     return () => clearTimeout(timerRef.current);
   }, [search, locationFilter]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [hideExpired]);
+
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({
       page,
       search: debouncedSearch,
       location: debouncedLocation,
       tags: selectedTags.join(","),
+      includeExpired: !hideExpired,
     }),
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "12" });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
+      params.set("includeExpired", String(!hideExpired));
       const res = await api.get(`/jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
@@ -398,6 +405,18 @@ export default function JobBrowsePage() {
                 </motion.button>
               );
             })}
+
+            <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={hideExpired}
+                onChange={(e) => setHideExpired(e.target.checked)}
+                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20"
+              />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                Hide expired
+              </span>
+            </label>
             <AnimatePresence>
               {hasFilters && (
                 <motion.button

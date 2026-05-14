@@ -15,9 +15,8 @@ import { queryKeys } from "../../../lib/query-keys";
 import type {
   FundingSignal,
   FundingSignalListResponse,
-  FundingSignalSource,
 } from "../../../lib/types";
-import { getSignalSources, querySignals, type SignalKind } from "./signals-api";
+import { querySignals, type SignalKind } from "./signals-api";
 
 function timeAgo(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -73,17 +72,8 @@ export default function SignalsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: sourcesData } = useQuery<{ sources: FundingSignalSource[] }>({
-    queryKey: queryKeys.signals.sources(),
-    queryFn: () => getSignalSources(),
-    staleTime: 60 * 60 * 1000,
-  });
-
   const signals = data?.signals ?? [];
   const totalPages = data?.pagination.totalPages ?? 1;
-  const sources = sourcesData?.sources ?? [];
-
-  const sourceLabel = (id: string) => sources.find((s) => s.id === id)?.name ?? id;
 
   const submitSearch = () => {
     setSearch(searchInput.trim());
@@ -140,11 +130,11 @@ export default function SignalsPage() {
           className="px-3 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors"
         >
           <option value="">All sources</option>
-          {sources.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
+          <option value="yc-launches">YC Launches</option>
+          <option value="techcrunch">TechCrunch</option>
+          <option value="hn-hiring">HN Hiring</option>
+          <option value="exa-funding">Exa Funding</option>
+          <option value="manual">Manual</option>
         </select>
         <select
           value={sort}
@@ -184,7 +174,7 @@ export default function SignalsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {signals.map((s) => (
-            <SignalCard key={s.id} signal={s} sourceLabel={sourceLabel} />
+            <SignalCard key={s.id} signal={s} />
           ))}
         </div>
       )}
@@ -217,10 +207,9 @@ export default function SignalsPage() {
 
 interface SignalCardProps {
   signal: FundingSignal;
-  sourceLabel: (id: string) => string;
 }
 
-const SignalCard = ({ signal, sourceLabel }: SignalCardProps) => {
+const SignalCard = ({ signal }: SignalCardProps) => {
   const initial = signal.companyName.trim().charAt(0).toUpperCase() || "?";
   return (
     <motion.div
@@ -275,7 +264,6 @@ const SignalCard = ({ signal, sourceLabel }: SignalCardProps) => {
       )}
 
       <div className="pt-3 border-t border-stone-200 dark:border-white/10 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 relative pointer-events-none">
-        <span>{sourceLabel(signal.source)}</span>
         {signal.fundingRound ? <span>{signal.fundingRound}</span> : null}
         {signal.fundingAmount ? (
           <span className="inline-flex items-center gap-1 text-lime-600 dark:text-lime-400">

@@ -5,7 +5,7 @@ export const generateCoverLetterSchema = z.object({
   jobTitle: z.string().optional(),
   companyName: z.string().optional(),
   keySkills: z.string().optional(),
-  tone: z.enum(["professional", "friendly", "enthusiastic"]),
+  tone: z.enum(["professional", "friendly", "enthusiastic", "technical", "creative", "formal", "concise", "startup"]),
   useProfile: z.boolean().optional(),
 });
 

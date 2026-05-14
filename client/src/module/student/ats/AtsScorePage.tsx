@@ -28,6 +28,29 @@ import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore, UsageStats } from "../../../lib/types";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+
+/** Recharts custom tooltip — renders score, date, role, and resume name on dot hover. */
+function ScoreTooltip({ active, payload }: any) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="bg-stone-900 border border-white/10 rounded-md px-3 py-2 text-[11px] font-mono text-stone-300 shadow-xl">
+      <div className="text-stone-500 mb-1">{d.fullDate}</div>
+      <div>Role: {d.jobTitle}</div>
+      <div className="truncate max-w-[200px]">Resume: {d.resumeName}</div>
+      <div className="text-lime-400 font-bold mt-1">Score: {d.score}/100</div>
+    </div>
+  );
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   formatting: "Formatting",
@@ -205,8 +228,48 @@ export default function AtsScorePage() {
     refetchOnWindowFocus: true,
   });
 
+  const { data: historyData } = useQuery({
+    queryKey: queryKeys.ats.history(),
+    queryFn: () => api.get("/ats/history").then((r) => r.data.history),
+    staleTime: 60_000,
+  });
+
+  const scoreHistory = (historyData ?? []) as {
+    id: number;
+    overallScore: number;
+    jobTitle: string | null;
+    resumeUrl: string;
+    createdAt: string;
+  }[];
+
+  const chartData = scoreHistory.map((h) => {
+    const resumeName = decodeURIComponent(
+      (h.resumeUrl.split("?")[0] ?? h.resumeUrl).split("/").pop() ??
+        "resume.pdf",
+    );
+    return {
+      key: h.createdAt,
+      date: new Date(h.createdAt).toLocaleDateString("en-IN", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+      }),
+      fullDate: new Date(h.createdAt).toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      score: h.overallScore,
+      jobTitle: h.jobTitle ?? "General",
+      resumeName,
+    };
+  });
+
   const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
   const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
+  const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
   const [analyzedFileName, setAnalyzedFileName] = useState("");
   const [analyzedFileSize, setAnalyzedFileSize] = useState(0);
@@ -218,7 +281,7 @@ export default function AtsScorePage() {
       emailQueued: boolean;
     }> => {
       let url = resumeUrl;
-      if (file && !resumeUrl) {
+      if (file) {
         const formData = new FormData();
         formData.append("file", file);
         const uploadRes = await api.post("/upload/profile-resume", formData, {
@@ -241,6 +304,7 @@ export default function AtsScorePage() {
       setResult(score);
       setEmailSent(emailQueued);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.ats.history() });
     },
     onError: (err: unknown) => {
       const msg =
@@ -266,9 +330,25 @@ export default function AtsScorePage() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
+  const validateFile = (file: File): string | null => {
+    if (file.size > MAX_SIZE) {
+      return `File is ${(file.size / 1024 / 1024).toFixed(1)} MB. Max 10 MB.`;
+    }
+    if (file.type !== "application/pdf") {
+      return "Only PDF files are allowed.";
+    }
+    return null;
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
+      const error = validateFile(selected);
+      if (error) {
+        toast.error(error);
+        e.target.value = "";
+        return;
+      }
       setFile(selected);
       setResumeUrl("");
       setResult(null);
@@ -281,10 +361,9 @@ export default function AtsScorePage() {
     setIsDragging(false);
     const dropped = e.dataTransfer.files[0];
     if (!dropped) return;
-    if (dropped.type !== "application/pdf") {
-      const msg = "Only PDF files are supported. Please drop a .pdf resume.";
-      setError(msg);
-      toast.error(msg);
+    const error = validateFile(dropped);
+    if (error) {
+      toast.error(error);
       return;
     }
     setFile(dropped);
@@ -391,6 +470,82 @@ export default function AtsScorePage() {
       </motion.div>
 
       <AtsToolsNav />
+
+      {/* ─── Score Progression Chart ─── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className={`${cardCls} mb-6`}
+      >
+        <CardHeader
+          kicker="progress"
+          title="Score over time"
+          right={
+            chartData.length > 0 ? (
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                {chartData.length}{" "}
+                {chartData.length === 1 ? "analysis" : "analyses"}
+              </span>
+            ) : null
+          }
+        />
+        <div className="p-5">
+          {chartData.length <= 1 ? (
+            <div className="flex items-center gap-3 py-4 text-sm text-stone-500">
+              <TrendingUp className="w-4 h-4 text-lime-500" />
+              {chartData.length === 0
+                ? "Analyze your first resume to start tracking progress."
+                : "Run one more analysis to start tracking your progress."}
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={chartData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(120,113,108,0.15)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="key"
+                  tickFormatter={(val: string) =>
+                    new Date(val).toLocaleDateString("en-IN", {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  }
+                  tick={{
+                    fontSize: 10,
+                    fontFamily: "monospace",
+                    fill: "#78716c",
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  tick={{
+                    fontSize: 10,
+                    fontFamily: "monospace",
+                    fill: "#78716c",
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip content={<ScoreTooltip />} cursor={false} />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="#a3e635"
+                  strokeWidth={2}
+                  dot={{ fill: "#a3e635", strokeWidth: 0, r: 4 }}
+                  activeDot={{ r: 7, fill: "#a3e635" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </motion.div>
 
       {/* ─── Main grid ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">

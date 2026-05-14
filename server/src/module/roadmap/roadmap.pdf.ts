@@ -1,6 +1,9 @@
 import PDFDocument from "pdfkit";
 
+export type PdfTheme = "light" | "dark";
+
 export interface RoadmapPdfInput {
+  theme?: PdfTheme;
   user: { name: string };
   roadmap: {
     title: string;
@@ -36,23 +39,48 @@ export interface RoadmapPdfInput {
   }[];
 }
 
-// ── Palette ────────────────────────────────────────────────────────────────
-const COLORS = {
+// ── Palettes ───────────────────────────────────────────────────────────────
+const LIGHT_COLORS = {
+  pageBg: "#ffffff",
+  coverBand: "#0a0a0a",
   ink: "#0a0a0a",
   body: "#27272a",
   mute: "#52525b",
   faint: "#a1a1aa",
   faintest: "#d4d4d8",
-  accent: "#4d7c0f",        // lime-700, prints well
-  accentSoft: "#84cc16",    // lime-500
-  accentBg: "#f7fee7",      // lime-50
-  accentBorder: "#d9f99d",  // lime-200
+  accent: "#4d7c0f",
+  accentSoft: "#84cc16",
+  accentBg: "#f7fee7",
+  accentBorder: "#d9f99d",
   amber: "#b45309",
   amberBg: "#fffbeb",
   amberBorder: "#fde68a",
   bg: "#fafafa",
   border: "#e4e4e7",
 };
+
+const DARK_COLORS = {
+  pageBg: "#111111",
+  coverBand: "#000000",
+  ink: "#f4f4f5",
+  body: "#d4d4d8",
+  mute: "#a1a1aa",
+  faint: "#71717a",
+  faintest: "#3f3f46",
+  accent: "#a3e635",
+  accentSoft: "#bef264",
+  accentBg: "#0f1e02",
+  accentBorder: "#1a3a05",
+  amber: "#fbbf24",
+  amberBg: "#1a1100",
+  amberBorder: "#3d2000",
+  bg: "#1c1c1e",
+  border: "#3f3f46",
+};
+
+// Mutable reference swapped per-call inside generateRoadmapPdf.
+// All draw helpers reference COLORS so they automatically pick up the theme.
+let COLORS: typeof LIGHT_COLORS = LIGHT_COLORS;
 
 const A4_WIDTH = 595.28;
 const A4_HEIGHT = 841.89;
@@ -71,6 +99,9 @@ const fmtShortDate = (d: Date) =>
  * stamp page numbers + footer onto every page after content rendering.
  */
 export async function generateRoadmapPdf(input: RoadmapPdfInput): Promise<Buffer> {
+  // Swap palette for the duration of this synchronous render pass.
+  COLORS = input.theme === "dark" ? DARK_COLORS : LIGHT_COLORS;
+
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
@@ -83,6 +114,18 @@ export async function generateRoadmapPdf(input: RoadmapPdfInput): Promise<Buffer
         Keywords: "roadmap, career, learning, full-stack",
       },
     });
+
+    // Paint full-page background for dark mode on every page (incl. first).
+    if (input.theme === "dark") {
+      const paintBg = () => {
+        doc.save();
+        doc.rect(0, 0, A4_WIDTH, A4_HEIGHT).fill(DARK_COLORS.pageBg);
+        doc.restore();
+      };
+      doc.on("pageAdded", paintBg);
+      // Also paint the very first page which was created during construction.
+      paintBg();
+    }
 
     const chunks: Buffer[] = [];
     doc.on("data", (c: Buffer) => chunks.push(c));
@@ -117,7 +160,7 @@ function drawCover(doc: PDFKit.PDFDocument, input: RoadmapPdfInput) {
   const contentW = w - MARGIN * 2;
 
   // Top band
-  doc.rect(0, 0, w, 160).fill(COLORS.ink);
+  doc.rect(0, 0, w, 160).fill(COLORS.coverBand);
 
   doc.fillColor("#ffffff").fontSize(10).font("Helvetica-Bold");
   doc.text("INTERNHACK", MARGIN, 40, { characterSpacing: 2.5, width: contentW });

@@ -7,6 +7,7 @@ import {
   enrollmentIdParam,
   enrollmentTopicParams,
   listQuerySchema,
+  pdfThemeQuery,
   recomputePaceSchema,
   roadmapSlugParam,
   topicSlugParam,
@@ -63,6 +64,15 @@ export async function getRoadmap(req: Request, res: Response, next: NextFunction
       res.status(404).json({ message: "Roadmap not found" });
       return;
     }
+
+    if (!roadmap.isPublished) {
+      const user = req.user;
+      if (!user || (user.role !== "ADMIN" && user.id !== roadmap.ownerUserId)) {
+        res.status(404).json({ message: "Roadmap not found" });
+        return;
+      }
+    }
+
     res.json({ roadmap });
   } catch (err) {
     next(err);
@@ -81,11 +91,21 @@ export async function getTopic(req: Request, res: Response, next: NextFunction) 
       res.status(404).json({ message: "Topic not found" });
       return;
     }
+
+    if (!topic.section.roadmap.isPublished) {
+      const user = req.user;
+      if (!user || (user.role !== "ADMIN" && user.id !== topic.section.roadmap.ownerUserId)) {
+        res.status(404).json({ message: "Topic not found" });
+        return;
+      }
+    }
+
     res.json({ topic });
   } catch (err) {
     next(err);
   }
 }
+
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
 export async function enroll(req: Request, res: Response, next: NextFunction) {
@@ -321,6 +341,10 @@ export async function downloadPdf(req: Request, res: Response, next: NextFunctio
       validationError(res, params.error.flatten().fieldErrors);
       return;
     }
+
+    const themeQuery = pdfThemeQuery.safeParse(req.query);
+    const theme = themeQuery.success ? themeQuery.data.theme : "light";
+
     const enrollment = await getEnrollmentForUser({
       userId: req.user!.id,
       enrollmentId: params.data.id,
@@ -342,6 +366,7 @@ export async function downloadPdf(req: Request, res: Response, next: NextFunctio
     }[]) ?? [];
 
     const pdfBuffer = await generateRoadmapPdf({
+      theme,
       user: { name: userRecord?.name ?? "Learner" },
       roadmap: {
         title: enrollment.roadmap.title,
@@ -382,10 +407,11 @@ export async function downloadPdf(req: Request, res: Response, next: NextFunctio
       })),
     });
 
+    const suffix = theme === "dark" ? "-dark" : "";
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${enrollment.roadmap.slug}-roadmap.pdf"`,
+      `attachment; filename="${enrollment.roadmap.slug}-roadmap${suffix}.pdf"`,
     );
     res.send(pdfBuffer);
   } catch (err) {
@@ -485,6 +511,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
         for (const [tIdx, topic] of section.topics.entries()) {
           if (!topic.resources?.length) continue;
           const createdTopic = createdSection.topics[tIdx];
+          if (!createdTopic) continue;
           await tx.roadmapResource.createMany({
             data: topic.resources.map((r, rIdx) => ({
               topicId: createdTopic.id,

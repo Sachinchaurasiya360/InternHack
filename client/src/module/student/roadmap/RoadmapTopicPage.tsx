@@ -19,7 +19,12 @@ import type {
 interface TopicResponse {
   topic: RoadmapTopic & {
     resources: RoadmapResource[];
-    section: { slug: string; title: string; orderIndex: number; roadmap: { slug: string; title: string } };
+    section: { 
+      slug: string; 
+      title: string; 
+      orderIndex: number; 
+      roadmap: { slug: string; title: string; isPublished: boolean }; 
+    };
   };
 }
 
@@ -117,6 +122,8 @@ export default function RoadmapTopicPage() {
         title={`${topic.title} - ${topic.section.roadmap.title}`}
         description={topic.summary}
         canonicalUrl={canonicalUrl(`/roadmaps/${slug}/topics/${topic.slug}`)}
+        ogType="article"
+        noIndex={!topic.section.roadmap.isPublished}
         structuredData={learningResourceSchema ?? undefined}
       />
 
