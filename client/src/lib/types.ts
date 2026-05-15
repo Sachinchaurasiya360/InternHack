@@ -499,7 +499,14 @@ export interface SkillTestQuestion {
 export interface SkillTestWithQuestions extends SkillTest {
   questions: SkillTestQuestion[];
   existingVerification?: VerifiedSkill | null;
-  bestAttempt?: { id: number; score: number; passed: boolean } | null;
+
+  questionsPerSession?: number;
+
+  bestAttempt?: {
+    id: number;
+    score: number;
+    passed: boolean;
+  } | null;
 }
 
 export interface SkillTestAttempt {
