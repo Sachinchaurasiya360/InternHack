@@ -11,7 +11,7 @@ export const cacheMiddleware = (ttl: number = 300, keyPrefix: string = "cache") 
     const key = `${keyPrefix}:${req.originalUrl || req.url}`;
     const cachedResponse = appCache.get(key);
 
-    if (cachedResponse) {
+    if (cachedResponse !== undefined) {
       res.setHeader("X-Cache", "HIT");
       return res.json(cachedResponse);
     }
