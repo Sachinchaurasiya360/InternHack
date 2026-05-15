@@ -47,7 +47,7 @@ export default function RoadmapDetailPage() {
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const { data: roadmapData, isLoading: roadmapLoading } = useQuery({
+  const { data: roadmapData, isLoading: roadmapLoading, isError: roadmapError } = useQuery({
     queryKey: queryKeys.roadmaps.detail(slug),
     queryFn: () => api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`).then(res => res.data),
     enabled: !!slug,
@@ -70,6 +70,20 @@ export default function RoadmapDetailPage() {
       <Chrome {...chromeProps}>
         <div className="flex items-center justify-center py-32">
           <div className="h-8 w-8 border-2 border-stone-200 dark:border-stone-800 border-t-lime-500 rounded-full animate-spin" />
+        </div>
+      </Chrome>
+    );
+  }
+
+  if (roadmapError) {
+    return (
+      <Chrome {...chromeProps}>
+        <div className="flex items-center justify-center py-32 px-6">
+          <div className="text-center">
+            <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load roadmap</p>
+            <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server.</p>
+            <Button onClick={() => window.location.reload()} variant="outline" size="sm">Retry</Button>
+          </div>
         </div>
       </Chrome>
     );

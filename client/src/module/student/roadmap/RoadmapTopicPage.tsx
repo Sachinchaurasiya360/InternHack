@@ -129,9 +129,12 @@ export default function RoadmapTopicPage() {
       setProgress((p) =>
         p ? { ...p, ...patch, notes: patch.notes ?? p.notes } : p,
       );
-      // Invalidate enrollments to keep data fresh
+      // Invalidate enrollments and detail to keep data fresh
       queryClient.invalidateQueries({
         queryKey: queryKeys.roadmaps.enrollments(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
       });
     } catch {
       toast.error("Could not save");

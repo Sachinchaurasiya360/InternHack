@@ -79,16 +79,19 @@ export default function RoadmapsLandingPage() {
     queryFn: () => api.get<ListResponse>("/roadmaps", { params }).then(res => res.data),
   });
 
-  const { data: enrollmentsData } = useQuery({
+  const { data: enrollmentsData, isError: enrollmentsError } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
     queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
     enabled: isStudent,
   });
 
   const roadmaps = useMemo(() => roadmapsData?.roadmaps || [], [roadmapsData]);
-  const enrollments = useMemo(() => enrollmentsData?.enrollments || [], [enrollmentsData]);
+  const enrollments = useMemo(() => {
+    if (enrollmentsError) return []; // Fallback to empty but we'll show error below
+    return enrollmentsData?.enrollments || [];
+  }, [enrollmentsData, enrollmentsError]);
   const loading = roadmapsLoading;
-  const error = roadmapsError ? "Could not load roadmaps. Please try again." : null;
+  const error = (roadmapsError || (isStudent && enrollmentsError)) ? "Could not load roadmaps. Please try again." : null;
 
   // Sync search input with URL when typing
   useEffect(() => {

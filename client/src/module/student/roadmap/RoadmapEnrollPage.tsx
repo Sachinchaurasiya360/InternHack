@@ -84,7 +84,7 @@ export default function RoadmapEnrollPage() {
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>("NEW");
   const [goal, setGoal] = useState<EnrollmentGoal>("JOB_READY");
 
-  const { data: roadmapData, isLoading: roadmapLoading } = useQuery({
+  const { data: roadmapData, isLoading: roadmapLoading, isError: roadmapError } = useQuery({
     queryKey: queryKeys.roadmaps.detail(slug),
     queryFn: () => api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`).then(res => res.data),
     enabled: !!slug,
@@ -158,6 +158,18 @@ export default function RoadmapEnrollPage() {
       </Chrome>
     );
   }
+  if (roadmapError) {
+    return (
+      <Chrome {...chromeProps}>
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load enrollment data</p>
+          <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server.</p>
+          <Button onClick={() => window.location.reload()} variant="outline" size="sm">Retry</Button>
+        </div>
+      </Chrome>
+    );
+  }
+
   if (!roadmap) {
     return (
       <Chrome {...chromeProps}>

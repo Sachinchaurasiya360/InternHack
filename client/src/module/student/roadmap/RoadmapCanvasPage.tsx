@@ -374,13 +374,14 @@ export default function RoadmapCanvasPage() {
 
   const enrollmentId = enrollmentMatch?.id || null;
 
-  const { data, isLoading: detailLoading } = useQuery({
+  const { data, isLoading: detailLoading, isError: detailError } = useQuery({
     queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
     queryFn: () => api.get<EnrollmentResponse>(`/roadmaps/me/enrollments/${enrollmentId}`).then(res => res.data),
     enabled: !!enrollmentId,
   });
 
-  const loading = enrollmentsLoading || detailLoading || (!data && !!enrollmentId);
+  const loading = enrollmentsLoading || detailLoading;
+  const error = enrollmentsError || detailError;
 
   // ── Fire completion modal when progress first reaches 100% ──────────────
   useEffect(() => {
@@ -642,6 +643,26 @@ export default function RoadmapCanvasPage() {
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <div className="hidden lg:block">
+          <Navbar sidebarOffset={sidebarWidth} />
+        </div>
+        <div className="lg:hidden">
+          <Navbar />
+        </div>
+        {sidebar}
+        <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load your roadmap</p>
+          <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server. Please try again.</p>
+          <Button onClick={() => window.location.reload()} variant="outline">Retry</Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   const { summary } = data;
