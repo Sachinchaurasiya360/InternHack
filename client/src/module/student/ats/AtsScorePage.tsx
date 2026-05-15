@@ -413,6 +413,10 @@ export default function AtsScorePage() {
     if (file) {
       setAnalyzedFileName(file.name);
       setAnalyzedFileSize(file.size);
+    } else if (resumeUrl) {
+      const fileName = (resumeUrl.split("?")[0] || resumeUrl).split("/").pop() || "profile-resume.pdf";
+      setAnalyzedFileName(fileName);
+      setAnalyzedFileSize(0);
     }
     analyzeMutation.mutate();
   };
@@ -806,7 +810,7 @@ export default function AtsScorePage() {
                           {analyzedFileName}
                         </p>
                         <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
-                          {(analyzedFileSize / 1024).toFixed(1)} kb · pdf
+                          {analyzedFileSize > 0 ? `${(analyzedFileSize / 1024).toFixed(1)} kb · ` : ""}pdf
                         </p>
                       </div>
                     </div>
