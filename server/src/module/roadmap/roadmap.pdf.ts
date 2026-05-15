@@ -948,7 +948,7 @@ export interface CertificateInput {
 }
 
 export async function generateCertificatePdf(input: CertificateInput): Promise<Buffer> {
-  COLORS = input.theme === "dark" ? DARK_COLORS : LIGHT_COLORS;
+  const colors = input.theme === "dark" ? DARK_COLORS : LIGHT_COLORS;
 
   return new Promise((resolve, reject) => {
     const W = 841.89; // A4 landscape width
@@ -979,14 +979,14 @@ export async function generateCertificatePdf(input: CertificateInput): Promise<B
     doc.on("error", reject);
 
     // Outer border
-    doc.rect(24, 24, W - 48, H - 48).lineWidth(3).stroke(COLORS.accent);
-    doc.rect(32, 32, W - 64, H - 64).lineWidth(1).stroke(COLORS.accentSoft);
+    doc.rect(24, 24, W - 48, H - 48).lineWidth(3).stroke(colors.accent);
+    doc.rect(32, 32, W - 64, H - 64).lineWidth(1).stroke(colors.accentSoft);
 
     // Top band
-    doc.rect(0, 0, W, 90).fill(COLORS.coverBand);
+    doc.rect(0, 0, W, 90).fill(colors.coverBand);
 
     // Platform name in band
-    doc.fillColor(COLORS.accentSoft).fontSize(11).font("Helvetica-Bold");
+    doc.fillColor(colors.accentSoft).fontSize(11).font("Helvetica-Bold");
     doc.text("INTERNHACK", MARGIN, 28, {
       characterSpacing: 3,
       width: W - MARGIN * 2,
@@ -999,24 +999,24 @@ export async function generateCertificatePdf(input: CertificateInput): Promise<B
     });
 
     // Title
-    doc.fillColor(COLORS.ink).fontSize(34).font("Helvetica-Bold");
+    doc.fillColor(colors.ink).fontSize(34).font("Helvetica-Bold");
     doc.text("Certificate of Completion", MARGIN, 120, {
       width: W - MARGIN * 2,
       align: "center",
     });
 
     // Accent rule
-    doc.rect(cx - 60, 166, 120, 2).fill(COLORS.accent);
+    doc.rect(cx - 60, 166, 120, 2).fill(colors.accent);
 
     // "This certifies that"
-    doc.fillColor(COLORS.mute).fontSize(12).font("Helvetica");
+    doc.fillColor(colors.mute).fontSize(12).font("Helvetica");
     doc.text("This certifies that", MARGIN, 185, {
       width: W - MARGIN * 2,
       align: "center",
     });
 
     // User name
-    doc.fillColor(COLORS.ink).fontSize(30).font("Helvetica-Bold");
+    doc.fillColor(colors.ink).fontSize(30).font("Helvetica-Bold");
     doc.text(input.userName, MARGIN, 210, {
       width: W - MARGIN * 2,
       align: "center",
@@ -1027,17 +1027,17 @@ export async function generateCertificatePdf(input: CertificateInput): Promise<B
       doc.widthOfString(input.userName, { fontSize: 30 }),
       380,
     );
-    doc.rect(cx - nameWidth / 2, 250, nameWidth, 1).fill(COLORS.accent);
+    doc.rect(cx - nameWidth / 2, 250, nameWidth, 1).fill(colors.accent);
 
     // Body
-    doc.fillColor(COLORS.mute).fontSize(12).font("Helvetica");
+    doc.fillColor(colors.mute).fontSize(12).font("Helvetica");
     doc.text("has successfully completed all topics in", MARGIN, 265, {
       width: W - MARGIN * 2,
       align: "center",
     });
 
     // Roadmap title
-    doc.fillColor(COLORS.accent).fontSize(20).font("Helvetica-Bold");
+    doc.fillColor(colors.accent).fontSize(20).font("Helvetica-Bold");
     doc.text(input.roadmapTitle, MARGIN, 292, {
       width: W - MARGIN * 2,
       align: "center",
@@ -1049,23 +1049,23 @@ export async function generateCertificatePdf(input: CertificateInput): Promise<B
       month: "long",
       day: "numeric",
     });
-    doc.fillColor(COLORS.faint).fontSize(11).font("Helvetica");
+    doc.fillColor(colors.faint).fontSize(11).font("Helvetica");
     doc.text(`Completed on ${dateStr}`, MARGIN, 332, {
       width: W - MARGIN * 2,
       align: "center",
     });
 
     // Signature line
-    doc.rect(cx - 80, H - 115, 160, 0.5).fill(COLORS.faintest);
-    doc.fillColor(COLORS.faint).fontSize(9).font("Helvetica");
+    doc.rect(cx - 80, H - 115, 160, 0.5).fill(colors.faintest);
+    doc.fillColor(colors.faint).fontSize(9).font("Helvetica");
     doc.text("InternHack Team", MARGIN, H - 100, {
       width: W - MARGIN * 2,
       align: "center",
     });
 
     // Bottom footer rule
-    doc.rect(MARGIN, H - 60, W - MARGIN * 2, 0.5).fill(COLORS.faintest);
-    doc.fillColor(COLORS.faint).fontSize(7.5).font("Helvetica");
+    doc.rect(MARGIN, H - 60, W - MARGIN * 2, 0.5).fill(colors.faintest);
+    doc.fillColor(colors.faint).fontSize(7.5).font("Helvetica");
     doc.text(
       `INTERNHACK · CERTIFICATE OF COMPLETION · ${input.roadmapTitle.toUpperCase()}`,
       MARGIN,
