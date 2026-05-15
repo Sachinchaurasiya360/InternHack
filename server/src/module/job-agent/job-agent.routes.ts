@@ -23,8 +23,9 @@ const chatBurstLimiter = rateLimit({
   message: { message: "You're sending messages too quickly. Please wait a moment and try again." },
 });
 
-router.post("/chat",             chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chat);
-router.get("/conversation",      jobAgentController.getConversation);
-router.delete("/conversation",   jobAgentController.resetConversation);
+router.post("/chat",           chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chat);
+router.post("/chat/stream",    chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chatStream);
+router.get("/conversation",    jobAgentController.getConversation);
+router.delete("/conversation", jobAgentController.resetConversation);
 
 export { router as jobAgentRouter };

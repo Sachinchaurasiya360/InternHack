@@ -22,6 +22,7 @@ import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 
 interface DisplayMessage {
+  id?: string;
   role: "user" | "assistant";
   content: string;
   jobs?: JobFeedMatch["job"][];
@@ -77,8 +78,10 @@ export default function JobAgentPage() {
   const qc = useQueryClient();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [hitFreeLimit, setHitFreeLimit] = useState(false);
   const hasChattedRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
 
@@ -99,6 +102,7 @@ export default function JobAgentPage() {
     if (conversation?.messages?.length && !hasChattedRef.current) {
       setMessages(
         conversation.messages.map((m: any) => ({
+          id: crypto.randomUUID(),
           role: m.role,
           content: m.content,
           jobs: m.jobs?.length ? m.jobs : undefined,
@@ -115,57 +119,222 @@ export default function JobAgentPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
+  // Fallback non-streaming mutation (used if SSE fails)
   const chatMut = useMutation({
     mutationFn: async (message: string) => {
       const res = await api.post("/job-agent/chat", { message });
       return res.data as JobAgentResponse;
     },
-    onSuccess: (data) => {
+    onSuccess: (data, _message, assistantId) => {
       hasChattedRef.current = true;
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: data.reply,
-          jobs: data.jobs.length > 0 ? data.jobs : undefined,
-        },
-      ]);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === (assistantId as unknown as string)
+            ? { ...m, content: data.reply, jobs: data.jobs.length > 0 ? data.jobs : undefined }
+            : m,
+        ),
+      );
     },
-    onError: (err: unknown) => {
+    onError: (err: unknown, _message, assistantId) => {
       const resp = (err as { response?: { status?: number; data?: { freeLimit?: boolean } } })?.response;
       if (resp?.status === 403 && resp?.data?.freeLimit) {
         setHitFreeLimit(true);
-        setMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
-        }]);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === (assistantId as unknown as string)
+              ? { ...m, content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search." }
+              : m,
+          ),
+        );
       } else {
-        setMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
-        }]);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === (assistantId as unknown as string)
+              ? { ...m, content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment." }
+              : m,
+          ),
+        );
       }
     },
   });
 
+  const startStream = useCallback(
+    async (message: string) => {
+      // Cancel any in-flight stream
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = new AbortController();
+
+      const assistantId = crypto.randomUUID();
+      hasChattedRef.current = true;
+
+      // Optimistically add empty assistant bubble
+      setMessages((prev) => [
+        ...prev,
+        { id: assistantId, role: "assistant" as const, content: "", jobs: undefined },
+      ]);
+
+      let usedFallback = false;
+
+      try {
+        const token = useAuthStore.getState().token;
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/job-agent/chat/stream`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ message }),
+            signal: abortControllerRef.current.signal,
+          },
+        );
+
+        // Handle HTTP errors before streaming starts
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          if (res.status === 403 && errData?.freeLimit) {
+            setHitFreeLimit(true);
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId
+                  ? { ...m, content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search." }
+                  : m,
+              ),
+            );
+            return;
+          }
+          // Non-free-limit error → fallback
+          usedFallback = true;
+          throw new Error(errData?.message || "Stream request failed");
+        }
+
+        // Parse SSE stream
+        const reader = res.body!.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          // Split on double newline (SSE event boundary)
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() ?? "";
+
+          for (const part of parts) {
+            if (!part.trim()) continue;
+            const eventMatch = part.match(/^event: (\w+)/m);
+            const dataMatch = part.match(/^data: (.+)$/m);
+            if (!eventMatch || !dataMatch) continue;
+
+            const event = eventMatch[1];
+            let data: any;
+            try { data = JSON.parse(dataMatch[1]); } catch { continue; }
+
+            if (event === "token") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId ? { ...m, content: m.content + data.text } : m,
+                ),
+              );
+            } else if (event === "jobs") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, jobs: data.jobs?.length > 0 ? data.jobs : undefined }
+                    : m,
+                ),
+              );
+            } else if (event === "error") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: "Something went wrong. Please try again." }
+                    : m,
+                ),
+              );
+            }
+            // "done" event — nothing to do, stream ends naturally
+          }
+        }
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+
+        if (usedFallback) {
+          // Fallback to non-streaming endpoint
+          try {
+            const token = useAuthStore.getState().token;
+            const res = await api.post("/job-agent/chat", { message });
+            const data = res.data as JobAgentResponse;
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId
+                  ? { ...m, content: data.reply, jobs: data.jobs?.length > 0 ? data.jobs : undefined }
+                  : m,
+              ),
+            );
+          } catch (fallbackErr: any) {
+            const resp = (fallbackErr as any)?.response;
+            if (resp?.status === 403 && resp?.data?.freeLimit) {
+              setHitFreeLimit(true);
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search." }
+                    : m,
+                ),
+              );
+            } else {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: "We're experiencing high demand right now. Please try again in a moment." }
+                    : m,
+                ),
+              );
+            }
+          }
+        } else {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? { ...m, content: "We're experiencing high demand right now. Please try again in a moment." }
+                : m,
+            ),
+          );
+        }
+      }
+    },
+    [],
+  );
+
   const resetMut = useMutation({
     mutationFn: () => api.delete("/job-agent/conversation"),
     onSuccess: () => {
+      abortControllerRef.current?.abort();
       hasChattedRef.current = false;
       setHitFreeLimit(false);
+      setIsStreaming(false);
       setMessages([]);
       qc.invalidateQueries({ queryKey: queryKeys.jobAgent.conversation() });
     },
   });
 
-  const handleSend = (text?: string) => {
-    const msg = (text ?? input).trim();
-    if (!msg || chatMut.isPending) return;
-    setInput("");
-    adjustHeight(true);
-    setMessages((prev) => [...prev, { role: "user", content: msg }]);
-    chatMut.mutate(msg);
-  };
+  const handleSend = useCallback(
+    async (text?: string) => {
+      const msg = (text ?? input).trim();
+      if (!msg || isStreaming) return;
+      setInput("");
+      adjustHeight(true);
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user" as const, content: msg }]);
+      setIsStreaming(true);
+      await startStream(msg);
+      setIsStreaming(false);
+    },
+    [input, isStreaming, startStream, adjustHeight],
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -174,8 +343,12 @@ export default function JobAgentPage() {
     }
   };
 
+  // ThinkingIndicator shows only before first token arrives
+  const lastMsg = messages[messages.length - 1];
+  const showThinking = isStreaming && (!lastMsg || lastMsg.role !== "assistant" || lastMsg.content === "");
+
   const isEmpty = messages.length === 0;
-  const inputDisabled = chatMut.isPending || hitFreeLimit;
+  const inputDisabled = isStreaming || hitFreeLimit;
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
@@ -291,9 +464,9 @@ export default function JobAgentPage() {
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
                 {messages.map((msg, i) => (
-                  <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
+                  <AgentMessage key={msg.id ?? i} role={msg.role} content={msg.content} jobs={msg.jobs} />
                 ))}
-                {chatMut.isPending && <ThinkingIndicator />}
+                {showThinking && <ThinkingIndicator />}
               </motion.div>
             )}
           </AnimatePresence>
@@ -336,7 +509,7 @@ export default function JobAgentPage() {
                 placeholder={
                   hitFreeLimit
                     ? "Upgrade to continue chatting..."
-                    : chatMut.isPending
+                    : isStreaming
                       ? "Thinking..."
                       : "Ask me about jobs..."
                 }
