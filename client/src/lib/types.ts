@@ -134,6 +134,7 @@ export interface Round {
   assessmentQuestions?: AssessmentQuestion[];
   timeLimitSecs?: number | null;
   autoGrade?: boolean;
+  activateAt?: string | null;
   _count?: { roundSubmissions: number };
   createdAt: string;
   updatedAt: string;
@@ -277,7 +278,7 @@ export interface LatexChatResponse {
 }
 
 // Cover Letter
-export type CoverLetterTone = "professional" | "friendly" | "enthusiastic";
+export type CoverLetterTone = "professional" | "friendly" | "enthusiastic" | "technical" | "creative" | "formal" | "concise" | "startup";
 
 export interface CoverLetterInput {
   jobDescription: string;
@@ -498,7 +499,14 @@ export interface SkillTestQuestion {
 export interface SkillTestWithQuestions extends SkillTest {
   questions: SkillTestQuestion[];
   existingVerification?: VerifiedSkill | null;
-  bestAttempt?: { id: number; score: number; passed: boolean } | null;
+
+  questionsPerSession?: number;
+
+  bestAttempt?: {
+    id: number;
+    score: number;
+    passed: boolean;
+  } | null;
 }
 
 export interface SkillTestAttempt {
@@ -1149,6 +1157,8 @@ export interface JobAgentMessage {
   content: string;
   timestamp: string;
   jobCount?: number;
+  jobIds?: number[];
+  jobs?: JobFeedMatch["job"][];
 }
 
 export interface JobAgentResponse {
