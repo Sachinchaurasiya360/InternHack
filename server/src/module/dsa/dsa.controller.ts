@@ -180,4 +180,27 @@ export class DsaController {
       next(err);
     }
   }
+
+  async getActivity(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      
+      const year = req.query.year ? parseInt(req.query.year as string) : new Date().getUTCFullYear();
+      if (isNaN(year)) { res.status(400).json({ message: "Invalid year" }); return; }
+
+      const activity = await this.dsaService.getActivity(userId, year);
+      
+      const currentYear = new Date().getUTCFullYear();
+      if (year < currentYear) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+      } else {
+        res.setHeader('Cache-Control', 'public, max-age=600');
+      }
+
+      res.json(activity);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
