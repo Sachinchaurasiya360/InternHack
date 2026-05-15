@@ -23,6 +23,7 @@ import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 
 interface DisplayMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
   jobs?: JobFeedMatch["job"][];
@@ -79,8 +80,8 @@ export default function JobAgentPage() {
   const [input, setInput] = useState("");
   const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
   const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
-  const [hasChatted, setHasChatted] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
 
@@ -97,7 +98,8 @@ export default function JobAgentPage() {
 
   const conversationMessages = useMemo<DisplayMessage[]>(
     () =>
-      conversation?.messages?.map((m) => ({
+      conversation?.messages?.map((m, index) => ({
+        id: m.id ?? `${m.role}-${m.timestamp}-${index}`,
         role: m.role,
         content: m.content,
         jobs: m.jobs?.length ? m.jobs : undefined,
@@ -125,6 +127,7 @@ export default function JobAgentPage() {
       setLocalMessages((prev) => [
         ...prev,
         {
+          id: crypto.randomUUID(),
           role: "assistant",
           content: data.reply,
           jobs: data.jobs.length > 0 ? data.jobs : undefined,
@@ -147,15 +150,23 @@ export default function JobAgentPage() {
 
       if (isFreeLimitError) {
         setManualHitFreeLimit(true);
-        setLocalMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
-        }]);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
+          },
+        ]);
       } else {
-        setLocalMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
-        }]);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
+          },
+        ]);
       }
     },
   });
@@ -176,7 +187,7 @@ export default function JobAgentPage() {
     setInput("");
     adjustHeight(true);
     setHasChatted(true);
-    setLocalMessages([...messages, { role: "user", content: msg }]);
+    setLocalMessages([...messages, { id: crypto.randomUUID(), role: "user", content: msg }]);
     chatMut.mutate(msg);
   };
 
@@ -316,19 +327,9 @@ export default function JobAgentPage() {
               </motion.div>
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg, i) => {
-                  const isLastMessage = i === messages.length - 1;
-
-                  return (
-                    <AgentMessage
-                      key={i}
-                      role={msg.role}
-                      content={msg.content}
-                      jobs={msg.jobs}
-                      isStreaming={chatMut.isPending && isLastMessage}
-                    />
-                  );
-                })}
+                {messages.map((msg) => (
+                  <AgentMessage key={msg.id} role={msg.role} content={msg.content} jobs={msg.jobs} />
+                ))}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
             )}
@@ -427,10 +428,12 @@ export default function JobAgentPage() {
               )}
             </div>
           )}
-          <p className={cn(
-            "text-center text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600",
-            isPremium ? "mt-2" : "mt-1",
-          )}>
+          <p
+            className={cn(
+              "text-center text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600",
+              isPremium ? "mt-2" : "mt-1",
+            )}
+          >
             powered by Neural Network , always verify job details
           </p>
         </div>

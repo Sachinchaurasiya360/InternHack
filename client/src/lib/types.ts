@@ -1113,6 +1113,7 @@ export interface EmailCampaignDetail extends EmailCampaign {
 }
 
 export interface ChatMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
 }
@@ -1153,6 +1154,7 @@ export interface JobPreferences {
 }
 
 export interface JobAgentMessage {
+  id?: string;
   role: "user" | "assistant";
   content: string;
   timestamp: string;
