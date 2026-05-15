@@ -118,6 +118,8 @@ export default function ResumeGeneratorPage() {
   const prevBlobUrl = useRef<string | null>(null);
   const hasAutoCompiled = useRef(false);
 const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
+const [showTemplateSwitch, setShowTemplateSwitch] = useState(false);
+const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?: string; keySkills?: string; useProfile?: boolean} | null>(null);
   const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
@@ -171,6 +173,7 @@ const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
       setLatexCode(data.latex);
       setPhase("editor");
       setPdfUrl(null);
+      setParsedData({ jobDescription: jobDescription.trim() || undefined, jobTitle: jobTitle.trim() || undefined, keySkills: keySkills.trim() || undefined, useProfile: useProfile && !!hasProfileData });
       setPreviewError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
     } catch (err) {
@@ -855,7 +858,13 @@ const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
                 >
                   <Download className="w-3.5 h-3.5" /> Download PDF
                 </button>
-
+<button
+  type="button"
+  onClick={() => setShowTemplateSwitch(!showTemplateSwitch)}
+  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+>
+  <FileCode2 className="w-3.5 h-3.5" /> Change Template
+</button>
                 <button
                   type="button"
                   onClick={() => { setPhase("form"); setError(""); }}
@@ -865,6 +874,61 @@ const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
                 </button>
               </div>
             </div>
+            {showTemplateSwitch && (
+  <div className={`${cardCls} mb-5 p-5`}>
+    <p className="text-xs font-bold text-stone-900 dark:text-stone-50 mb-3">Switch template (uses cached content, no quota used)</p>
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-1 mb-4">
+      {LATEX_TEMPLATES.map((tpl) => (
+        <button
+          key={tpl.id}
+          type="button"
+          onClick={() => setSelectedTemplateId(tpl.id)}
+          className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
+            selectedTemplateId === tpl.id
+              ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
+              : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
+          }`}
+        >
+          <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
+          <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-1">{tpl.description}</p>
+        </button>
+      ))}
+    </div>
+    <button
+      type="button"
+      disabled={loading}
+      onClick={async () => {
+        if (!parsedData) return;
+        setShowTemplateSwitch(false);
+        setLoading(true);
+        setError("");
+        setCurrentStep(0);
+        hasAutoCompiled.current = false;
+        const stepInterval = setInterval(() => {
+          setCurrentStep((s) => (s < GENERATION_STEPS.length - 1 ? s + 1 : s));
+        }, 1500);
+        try {
+          const { data } = await api.post("/ats/generate-resume", {
+            ...parsedData,
+            templateId: selectedTemplateId,
+          });
+          setLatexCode(data.latex);
+          setPdfUrl(null);
+          setPreviewError(null);
+        } catch (err) {
+          const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to switch template.";
+          setError(msg);
+        } finally {
+          clearInterval(stepInterval);
+          setLoading(false);
+        }
+      }}
+      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+    >
+      <RefreshCw className="w-3.5 h-3.5" /> Apply Template
+    </button>
+  </div>
+)}
 
             {/* ─── Split pane ─── */}
             <div className="flex flex-col lg:flex-row gap-5 min-h-[calc(100vh-220px)]">
