@@ -883,6 +883,41 @@ export interface DsaSubmissionSummary {
   createdAt: string;
 }
 
+// LeetCode Import
+export interface LeetcodeImportPreviewItem {
+  problemId: number;
+  title: string;
+  difficulty: string;
+  slug: string;
+  solvedAt: string | null;
+}
+
+export interface LeetcodeImportPreview {
+  matched: number;
+  unmatched: number;
+  alreadySolved: number;
+  newSolves: number;
+  token: string;
+  preview: LeetcodeImportPreviewItem[];
+  lastImport?: { importedAt: string; username: string | null; source: string } | null;
+}
+
+export interface LeetcodeImportResult {
+  imported: number;
+  skipped: number;
+  importedAt: string;
+}
+
+export interface LeetcodeImportStatus {
+  lastImport: {
+    importedAt: string;
+    username: string | null;
+    source: string;
+    matched: number;
+    imported: number;
+  } | null;
+}
+
 // Aptitude Practice
 export interface AptitudeCategory {
   id: number;
