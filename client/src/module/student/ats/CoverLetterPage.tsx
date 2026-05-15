@@ -35,6 +35,7 @@ import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CoverLetterTone, UsageStats } from "../../../lib/types";
 
+
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   {
     id: "professional",
@@ -56,6 +57,26 @@ const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   { id: "formal", label: "Formal", description: "Executive and measured" },
   { id: "concise", label: "Concise", description: "Short and direct" },
   { id: "startup", label: "Startup", description: "Bold and mission-driven" },
+];
+const LENGTHS = [
+  {
+    id: "short",
+    label: "Short",
+    words: "~150 words",
+    description: "Quick intro, best for emails & EasyApply",
+  },
+  {
+    id: "medium",
+    label: "Medium",
+    words: "~300 words",
+    description: "Standard application length",
+  },
+  {
+    id: "long",
+    label: "Long",
+    words: "~500 words",
+    description: "Detailed for academic or executive roles",
+  },
 ];
 
 const GENERATION_STEPS = [
@@ -118,6 +139,7 @@ const [isModified, setIsModified] = useState(false);
 const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
+  const [length, setLength] = useState("medium");
 const letterRef = useRef<HTMLDivElement>(null);
 const [toneManuallySelected, setToneManuallySelected] = useState(false);
 
@@ -213,6 +235,9 @@ const [toneManuallySelected, setToneManuallySelected] = useState(false);
         companyName: companyName.trim() || undefined,
         keySkills: keySkills.trim() || undefined,
         tone,
+        length,
+        targetWords:
+          length=== "short" ? 150 : length === "medium" ? 300 : 500,
         useProfile,
       });
       setCoverLetter(data.coverLetter);
@@ -532,10 +557,50 @@ useEffect(() => {
             </div>
           </div>
 
+          {/* ─── Length card ─── */}
+          <div className={cardCls}>
+  <CardHeader kicker="step 03" title="Length" />
+  <div className="p-5">
+    <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10">
+      {LENGTHS.map((l, i) => {
+        const isActive = length === l.id;
+        return (
+          <button
+            key={l.id}
+            type="button"
+            onClick={() => setLength(l.id)}
+            className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
+              isActive
+                ? "bg-stone-900 text-stone-50 dark:text-stone-50"
+                : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-800"
+            }`}
+          >
+            <span
+              className={`text-[10px] font-mono uppercase tracking-widest ${
+                isActive ? "text-lime-400" : "text-stone-500"
+              }`}
+            >
+              / {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="text-sm font-bold">{l.label}</span>
+            <span
+              className={`text-[11px] ${
+                isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+              }`}
+            >
+              {l.words}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
           {/* ─── Profile toggle ─── */}
           <div className={cardCls}>
             <CardHeader
-              kicker="step 03"
+              kicker="step 04"
               title="Use my profile"
               right={
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
