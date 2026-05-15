@@ -688,12 +688,22 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       select: { name: true },
     });
 
+
+
+    const completedTopics = enrollment.topicProgress
+      .filter((p) => p.status === "COMPLETED" && p.completedAt)
+      .sort((a, b) => b.completedAt!.getTime() - a.completedAt!.getTime());
+    const actualCompletedAt = completedTopics[0]?.completedAt ?? new Date();
+
     const pdfBuffer = await generateCertificatePdf({
       theme,
       userName: userRecord?.name ?? "Learner",
       roadmapTitle: enrollment.roadmap.title,
-      completedAt: new Date(),
+      completedAt: actualCompletedAt,
     });
+
+
+
 
     const suffix = theme === "dark" ? "-dark" : "";
     res.setHeader("Content-Type", "application/pdf");
