@@ -1,5 +1,4 @@
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -77,14 +76,11 @@ export default function JobAgentPage() {
 
   const qc = useQueryClient();
   const [input, setInput] = useState("");
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [messages, setMessages] = useState<DisplayMessage[]>([]);
-  const [hitFreeLimit, setHitFreeLimit] = useState(false);
-  const hasChattedRef = useRef(false);
+  const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
+  const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
+  const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
-
-  const userMsgCount = messages.filter((m) => m.role === "user").length;
 
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
@@ -92,26 +88,24 @@ export default function JobAgentPage() {
       const res = await api.get("/job-agent/conversation");
       return res.data as { messages: JobAgentMessage[] } | null;
     },
-    enabled: !hasChattedRef.current,
+    enabled: !hasChatted,
     retry: false,
     staleTime: Infinity,
   });
 
-  useEffect(() => {
-    if (conversation?.messages?.length && !hasChattedRef.current) {
-      setMessages(
-        conversation.messages.map((m: any) => ({
-          role: m.role,
-          content: m.content,
-          jobs: m.jobs?.length ? m.jobs : undefined,
-        })),
-      );
-      if (!isPremium) {
-        const userMsgs = conversation.messages.filter((m) => m.role === "user").length;
-        if (userMsgs >= FREE_LIMIT) setHitFreeLimit(true);
-      }
-    }
-  }, [conversation, isPremium]);
+  const conversationMessages = useMemo<DisplayMessage[]>(
+    () =>
+      conversation?.messages?.map((m) => ({
+        role: m.role,
+        content: m.content,
+        jobs: m.jobs?.length ? m.jobs : undefined,
+      })) ?? [],
+    [conversation],
+  );
+
+  const messages = hasChatted || localMessages.length > 0 ? localMessages : conversationMessages;
+  const userMsgCount = messages.filter((m) => m.role === "user").length;
+  const hitFreeLimit = manualHitFreeLimit || (!isPremium && !hasChatted && userMsgCount >= FREE_LIMIT);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -123,8 +117,8 @@ export default function JobAgentPage() {
       return res.data as JobAgentResponse;
     },
     onSuccess: (data) => {
-      hasChattedRef.current = true;
-      setMessages((prev) => [
+      setHasChatted(true);
+      setLocalMessages((prev) => [
         ...prev,
         {
           role: "assistant",
@@ -136,13 +130,13 @@ export default function JobAgentPage() {
     onError: (err: unknown) => {
       const resp = (err as { response?: { status?: number; data?: { freeLimit?: boolean } } })?.response;
       if (resp?.status === 403 && resp?.data?.freeLimit) {
-        setHitFreeLimit(true);
-        setMessages((prev) => [...prev, {
+        setManualHitFreeLimit(true);
+        setLocalMessages((prev) => [...prev, {
           role: "assistant",
           content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
         }]);
       } else {
-        setMessages((prev) => [...prev, {
+        setLocalMessages((prev) => [...prev, {
           role: "assistant",
           content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
         }]);
@@ -153,9 +147,9 @@ export default function JobAgentPage() {
   const resetMut = useMutation({
     mutationFn: () => api.delete("/job-agent/conversation"),
     onSuccess: () => {
-      hasChattedRef.current = false;
-      setHitFreeLimit(false);
-      setMessages([]);
+      setHasChatted(false);
+      setManualHitFreeLimit(false);
+      setLocalMessages([]);
       qc.invalidateQueries({ queryKey: queryKeys.jobAgent.conversation() });
     },
   });
@@ -165,7 +159,8 @@ export default function JobAgentPage() {
     if (!msg || chatMut.isPending) return;
     setInput("");
     adjustHeight(true);
-    setMessages((prev) => [...prev, { role: "user", content: msg }]);
+    setHasChatted(true);
+    setLocalMessages([...messages, { role: "user", content: msg }]);
     chatMut.mutate(msg);
   };
 
@@ -307,9 +302,19 @@ export default function JobAgentPage() {
               </motion.div>
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg, i) => (
-                  <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
-                ))}
+                {messages.map((msg, i) => {
+                  const isLastMessage = i === messages.length - 1;
+
+                  return (
+                    <AgentMessage
+                      key={i}
+                      role={msg.role}
+                      content={msg.content}
+                      jobs={msg.jobs}
+                      isStreaming={chatMut.isPending && isLastMessage}
+                    />
+                  );
+                })}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
             )}
