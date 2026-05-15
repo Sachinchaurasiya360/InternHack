@@ -110,15 +110,6 @@ const getScoreTier = (score: number): ScoreTier =>
 const JD_MAX_CHARS = 5000;
 const JD_WARN_CHARS = 4500;
 
-const ANALYSIS_STEPS = [
-  { icon: Upload, label: "Uploading resume" },
-  { icon: FileText, label: "Parsing document" },
-  { icon: Search, label: "Scanning keywords" },
-  { icon: AlignLeft, label: "Checking formatting" },
-  { icon: ScanSearch, label: "Analyzing impact statements" },
-  { icon: BarChart2, label: "Generating ATS score" },
-];
-
 // ── Shared UI primitives ─────────────────────────────────────────────────
 const cardCls =
   "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
@@ -280,9 +271,6 @@ export default function AtsScorePage() {
   const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
   const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
-  const [currentStep, setCurrentStep] = useState(-1);
-  const [analysisComplete, setAnalysisComplete] = useState(false);
-  const [analysisRunId, setAnalysisRunId] = useState(0);
   const [analyzedFileName, setAnalyzedFileName] = useState("");
   const [analyzedFileSize, setAnalyzedFileSize] = useState(0);
   const [emailSent, setEmailSent] = useState(false);
@@ -315,8 +303,6 @@ export default function AtsScorePage() {
     onSuccess: ({ score, emailQueued }) => {
       setResult(score);
       setEmailSent(emailQueued);
-      setCurrentStep(ANALYSIS_STEPS.length - 1);
-      setAnalysisComplete(true);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.history() });
     },
@@ -333,18 +319,6 @@ export default function AtsScorePage() {
   });
 
   const loading = analyzeMutation.isPending;
-
-  useEffect(() => {
-    if (analysisRunId === 0 || !loading) return;
-
-    setAnalysisComplete(false);
-    setCurrentStep(0);
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    for (let i = 1; i < ANALYSIS_STEPS.length; i++) {
-      timers.push(setTimeout(() => setCurrentStep(i), i * 2200));
-    }
-    return () => timers.forEach(clearTimeout);
-  }, [analysisRunId, loading]);
 
   useEffect(() => {
     if (!file) {
@@ -379,8 +353,6 @@ export default function AtsScorePage() {
       setResumeUrl("");
       setResult(null);
       setError("");
-      setCurrentStep(-1);
-      setAnalysisComplete(false);
     }
   };
 
@@ -398,8 +370,6 @@ export default function AtsScorePage() {
     setResumeUrl("");
     setResult(null);
     setError("");
-    setCurrentStep(-1);
-    setAnalysisComplete(false);
   };
 
   const handleAnalyze = () => {
@@ -407,9 +377,6 @@ export default function AtsScorePage() {
     setResult(null);
     setEmailSent(false);
     setActiveTab("suggestions");
-    setAnalysisComplete(false);
-    setCurrentStep(0);
-    setAnalysisRunId((id) => id + 1);
     if (file) {
       setAnalyzedFileName(file.name);
       setAnalyzedFileSize(file.size);
@@ -426,8 +393,6 @@ export default function AtsScorePage() {
     setResumeUrl("");
     setResult(null);
     setError("");
-    setCurrentStep(-1);
-    setAnalysisComplete(false);
     setAnalyzedFileName("");
     setAnalyzedFileSize(0);
     setEmailSent(false);
@@ -961,120 +926,44 @@ export default function AtsScorePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className={`${cardCls} min-h-125`}
+                role="status"
+                aria-live="polite"
+                aria-label="Analyzing your resume"
+                className={`${cardCls} min-h-125 flex flex-col items-center justify-center p-10`}
               >
-                <CardHeader
-                  kicker="analyzing"
-                  title="Scanning your resume"
-                  right={
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                      ~10-20s
-                    </span>
-                  }
-                />
-                <div className="p-6">
-                  <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-full overflow-hidden mb-6">
+                <div className="max-w-xs w-full text-center space-y-6">
+                  <div className="w-14 h-14 rounded-md bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto">
                     <motion.div
-                      className="h-full bg-lime-400"
-                      initial={{ width: "0%" }}
-                      animate={{
-                        width: `${Math.min(((currentStep + 1) / ANALYSIS_STEPS.length) * 100, 100)}%`,
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "linear",
                       }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    />
+                    >
+                      <ScanSearch className="w-6 h-6 text-stone-600 dark:text-stone-400" />
+                    </motion.div>
                   </div>
-
-                  <div className="space-y-1">
-                    {ANALYSIS_STEPS.map((step, i) => {
-                      const Icon = step.icon;
-                      const isDone =
-                        i < currentStep ||
-                        (i === currentStep && analysisComplete);
-                      const isCurrent = i === currentStep && !analysisComplete;
-                      const isPending = i > currentStep;
-                      return (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.08 }}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
-                            isCurrent
-                              ? "bg-lime-400/10 border border-lime-400/40"
-                              : isDone
-                                ? "bg-stone-50 dark:bg-stone-950/60 border border-transparent"
-                                : "border border-transparent opacity-50"
-                          }`}
-                        >
-                          <div
-                            className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
-                              isDone
-                                ? "bg-lime-400 text-stone-950"
-                                : isCurrent
-                                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
-                                  : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
-                            }`}
-                          >
-                            {isDone ? (
-                              <CheckCircle className="w-3.5 h-3.5" />
-                            ) : isCurrent ? (
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                  duration: 1.5,
-                                  repeat: Infinity,
-                                  ease: "linear",
-                                }}
-                              >
-                                <Icon className="w-3.5 h-3.5" />
-                              </motion.div>
-                            ) : (
-                              <Icon className="w-3.5 h-3.5" />
-                            )}
-                          </div>
-                          <span
-                            className={`text-sm font-medium flex-1 ${
-                              isDone
-                                ? "text-stone-600 dark:text-stone-400"
-                                : isCurrent
-                                  ? "text-stone-900 dark:text-stone-50"
-                                  : "text-stone-400 dark:text-stone-600"
-                            }`}
-                          >
-                            {step.label}
-                          </span>
-                          {isDone && (
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
-                              done
-                            </span>
-                          )}
-                          {isCurrent && (
-                            <div className="flex gap-1">
-                              {[0, 0.15, 0.3].map((delay) => (
-                                <motion.div
-                                  key={delay}
-                                  className="w-1.5 h-1.5 rounded-full bg-lime-400"
-                                  animate={{
-                                    scale: [1, 1.4, 1],
-                                    opacity: [0.5, 1, 0.5],
-                                  }}
-                                  transition={{
-                                    duration: 0.8,
-                                    repeat: Infinity,
-                                    delay,
-                                  }}
-                                />
-                              ))}
-                            </div>
-                          )}
-                          {isPending && (
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
-                              pending
-                            </span>
-                          )}
-                        </motion.div>
-                      );
-                    })}
+                  <div>
+                    <p className="text-sm font-bold text-stone-900 dark:text-stone-50 mb-1">
+                      Analyzing your resume
+                    </p>
+                    <p className="text-xs text-stone-500 font-mono uppercase tracking-widest">
+                      This takes 10–20 seconds
+                    </p>
+                  </div>
+                  {/* Indeterminate progress bar — honest, not fake-stepped */}
+                  <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-lime-400 rounded-full"
+                      animate={{ x: ["-100%", "250%"] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      style={{ width: "40%" }}
+                    />
                   </div>
                 </div>
               </motion.div>
