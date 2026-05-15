@@ -35,6 +35,7 @@ import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CoverLetterTone, UsageStats } from "../../../lib/types";
 
+
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   {
     id: "professional",
@@ -57,6 +58,26 @@ const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   { id: "concise", label: "Concise", description: "Short and direct" },
   { id: "startup", label: "Startup", description: "Bold and mission-driven" },
 ];
+const LENGTHS = [
+  {
+    id: "short",
+    label: "Short",
+    words: "~150 words",
+    description: "Quick intro, best for emails & EasyApply",
+  },
+  {
+    id: "medium",
+    label: "Medium",
+    words: "~300 words",
+    description: "Standard application length",
+  },
+  {
+    id: "long",
+    label: "Long",
+    words: "~500 words",
+    description: "Detailed for academic or executive roles",
+  },
+];
 
 const GENERATION_STEPS = [
   { icon: FileText, label: "Reading job description" },
@@ -66,6 +87,8 @@ const GENERATION_STEPS = [
 ];
 
 const JD_MIN_CHARS = 50;
+
+const STORAGE_KEY = "cover_letter_draft";
 
 const cardCls =
   "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
@@ -108,12 +131,16 @@ export default function CoverLetterPage() {
   const [keySkills, setKeySkills] = useState("");
   const [tone, setTone] = useState<CoverLetterTone>("professional");
   const [useProfile, setUseProfile] = useState(false);
-  const [coverLetter, setCoverLetter] = useState("");
-  const [loading, setLoading] = useState(false);
+
+const [coverLetter, setCoverLetter] = useState("");
+const [originalCoverLetter, setOriginalCoverLetter] = useState("");
+const [isModified, setIsModified] = useState(false);
+
+const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
-  const letterRef = useRef<HTMLDivElement>(null);
-  const [toneManuallySelected, setToneManuallySelected] = useState(false);
+  const [length, setLength] = useState("medium");
+const [toneManuallySelected, setToneManuallySelected] = useState(false);
 
   const user = useAuthStore((s) => s.user);
 
@@ -181,26 +208,24 @@ export default function CoverLetterPage() {
       setTone("startup");
     }
   }, [jobDescription, toneManuallySelected]);
+  
+ const handleGenerate = async () => {
+  if (jobDescription.trim().length < JD_MIN_CHARS) {
+    toast.error(`Job description must be at least ${JD_MIN_CHARS} characters`);
+    return;
+  }
 
-  const handleGenerate = async () => {
-    if (jobDescription.trim().length < JD_MIN_CHARS) {
-      toast.error(
-        `Job description must be at least ${JD_MIN_CHARS} characters`,
-      );
-      return;
-    }
+  setLoading(true);
+  setError("");
+  setCoverLetter("");
+  setCurrentStep(0);
 
-    setLoading(true);
-    setError("");
-    setCoverLetter("");
-    setCurrentStep(0);
-
-    const stepInterval = setInterval(() => {
-      setCurrentStep((s) => {
-        if (s < GENERATION_STEPS.length - 1) return s + 1;
-        return s;
-      });
-    }, 1500);
+  const stepInterval = setInterval(() => {
+    setCurrentStep((s) => {
+      if (s < GENERATION_STEPS.length - 1) return s + 1;
+      return s;
+    });
+  }, 1500);
 
     try {
       const { data } = await api.post("/ats/cover-letter", {
@@ -209,11 +234,24 @@ export default function CoverLetterPage() {
         companyName: companyName.trim() || undefined,
         keySkills: keySkills.trim() || undefined,
         tone,
+        length,
+        targetWords:
+          length=== "short" ? 150 : length === "medium" ? 300 : 500,
         useProfile,
       });
       setCoverLetter(data.coverLetter);
-      queryClient.invalidateQueries({ queryKey: queryKeys.coverLetter.history() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+setOriginalCoverLetter(data.coverLetter);
+setIsModified(false);
+
+localStorage.setItem(STORAGE_KEY, data.coverLetter);
+
+queryClient.invalidateQueries({
+  queryKey: queryKeys.coverLetter.history(),
+});
+
+queryClient.invalidateQueries({
+  queryKey: queryKeys.ats.usage(),
+});
     } catch (err) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data
@@ -224,6 +262,7 @@ export default function CoverLetterPage() {
       setLoading(false);
     }
   };
+
 
   const handleCopy = async () => {
     try {
@@ -253,21 +292,42 @@ export default function CoverLetterPage() {
 };
 
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
-  const downloadMenuRef = useRef<HTMLDivElement>(null);
+const downloadMenuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!showDownloadMenu) return;
-    const handleClick = (e: MouseEvent) => {
-      if (
-        downloadMenuRef.current &&
-        !downloadMenuRef.current.contains(e.target as Node)
-      ) {
-        setShowDownloadMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [showDownloadMenu]);
+useEffect(() => {
+  const savedDraft = localStorage.getItem(STORAGE_KEY);
+
+  if (savedDraft) {
+    setCoverLetter(savedDraft);
+    setIsModified(true);
+  }
+}, []);
+
+useEffect(() => {
+  if (coverLetter.trim()) {
+    localStorage.setItem(STORAGE_KEY, coverLetter);
+  }
+}, [coverLetter]);
+
+useEffect(() => {
+  if (!showDownloadMenu) return;
+
+  const handleClick = (e: MouseEvent) => {
+    if (
+      downloadMenuRef.current &&
+      !downloadMenuRef.current.contains(e.target as Node)
+    ) {
+      setShowDownloadMenu(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClick);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClick);
+  };
+}, [showDownloadMenu]);
+  
 
   const handleDownloadPdf = async () => {
     if (!coverLetter) return;
@@ -496,10 +556,50 @@ export default function CoverLetterPage() {
             </div>
           </div>
 
+          {/* ─── Length card ─── */}
+          <div className={cardCls}>
+  <CardHeader kicker="step 03" title="Length" />
+  <div className="p-5">
+    <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10">
+      {LENGTHS.map((l, i) => {
+        const isActive = length === l.id;
+        return (
+          <button
+            key={l.id}
+            type="button"
+            onClick={() => setLength(l.id)}
+            className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
+              isActive
+                ? "bg-stone-900 text-stone-50 dark:text-stone-50"
+                : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-800"
+            }`}
+          >
+            <span
+              className={`text-[10px] font-mono uppercase tracking-widest ${
+                isActive ? "text-lime-400" : "text-stone-500"
+              }`}
+            >
+              / {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="text-sm font-bold">{l.label}</span>
+            <span
+              className={`text-[11px] ${
+                isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+              }`}
+            >
+              {l.words}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
           {/* ─── Profile toggle ─── */}
           <div className={cardCls}>
             <CardHeader
-              kicker="step 03"
+              kicker="step 04"
               title="Use my profile"
               right={
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -824,6 +924,20 @@ export default function CoverLetterPage() {
                         >
                           <Download className="w-3 h-3" /> Download
                         </button>
+
+                        <button
+  type="button"
+  onClick={() => {
+    setCoverLetter(originalCoverLetter);
+    setIsModified(false);
+    localStorage.setItem(STORAGE_KEY, originalCoverLetter);
+  }}
+  disabled={!isModified}
+  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  Reset
+</button>
+
                         <AnimatePresence>
                           {showDownloadMenu && (
                             <motion.div
@@ -856,11 +970,16 @@ export default function CoverLetterPage() {
                     </div>
                   }
                 />
-                <div className="p-6" ref={letterRef}>
+                <div className="p-6">
                   <textarea
                     className="w-full min-h-100 text-sm text-stone-700 dark:text-stone-300 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
                     value={coverLetter}
-                    onChange={(e) => setCoverLetter(e.target.value)}
+                   onChange={(e) => {
+  const updatedValue = e.target.value;
+
+  setCoverLetter(updatedValue);
+  setIsModified(updatedValue !== originalCoverLetter);
+}}
                   />
                 </div>
               </motion.div>

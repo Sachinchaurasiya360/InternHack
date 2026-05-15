@@ -134,6 +134,7 @@ export interface Round {
   assessmentQuestions?: AssessmentQuestion[];
   timeLimitSecs?: number | null;
   autoGrade?: boolean;
+  activateAt?: string | null;
   _count?: { roundSubmissions: number };
   createdAt: string;
   updatedAt: string;
@@ -498,7 +499,14 @@ export interface SkillTestQuestion {
 export interface SkillTestWithQuestions extends SkillTest {
   questions: SkillTestQuestion[];
   existingVerification?: VerifiedSkill | null;
-  bestAttempt?: { id: number; score: number; passed: boolean } | null;
+
+  questionsPerSession?: number;
+
+  bestAttempt?: {
+    id: number;
+    score: number;
+    passed: boolean;
+  } | null;
 }
 
 export interface SkillTestAttempt {
@@ -1140,6 +1148,7 @@ export interface EmailCampaignDetail extends EmailCampaign {
 }
 
 export interface ChatMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
 }
@@ -1180,10 +1189,13 @@ export interface JobPreferences {
 }
 
 export interface JobAgentMessage {
+  id?: string;
   role: "user" | "assistant";
   content: string;
   timestamp: string;
   jobCount?: number;
+  jobIds?: number[];
+  jobs?: JobFeedMatch["job"][];
 }
 
 export interface JobAgentResponse {

@@ -65,6 +65,8 @@ export class CoverLetterController {
         jobDescription: result.data.jobDescription,
         content:        coverLetter,
         tone:           result.data.tone ?? "professional",
+        length:         result.data.length ?? "medium",
+        targetWords:    result.data.targetWords ?? 300,
         useProfile:     result.data.useProfile ?? false,
         keySkills:      result.data.keySkills,
       }).catch(() => {});

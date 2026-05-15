@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -129,6 +129,7 @@ const HOW_IT_WORKS = [
 // ─── Component ────────────────────────────────────────────────
 export default function CheckoutPage() {
   const { user, setUser } = useAuthStore();
+  const navigate = useNavigate();
 
   // Redirect premium users - they already have an active subscription
   if (user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE") {
@@ -147,22 +148,24 @@ export default function CheckoutPage() {
       await new Promise((r) => setTimeout(r, 2000));
       try {
         const { data } = await api.get("/auth/me");
-        if (data.subscriptionStatus === "ACTIVE" && data.subscriptionPlan !== "FREE") {
+        const profile = data.user ?? data;
+        if (profile.subscriptionStatus === "ACTIVE" && profile.subscriptionPlan !== "FREE") {
           if (user) {
             setUser({
               ...user,
-              subscriptionPlan: data.subscriptionPlan,
-              subscriptionStatus: data.subscriptionStatus,
-              subscriptionEndDate: data.subscriptionEndDate,
+              subscriptionPlan: profile.subscriptionPlan,
+              subscriptionStatus: profile.subscriptionStatus,
+              subscriptionEndDate: profile.subscriptionEndDate,
             });
           }
+          navigate("/student/dashboard", { replace: true });
           return;
         }
       } catch {
         // ignore polling errors
       }
     }
-  }, [user, setUser]);
+  }, [user, setUser, navigate]);
 
   useEffect(() => {
     if (dodoInitialized.current) return;

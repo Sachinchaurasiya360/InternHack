@@ -207,5 +207,6 @@ export const queryKeys = {
     sheets: () => ["dsa", "sheets"] as const,
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
     importStatus: () => ["dsa", "import-status"] as const,
+    activity: (year: number) => ["dsa", "activity", year] as const,
   },
 };

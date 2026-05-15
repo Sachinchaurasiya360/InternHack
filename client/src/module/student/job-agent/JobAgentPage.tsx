@@ -22,6 +22,7 @@ import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 
 interface DisplayMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
   jobs?: JobFeedMatch["job"][];
@@ -99,10 +100,11 @@ export default function JobAgentPage() {
     if (conversation?.messages?.length && !hasChattedRef.current) {
       setMessages(
         conversation.messages.map((m: any) => ({
-          role: m.role,
-          content: m.content,
-          jobs: m.jobs?.length ? m.jobs : undefined,
-        })),
+  id: m.id ?? crypto.randomUUID(),
+  role: m.role,
+  content: m.content,
+  jobs: m.jobs?.length ? m.jobs : undefined,
+})),
       );
       if (!isPremium) {
         const userMsgs = conversation.messages.filter((m) => m.role === "user").length;
@@ -125,10 +127,11 @@ export default function JobAgentPage() {
       setMessages((prev) => [
         ...prev,
         {
-          role: "assistant",
-          content: data.reply,
-          jobs: data.jobs.length > 0 ? data.jobs : undefined,
-        },
+  id: crypto.randomUUID(),
+  role: "assistant",
+  content: data.reply,
+  jobs: data.jobs.length > 0 ? data.jobs : undefined,
+},
       ]);
     },
     onError: (err: unknown) => {
@@ -136,11 +139,13 @@ export default function JobAgentPage() {
       if (resp?.status === 403 && resp?.data?.freeLimit) {
         setHitFreeLimit(true);
         setMessages((prev) => [...prev, {
+          id: crypto.randomUUID(),
           role: "assistant",
           content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
         }]);
       } else {
         setMessages((prev) => [...prev, {
+          id: crypto.randomUUID(),
           role: "assistant",
           content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
         }]);
@@ -163,7 +168,7 @@ export default function JobAgentPage() {
     if (!msg || chatMut.isPending) return;
     setInput("");
     adjustHeight(true);
-    setMessages((prev) => [...prev, { role: "user", content: msg }]);
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user", content: msg }]);
     chatMut.mutate(msg);
   };
 
@@ -290,8 +295,8 @@ export default function JobAgentPage() {
               </motion.div>
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg, i) => (
-                  <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
+                {messages.map((msg) => (
+  <AgentMessage key={msg.id} role={msg.role} content={msg.content} jobs={msg.jobs} />
                 ))}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
