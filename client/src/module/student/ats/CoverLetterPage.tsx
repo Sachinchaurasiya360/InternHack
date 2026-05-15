@@ -140,7 +140,6 @@ const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
   const [length, setLength] = useState("medium");
-const letterRef = useRef<HTMLDivElement>(null);
 const [toneManuallySelected, setToneManuallySelected] = useState(false);
 
   const user = useAuthStore((s) => s.user);
