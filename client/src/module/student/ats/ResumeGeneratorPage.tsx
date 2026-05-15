@@ -117,9 +117,10 @@ export default function ResumeGeneratorPage() {
   const [previewError, setPreviewError] = useState<string | null>(null);
   const prevBlobUrl = useRef<string | null>(null);
   const hasAutoCompiled = useRef(false);
-const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
-const [showTemplateSwitch, setShowTemplateSwitch] = useState(false);
-const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?: string; keySkills?: string; useProfile?: boolean} | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
+  const [showTemplateSwitch, setShowTemplateSwitch] = useState(false);
+  const [templateSwitchError, setTemplateSwitchError] = useState("");
+  const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?: string; keySkills?: string; useProfile?: boolean} | null>(null);
   const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
@@ -187,6 +188,35 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
     }
   };
 
+  const handleApplyTemplate = async () => {
+    if (!parsedData) return;
+    setShowTemplateSwitch(false);
+    setTemplateSwitchError("");
+    setLoading(true);
+    setError("");
+    setCurrentStep(0);
+    hasAutoCompiled.current = false;
+    const stepInterval = setInterval(() => {
+      setCurrentStep((s) => (s < GENERATION_STEPS.length - 1 ? s + 1 : s));
+    }, 1500);
+    try {
+      const { data } = await api.post("/ats/generate-resume", {
+        ...parsedData,
+        templateId: selectedTemplateId,
+      });
+      setLatexCode(data.latex);
+      setPdfUrl(null);
+      setPreviewError(null);
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to switch template.";
+      setTemplateSwitchError(msg);
+      setShowTemplateSwitch(true);
+    } finally {
+      clearInterval(stepInterval);
+      setLoading(false);
+    }
+  };
+
   const handleCodeChange = useCallback((val: string) => {
     setLatexCode(val);
   }, []);
@@ -246,7 +276,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
 
   useEffect(() => {
     if (phase !== "editor" || !latexCode || hasAutoCompiled.current) return;
-
     hasAutoCompiled.current = true;
     void updatePreview(latexCode);
   }, [phase, latexCode, updatePreview]);
@@ -287,7 +316,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
     <div className="relative pb-16">
       <SEO title="AI Resume Generator - InternHack" description="Generate a professional LaTeX resume with AI" noIndex />
 
-      {/* ─── Editorial header ─── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -331,7 +359,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
             transition={{ duration: 0.3 }}
           >
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-              {/* ─── Left column: input form ─── */}
               <div className="lg:col-span-2 space-y-6">
                 <div className={cardCls}>
                   <CardHeader kicker="step 01" title="Resume details" />
@@ -410,7 +437,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                   </div>
                 </div>
 
-                {/* ─── Profile toggle card ─── */}
                 <div className={cardCls}>
                   <CardHeader
                     kicker="step 02"
@@ -528,32 +554,32 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                   </div>
                 </div>
 
-                {/* ─── Template Picker ─── */}
-<div className={cardCls}>
-  <CardHeader kicker="step 03" title="Choose template" />
-  <div className="p-5">
-    <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
-      {LATEX_TEMPLATES.map((tpl) => (
-        <button
-          key={tpl.id}
-          type="button"
-          onClick={() => setSelectedTemplateId(tpl.id)}
-          className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
-            selectedTemplateId === tpl.id
-              ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
-              : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
-          }`}
-        >
-          <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
-          <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-2">{tpl.description}</p>
-          <span className="inline-block mt-1.5 text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500">
-            {tpl.category}
-          </span>
-        </button>
-      ))}
-    </div>
-  </div>
-</div>
+                <div className={cardCls}>
+                  <CardHeader kicker="step 03" title="Choose template" />
+                  <div className="p-5">
+                    <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+                      {LATEX_TEMPLATES.map((tpl) => (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setSelectedTemplateId(tpl.id)}
+                          className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
+                            selectedTemplateId === tpl.id
+                              ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
+                              : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
+                          }`}
+                        >
+                          <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
+                          <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-2">{tpl.description}</p>
+                          <span className="inline-block mt-1.5 text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500">
+                            {tpl.category}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 {error && (
                   <div className="flex items-start gap-2.5 p-4 bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 rounded-md text-sm border border-red-200 dark:border-red-900/40">
                     <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -593,7 +619,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                 )}
               </div>
 
-              {/* ─── Right column: empty / loading / error ─── */}
               <div className="lg:col-span-3">
                 <AnimatePresence mode="wait">
                   {loading && (
@@ -624,11 +649,9 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                             transition={{ duration: 0.6, ease: "easeOut" }}
                           />
                         </div>
-
                         <p className="sr-only" aria-live="polite" aria-atomic="true">
                           {`Step ${String(currentStep + 1)} of ${String(GENERATION_STEPS.length)}: ${GENERATION_STEPS[currentStep]?.label ?? ""}`}
                         </p>
-
                         <div className="space-y-1" role="list" aria-label="Resume generation progress">
                           {GENERATION_STEPS.map((step, i) => {
                             const Icon = step.icon;
@@ -649,15 +672,13 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                                       : "border border-transparent opacity-50"
                                 }`}
                               >
-                                <div
-                                  className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
-                                    isDone
-                                      ? "bg-lime-400 text-stone-950"
-                                      : isActive
-                                        ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
-                                        : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
-                                  }`}
-                                >
+                                <div className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
+                                  isDone
+                                    ? "bg-lime-400 text-stone-950"
+                                    : isActive
+                                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                                      : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
+                                }`}>
                                   {isDone ? (
                                     <CheckCircle className="w-3.5 h-3.5" />
                                   ) : isActive ? (
@@ -668,21 +689,17 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                                     <Icon className="w-3.5 h-3.5" />
                                   )}
                                 </div>
-                                <span
-                                  className={`text-sm font-medium flex-1 ${
-                                    isDone
-                                      ? "text-stone-600 dark:text-stone-400"
-                                      : isActive
-                                        ? "text-stone-900 dark:text-stone-50"
-                                        : "text-stone-400 dark:text-stone-600"
-                                  }`}
-                                >
+                                <span className={`text-sm font-medium flex-1 ${
+                                  isDone
+                                    ? "text-stone-600 dark:text-stone-400"
+                                    : isActive
+                                      ? "text-stone-900 dark:text-stone-50"
+                                      : "text-stone-400 dark:text-stone-600"
+                                }`}>
                                   {step.label}
                                 </span>
                                 {isDone && (
-                                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
-                                    done
-                                  </span>
+                                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">done</span>
                                 )}
                                 {isActive && (
                                   <div className="flex gap-1">
@@ -692,9 +709,7 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                                   </div>
                                 )}
                                 {isPending && (
-                                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
-                                    pending
-                                  </span>
+                                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">pending</span>
                                 )}
                               </motion.div>
                             );
@@ -726,9 +741,7 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                         </h3>
                         <p className="text-sm text-stone-500 leading-relaxed">
                           Fill in job details, toggle{" "}
-                          <span className="font-bold text-stone-900 dark:text-stone-50">
-                            Pull from profile
-                          </span>
+                          <span className="font-bold text-stone-900 dark:text-stone-50">Pull from profile</span>
                           , then click Generate to draft a LaTeX resume.
                         </p>
                         <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
@@ -737,12 +750,8 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                             { label: "ats ready", icon: <ScanSearch className="w-3 h-3" /> },
                             { label: "editable", icon: <Zap className="w-3 h-3" /> },
                           ].map((tag) => (
-                            <div
-                              key={tag.label}
-                              className="bg-white dark:bg-stone-900 px-2 py-2.5 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500"
-                            >
-                              {tag.icon}
-                              {tag.label}
+                            <div key={tag.label} className="bg-white dark:bg-stone-900 px-2 py-2.5 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                              {tag.icon}{tag.label}
                             </div>
                           ))}
                         </div>
@@ -805,7 +814,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                   <ArrowLeft className="w-3.5 h-3.5" /> Back
                 </button>
 
-                {/* Mobile toggle */}
                 <div className="flex lg:hidden gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                   <button
                     type="button"
@@ -858,13 +866,15 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                 >
                   <Download className="w-3.5 h-3.5" /> Download PDF
                 </button>
-<button
-  type="button"
-  onClick={() => setShowTemplateSwitch(!showTemplateSwitch)}
-  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
->
-  <FileCode2 className="w-3.5 h-3.5" /> Change Template
-</button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowTemplateSwitch(!showTemplateSwitch); setTemplateSwitchError(""); }}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                >
+                  <FileCode2 className="w-3.5 h-3.5" /> Change Template
+                </button>
+
                 <button
                   type="button"
                   onClick={() => { setPhase("form"); setError(""); }}
@@ -874,70 +884,47 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                 </button>
               </div>
             </div>
+
             {showTemplateSwitch && (
-  <div className={`${cardCls} mb-5 p-5`}>
-    <p className="text-xs font-bold text-stone-900 dark:text-stone-50 mb-3">Switch template (uses cached content, no quota used)</p>
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-1 mb-4">
-      {LATEX_TEMPLATES.map((tpl) => (
-        <button
-          key={tpl.id}
-          type="button"
-          onClick={() => setSelectedTemplateId(tpl.id)}
-          className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
-            selectedTemplateId === tpl.id
-              ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
-              : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
-          }`}
-        >
-          <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
-          <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-1">{tpl.description}</p>
-        </button>
-      ))}
-    </div>
-    <button
-      type="button"
-      disabled={loading}
-      onClick={async () => {
-        if (!parsedData) return;
-        setShowTemplateSwitch(false);
-        setLoading(true);
-        setError("");
-        setCurrentStep(0);
-        hasAutoCompiled.current = false;
-        const stepInterval = setInterval(() => {
-          setCurrentStep((s) => (s < GENERATION_STEPS.length - 1 ? s + 1 : s));
-        }, 1500);
-        try {
-          const { data } = await api.post("/ats/generate-resume", {
-            ...parsedData,
-            templateId: selectedTemplateId,
-          });
-          setLatexCode(data.latex);
-          setPdfUrl(null);
-          setPreviewError(null);
-        } catch (err) {
-          const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to switch template.";
-          setError(msg);
-        } finally {
-          clearInterval(stepInterval);
-          setLoading(false);
-        }
-      }}
-      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
-    >
-      <RefreshCw className="w-3.5 h-3.5" /> Apply Template
-    </button>
-  </div>
-)}
+              <div className={`${cardCls} mb-5 p-5`}>
+                <p className="text-xs font-bold text-stone-900 dark:text-stone-50 mb-3">Switch template (uses cached content, no quota used)</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-1 mb-4">
+                  {LATEX_TEMPLATES.map((tpl) => (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      onClick={() => setSelectedTemplateId(tpl.id)}
+                      className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
+                        selectedTemplateId === tpl.id
+                          ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
+                          : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
+                      }`}
+                    >
+                      <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
+                      <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-1">{tpl.description}</p>
+                    </button>
+                  ))}
+                </div>
+                {templateSwitchError && (
+                  <div className="flex items-start gap-2.5 p-3 mb-3 bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 rounded-md text-xs border border-red-200 dark:border-red-900/40">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>{templateSwitchError}</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleApplyTemplate}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+                >
+                  {loading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Applying...</> : <><RefreshCw className="w-3.5 h-3.5" /> Apply Template</>}
+                </button>
+              </div>
+            )}
 
             {/* ─── Split pane ─── */}
             <div className="flex flex-col lg:flex-row gap-5 min-h-[calc(100vh-220px)]">
-              {/* Editor */}
-              <div
-                className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${
-                  mobileView === "preview" ? "hidden lg:flex" : "flex"
-                }`}
-              >
+              <div className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${mobileView === "preview" ? "hidden lg:flex" : "flex"}`}>
                 <CardHeader
                   kicker="source"
                   title="LaTeX editor"
@@ -965,12 +952,7 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                 </div>
               </div>
 
-              {/* Preview */}
-              <div
-                className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${
-                  mobileView === "editor" ? "hidden lg:flex" : "flex"
-                }`}
-              >
+              <div className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${mobileView === "editor" ? "hidden lg:flex" : "flex"}`}>
                 <CardHeader
                   kicker="output"
                   title="PDF preview"
@@ -994,7 +976,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                       title="PDF Preview"
                     />
                   )}
-
                   {previewError && (
                     <div className="absolute inset-0 flex items-center justify-center p-6">
                       <div className="max-w-md w-full">
@@ -1009,9 +990,7 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                                 error
                               </div>
                               <h3 className={sectionTitleCls + " mt-1"}>Compilation failed</h3>
-                              <p className="text-xs text-stone-500 mt-0.5">
-                                Fix the errors below and try again.
-                              </p>
+                              <p className="text-xs text-stone-500 mt-0.5">Fix the errors below and try again.</p>
                             </div>
                           </div>
                           <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 rounded-md p-4">
@@ -1030,7 +1009,6 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                       </div>
                     </div>
                   )}
-
                   {!pdfUrl && !previewError && !compiling && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center max-w-xs">
@@ -1042,20 +1020,13 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                           <span className="h-1 w-1 bg-lime-400" />
                           idle
                         </div>
-                        <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
-                          Ready to compile.
-                        </h3>
+                        <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">Ready to compile.</h3>
                         <p className="text-sm text-stone-500 leading-relaxed">
-                          Click{" "}
-                          <span className="font-bold text-stone-900 dark:text-stone-50">
-                            Compile
-                          </span>{" "}
-                          to render your AI-generated LaTeX as a PDF.
+                          Click <span className="font-bold text-stone-900 dark:text-stone-50">Compile</span> to render your AI-generated LaTeX as a PDF.
                         </p>
                       </div>
                     </div>
                   )}
-
                   {!pdfUrl && compiling && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
@@ -1075,9 +1046,7 @@ const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?
                           compiling
                         </div>
                         <h3 className={sectionTitleCls}>Rendering LaTeX</h3>
-                        <p className="text-xs text-stone-500 mt-1">
-                          This usually takes a few seconds.
-                        </p>
+                        <p className="text-xs text-stone-500 mt-1">This usually takes a few seconds.</p>
                       </div>
                     </div>
                   )}
