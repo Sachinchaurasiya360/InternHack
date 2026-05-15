@@ -3,7 +3,15 @@ import { Link, useParams } from "react-router";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Bookmark, CheckCircle2, ChevronRight, Circle, ExternalLink, Loader2, Save } from "lucide-react";
+import {
+  Bookmark,
+  CheckCircle2,
+  ChevronRight,
+  Circle,
+  ExternalLink,
+  Loader2,
+  Save,
+} from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -15,15 +23,17 @@ import type {
   RoadmapTopic,
   RoadmapTopicStatus,
 } from "../../../lib/types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 interface TopicResponse {
   topic: RoadmapTopic & {
     resources: RoadmapResource[];
-    section: { 
-      slug: string; 
-      title: string; 
-      orderIndex: number; 
-      roadmap: { slug: string; title: string; isPublished: boolean }; 
+    section: {
+      slug: string;
+      title: string;
+      orderIndex: number;
+      roadmap: { slug: string; title: string; isPublished: boolean };
     };
   };
 }
@@ -31,42 +41,64 @@ interface TopicResponse {
 export default function RoadmapTopicPage() {
   const { slug = "", topicSlug = "" } = useParams();
   const { isAuthenticated } = useAuthStore();
-  const [topic, setTopic] = useState<TopicResponse["topic"] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [enrollmentId, setEnrollmentId] = useState<number | null>(null);
-  const [progress, setProgress] = useState<{ status: RoadmapTopicStatus; bookmarked: boolean; notes: string } | null>(null);
   const [savingNotes, setSavingNotes] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: topicData, isLoading: topicLoading } = useQuery({
+    queryKey: queryKeys.roadmaps.topic(slug, topicSlug),
+    queryFn: () =>
+      api
+        .get<TopicResponse>(`/roadmaps/${slug}/topics/${topicSlug}`)
+        .then((res) => res.data),
+    enabled: !!slug && !!topicSlug,
+  });
+
+  const topic = topicData?.topic || null;
+  const loading = topicLoading;
+
+  const { data: enrollmentsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () =>
+      api
+        .get<{
+          enrollments: {
+            id: number;
+            roadmap: { slug: string };
+            topicProgress: {
+              topicId: number;
+              status: RoadmapTopicStatus;
+              bookmarked: boolean;
+              notes: string | null;
+            }[];
+          }[];
+        }>("/roadmaps/me/enrollments")
+        .then((res) => res.data),
+    enabled: isAuthenticated && !!topic,
+  });
+
+  const enrollment = enrollmentsData?.enrollments.find(
+    (e) => e.roadmap.slug === slug,
+  );
+  const enrollmentId = enrollment?.id || null;
+
+  // We keep local state for optimistic updates during editing
+  const [progress, setProgress] = useState<{
+    status: RoadmapTopicStatus;
+    bookmarked: boolean;
+    notes: string;
+  } | null>(null);
 
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    api.get<TopicResponse>(`/roadmaps/${slug}/topics/${topicSlug}`)
-      .then((res) => mounted && setTopic(res.data.topic))
-      .catch(() => mounted && setTopic(null))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, [slug, topicSlug]);
-
-  // If user is enrolled, fetch their progress for this topic
-  useEffect(() => {
-    if (!isAuthenticated || !topic) return;
-    let mounted = true;
-    api.get<{ enrollments: { id: number; roadmap: { slug: string }; topicProgress: { topicId: number; status: RoadmapTopicStatus; bookmarked: boolean; notes: string | null }[] }[] }>(
-      "/roadmaps/me/enrollments",
-    ).then((res) => {
-      if (!mounted) return;
-      const e = res.data.enrollments.find((x) => x.roadmap.slug === slug);
-      if (!e) return;
-      setEnrollmentId(e.id);
-      const p = e.topicProgress.find((tp) => tp.topicId === topic.id);
+    if (enrollment && topic) {
+      const p = enrollment.topicProgress.find((tp) => tp.topicId === topic.id);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgress({
         status: p?.status ?? "NOT_STARTED",
         bookmarked: p?.bookmarked ?? false,
         notes: p?.notes ?? "",
       });
-    }).catch(() => { /* not enrolled, fine */ });
-    return () => { mounted = false; };
-  }, [isAuthenticated, topic, slug]);
+    }
+  }, [enrollment, topic]);
 
   const learningResourceSchema = useMemo(() => {
     if (!topic) return null;
@@ -83,11 +115,24 @@ export default function RoadmapTopicPage() {
     };
   }, [topic, slug]);
 
-  const updateProgress = async (patch: { status?: RoadmapTopicStatus; bookmarked?: boolean; notes?: string }) => {
+  const updateProgress = async (patch: {
+    status?: RoadmapTopicStatus;
+    bookmarked?: boolean;
+    notes?: string;
+  }) => {
     if (!enrollmentId || !topic) return;
     try {
-      await api.patch(`/roadmaps/me/enrollments/${enrollmentId}/topics/${topic.id}`, patch);
-      setProgress((p) => p ? { ...p, ...patch, notes: patch.notes ?? p.notes } : p);
+      await api.patch(
+        `/roadmaps/me/enrollments/${enrollmentId}/topics/${topic.id}`,
+        patch,
+      );
+      setProgress((p) =>
+        p ? { ...p, ...patch, notes: patch.notes ?? p.notes } : p,
+      );
+      // Invalidate enrollments to keep data fresh
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollments(),
+      });
     } catch {
       toast.error("Could not save");
     }
@@ -135,43 +180,76 @@ export default function RoadmapTopicPage() {
         >
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs font-mono text-gray-400 mt-8 mb-6">
-            <Link to="/roadmaps" className="hover:text-gray-600 dark:hover:text-gray-300 no-underline">roadmaps</Link>
+            <Link
+              to="/roadmaps"
+              className="hover:text-gray-600 dark:hover:text-gray-300 no-underline"
+            >
+              roadmaps
+            </Link>
             <ChevronRight className="w-3 h-3" />
-            <Link to={`/roadmaps/${slug}`} className="hover:text-gray-600 dark:hover:text-gray-300 no-underline">{topic.section.roadmap.title.toLowerCase()}</Link>
+            <Link
+              to={`/roadmaps/${slug}`}
+              className="hover:text-gray-600 dark:hover:text-gray-300 no-underline"
+            >
+              {topic.section.roadmap.title.toLowerCase()}
+            </Link>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-gray-600 dark:text-gray-300">{topic.title.toLowerCase()}</span>
+            <span className="text-gray-600 dark:text-gray-300">
+              {topic.title.toLowerCase()}
+            </span>
           </nav>
 
           <h1 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
             {topic.title}
           </h1>
-          <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-5">{topic.summary}</p>
+          <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-5">
+            {topic.summary}
+          </p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-mono text-gray-500 mb-8">
             <span>{topic.estimatedHours} hours</span>
             <span>·</span>
             <span>difficulty {topic.difficulty}/5</span>
             <span>·</span>
-            <span>section {topic.section.orderIndex + 1}: {topic.section.title}</span>
+            <span>
+              section {topic.section.orderIndex + 1}: {topic.section.title}
+            </span>
           </div>
 
           {progress && (
             <div className="flex flex-wrap items-center gap-2 mb-8">
               <Button
                 size="sm"
-                variant={progress.status === "COMPLETED" ? "primary" : "outline"}
-                onClick={() => updateProgress({
-                  status: progress.status === "COMPLETED" ? "NOT_STARTED" : "COMPLETED",
-                })}
+                variant={
+                  progress.status === "COMPLETED" ? "primary" : "outline"
+                }
+                onClick={() =>
+                  updateProgress({
+                    status:
+                      progress.status === "COMPLETED"
+                        ? "NOT_STARTED"
+                        : "COMPLETED",
+                  })
+                }
               >
-                {progress.status === "COMPLETED" ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
-                {progress.status === "COMPLETED" ? "Completed" : "Mark complete"}
+                {progress.status === "COMPLETED" ? (
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                ) : (
+                  <Circle className="w-3.5 h-3.5" />
+                )}
+                {progress.status === "COMPLETED"
+                  ? "Completed"
+                  : "Mark complete"}
               </Button>
               <Button
                 size="sm"
                 variant={progress.bookmarked ? "primary" : "outline"}
-                onClick={() => updateProgress({ bookmarked: !progress.bookmarked })}
+                onClick={() =>
+                  updateProgress({ bookmarked: !progress.bookmarked })
+                }
               >
-                <Bookmark className={`w-3.5 h-3.5 ${progress.bookmarked ? "fill-current" : ""}`} />
+                <Bookmark
+                  className={`w-3.5 h-3.5 ${progress.bookmarked ? "fill-current" : ""}`}
+                />
                 {progress.bookmarked ? "Bookmarked" : "Bookmark"}
               </Button>
             </div>
@@ -179,13 +257,17 @@ export default function RoadmapTopicPage() {
 
           {/* Markdown content */}
           <article className="prose prose-zinc dark:prose-invert max-w-none mb-10">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{topic.contentMd}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {topic.contentMd}
+            </ReactMarkdown>
           </article>
 
           {/* Resources */}
           {topic.resources.length > 0 && (
             <section className="mb-10">
-              <h2 className="font-display text-xl font-bold text-gray-950 dark:text-white mb-4">Resources</h2>
+              <h2 className="font-display text-xl font-bold text-gray-950 dark:text-white mb-4">
+                Resources
+              </h2>
               <ul className="space-y-2">
                 {topic.resources.map((r) => (
                   <li key={r.id}>
@@ -195,10 +277,18 @@ export default function RoadmapTopicPage() {
                       rel="noopener noreferrer"
                       className="flex items-start gap-3 p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-sm transition-all group no-underline"
                     >
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-indigo-500 mt-1 shrink-0">{r.kind}</span>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-indigo-500 mt-1 shrink-0">
+                        {r.kind}
+                      </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-gray-950 dark:text-white">{r.title}</p>
-                        {r.source && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{r.source}</p>}
+                        <p className="text-sm font-bold text-gray-950 dark:text-white">
+                          {r.title}
+                        </p>
+                        {r.source && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            {r.source}
+                          </p>
+                        )}
                       </div>
                       <ExternalLink className="w-4 h-4 text-gray-400 mt-1 shrink-0 group-hover:text-indigo-500 transition-colors" />
                     </a>
@@ -210,32 +300,48 @@ export default function RoadmapTopicPage() {
 
           {topic.miniProject && (
             <section className="mb-10 bg-lime-50 dark:bg-lime-950/30 border border-lime-200 dark:border-lime-900 rounded-2xl p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-lime-700 dark:text-lime-400 mb-2">Mini project</p>
-              <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">{topic.miniProject}</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-lime-700 dark:text-lime-400 mb-2">
+                Mini project
+              </p>
+              <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">
+                {topic.miniProject}
+              </p>
             </section>
           )}
 
           {topic.selfCheck && (
             <section className="mb-10 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-2xl p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-2">Self-check</p>
-              <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">{topic.selfCheck}</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-2">
+                Self-check
+              </p>
+              <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">
+                {topic.selfCheck}
+              </p>
             </section>
           )}
 
           {/* Notes for enrolled users */}
           {progress && (
             <section>
-              <h2 className="font-display text-xl font-bold text-gray-950 dark:text-white mb-3">Your notes</h2>
+              <h2 className="font-display text-xl font-bold text-gray-950 dark:text-white mb-3">
+                Your notes
+              </h2>
               <textarea
                 value={progress.notes}
-                onChange={(e) => setProgress({ ...progress, notes: e.target.value })}
+                onChange={(e) =>
+                  setProgress({ ...progress, notes: e.target.value })
+                }
                 rows={6}
                 placeholder="Anything you want to remember about this topic..."
                 className="w-full p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 transition-colors"
               />
               <div className="mt-2 flex justify-end">
                 <Button size="sm" onClick={saveNotes} disabled={savingNotes}>
-                  {savingNotes ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  {savingNotes ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Save className="w-3.5 h-3.5" />
+                  )}
                   Save notes
                 </Button>
               </div>

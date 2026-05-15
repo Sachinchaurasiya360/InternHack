@@ -202,4 +202,15 @@ export const queryKeys = {
     sheets: () => ["dsa", "sheets"] as const,
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
   },
+
+  // Roadmaps
+  roadmaps: {
+    all: ["roadmaps"] as const,
+    list: (params?: Record<string, string | number>) =>
+      ["roadmaps", "list", params] as const,
+    detail: (slug: string) => ["roadmaps", "detail", slug] as const,
+    enrollments: () => ["roadmaps", "enrollments"] as const,
+    enrollmentDetail: (id: number) => ["roadmaps", "enrollment-detail", id] as const,
+    topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
+  },
 };
