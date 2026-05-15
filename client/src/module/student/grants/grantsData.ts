@@ -1299,8 +1299,8 @@ export const grants: Grant[] = [
     organization: "Biotechnology Industry Research Assistance Council",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
-      "The Biotechnology Ignition Grant (BIG) supports biotech startups and entrepreneurs at the proof-of-concept stage. It funds innovative ideas in healthcare, agriculture, industrial biotech, and clean energy with equity-free grants up to â‚¹50 Lakhs over 18 months.",
-    fundingAmount: "Up to â‚¹50 Lakhs",
+      "The Biotechnology Ignition Grant (BIG) supports biotech startups and entrepreneurs at the proof-of-concept stage. It funds innovative ideas in healthcare, agriculture, industrial biotech, and clean energy with equity-free grants up to ₹50 Lakhs over 18 months.",
+    fundingAmount: "Up to ₹50 Lakhs",
     category: "Government",
     tags: ["Biotech", "Healthcare", "Agriculture", "India"],
     website: "https://birac.nic.in",
@@ -1325,20 +1325,20 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "The Startup India Seed Fund Scheme (SISFS) provides financial assistance to startups for proof of concept, prototype development, product trials, market entry, and commercialization. It operates through selected incubators across India.",
-    fundingAmount: "Up to â‚¹50 Lakhs",
+    fundingAmount: "Up to ₹50 Lakhs",
     category: "Government",
     tags: ["Seed Fund", "Incubator", "Commercialization", "India"],
     website: "https://seedfund.startupindia.gov.in",
     eligibility: [
       "DPIIT-recognized startups not older than 2 years",
       "Must apply through an approved incubator",
-      "Grants up to â‚¹20 Lakhs for validation; loans up to â‚¹50 Lakhs for commercialization",
-      "Must not have received more than â‚¹10 Lakhs from any other central/state scheme",
+      "Grants up to ₹20 Lakhs for validation; loans up to ₹50 Lakhs for commercialization",
+      "Must not have received more than ₹10 Lakhs from any other central/state scheme",
     ],
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "â‚¹945 Crore corpus supporting 3,600+ startups",
+      "₹945 Crore corpus supporting 3,600+ startups",
       "Operates through 300+ approved incubators",
       "Both grant and convertible debenture options",
     ],
@@ -1350,7 +1350,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
       "NIDHI-PRAYAS (Promoting and Accelerating Young and Aspiring Innovators and Startups) supports innovators to translate their ideas into prototypes. Located in Technology Business Incubators, it provides grants, mentorship, and access to fabrication labs.",
-    fundingAmount: "Up to â‚¹10 Lakhs",
+    fundingAmount: "Up to ₹10 Lakhs",
     category: "Government",
     tags: ["Prototyping", "Innovation", "DST", "India"],
     website: "https://nidhi.dst.gov.in/schemes-programmes/nidhiprayas/",
@@ -1375,7 +1375,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
       "The Atal New India Challenge (ANIC) invites startups and MSMEs to create market-ready products addressing national challenges. It provides grants for product development in areas like healthcare, mobility, space, agriculture, and clean energy.",
-    fundingAmount: "Up to â‚¹1 Crore",
+    fundingAmount: "Up to ₹1 Crore",
     category: "Government",
     tags: ["Deep Tech", "National Challenges", "NITI Aayog", "India"],
     website: "https://aim.gov.in/atal-new-india-challenge.php",
@@ -1400,7 +1400,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "Technology Incubation and Development of Entrepreneurs (TIDE 2.0) by MeitY supports tech startups through financial grants and incubation. It focuses on IoT, AI, blockchain, robotics, and other emerging technologies across India.",
-    fundingAmount: "Up to â‚¹7 Crores",
+    fundingAmount: "Up to ₹7 Crores",
     category: "Government",
     tags: ["MeitY", "IoT", "AI", "Blockchain", "India"],
     website: "https://meity.gov.in",
@@ -1425,7 +1425,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "The SERB Core Research Grant (CRG) funds investigator-driven basic and applied research proposals in all areas of science and engineering. It supports projects for 3 years with grants covering equipment, consumables, travel, and manpower.",
-    fundingAmount: "Up to â‚¹50 Lakhs/year",
+    fundingAmount: "Up to ₹50 Lakhs/year",
     category: "Government",
     tags: ["Research", "Science", "Engineering", "SERB", "India"],
     website: "https://anrf.gov.in/page/english/research_grants",
@@ -1450,7 +1450,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
       "CSIR recognizes innovative ideas from school students and young researchers. Through its innovation programs and the CSIR-Tech Innovation Fund, it supports early-stage innovations with grants, mentorship, and commercialization assistance.",
-    fundingAmount: "Up to â‚¹10 Lakhs",
+    fundingAmount: "Up to ₹10 Lakhs",
     category: "Government",
     tags: ["CSIR", "Innovation", "Students", "Research", "India"],
     website: "https://www.csir.res.in/en/awards/csir-innovation-award-school-children-application",
@@ -1475,7 +1475,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=i",
     description:
       "iDEX engages startups and innovators to solve defence and aerospace challenges. Through the Defence Innovation Organisation (DIO), it provides grants for developing indigenous defence technologies across domains like AI, cybersecurity, and autonomous systems.",
-    fundingAmount: "Up to â‚¹1.5 Crore",
+    fundingAmount: "Up to ₹1.5 Crore",
     category: "Government",
     tags: ["Defence", "Aerospace", "Innovation", "India"],
     website: "https://idex.gov.in",
@@ -1525,7 +1525,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "MeitY Startup Hub is the nodal entity for MeitY's startup initiatives, managing programs like SAMRIDH and Digital India GENESIS. It provides equity-free grants, mentorship, and market access to tech startups across India.",
-    fundingAmount: "Up to â‚¹25 Lakhs",
+    fundingAmount: "Up to ₹25 Lakhs",
     category: "Government",
     tags: ["MeitY", "Digital India", "Tech Startups", "India"],
     website: "https://msh.meity.gov.in",
@@ -1553,7 +1553,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
       "Karnataka's IT startup policy offers subsidies, grants, and incentives to tech startups. It provides reimbursement of rent, patent costs, quality testing, marketing, and cloud hosting. Startups also get procurement preference in government tenders.",
-    fundingAmount: "Up to â‚¹50 Lakhs",
+    fundingAmount: "Up to ₹50 Lakhs",
     category: "Government",
     tags: ["Karnataka", "IT", "Subsidies", "India"],
     website: "https://www.missionstartupkarnataka.org/funding",
@@ -1561,7 +1561,7 @@ export const grants: Grant[] = [
       "Startups registered in Karnataka with valid DPIIT recognition",
       "Must be operational within Karnataka's jurisdiction",
       "Less than 5 years old at time of application",
-      "Annual turnover below â‚¹10 Crore",
+      "Annual turnover below ₹10 Crore",
     ],
     status: "Active",
     ecosystem: "India",
@@ -1578,7 +1578,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
       "Kerala Startup Mission is the nodal agency for startup activities in Kerala. It runs incubation programs, innovation grants, and seed funding through its network of incubators. It has supported 4,000+ startups since inception.",
-    fundingAmount: "Up to â‚¹30 Lakhs",
+    fundingAmount: "Up to ₹30 Lakhs",
     category: "Government",
     tags: ["Kerala", "Incubation", "Innovation", "India"],
     website: "https://startupmission.kerala.gov.in",
@@ -1603,7 +1603,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
       "The Student and Knowledge-driven Innovation Promotion Program (SKIPP) supports student entrepreneurs in West Bengal. It provides seed grants, mentorship, and incubation support for innovative ideas from college students.",
-    fundingAmount: "Up to â‚¹25 Lakhs",
+    fundingAmount: "Up to ₹25 Lakhs",
     category: "Government",
     tags: ["West Bengal", "Students", "Innovation", "India"],
     website: "https://msme.wb.gov.in",
@@ -1628,7 +1628,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
       "T-Hub in Hyderabad is India's largest technology incubator. It provides funding, mentorship, corporate connections, and international market access to startups across healthcare, fintech, sustainability, and deep tech domains.",
-    fundingAmount: "Up to â‚¹25 Lakhs",
+    fundingAmount: "Up to ₹25 Lakhs",
     category: "Government",
     tags: ["Telangana", "Incubation", "Deep Tech", "India"],
     website: "https://t-hub.co",
@@ -1653,7 +1653,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "Maharashtra State Innovation Society (MSINS) runs Startup Yatra to discover grassroots innovators across Maharashtra. Selected startups receive grants, incubation, and government procurement opportunities through the Maharashtra Startup Policy.",
-    fundingAmount: "Up to â‚¹15 Lakhs",
+    fundingAmount: "Up to ₹15 Lakhs",
     category: "Government",
     tags: ["Maharashtra", "Grassroots", "Innovation", "India"],
     website: "https://msins.in",
@@ -1678,7 +1678,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
       "iCreate is Gujarat's international centre for entrepreneurship and technology. It provides grants, residential incubation, prototyping labs, and market access to hardware and IoT startups. The program runs 6-month cohorts.",
-    fundingAmount: "Up to â‚¹10 Lakhs",
+    fundingAmount: "Up to ₹10 Lakhs",
     category: "Government",
     tags: ["Gujarat", "Hardware", "IoT", "Prototyping", "India"],
     website: "https://icreate.org.in",
@@ -1703,7 +1703,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
       "StartupTN, the nodal agency for Tamil Nadu's startup ecosystem, provides seed grants, mentorship, and market access. The state policy offers grants for prototyping, patent filing, and marketing to DPIIT-recognized startups.",
-    fundingAmount: "Up to â‚¹30 Lakhs",
+    fundingAmount: "Up to ₹30 Lakhs",
     category: "Government",
     tags: ["Tamil Nadu", "Seed Grant", "Patents", "India"],
     website: "https://startuptn.in",
@@ -1711,13 +1711,13 @@ export const grants: Grant[] = [
       "DPIIT-recognized startups registered in Tamil Nadu",
       "Less than 5 years old",
       "Must be incubated at an approved Tamil Nadu incubator",
-      "Revenue below â‚¹25 Crore annually",
+      "Revenue below ₹25 Crore annually",
     ],
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Patent cost reimbursement up to â‚¹10 Lakhs",
-      "Marketing support up to â‚¹5 Lakhs",
+      "Patent cost reimbursement up to ₹10 Lakhs",
+      "Marketing support up to ₹5 Lakhs",
       "Free co-working space at TIDEL parks",
     ],
   },
@@ -1728,7 +1728,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "iStart is Rajasthan's flagship startup initiative providing sustenance allowance, seed grants, and incubation support. It offers monthly stipends to founding teams and connects startups with government departments for pilot projects.",
-    fundingAmount: "Up to â‚¹25 Lakhs",
+    fundingAmount: "Up to ₹25 Lakhs",
     category: "Government",
     tags: ["Rajasthan", "iStart", "Stipend", "India"],
     website: "https://istart.rajasthan.gov.in",
@@ -1741,7 +1741,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Monthly sustenance allowance of â‚¹20,000 per co-founder",
+      "Monthly sustenance allowance of ₹20,000 per co-founder",
       "Government pilot project opportunities",
       "18,000+ startups registered on iStart platform",
     ],
@@ -1753,7 +1753,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
       "Andhra Pradesh Innovation Society supports startups through grants, incubation, and innovation challenges. It runs sector-specific programs in agritech, healthtech, and edtech with funding support and government market access.",
-    fundingAmount: "Up to â‚¹15 Lakhs",
+    fundingAmount: "Up to ₹15 Lakhs",
     category: "Government",
     tags: ["Andhra Pradesh", "Agritech", "Healthtech", "India"],
     website: "https://apis.ap.gov.in",
@@ -1778,7 +1778,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:
       "Punjab's startup and innovation policy provides financial support through seed grants, infrastructure subsidies, and patent reimbursement. The scheme operates through Punjab Infotech and state-designated incubators.",
-    fundingAmount: "Up to â‚¹10 Lakhs",
+    fundingAmount: "Up to ₹10 Lakhs",
     category: "Government",
     tags: ["Punjab", "Seed Grant", "Infrastructure", "India"],
     website: "https://punjabinfotech.in",
@@ -1791,7 +1791,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Rent and infrastructure subsidy up to â‚¹5 Lakhs",
+      "Rent and infrastructure subsidy up to ₹5 Lakhs",
       "Patent filing reimbursement",
       "Access to Punjab's IT parks at subsidized rates",
     ],
@@ -1831,7 +1831,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
       "The Wellcome Trust funds bold research to improve health. Its grants support discovery research, technology development, and interventions across biomedical science, population health, humanities, and social science.",
-    fundingAmount: "Up to Â£3M",
+    fundingAmount: "Up to £3M",
     category: "Research",
     tags: ["UK", "Biomedical", "Health Research", "Discovery"],
     website: "https://wellcome.org/grant-funding",
@@ -1844,7 +1844,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "UK",
     highlights: [
-      "One of the world's largest research funders (Â£16B+ endowment)",
+      "One of the world's largest research funders (£16B+ endowment)",
       "Open to researchers from any country",
       "Flexible funding for 3-8 year projects",
     ],
@@ -1906,7 +1906,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
       "DAAD offers research grants for doctoral candidates, postdocs, and academics to conduct research at German universities and institutions. Grants cover monthly stipend, health insurance, and travel allowance.",
-    fundingAmount: "â‚¬1,000-â‚¬1,300/month",
+    fundingAmount: "€1,000-€1,300/month",
     category: "Research",
     tags: ["Germany", "Doctoral", "Academic", "Research"],
     website: "https://www.daad.de/go/en/stipa57742121",
@@ -1931,7 +1931,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
       "Marie Curie Fellowships support experienced researchers with cross-border and cross-sector mobility. The Postdoctoral Fellowships fund 1-2 year research projects at European or global institutions with generous living and mobility allowances.",
-    fundingAmount: "â‚¬5,080/month + allowances",
+    fundingAmount: "€5,080/month + allowances",
     category: "Research",
     tags: ["EU", "Postdoctoral", "Mobility", "Research"],
     website: "https://marie-sklodowska-curie-actions.ec.europa.eu",
@@ -1981,7 +1981,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
       "The Humboldt Research Fellowship supports highly qualified researchers from abroad to carry out long-term research at German institutions. It provides monthly stipends, travel allowances, and language courses for 6-24 month stays.",
-    fundingAmount: "â‚¬2,670/month",
+    fundingAmount: "€2,670/month",
     category: "Research",
     tags: ["Germany", "Postdoctoral", "Senior Research", "Long-term"],
     website: "https://www.humboldt-foundation.de",
@@ -2006,7 +2006,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=J",
     description:
       "JSPS Postdoctoral Fellowships invite young researchers from abroad to conduct collaborative research in Japan. The program covers round-trip airfare, monthly stipend, research allowance, and overseas travel insurance.",
-    fundingAmount: "Â¥362,000/month",
+    fundingAmount: "¥362,000/month",
     category: "Research",
     tags: ["Japan", "Postdoctoral", "Collaborative Research", "Science"],
     website: "https://www.jsps.go.jp/english",
@@ -2019,7 +2019,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "Japan",
     highlights: [
-      "Research allowance of Â¥150,000/year",
+      "Research allowance of ¥150,000/year",
       "Round-trip airfare included",
       "Access to Japan's top research universities",
     ],
@@ -2031,7 +2031,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "Newton International Fellowships enable early-career postdoctoral researchers from overseas to work at UK research institutions for 2 years. The program aims to attract the best researchers globally to build lasting connections with UK science.",
-    fundingAmount: "Â£24,000/year + research expenses",
+    fundingAmount: "£24,000/year + research expenses",
     category: "Research",
     tags: ["UK", "Postdoctoral", "Royal Society", "Science"],
     website: "https://royalsociety.org/grants-schemes-awards/grants/newton-international",
@@ -2045,12 +2045,12 @@ export const grants: Grant[] = [
     ecosystem: "UK",
     highlights: [
       "2-year fully funded research position in UK",
-      "Â£8,000 research expenses per year",
-      "Follow-up funding of Â£6,000/year for 10 years",
+      "£8,000 research expenses per year",
+      "Follow-up funding of £6,000/year for 10 years",
     ],
   },
 
-  // â”€â”€ Global Youth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â”€â”€ Global Youth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” €â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— â”— 
 
   {
     id: 81,
@@ -2159,7 +2159,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "Resolution supports young social entrepreneurs (18-25) tackling poverty, inequality, and injustice. Fellows receive funding for 12 months, plus mentoring, legal support, and connections to scale their ventures.",
-    fundingAmount: "Â£18,000/year",
+    fundingAmount: "£18,000/year",
     category: "Global Youth",
     tags: ["Social Enterprise", "Youth", "UK", "Poverty"],
     website: "https://www.resolutionfoundation.org",
@@ -2412,7 +2412,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=O",
     description:
       "The Oxford Foundry is the University of Oxford's entrepreneurship centre. It offers accelerator programs, grants, and mentorship to Oxford students and alumni building impactful ventures.",
-    fundingAmount: "Up to Â£25,000",
+    fundingAmount: "Up to £25,000",
     category: "University",
     tags: ["Oxford", "Entrepreneurship", "UK", "Accelerator"],
     website: "https://www.sbs.ox.ac.uk/oxford-foundry",
@@ -2437,7 +2437,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Society for Innovation and Entrepreneurship (SINE) at IIT Bombay incubates technology startups. It provides seed funding, lab access, mentorship, and campus infrastructure to startups founded by IIT Bombay community members.",
-    fundingAmount: "Up to â‚¹25 Lakhs",
+    fundingAmount: "Up to ₹25 Lakhs",
     category: "University",
     tags: ["IIT Bombay", "Incubation", "Tech Startups", "India"],
     website: "https://www.sineiitb.org",
@@ -2462,7 +2462,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Foundation for Innovation and Technology Transfer (FITT) at IIT Delhi supports startups through incubation, seed funding, and technology transfer. It bridges academia and industry to commercialize research innovations.",
-    fundingAmount: "Up to â‚¹25 Lakhs",
+    fundingAmount: "Up to ₹25 Lakhs",
     category: "University",
     tags: ["IIT Delhi", "Tech Transfer", "Incubation", "India"],
     website: "https://fitt-iitd.in",
@@ -2487,7 +2487,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Science and Technology Entrepreneurs Park (STEP) at IISc Bangalore provides incubation, seed funding, and mentorship to deep tech startups. It leverages IISc's world-class research to build science-based companies.",
-    fundingAmount: "Up to â‚¹10 Lakhs",
+    fundingAmount: "Up to ₹10 Lakhs",
     category: "University",
     tags: ["IISc", "Deep Tech", "Research", "Bangalore", "India"],
     website: "https://www.fsid-iisc.in",
@@ -2739,8 +2739,8 @@ export const grants: Grant[] = [
     organization: "Founders Factory",
     logo: "https://placehold.co/100x100/EEE/999?text=F",
     description:
-      "Founders Factory partners with large corporations to build and accelerate startups. It offers 6-month programs with dedicated engineering, design, and growth teams to help startups scale, plus investment of up to Â£250K.",
-    fundingAmount: "Up to Â£250,000",
+      "Founders Factory partners with large corporations to build and accelerate startups. It offers 6-month programs with dedicated engineering, design, and growth teams to help startups scale, plus investment of up to £250K.",
+    fundingAmount: "Up to £250,000",
     category: "Accelerator",
     tags: ["Corporate Partnership", "UK", "Scaling", "Accelerator"],
     website: "https://foundersfactory.com",
@@ -2790,7 +2790,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
       "Chiratae Ventures' Sonic Program is India's leading early-stage startup program. It provides seed funding, mentorship from successful entrepreneurs, and access to Chiratae's network for Indian tech startups.",
-    fundingAmount: "Up to â‚¹1 Crore",
+    fundingAmount: "Up to ₹1 Crore",
     category: "Accelerator",
     tags: ["India", "Seed", "Tech Startups", "VC"],
     website: "https://chiratae.com",
@@ -2843,7 +2843,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
       "EIT Climate-KIC accelerates climate innovation across Europe. Its startup accelerator provides grants, coaching, and market access to cleantech ventures tackling decarbonization, sustainable materials, and circular economy.",
-    fundingAmount: "Up to â‚¬95,000",
+    fundingAmount: "Up to €95,000",
     category: "Climate",
     tags: ["EU", "Cleantech", "Decarbonization", "Accelerator"],
     website: "https://www.climate-kic.org",
@@ -2857,7 +2857,7 @@ export const grants: Grant[] = [
     ecosystem: "EU",
     highlights: [
       "Europe's largest climate innovation network",
-      "3-stage program: â‚¬15K â†’ â‚¬30K â†’ â‚¬50K",
+      "3-stage program: €15K → €30K → €50K",
       "4,500+ startups supported since 2010",
     ],
   },
@@ -2992,8 +2992,8 @@ export const grants: Grant[] = [
     organization: "Royal Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
-      "The Earthshot Prize, founded by Prince William, awards Â£1M each to 5 winners annually who develop solutions to environmental challenges. Categories: Protect & Restore Nature, Clean Air, Revive Oceans, Build a Waste-Free World, Fix Climate.",
-    fundingAmount: "Â£1,000,000",
+      "The Earthshot Prize, founded by Prince William, awards £1M each to 5 winners annually who develop solutions to environmental challenges. Categories: Protect & Restore Nature, Clean Air, Revive Oceans, Build a Waste-Free World, Fix Climate.",
+    fundingAmount: "£1,000,000",
     category: "Climate",
     tags: ["Prize", "Environment", "UK", "Nature"],
     website: "https://earthshotprize.org",
@@ -3006,7 +3006,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "UK",
     highlights: [
-      "5 winners each receive Â£1M annually until 2030",
+      "5 winners each receive £1M annually until 2030",
       "Global visibility and media coverage",
       "Founded by Prince William, Royal Foundation",
     ],
@@ -3530,7 +3530,7 @@ export const grants: Grant[] = [
     website: "https://www.bwfund.org",
     eligibility: [
       "Researchers at US and Canadian institutions",
-      "Must be at career transition stage (postdoc â†’ faculty or early faculty)",
+      "Must be at career transition stage (postdoc → faculty or early faculty)",
       "Multiple programs with different eligibility requirements",
       "Annual deadlines varying by program",
     ],
@@ -3641,7 +3641,7 @@ export const grants: Grant[] = [
     ecosystem: "Global",
     highlights: [
       "No application gatekeeping - open to all startups",
-      "Credits: $1K â†’ $5K â†’ $25K â†’ $150K as you grow",
+      "Credits: $1K → $5K → $25K → $150K as you grow",
       "Includes OpenAI API credits for AI startups",
     ],
   },
@@ -3727,7 +3727,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "SAP.iO runs accelerator foundries in 10+ cities worldwide, supporting B2B startups building on or integrating with SAP technologies. It provides equity-free support, SAP technology access, and customer introductions.",
-    fundingAmount: "Up to â‚¬250,000 in value",
+    fundingAmount: "Up to €250,000 in value",
     category: "Accelerator",
     tags: ["SAP", "B2B", "Enterprise", "ERP", "Accelerator"],
     website: "https://www.sap.com/partners.html",
@@ -3802,7 +3802,7 @@ export const grants: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
       "The Robert Bosch Foundation funds research and innovation projects in healthcare, education, sustainability, and international understanding. It also supports startups through Bosch's corporate venture activities and research partnerships.",
-    fundingAmount: "Up to â‚¬200,000",
+    fundingAmount: "Up to €200,000",
     category: "Accelerator",
     tags: ["Bosch", "Sustainability", "Healthcare", "Education", "EU"],
     website: "https://www.bosch-stiftung.de/en",
@@ -3816,7 +3816,7 @@ export const grants: Grant[] = [
     ecosystem: "Germany",
     highlights: [
       "One of Europe's largest corporate foundations",
-      "â‚¬1.2B+ distributed since 1964",
+      "€1.2B+ distributed since 1964",
       "Supports research, education, and international dialogue",
     ],
   },
