@@ -109,7 +109,7 @@ export default function JobAgentPage() {
   const userMsgCount = messages.filter((m) => m.role === "user").length;
   const hitFreeLimit = manualHitFreeLimit || (!isPremium && !hasChatted && userMsgCount >= FREE_LIMIT);
   const remainingFree = Math.max(0, FREE_LIMIT - userMsgCount);
-  const showSoftHint = !isPremium && !hitFreeLimit && userMsgCount >= 1;
+  const showSoftHint = !isPremium && !hitFreeLimit && userMsgCount >= 1 && remainingFree > 0;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
