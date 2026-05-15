@@ -139,14 +139,14 @@ export default function JobAgentPage() {
         response?: {
           status?: number;
           data?: {
-            freeLimit?: boolean;
             usage?: { action?: string; tier?: string };
           };
         };
       })?.response;
       const isFreeLimitError =
-        (resp?.status === 403 && resp?.data?.freeLimit) ||
-        (resp?.status === 429 && resp.data?.usage?.action === "AI_JOB_CHAT" && resp.data?.usage?.tier === "FREE");
+        resp?.status === 429 &&
+        resp.data?.usage?.action === "AI_JOB_CHAT" &&
+        resp.data?.usage?.tier === "FREE";
 
       if (isFreeLimitError) {
         setManualHitFreeLimit(true);
