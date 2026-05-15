@@ -4,7 +4,7 @@ import {
   User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2,
   CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap,
   Linkedin, Github, Globe, X, Plus, AlignLeft, Calendar, Crown,
-  ChevronDown, ShieldCheck, Trophy, Pencil, Search as SearchIcon,
+  ChevronDown, ShieldCheck, Trophy, Pencil, Search as SearchIcon, Copy, Check,
 } from "lucide-react";
 import { Link } from "react-router";
 import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
@@ -498,6 +498,20 @@ export default function StudentProfilePage() {
     return <p className="text-xs text-red-500 dark:text-red-400 mt-1.5 font-mono">{errs[0]}</p>;
   };
 
+  const [profileUrlCopied, setProfileUrlCopied] = useState(false);
+
+  const handleCopyProfileUrl = async () => {
+    const url = `${window.location.origin}/student/profile/public/${user?.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setProfileUrlCopied(true);
+      toast.success("Profile URL copied!");
+      setTimeout(() => setProfileUrlCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy URL");
+    }
+  };
+
   const displayDate = memberSince || user?.createdAt;
   const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
 
@@ -661,9 +675,29 @@ export default function StudentProfilePage() {
                 </div>
               )}
 
+              {/* Share Profile URL */}
+              {form.isProfilePublic && (
+                <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                      shareable profile
+                    </p>
+                    <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 leading-snug truncate">
+                      {`${window.location.origin}/student/profile/public/${user?.id}`}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyProfileUrl}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+                  >
+                    {profileUrlCopied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
+                    {profileUrlCopied ? "Copied!" : "Copy URL"}
+                  </button>
+                </div>
+              )}
               {/* Visibility */}
               <div className="flex items-start justify-between gap-3 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
-                <div className="min-w-0">
                   <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                     recruiter visibility
                   </p>

@@ -16,6 +16,8 @@ import {
   Camera,
   Ban,
   Shield,
+  FileText,
+  Trophy,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
@@ -80,10 +82,22 @@ export default function SkillTestPage() {
   const [started, setStarted] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [retryAfter, setRetryAfter] = useState<Date | null>(null); 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const submittingRef = useRef(false);
   const [remainingSecs, setRemainingSecs] = useState<number | null>(null);
+  const questionsRef = useRef<SkillTestWithQuestions["questions"]>([]);
+  const currentQRef = useRef(0);
+  // Keep refs updated to prevent stale state in keyboard shortcuts
+  useEffect(() => {
+    questionsRef.current = test?.questions ?? [];
+  }, [test]);
+
+  useEffect(() => {
+    currentQRef.current = currentQ;
+  }, [currentQ]);
+
 
   /* ---- Prevent closing tab during active test ---------------------- */
   useEffect(() => {
@@ -135,14 +149,19 @@ export default function SkillTestPage() {
     try {
       const res = await api.post(`/skill-tests/${testId}/start`);
       // Use server-derived remaining time instead of full timeLimitSecs
-      setRemainingSecs(res.data.remainingSecs); 
+      setRemainingSecs(res.data.remainingSecs);
       setTest((prev) =>
         prev ? { ...prev, questions: res.data.questions } : prev,
       );
       setStarted(true);
       await proctor.requestFullscreen();
     } catch (err: any) {
-      toast.error(err?.response?.data?.error ?? "Failed to start test");
+      if (err?.response?.status === 429) {
+        setRetryAfter(new Date(err.response.data.retryAfter));
+        toast.error("Cooldown active! Please wait before retaking.");
+      } else {
+        toast.error(err?.response?.data?.error ?? "Failed to start test");
+      }
     }
   }, [testId, proctor]);
 
@@ -176,7 +195,7 @@ export default function SkillTestPage() {
         }
 
         if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => {});
+          document.exitFullscreen().catch(() => { });
         }
       } catch (err: any) {
         toast.error(err?.response?.data?.error ?? "Failed to submit test");
@@ -192,8 +211,86 @@ export default function SkillTestPage() {
   const terminateRef = useRef<() => void>(undefined);
   terminateRef.current = () => handleSubmit(true);
 
+  const selectAnswer = useCallback((questionId: number, optIdx: number) => {
+    if (result) return;
+    setAnswers((prev) => ({ ...prev, [questionId]: optIdx }));
+  }, [result]);
+  /*
+     Keyboard shortcuts for test navigation and answer selection.
+     Active only during an ongoing test 
+   */
+ useEffect(() => {
+  if (!started || result) return;
+
+ const handleKeyDown = (event: KeyboardEvent) => {
+  const target = event.target as HTMLElement | null;
+
+  const isEditable =
+    !!target &&
+    (target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.isContentEditable);
+
+  if (
+    isEditable ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey
+  ) {
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+    const questions = questionsRef.current;
+    const qIndex = currentQRef.current;
+    const current = questions[qIndex];
+    if (!current) return;
+    if (
+      key === "arrowleft" ||
+      key === "arrowright" ||
+      key === "enter" ||
+      ["a", "d", "1", "2", "3", "4"].includes(key)
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // LEFT
+    if (key === "arrowleft" || key === "a") {
+      setCurrentQ((p) => Math.max(0, p - 1));
+      return;
+    }
+
+    // RIGHT
+    if (key === "arrowright" || key === "d") {
+      setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+      return;
+    }
+
+    // OPTIONS
+    if (key === "1") selectAnswer(current.id, 0);
+    if (key === "2") selectAnswer(current.id, 1);
+    if (key === "3") selectAnswer(current.id, 2);
+    if (key === "4") selectAnswer(current.id, 3);
+
+    // ENTER → only move if answer exists
+    if (key === "enter") {
+      const hasAnswered = answers[current.id] !== undefined;
+      if (hasAnswered) {
+        setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+      }
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown, true);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown, true);
+  };
+}, [started, result, answers, selectAnswer]);
+
   /* Timer ----------------------------------------------------------- */
-  
+
   // Initialize countdown from server remainingSecs to survive page refresh
   const { formatted: timerDisplay, isUrgent } = useCountdown(
     started && !result ? remainingSecs : null,
@@ -206,11 +303,6 @@ export default function SkillTestPage() {
   const answeredCount = Object.keys(answers).length;
   const allAnswered = answeredCount === totalQuestions && totalQuestions > 0;
   const currentQuestion = questions[currentQ];
-
-  const selectAnswer = (questionId: number, optIdx: number) => {
-    if (result) return;
-    setAnswers((prev) => ({ ...prev, [questionId]: optIdx }));
-  };
 
   /* Loading --------------------------------------------------------- */
   if (loading) {
@@ -342,43 +434,59 @@ export default function SkillTestPage() {
                 {test.title}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                {test.skillName.replace("-", " ")}
+                {test.skillName.replace(/-/g, " ")}
               </p>
             </div>
-
+                    
             {test.description && (
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                 {test.description}
               </p>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                {
-                  label: "Time Limit",
-                  value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
-                  icon: Clock,
-                },
-                {
-                  label: "Pass Score",
-                  value: `${test.passThreshold}%`,
-                  icon: CheckCircle2,
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
-                >
-                  <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                    {item.value}
-                  </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                    {item.label}
-                  </p>
-                </div>
-              ))}
-            </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+  {[
+    {
+      label: "Time Limit",
+      value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
+      icon: Clock,
+    },
+    {
+      label: "Pass Score",
+      value: `${test.passThreshold}%`,
+      icon: CheckCircle2,
+    },
+    {
+      label: "Questions",
+      value: test.questionsPerSession ?? "—",
+      icon: FileText,
+    },
+    {
+      label: "Best Attempt",
+      value:
+  test.bestAttempt?.score !== undefined
+    ? `${test.bestAttempt.score}%`
+    : "—",
+      icon: Trophy,
+    },
+  ].map((item) => (
+    <div
+      key={item.label}
+      className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
+    >
+      <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+
+      <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+        {item.value}
+      </p>
+
+      <p className="text-[11px] text-gray-500 dark:text-gray-400">
+        {item.label}
+      </p>
+    </div>
+  ))}
+</div>  
+             
 
             {test.existingVerification && (
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3 text-center">
@@ -411,14 +519,20 @@ export default function SkillTestPage() {
               </ul>
             </div>
 
-            <Button
-              size="lg"
-              onClick={handleStart}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-            >
-              <Maximize className="w-4 h-4" />
-              Start Proctored Test
-            </Button>
+            {retryAfter && new Date() < retryAfter ? (
+  <div className="w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+    ⏳ Cooldown active! Retry available at {retryAfter.toLocaleTimeString()}
+  </div>
+) : (
+  <Button
+    size="lg"
+    onClick={handleStart}
+    className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+  >
+    <Maximize className="w-4 h-4" />
+    Start Proctored Test
+  </Button>
+)}
           </motion.div>
         </div>
       </div>
@@ -435,18 +549,16 @@ export default function SkillTestPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`rounded-2xl p-8 text-center border ${
-              result.passed
-                ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
-            }`}
+            className={`rounded-2xl p-8 text-center border ${result.passed
+              ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+              : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+              }`}
           >
             <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold ${
-                result.passed
-                  ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400"
-                  : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400"
-              }`}
+              className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold ${result.passed
+                ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400"
+                : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400"
+                }`}
             >
               {result.score}%
             </div>
@@ -517,13 +629,12 @@ export default function SkillTestPage() {
                       return (
                         <div
                           key={optIdx}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs border ${
-                            isCorrect
-                              ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300"
-                              : isWrong
-                                ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300"
-                                : "border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-400"
-                          }`}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs border ${isCorrect
+                            ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300"
+                            : isWrong
+                              ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300"
+                              : "border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-400"
+                            }`}
                         >
                           <span className="font-bold w-5">
                             {OPTION_LABELS[optIdx]}
@@ -543,17 +654,24 @@ export default function SkillTestPage() {
             })}
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 pt-2 pb-8">
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={closeTab}
-              className="flex-1 rounded-xl"
-            >
-              Close Tab
-            </Button>
-            {!result.passed && (
+        {/* Actions */}
+        {/* Actions */}
+        <div className="flex gap-3 pt-2 pb-8">
+          <Button
+            size="lg"
+            variant="secondary"
+            onClick={closeTab}
+            className="flex-1 rounded-xl"
+          >
+            Close Tab
+          </Button>
+
+          {!result.passed && (
+            retryAfter && new Date() < retryAfter ? (
+              <div className="flex-1 text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+                ⏳ Retry available at {retryAfter.toLocaleTimeString()}
+              </div>
+            ) : (
               <Button
                 size="lg"
                 onClick={() => {
@@ -561,13 +679,15 @@ export default function SkillTestPage() {
                   setAnswers({});
                   setCurrentQ(0);
                   setStarted(false);
+                  setRetryAfter(null);
                 }}
                 className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
               >
                 Try Again
               </Button>
-            )}
-          </div>
+            )
+          )}
+        </div>
         </div>
       </div>
     );
@@ -636,11 +756,10 @@ export default function SkillTestPage() {
 
               {/* Timer */}
               <div
-                className={`px-3 py-1.5 rounded-lg text-sm font-mono font-bold tabular-nums ${
-                  isUrgent
-                    ? "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 animate-pulse"
-                    : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-mono font-bold tabular-nums ${isUrgent
+                  ? "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 animate-pulse"
+                  : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  }`}
               >
                 {timerDisplay}
               </div>
@@ -656,13 +775,12 @@ export default function SkillTestPage() {
               size="sm"
               variant="ghost"
               onClick={() => setCurrentQ(i)}
-              className={`w-9 h-9 ${
-                i === currentQ
-                  ? "bg-violet-600 text-white shadow-sm hover:bg-violet-700"
-                  : answers[q.id] !== undefined
-                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
+              className={`w-9 h-9 ${i === currentQ
+                ? "bg-violet-600 text-white shadow-sm hover:bg-violet-700"
+                : answers[q.id] !== undefined
+                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
             >
               {i + 1}
             </Button>
@@ -695,18 +813,16 @@ export default function SkillTestPage() {
                       variant="outline"
                       onClick={() => selectAnswer(currentQuestion.id, optIdx)}
                       autoHeight
-                      className={`w-full justify-start gap-3 py-3.5 rounded-xl text-left ${
-                        isSelected
-                          ? "border-violet-400 dark:border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-900 dark:text-violet-200 ring-1 ring-violet-200 dark:ring-violet-700"
-                          : ""
-                      }`}
+                      className={`w-full justify-start gap-3 py-3.5 rounded-xl text-left ${isSelected
+                        ? "border-violet-400 dark:border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-900 dark:text-violet-200 ring-1 ring-violet-200 dark:ring-violet-700"
+                        : ""
+                        }`}
                     >
                       <span
-                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border ${
-                          isSelected
-                            ? "border-violet-400 dark:border-violet-500 bg-violet-500 text-white"
-                            : "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
-                        }`}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border ${isSelected
+                          ? "border-violet-400 dark:border-violet-500 bg-violet-500 text-white"
+                          : "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
+                          }`}
                       >
                         {OPTION_LABELS[optIdx]}
                       </span>

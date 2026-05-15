@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { createJobSchema, updateJobSchema, updateJobStatusSchema, jobQuerySchema } from "./types.validation.js";
+import { createJobSchema, updateJobSchema, updateJobStatusSchema, jobQuerySchema } from "./job.validation.js";
 import { JobService } from "./job.service.js";
 import { createLogger } from "../../utils/logger.js";
 

@@ -327,8 +327,13 @@ function App() {
           <Route path="/companies" element={<CompanyListOrRedirect />} />
           <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
           <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
-          <Route path="/ats-score" element={<PublicAtsPage />} />
-          <Route path="/grants" element={<GrantsPage />} />
+
+
+ <Route path="/ats-score" element={<PublicAtsPage />} />
+<Route path="/test-cover-letter" element={<CoverLetterPage />} />
+<Route path="/grants" element={<GrantsPage />} />
+
+
           <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
           <Route path="/recruiter/login" element={<RecruiterLoginPage />} />
           <Route path="/recruiter/register" element={<RecruiterRegisterPage />} />

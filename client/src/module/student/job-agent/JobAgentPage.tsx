@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -18,11 +18,12 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { JobAgentMessage, JobAgentResponse, JobFeedMatch } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 
 interface DisplayMessage {
-  id?: string;
+  id: string;
   role: "user" | "assistant";
   content: string;
   jobs?: JobFeedMatch["job"][];
@@ -77,15 +78,12 @@ export default function JobAgentPage() {
 
   const qc = useQueryClient();
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<DisplayMessage[]>([]);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [hitFreeLimit, setHitFreeLimit] = useState(false);
-  const hasChattedRef = useRef(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
+  const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
-
-  const userMsgCount = messages.filter((m) => m.role === "user").length;
 
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
@@ -93,248 +91,105 @@ export default function JobAgentPage() {
       const res = await api.get("/job-agent/conversation");
       return res.data as { messages: JobAgentMessage[] } | null;
     },
-    enabled: !hasChattedRef.current,
+    enabled: !hasChatted,
     retry: false,
     staleTime: Infinity,
   });
 
-  useEffect(() => {
-    if (conversation?.messages?.length && !hasChattedRef.current) {
-      setMessages(
-        conversation.messages.map((m: any) => ({
-          id: crypto.randomUUID(),
-          role: m.role,
-          content: m.content,
-          jobs: m.jobs?.length ? m.jobs : undefined,
-        })),
-      );
-      if (!isPremium) {
-        const userMsgs = conversation.messages.filter((m) => m.role === "user").length;
-        if (userMsgs >= FREE_LIMIT) setHitFreeLimit(true);
-      }
-    }
-  }, [conversation, isPremium]);
+  const conversationMessages = useMemo<DisplayMessage[]>(
+    () =>
+      conversation?.messages?.map((m, index) => ({
+        id: m.id ?? `${m.role}-${m.timestamp}-${index}`,
+        role: m.role,
+        content: m.content,
+        jobs: m.jobs?.length ? m.jobs : undefined,
+      })) ?? [],
+    [conversation],
+  );
+
+  const messages = hasChatted || localMessages.length > 0 ? localMessages : conversationMessages;
+  const userMsgCount = messages.filter((m) => m.role === "user").length;
+  const hitFreeLimit = manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
+  const remainingFree = Math.max(0, FREE_LIMIT - userMsgCount);
+  const showSoftHint = !isPremium && !hitFreeLimit && userMsgCount >= 1 && remainingFree > 0;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // Fallback non-streaming mutation (used if SSE fails)
   const chatMut = useMutation({
     mutationFn: async (message: string) => {
       const res = await api.post("/job-agent/chat", { message });
       return res.data as JobAgentResponse;
     },
-    onSuccess: (data, _message, assistantId) => {
-      hasChattedRef.current = true;
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === (assistantId as unknown as string)
-            ? { ...m, content: data.reply, jobs: data.jobs.length > 0 ? data.jobs : undefined }
-            : m,
-        ),
-      );
+    onSuccess: (data) => {
+      setHasChatted(true);
+      setLocalMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: data.reply,
+          jobs: data.jobs.length > 0 ? data.jobs : undefined,
+        },
+      ]);
     },
-    onError: (err: unknown, _message, assistantId) => {
-      const resp = (err as { response?: { status?: number; data?: { freeLimit?: boolean } } })?.response;
-      if (resp?.status === 403 && resp?.data?.freeLimit) {
-        setHitFreeLimit(true);
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === (assistantId as unknown as string)
-              ? { ...m, content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search." }
-              : m,
-          ),
-        );
+    onError: (err: unknown) => {
+      const resp = (err as {
+        response?: {
+          status?: number;
+          data?: {
+            usage?: { action?: string; tier?: string };
+          };
+        };
+      })?.response;
+      const isFreeLimitError =
+        resp?.status === 429 &&
+        resp.data?.usage?.action === "AI_JOB_CHAT" &&
+        resp.data?.usage?.tier === "FREE";
+
+      if (isFreeLimitError) {
+        setManualHitFreeLimit(true);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
+          },
+        ]);
       } else {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === (assistantId as unknown as string)
-              ? { ...m, content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment." }
-              : m,
-          ),
-        );
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
+          },
+        ]);
       }
     },
   });
-
-  const startStream = useCallback(
-    async (message: string) => {
-      // Cancel any in-flight stream
-      abortControllerRef.current?.abort();
-      abortControllerRef.current = new AbortController();
-
-      const assistantId = crypto.randomUUID();
-      hasChattedRef.current = true;
-
-      // Optimistically add empty assistant bubble
-      setMessages((prev) => [
-        ...prev,
-        { id: assistantId, role: "assistant" as const, content: "", jobs: undefined },
-      ]);
-
-      let usedFallback = false;
-
-      try {
-        const token = useAuthStore.getState().token;
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/job-agent/chat/stream`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ message }),
-            signal: abortControllerRef.current.signal,
-          },
-        );
-
-        // Handle HTTP errors before streaming starts
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          if (res.status === 403 && errData?.freeLimit) {
-            setHitFreeLimit(true);
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId
-                  ? { ...m, content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search." }
-                  : m,
-              ),
-            );
-            return;
-          }
-          // Non-free-limit error → fallback
-          usedFallback = true;
-          throw new Error(errData?.message || "Stream request failed");
-        }
-
-        // Parse SSE stream
-        const reader = res.body!.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-
-          // Split on double newline (SSE event boundary)
-          const parts = buffer.split("\n\n");
-          buffer = parts.pop() ?? "";
-
-          for (const part of parts) {
-            if (!part.trim()) continue;
-            const eventMatch = part.match(/^event: (\w+)/m);
-            const dataMatch = part.match(/^data: (.+)$/m);
-            if (!eventMatch || !dataMatch) continue;
-
-            const event = eventMatch[1];
-            let data: any;
-            try { data = JSON.parse(dataMatch[1]); } catch { continue; }
-
-            if (event === "token") {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId ? { ...m, content: m.content + data.text } : m,
-                ),
-              );
-            } else if (event === "jobs") {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId
-                    ? { ...m, jobs: data.jobs?.length > 0 ? data.jobs : undefined }
-                    : m,
-                ),
-              );
-            } else if (event === "error") {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId
-                    ? { ...m, content: "Something went wrong. Please try again." }
-                    : m,
-                ),
-              );
-            }
-            // "done" event — nothing to do, stream ends naturally
-          }
-        }
-      } catch (err: any) {
-        if (err?.name === "AbortError") return;
-
-        if (usedFallback) {
-          // Fallback to non-streaming endpoint
-          try {
-            const token = useAuthStore.getState().token;
-            const res = await api.post("/job-agent/chat", { message });
-            const data = res.data as JobAgentResponse;
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId
-                  ? { ...m, content: data.reply, jobs: data.jobs?.length > 0 ? data.jobs : undefined }
-                  : m,
-              ),
-            );
-          } catch (fallbackErr: any) {
-            const resp = (fallbackErr as any)?.response;
-            if (resp?.status === 403 && resp?.data?.freeLimit) {
-              setHitFreeLimit(true);
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId
-                    ? { ...m, content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search." }
-                    : m,
-                ),
-              );
-            } else {
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId
-                    ? { ...m, content: "We're experiencing high demand right now. Please try again in a moment." }
-                    : m,
-                ),
-              );
-            }
-          }
-        } else {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantId
-                ? { ...m, content: "We're experiencing high demand right now. Please try again in a moment." }
-                : m,
-            ),
-          );
-        }
-      }
-    },
-    [],
-  );
 
   const resetMut = useMutation({
     mutationFn: () => api.delete("/job-agent/conversation"),
     onSuccess: () => {
-      abortControllerRef.current?.abort();
-      hasChattedRef.current = false;
-      setHitFreeLimit(false);
-      setIsStreaming(false);
-      setMessages([]);
+      setHasChatted(false);
+      setManualHitFreeLimit(false);
+      setLocalMessages([]);
       qc.invalidateQueries({ queryKey: queryKeys.jobAgent.conversation() });
     },
   });
 
-  const handleSend = useCallback(
-    async (text?: string) => {
-      const msg = (text ?? input).trim();
-      if (!msg || isStreaming) return;
-      setInput("");
-      adjustHeight(true);
-      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "user" as const, content: msg }]);
-      setIsStreaming(true);
-      await startStream(msg);
-      setIsStreaming(false);
-    },
-    [input, isStreaming, startStream, adjustHeight],
-  );
+  const handleSend = (text?: string) => {
+    const msg = (text ?? input).trim();
+    if (!msg || chatMut.isPending) return;
+    setInput("");
+    adjustHeight(true);
+    setHasChatted(true);
+    setLocalMessages([...messages, { id: crypto.randomUUID(), role: "user", content: msg }]);
+    chatMut.mutate(msg);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -343,12 +198,8 @@ export default function JobAgentPage() {
     }
   };
 
-  // ThinkingIndicator shows only before first token arrives
-  const lastMsg = messages[messages.length - 1];
-  const showThinking = isStreaming && (!lastMsg || lastMsg.role !== "assistant" || lastMsg.content === "");
-
   const isEmpty = messages.length === 0;
-  const inputDisabled = isStreaming || hitFreeLimit;
+  const inputDisabled = chatMut.isPending || hitFreeLimit;
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
@@ -382,7 +233,10 @@ export default function JobAgentPage() {
               {messages.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => resetMut.mutate()}
+                  onClick={() => {
+                    if (messages.length === 0) return;
+                    setShowResetConfirm(true);
+                  }}
                   disabled={resetMut.isPending}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
                 >
@@ -391,6 +245,18 @@ export default function JobAgentPage() {
                 </button>
               )}
             </div>
+            <ConfirmDialog
+              open={showResetConfirm}
+              title="Start a new chat?"
+              description="This will permanently delete your current conversation. This action cannot be undone."
+              confirmLabel="Delete and start new"
+              cancelLabel="Cancel"
+              onConfirm={() => {
+                resetMut.mutate();
+                setShowResetConfirm(false);
+              }}
+              onCancel={() => setShowResetConfirm(false)}
+            />
           </div>
         </div>
       </div>
@@ -448,25 +314,23 @@ export default function JobAgentPage() {
                 </div>
 
                 {!isPremium && (
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-6">
-                    {FREE_LIMIT} free messages.{" "}
+                  <p className="mt-6 text-center text-xs text-stone-500 dark:text-stone-400">
+                    Free plan: {FREE_LIMIT} messages per day{" - "}
                     <Link
                       to="/student/checkout"
-                      className="text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 no-underline"
+                      className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
                     >
-                      <span className="underline decoration-lime-400 decoration-2 underline-offset-4">
-                        upgrade for unlimited
-                      </span>
+                      Upgrade for unlimited
                     </Link>
                   </p>
                 )}
               </motion.div>
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg, i) => (
-                  <AgentMessage key={msg.id ?? i} role={msg.role} content={msg.content} jobs={msg.jobs} />
+                {messages.map((msg) => (
+                  <AgentMessage key={msg.id} role={msg.role} content={msg.content} jobs={msg.jobs} />
                 ))}
-                {showThinking && <ThinkingIndicator />}
+                {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
             )}
           </AnimatePresence>
@@ -509,7 +373,7 @@ export default function JobAgentPage() {
                 placeholder={
                   hitFreeLimit
                     ? "Upgrade to continue chatting..."
-                    : isStreaming
+                    : chatMut.isPending
                       ? "Thinking..."
                       : "Ask me about jobs..."
                 }
@@ -549,7 +413,27 @@ export default function JobAgentPage() {
               </button>
             </div>
           </div>
-          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+          {!isPremium && (
+            <div className="mt-2 min-h-5 text-center">
+              {showSoftHint && (
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  {remainingFree} free {remainingFree === 1 ? "message" : "messages"} left today{" - "}
+                  <Link
+                    to="/student/checkout"
+                    className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
+                  >
+                    Upgrade for unlimited
+                  </Link>
+                </p>
+              )}
+            </div>
+          )}
+          <p
+            className={cn(
+              "text-center text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600",
+              isPremium ? "mt-2" : "mt-1",
+            )}
+          >
             powered by Neural Network , always verify job details
           </p>
         </div>
