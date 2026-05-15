@@ -109,7 +109,7 @@ export default function JobAgentPage() {
 
   const messages = hasChatted || localMessages.length > 0 ? localMessages : conversationMessages;
   const userMsgCount = messages.filter((m) => m.role === "user").length;
-  const hitFreeLimit = manualHitFreeLimit || (!isPremium && !hasChatted && userMsgCount >= FREE_LIMIT);
+  const hitFreeLimit = manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
   const remainingFree = Math.max(0, FREE_LIMIT - userMsgCount);
   const showSoftHint = !isPremium && !hitFreeLimit && userMsgCount >= 1 && remainingFree > 0;
 
