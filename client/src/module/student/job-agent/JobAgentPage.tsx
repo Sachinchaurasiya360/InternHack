@@ -10,6 +10,8 @@ import {
   Zap,
   Crown,
   ArrowUpIcon,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
@@ -20,6 +22,7 @@ import type { JobAgentMessage, JobAgentResponse, JobFeedMatch } from "../../../l
 import { SEO } from "../../../components/SEO";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
+import { useSpeechRecognition } from "./useSpeechRecognition";
 
 interface DisplayMessage {
   role: "user" | "assistant";
@@ -76,11 +79,24 @@ export default function JobAgentPage() {
 
   const qc = useQueryClient();
   const [input, setInput] = useState("");
+  const [interimText, setInterimText] = useState("");
   const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
   const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
   const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
+
+  // Voice input
+  const { supported: voiceSupported, isListening, error: voiceError, start: startListening, stop: stopListening } = useSpeechRecognition({
+    onInterim: (text) => setInterimText(text),
+    onFinal: (text) => {
+      setInput((prev) => (prev ? `${prev} ${text}` : text));
+      setInterimText("");
+      setTimeout(() => adjustHeight(), 0);
+    },
+  });
+
+  const displayValue = input + (interimText ? " " + interimText : "");
 
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
@@ -155,9 +171,11 @@ export default function JobAgentPage() {
   });
 
   const handleSend = (text?: string) => {
-    const msg = (text ?? input).trim();
+    const committedInput = interimText ? (input ? `${input} ${interimText}` : interimText) : input;
+    const msg = (text ?? committedInput).trim();
     if (!msg || chatMut.isPending) return;
     setInput("");
+    setInterimText("");
     adjustHeight(true);
     setHasChatted(true);
     setLocalMessages([...messages, { role: "user", content: msg }]);
@@ -334,7 +352,7 @@ export default function JobAgentPage() {
             <div className="overflow-y-auto">
               <textarea
                 ref={textareaRef}
-                value={input}
+                value={displayValue}
                 onChange={(e) => {
                   setInput(e.target.value);
                   adjustHeight();
@@ -367,20 +385,38 @@ export default function JobAgentPage() {
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
                 {hitFreeLimit ? "limit reached" : "enter to send, shift + enter for newline"}
               </span>
-              <button
-                type="button"
-                onClick={() => handleSend()}
-                disabled={!input.trim() || inputDisabled}
-                className={cn(
-                  "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
-                  input.trim() && !inputDisabled
-                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
-                    : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+              <div className="flex items-center gap-1">
+                {voiceSupported && (
+                  <button
+                    type="button"
+                    onClick={isListening ? stopListening : startListening}
+                    aria-label={isListening ? "Stop recording" : "Start voice input"}
+                    aria-pressed={isListening}
+                    className={cn(
+                      "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer",
+                      isListening
+                        ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                        : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800",
+                    )}
+                  >
+                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  </button>
                 )}
-                aria-label="Send"
-              >
-                <ArrowUpIcon className="w-4 h-4" />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => handleSend()}
+                  disabled={!input.trim() || inputDisabled}
+                  className={cn(
+                    "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
+                    input.trim() && !inputDisabled
+                      ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
+                      : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+                  )}
+                  aria-label="Send"
+                >
+                  <ArrowUpIcon className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
           <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
