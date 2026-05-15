@@ -206,7 +206,10 @@ export default function JobAgentPage() {
               {messages.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => resetMut.mutate()}
+                  onClick={() => {
+  if (messages.length === 0) return;
+  setShowResetConfirm(true);
+}}
                   disabled={resetMut.isPending}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
                 >
@@ -215,6 +218,18 @@ export default function JobAgentPage() {
                 </button>
               )}
             </div>
+            <ConfirmDialog
+  open={showResetConfirm}
+  title="Start a new chat?"
+  description="This will permanently delete your current conversation. This action cannot be undone."
+  confirmLabel="Delete and start new"
+  cancelLabel="Cancel"
+  onConfirm={() => {
+    resetMut.mutate();
+    setShowResetConfirm(false);
+  }}
+  onCancel={() => setShowResetConfirm(false)}
+/>
           </div>
         </div>
       </div>
