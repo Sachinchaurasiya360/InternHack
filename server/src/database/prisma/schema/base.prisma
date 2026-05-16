@@ -77,6 +77,7 @@ model user {
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
@@ -87,6 +88,21 @@ model user {
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
+}
+
+model userInterviewProgress {
+  id            Int       @id @default(autoincrement())
+  userId        Int       @unique
+  completedIds  String[]  @default([])
+  bookmarkedIds String[]  @default([])
+  lastVisitedId String?
+  lastVisitedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model adminProfile {
