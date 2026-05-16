@@ -29,7 +29,7 @@ export function useStepPlayer<T>(frames: T[], speedMs = 700): StepPlayer<T> {
 }, [frames.length]);
 
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying) return;``
     const t = setInterval(() => {
       setIndex((i) => {
         const max = framesRef.current.length - 1;

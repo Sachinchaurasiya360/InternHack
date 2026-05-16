@@ -475,7 +475,7 @@ function VisualizeTab() {
   const [mode, setMode] = useState<"kruskal" | "prim">("kruskal");
   const [inputStr, setInputStr] = useState("A-B:4, A-C:3, B-C:1, B-D:2, C-D:4, C-E:5, D-E:6");
   const [start, setStart] = useState("A");
-  const parsed = parseWeighted(inputStr);
+  const parsed = useMemo(() => parseWeighted(inputStr), [inputStr]);
   const ids = parsed?.ids ?? [];
   const edges = parsed?.edges ?? [];
 
