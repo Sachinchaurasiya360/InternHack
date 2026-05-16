@@ -10,23 +10,26 @@ import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
+import api from "../../../lib/axios"
 
 const STORAGE_KEY = "interview-progress";
 
 function getLocalProgress(): InterviewProgress {
   try {
     const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: InterviewProgress = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
-        out[k] = { completed: (v as { completed: boolean }).completed };
-      }
+
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      return {};
     }
-    return out;
+
+    return raw as InterviewProgress;
   } catch {
     return {};
   }
+}
+
+function saveLocalProgress(progress: InterviewProgress) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
 }
 
 const LEVEL_STYLE: Record<string, string> = {
@@ -46,26 +49,56 @@ function MetaChip({ children, className = "" }: { children: React.ReactNode; cla
 export default function InterviewLessonsPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [showGate, setShowGate] = useState(false);
-  const [progress, setProgress] = useState<InterviewProgress>(() => getLocalProgress());
-
-  const refreshProgress = useCallback(() => setProgress(getLocalProgress()), []);
+  const [progress, setProgress] = useState<InterviewProgress>({});
 
   useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY || e.key === null) refreshProgress();
-    };
-    const onVisible = () => {
-      if (document.visibilityState === "visible") refreshProgress();
-    };
-    window.addEventListener("storage", onStorage);
-    document.addEventListener("visibilitychange", onVisible);
-    window.addEventListener("focus", refreshProgress);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      document.removeEventListener("visibilitychange", onVisible);
-      window.removeEventListener("focus", refreshProgress);
-    };
-  }, [refreshProgress]);
+  if (!isAuthenticated) {
+    setProgress(getLocalProgress());
+    return;
+  }
+
+  const loadProgress = async () => {
+    try {
+      const localProgress = getLocalProgress();
+
+      const response = await api.get("/interview-progress");
+
+      const serverData = response.data;
+
+      const merged: InterviewProgress = {
+        ...localProgress,
+      };
+
+      serverData.completedIds.forEach((id: string) => {
+        merged[id] = { completed: true };
+      });
+
+      setProgress(merged);
+
+      saveLocalProgress(merged);
+
+      const migrated = localStorage.getItem("interview-progress-migrated");
+
+      if (!migrated && Object.keys(localProgress).length > 0) {
+        for (const [questionId, value] of Object.entries(localProgress)) {
+          if (value.completed) {
+            await api.patch(`/interview-progress`, {
+             questionId: questionId, action: "complete"
+            });
+          }
+        }
+
+        localStorage.setItem("interview-progress-migrated", "true");
+      }
+    } catch (error) {
+      console.error("Failed to load interview progress", error);
+
+      setProgress(getLocalProgress());
+    }
+  };
+
+  loadProgress();
+}, [isAuthenticated]);
 
   const sectionStats = useMemo(() => {
     return sections.map((section) => {

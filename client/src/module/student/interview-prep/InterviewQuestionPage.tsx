@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -13,34 +13,43 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { sections, questions } from "./data";
-import type { InterviewProgress, CodeExample } from "./data/types";
+import type { CodeExample } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 
-function getLocalProgress(): InterviewProgress {
-  try {
-    const raw = JSON.parse(localStorage.getItem("interview-progress") || "{}");
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: InterviewProgress = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
-        out[k] = { completed: (v as { completed: boolean }).completed };
-      }
-    }
-    return out;
-  } catch {
-    return {};
+async function getServerProgress() {
+  const res = await fetch("/api/interview-progress", {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch progress");
   }
+
+  return res.json();
 }
 
-function toggleProgress(questionId: string): boolean {
-  const progress = getLocalProgress();
-  const current = progress[questionId]?.completed ?? false;
-  progress[questionId] = { completed: !current };
-  localStorage.setItem("interview-progress", JSON.stringify(progress));
-  return !current;
+async function updateServerProgress(
+  questionId: string,
+  action: "complete" | "uncomplete" | "visit"
+) {
+  const res = await fetch(`/api/interview-progress`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ questionId, action }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update progress");
+  }
+
+  return res.json();
 }
 
 const DIFF_STYLE: Record<string, string> = {
@@ -139,10 +148,7 @@ export default function InterviewQuestionPage() {
   const basePath = "/learn/interview";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const [completed, setCompleted] = useState(() => {
-    const p = getLocalProgress();
-    return !!p[questionId ?? ""]?.completed;
-  });
+  const [completed, setCompleted] = useState(false);
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionQuestions = useMemo(
@@ -151,20 +157,93 @@ export default function InterviewQuestionPage() {
   );
 
   const question = sectionQuestions.find((q) => q.id === questionId);
-  const currentIndex = question ? sectionQuestions.findIndex((q) => q.id === question.id) : -1;
-  const prevQuestion = currentIndex > 0 ? sectionQuestions[currentIndex - 1] : null;
-  const nextQuestion = currentIndex < sectionQuestions.length - 1 ? sectionQuestions[currentIndex + 1] : null;
 
-  const handleToggleComplete = useCallback(() => {
-    if (!questionId) return;
-    const newVal = toggleProgress(questionId);
-    setCompleted(newVal);
-    if (newVal && isAuthenticated && sectionSlug) {
-      const progress = getLocalProgress();
-      const allDone = sectionQuestions.every((q) => progress[q.id]?.completed);
-      if (allDone) reportMilestone("INTERVIEW_SECTION_COMPLETE", sectionSlug);
+  const currentIndex = question
+    ? sectionQuestions.findIndex((q) => q.id === question.id)
+    : -1;
+
+  const prevQuestion =
+    currentIndex > 0
+      ? sectionQuestions[currentIndex - 1]
+      : null;
+
+  const nextQuestion =
+    currentIndex < sectionQuestions.length - 1
+      ? sectionQuestions[currentIndex + 1]
+      : null;
+
+  useEffect(() => {
+    if (!isAuthenticated || !questionId) return;
+
+    const loadProgress = async () => {
+      try {
+        const progress = await getServerProgress();
+
+        setCompleted(
+          progress.completedIds?.includes(questionId) ?? false
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadProgress();
+  }, [isAuthenticated, questionId]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !questionId) return;
+
+    const timeout = setTimeout(() => {
+      updateServerProgress(questionId, "visit")
+        .catch(console.error);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [isAuthenticated, questionId]);
+
+  const handleToggleComplete = useCallback(async () => {
+    if (!questionId || !isAuthenticated) return;
+
+    try {
+      const action =
+        completed ? "uncomplete" : "complete";
+
+      const updatedProgress =
+        await updateServerProgress(
+          questionId,
+          action
+        );
+
+      const isNowCompleted =
+        updatedProgress.completedIds.includes(questionId);
+
+      setCompleted(isNowCompleted);
+
+      if (
+        isNowCompleted &&
+        sectionSlug
+      ) {
+        const allDone = sectionQuestions.every((q) =>
+          updatedProgress.completedIds.includes(q.id)
+        );
+
+        if (allDone) {
+          reportMilestone(
+            "INTERVIEW_SECTION_COMPLETE",
+            sectionSlug
+          );
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
-  }, [questionId, isAuthenticated, sectionSlug, sectionQuestions]);
+  }, [
+    questionId,
+    completed,
+    isAuthenticated,
+    sectionSlug,
+    sectionQuestions,
+  ]);
 
   if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
