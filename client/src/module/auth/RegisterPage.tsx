@@ -156,7 +156,6 @@ export default function RegisterPage() {
                 </button>
                 <button
                   type="button"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setRole("RECRUITER")}
                   className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
                       ? "bg-lime-400 text-stone-950"
