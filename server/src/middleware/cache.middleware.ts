@@ -18,7 +18,7 @@ export const cacheMiddleware = (ttl: number = 300, keyPrefix: string = "cache") 
 
     const originalJson = res.json;
     res.json = function (data) {
-      if (res.statusCode >= 200 && res.statusCode < 300) {
+      if (res.statusCode >= 200 && res.statusCode < 300 && !res.locals["skipCache"]) {
         appCache.set(key, data, ttl);
       }
       res.setHeader("X-Cache", "MISS");

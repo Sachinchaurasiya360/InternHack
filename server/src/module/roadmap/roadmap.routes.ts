@@ -21,6 +21,7 @@ export const roadmapRouter = Router();
 roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, postAiGenerate);
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
 roadmapRouter.get("/me/enrollments/:id", authMiddleware, getMyEnrollment);
+roadmapRouter.get("/me/enrollments/:id/pdf", authMiddleware, downloadPdf);
 roadmapRouter.get("/me/enrollments/:id/certificate", authMiddleware, downloadCertificate);
 roadmapRouter.patch(
   "/me/enrollments/:id/topics/:topicId",

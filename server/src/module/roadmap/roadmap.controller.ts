@@ -72,6 +72,7 @@ export async function getRoadmap(req: Request, res: Response, next: NextFunction
         res.status(404).json({ message: "Roadmap not found" });
         return;
       }
+      res.locals["skipCache"] = true;
     }
 
     res.json({ roadmap });
