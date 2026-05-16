@@ -1,0 +1,11 @@
+/* Decorative backgrounds used by AuthPromoPanel */
+.auth-promo-dots {
+	background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+	background-size: 28px 28px;
+}
+
+.auth-promo-lines {
+	background-image: linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px);
+	background-size: 120px 100%;
+}
+

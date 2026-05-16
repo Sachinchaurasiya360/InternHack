@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import type { KeyboardEvent } from "react";
 import { MapPin, ChevronDown, X, Search } from "lucide-react";
 
 // ─── Popular job-search locations ────────────────────────────────────────────

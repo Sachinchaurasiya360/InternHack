@@ -14,12 +14,12 @@ export class ResumeGenController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-
       const result = generateResumeSchema.safeParse(req.body);
       if (!result.success) {
         res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
         return;
       }
+      
 
       let profile: UserProfile | undefined;
 
@@ -57,6 +57,19 @@ export class ResumeGenController {
       }
 
       const latex = await this.resumeGenService.generate(result.data, profile, req.user.id);
+     
+    await prisma.generatedResume.create({
+  data: {
+    userId: req.user.id,
+    title: result.data.jobTitle 
+      ? `Resume — ${result.data.jobTitle}` 
+      : `Resume — ${new Date().toLocaleDateString()}`,
+    jobTitle: result.data.jobTitle ?? null,
+    jobDescription: result.data.jobDescription ?? null,
+    keySkills: result.data.keySkills ?? null,
+    latexContent: latex,
+  },
+});
 
       await prisma.usageLog.create({ data: { userId: req.user.id, action: "GENERATE_RESUME" as UsageAction } });
 
@@ -69,4 +82,29 @@ export class ResumeGenController {
       next(err);
     }
   }
+  async getHistory(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    const resumes = await prisma.generatedResume.findMany({
+      where: { userId: req.user.id },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        title: true,
+        jobTitle: true,
+        latexContent: true,
+        createdAt: true,
+      },
+    });
+
+    res.json({ resumes });
+  } catch (err) {
+    next(err);
+  }
+}
 }

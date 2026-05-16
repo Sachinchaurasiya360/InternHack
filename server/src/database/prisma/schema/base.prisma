@@ -79,9 +79,15 @@ model user {
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
+  roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
+  scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
+  privateRoadmaps       roadmap[]                @relation("UserPrivateRoadmaps")
+  generatedResumes generatedResume[] @relation("UserGeneratedResumes")
+  leetcodeImports       leetcodeImportLog[]      @relation("UserLeetcodeImports")
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
+  generatedCoverLetters generatedCoverLetter[]      @relation("StudentCoverLetters")
 
   @@index([role])
   @@index([role, isActive])
@@ -564,6 +570,20 @@ model ycCompany {
   @@index([isHiring])
   @@index([topCompany])
   @@index([name])
+}
+
+model leetcodeImportLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  username   String?
+  source     String   @default("LEETCODE_USERNAME")
+  matched    Int      @default(0)
+  imported   Int      @default(0)
+  importedAt DateTime @default(now())
+  user       user     @relation("UserLeetcodeImports", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([importedAt])
 }
 
 model dsaTopic {

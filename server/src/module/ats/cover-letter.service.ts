@@ -4,7 +4,7 @@ import type {
 } from "./cover-letter.validation.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../../database/db.js";
 
 export class CoverLetterService {
   async generate(
@@ -27,6 +27,8 @@ export class CoverLetterService {
       jobDescription: string;
       content: string;
       tone: string;
+      length: string;
+      targetWords: number;
       useProfile: boolean;
       keySkills?: string;
     }
@@ -40,6 +42,8 @@ export class CoverLetterService {
         jobDescription: data.jobDescription,
         content:        data.content,
         tone:           data.tone,
+        length:         data.length,
+        targetWords:    data.targetWords,
         useProfile:     data.useProfile,
         keySkills:      data.keySkills      ?? null,
         excerpt,
@@ -57,6 +61,7 @@ export class CoverLetterService {
         jobTitle:    true,
         companyName: true,
         tone:        true,
+        length:      true,
         excerpt:     true,
         createdAt:   true,
       },
@@ -139,9 +144,18 @@ export class CoverLetterService {
       startup:
         "Use bold, mission-driven language. Show that you understand the startup's vision and want to help build something meaningful. Be direct, energetic, and avoid corporate speak.",
     };
+    
 
     const toneGuide =
       toneInstructions[input.tone] ?? toneInstructions["professional"];
+
+    const lengthInstructions: Record<string,string> ={
+      short:"Keep the cover letter concise and impactful. Target approximately 150 words. Prioritize brevity and clarity.",
+      medium: "Write a balanced cover letter of approximately 300 words. Maintain good detail while staying concise.",
+       long:
+    "Write a detailed and comprehensive cover letter of approximately 500 words with richer examples and explanations.",
+    }  ;
+    const lengthGuide = lengthInstructions[input.length]??lengthInstructions["medium"];
 
     const profileBlock = profile
       ? `\nCANDIDATE PROFILE:\n${this.buildProfileSection(profile)}\n`
@@ -151,6 +165,9 @@ export class CoverLetterService {
 
 TONE: ${input.tone}
 ${toneGuide}
+
+LENGTH:${input.length}
+${lengthGuide}
 
 JOB DESCRIPTION:
 ${input.jobDescription}
@@ -168,7 +185,8 @@ INSTRUCTIONS:
 - Include specific examples from the candidate's projects and achievements when available
 - Reference the candidate's education and technical skills where relevant
 - Close with a clear call to action
-- Keep it concise - no more than 400 words
+- Keep it concise
+- target approximately ${input.targetWords ?? 300} words 
 - Do NOT include placeholder brackets like [Your Name] - write it as a complete letter
 - Do NOT include any subject line, headers, or metadata - just the letter body
 

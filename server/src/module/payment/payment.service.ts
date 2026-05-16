@@ -169,7 +169,7 @@ export class PaymentService {
 
   private async activateSubscription(sub: { subscription_id: string; product_id: string; next_billing_date: string; metadata: Record<string, string> }) {
     const userId = Number(sub.metadata["userId"]);
-    if (!userId) {
+    if (!userId || isNaN(userId)) {
       console.error("[Webhook] No userId in subscription metadata");
       return;
     }
@@ -180,26 +180,21 @@ export class PaymentService {
     const now = new Date();
     const endDate = new Date(sub.next_billing_date);
 
-    await prisma.$transaction([
-      prisma.payment.updateMany({
-        where: { dodoSubscriptionId: sub.subscription_id },
-        data: { status: "SUCCESS" },
-      }),
-      prisma.user.update({
-        where: { id: userId },
-        data: {
-          subscriptionPlan: plan,
-          subscriptionStatus: "ACTIVE",
-          subscriptionStartDate: now,
-          subscriptionEndDate: endDate,
-        },
-      }),
-    ]);
-
-    // Also link subscription ID to payment record
+    // Link subscription ID and mark payment SUCCESS first, then activate the user.
+    // Order matters: payment record must be linked before any code looks it up by subscription_id.
     await prisma.payment.updateMany({
       where: { userId, status: "PENDING" },
-      data: { dodoSubscriptionId: sub.subscription_id },
+      data: { dodoSubscriptionId: sub.subscription_id, status: "SUCCESS" },
+    });
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        subscriptionPlan: plan,
+        subscriptionStatus: "ACTIVE",
+        subscriptionStartDate: now,
+        subscriptionEndDate: endDate,
+      },
     });
 
     // Send confirmation email
