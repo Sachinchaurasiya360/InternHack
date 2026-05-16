@@ -13,6 +13,7 @@ import {
   Mic,
   MicOff,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -260,7 +261,7 @@ export default function JobAgentPage() {
                 </span>
               )}
               {messages.length > 0 && (
-                <button
+                <Button
                   type="button"
                   onClick={() => resetMut.mutate()}
                   disabled={resetMut.isPending}
@@ -268,7 +269,7 @@ export default function JobAgentPage() {
                 >
                   <RotateCcw className="w-3 h-3" />
                   new chat
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -306,7 +307,7 @@ export default function JobAgentPage() {
                 {/* Quick prompt numbered grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 w-full max-w-2xl border-t border-l border-stone-200 dark:border-white/10">
                   {QUICK_PROMPTS.map((q, i) => (
-                    <button
+                    <Button
                       key={q.text}
                       type="button"
                       onClick={() => handleSend(q.text)}
@@ -323,7 +324,7 @@ export default function JobAgentPage() {
                           </span>
                         </div>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
 
@@ -426,9 +427,18 @@ export default function JobAgentPage() {
               </span>
               <div className="flex items-center gap-1">
                 {voiceSupported && (
-                  <button
+                  <Button
                     type="button"
-                    onClick={isListening ? stopListening : startListening}
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (isListening) {
+                        setInterimText("");
+                        stopListening();
+                      } else {
+                        startListening();
+                      }
+                    }}
                     aria-label={isListening ? "Stop recording" : "Start voice input"}
                     aria-pressed={isListening}
                     className={cn(
@@ -449,10 +459,11 @@ export default function JobAgentPage() {
                     ) : (
                       <Mic className="w-4 h-4" />
                     )}
-                  </button>
+                  </Button>
                 )}
-                <button
+                <Button
                   type="button"
+                  size="icon"
                   onClick={() => handleSend()}
                   disabled={!(input.trim() || interimText.trim()) || inputDisabled}
                   className={cn(
@@ -464,7 +475,7 @@ export default function JobAgentPage() {
                   aria-label="Send"
                 >
                   <ArrowUpIcon className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
             </div>
@@ -474,7 +485,7 @@ export default function JobAgentPage() {
               </p>
             )}
             <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
-              powered by Neural Network , always verify job details
+              powered by Neural Network, always verify job details
             </p>
         </div>
       </div>
