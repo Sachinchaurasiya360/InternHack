@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router";
 import { motion } from "framer-motion";
 import { Clock, BookOpen, Target, ChevronRight, ArrowRight, Check, HelpCircle, Map as MapIcon } from "lucide-react";
@@ -10,6 +10,8 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { Roadmap, RoadmapEnrollmentListItem } from "../../../lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 function Chrome({ children, isStudent, sidebarWidth, collapsed, sidebar }: {
   children: ReactNode;
@@ -43,28 +45,23 @@ export default function RoadmapDetailPage() {
   const { isAuthenticated, user } = useAuthStore();
   const isStudent = isAuthenticated && user?.role === "STUDENT";
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
-  const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
-  const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
 
-  useEffect(() => {
-    let mounted = true;
-    api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`)
-      .then((res) => mounted && setRoadmap(res.data.roadmap))
-      .catch(() => mounted && setRoadmap(null))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, [slug]);
+  const { data: roadmapData, isLoading: roadmapLoading, isError: roadmapError } = useQuery({
+    queryKey: queryKeys.roadmaps.detail(slug),
+    queryFn: () => api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`).then(res => res.data),
+    enabled: !!slug,
+  });
 
-  useEffect(() => {
-    if (!isStudent) return;
-    let mounted = true;
-    api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments")
-      .then((res) => mounted && setEnrollments(res.data.enrollments))
-      .catch(() => { /* ok if not enrolled in anything */ });
-    return () => { mounted = false; };
-  }, [isStudent]);
+  const { data: enrollmentsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+    enabled: isStudent,
+  });
+
+  const roadmap = roadmapData?.roadmap || null;
+  const enrollments = enrollmentsData?.enrollments || [];
+  const loading = roadmapLoading;
 
   const chromeProps = { isStudent, sidebarWidth, collapsed, sidebar };
 
@@ -73,6 +70,20 @@ export default function RoadmapDetailPage() {
       <Chrome {...chromeProps}>
         <div className="flex items-center justify-center py-32">
           <div className="h-8 w-8 border-2 border-stone-200 dark:border-stone-800 border-t-lime-500 rounded-full animate-spin" />
+        </div>
+      </Chrome>
+    );
+  }
+
+  if (roadmapError) {
+    return (
+      <Chrome {...chromeProps}>
+        <div className="flex items-center justify-center py-32 px-6">
+          <div className="text-center">
+            <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load roadmap</p>
+            <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server.</p>
+            <Button onClick={() => window.location.reload()} variant="outline" size="sm">Retry</Button>
+          </div>
         </div>
       </Chrome>
     );

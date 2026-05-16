@@ -405,7 +405,14 @@ export default function StudentProfilePage() {
   const handleProfilePicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // 1. Size Check
     if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (picInputRef.current) picInputRef.current.value = ""; return; }
+    
+    // 2. Strict Format Check
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) { toast.error("Only JPG and PNG formats are allowed"); if (picInputRef.current) picInputRef.current.value = ""; return; }
+
     const reader = new FileReader();
     reader.onload = () => {
       setCropSrc(reader.result as string);
@@ -418,7 +425,14 @@ export default function StudentProfilePage() {
   const handleCoverImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // 1. Size Check
     if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (coverInputRef.current) coverInputRef.current.value = ""; return; }
+    
+    // 2. Strict Format Check
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) { toast.error("Only JPG and PNG formats are allowed"); if (coverInputRef.current) coverInputRef.current.value = ""; return; }
+
     const reader = new FileReader();
     reader.onload = () => {
       setCropSrc(reader.result as string);
@@ -441,11 +455,23 @@ export default function StudentProfilePage() {
       const fd = new FormData();
       fd.append("file", blob, "cropped.jpg");
       const res = await api.post(endpoint, fd, { headers: { "Content-Type": "multipart/form-data" } });
-      const u = res.data.user;
-      setForm((prev) => ({ ...prev, [field]: u[field] ?? "" }));
-      syncUser({ ...form, [field]: u[field] ?? "" });
+      
+      // Extract the updated user or look for a direct secure_url/filePath returned by your API
+      const u = res.data.user || res.data;
+      
+      // Get the image path. If the backend returns a relative path, we map it to the backend server URL
+      let imagePath = u[field] ?? "";
+      if (imagePath && !imagePath.startsWith("http")) {
+        // Fallback for local backend uploads: prepend server address if not an external cloud URL (like Cloudinary)
+        imagePath = `${api.defaults.baseURL?.replace("/api", "") || "http://localhost:3000"}/${imagePath.replace(/^\//, "")}`;
+      }
+
+      setForm((prev) => ({ ...prev, [field]: imagePath }));
+      syncUser({ ...form, [field]: imagePath });
+      
       toast.success(isProfile ? "Profile picture updated!" : "Cover image updated!");
-    } catch {
+    } catch (error) {
+      console.error("Upload rendering error:", error);
       toast.error(isProfile ? "Failed to upload profile picture" : "Failed to upload cover image");
     } finally {
       setUploading(false);
@@ -594,7 +620,7 @@ export default function StudentProfilePage() {
               >
                 {uploadingCover ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
               </button>
-              <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverImageSelect} className="hidden" />
+              <input ref={coverInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={handleCoverImageSelect} className="hidden" />
             </div>
 
             <div className="px-5 pb-5 -mt-10 relative">
@@ -617,7 +643,7 @@ export default function StudentProfilePage() {
                 >
                   {uploadingPic ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
                 </button>
-                <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicSelect} className="hidden" />
+                <input ref={picInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={handleProfilePicSelect} className="hidden" />
               </div>
 
               <h2 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate leading-tight">

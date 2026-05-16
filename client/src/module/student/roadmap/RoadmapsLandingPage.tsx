@@ -21,6 +21,8 @@ import type { RoadmapListItem, RoadmapEnrollmentListItem } from "../../../lib/ty
 import { useSearchParams } from "react-router";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 interface ListResponse {
   roadmaps: RoadmapListItem[];
@@ -58,44 +60,38 @@ export default function RoadmapsLandingPage() {
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [roadmaps, setRoadmaps] = useState<RoadmapListItem[]>([]);
-  const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   // Filter states from URL
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
   const debouncedSearch = useDebounce(searchInput, 400);
   
-  const level = (searchParams.get("level") || "ALL_LEVELS") as any;
+  const level = searchParams.get("level") || "ALL_LEVELS";
   const tag = searchParams.get("tag") || "";
   const category = searchParams.get("category") || "";
 
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    
-    const params: any = { page: 1, limit: 100 };
-    if (debouncedSearch) params.search = debouncedSearch;
-    if (level && level !== "ALL_LEVELS") params.level = level;
-    if (tag) params.tag = tag;
-    if (category) params.category = category;
+  const params: Record<string, string | number> = { page: 1, limit: 100 };
+  if (debouncedSearch) params.search = debouncedSearch;
+  if (level && level !== "ALL_LEVELS") params.level = level;
+  if (tag) params.tag = tag;
+  if (category) params.category = category;
 
-    api.get<ListResponse>("/roadmaps", { params })
-      .then((res) => mounted && setRoadmaps(res.data.roadmaps))
-      .catch(() => mounted && setError("Could not load roadmaps. Please try again."))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, [debouncedSearch, level, tag, category]);
+  const { data: roadmapsData, isLoading: roadmapsLoading, error: roadmapsError } = useQuery({
+    queryKey: queryKeys.roadmaps.list(params),
+    queryFn: () => api.get<ListResponse>("/roadmaps", { params }).then(res => res.data),
+  });
 
-  useEffect(() => {
-    if (!isStudent) return;
-    let mounted = true;
-    api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments")
-      .then((res) => mounted && setEnrollments(res.data.enrollments))
-      .catch(() => { /* ok */ });
-    return () => { mounted = false; };
-  }, [isStudent]);
+  const { data: enrollmentsData, isError: enrollmentsError } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+    enabled: isStudent,
+  });
+
+  const roadmaps = useMemo(() => roadmapsData?.roadmaps || [], [roadmapsData]);
+  const enrollments = useMemo(() => {
+    if (enrollmentsError) return []; // Fallback to empty but we'll show error below
+    return enrollmentsData?.enrollments || [];
+  }, [enrollmentsData, enrollmentsError]);
+  const loading = roadmapsLoading;
+  const error = (roadmapsError || (isStudent && enrollmentsError)) ? "Could not load roadmaps. Please try again." : null;
 
   // Sync search input with URL when typing
   useEffect(() => {
