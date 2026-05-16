@@ -126,7 +126,7 @@ return (
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-md mt-16 lg:mt-0"
+        className="w-full max-w-md"
       >
         <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
           <span className="h-1.5 w-1.5 bg-lime-400" />
