@@ -111,7 +111,7 @@ export function FeaturesSection() {
           </p>
         </motion.div>
 
-         <div
+         <motion.div
          className="grid grid-cols-1 md:grid-cols-3 auto-rows-fr gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-2xl overflow-hidden"
          variants={containerVariants}
          initial="hidden"
@@ -143,18 +143,12 @@ export function FeaturesSection() {
                 {f.stat}
                </span>
               </div>
-
-             {/* Title */}
              <h3 className="text-xl md:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
               {f.title}
              </h3>
-
-             {/* Description */}
              <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 leading-relaxed flex-1">
               {f.desc}
              </p>
-
-             {/* CTA */}
              <span className="mt-8 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 group-hover:gap-2.5 transition-all">
                open
                <ArrowRight className="w-3.5 h-3.5" />
