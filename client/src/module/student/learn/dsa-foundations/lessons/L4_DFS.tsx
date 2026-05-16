@@ -316,7 +316,7 @@ function StackViz({ items }: { items: string[] }) {
 function VisualizeTab() {
   const [inputStr, setInputStr] = useState("A>B, A>C, B>D, C>D, D>E, E>B, C>E");
   const [source, setSource] = useState("A");
-  const parsed = parseEdgeList(inputStr);
+  const parsed = useMemo(() => parseEdgeList(inputStr), [inputStr]);
   const ids = parsed?.nodeIds ?? [];
   const rawEdges = parsed?.edges ?? [];
 
