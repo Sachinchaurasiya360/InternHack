@@ -1,11 +1,5 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 
-/* ------------------------------------------------------------------ */
-/*  Types — the public API is fully typed; browser SpeechRecognition   */
-/*  internals are cast to `any` inside the hook so `any` never leaks  */
-/*  out to consumers.                                                 */
-/* ------------------------------------------------------------------ */
-
 interface UseSpeechRecognitionOptions {
   onInterim: (text: string) => void;
   onFinal: (text: string) => void;
@@ -25,10 +19,10 @@ export function useSpeechRecognition({
 }: UseSpeechRecognitionOptions): SpeechRecognitionResult {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Stable callback refs so the recognition instance always calls the latest
   const onInterimRef = useRef(onInterim);
   const onFinalRef = useRef(onFinal);
   useEffect(() => {
@@ -44,7 +38,6 @@ export function useSpeechRecognition({
   const start = useCallback(() => {
     if (!supported) return;
 
-    // Abort any existing instance before creating a new one
     recognitionRef.current?.abort();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,12 +47,20 @@ export function useSpeechRecognition({
     if (!SpeechRecognitionCtor) return;
 
     const recognition = new SpeechRecognitionCtor();
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = navigator.language || "en-US";
 
+    const resetSilenceTimer = () => {
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = setTimeout(() => {
+        recognitionRef.current?.stop();
+      }, 2000);
+    };
+    
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = (event: any) => {
+      resetSilenceTimer();
       let interim = "";
       let final = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -91,13 +92,14 @@ export function useSpeechRecognition({
   }, [supported]);
 
   const stop = useCallback(() => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     recognitionRef.current?.stop();
     setIsListening(false);
   }, []);
 
-  // Abort on unmount — use abort (not stop) so onresult doesn't fire with stale data
   useEffect(() => {
     return () => {
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       recognitionRef.current?.abort();
     };
   }, []);

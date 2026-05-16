@@ -98,6 +98,20 @@ export default function JobAgentPage() {
 
   const displayValue = input + (interimText ? " " + interimText : "");
 
+  const [voiceHint, setVoiceHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (voiceError === "not-allowed") {
+      setVoiceHint("Microphone access blocked - check browser settings");
+    }
+  }, [voiceError]);
+
+  useEffect(() => {
+    if (!voiceHint) return;
+    const timer = setTimeout(() => setVoiceHint(null), 5000);
+    return () => clearTimeout(timer);
+  }, [voiceHint]);
+
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
     queryFn: async () => {
@@ -188,6 +202,30 @@ export default function JobAgentPage() {
       handleSend();
     }
   };
+
+  useEffect(() => {
+    if (!isListening) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        stopListening();
+        setInterimText("");
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isListening, stopListening]);
+
+  useEffect(() => {
+    if (!isListening) {
+      const raf = requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+        const len = input.length;
+        textareaRef.current?.setSelectionRange(len, len);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isListening]);
 
   const isEmpty = messages.length === 0;
   const inputDisabled = chatMut.isPending || hitFreeLimit;
@@ -354,6 +392,7 @@ export default function JobAgentPage() {
                 ref={textareaRef}
                 value={displayValue}
                 onChange={(e) => {
+                  setInterimText("");
                   setInput(e.target.value);
                   adjustHeight();
                 }}
@@ -399,16 +438,26 @@ export default function JobAgentPage() {
                         : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800",
                     )}
                   >
-                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    {isListening ? (
+                      <motion.span
+                        animate={{ scale: [1, 1.15, 1] }}
+                        transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                        className="inline-flex items-center justify-center"
+                      >
+                        <MicOff className="w-4 h-4" />
+                      </motion.span>
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => handleSend()}
-                  disabled={!input.trim() || inputDisabled}
+                  disabled={!(input.trim() || interimText.trim()) || inputDisabled}
                   className={cn(
                     "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
-                    input.trim() && !inputDisabled
+                    (input.trim() || interimText.trim()) && !inputDisabled
                       ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
                       : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
                   )}
@@ -418,10 +467,15 @@ export default function JobAgentPage() {
                 </button>
               </div>
             </div>
-          </div>
-          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
-            powered by Neural Network , always verify job details
-          </p>
+            </div>
+            {voiceHint && (
+              <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
+                {voiceHint}
+              </p>
+            )}
+            <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+              powered by Neural Network , always verify job details
+            </p>
         </div>
       </div>
     </div>
