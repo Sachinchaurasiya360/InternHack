@@ -194,6 +194,11 @@ export class DsaController {
         message: `Successfully synced ${result.syncedCount} problems from LeetCode.`,
         data: result,
       });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getActivity(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
