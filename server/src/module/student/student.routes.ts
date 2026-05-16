@@ -18,11 +18,13 @@ studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, re
 studentRouter.get("/jobs/:jobId/application-status", (req, res) => studentController.getApplicationStatusByJob(req, res));
 studentRouter.get("/applications", (req, res) => studentController.getMyApplications(req, res));
 studentRouter.get("/applications/:applicationId", (req, res) => studentController.getApplicationDetail(req, res));
+studentRouter.get("/applications/:applicationId/calendar.ics", (req, res) => studentController.downloadCalendarEvent(req, res));
 studentRouter.delete("/applications/:applicationId", (req, res) => studentController.withdrawApplication(req, res));
 
 // External job applications
 studentRouter.post("/external-jobs/:adminJobId/apply", (req, res) => studentController.applyToExternalJob(req, res));
 studentRouter.get("/external-jobs/:adminJobId/status", (req, res) => studentController.getExternalApplicationStatus(req, res));
+studentRouter.delete("/external-applications/:applicationId", (req, res, next) => studentController.deleteExternalApplication(req, res, next));
 
 // Round submissions
 studentRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => studentController.getRoundInfo(req, res));

@@ -22,13 +22,22 @@ export class SkillTestController {
 
   async getTestDetail(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) { res.status(401).json({ error: "Authentication required" }); return; }
+      if (!req.user) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
 
       const testId = parseInt(String(req.params["id"]), 10);
-      if (isNaN(testId)) { res.status(400).json({ error: "Invalid test ID" }); return; }
+      if (isNaN(testId)) {
+        res.status(400).json({ error: "Invalid test ID" });
+        return;
+      }
 
       const result = await this.service.getTestDetail(testId, req.user.id);
-      if (!result) { res.status(404).json({ error: "Test not found" }); return; }
+      if (!result) {
+        res.status(404).json({ error: "Test not found" });
+        return;
+      }
 
       res.json(result);
     } catch (err) {
@@ -38,29 +47,62 @@ export class SkillTestController {
 
   async startTest(req: Request, res: Response, next: NextFunction) {
     try {
-      const testId = parseInt(String(req.params["id"]), 10);
-      if (isNaN(testId)) { res.status(400).json({ error: "Invalid test ID" }); return; }
+      if (!req.user) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
 
-      const test = await this.service.startTest(testId);
+      const testId = parseInt(String(req.params["id"]), 10);
+      if (isNaN(testId)) {
+        res.status(400).json({ error: "Invalid test ID" });
+        return;
+      }
+
+      // Pass studentId to enable server-side session tracking
+      const test = await this.service.startTest(testId, req.user.id);
       res.json(test);
     } catch (err) {
       if (err instanceof Error && err.message === "Test not found") {
-        res.status(404).json({ error: err.message }); return;
+        res.status(404).json({ error: err.message });
+        return;
       }
+
+      // Return 403 if student tries to resume an already-expired session
+      if (err instanceof Error && err.message === "TEST_EXPIRED") {
+        res
+          .status(403)
+          .json({ error: "Time is up. Your session has expired." });
+        return;
+      }
+      if (err instanceof Error && (err as any).status === 429) {
+  res.status(429).json({ 
+    error: err.message, 
+    retryAfter: (err as any).retryAfter 
+  }); return;
+}
       next(err);
     }
   }
 
   async submitTest(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) { res.status(401).json({ error: "Authentication required" }); return; }
+      if (!req.user) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
 
       const testId = parseInt(String(req.params["id"]), 10);
-      if (isNaN(testId)) { res.status(400).json({ error: "Invalid test ID" }); return; }
+      if (isNaN(testId)) {
+        res.status(400).json({ error: "Invalid test ID" });
+        return;
+      }
 
       const parsed = submitTestSchema.safeParse(req.body);
       if (!parsed.success) {
-        res.status(400).json({ error: "Validation failed", details: parsed.error.flatten() });
+        res.status(400).json({
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
         return;
       }
 
@@ -68,12 +110,29 @@ export class SkillTestController {
         testId,
         req.user.id,
         parsed.data.answers,
-        parsed.data.proctorLog
+        parsed.data.proctorLog,
       );
       res.status(201).json(result);
     } catch (err) {
       if (err instanceof Error && err.message === "Test not found") {
-        res.status(404).json({ error: err.message }); return;
+        res.status(404).json({ error: err.message });
+        return;
+      }
+      // Return 403 if submission arrives after server-side expiry
+      if (err instanceof Error && err.message === "TEST_EXPIRED") {
+        res
+          .status(403)
+          .json({ error: "Time is up. Your session has expired." });
+        return;
+      }
+      // Return 400 if student tries to submit without starting the test first
+      if (err instanceof Error && err.message === "NO_OPEN_SESSION") {
+        res
+          .status(400)
+          .json({
+            error: "No active test session found. Please start the test first.",
+          });
+        return;
       }
       next(err);
     }
@@ -81,7 +140,10 @@ export class SkillTestController {
 
   async getMyAttempts(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) { res.status(401).json({ error: "Authentication required" }); return; }
+      if (!req.user) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
       const attempts = await this.service.getMyAttempts(req.user.id);
       res.json({ attempts });
     } catch (err) {
@@ -91,7 +153,10 @@ export class SkillTestController {
 
   async getMyVerified(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) { res.status(401).json({ error: "Authentication required" }); return; }
+      if (!req.user) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
       const verified = await this.service.getMyVerified(req.user.id);
       res.json({ verified });
     } catch (err) {
@@ -102,7 +167,10 @@ export class SkillTestController {
   async getStudentVerified(req: Request, res: Response, next: NextFunction) {
     try {
       const studentId = parseInt(String(req.params["studentId"]), 10);
-      if (isNaN(studentId)) { res.status(400).json({ error: "Invalid student ID" }); return; }
+      if (isNaN(studentId)) {
+        res.status(400).json({ error: "Invalid student ID" });
+        return;
+      }
 
       const verified = await this.service.getStudentVerified(studentId);
       res.json({ verified });
@@ -115,7 +183,10 @@ export class SkillTestController {
     try {
       const parsed = createTestSchema.safeParse(req.body);
       if (!parsed.success) {
-        res.status(400).json({ error: "Validation failed", details: parsed.error.flatten() });
+        res.status(400).json({
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
         return;
       }
 
@@ -123,7 +194,9 @@ export class SkillTestController {
       res.status(201).json({ test });
     } catch (err) {
       if (err instanceof Error && err.message.includes("Unique constraint")) {
-        res.status(409).json({ error: "A test for this skill and difficulty already exists" });
+        res.status(409).json({
+          error: "A test for this skill and difficulty already exists",
+        });
         return;
       }
       next(err);
@@ -133,19 +206,29 @@ export class SkillTestController {
   async addQuestions(req: Request, res: Response, next: NextFunction) {
     try {
       const testId = parseInt(String(req.params["id"]), 10);
-      if (isNaN(testId)) { res.status(400).json({ error: "Invalid test ID" }); return; }
-
-      const parsed = addQuestionsSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res.status(400).json({ error: "Validation failed", details: parsed.error.flatten() });
+      if (isNaN(testId)) {
+        res.status(400).json({ error: "Invalid test ID" });
         return;
       }
 
-      const created = await this.service.addQuestions(testId, parsed.data.questions);
+      const parsed = addQuestionsSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
+        return;
+      }
+
+      const created = await this.service.addQuestions(
+        testId,
+        parsed.data.questions,
+      );
       res.status(201).json({ created });
     } catch (err) {
       if (err instanceof Error && err.message === "Test not found") {
-        res.status(404).json({ error: err.message }); return;
+        res.status(404).json({ error: err.message });
+        return;
       }
       next(err);
     }

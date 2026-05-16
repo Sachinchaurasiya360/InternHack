@@ -359,7 +359,7 @@ export default function RoadmapsLandingPage() {
                 {(searchInput || tag || category || (level && level !== "ALL_LEVELS")) && (
                   <button
                     onClick={clearFilters}
-                    className="text-[10px] font-mono uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors flex items-center gap-1"
+                    className="text-[10px] font-mono uppercase tracking-widest text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-500/10 px-2 py-1 rounded transition-all cursor-pointer flex items-center gap-1"
                   >
                     <X className="w-3 h-3" />
                     Clear all filters

@@ -134,3 +134,21 @@ model generatedResume {
   @@index([userId])
   @@index([createdAt])
 }
+model generatedCoverLetter {
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  jobTitle       String?
+  companyName    String?
+  jobDescription String
+  content        String
+  tone           String
+  useProfile     Boolean  @default(false)
+  keySkills      String?
+  excerpt        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  student        user     @relation("StudentCoverLetters", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([createdAt])
+}

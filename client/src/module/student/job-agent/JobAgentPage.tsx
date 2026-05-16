@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -18,10 +18,12 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { JobAgentMessage, JobAgentResponse, JobFeedMatch } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 
 interface DisplayMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
   jobs?: JobFeedMatch["job"][];
@@ -76,13 +78,12 @@ export default function JobAgentPage() {
 
   const qc = useQueryClient();
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<DisplayMessage[]>([]);
-  const [hitFreeLimit, setHitFreeLimit] = useState(false);
-  const hasChattedRef = useRef(false);
+  const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
+  const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
-
-  const userMsgCount = messages.filter((m) => m.role === "user").length;
 
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
@@ -90,26 +91,27 @@ export default function JobAgentPage() {
       const res = await api.get("/job-agent/conversation");
       return res.data as { messages: JobAgentMessage[] } | null;
     },
-    enabled: !hasChattedRef.current,
+    enabled: !hasChatted,
     retry: false,
     staleTime: Infinity,
   });
 
-  useEffect(() => {
-    if (conversation?.messages?.length && !hasChattedRef.current) {
-      setMessages(
-        conversation.messages.map((m: any) => ({
-          role: m.role,
-          content: m.content,
-          jobs: m.jobs?.length ? m.jobs : undefined,
-        })),
-      );
-      if (!isPremium) {
-        const userMsgs = conversation.messages.filter((m) => m.role === "user").length;
-        if (userMsgs >= FREE_LIMIT) setHitFreeLimit(true);
-      }
-    }
-  }, [conversation, isPremium]);
+  const conversationMessages = useMemo<DisplayMessage[]>(
+    () =>
+      conversation?.messages?.map((m, index) => ({
+        id: m.id ?? `${m.role}-${m.timestamp}-${index}`,
+        role: m.role,
+        content: m.content,
+        jobs: m.jobs?.length ? m.jobs : undefined,
+      })) ?? [],
+    [conversation],
+  );
+
+  const messages = hasChatted || localMessages.length > 0 ? localMessages : conversationMessages;
+  const userMsgCount = messages.filter((m) => m.role === "user").length;
+  const hitFreeLimit = manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
+  const remainingFree = Math.max(0, FREE_LIMIT - userMsgCount);
+  const showSoftHint = !isPremium && !hitFreeLimit && userMsgCount >= 1 && remainingFree > 0;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -121,10 +123,11 @@ export default function JobAgentPage() {
       return res.data as JobAgentResponse;
     },
     onSuccess: (data) => {
-      hasChattedRef.current = true;
-      setMessages((prev) => [
+      setHasChatted(true);
+      setLocalMessages((prev) => [
         ...prev,
         {
+          id: crypto.randomUUID(),
           role: "assistant",
           content: data.reply,
           jobs: data.jobs.length > 0 ? data.jobs : undefined,
@@ -132,18 +135,38 @@ export default function JobAgentPage() {
       ]);
     },
     onError: (err: unknown) => {
-      const resp = (err as { response?: { status?: number; data?: { freeLimit?: boolean } } })?.response;
-      if (resp?.status === 403 && resp?.data?.freeLimit) {
-        setHitFreeLimit(true);
-        setMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
-        }]);
+      const resp = (err as {
+        response?: {
+          status?: number;
+          data?: {
+            usage?: { action?: string; tier?: string };
+          };
+        };
+      })?.response;
+      const isFreeLimitError =
+        resp?.status === 429 &&
+        resp.data?.usage?.action === "AI_JOB_CHAT" &&
+        resp.data?.usage?.tier === "FREE";
+
+      if (isFreeLimitError) {
+        setManualHitFreeLimit(true);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
+          },
+        ]);
       } else {
-        setMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
-        }]);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
+          },
+        ]);
       }
     },
   });
@@ -151,9 +174,9 @@ export default function JobAgentPage() {
   const resetMut = useMutation({
     mutationFn: () => api.delete("/job-agent/conversation"),
     onSuccess: () => {
-      hasChattedRef.current = false;
-      setHitFreeLimit(false);
-      setMessages([]);
+      setHasChatted(false);
+      setManualHitFreeLimit(false);
+      setLocalMessages([]);
       qc.invalidateQueries({ queryKey: queryKeys.jobAgent.conversation() });
     },
   });
@@ -163,7 +186,8 @@ export default function JobAgentPage() {
     if (!msg || chatMut.isPending) return;
     setInput("");
     adjustHeight(true);
-    setMessages((prev) => [...prev, { role: "user", content: msg }]);
+    setHasChatted(true);
+    setLocalMessages([...messages, { id: crypto.randomUUID(), role: "user", content: msg }]);
     chatMut.mutate(msg);
   };
 
@@ -209,7 +233,10 @@ export default function JobAgentPage() {
               {messages.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => resetMut.mutate()}
+                  onClick={() => {
+                    if (messages.length === 0) return;
+                    setShowResetConfirm(true);
+                  }}
                   disabled={resetMut.isPending}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
                 >
@@ -218,6 +245,18 @@ export default function JobAgentPage() {
                 </button>
               )}
             </div>
+            <ConfirmDialog
+              open={showResetConfirm}
+              title="Start a new chat?"
+              description="This will permanently delete your current conversation. This action cannot be undone."
+              confirmLabel="Delete and start new"
+              cancelLabel="Cancel"
+              onConfirm={() => {
+                resetMut.mutate();
+                setShowResetConfirm(false);
+              }}
+              onCancel={() => setShowResetConfirm(false)}
+            />
           </div>
         </div>
       </div>
@@ -275,23 +314,21 @@ export default function JobAgentPage() {
                 </div>
 
                 {!isPremium && (
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-6">
-                    {FREE_LIMIT} free messages.{" "}
+                  <p className="mt-6 text-center text-xs text-stone-500 dark:text-stone-400">
+                    Free plan: {FREE_LIMIT} messages per day{" - "}
                     <Link
                       to="/student/checkout"
-                      className="text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 no-underline"
+                      className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
                     >
-                      <span className="underline decoration-lime-400 decoration-2 underline-offset-4">
-                        upgrade for unlimited
-                      </span>
+                      Upgrade for unlimited
                     </Link>
                   </p>
                 )}
               </motion.div>
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg, i) => (
-                  <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
+                {messages.map((msg) => (
+                  <AgentMessage key={msg.id} role={msg.role} content={msg.content} jobs={msg.jobs} />
                 ))}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
@@ -376,7 +413,27 @@ export default function JobAgentPage() {
               </button>
             </div>
           </div>
-          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+          {!isPremium && (
+            <div className="mt-2 min-h-5 text-center">
+              {showSoftHint && (
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  {remainingFree} free {remainingFree === 1 ? "message" : "messages"} left today{" - "}
+                  <Link
+                    to="/student/checkout"
+                    className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
+                  >
+                    Upgrade for unlimited
+                  </Link>
+                </p>
+              )}
+            </div>
+          )}
+          <p
+            className={cn(
+              "text-center text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600",
+              isPremium ? "mt-2" : "mt-1",
+            )}
+          >
             powered by Neural Network , always verify job details
           </p>
         </div>

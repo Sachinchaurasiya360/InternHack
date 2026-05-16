@@ -139,6 +139,9 @@ export default function RoadmapDetailPage() {
         title={`${roadmap.title} (Free)`}
         description={roadmap.shortDescription}
         canonicalUrl={canonicalUrl(`/roadmaps/${roadmap.slug}`)}
+        ogImage={roadmap.ogImage || roadmap.coverImage || undefined}
+        ogType="article"
+        noIndex={!roadmap.isPublished}
         structuredData={faqSchema ? [courseSchema, faqSchema] : courseSchema}
       />
 
