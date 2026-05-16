@@ -144,4 +144,18 @@ export class AtsController {
     const subject = `Your resume scored ${score.overallScore}/100 on InternHack`;
     await sendEmail({ to: user.email, subject, html });
   }
+
+  /** GET /api/ats/history — returns the authenticated student's recent score history. */
+  async getScoreHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const history = await this.atsService.getScoreHistory(req.user.id);
+      res.json({ history });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

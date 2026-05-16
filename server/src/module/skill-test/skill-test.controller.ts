@@ -74,6 +74,12 @@ export class SkillTestController {
           .json({ error: "Time is up. Your session has expired." });
         return;
       }
+      if (err instanceof Error && (err as any).status === 429) {
+  res.status(429).json({ 
+    error: err.message, 
+    retryAfter: (err as any).retryAfter 
+  }); return;
+}
       next(err);
     }
   }

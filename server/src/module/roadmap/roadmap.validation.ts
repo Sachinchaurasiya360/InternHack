@@ -43,6 +43,10 @@ export const recomputePaceSchema = z.object({
   hoursPerWeek: z.number().int().min(2).max(40),
 });
 
+export const pdfThemeQuery = z.object({
+  theme: z.enum(["light", "dark"]).default("light"),
+});
+
 export const listQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
