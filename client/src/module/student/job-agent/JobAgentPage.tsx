@@ -10,7 +10,10 @@ import {
   Zap,
   Crown,
   ArrowUpIcon,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -21,8 +24,10 @@ import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
+import { useSpeechRecognition } from "./useSpeechRecognition";
 
 interface DisplayMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
   jobs?: JobFeedMatch["job"][];
@@ -77,12 +82,40 @@ export default function JobAgentPage() {
 
   const qc = useQueryClient();
   const [input, setInput] = useState("");
+  const [interimText, setInterimText] = useState("");
   const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
   const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hasChatted, setHasChatted] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
+
+  // Voice input
+  const { supported: voiceSupported, isListening, error: voiceError, start: startListening, stop: stopListening } = useSpeechRecognition({
+    onInterim: (text) => setInterimText(text),
+    onFinal: (text) => {
+      setInput((prev) => (prev ? `${prev} ${text}` : text));
+      setInterimText("");
+      setTimeout(() => adjustHeight(), 0);
+    },
+  });
+
+  const displayValue = input + (interimText ? " " + interimText : "");
+
+  const [voiceHint, setVoiceHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (voiceError === "not-allowed") {
+      setVoiceHint("Microphone access blocked - check browser settings");
+    }
+  }, [voiceError]);
+
+  useEffect(() => {
+    if (!voiceHint) return;
+    const timer = setTimeout(() => setVoiceHint(null), 5000);
+    return () => clearTimeout(timer);
+  }, [voiceHint]);
 
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
@@ -97,7 +130,8 @@ export default function JobAgentPage() {
 
   const conversationMessages = useMemo<DisplayMessage[]>(
     () =>
-      conversation?.messages?.map((m) => ({
+      conversation?.messages?.map((m, index) => ({
+        id: m.id ?? `${m.role}-${m.timestamp}-${index}`,
         role: m.role,
         content: m.content,
         jobs: m.jobs?.length ? m.jobs : undefined,
@@ -107,7 +141,9 @@ export default function JobAgentPage() {
 
   const messages = hasChatted || localMessages.length > 0 ? localMessages : conversationMessages;
   const userMsgCount = messages.filter((m) => m.role === "user").length;
-  const hitFreeLimit = manualHitFreeLimit || (!isPremium && !hasChatted && userMsgCount >= FREE_LIMIT);
+  const hitFreeLimit = manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
+  const remainingFree = Math.max(0, FREE_LIMIT - userMsgCount);
+  const showSoftHint = !isPremium && !hitFreeLimit && userMsgCount >= 1 && remainingFree > 0;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -123,6 +159,7 @@ export default function JobAgentPage() {
       setLocalMessages((prev) => [
         ...prev,
         {
+          id: crypto.randomUUID(),
           role: "assistant",
           content: data.reply,
           jobs: data.jobs.length > 0 ? data.jobs : undefined,
@@ -130,18 +167,38 @@ export default function JobAgentPage() {
       ]);
     },
     onError: (err: unknown) => {
-      const resp = (err as { response?: { status?: number; data?: { freeLimit?: boolean } } })?.response;
-      if (resp?.status === 403 && resp?.data?.freeLimit) {
+      const resp = (err as {
+        response?: {
+          status?: number;
+          data?: {
+            usage?: { action?: string; tier?: string };
+          };
+        };
+      })?.response;
+      const isFreeLimitError =
+        resp?.status === 429 &&
+        resp.data?.usage?.action === "AI_JOB_CHAT" &&
+        resp.data?.usage?.tier === "FREE";
+
+      if (isFreeLimitError) {
         setManualHitFreeLimit(true);
-        setLocalMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
-        }]);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
+          },
+        ]);
       } else {
-        setLocalMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
-        }]);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
+          },
+        ]);
       }
     },
   });
@@ -157,12 +214,14 @@ export default function JobAgentPage() {
   });
 
   const handleSend = (text?: string) => {
-    const msg = (text ?? input).trim();
+    const committedInput = interimText ? (input ? `${input} ${interimText}` : interimText) : input;
+    const msg = (text ?? committedInput).trim();
     if (!msg || chatMut.isPending) return;
     setInput("");
+    setInterimText("");
     adjustHeight(true);
     setHasChatted(true);
-    setLocalMessages([...messages, { role: "user", content: msg }]);
+    setLocalMessages([...messages, { id: crypto.randomUUID(), role: "user", content: msg }]);
     chatMut.mutate(msg);
   };
 
@@ -172,6 +231,30 @@ export default function JobAgentPage() {
       handleSend();
     }
   };
+
+  useEffect(() => {
+    if (!isListening) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        stopListening();
+        setInterimText("");
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isListening, stopListening]);
+
+  useEffect(() => {
+    if (!isListening) {
+      const raf = requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+        const len = input.length;
+        textareaRef.current?.setSelectionRange(len, len);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isListening]);
 
   const isEmpty = messages.length === 0;
   const inputDisabled = chatMut.isPending || hitFreeLimit;
@@ -206,7 +289,7 @@ export default function JobAgentPage() {
                 </span>
               )}
               {messages.length > 0 && (
-                <button
+                <Button
                   type="button"
                   onClick={() => {
                     if (messages.length === 0) return;
@@ -217,7 +300,7 @@ export default function JobAgentPage() {
                 >
                   <RotateCcw className="w-3 h-3" />
                   new chat
-                </button>
+                </Button>
               )}
             </div>
             <ConfirmDialog
@@ -267,7 +350,7 @@ export default function JobAgentPage() {
                 {/* Quick prompt numbered grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 w-full max-w-2xl border-t border-l border-stone-200 dark:border-white/10">
                   {QUICK_PROMPTS.map((q, i) => (
-                    <button
+                    <Button
                       key={q.text}
                       type="button"
                       onClick={() => handleSend(q.text)}
@@ -284,39 +367,27 @@ export default function JobAgentPage() {
                           </span>
                         </div>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
 
                 {!isPremium && (
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-6">
-                    {FREE_LIMIT} free messages.{" "}
+                  <p className="mt-6 text-center text-xs text-stone-500 dark:text-stone-400">
+                    Free plan: {FREE_LIMIT} messages per day{" - "}
                     <Link
                       to="/student/checkout"
-                      className="text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 no-underline"
+                      className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
                     >
-                      <span className="underline decoration-lime-400 decoration-2 underline-offset-4">
-                        upgrade for unlimited
-                      </span>
+                      Upgrade for unlimited
                     </Link>
                   </p>
                 )}
               </motion.div>
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg, i) => {
-                  const isLastMessage = i === messages.length - 1;
-
-                  return (
-                    <AgentMessage
-                      key={i}
-                      role={msg.role}
-                      content={msg.content}
-                      jobs={msg.jobs}
-                      isStreaming={chatMut.isPending && isLastMessage}
-                    />
-                  );
-                })}
+                {messages.map((msg) => (
+                  <AgentMessage key={msg.id} role={msg.role} content={msg.content} jobs={msg.jobs} />
+                ))}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
             )}
@@ -351,8 +422,9 @@ export default function JobAgentPage() {
             <div className="overflow-y-auto">
               <textarea
                 ref={textareaRef}
-                value={input}
+                value={displayValue}
                 onChange={(e) => {
+                  setInterimText("");
                   setInput(e.target.value);
                   adjustHeight();
                 }}
@@ -384,25 +456,68 @@ export default function JobAgentPage() {
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
                 {hitFreeLimit ? "limit reached" : "enter to send, shift + enter for newline"}
               </span>
-              <button
-                type="button"
-                onClick={() => handleSend()}
-                disabled={!input.trim() || inputDisabled}
-                className={cn(
-                  "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
-                  input.trim() && !inputDisabled
-                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
-                    : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+              <div className="flex items-center gap-1">
+                {voiceSupported && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (isListening) {
+                        setInterimText("");
+                        stopListening();
+                      } else {
+                        startListening();
+                      }
+                    }}
+                    aria-label={isListening ? "Stop recording" : "Start voice input"}
+                    aria-pressed={isListening}
+                    className={cn(
+                      "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer",
+                      isListening
+                        ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                        : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800",
+                    )}
+                  >
+                    {isListening ? (
+                      <motion.span
+                        animate={{ scale: [1, 1.15, 1] }}
+                        transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                        className="inline-flex items-center justify-center"
+                      >
+                        <MicOff className="w-4 h-4" />
+                      </motion.span>
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
+                  </Button>
                 )}
-                aria-label="Send"
-              >
-                <ArrowUpIcon className="w-4 h-4" />
-              </button>
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={() => handleSend()}
+                  disabled={!(input.trim() || interimText.trim()) || inputDisabled}
+                  className={cn(
+                    "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
+                    (input.trim() || interimText.trim()) && !inputDisabled
+                      ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
+                      : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+                  )}
+                  aria-label="Send"
+                >
+                  <ArrowUpIcon className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-          </div>
-          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
-            powered by Neural Network , always verify job details
-          </p>
+            </div>
+            {voiceHint && (
+              <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
+                {voiceHint}
+              </p>
+            )}
+            <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+              powered by Neural Network, always verify job details
+            </p>
         </div>
       </div>
     </div>

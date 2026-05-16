@@ -24,6 +24,7 @@ studentRouter.delete("/applications/:applicationId", (req, res) => studentContro
 // External job applications
 studentRouter.post("/external-jobs/:adminJobId/apply", (req, res) => studentController.applyToExternalJob(req, res));
 studentRouter.get("/external-jobs/:adminJobId/status", (req, res) => studentController.getExternalApplicationStatus(req, res));
+studentRouter.delete("/external-applications/:applicationId", (req, res, next) => studentController.deleteExternalApplication(req, res, next));
 
 // Round submissions
 studentRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => studentController.getRoundInfo(req, res));
