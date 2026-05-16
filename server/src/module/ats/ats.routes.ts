@@ -31,5 +31,6 @@ atsRouter.get("/usage", (req, res, next) => atsController.getUsageStats(req, res
 atsRouter.post("/score", usageLimit("ATS_SCORE"), (req, res, next) => atsController.scoreResume(req, res, next));
 atsRouter.post("/cover-letter", usageLimit("COVER_LETTER"), (req, res, next) => coverLetterController.generate(req, res, next));
 atsRouter.post("/generate-resume", usageLimit("GENERATE_RESUME"), (req, res, next) => resumeGenController.generate(req, res, next));
+atsRouter.get("/resume-history", (req, res, next) => resumeGenController.getHistory(req, res, next));
 atsRouter.post("/latex-chat", (req, res, next) => latexChatController.chat(req, res, next));
 atsRouter.post("/latex-optimize-jd", (req, res, next) => latexChatController.optimizeForJD(req, res, next));

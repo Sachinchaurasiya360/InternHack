@@ -82,6 +82,7 @@ model user {
   roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                @relation("UserPrivateRoadmaps")
+  generatedResumes generatedResume[] @relation("UserGeneratedResumes")
 
   @@index([role])
   @@index([role, isActive])
