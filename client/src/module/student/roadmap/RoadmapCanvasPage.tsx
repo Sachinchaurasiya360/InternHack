@@ -36,8 +36,6 @@ import {
   Network,
   ChevronDown,
   ChevronUp,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -368,7 +366,7 @@ export default function RoadmapCanvasPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
-  const [downloading, setDownloading] = useState(false);
+  const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
   const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">("LINEAR");
   const [collapsedSections, setCollapsedSections] = useState<Set<number>>(new Set());
 

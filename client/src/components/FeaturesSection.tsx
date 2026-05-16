@@ -17,7 +17,7 @@ type Feature = {
   icon: LucideIcon;
   href: string;
   stat: string;
-  span?: "single" | "double";
+  span?: "single" | "double" | "full";
 };
 
 const FEATURES: Feature[] = [

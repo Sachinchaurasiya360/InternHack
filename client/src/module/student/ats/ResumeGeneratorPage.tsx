@@ -109,7 +109,7 @@ export default function ResumeGeneratorPage() {
   const limitReached = resumeUsage
     ? resumeUsage.used >= resumeUsage.limit
     : false;
-  const { data: historyData, refetch: refetchHistory } = useQuery({
+  const { refetch: refetchHistory } = useQuery({
     queryKey: ["resume-history"],
     queryFn: () => api.get("/ats/resume-history").then((r) => r.data),
     staleTime: 30_000,

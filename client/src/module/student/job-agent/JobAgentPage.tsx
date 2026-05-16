@@ -87,7 +87,6 @@ export default function JobAgentPage() {
   const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hasChatted, setHasChatted] = useState(false);
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
 
@@ -142,9 +141,6 @@ export default function JobAgentPage() {
   const messages = hasChatted || localMessages.length > 0 ? localMessages : conversationMessages;
   const userMsgCount = messages.filter((m) => m.role === "user").length;
   const hitFreeLimit = manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
-  const remainingFree = Math.max(0, FREE_LIMIT - userMsgCount);
-  const showSoftHint = !isPremium && !hitFreeLimit && userMsgCount >= 1 && remainingFree > 0;
-
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
