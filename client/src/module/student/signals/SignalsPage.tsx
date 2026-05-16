@@ -67,7 +67,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500"
+      className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500"
     >
       <span className="h-1.5 w-1.5 bg-lime-400" />
       {children}
@@ -444,7 +444,7 @@ const SignalCard = ({ signal }: SignalCardProps) => {
         <div className="flex-1" />
       )}
 
-      <div className="pt-3 border-t border-stone-200 dark:border-white/10 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 relative pointer-events-none">
+      <div className="pt-3 border-t border-stone-200 dark:border-white/10 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono uppercase tracking-widest text-stone-500 relative pointer-events-none">
         {signal.fundingRound ? <span>{signal.fundingRound}</span> : null}
         {signal.fundingAmount ? (
           <span className="inline-flex items-center gap-1 text-lime-600 dark:text-lime-400">
