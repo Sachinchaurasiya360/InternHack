@@ -18,6 +18,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { JobAgentMessage, JobAgentResponse, JobFeedMatch } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 
@@ -79,6 +80,7 @@ export default function JobAgentPage() {
   const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
   const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
   const [hasChatted, setHasChatted] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
 
@@ -207,9 +209,9 @@ export default function JobAgentPage() {
                 <button
                   type="button"
                   onClick={() => {
-  if (messages.length === 0) return;
-  setShowResetConfirm(true);
-}}
+                    if (messages.length === 0) return;
+                    setShowResetConfirm(true);
+                  }}
                   disabled={resetMut.isPending}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
                 >
@@ -219,17 +221,17 @@ export default function JobAgentPage() {
               )}
             </div>
             <ConfirmDialog
-  open={showResetConfirm}
-  title="Start a new chat?"
-  description="This will permanently delete your current conversation. This action cannot be undone."
-  confirmLabel="Delete and start new"
-  cancelLabel="Cancel"
-  onConfirm={() => {
-    resetMut.mutate();
-    setShowResetConfirm(false);
-  }}
-  onCancel={() => setShowResetConfirm(false)}
-/>
+              open={showResetConfirm}
+              title="Start a new chat?"
+              description="This will permanently delete your current conversation. This action cannot be undone."
+              confirmLabel="Delete and start new"
+              cancelLabel="Cancel"
+              onConfirm={() => {
+                resetMut.mutate();
+                setShowResetConfirm(false);
+              }}
+              onCancel={() => setShowResetConfirm(false)}
+            />
           </div>
         </div>
       </div>

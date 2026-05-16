@@ -186,16 +186,19 @@ export class DsaController {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       
-      const year = req.query.year ? parseInt(req.query.year as string) : new Date().getUTCFullYear();
-      if (isNaN(year)) { res.status(400).json({ message: "Invalid year" }); return; }
+      const currentYear = new Date().getUTCFullYear();
+      const year = req.query.year ? parseInt(req.query.year as string, 10) : currentYear;
+      if (!Number.isInteger(year) || year < 1970 || year > currentYear) {
+        res.status(400).json({ message: "Invalid year" });
+        return;
+      }
 
       const activity = await this.dsaService.getActivity(userId, year);
-      
-      const currentYear = new Date().getUTCFullYear();
+
       if (year < currentYear) {
-        res.setHeader('Cache-Control', 'public, max-age=31536000');
+        res.setHeader("Cache-Control", "private, max-age=31536000");
       } else {
-        res.setHeader('Cache-Control', 'public, max-age=600');
+        res.setHeader("Cache-Control", "private, max-age=600");
       }
 
       res.json(activity);

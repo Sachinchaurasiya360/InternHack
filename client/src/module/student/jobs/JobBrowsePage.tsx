@@ -10,7 +10,6 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { ExternalJob, Job, Pagination, ScrapedJob } from "../../../lib/types";
-import { Button } from "../../../components/ui/button";
 
 const FILTER_TAGS = [
   "Frontend", "Backend", "Full Stack", "Python", "Java", "DevOps",
