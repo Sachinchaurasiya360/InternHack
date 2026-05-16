@@ -44,6 +44,8 @@ import type {
   RoadmapTopicStatus,
   RoadmapResource,
 } from "../../../lib/types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 interface EnrollmentResponse {
   enrollment: RoadmapEnrollment;
@@ -343,9 +345,7 @@ const nodeTypes = { topic: TopicNode, sectionLabel: SectionLabelNode };
 export default function RoadmapCanvasPage() {
   const { slug = "" } = useParams();
   const navigate = useNavigate();
-  const [data, setData] = useState<EnrollmentResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [enrollmentId, setEnrollmentId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -353,32 +353,35 @@ export default function RoadmapCanvasPage() {
   const prevPercentRef = useRef<number | null>(null);
   const hasShownCompletionRef = useRef(false);
 
+  const { data: enrollmentsList, isLoading: enrollmentsLoading, error: enrollmentsError } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: { id: number; roadmap: { slug: string } }[] }>("/roadmaps/me/enrollments").then(res => res.data),
+  });
+
   useEffect(() => {
-    let mounted = true;
-    api
-      .get<{ enrollments: { id: number; roadmap: { slug: string } }[] }>(
-        "/roadmaps/me/enrollments",
-      )
-      .then(async (res) => {
-        if (!mounted) return;
-        const e = res.data.enrollments.find((x) => x.roadmap.slug === slug);
-        if (!e) {
-          navigate(`/roadmaps/${slug}/enroll`);
-          return;
-        }
-        setEnrollmentId(e.id);
-        const detail = await api.get<EnrollmentResponse>(
-          `/roadmaps/me/enrollments/${e.id}`,
-        );
-        if (!mounted) return;
-        setData(detail.data);
-      })
-      .catch(() => mounted && navigate(`/roadmaps/${slug}`))
-      .finally(() => mounted && setLoading(false));
-    return () => {
-      mounted = false;
-    };
-  }, [slug, navigate]);
+    if (enrollmentsError) {
+      navigate(`/roadmaps/${slug}`);
+    }
+  }, [enrollmentsError, navigate, slug]);
+
+  const enrollmentMatch = enrollmentsList?.enrollments.find((x) => x.roadmap.slug === slug);
+
+  useEffect(() => {
+    if (enrollmentsList && !enrollmentMatch && !enrollmentsLoading) {
+      navigate(`/roadmaps/${slug}/enroll`);
+    }
+  }, [enrollmentsList, enrollmentMatch, enrollmentsLoading, navigate, slug]);
+
+  const enrollmentId = enrollmentMatch?.id || null;
+
+  const { data, isLoading: detailLoading, isError: detailError } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
+    queryFn: () => api.get<EnrollmentResponse>(`/roadmaps/me/enrollments/${enrollmentId}`).then(res => res.data),
+    enabled: !!enrollmentId,
+  });
+
+  const loading = enrollmentsLoading || detailLoading;
+  const error = enrollmentsError || detailError;
 
   // ── Fire completion modal when progress first reaches 100% ──────────────
   useEffect(() => {
@@ -586,10 +589,8 @@ export default function RoadmapCanvasPage() {
         `/roadmaps/me/enrollments/${enrollmentId}/topics/${topicId}`,
         patch,
       );
-      const detail = await api.get<EnrollmentResponse>(
-        `/roadmaps/me/enrollments/${enrollmentId}`,
-      );
-      setData(detail.data);
+      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollments() });
     } catch {
       toast.error("Could not save progress");
     }
@@ -642,6 +643,26 @@ export default function RoadmapCanvasPage() {
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <div className="hidden lg:block">
+          <Navbar sidebarOffset={sidebarWidth} />
+        </div>
+        <div className="lg:hidden">
+          <Navbar />
+        </div>
+        {sidebar}
+        <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load your roadmap</p>
+          <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server. Please try again.</p>
+          <Button onClick={() => window.location.reload()} variant="outline">Retry</Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   const { summary } = data;
