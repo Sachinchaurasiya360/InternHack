@@ -695,9 +695,10 @@ export default function StudentProfilePage() {
                     {profileUrlCopied ? "Copied!" : "Copy URL"}
                   </button>
                 </div>
-              )}
+               )}
               {/* Visibility */}
               <div className="flex items-start justify-between gap-3 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
+                <div className="min-w-0">
                   <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                     recruiter visibility
                   </p>
