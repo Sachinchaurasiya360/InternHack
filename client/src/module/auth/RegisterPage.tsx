@@ -156,6 +156,7 @@ export default function RegisterPage() {
                 </button>
                 <button
                   type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setRole("RECRUITER")}
                   className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
                       ? "bg-lime-400 text-stone-950"
@@ -320,24 +321,8 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
 
   return (
     <div className="hidden lg:flex relative flex-col justify-center p-12 xl:p-16 bg-stone-900 overflow-hidden">
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-          backgroundSize: "28px 28px",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.06] auth-promo-dots" />
+      <div aria-hidden className="absolute inset-0 pointer-events-none auth-promo-lines" />
 
       <div className="relative max-w-lg">
         <motion.div
