@@ -118,6 +118,7 @@ model jobAgentConversation {
 
   @@index([userId, isActive])
 }
+
 model generatedCoverLetter {
   id             Int      @id @default(autoincrement())
   studentId      Int
