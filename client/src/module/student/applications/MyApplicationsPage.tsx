@@ -1,14 +1,15 @@
 
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import toast from "@/components/ui/toast";
 interface ExternalApplication {
   id: number;
@@ -154,8 +155,10 @@ const ApplicationCard = React.memo(function ApplicationCard({
 
 const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
   app,
+  onRemove,
 }: {
   app: ExternalApplication;
+  onRemove: (id: number) => void;
 }) {
   return (
     <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
@@ -199,69 +202,42 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
             year: "numeric",
           })}
         </span>
-        {app.adminJob.applyLink && (
-          <a
-            href={app.adminJob.applyLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 no-underline transition-colors"
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onRemove(app.id)}
+            className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors bg-transparent border-0 cursor-pointer px-2 py-1"
           >
-            View posting <ExternalLink className="w-3 h-3" />
-          </a>
-        )}
+            <Trash2 className="w-3 h-3" /> Remove
+          </button>
+          {app.adminJob.applyLink && (
+            <a
+              href={app.adminJob.applyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 no-underline transition-colors"
+            >
+              View posting <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
 });
 
 const PAGE_SIZE = 10;
-function WithdrawModal({
-  open,
-  onCancel,
-  onConfirm,
-}: {
-  open: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-}) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 max-w-sm w-full mx-4 space-y-4">
-        <h3 className="text-base font-bold text-stone-900 dark:text-stone-50">
-          Withdraw Application?
-        </h3>
-        <p className="text-sm text-stone-500">
-          Are you sure you want to withdraw this application? This action cannot be undone.
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={onCancel}
-            className="flex-1 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 hover:border-stone-400 transition-colors bg-transparent cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="flex-1 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-white bg-red-500 hover:bg-red-600 transition-colors cursor-pointer border-0"
-          >
-            Withdraw
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-
+type PendingDelete =
+  | { kind: "internal"; id: number }
+  | { kind: "external"; id: number };
 
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-   const [page, setPage] = useState(1);
-  const [withdrawId, setWithdrawId] = useState<number | null>(null);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
     return () => clearTimeout(t);
@@ -302,38 +278,80 @@ export default function MyApplicationsPage() {
 
   const totalAll = applications.length + externalApplications.length;
 
-  const handleWithdraw = useCallback(
-    async (id: number) => {
-      setWithdrawId(id);
-      setShowWithdrawModal(true);
+  const deleteMutation = useMutation({
+    mutationFn: async (item: PendingDelete) => {
+      if (item.kind === "internal") {
+        await api.delete(`/student/applications/${item.id}`);
+      } else {
+        await api.delete(`/student/external-applications/${item.id}`);
+      }
+      return item;
     },
-    []
-  );
+    onSuccess: (item) => {
+      if (item.kind === "internal") {
+        queryClient.setQueryData<{
+          applications: Application[];
+          externalApplications: ExternalApplication[];
+        }>(queryKeys.applications.mine(), (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            applications: old.applications.map((a) =>
+              a.id === item.id ? { ...a, status: "WITHDRAWN" as const } : a
+            ),
+          };
+        });
+        toast.success("Application withdrawn successfully");
+      } else {
+        queryClient.setQueryData<{
+          applications: Application[];
+          externalApplications: ExternalApplication[];
+        }>(queryKeys.applications.mine(), (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            externalApplications: old.externalApplications.filter((a) => a.id !== item.id),
+          };
+        });
+        toast.success("Application removed");
+      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.applications.mine() });
+    },
+    onError: (_err, item) => {
+      toast.error(
+        item.kind === "internal"
+          ? "Failed to withdraw application"
+          : "Failed to remove application"
+      );
+    },
+  });
 
-  const confirmWithdraw = useCallback(async () => {
-  if (!withdrawId) return;
-  const idToWithdraw = withdrawId;
-  setShowWithdrawModal(false);
-  setWithdrawId(null);
-  try {
-    await api.delete(`/student/applications/${idToWithdraw}`);
-    queryClient.setQueryData<{
-      applications: Application[];
-      externalApplications: ExternalApplication[];
-    }>(queryKeys.applications.mine(), (old) => {
-      if (!old) return old;
-      return {
-        ...old,
-        applications: old.applications.map((a) =>
-          a.id === idToWithdraw ? { ...a, status: "WITHDRAWN" as const } : a
-        ),
-      };
-    });
-    toast.success("Application withdrawn successfully");
-  } catch {
-    toast.error("Failed to withdraw application");
-  }
-}, [withdrawId, queryClient]);
+  const handleWithdraw = useCallback((id: number) => {
+    setPendingDelete({ kind: "internal", id });
+  }, []);
+
+  const handleRemoveExternal = useCallback((id: number) => {
+    setPendingDelete({ kind: "external", id });
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    if (!pendingDelete) return;
+    const item = pendingDelete;
+    setPendingDelete(null);
+    deleteMutation.mutate(item);
+  }, [pendingDelete, deleteMutation]);
+
+  const cancelDelete = useCallback(() => setPendingDelete(null), []);
+
+  const isInternalDelete = pendingDelete?.kind === "internal";
+  const confirmTitle = isInternalDelete
+    ? "Withdraw application?"
+    : "Remove tracked application?";
+  const confirmDescription = isInternalDelete
+    ? "The recruiter will see this change. This action cannot be undone."
+    : "This only removes it from your list. The job posting won't be affected.";
+  const confirmLabel = isInternalDelete ? "Withdraw" : "Remove";
+
   if (isLoading) return <LoadingScreen />;
 
  
@@ -343,10 +361,14 @@ export default function MyApplicationsPage() {
   return (
     <div className="relative pb-16">
       <SEO title="My Applications" noIndex />
-      <WithdrawModal
-        open={showWithdrawModal}
-        onCancel={() => setShowWithdrawModal(false)}
-        onConfirm={confirmWithdraw}
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title={confirmTitle}
+        description={confirmDescription}
+        confirmLabel={confirmLabel}
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
 
       {/* Header */}
@@ -465,7 +487,7 @@ export default function MyApplicationsPage() {
                     {item.kind === "internal" ? (
                       <ApplicationCard app={item.app} onWithdraw={handleWithdraw} />
                     ) : (
-                      <ExternalApplicationCard app={item.app} />
+                      <ExternalApplicationCard app={item.app} onRemove={handleRemoveExternal} />
                     )}
                   </motion.div>
                 ))}

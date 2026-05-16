@@ -533,6 +533,7 @@ export default function CompanyListPage() {
   const [ycSearch, setYcSearch] = useState("");
   const [ycBatch, setYcBatch] = useState("");
   const [ycIndustry, setYcIndustry] = useState("");
+  const [ycHiring, setYcHiring] = useState(false);
   const [ycPage, setYcPage] = useState(1);
 
   // Professor filters
@@ -642,6 +643,7 @@ export default function CompanyListPage() {
   if (ycSearch) ycQueryParams["search"] = ycSearch;
   if (ycBatch) ycQueryParams["batch"] = ycBatch;
   if (ycIndustry) ycQueryParams["industry"] = ycIndustry;
+  if (ycHiring) ycQueryParams["isHiring"] = "true";
 
   const { data: ycData, isLoading: ycLoading } = useQuery<{
     companies: YCCompany[];
@@ -706,7 +708,7 @@ export default function CompanyListPage() {
   const tabs: { key: Tab; label: string; icon: React.ReactNode; count?: number | string }[] = [
     { key: "all", label: "Companies", icon: <Building2 className="w-4 h-4" />, count: pagination?.total },
     { key: "interviews", label: "Interviews", icon: <MessageCircle className="w-4 h-4" />, count: interviewPagination?.total },
-    { key: "yc", label: "YC", icon: <Rocket className="w-4 h-4" />, count: ycStats?.total },
+    { key: "yc", label: "YC", icon: <Rocket className="w-4 h-4" />, count: ycPagination?.total ?? ycStats?.total },
     { key: "professors", label: "Professors", icon: <GraduationCap className="w-4 h-4" />, count: profStats?.total },
   ];
 
@@ -1111,13 +1113,30 @@ export default function CompanyListPage() {
                   })),
                 ]}
               />
-              {(ycSearch || ycBatch || ycIndustry) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setYcHiring((prev) => !prev);
+                  setYcPage(1);
+                }}
+                className={cn(
+                  "inline-flex items-center gap-2 h-10 px-3 rounded-md text-xs font-mono uppercase tracking-widest border transition-colors cursor-pointer shrink-0",
+                  ycHiring
+                    ? "bg-lime-500 text-stone-900 border-lime-500"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
+                )}
+              >
+                <span className={cn("h-1.5 w-1.5 rounded-none", ycHiring ? "bg-stone-900" : "bg-lime-500")} />
+                hiring
+              </button>
+              {(ycSearch || ycBatch || ycIndustry || ycHiring) && (
                 <button
                   onClick={() => {
                     setYcSearchInput("");
                     setYcSearch("");
                     setYcBatch("");
                     setYcIndustry("");
+                    setYcHiring(false);
                     setYcPage(1);
                   }}
                   className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"

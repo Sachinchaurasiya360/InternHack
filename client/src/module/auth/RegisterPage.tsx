@@ -147,22 +147,20 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setRole("STUDENT")}
-                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${
-                    role === "STUDENT"
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
                       ? "bg-lime-400 text-stone-950"
                       : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
+                    }`}
                 >
                   Student
                 </button>
                 <button
                   type="button"
                   onClick={() => setRole("RECRUITER")}
-                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${
-                    role === "RECRUITER"
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
                       ? "bg-lime-400 text-stone-950"
                       : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
+                    }`}
                 >
                   Recruiter
                 </button>
@@ -247,6 +245,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -310,7 +309,7 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
   const studentStats = [
     { value: "300", suffix: "+", label: "interview q's" },
     { value: "11", suffix: "", label: "coding tracks" },
-    { value: "14", suffix: "t", label: "resume templates" },
+    { value: "14", suffix: "", label: "resume templates" },
   ];
   const recruiterStats = [
     { value: "7", suffix: "d", label: "free trial" },
@@ -394,7 +393,7 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
           ))}
         </div>
 
-        <div className="mt-8 text-xs font-mono text-stone-500">
+        <div className="mt-8 relative text-xs font-mono text-stone-500">
           {isRecruiter
             ? "no card required. cancel any time."
             : "free for students. always."}
