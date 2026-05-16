@@ -10,7 +10,10 @@ import {
   Zap,
   Crown,
   ArrowUpIcon,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -21,6 +24,7 @@ import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
+import { useSpeechRecognition } from "./useSpeechRecognition";
 
 interface DisplayMessage {
   id: string;
@@ -78,12 +82,39 @@ export default function JobAgentPage() {
 
   const qc = useQueryClient();
   const [input, setInput] = useState("");
+  const [interimText, setInterimText] = useState("");
   const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
   const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
+
+  // Voice input
+  const { supported: voiceSupported, isListening, error: voiceError, start: startListening, stop: stopListening } = useSpeechRecognition({
+    onInterim: (text) => setInterimText(text),
+    onFinal: (text) => {
+      setInput((prev) => (prev ? `${prev} ${text}` : text));
+      setInterimText("");
+      setTimeout(() => adjustHeight(), 0);
+    },
+  });
+
+  const displayValue = input + (interimText ? " " + interimText : "");
+
+  const [voiceHint, setVoiceHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (voiceError === "not-allowed") {
+      setVoiceHint("Microphone access blocked - check browser settings");
+    }
+  }, [voiceError]);
+
+  useEffect(() => {
+    if (!voiceHint) return;
+    const timer = setTimeout(() => setVoiceHint(null), 5000);
+    return () => clearTimeout(timer);
+  }, [voiceHint]);
 
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
@@ -182,9 +213,11 @@ export default function JobAgentPage() {
   });
 
   const handleSend = (text?: string) => {
-    const msg = (text ?? input).trim();
+    const committedInput = interimText ? (input ? `${input} ${interimText}` : interimText) : input;
+    const msg = (text ?? committedInput).trim();
     if (!msg || chatMut.isPending) return;
     setInput("");
+    setInterimText("");
     adjustHeight(true);
     setHasChatted(true);
     setLocalMessages([...messages, { id: crypto.randomUUID(), role: "user", content: msg }]);
@@ -197,6 +230,30 @@ export default function JobAgentPage() {
       handleSend();
     }
   };
+
+  useEffect(() => {
+    if (!isListening) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        stopListening();
+        setInterimText("");
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isListening, stopListening]);
+
+  useEffect(() => {
+    if (!isListening) {
+      const raf = requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+        const len = input.length;
+        textareaRef.current?.setSelectionRange(len, len);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isListening]);
 
   const isEmpty = messages.length === 0;
   const inputDisabled = chatMut.isPending || hitFreeLimit;
@@ -231,7 +288,7 @@ export default function JobAgentPage() {
                 </span>
               )}
               {messages.length > 0 && (
-                <button
+                <Button
                   type="button"
                   onClick={() => {
                     if (messages.length === 0) return;
@@ -242,7 +299,7 @@ export default function JobAgentPage() {
                 >
                   <RotateCcw className="w-3 h-3" />
                   new chat
-                </button>
+                </Button>
               )}
             </div>
             <ConfirmDialog
@@ -292,7 +349,7 @@ export default function JobAgentPage() {
                 {/* Quick prompt numbered grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 w-full max-w-2xl border-t border-l border-stone-200 dark:border-white/10">
                   {QUICK_PROMPTS.map((q, i) => (
-                    <button
+                    <Button
                       key={q.text}
                       type="button"
                       onClick={() => handleSend(q.text)}
@@ -309,7 +366,7 @@ export default function JobAgentPage() {
                           </span>
                         </div>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
 
@@ -364,8 +421,9 @@ export default function JobAgentPage() {
             <div className="overflow-y-auto">
               <textarea
                 ref={textareaRef}
-                value={input}
+                value={displayValue}
                 onChange={(e) => {
+                  setInterimText("");
                   setInput(e.target.value);
                   adjustHeight();
                 }}
@@ -397,45 +455,68 @@ export default function JobAgentPage() {
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
                 {hitFreeLimit ? "limit reached" : "enter to send, shift + enter for newline"}
               </span>
-              <button
-                type="button"
-                onClick={() => handleSend()}
-                disabled={!input.trim() || inputDisabled}
-                className={cn(
-                  "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
-                  input.trim() && !inputDisabled
-                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
-                    : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
-                )}
-                aria-label="Send"
-              >
-                <ArrowUpIcon className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-          {!isPremium && (
-            <div className="mt-2 min-h-5 text-center">
-              {showSoftHint && (
-                <p className="text-xs text-stone-500 dark:text-stone-400">
-                  {remainingFree} free {remainingFree === 1 ? "message" : "messages"} left today{" - "}
-                  <Link
-                    to="/student/checkout"
-                    className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
+              <div className="flex items-center gap-1">
+                {voiceSupported && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (isListening) {
+                        setInterimText("");
+                        stopListening();
+                      } else {
+                        startListening();
+                      }
+                    }}
+                    aria-label={isListening ? "Stop recording" : "Start voice input"}
+                    aria-pressed={isListening}
+                    className={cn(
+                      "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer",
+                      isListening
+                        ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                        : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800",
+                    )}
                   >
-                    Upgrade for unlimited
-                  </Link>
-                </p>
-              )}
+                    {isListening ? (
+                      <motion.span
+                        animate={{ scale: [1, 1.15, 1] }}
+                        transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                        className="inline-flex items-center justify-center"
+                      >
+                        <MicOff className="w-4 h-4" />
+                      </motion.span>
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={() => handleSend()}
+                  disabled={!(input.trim() || interimText.trim()) || inputDisabled}
+                  className={cn(
+                    "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
+                    (input.trim() || interimText.trim()) && !inputDisabled
+                      ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
+                      : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+                  )}
+                  aria-label="Send"
+                >
+                  <ArrowUpIcon className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-          )}
-          <p
-            className={cn(
-              "text-center text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600",
-              isPremium ? "mt-2" : "mt-1",
+            </div>
+            {voiceHint && (
+              <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
+                {voiceHint}
+              </p>
             )}
-          >
-            powered by Neural Network , always verify job details
-          </p>
+            <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+              powered by Neural Network, always verify job details
+            </p>
         </div>
       </div>
     </div>
