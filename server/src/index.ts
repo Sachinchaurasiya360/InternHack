@@ -146,8 +146,9 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", uptime: process.uptime() });
 });
 
-// Raw body for Dodo Payments webhook (must be BEFORE express.json())
+// Raw body for webhooks (must be BEFORE express.json())
 app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
+app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -170,6 +171,7 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.path === "/api/payments/webhook" || req.path === "/api/email-inbound/webhook",
   message: { message: "Too many requests, please try again later" },
 });
 app.use("/api/", globalLimiter);
