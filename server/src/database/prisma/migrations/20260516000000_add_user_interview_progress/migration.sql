@@ -13,7 +13,6 @@ CREATE TABLE "userInterviewProgress" (
 );
 
 CREATE UNIQUE INDEX "userInterviewProgress_userId_key" ON "userInterviewProgress"("userId");
-CREATE INDEX "userInterviewProgress_userId_idx" ON "userInterviewProgress"("userId");
 
 ALTER TABLE "userInterviewProgress"
 ADD CONSTRAINT "userInterviewProgress_userId_fkey"

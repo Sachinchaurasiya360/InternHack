@@ -710,8 +710,6 @@ model userInterviewProgress {
   lastVisitedAt DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  @@index([userId])
 }
 
 model aptitudeCategory {
