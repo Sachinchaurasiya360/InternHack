@@ -62,7 +62,7 @@ export function AudienceSection() {
             <span className="h-1.5 w-1.5 bg-lime-400" />
             built for three kinds of people
           </div>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
             Whichever lane{" "}
             <span className="text-stone-400 dark:text-stone-600">
               you are in.
@@ -75,22 +75,24 @@ export function AudienceSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-2xl overflow-hidden">
           {AUDIENCES.map((a, i) => (
             <motion.div
+              whileHover={{ y: -8 }}
+              transition={{ duration: 0.25 }}
               key={a.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="group relative flex flex-col p-8 md:p-10 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors"
+              
+              className="group relative flex flex-col p-8 md:p-10 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border border-transparent hover:border-lime-400/30"
             >
               <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-8">
                 <span className="h-1.5 w-1.5 bg-lime-400" />
                 {a.kicker}
               </div>
 
-              <div className="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 mb-6">
+              <div className="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 mb-6 transition-transform duration-300 group-hover:scale-110">
                 <a.icon className="w-5 h-5" strokeWidth={2} />
               </div>
 
@@ -114,7 +116,7 @@ export function AudienceSection() {
               </ul>
 
               <Link to={a.cta.href} className="no-underline mt-10">
-                <span className="inline-flex items-center gap-2 text-sm font-bold text-stone-900 dark:text-stone-50 border-b border-stone-900 dark:border-stone-50 pb-0.5 group-hover:gap-3 transition-all">
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-stone-900 dark:text-stone-50 border-b border-stone-900 dark:border-stone-50 pb-0.5 group-hover:gap-3 transition-all duration-300">
                   {a.cta.label}
                   <ArrowRight className="w-4 h-4" />
                 </span>
