@@ -88,6 +88,7 @@ process.on("uncaughtException", (err) => {
 const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env["PORT"] || 3000;
+const PAYMENT_WEBHOOK_PATH = "/api/payments/webhook";
 
 // ── Security headers ──
 app.use(
@@ -149,6 +150,8 @@ app.get("/api/health", (_req, res) => {
 // Raw body for webhooks (must be BEFORE express.json())
 app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
+// Raw body for Dodo Payments webhook (must be BEFORE express.json())
+app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -173,6 +176,7 @@ const globalLimiter = rateLimit({
   legacyHeaders: false,
   skip: (req) => req.path === "/api/payments/webhook" || req.path === "/api/email-inbound/webhook",
   message: { message: "Too many requests, please try again later" },
+  skip: (req) => req.originalUrl.split("?")[0] === PAYMENT_WEBHOOK_PATH,
 });
 app.use("/api/", globalLimiter);
 

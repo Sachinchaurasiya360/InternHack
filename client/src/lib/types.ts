@@ -134,6 +134,7 @@ export interface Round {
   assessmentQuestions?: AssessmentQuestion[];
   timeLimitSecs?: number | null;
   autoGrade?: boolean;
+  activateAt?: string | null;
   _count?: { roundSubmissions: number };
   createdAt: string;
   updatedAt: string;
@@ -277,7 +278,7 @@ export interface LatexChatResponse {
 }
 
 // Cover Letter
-export type CoverLetterTone = "professional" | "friendly" | "enthusiastic";
+export type CoverLetterTone = "professional" | "friendly" | "enthusiastic" | "technical" | "creative" | "formal" | "concise" | "startup";
 
 export interface CoverLetterInput {
   jobDescription: string;
@@ -498,7 +499,14 @@ export interface SkillTestQuestion {
 export interface SkillTestWithQuestions extends SkillTest {
   questions: SkillTestQuestion[];
   existingVerification?: VerifiedSkill | null;
-  bestAttempt?: { id: number; score: number; passed: boolean } | null;
+
+  questionsPerSession?: number;
+
+  bestAttempt?: {
+    id: number;
+    score: number;
+    passed: boolean;
+  } | null;
 }
 
 export interface SkillTestAttempt {
@@ -875,6 +883,41 @@ export interface DsaSubmissionSummary {
   createdAt: string;
 }
 
+// LeetCode Import
+export interface LeetcodeImportPreviewItem {
+  problemId: number;
+  title: string;
+  difficulty: string;
+  slug: string;
+  solvedAt: string | null;
+}
+
+export interface LeetcodeImportPreview {
+  matched: number;
+  unmatched: number;
+  alreadySolved: number;
+  newSolves: number;
+  token: string;
+  preview: LeetcodeImportPreviewItem[];
+  lastImport?: { importedAt: string; username: string | null; source: string } | null;
+}
+
+export interface LeetcodeImportResult {
+  imported: number;
+  skipped: number;
+  importedAt: string;
+}
+
+export interface LeetcodeImportStatus {
+  lastImport: {
+    importedAt: string;
+    username: string | null;
+    source: string;
+    matched: number;
+    imported: number;
+  } | null;
+}
+
 // Aptitude Practice
 export interface AptitudeCategory {
   id: number;
@@ -1105,6 +1148,7 @@ export interface EmailCampaignDetail extends EmailCampaign {
 }
 
 export interface ChatMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
 }
@@ -1145,10 +1189,13 @@ export interface JobPreferences {
 }
 
 export interface JobAgentMessage {
+  id?: string;
   role: "user" | "assistant";
   content: string;
   timestamp: string;
   jobCount?: number;
+  jobIds?: number[];
+  jobs?: JobFeedMatch["job"][];
 }
 
 export interface JobAgentResponse {

@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { Prisma } from "@prisma/client";
 
 const QUESTIONS_PER_SESSION = 20;
 
@@ -75,6 +76,24 @@ export class SkillTestService {
 
     if (!test || !test.isActive) throw new Error("Test not found");
 
+    //  Cooldown check - 12 hours between retakes
+    const lastAttempt = await prisma.skillTestAttempt.findFirst({
+      where: { testId, studentId ,completedAt: { not: null }},
+      orderBy: { completedAt: "desc" },
+    });
+
+    if (lastAttempt?.completedAt) {
+      const hoursSince = (Date.now() - lastAttempt.completedAt.getTime()) / (1000 * 60 * 60);
+      if (hoursSince < 12) {
+        const retryAfter = new Date(lastAttempt.completedAt.getTime() + 12 * 60 * 60 * 1000);
+        throw Object.assign(new Error("Cooldown active. Please wait before retaking."), {
+          status: 429,
+          retryAfter,
+        });
+      }
+    }
+
+    // Shuffle and pick a random subset
     const now = new Date();
 
     // Check for an existing incomplete session to prevent timer reset on refresh
@@ -163,6 +182,7 @@ export class SkillTestService {
       totalPool: test.questions.length,
       questionsCount: selected.length,
       questions: sanitizedQuestions,
+      retryAfter: null, // null means no cooldown active
       resumed: false,
     };
   }
@@ -249,7 +269,7 @@ export class SkillTestService {
         score,
         passed,
         answers: gradedAnswers,
-        proctorLog: proctorLog ?? null,
+        proctorLog: (proctorLog as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
         proctoringScore,
         autoTerminated,
         completedAt: new Date(),

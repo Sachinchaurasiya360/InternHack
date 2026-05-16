@@ -1,6 +1,9 @@
 import PDFDocument from "pdfkit";
 
+export type PdfTheme = "light" | "dark";
+
 export interface RoadmapPdfInput {
+  theme?: PdfTheme;
   user: { name: string };
   roadmap: {
     title: string;
@@ -36,23 +39,48 @@ export interface RoadmapPdfInput {
   }[];
 }
 
-// ── Palette ────────────────────────────────────────────────────────────────
-const COLORS = {
+// ── Palettes ───────────────────────────────────────────────────────────────
+const LIGHT_COLORS = {
+  pageBg: "#ffffff",
+  coverBand: "#0a0a0a",
   ink: "#0a0a0a",
   body: "#27272a",
   mute: "#52525b",
   faint: "#a1a1aa",
   faintest: "#d4d4d8",
-  accent: "#4d7c0f",        // lime-700, prints well
-  accentSoft: "#84cc16",    // lime-500
-  accentBg: "#f7fee7",      // lime-50
-  accentBorder: "#d9f99d",  // lime-200
+  accent: "#4d7c0f",
+  accentSoft: "#84cc16",
+  accentBg: "#f7fee7",
+  accentBorder: "#d9f99d",
   amber: "#b45309",
   amberBg: "#fffbeb",
   amberBorder: "#fde68a",
   bg: "#fafafa",
   border: "#e4e4e7",
 };
+
+const DARK_COLORS = {
+  pageBg: "#111111",
+  coverBand: "#000000",
+  ink: "#f4f4f5",
+  body: "#d4d4d8",
+  mute: "#a1a1aa",
+  faint: "#71717a",
+  faintest: "#3f3f46",
+  accent: "#a3e635",
+  accentSoft: "#bef264",
+  accentBg: "#0f1e02",
+  accentBorder: "#1a3a05",
+  amber: "#fbbf24",
+  amberBg: "#1a1100",
+  amberBorder: "#3d2000",
+  bg: "#1c1c1e",
+  border: "#3f3f46",
+};
+
+// Mutable reference swapped per-call inside generateRoadmapPdf.
+// All draw helpers reference COLORS so they automatically pick up the theme.
+let COLORS: typeof LIGHT_COLORS = LIGHT_COLORS;
 
 const A4_WIDTH = 595.28;
 const A4_HEIGHT = 841.89;
@@ -71,6 +99,9 @@ const fmtShortDate = (d: Date) =>
  * stamp page numbers + footer onto every page after content rendering.
  */
 export async function generateRoadmapPdf(input: RoadmapPdfInput): Promise<Buffer> {
+  // Swap palette for the duration of this synchronous render pass.
+  COLORS = input.theme === "dark" ? DARK_COLORS : LIGHT_COLORS;
+
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
@@ -83,6 +114,18 @@ export async function generateRoadmapPdf(input: RoadmapPdfInput): Promise<Buffer
         Keywords: "roadmap, career, learning, full-stack",
       },
     });
+
+    // Paint full-page background for dark mode on every page (incl. first).
+    if (input.theme === "dark") {
+      const paintBg = () => {
+        doc.save();
+        doc.rect(0, 0, A4_WIDTH, A4_HEIGHT).fill(DARK_COLORS.pageBg);
+        doc.restore();
+      };
+      doc.on("pageAdded", paintBg);
+      // Also paint the very first page which was created during construction.
+      paintBg();
+    }
 
     const chunks: Buffer[] = [];
     doc.on("data", (c: Buffer) => chunks.push(c));
@@ -117,7 +160,7 @@ function drawCover(doc: PDFKit.PDFDocument, input: RoadmapPdfInput) {
   const contentW = w - MARGIN * 2;
 
   // Top band
-  doc.rect(0, 0, w, 160).fill(COLORS.ink);
+  doc.rect(0, 0, w, 160).fill(COLORS.coverBand);
 
   doc.fillColor("#ffffff").fontSize(10).font("Helvetica-Bold");
   doc.text("INTERNHACK", MARGIN, 40, { characterSpacing: 2.5, width: contentW });
@@ -892,3 +935,146 @@ function expLabel(e: string): string {
     default: return e;
   }
 }
+
+
+
+
+// ── Completion Certificate ────────────────────────────────────────────────────
+export interface CertificateInput {
+  theme?: PdfTheme;
+  userName: string;
+  roadmapTitle: string;
+  completedAt: Date;
+}
+
+export async function generateCertificatePdf(input: CertificateInput): Promise<Buffer> {
+  const colors = input.theme === "dark" ? DARK_COLORS : LIGHT_COLORS;
+
+  return new Promise((resolve, reject) => {
+    const W = 841.89; // A4 landscape width
+    const H = 595.28; // A4 landscape height
+    const cx = W / 2;
+
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margin: MARGIN,
+      bufferPages: true,
+      info: {
+        Title: `Certificate of Completion – ${input.roadmapTitle}`,
+        Author: "InternHack",
+        Subject: "Roadmap completion certificate",
+      },
+    });
+
+    if (input.theme === "dark") {
+      doc.save();
+      doc.rect(0, 0, W, H).fill(DARK_COLORS.pageBg);
+      doc.restore();
+    }
+
+    const chunks: Buffer[] = [];
+    doc.on("data", (c: Buffer) => chunks.push(c));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    // Outer border
+    doc.rect(24, 24, W - 48, H - 48).lineWidth(3).stroke(colors.accent);
+    doc.rect(32, 32, W - 64, H - 64).lineWidth(1).stroke(colors.accentSoft);
+
+    // Top band
+    doc.rect(0, 0, W, 90).fill(colors.coverBand);
+
+    // Platform name in band
+    doc.fillColor(colors.accentSoft).fontSize(11).font("Helvetica-Bold");
+    doc.text("INTERNHACK", MARGIN, 28, {
+      characterSpacing: 3,
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+    doc.fillColor("#ffffff").fontSize(9).font("Helvetica");
+    doc.text("internhack.xyz  ·  Certificate of Completion", MARGIN, 48, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // Title
+    doc.fillColor(colors.ink).fontSize(34).font("Helvetica-Bold");
+    doc.text("Certificate of Completion", MARGIN, 120, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // Accent rule
+    doc.rect(cx - 60, 166, 120, 2).fill(colors.accent);
+
+    // "This certifies that"
+    doc.fillColor(colors.mute).fontSize(12).font("Helvetica");
+    doc.text("This certifies that", MARGIN, 185, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // User name
+    doc.fillColor(colors.ink).fontSize(30).font("Helvetica-Bold");
+    doc.text(input.userName, MARGIN, 210, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // Underline the name
+    const nameWidth = Math.min(
+      doc.widthOfString(input.userName, { fontSize: 30 }),
+      380,
+    );
+    doc.rect(cx - nameWidth / 2, 250, nameWidth, 1).fill(colors.accent);
+
+    // Body
+    doc.fillColor(colors.mute).fontSize(12).font("Helvetica");
+    doc.text("has successfully completed all topics in", MARGIN, 265, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // Roadmap title
+    doc.fillColor(colors.accent).fontSize(20).font("Helvetica-Bold");
+    doc.text(input.roadmapTitle, MARGIN, 292, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // Completion date
+    const dateStr = input.completedAt.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    doc.fillColor(colors.faint).fontSize(11).font("Helvetica");
+    doc.text(`Completed on ${dateStr}`, MARGIN, 332, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // Signature line
+    doc.rect(cx - 80, H - 115, 160, 0.5).fill(colors.faintest);
+    doc.fillColor(colors.faint).fontSize(9).font("Helvetica");
+    doc.text("InternHack Team", MARGIN, H - 100, {
+      width: W - MARGIN * 2,
+      align: "center",
+    });
+
+    // Bottom footer rule
+    doc.rect(MARGIN, H - 60, W - MARGIN * 2, 0.5).fill(colors.faintest);
+    doc.fillColor(colors.faint).fontSize(7.5).font("Helvetica");
+    doc.text(
+      `INTERNHACK · CERTIFICATE OF COMPLETION · ${input.roadmapTitle.toUpperCase()}`,
+      MARGIN,
+      H - 46,
+      { width: W - MARGIN * 2, align: "center", characterSpacing: 1 },
+    );
+
+    doc.end();
+  });
+}
+
+
