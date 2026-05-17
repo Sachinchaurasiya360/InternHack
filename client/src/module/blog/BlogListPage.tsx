@@ -28,15 +28,6 @@ import type {
   Pagination,
 } from "../../lib/types";
 
-const CATEGORIES: { label: string; value: BlogCategory | "ALL" }[] = [
-  { label: "All", value: "ALL" },
-  { label: "Career Advice", value: "CAREER_ADVICE" },
-  { label: "Interview Tips", value: "INTERVIEW_TIPS" },
-  { label: "Salary Guide", value: "SALARY_GUIDE" },
-  { label: "Industry Insights", value: "INDUSTRY_INSIGHTS" },
-  { label: "Resume Tips", value: "RESUME_TIPS" },
-  { label: "Tech Trends", value: "TECH_TRENDS" },
-];
 
 export default function BlogListPage() {
   const [search, setSearch] = useState("");
@@ -125,7 +116,7 @@ export default function BlogListPage() {
   const featuredPosts = featuredData?.posts ?? [];
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <SEO
         title="Blog & Resources"
         description="Career tips, interview strategies, salary insights, and industry trends to help you land your dream role. Read expert articles on InternHack."
@@ -138,15 +129,14 @@ export default function BlogListPage() {
       {/* Hero */}
       <BlogHero
         search={search}
-        onSearchChange={handleSearchChange}
+        setSearch={handleSearchChange}
       />
 
       <div className="max-w-6xl mx-auto px-6">
         {/* Category Pills */}
         <CategoryPills
-          categories={CATEGORIES}
           selected={category}
-          onSelect={(value) => {
+          onChange={(value) => {
             setCategory(value as BlogCategory | "ALL");
             setPage(1);
           }}
@@ -167,16 +157,16 @@ export default function BlogListPage() {
         {/* Blog Grid */}
         <section className="mb-16">
           <div className="flex items-center gap-2 mb-6">
-            <BookOpen className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+            <BookOpen className="w-5 h-5 text-gray-400 dark:text-stone-500" />
 
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-bold text-stone-900 dark:text-white">
               {category === "ALL"
                 ? "All Articles"
                 : CATEGORY_LABELS[category]}
             </h2>
 
             {pagination && (
-              <span className="text-sm text-gray-400 dark:text-gray-500 ml-2">
+              <span className="text-sm text-stone-400 dark:text-stone-500 ml-2">
                 ({pagination.total} article
                 {pagination.total !== 1 ? "s" : ""})
               </span>
@@ -184,7 +174,11 @@ export default function BlogListPage() {
           </div>
 
           {isLoading ? (
-            <BlogSkeleton count={6} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <BlogSkeleton key={i} />
+              ))}
+            </div>
           ) : posts.length === 0 ? (
             <EmptyState
               title="No articles found"
@@ -214,13 +208,13 @@ export default function BlogListPage() {
                   setPage((p) => Math.max(1, p - 1))
                 }
                 disabled={page <= 1}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
               </button>
 
-              <span className="text-sm text-gray-500 dark:text-gray-400 px-3">
+              <span className="text-sm text-stone-500 dark:text-stone-400 px-3">
                 Page {pagination.page} of{" "}
                 {pagination.totalPages}
               </span>
@@ -235,7 +229,7 @@ export default function BlogListPage() {
                   )
                 }
                 disabled={page >= pagination.totalPages}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />

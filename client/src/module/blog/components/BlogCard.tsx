@@ -3,9 +3,7 @@ import { motion } from "framer-motion";
 import { Clock, Eye, User, Calendar } from "lucide-react";
 
 import type { BlogPost, BlogCategory } from "@/lib/types";
-import { Link } from "react-router";
-import { motion } from "framer-motion";
-import { Clock, Eye, User, Calendar } from "lucide-react";
+
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",

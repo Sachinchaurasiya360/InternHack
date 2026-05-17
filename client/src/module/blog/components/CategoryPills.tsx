@@ -41,9 +41,8 @@ export default function CategoryPills({
             onClick={() => onChange(category)}
             className={`relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border ${
               active
-                ? "border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/20"
-                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400"
-            }`}
+                ? "bg-stone-950 dark:bg-white text-white dark:text-stone-950 border-stone-950 dark:border-white"
+                : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:border-stone-950 hover:text-stone-950 dark:hover:text-white"            }`}
           >
             {category === "ALL"
               ? "All"
