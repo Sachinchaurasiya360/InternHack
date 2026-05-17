@@ -95,17 +95,7 @@ export default function LoginPage() {
         ]}
       />
 
-      <div className="relative flex items-start lg:items-center justify-center px-6 pt-24 pb-12 lg:py-0">
-        <Link
-          to="/"
-          className="absolute top-6 left-6 flex items-center gap-2 text-sm no-underline text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
-        >
-          <div className="relative">
-            <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-md object-contain" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
-          </div>
-          <span className="font-bold text-stone-900 dark:text-stone-50">InternHack</span>
-        </Link>
+      <div className="flex items-center justify-center px-6 py-12 lg:py-0">
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -262,7 +252,7 @@ function AuthPromoPanel({
   stats: { value: string; suffix: string; label: string }[];
 }) {
   return (
-    <div className="hidden lg:flex relative flex-col justify-between p-12 xl:p-16 bg-stone-900 overflow-hidden">
+    <div className="hidden lg:flex relative flex-col justify-between px-12 xl:px-16 pt-8 pb-12 xl:pb-16 bg-stone-900 overflow-hidden">
       <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.06] auth-promo-dots" />
       <div aria-hidden className="absolute inset-0 pointer-events-none auth-promo-lines" />
 
