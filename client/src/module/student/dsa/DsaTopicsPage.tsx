@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -15,6 +15,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
+import { LeetCodeSync } from "./components/LeetCodeSync";
 import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
 
@@ -52,6 +53,7 @@ function CircularProgress({ progress }: { progress: number }) {
 
 export default function DsaTopicsPage() {
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
   const [showGate, setShowGate] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -69,8 +71,8 @@ export default function DsaTopicsPage() {
 
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
-    activeTab === "medium-hard" ? "Medium,Hard" :
-    undefined;
+      activeTab === "medium-hard" ? "Medium,Hard" :
+        undefined;
 
   const filterKey = `${difficultyParam ?? ""}|${debouncedSearch}`;
   const { data: topicsData, isLoading } = useQuery({
@@ -317,6 +319,16 @@ export default function DsaTopicsPage() {
           ))}
         </motion.div>
 
+        {/* LeetCode Sync — only for logged-in students */}
+        {user && (
+          <LeetCodeSync
+            onSyncSuccess={() => {
+              queryClient.invalidateQueries({ queryKey: queryKeys.dsa.topics("") });
+              queryClient.invalidateQueries({ queryKey: queryKeys.dsa.progress() });
+            }}
+          />
+        )}
+
         {/* Filters + search */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -345,11 +357,10 @@ export default function DsaTopicsPage() {
                 <button
                   key={tab.key}
                   onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                    active
-                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                    : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                    }`}
                 >
                   {tab.label}
                 </button>
