@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useReactToPrint } from "react-to-print";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -22,6 +23,7 @@ import {
   ArrowRight,
   Award,
   Mail,
+  Download,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
@@ -211,6 +213,7 @@ function ScoreCircle({
 // ── Main Page ────────────────────────────────────────────────────────────
 export default function AtsScorePage() {
   const queryClient = useQueryClient();
+  const printRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
@@ -220,6 +223,11 @@ export default function AtsScorePage() {
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `ATS_Report_${new Date().toLocaleDateString("en-IN")}`,
+  });
 
   const { data: usageData } = useQuery<UsageStats>({
     queryKey: queryKeys.ats.usage(),
@@ -859,6 +867,8 @@ export default function AtsScorePage() {
 
         {/* ─── Right column: Results ─── */}
         <div
+          ref={printRef}
+          id="ats-print-section"
           className="lg:col-span-3"
           role="status"
           aria-live="polite"
@@ -1035,32 +1045,43 @@ export default function AtsScorePage() {
 
                 {/* Tabbed Results */}
                 <div className={cardCls}>
-                  {/* Tab strip */}
-                  <div className="flex border-b border-stone-200 dark:border-white/10 overflow-x-auto">
-                    {TABS.map((tab) => {
-                      const isActive = activeTab === tab.id;
-                      return (
-                        <button
-                          key={tab.id}
-                          type="button"
-                          onClick={() => setActiveTab(tab.id)}
-                          className={`relative flex items-center gap-2 px-5 py-3.5 text-xs font-mono uppercase tracking-widest transition-colors border-0 bg-transparent cursor-pointer ${
-                            isActive
-                              ? "text-stone-900 dark:text-stone-50"
-                              : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
-                          }`}
-                        >
-                          {tab.icon}
-                          {tab.label}
-                          {isActive && (
-                            <motion.span
-                              layoutId="ats-tab-underline"
-                              className="absolute left-0 right-0 -bottom-px h-0.5 bg-lime-400"
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
+                  {/* Tab strip with print button */}
+                  <div className="flex items-center justify-between border-b border-stone-200 dark:border-white/10 overflow-x-auto">
+                    <div className="flex">
+                      {TABS.map((tab) => {
+                        const isActive = activeTab === tab.id;
+                        return (
+                          <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`relative flex items-center gap-2 px-5 py-3.5 text-xs font-mono uppercase tracking-widest transition-colors border-0 bg-transparent cursor-pointer ${
+                              isActive
+                                ? "text-stone-900 dark:text-stone-50"
+                                : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
+                            }`}
+                          >
+                            {tab.icon}
+                            {tab.label}
+                            {isActive && (
+                              <motion.span
+                                layoutId="ats-tab-underline"
+                                className="absolute left-0 right-0 -bottom-px h-0.5 bg-lime-400"
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handlePrint()}
+                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer print:hidden"
+                      title="Download or print this ATS report"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Print</span>
+                    </button>
                   </div>
 
                   <div className="p-5">
