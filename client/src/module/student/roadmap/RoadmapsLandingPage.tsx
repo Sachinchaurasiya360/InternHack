@@ -68,7 +68,7 @@ export default function RoadmapsLandingPage() {
   const tag = searchParams.get("tag") || "";
   const category = searchParams.get("category") || "";
 
-  const params: Record<string, string | number> = { page: 1, limit: 100 };
+  const params: Record<string, string | number> = { page: 1, limit: 50 };
   if (debouncedSearch) params.search = debouncedSearch;
   if (level && level !== "ALL_LEVELS") params.level = level;
   if (tag) params.tag = tag;
