@@ -1023,7 +1023,6 @@ export async function generateCertificatePdf(input: CertificateInput): Promise<B
     });
 
     // Underline the name
-    doc.fontSize(30);
     const nameWidth = Math.min(
       doc.widthOfString(input.userName),
       380,
