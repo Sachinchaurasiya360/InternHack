@@ -27,8 +27,6 @@ export class CoverLetterService {
       jobDescription: string;
       content: string;
       tone: string;
-      length: string;
-      targetWords: number;
       useProfile: boolean;
       keySkills?: string;
     }
@@ -42,8 +40,6 @@ export class CoverLetterService {
         jobDescription: data.jobDescription,
         content:        data.content,
         tone:           data.tone,
-        length:         data.length,
-        targetWords:    data.targetWords,
         useProfile:     data.useProfile,
         keySkills:      data.keySkills      ?? null,
         excerpt,
@@ -61,7 +57,6 @@ export class CoverLetterService {
         jobTitle:    true,
         companyName: true,
         tone:        true,
-        length:      true,
         excerpt:     true,
         createdAt:   true,
       },
