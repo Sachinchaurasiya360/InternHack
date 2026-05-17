@@ -70,7 +70,7 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${gradient} opacity-80`} />
+            <div className={`w-full h-full bg-linear-to-br ${gradient} opacity-80`} />
           )}
           {/* Category badge */}
           <span

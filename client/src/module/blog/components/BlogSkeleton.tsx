@@ -1,4 +1,8 @@
-export default function BlogSkeleton() {
+interface BlogSkeletonProps {
+  count?: number;
+}
+
+function SkeletonCard() {
   return (
     <div className="animate-pulse rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
       {/* Image */}
@@ -35,6 +39,18 @@ export default function BlogSkeleton() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function BlogSkeleton({ count = 1 }: BlogSkeletonProps) {
+  if (count <= 1) return <SkeletonCard />;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: count }, (_, i) => (
+        <SkeletonCard key={i} />
+      ))}
     </div>
   );
 }
