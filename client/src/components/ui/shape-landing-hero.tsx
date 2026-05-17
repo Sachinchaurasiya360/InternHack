@@ -243,7 +243,7 @@ function StatCell({
 
 function WinsMarquee() {
   const controls = useAnimation();
-  const isPaused = useRef(false);
+  const isPausedByClick = useRef(false);
   
   const startAnimation = () => {
     controls.start({
@@ -257,21 +257,21 @@ function WinsMarquee() {
   }, []);
 
   const mouseEnter = () => {
-    isPaused.current = true;
     controls.stop();
   };
 
   const mouseLeave = () => {
-    isPaused.current = false;
-    startAnimation();
+    if(!isPausedByClick.current){
+      startAnimation();
+    }
   };
 
   const onclicked = () => {
-    if(isPaused.current) {
-      isPaused.current = false;
+    if(isPausedByClick.current) {
+      isPausedByClick.current = false;
       startAnimation();
     } else {
-      isPaused.current = true;
+      isPausedByClick.current = true;
       controls.stop();
     }
   };
