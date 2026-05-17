@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router";
 import { ArrowRight, GraduationCap, Briefcase, Target } from "lucide-react";
 
+const REVEAL_IN_VIEW = { opacity: 1, y: 0 };
+const REVEAL_VIEWPORT = { once: true };
+
 const AUDIENCES = [
   {
     id: "students",
@@ -53,8 +56,8 @@ export function AudienceSection() {
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          whileInView={REVEAL_IN_VIEW}
+          viewport={REVEAL_VIEWPORT}
           transition={{ duration: 0.5 }}
           className="max-w-3xl mb-16"
         >
@@ -62,12 +65,14 @@ export function AudienceSection() {
             <span className="h-1.5 w-1.5 bg-lime-400" />
             built for three kinds of people
           </div>
+
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
             Whichever lane{" "}
             <span className="text-stone-400 dark:text-stone-600">
               you are in.
             </span>
           </h2>
+
           <p className="mt-6 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
             Students, working engineers, or full-time job hunters, the stack
             bends to your goal without turning into another dashboard you stop
@@ -78,14 +83,13 @@ export function AudienceSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-2xl overflow-hidden">
           {AUDIENCES.map((a, i) => (
             <motion.div
-              whileHover={{ y: -8 }}
-              transition={{ duration: 0.25 }}
               key={a.id}
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              
-              className="group relative flex flex-col p-8 md:p-10 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border border-transparent hover:border-lime-400/30"
+              whileInView={REVEAL_IN_VIEW}
+              viewport={REVEAL_VIEWPORT}
+              whileHover={{ y: -8 }}
+              transition={{ duration: 0.25, delay: i * 0.08 }}
+              className="group relative flex flex-col p-8 md:p-10 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-all duration-300 hover:shadow-2xl border border-transparent hover:border-lime-400/30"
             >
               <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-8">
                 <span className="h-1.5 w-1.5 bg-lime-400" />
@@ -99,6 +103,7 @@ export function AudienceSection() {
               <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
                 {a.title}
               </h3>
+
               <p className="mt-4 text-sm md:text-base text-stone-600 dark:text-stone-400 leading-relaxed">
                 {a.desc}
               </p>
