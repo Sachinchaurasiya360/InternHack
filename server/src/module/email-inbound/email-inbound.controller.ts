@@ -6,30 +6,58 @@ import { inboundWebhookSchema } from "./email-inbound.validation.js";
 const FORWARD_TO = process.env["INBOUND_FORWARD_TO"] || "mrsachinchaurasiya@gmail.com";
 const WEBHOOK_SECRET = process.env["RESEND_WEBHOOK_SECRET"] || "";
 
-function verifySignature(payload: string, signature: string): boolean {
-  if (!WEBHOOK_SECRET) return true; // skip verification if no secret configured
+function verifySignature(payload: Buffer, signature: string): boolean {
+  if (!WEBHOOK_SECRET) {
+    if (process.env["NODE_ENV"] === "production") {
+      console.error("[Inbound] RESEND_WEBHOOK_SECRET is missing in production!");
+      return false;
+    }
+    return true; // allow in dev
+  }
+
   const expected = crypto
     .createHmac("sha256", WEBHOOK_SECRET)
     .update(payload)
     .digest("base64");
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expected),
-  );
+
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, "utf8"),
+      Buffer.from(expected, "utf8"),
+    );
+  } catch {
+    return false;
+  }
 }
 
 export async function handleInboundEmail(req: Request, res: Response): Promise<void> {
   try {
     const signature = req.headers["resend-signature"] as string | undefined;
-    const rawBody = JSON.stringify(req.body);
+    const rawBody = req.body;
 
-    if (WEBHOOK_SECRET && (!signature || !verifySignature(rawBody, signature))) {
+    // Verify it's a buffer (from express.raw)
+    if (!Buffer.isBuffer(rawBody)) {
+      console.error("[Inbound] Request body is not a buffer. Check middleware order.");
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (!verifySignature(rawBody, signature || "")) {
       console.warn("[Inbound] Invalid webhook signature");
       res.status(401).json({ error: "Invalid signature" });
       return;
     }
 
-    const parsed = inboundWebhookSchema.safeParse(req.body);
+    // Now parse the body
+    let body;
+    try {
+      body = JSON.parse(rawBody.toString("utf8"));
+    } catch (err) {
+      res.status(400).json({ error: "Invalid JSON payload" });
+      return;
+    }
+
+    const parsed = inboundWebhookSchema.safeParse(body);
     if (!parsed.success) {
       res.status(400).json({ error: "Invalid webhook payload" });
       return;
