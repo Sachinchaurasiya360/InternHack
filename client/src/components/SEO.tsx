@@ -39,25 +39,32 @@ export function SEO({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
 
-      {/* Open Graph */}
+      {/* Primary Meta Tags */}
+      <meta name="title" content={fullTitle} />
+
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content={ogType} />
+      <meta property="og:url" content={effectiveCanonical} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:type" content={ogType} />
       <meta property="og:image" content={absoluteOgImage} />
       <meta property="og:site_name" content={SITE_NAME} />
-      <meta property="og:url" content={effectiveCanonical} />
 
-      {/* Twitter Card */}
+      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={effectiveCanonical} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={absoluteOgImage} />
 
-      {/* Canonical, always present */}
+      {/* Canonical URL */}
       <link rel="canonical" href={effectiveCanonical} />
 
       {/* Robots */}
-      {noIndex && <meta name="robots" content="noindex,nofollow" />}
+      <meta
+        name="robots"
+        content={noIndex ? "noindex,nofollow" : "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"}
+      />
 
       {/* Structured Data (JSON-LD) */}
       {structuredData &&

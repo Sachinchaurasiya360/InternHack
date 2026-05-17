@@ -1009,7 +1009,7 @@ export class AdminController {
 
   async getPublicExternalJobBySlug(req: Request, res: Response) {
     try {
-      const slug = req.params["slug"];
+      const slug = req.params["slug"] as string;
       if (!slug) return res.status(400).json({ message: "Slug is required" });
 
       const job = await this.adminService.getPublicExternalJobBySlug(slug);

@@ -203,7 +203,7 @@ interface ApprovalNotifyTarget {
   id: number;
   role: string;
   user: { id: number } | null;
-  company: { name: string };
+  company: { name: string } | null;
 }
 
 async function notifyApproval(experience: ApprovalNotifyTarget): Promise<void> {
@@ -231,10 +231,10 @@ async function notifyApproval(experience: ApprovalNotifyTarget): Promise<void> {
 
   await sendEmail({
     to: author.email,
-    subject: `Your interview experience for ${experience.company.name} is approved`,
+    subject: `Your interview experience for ${experience.company?.name ?? "a company"} is approved`,
     html: interviewExperienceApprovedHtml({
       name: author.name,
-      companyName: experience.company.name,
+      companyName: experience.company?.name ?? "Unknown Company",
       role: experience.role,
       experienceId: experience.id,
       earnedBadges: earnedBadges.map((b) => ({

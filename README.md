@@ -100,15 +100,16 @@ cd client && npm install
 ### 4. Set up the database
 
 ```bash
-# From the server/src/database/ directory (prisma.config.ts lives here)
-cd server/src/database
+# Go to server directory
+cd server
 
-# Generate Prisma client
-npx prisma generate
+# Generate Prisma client using prisma.config.ts
+npx prisma generate --config src/database/prisma.config.ts
 
-# Push schema to your database
-npx prisma db push
+# Push schema to database
+npx prisma db push --config src/database/prisma.config.ts
 ```
+
 
 ### 5. Seed initial data (optional)
 
@@ -120,7 +121,7 @@ cd server
 npm run seed:admin
 
 # Seed all sample data (DSA, aptitude, companies, etc.)
-npm run seed:all
+npm run seed
 ```
 
 ### 6. Start development servers

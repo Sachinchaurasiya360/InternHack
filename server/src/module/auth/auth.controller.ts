@@ -44,7 +44,7 @@ export class AuthController {
           return res.status(403).json({
             message: "Please verify your email before signing in. A new verification code has been sent.",
             requiresVerification: true,
-            email: result.data.email,
+            email: (req.body as { email?: string }).email,
           });
         }
         if (error.message === "Account is deactivated") {
