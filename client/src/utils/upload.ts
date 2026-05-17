@@ -2,22 +2,27 @@ interface UploadProfileParams {
   file: File;
   folder: 'resumes' | 'profile-pics' | 'cover-images';
   endpoint: '/profile-resume' | '/profile-pic' | '/cover-image';
-  authToken: string;
+  authToken?: string;
 }
 
 export const uploadDirectToS3 = async ({ file, folder, endpoint, authToken }: UploadProfileParams) => {
   try {
+    const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000";
+    const authHeaders: Record<string, string> = {};
+    if (authToken) authHeaders.Authorization = `Bearer ${authToken}`;
+
     // Get the Pre-signed URL from your backend
-    const presignRes = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/presigned-url`, {
+    const presignRes = await fetch(`${apiUrl}/api/upload/presigned-url`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
+        ...authHeaders,
       },
       body: JSON.stringify({
         fileName: file.name,
         fileType: file.type,
-        folder: folder
+        folder: folder,
       }),
     });
 
@@ -37,17 +42,18 @@ export const uploadDirectToS3 = async ({ file, folder, endpoint, authToken }: Up
 
    
     // Tell your backend to save the new file URL
-    const updateRes = await fetch(`${import.meta.env.VITE_API_URL}/api/upload${endpoint}`, {
+    const updateRes = await fetch(`${apiUrl}/api/upload${endpoint}`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
+        ...authHeaders,
       },
       body: JSON.stringify({
         fileUrl: fileUrl,
         originalName: file.name,
         size: file.size,
-        mimeType: file.type
+        mimeType: file.type,
       }),
     });
 

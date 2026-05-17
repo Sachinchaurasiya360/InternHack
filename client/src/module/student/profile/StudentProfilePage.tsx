@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router";
 import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
 import api from "../../../lib/axios";
+import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -445,30 +446,31 @@ export default function StudentProfilePage() {
   const handleCropComplete = async (blob: Blob) => {
     const isProfile = cropType === "profile";
     const setUploading = isProfile ? setUploadingPic : setUploadingCover;
-    const endpoint = isProfile ? "/upload/profile-pic" : "/upload/cover-image";
     const field = isProfile ? "profilePic" : "coverImage";
 
     setCropSrc(null);
     setCropType(null);
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", blob, "cropped.jpg");
-      const res = await api.post(endpoint, fd, { headers: { "Content-Type": "multipart/form-data" } });
-      
-      // Extract the updated user or look for a direct secure_url/filePath returned by your API
-      const u = res.data.user || res.data;
-      
-      // Get the image path. If the backend returns a relative path, we map it to the backend server URL
-      let imagePath = u[field] ?? "";
+      const file = new File([blob], "cropped.jpg", { type: blob.type || "image/jpeg" });
+      const res = await uploadDirectToS3({
+        file,
+        folder: isProfile ? "profile-pics" : "cover-images",
+        endpoint: isProfile ? "/profile-pic" : "/cover-image",
+      });
+
+      const u = res.user || res;
+      let imagePath = u[field] || u.fileUrl || u.url || "";
       if (imagePath && !imagePath.startsWith("http")) {
-        // Fallback for local backend uploads: prepend server address if not an external cloud URL (like Cloudinary)
         imagePath = `${api.defaults.baseURL?.replace("/api", "") || "http://localhost:3000"}/${imagePath.replace(/^\//, "")}`;
       }
 
-      setForm((prev) => ({ ...prev, [field]: imagePath }));
-      syncUser({ ...form, [field]: imagePath });
-      
+      setForm((prev) => {
+        const next = { ...prev, [field]: imagePath };
+        syncUser(next);
+        return next;
+      });
+
       toast.success(isProfile ? "Profile picture updated!" : "Cover image updated!");
     } catch (error) {
       console.error("Upload rendering error:", error);
@@ -483,12 +485,18 @@ export default function StudentProfilePage() {
     if (!file) return;
     setUploadingResume(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await api.post("/upload/profile-resume", fd, { headers: { "Content-Type": "multipart/form-data" } });
-      const u = res.data.user;
-      setForm((prev) => ({ ...prev, resumes: u.resumes ?? [] }));
-      syncUser({ ...form, resumes: u.resumes ?? [] });
+      const res = await uploadDirectToS3({
+        file,
+        folder: "resumes",
+        endpoint: "/profile-resume",
+      });
+      const u = res.user || res;
+      const resumes = u.resumes ?? [];
+      setForm((prev) => {
+        const next = { ...prev, resumes };
+        syncUser(next);
+        return next;
+      });
       toast.success("Resume uploaded!");
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to upload resume";
