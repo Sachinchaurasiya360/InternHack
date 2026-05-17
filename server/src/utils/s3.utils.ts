@@ -80,3 +80,16 @@ export async function signUrl(url: string, expiresIn = 3600): Promise<string> {
 export async function signUrls(urls: string[], expiresIn = 3600): Promise<string[]> {
   return Promise.all(urls.map((u) => signUrl(u, expiresIn)));
 }
+
+
+export const generatePresignedUploadUrl = async (fileKey: string, fileType: string) => {
+  const command = new PutObjectCommand({
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: fileKey,
+    ContentType: fileType, // Enforces that the client uploads the correct file type
+  });
+
+  // URL expires in 5 minutes (300 seconds)
+  const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
+  return uploadUrl;
+};
