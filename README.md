@@ -281,3 +281,5 @@ This project is open source. See [LICENSE](LICENSE) for details.
 ---
 
 Built with care by the InternHack team.
+
+Automated PR: minor README note (branch: copilot/pr/auto-readme).
