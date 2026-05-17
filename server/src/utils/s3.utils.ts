@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import {
   S3Client,
   PutObjectCommand,
@@ -19,6 +20,12 @@ const REGION = process.env["AWS_REGION"] || "ap-south-1";
 
 function getBucketUrl(): string {
   return `https://${BUCKET}.s3.${REGION}.amazonaws.com`;
+}
+
+export function createUniqueS3Key(folder: string, userId: string, fileName: string): string {
+  const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
+  const uniqueId = randomUUID();
+  return `${folder}/${String(userId)}/${uniqueId}-${cleanFileName}`;
 }
 
 export async function uploadToS3(

@@ -1,16 +1,25 @@
 import type { Request, Response } from "express";
-import path from "path";
-import fs from "fs";
+import * as path from "path";
+import * as fs from "fs";
 import { fileURLToPath } from "url";
-import { deleteFromS3, getS3KeyFromUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
+import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
-import crypto from "crypto";
 
 const MAX_RESUMES = 2;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const UPLOADS_DIR = path.join(__dirname, "../../../uploads");
+
+function getExpectedS3UrlPrefix(): string {
+  const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
+  const region = process.env.AWS_REGION || "ap-south-1";
+  return `https://${bucketName}.s3.${region}.amazonaws.com/`;
+}
+
+function isValidS3FileUrl(url: unknown): url is string {
+  return typeof url === "string" && url.startsWith(getExpectedS3UrlPrefix());
+}
 
 /** Delete a file - keeps local fallback support just in case users have legacy local files */
 function deleteFile(url: string): void {
@@ -36,12 +45,11 @@ export class UploadController {
         return res.status(400).json({ message: "fileName and fileType are required" });
       }
 
-      const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
-      const uniqueId = crypto.randomUUID();
-      const fileKey = `${folder}/${req.user.id}/${uniqueId}-${cleanFileName}`;
-
+      const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
       const uploadUrl = await generatePresignedUploadUrl(fileKey, fileType);
-      const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+      const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
+      const region = process.env.AWS_REGION || "ap-south-1";
+      const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${fileKey}`;
 
       return res.status(200).json({ uploadUrl, fileKey, fileUrl });
     } catch (error) {
@@ -56,7 +64,9 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!fileUrl) return res.status(400).json({ message: "fileUrl is required" });
+      if (!isValidS3FileUrl(fileUrl)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      }
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { profilePic: true } });
@@ -82,7 +92,9 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!fileUrl) return res.status(400).json({ message: "fileUrl is required" });
+      if (!isValidS3FileUrl(fileUrl)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      }
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { coverImage: true } });
@@ -108,7 +120,9 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl, originalName, size, mimeType } = req.body;
-      if (!fileUrl) return res.status(400).json({ message: "fileUrl is required" });
+      if (!isValidS3FileUrl(fileUrl)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      }
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
