@@ -3,26 +3,10 @@ import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight } from "lucide-react";
 import { sections, questions } from "./data";
-import type { InterviewProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
-
-function getLocalProgress(): InterviewProgress {
-  try {
-    const raw = JSON.parse(localStorage.getItem("interview-progress") || "{}");
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: InterviewProgress = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
-        out[k] = { completed: (v as { completed: boolean }).completed };
-      }
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
+import { useInterviewProgress } from "./interviewProgress";
 
 const DIFF_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -50,18 +34,17 @@ export default function InterviewSectionPage() {
   const { sectionSlug } = useParams();
   const basePath = "/learn/interview";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-
-  const progress: InterviewProgress = getLocalProgress();
+  const { progress, isLoading } = useInterviewProgress();
   const section = sections.find((s) => s.id === sectionSlug);
-
-  if (section && !section.freeTier && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
 
   const sectionQuestions = useMemo(
     () => questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug],
   );
+
+  if (section && !section.freeTier && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
   if (!section) {
     return (
@@ -147,7 +130,7 @@ export default function InterviewSectionPage() {
         >
           <div className="flex items-center justify-between gap-4 mb-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              section progress
+              {isLoading ? "syncing progress" : "section progress"}
             </span>
             <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
               {completedCount} / {sectionQuestions.length}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -18,30 +18,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
-
-function getLocalProgress(): InterviewProgress {
-  try {
-    const raw = JSON.parse(localStorage.getItem("interview-progress") || "{}");
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: InterviewProgress = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
-        out[k] = { completed: (v as { completed: boolean }).completed };
-      }
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-function toggleProgress(questionId: string): boolean {
-  const progress = getLocalProgress();
-  const current = progress[questionId]?.completed ?? false;
-  progress[questionId] = { completed: !current };
-  localStorage.setItem("interview-progress", JSON.stringify(progress));
-  return !current;
-}
+import { useInterviewProgress } from "./interviewProgress";
 
 const DIFF_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -138,11 +115,7 @@ export default function InterviewQuestionPage() {
   const navigate = useNavigate();
   const basePath = "/learn/interview";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-
-  const [completed, setCompleted] = useState(() => {
-    const p = getLocalProgress();
-    return !!p[questionId ?? ""]?.completed;
-  });
+  const { progress, toggleComplete, recordVisit } = useInterviewProgress();
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionQuestions = useMemo(
@@ -151,20 +124,27 @@ export default function InterviewQuestionPage() {
   );
 
   const question = sectionQuestions.find((q) => q.id === questionId);
+  const completed = !!(questionId && progress[questionId]?.completed);
   const currentIndex = question ? sectionQuestions.findIndex((q) => q.id === question.id) : -1;
   const prevQuestion = currentIndex > 0 ? sectionQuestions[currentIndex - 1] : null;
   const nextQuestion = currentIndex < sectionQuestions.length - 1 ? sectionQuestions[currentIndex + 1] : null;
 
   const handleToggleComplete = useCallback(() => {
     if (!questionId) return;
-    const newVal = toggleProgress(questionId);
-    setCompleted(newVal);
-    if (newVal && isAuthenticated && sectionSlug) {
-      const progress = getLocalProgress();
-      const allDone = sectionQuestions.every((q) => progress[q.id]?.completed);
-      if (allDone) reportMilestone("INTERVIEW_SECTION_COMPLETE", sectionSlug);
-    }
-  }, [questionId, isAuthenticated, sectionSlug, sectionQuestions]);
+    void toggleComplete(questionId)
+      .then((newVal) => {
+        if (newVal && isAuthenticated && sectionSlug) {
+          const nextProgress: InterviewProgress = { ...progress, [questionId]: { completed: true } };
+          const allDone = sectionQuestions.every((q) => nextProgress[q.id]?.completed);
+          if (allDone) reportMilestone("INTERVIEW_SECTION_COMPLETE", sectionSlug);
+        }
+      })
+      .catch(() => {});
+  }, [questionId, toggleComplete, isAuthenticated, sectionSlug, sectionQuestions, progress]);
+
+  useEffect(() => {
+    if (questionId) recordVisit(questionId);
+  }, [questionId, recordVisit]);
 
   if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
