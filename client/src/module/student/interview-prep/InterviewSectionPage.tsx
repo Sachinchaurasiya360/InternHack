@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight } from "lucide-react";
@@ -6,7 +6,7 @@ import { sections, questions } from "./data";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
-import { useInterviewProgress } from "./interviewProgress";
+import api from "../../../lib/axios";
 
 const DIFF_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -34,7 +34,25 @@ export default function InterviewSectionPage() {
   const { sectionSlug } = useParams();
   const basePath = "/learn/interview";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const { progress, isLoading } = useInterviewProgress();
+
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const loadProgress = async () => {
+      try {
+        const res = await api.get("/interview-progress");
+
+        setCompletedIds(res.data.completedIds || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadProgress();
+  }, [isAuthenticated]);
+
   const section = sections.find((s) => s.id === sectionSlug);
 
   const sectionQuestions = useMemo(
@@ -60,7 +78,7 @@ export default function InterviewSectionPage() {
     );
   }
 
-  const completedCount = sectionQuestions.filter((q) => progress[q.id]?.completed).length;
+  const completedCount = sectionQuestions.filter((q) => completedIds.includes(q.id)).length;
   const pct = sectionQuestions.length > 0 ? Math.round((completedCount / sectionQuestions.length) * 100) : 0;
 
   return (
@@ -170,7 +188,7 @@ export default function InterviewSectionPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {sectionQuestions.map((question, i) => {
-              const isCompleted = progress[question.id]?.completed;
+              const isCompleted = completedIds.includes(question.id);
               return (
                 <motion.div
                   key={question.id}
