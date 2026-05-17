@@ -62,10 +62,14 @@ export default function ScrapedJobsPage() {
     return () => clearTimeout(timerRef.current);
   }, [search, location]);
 
-  const flushSearch = () => {
+  const commitFilters = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setDebouncedSearch(search);
     setDebouncedLocation(location);
+  };
+
+  const flushSearch = () => {
+    commitFilters();
     setPage(1);
   };
 
@@ -162,6 +166,7 @@ export default function ScrapedJobsPage() {
             <select
               value={source}
               onChange={(e) => {
+                commitFilters();
                 setSource(e.target.value);
                 setPage(1);
               }}
