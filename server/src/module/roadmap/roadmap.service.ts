@@ -90,12 +90,19 @@ export async function listPublishedRoadmaps(opts: {
   if (opts.level && opts.level !== "ALL_LEVELS") {
     where.level = opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS";
   }
-  if (opts.tag) {
-    andConditions.push({ tags: { has: opts.tag } });
-  }
-  if (opts.category) {
-    andConditions.push({ tags: { has: opts.category } });
-  }
+  // if (opts.tag) {
+  //   andConditions.push({ tags: { has: opts.tag } });
+  // }
+  // if (opts.category) {
+  //   andConditions.push({ tags: { has: opts.category } });
+  // }
+  const tagFilters: string[] = [];
+if (opts.tag) tagFilters.push(opts.tag);
+if (opts.category) tagFilters.push(opts.category);
+
+if (tagFilters.length > 0) {
+  andConditions.push({ tags: { hasSome: tagFilters } });
+}
   if (opts.search) {
     const s = opts.search.trim();
     if (s) {
