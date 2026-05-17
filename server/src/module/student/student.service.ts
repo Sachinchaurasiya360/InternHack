@@ -249,13 +249,18 @@ export class StudentService {
     // Auth-check the application first, then fetch round in parallel with nothing
     // (cannot parallelize with application since we need studentId check first).
     // But we can parallelize application + round and validate after.
-    const [application, round] = await Promise.all([
+    const [application, round, existingSubmission] = await Promise.all([
       prisma.application.findUnique({ where: { id: applicationId } }),
       prisma.round.findUnique({ where: { id: roundId } }),
+      prisma.roundSubmission.findUnique({ where: { applicationId_roundId: { applicationId, roundId } } }),
     ]);
     if (!application) throw new Error("Application not found");
     if (application.studentId !== studentId) throw new Error("Not authorized");
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
+
+    if (existingSubmission && existingSubmission.status === "COMPLETED") {
+      throw new Error("You have already submitted this assessment.");
+    }
 
     const submission = await prisma.roundSubmission.upsert({
       where: { applicationId_roundId: { applicationId, roundId } },
