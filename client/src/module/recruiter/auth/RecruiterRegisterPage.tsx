@@ -13,10 +13,77 @@ export default function RecruiterRegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Validation functions
+  const validateName = (name: string): string => {
+    if (!name.trim()) return "Name is required";
+    if (name.trim().length < 2) return "Name must be at least 2 characters long";
+    return "";
+  };
+
+  const validateEmail = (email: string): string => {
+    if (!email.trim()) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Invalid email address";
+    return "";
+  };
+
+  const validatePassword = (password: string): string => {
+    if (!password) return "Password is required";
+    if (password.length < 6) return "Password must be at least 6 characters";
+    return "";
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    
+    // Real-time validation
+    const newErrors = { ...fieldErrors };
+    if (field === "name") {
+      const nameError = validateName(value);
+      if (nameError) {
+        newErrors.name = nameError;
+      } else {
+        delete newErrors.name;
+      }
+    } else if (field === "email") {
+      const emailError = validateEmail(value);
+      if (emailError) {
+        newErrors.email = emailError;
+      } else {
+        delete newErrors.email;
+      }
+    } else if (field === "password") {
+      const passwordError = validatePassword(value);
+      if (passwordError) {
+        newErrors.password = passwordError;
+      } else {
+        delete newErrors.password;
+      }
+    }
+    setFieldErrors(newErrors);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
+    
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+    const nameError = validateName(form.name);
+    const emailError = validateEmail(form.email);
+    const passwordError = validatePassword(form.password);
+    
+    if (nameError) newErrors.name = nameError;
+    if (emailError) newErrors.email = emailError;
+    if (passwordError) newErrors.password = passwordError;
+    
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -35,8 +102,34 @@ export default function RecruiterRegisterPage() {
         navigate("/recruiters");
       }
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Registration failed");
+      const error = err as {
+        response?: {
+          data?: {
+            message?: string;
+            errors?: {
+              fieldErrors?: Record<string, string[]>;
+            };
+          };
+        };
+      };
+
+      // Handle field-level errors from backend
+      const backendFieldErrors = error.response?.data?.errors?.fieldErrors;
+      if (backendFieldErrors && typeof backendFieldErrors === "object") {
+        const fieldErrorsObj: Record<string, string> = {};
+        for (const [field, messages] of Object.entries(backendFieldErrors)) {
+          if (Array.isArray(messages) && messages.length > 0) {
+            fieldErrorsObj[field] = messages[0];
+          }
+        }
+        if (Object.keys(fieldErrorsObj).length > 0) {
+          setFieldErrors(fieldErrorsObj);
+          return;
+        }
+      }
+
+      const backendMessage = error.response?.data?.message || "Registration failed";
+      setError(backendMessage);
     } finally {
       setLoading(false);
     }
@@ -100,23 +193,31 @@ export default function RecruiterRegisterPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <FormField label="Full name">
+              <FormField label="Full name" error={fieldErrors.name}>
                 <input
                   type="text"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.name
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
                   placeholder="Jane Doe"
                   required
                 />
               </FormField>
 
-              <FormField label="Work email">
+              <FormField label="Work email" error={fieldErrors.email}>
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  onChange={(e) => handleFieldChange("email", e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.email
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
                   placeholder="you@company.com"
                   required
                 />
@@ -133,13 +234,17 @@ export default function RecruiterRegisterPage() {
                 />
               </FormField>
 
-              <FormField label="Password">
+              <FormField label="Password" error={fieldErrors.password}>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                    onChange={(e) => handleFieldChange("password", e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                      fieldErrors.password
+                        ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                        : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                    }`}
                     placeholder="Min. 6 characters"
                     required
                     minLength={6}
@@ -206,10 +311,12 @@ export default function RecruiterRegisterPage() {
 function FormField({
   label,
   right,
+  error,
   children,
 }: {
   label: string;
   right?: React.ReactNode;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -221,6 +328,11 @@ function FormField({
         {right}
       </div>
       {children}
+      {error && (
+        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
