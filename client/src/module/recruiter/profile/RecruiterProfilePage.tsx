@@ -15,6 +15,7 @@ import {
   AlignLeft,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
@@ -126,16 +127,15 @@ export default function RecruiterProfilePage() {
     setCropSrc(null);
     setUploadingPic(true);
     try {
-      const fd = new FormData();
-      fd.append("file", blob, "cropped.jpg");
-      const res = await api.post("/upload/profile-pic", fd, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const file = new File([blob], "cropped.jpg", { type: blob.type || "image/jpeg" });
+      const res = await uploadDirectToS3({
+        file,
+        folder: "profile-pics",
+        endpoint: "/profile-pic",
       });
-      
-      const u = res.data.user || res.data;
-      
-      // Map path properly if relative string path is returned by localhost server
-      let imagePath = u.profilePic ?? "";
+
+      const u = res.user || res;
+      let imagePath = u.profilePic || u.fileUrl || u.url || "";
       if (imagePath && !imagePath.startsWith("http")) {
         imagePath = `${api.defaults.baseURL?.replace("/api", "") || "http://localhost:3000"}/${imagePath.replace(/^\//, "")}`;
       }
