@@ -260,6 +260,7 @@ export default function MyApplicationsPage() {
   }, [externalApplications, debouncedSearch]);
 
   const totalAll = applications.length + externalApplications.length;
+  const totalFiltered = filtered.length + filteredExternal.length;
 
   const handleWithdraw = useCallback(
     async (id: number) => {
@@ -310,13 +311,16 @@ export default function MyApplicationsPage() {
           </p>
         </div>
         {totalAll > 0 && (
-          <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-            total{" "}
-            <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-              {totalAll}
-            </span>
-          </div>
-        )}
+           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+           {hasSearch ? "showing" : "total"}{" "}
+           <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+           {hasSearch ? totalFiltered : totalAll}
+          </span>
+          {hasSearch && (
+          <span className="ml-1">of {totalAll}</span>
+           )}
+        </div>
+       )}
       </motion.div>
 
       {/* Search */}
