@@ -43,6 +43,8 @@ This guide walks you through everything from setting up the project to submittin
 | PostgreSQL | 14+ | Database |
 | Git | 2.30+ | Version control |
 
+**Docker Compose shortcut:** You can run Postgres + API + client with only Docker by following the README “Docker Compose (alternative)” section (root `.env.example` plus `docker compose up`). That path does **not** use Redis — the app stack is PostgreSQL only.
+
 You'll also need:
 - A **Google Cloud Console** project for OAuth (client ID)
 - A **Gemini API key** ([free at aistudio.google.com](https://aistudio.google.com/apikey))
@@ -57,13 +59,19 @@ cd InternHack
 
 ### Step 2: Set up environment variables
 
-```bash
-# Server environment
-cp server/.env.example server/.env
+**Docker Compose:** copy the template at the repo root:
 
-# Client environment
+```bash
+cp .env.example .env
+```
+
+**Classic setup:** separate client and server copies:
+
+```bash
+cp server/.env.example server/.env
 cp client/.env.example client/.env
 ```
+
 
 Open `server/.env` and fill in the **required** values:
 

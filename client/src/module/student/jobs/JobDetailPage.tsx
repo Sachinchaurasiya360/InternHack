@@ -1,6 +1,6 @@
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight, Share2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
@@ -11,6 +11,8 @@ import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { Job } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
+import toast from "../../../components/ui/toast";
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.07 } } };
@@ -110,6 +112,39 @@ export default function JobDetailPage() {
   }
 
   const deadlineInfo = job.deadline ? getDeadlineInfo(job.deadline) : null;
+  const shareUrl = canonicalUrl(`/jobs/${id}`);
+
+  const copyJobLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied!");
+    } catch {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  const handleShareJob = async () => {
+    const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
+    if (canShare) {
+      try {
+        await navigator.share({
+          title: `${job.title} at ${job.company}`,
+          text: `Check out this role: ${job.title} at ${job.company}`,
+          url: shareUrl,
+        });
+      } catch (e) {
+        if (
+          (e instanceof DOMException || e instanceof Error) &&
+          e.name === "AbortError"
+        ) {
+          return;
+        }
+        await copyJobLink();
+      }
+      return;
+    }
+    await copyJobLink();
+  };
 
   const ctaButton = isAuthenticated && user?.role === "STUDENT" ? (
     applicationStatus?.applied ? (
@@ -161,7 +196,19 @@ export default function JobDetailPage() {
                 </h1>
                 <p className="mt-2 text-sm text-stone-500">{job.company}</p>
               </div>
-              <div className="shrink-0">{ctaButton}</div>
+              <div className="shrink-0 flex flex-wrap items-center gap-2 sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  mode="icon"
+                  size="lg"
+                  aria-label="Share job"
+                  onClick={() => void handleShareJob()}
+                >
+                  <Share2 />
+                </Button>
+                {ctaButton}
+              </div>
             </div>
 
             {/* Meta row */}
