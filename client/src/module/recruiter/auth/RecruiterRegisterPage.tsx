@@ -192,61 +192,63 @@ export default function RecruiterRegisterPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <FormField label="Full name" error={fieldErrors.name}>
+            <form noValidate onSubmit={handleSubmit} className="space-y-4">
+              <FormField label="Full name" error={fieldErrors.name} fieldName="name">
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => handleFieldChange("name", e.target.value)}
+                  aria-invalid={!!fieldErrors.name}
+                  aria-describedby={fieldErrors.name ? "error-name" : undefined}
                   className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
                     fieldErrors.name
                       ? "border-red-300 dark:border-red-800 focus:border-red-400"
                       : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                   }`}
                   placeholder="Jane Doe"
-                  required
                 />
               </FormField>
 
-              <FormField label="Work email" error={fieldErrors.email}>
+              <FormField label="Work email" error={fieldErrors.email} fieldName="email">
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => handleFieldChange("email", e.target.value)}
+                  aria-invalid={!!fieldErrors.email}
+                  aria-describedby={fieldErrors.email ? "error-email" : undefined}
                   className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
                     fieldErrors.email
                       ? "border-red-300 dark:border-red-800 focus:border-red-400"
                       : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                   }`}
                   placeholder="you@company.com"
-                  required
                 />
               </FormField>
 
-              <FormField label="Company">
+              <FormField label="Company" fieldName="company">
                 <input
                   type="text"
                   value={form.company}
                   onChange={(e) => setForm({ ...form, company: e.target.value })}
                   className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
                   placeholder="Your company name"
-                  required
                 />
               </FormField>
 
-              <FormField label="Password" error={fieldErrors.password}>
+              <FormField label="Password" error={fieldErrors.password} fieldName="password">
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={(e) => handleFieldChange("password", e.target.value)}
+                    aria-invalid={!!fieldErrors.password}
+                    aria-describedby={fieldErrors.password ? "error-password" : undefined}
                     className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
                       fieldErrors.password
                         ? "border-red-300 dark:border-red-800 focus:border-red-400"
                         : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                     }`}
                     placeholder="Min. 6 characters"
-                    required
                     minLength={6}
                   />
                   <button
@@ -312,13 +314,16 @@ function FormField({
   label,
   right,
   error,
+  fieldName,
   children,
 }: {
   label: string;
   right?: React.ReactNode;
   error?: string;
+  fieldName?: string;
   children: React.ReactNode;
 }) {
+  const errorId = fieldName ? `error-${fieldName}` : undefined;
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
@@ -329,7 +334,7 @@ function FormField({
       </div>
       {children}
       {error && (
-        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+        <p id={errorId} className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
           {error}
         </p>
       )}
