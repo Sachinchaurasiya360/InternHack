@@ -39,8 +39,6 @@ const FILTER_TAGS = [
 
 const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
 
-
-
 function MetaChip({
   icon,
   children,
@@ -600,12 +598,18 @@ export default function JobBrowsePage() {
                       }
                       metaChips={
                         <>
-                          <MetaChip icon={<MapPin className="w-3 h-3" />}>
-                            {job.location}
-                          </MetaChip>
-                          <MetaChip icon={<IndianRupee className="w-3 h-3" />}>
-                            {job.salary}
-                          </MetaChip>
+                          {job.location && (
+                            <MetaChip icon={<MapPin className="w-3 h-3" />}>
+                              {job.location}
+                            </MetaChip>
+                          )}
+                          {job.salary && (
+                            <MetaChip
+                              icon={<IndianRupee className="w-3 h-3" />}
+                            >
+                              {job.salary}
+                            </MetaChip>
+                          )}
                           {job.deadline &&
                             (new Date(job.deadline) < new Date() ? (
                               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
