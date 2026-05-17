@@ -309,6 +309,28 @@ We welcome contributions! See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the ful
 
 ---
 
+## Contributors  
+
+A huge thanks to all the amazing contributors who helped make **InternHack** better 🚀✨  
+
+<div align="center">
+  <a href="https://github.com/Sachinchaurasiya360/InternHack/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=Sachinchaurasiya360/InternHack" alt="Contributors" />
+  </a>
+</div>
+
+<br/><br/>
+
+## Project Support
+
+<div align="center">
+
+[![Stars](https://img.shields.io/github/stars/Sachinchaurasiya360/InternHack?style=social)](https://github.com/Sachinchaurasiya360/InternHack/stargazers)
+&nbsp;&nbsp;
+[![Forks](https://img.shields.io/github/forks/Sachinchaurasiya360/InternHack?style=social)](https://github.com/Sachinchaurasiya360/InternHack/network/members)
+
+</div>
+
 ## License
 
 This project is open source. See [LICENSE](LICENSE) for details.
