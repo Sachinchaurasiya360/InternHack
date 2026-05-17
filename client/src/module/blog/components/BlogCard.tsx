@@ -2,32 +2,10 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Clock, Eye, User, Calendar } from "lucide-react";
 
-export type BlogCategory =
-  | "CAREER_ADVICE"
-  | "INTERVIEW_TIPS"
-  | "SALARY_GUIDE"
-  | "INDUSTRY_INSIGHTS"
-  | "RESUME_TIPS"
-  | "TECH_TRENDS";
-
-export interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  category: BlogCategory;
-  tags: string[];
-  author: { id: number; name: string; profilePic?: string };
-  status: "DRAFT" | "PUBLISHED";
-  featuredImage?: string;
-  readingTime: number;
-  viewCount: number;
-  isFeatured: boolean;
-  publishedAt?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
+import type { BlogPost, BlogCategory } from "@/lib/types";
+import { Link } from "react-router";
+import { motion } from "framer-motion";
+import { Clock, Eye, User, Calendar } from "lucide-react";
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",
