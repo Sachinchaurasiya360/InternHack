@@ -47,7 +47,7 @@ function MetaChip({
   children: React.ReactNode;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
       <span className="text-stone-400">{icon}</span>
       {children}
     </span>
@@ -417,7 +417,7 @@ export default function JobBrowsePage() {
                   key={`ext-${job.id}`}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
+                  transition={{ delay: i * 0.04 }}
                 >
                   <JobCard
                     to={job.slug ? `/jobs/ext/${job.slug}` : "#"}
@@ -482,7 +482,7 @@ export default function JobBrowsePage() {
                   key={`scr-${job.id}`}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
+                  transition={{ delay: i * 0.04 }}
                 >
                   <JobCard
                     href={job.applicationUrl}
@@ -583,7 +583,7 @@ export default function JobBrowsePage() {
                     key={job.id}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.03 }}
+                    transition={{ delay: i * 0.04 }}
                   >
                     <JobCard
                       to={`/jobs/${job.id}`}
