@@ -1,0 +1,21 @@
+# API image for local development only (docker compose). Production deploy still uses `server/dockerfile`.
+
+FROM node:20-bookworm-slim AS deps
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+FROM deps AS development
+
+ENV NODE_ENV=development
+
+COPY docker-entrypoint.dev.sh /usr/local/bin/docker-entrypoint-dev.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint-dev.sh
+
+EXPOSE 3000
+ENTRYPOINT ["docker-entrypoint-dev.sh"]

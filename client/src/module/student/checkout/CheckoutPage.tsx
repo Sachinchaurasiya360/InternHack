@@ -189,11 +189,19 @@ export default function CheckoutPage() {
           }
         }
         if (event.event_type === "checkout.closed") {
+          DodoPayments.Checkout.close();
           setLoading(null);
         }
       },
     });
   }, [pollSubscription]);
+
+  // Close overlay if user navigates away mid-checkout
+  useEffect(() => {
+    return () => {
+      DodoPayments.Checkout.close();
+    };
+  }, []);
 
   const handleSelectPlan = async (planKey: PlanKey) => {
     if (planKey === "free") return;

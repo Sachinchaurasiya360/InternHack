@@ -474,7 +474,7 @@ export default function RecruiterLandingPage() {
                 className={
                   plan.highlighted
                     ? "relative rounded-2xl border-2 border-lime-400/50 shadow-2xl shadow-lime-400/10 bg-white dark:bg-stone-900 flex flex-col"
-                    : "relative rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 flex flex-col"
+                    : "relative rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 flex flex-col hover:border-lime-400 hover:shadow-2xl hover:shadow-lime-400/10 hover:-translate-y-1 transition-all duration-300"
                 }
               >
                 {plan.highlighted && (

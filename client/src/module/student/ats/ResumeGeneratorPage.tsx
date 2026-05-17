@@ -925,7 +925,7 @@ export default function ResumeGeneratorPage() {
                   <ArrowLeft className="w-3.5 h-3.5" /> Back
                 </button>
 
-                <div className="flex lg:hidden gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                <div className="flex md:hidden gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                   <button
                     type="button"
                     onClick={() => setMobileView("editor")}
@@ -1042,8 +1042,8 @@ export default function ResumeGeneratorPage() {
             )}
 
             {/* ─── Split pane ─── */}
-            <div className="flex flex-col lg:flex-row gap-5 min-h-[calc(100vh-220px)]">
-              <div className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${mobileView === "preview" ? "hidden lg:flex" : "flex"}`}>
+            <div className="flex flex-col md:flex-row gap-5 min-h-[calc(100vh-220px)]">
+              <div className={`md:w-2/5 lg:w-1/2 min-w-0 ${cardCls} flex-col overflow-hidden ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
                 <CardHeader
                   kicker="source"
                   title="LaTeX editor"
@@ -1071,7 +1071,7 @@ export default function ResumeGeneratorPage() {
                 </div>
               </div>
 
-              <div className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${mobileView === "editor" ? "hidden lg:flex" : "flex"}`}>
+              <div className={`md:w-3/5 lg:w-1/2 min-w-0 ${cardCls} flex-col overflow-hidden ${mobileView === "editor" ? "hidden md:flex" : "flex"}`}>
                 <CardHeader
                   kicker="output"
                   title="PDF preview"

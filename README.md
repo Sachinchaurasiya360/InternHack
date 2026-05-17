@@ -75,17 +75,48 @@ git clone https://github.com/Sachinchaurasiya360/InternHack.git
 cd InternHack
 ```
 
+### Docker Compose (alternative)
+
+Requires [Docker Desktop](https://docs.docker.com/get-docker/) or Docker Engine plus Compose v2. You do **not** need a host-installed PostgreSQL or Node for this path. (**Redis is not used** by InternHack.) The API service image is defined in [`server/Dockerfile.dev`](server/Dockerfile.dev) for local dev only; production deploy continues to use [`server/dockerfile`](server/dockerfile).
+
+From the repo root:
+
+```bash
+cp .env.example .env
+# Set JWT_SECRET at minimum; add OAuth/AI keys as needed (see Environment Variables below).
+
+docker compose up --build
+```
+
+Compose falls back to the same Postgres defaults as `.env.example` when variables are absent, but the API refuses to boot without **`JWT_SECRET`**, which your root `.env` must supply.
+
+- Frontend **http://localhost:5173** — API **http://localhost:3000**
+- Source trees are bind-mounted into the containers; `CHOKIDAR_USEPOLLING` helps file watching on Docker Desktop for macOS.
+- On startup, the API container runs `prisma migrate deploy`, then `npm run dev`.
+- The frontend service runs **Vite in dev mode** (`npm run dev`) for hot reload; production client builds (`cd client && npm run build`) are still separate from this Compose file.
+
+Optional sample data:
+
+```bash
+docker compose exec server npm run seed
+```
+
+Uncomment the `postgres` `ports` section in `docker-compose.yml` if you need to reach Postgres from tools on your host defaulting to localhost.
+
+To install Node and Postgres on your machine instead, follow the numbered steps below.
+
 ### 2. Set up environment variables
 
 ```bash
-# Server
+# Without Docker — per-package env files
 cp server/.env.example server/.env
-# Fill in your values (see Environment Variables section below)
-
-# Client
 cp client/.env.example client/.env
-# Fill in VITE_GOOGLE_CLIENT_ID
+
+# Docker Compose — single consolidated file at the repo root
+cp .env.example .env
 ```
+
+Fill values as described below (Compose uses `.env`; per-package copies use `server/.env` and `client/.env`).
 
 ### 3. Install dependencies
 
@@ -140,7 +171,9 @@ Open **http://localhost:5173** and you're in!
 
 ## Environment Variables
 
-### Server (`server/.env`)
+For Docker Compose, use the **repo root [`.env.example`](.env.example)** as the master template (`cp .env.example .env`).
+
+### Server (`server/.env` or root `.env` with Compose)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -167,7 +200,7 @@ Open **http://localhost:5173** and you're in!
 
 > Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. Other services degrade gracefully.
 
-### Client (`client/.env`)
+### Client (`client/.env`, or root `.env` — only `VITE_*` vars are exposed to Vite)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -180,6 +213,8 @@ Open **http://localhost:5173** and you're in!
 
 ```
 InternHack/
+├── docker-compose.yml        # Postgres + API + client (dev, hot reload)
+├── .env.example              # Compose + combined env documentation
 ├── client/                   # React frontend (Vite)
 │   ├── src/
 │   │   ├── components/       # Shared UI components
@@ -273,6 +308,28 @@ We welcome contributions! See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the ful
 - Code style and conventions
 
 ---
+
+## Contributors  
+
+A huge thanks to all the amazing contributors who helped make **InternHack** better 🚀✨  
+
+<div align="center">
+  <a href="https://github.com/Sachinchaurasiya360/InternHack/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=Sachinchaurasiya360/InternHack" alt="Contributors" />
+  </a>
+</div>
+
+<br/><br/>
+
+## Project Support
+
+<div align="center">
+
+[![Stars](https://img.shields.io/github/stars/Sachinchaurasiya360/InternHack?style=social)](https://github.com/Sachinchaurasiya360/InternHack/stargazers)
+&nbsp;&nbsp;
+[![Forks](https://img.shields.io/github/forks/Sachinchaurasiya360/InternHack?style=social)](https://github.com/Sachinchaurasiya360/InternHack/network/members)
+
+</div>
 
 ## License
 

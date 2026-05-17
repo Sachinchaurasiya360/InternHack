@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight, Lock } from "lucide-react";
@@ -10,24 +10,7 @@ import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
-
-const STORAGE_KEY = "interview-progress";
-
-function getLocalProgress(): InterviewProgress {
-  try {
-    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: InterviewProgress = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
-        out[k] = { completed: (v as { completed: boolean }).completed };
-      }
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
+import { useInterviewProgress } from "./interviewProgress";
 
 const LEVEL_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -46,26 +29,7 @@ function MetaChip({ children, className = "" }: { children: React.ReactNode; cla
 export default function InterviewLessonsPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [showGate, setShowGate] = useState(false);
-  const [progress, setProgress] = useState<InterviewProgress>(() => getLocalProgress());
-
-  const refreshProgress = useCallback(() => setProgress(getLocalProgress()), []);
-
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY || e.key === null) refreshProgress();
-    };
-    const onVisible = () => {
-      if (document.visibilityState === "visible") refreshProgress();
-    };
-    window.addEventListener("storage", onStorage);
-    document.addEventListener("visibilitychange", onVisible);
-    window.addEventListener("focus", refreshProgress);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      document.removeEventListener("visibilitychange", onVisible);
-      window.removeEventListener("focus", refreshProgress);
-    };
-  }, [refreshProgress]);
+  const { progress, isLoading } = useInterviewProgress();
 
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
@@ -76,7 +40,7 @@ export default function InterviewLessonsPage() {
     });
   }, [progress]);
 
-  const totalCompleted = Object.values(progress).filter((p) => p.completed).length;
+  const totalCompleted = Object.values(progress as InterviewProgress).filter((p) => p.completed).length;
   const totalQuestions = questions.length;
   const overallPct = totalQuestions > 0 ? Math.round((totalCompleted / totalQuestions) * 100) : 0;
 
@@ -172,7 +136,7 @@ export default function InterviewLessonsPage() {
         >
           <div className="flex items-center justify-between gap-4 mb-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              overall progress
+              {isLoading ? "syncing progress" : "overall progress"}
             </span>
             <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
               {totalCompleted} / {totalQuestions}

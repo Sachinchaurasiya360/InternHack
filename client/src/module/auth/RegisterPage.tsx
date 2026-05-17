@@ -34,6 +34,59 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Validation functions
+  const validateName = (name: string): string => {
+    if (!name.trim()) return "Name is required";
+    if (name.trim().length < 2) return "Name must be at least 2 characters long";
+    return "";
+  };
+
+  const validateEmail = (email: string, userRole: string): string => {
+    if (!email.trim()) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Invalid email address";
+    if (userRole === "RECRUITER" && isPersonalEmail(email)) {
+      return "Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.";
+    }
+    return "";
+  };
+
+  const validatePassword = (password: string): string => {
+    if (!password) return "Password is required";
+    if (password.length < 6) return "Password must be at least 6 characters";
+    return "";
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    
+    // Real-time validation
+    const newErrors = { ...fieldErrors };
+    if (field === "name") {
+      const nameError = validateName(value);
+      if (nameError) {
+        newErrors.name = nameError;
+      } else {
+        delete newErrors.name;
+      }
+    } else if (field === "email") {
+      const emailError = validateEmail(value, role);
+      if (emailError) {
+        newErrors.email = emailError;
+      } else {
+        delete newErrors.email;
+      }
+    } else if (field === "password") {
+      const passwordError = validatePassword(value);
+      if (passwordError) {
+        newErrors.password = passwordError;
+      } else {
+        delete newErrors.password;
+      }
+    }
+    setFieldErrors(newErrors);
+  };
 
   const redirectAfterAuth = (userRole: string) => {
     if (returnTo) {
@@ -63,13 +116,24 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
-
-    if (role === "RECRUITER" && isPersonalEmail(form.email)) {
-      setError("Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.");
-      setLoading(false);
+    setFieldErrors({});
+    
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+    const nameError = validateName(form.name);
+    const emailError = validateEmail(form.email, role);
+    const passwordError = validatePassword(form.password);
+    
+    if (nameError) newErrors.name = nameError;
+    if (emailError) newErrors.email = emailError;
+    if (passwordError) newErrors.password = passwordError;
+    
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
       return;
     }
+
+    setLoading(true);
 
     try {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
@@ -87,24 +151,33 @@ export default function RegisterPage() {
           data?: {
             message?: string;
             errors?: {
-              fieldErrors?: {
-                email?: string[];
-              };
+              fieldErrors?: Record<string, string[]>;
             };
           };
         };
       };
 
-      const backendMessage =
-        error.response?.data?.errors?.fieldErrors?.email?.[0] ||
-        error.response?.data?.message ||
-        "Registration failed";
+      // Handle field-level errors from backend
+      const backendFieldErrors = error.response?.data?.errors?.fieldErrors;
+      if (backendFieldErrors && typeof backendFieldErrors === "object") {
+        const fieldErrorsObj: Record<string, string> = {};
+        for (const [field, messages] of Object.entries(backendFieldErrors)) {
+          if (Array.isArray(messages) && messages.length > 0) {
+            fieldErrorsObj[field] = messages[0];
+          }
+        }
+        if (Object.keys(fieldErrorsObj).length > 0) {
+          setFieldErrors(fieldErrorsObj);
+          return;
+        }
+      }
 
+      const backendMessage = error.response?.data?.message || "Registration failed";
       setError(backendMessage);
     } finally {
-    setLoading(false);
-  }
-};
+      setLoading(false);
+    }
+  };
 
 const isRecruiter = role === "RECRUITER";
 
@@ -120,17 +193,7 @@ return (
       isRecruiter={isRecruiter}
     />
 
-    <div className="relative flex items-center justify-center px-6 py-16 lg:py-0">
-      <Link
-        to="/"
-        className="absolute top-6 left-6 flex items-center gap-2 text-sm no-underline text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
-      >
-        <div className="relative">
-          <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-md object-contain" />
-          <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
-        </div>
-        <span className="font-bold text-stone-900 dark:text-stone-50">InternHack</span>
-      </Link>
+    <div className="flex items-center justify-center px-6 py-12 lg:py-0">
 
       <motion.div
         initial={{ opacity: 0, y: 16 }}
@@ -208,27 +271,35 @@ return (
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField label="Full name">
+            <FormField label="Full name" error={fieldErrors.name}>
               <input
                 type="text"
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                onChange={(e) => handleFieldChange("name", e.target.value)}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                  fieldErrors.name
+                    ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                    : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                }`}
                 placeholder="Jane Doe"
                 required
               />
             </FormField>
 
-            <FormField label={isRecruiter ? "Company email" : "Email"}>
+            <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email}>
               <input
                 type="email"
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                onChange={(e) => handleFieldChange("email", e.target.value)}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                  fieldErrors.email
+                    ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                    : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                }`}
                 placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
                 required
               />
-              {isRecruiter && (
+              {!fieldErrors.email && isRecruiter && (
                 <p className="mt-1.5 text-xs font-mono text-amber-600 dark:text-amber-400">
                   no personal gmail, yahoo, or outlook.
                 </p>
@@ -248,13 +319,17 @@ return (
               </FormField>
             )}
 
-            <FormField label="Password">
+            <FormField label="Password" error={fieldErrors.password}>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  onChange={(e) => handleFieldChange("password", e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.password
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
                   placeholder="Min. 6 characters"
                   required
                   minLength={6}
@@ -303,10 +378,12 @@ return (
 function FormField({
   label,
   right,
+  error,
   children,
 }: {
   label: string;
   right?: React.ReactNode;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -318,6 +395,11 @@ function FormField({
         {right}
       </div>
       {children}
+      {error && (
+        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -336,10 +418,19 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
   const stats = isRecruiter ? recruiterStats : studentStats;
 
   return (
-    <div className="hidden lg:flex relative flex-col justify-center p-12 xl:p-16 bg-stone-900 overflow-hidden">
+    <div className="hidden lg:flex relative flex-col justify-between px-12 xl:px-16 pt-8 pb-12 xl:pb-16 bg-stone-900 overflow-hidden">
       <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.06] auth-promo-dots" />
       <div aria-hidden className="absolute inset-0 pointer-events-none auth-promo-lines" />
 
+      <div className="relative mb-auto">
+        <Link to="/" className="inline-flex items-center gap-2.5 no-underline">
+          <div className="relative">
+            <img src="/logo.png" alt="InternHack" className="h-8 w-8 rounded-md object-contain" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
+          </div>
+          <span className="text-base font-bold tracking-tight text-stone-50">InternHack</span>
+        </Link>
+      </div>
       <div className="relative max-w-lg">
         <motion.div
           key={isRecruiter ? "r" : "s"}
