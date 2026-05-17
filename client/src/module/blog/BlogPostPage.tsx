@@ -4,12 +4,10 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  Clock,
   Eye,
   Calendar,
   User,
   Tag,
-  FileText,
   BookOpen,
   Share2,
 } from "lucide-react";
@@ -324,11 +322,10 @@ export default function BlogPostPage() {
             </div>
           ) : isError || !post ? (
             <EmptyState
-              icon={FileText}
               title="Article not found"
               description="The article you're looking for doesn't exist or may have been removed."
               actionLabel="Browse articles"
-              actionHref="/blog"
+              onAction={() => { window.location.href = "/blog"; }}
             />
           ) : (
             <motion.article
@@ -345,7 +342,7 @@ export default function BlogPostPage() {
                   <img
                     src={post.featuredImage}
                     alt={post.title}
-                    className="w-full h-72 md:h-[420px] object-cover"
+                    className="w-full h-72 md:h-105 object-cover"
                   />
                 </div>
               )}
@@ -413,7 +410,7 @@ export default function BlogPostPage() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">
-                  <BookmarkButton post={post} />
+                  <BookmarkButton postId={post.id} />
 
                   <ShareButton
                     title={post.title}
@@ -474,7 +471,7 @@ export default function BlogPostPage() {
                 </Link>
 
                 <div className="flex items-center gap-3">
-                  <BookmarkButton post={post} />
+                  <BookmarkButton postId={post.id} />
 
                   <button
                     onClick={() =>

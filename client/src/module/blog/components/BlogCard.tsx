@@ -3,9 +3,6 @@ import { motion } from "framer-motion";
 import { Clock, Eye, User, Calendar } from "lucide-react";
 
 import type { BlogPost, BlogCategory } from "@/lib/types";
-import { Link } from "react-router";
-import { motion } from "framer-motion";
-import { Clock, Eye, User, Calendar } from "lucide-react";
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",
@@ -72,7 +69,7 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${gradient} opacity-80`} />
+            <div className={`w-full h-full bg-linear-to-br ${gradient} opacity-80`} />
           )}
           {/* Category badge */}
           <span

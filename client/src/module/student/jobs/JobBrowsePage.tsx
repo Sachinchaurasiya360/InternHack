@@ -37,7 +37,6 @@ const FILTER_TAGS = [
   "Data Science",
 ] as const;
 
-const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
 
 function MetaChip({
   icon,

@@ -28,15 +28,6 @@ import type {
   Pagination,
 } from "../../lib/types";
 
-const CATEGORIES: { label: string; value: BlogCategory | "ALL" }[] = [
-  { label: "All", value: "ALL" },
-  { label: "Career Advice", value: "CAREER_ADVICE" },
-  { label: "Interview Tips", value: "INTERVIEW_TIPS" },
-  { label: "Salary Guide", value: "SALARY_GUIDE" },
-  { label: "Industry Insights", value: "INDUSTRY_INSIGHTS" },
-  { label: "Resume Tips", value: "RESUME_TIPS" },
-  { label: "Tech Trends", value: "TECH_TRENDS" },
-];
 
 export default function BlogListPage() {
   const [search, setSearch] = useState("");
@@ -138,16 +129,15 @@ export default function BlogListPage() {
       {/* Hero */}
       <BlogHero
         search={search}
-        onSearchChange={handleSearchChange}
+        setSearch={handleSearchChange}
       />
 
       <div className="max-w-6xl mx-auto px-6">
         {/* Category Pills */}
         <CategoryPills
-          categories={CATEGORIES}
           selected={category}
-          onSelect={(value) => {
-            setCategory(value as BlogCategory | "ALL");
+          onChange={(value) => {
+            setCategory(value);
             setPage(1);
           }}
         />
