@@ -12,7 +12,10 @@ export function useBookmarks() {
 
       if (!stored) return;
 
-      const parsed: number[] = JSON.parse(stored);
+      const raw: unknown = JSON.parse(stored);
+      const parsed = Array.isArray(raw)
+        ? raw.filter((x): x is number => typeof x === "number")
+        : [];
 
       setBookmarks(parsed);
     } catch (error) {

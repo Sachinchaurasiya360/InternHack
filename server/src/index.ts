@@ -175,9 +175,11 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.path === "/api/payments/webhook" || req.path === "/api/email-inbound/webhook",
+  skip: (req) => {
+    const path = req.originalUrl.split("?")[0];
+    return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
+  },
   message: { message: "Too many requests, please try again later" },
-  skip: (req) => req.originalUrl.split("?")[0] === PAYMENT_WEBHOOK_PATH,
 });
 app.use("/api/", globalLimiter);
 

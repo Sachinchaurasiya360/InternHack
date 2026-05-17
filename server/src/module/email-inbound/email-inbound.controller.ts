@@ -107,7 +107,7 @@ export async function handleInboundEmail(req: Request, res: Response): Promise<v
         </td></tr>
       </table>
       <div style="font-size:14px;line-height:1.6;color:#3f3f46;">
-        ${htmlBody || `<pre style="white-space:pre-wrap;font-family:inherit;">${escapeHtml(textBody)}</pre>`}
+        <pre style="white-space:pre-wrap;font-family:inherit;">${escapeHtml(textBody || htmlBody.replace(/<[^>]*>/g, " ") || "(no body)")}</pre>
       </div>
     </td>
   </tr>
