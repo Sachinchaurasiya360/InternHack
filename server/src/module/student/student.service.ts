@@ -153,6 +153,17 @@ export class StudentService {
     });
   }
 
+  async deleteExternalApplication(applicationId: number, studentId: number) {
+    const application = await prisma.externalJobApplication.findUnique({
+      where: { id: applicationId },
+    });
+    if (!application) throw new Error("External application not found");
+    if (application.studentId !== studentId) throw new Error("Not authorized");
+
+    await prisma.externalJobApplication.delete({ where: { id: applicationId } });
+    return { success: true };
+  }
+
   private async checkApplicationMilestone(studentId: number) {
     const [regular, external] = await Promise.all([
       prisma.application.count({ where: { studentId } }),

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight, Lock } from "lucide-react";
@@ -109,7 +109,7 @@ export default function InterviewLessonsPage() {
     });
   }, [progress]);
 
-  const totalCompleted = Object.values(progress).filter((p) => p.completed).length;
+  const totalCompleted = Object.values(progress as InterviewProgress).filter((p) => p.completed).length;
   const totalQuestions = questions.length;
   const overallPct = totalQuestions > 0 ? Math.round((totalCompleted / totalQuestions) * 100) : 0;
 
@@ -205,7 +205,7 @@ export default function InterviewLessonsPage() {
         >
           <div className="flex items-center justify-between gap-4 mb-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              overall progress
+              {isLoading ? "syncing progress" : "overall progress"}
             </span>
             <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
               {totalCompleted} / {totalQuestions}

@@ -59,6 +59,7 @@ import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
+import { learnRouter } from "./module/learn/learn.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
@@ -89,6 +90,7 @@ process.on("uncaughtException", (err) => {
 const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env["PORT"] || 3000;
+const PAYMENT_WEBHOOK_PATH = "/api/payments/webhook";
 
 // ── Security headers ──
 app.use(
@@ -147,8 +149,11 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", uptime: process.uptime() });
 });
 
-// Raw body for Dodo Payments webhook (must be BEFORE express.json())
+// Raw body for webhooks (must be BEFORE express.json())
 app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
+app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
+// Raw body for Dodo Payments webhook (must be BEFORE express.json())
+app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -171,6 +176,10 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    const path = req.originalUrl.split("?")[0];
+    return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
+  },
   message: { message: "Too many requests, please try again later" },
 });
 app.use("/api/", globalLimiter);
@@ -242,6 +251,7 @@ app.use("/api/hr/analytics", hrAnalyticsRouter);
 app.use("/api/email-inbound", emailInboundRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
+app.use("/api/learn", learnRouter);
 
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());

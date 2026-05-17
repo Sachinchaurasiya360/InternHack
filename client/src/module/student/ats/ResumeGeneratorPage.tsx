@@ -1,3 +1,4 @@
+import { LATEX_TEMPLATES } from "./latex-templates.data";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -54,8 +55,7 @@ const cardCls =
   "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
 const sectionKickerCls =
   "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
-const sectionTitleCls =
-  "text-sm font-bold text-stone-900 dark:text-stone-50";
+const sectionTitleCls = "text-sm font-bold text-stone-900 dark:text-stone-50";
 const inputCls =
   "w-full px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
 const labelCls =
@@ -103,8 +103,17 @@ export default function ResumeGeneratorPage() {
     refetchOnWindowFocus: true,
   });
 
-  const resumeUsage = usageData?.usage.find((u) => u.action === "GENERATE_RESUME");
-  const limitReached = resumeUsage ? resumeUsage.used >= resumeUsage.limit : false;
+  const resumeUsage = usageData?.usage.find(
+    (u) => u.action === "GENERATE_RESUME",
+  );
+  const limitReached = resumeUsage
+    ? resumeUsage.used >= resumeUsage.limit
+    : false;
+  const { refetch: refetchHistory } = useQuery({
+    queryKey: ["resume-history"],
+    queryFn: () => api.get("/ats/resume-history").then((r) => r.data),
+    staleTime: 30_000,
+  });
 
   const [latexCode, setLatexCode] = useState("");
   const [phase, setPhase] = useState<"form" | "editor">("form");
@@ -116,7 +125,10 @@ export default function ResumeGeneratorPage() {
   const [previewError, setPreviewError] = useState<string | null>(null);
   const prevBlobUrl = useRef<string | null>(null);
   const hasAutoCompiled = useRef(false);
-
+  const [selectedTemplateId, setSelectedTemplateId] = useState("professional");
+  const [showTemplateSwitch, setShowTemplateSwitch] = useState(false);
+  const [templateSwitchError, setTemplateSwitchError] = useState("");
+  const [parsedData, setParsedData] = useState<{jobDescription?: string; jobTitle?: string; keySkills?: string; useProfile?: boolean} | null>(null);
   const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
@@ -128,11 +140,25 @@ export default function ResumeGeneratorPage() {
   const profileSummary = useMemo(() => {
     if (!user) return null;
     const parts: string[] = [];
-    if (user.skills && user.skills.length > 0) parts.push(user.skills.join(", "));
-    if (user.college) parts.push(user.college + (user.graduationYear ? ` (${String(user.graduationYear)})` : ""));
-    if (user.company) parts.push(user.company + (user.designation ? ` - ${user.designation}` : ""));
-    if (user.projects && user.projects.length > 0) parts.push(`${String(user.projects.length)} project${user.projects.length > 1 ? "s" : ""}`);
-    if (user.achievements && user.achievements.length > 0) parts.push(`${String(user.achievements.length)} achievement${user.achievements.length > 1 ? "s" : ""}`);
+    if (user.skills && user.skills.length > 0)
+      parts.push(user.skills.join(", "));
+    if (user.college)
+      parts.push(
+        user.college +
+          (user.graduationYear ? ` (${String(user.graduationYear)})` : ""),
+      );
+    if (user.company)
+      parts.push(
+        user.company + (user.designation ? ` - ${user.designation}` : ""),
+      );
+    if (user.projects && user.projects.length > 0)
+      parts.push(
+        `${String(user.projects.length)} project${user.projects.length > 1 ? "s" : ""}`,
+      );
+    if (user.achievements && user.achievements.length > 0)
+      parts.push(
+        `${String(user.achievements.length)} achievement${user.achievements.length > 1 ? "s" : ""}`,
+      );
     return parts;
   }, [user]);
 
@@ -141,11 +167,15 @@ export default function ResumeGeneratorPage() {
   const handleGenerate = async () => {
     const jdLen = jobDescription.trim().length;
     if (jdLen > 0 && jdLen < JD_MIN_CHARS) {
-      toast.error(`Job description must be at least ${JD_MIN_CHARS} characters`);
+      toast.error(
+        `Job description must be at least ${JD_MIN_CHARS} characters`,
+      );
       return;
     }
     if (keySkills.length > KEY_SKILLS_MAX_CHARS) {
-      toast.error(`Key skills must be under ${KEY_SKILLS_MAX_CHARS.toLocaleString()} characters`);
+      toast.error(
+        `Key skills must be under ${KEY_SKILLS_MAX_CHARS.toLocaleString()} characters`,
+      );
       return;
     }
 
@@ -164,17 +194,50 @@ export default function ResumeGeneratorPage() {
         jobTitle: jobTitle.trim() || undefined,
         keySkills: keySkills.trim() || undefined,
         useProfile: useProfile && !!hasProfileData,
+        templateId: selectedTemplateId,
       });
+      
       setLatexCode(data.latex);
       setPhase("editor");
       setPdfUrl(null);
+      setParsedData({ jobDescription: jobDescription.trim() || undefined, jobTitle: jobTitle.trim() || undefined, keySkills: keySkills.trim() || undefined, useProfile: useProfile && !!hasProfileData });
       setPreviewError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+      void refetchHistory();
     } catch (err) {
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        "Failed to generate resume. Please try again.";
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Failed to generate resume. Please try again.";
       setError(msg);
+    } finally {
+      clearInterval(stepInterval);
+      setLoading(false);
+    }
+  };
+
+  const handleApplyTemplate = async () => {
+    if (!parsedData) return;
+    setShowTemplateSwitch(false);
+    setTemplateSwitchError("");
+    setLoading(true);
+    setError("");
+    setCurrentStep(0);
+    hasAutoCompiled.current = false;
+    const stepInterval = setInterval(() => {
+      setCurrentStep((s) => (s < GENERATION_STEPS.length - 1 ? s + 1 : s));
+    }, 1500);
+    try {
+      const { data } = await api.post("/ats/generate-resume", {
+        ...parsedData,
+        templateId: selectedTemplateId,
+      });
+      setLatexCode(data.latex);
+      setPdfUrl(null);
+      setPreviewError(null);
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to switch template.";
+      setTemplateSwitchError(msg);
+      setShowTemplateSwitch(true);
     } finally {
       clearInterval(stepInterval);
       setLoading(false);
@@ -192,31 +255,32 @@ export default function ResumeGeneratorPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const compileLatex = useCallback(
-    async (source: string): Promise<Blob> => {
-      try {
-        const res = await api.post("/latex/compile", { source }, { responseType: "blob" });
-        return res.data as Blob;
-      } catch (err: unknown) {
-        let msg = "Compilation failed. Please check your LaTeX syntax.";
-        let details = "";
-        if (err && typeof err === "object" && "response" in err) {
-          const resp = err as { response?: { data?: Blob } };
-          if (resp.response?.data instanceof Blob) {
-            try {
-              const parsed = JSON.parse(await resp.response.data.text());
-              msg = parsed.message || msg;
-              details = parsed.details || "";
-            } catch {
-              // non-JSON error body, keep default msg
-            }
+  const compileLatex = useCallback(async (source: string): Promise<Blob> => {
+    try {
+      const res = await api.post(
+        "/latex/compile",
+        { source },
+        { responseType: "blob" },
+      );
+      return res.data as Blob;
+    } catch (err: unknown) {
+      let msg = "Compilation failed. Please check your LaTeX syntax.";
+      let details = "";
+      if (err && typeof err === "object" && "response" in err) {
+        const resp = err as { response?: { data?: Blob } };
+        if (resp.response?.data instanceof Blob) {
+          try {
+            const parsed = JSON.parse(await resp.response.data.text());
+            msg = parsed.message || msg;
+            details = parsed.details || "";
+          } catch {
+            // non-JSON error body, keep default msg
           }
         }
-        throw new Error(details ? `${msg}\n\n${details}` : msg);
       }
-    },
-    [],
-  );
+      throw new Error(details ? `${msg}\n\n${details}` : msg);
+    }
+  }, []);
 
   const updatePreview = useCallback(
     async (source: string) => {
@@ -230,7 +294,9 @@ export default function ResumeGeneratorPage() {
         setPdfUrl(url);
       } catch (err) {
         setPdfUrl(null);
-        setPreviewError(err instanceof Error ? err.message : "Compilation failed.");
+        setPreviewError(
+          err instanceof Error ? err.message : "Compilation failed.",
+        );
       } finally {
         setCompiling(false);
       }
@@ -240,7 +306,6 @@ export default function ResumeGeneratorPage() {
 
   useEffect(() => {
     if (phase !== "editor" || !latexCode || hasAutoCompiled.current) return;
-
     hasAutoCompiled.current = true;
     void updatePreview(latexCode);
   }, [phase, latexCode, updatePreview]);
@@ -264,7 +329,9 @@ export default function ResumeGeneratorPage() {
         URL.revokeObjectURL(url);
       }, 1000);
     } catch (err) {
-      setPreviewError(err instanceof Error ? err.message : "Compilation failed.");
+      setPreviewError(
+        err instanceof Error ? err.message : "Compilation failed.",
+      );
     } finally {
       setCompiling(false);
     }
@@ -279,9 +346,12 @@ export default function ResumeGeneratorPage() {
 
   return (
     <div className="relative pb-16">
-      <SEO title="AI Resume Generator - InternHack" description="Generate a professional LaTeX resume with AI" noIndex />
+      <SEO
+        title="AI Resume Generator - InternHack"
+        description="Generate a professional LaTeX resume with AI"
+        noIndex
+      />
 
-      {/* ─── Editorial header ─── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -297,7 +367,8 @@ export default function ResumeGeneratorPage() {
             Generate your resume.
           </h1>
           <p className="mt-3 text-sm text-stone-500 max-w-md">
-            Describe the role, optionally pull in your profile, and get an ATS-optimized LaTeX resume you can edit and export as PDF.
+            Describe the role, optionally pull in your profile, and get an
+            ATS-optimized LaTeX resume you can edit and export as PDF.
           </p>
         </div>
         {resumeUsage && (
@@ -307,7 +378,10 @@ export default function ResumeGeneratorPage() {
             </span>
             <span className="text-sm font-bold tabular-nums text-stone-900 dark:text-stone-50">
               {resumeUsage.used}
-              <span className="text-stone-400 dark:text-stone-600 font-normal"> / {resumeUsage.limit}</span>
+              <span className="text-stone-400 dark:text-stone-600 font-normal">
+                {" "}
+                / {resumeUsage.limit}
+              </span>
             </span>
           </div>
         )}
@@ -325,7 +399,6 @@ export default function ResumeGeneratorPage() {
             transition={{ duration: 0.3 }}
           >
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-              {/* ─── Left column: input form ─── */}
               <div className="lg:col-span-2 space-y-6">
                 <div className={cardCls}>
                   <CardHeader kicker="step 01" title="Resume details" />
@@ -354,20 +427,29 @@ export default function ResumeGeneratorPage() {
                         onChange={(e) => {
                           const next = e.target.value.slice(0, JD_MAX_CHARS);
                           if (e.target.value.length > JD_MAX_CHARS) {
-                            toast.error(`Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`);
+                            toast.error(
+                              `Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`,
+                            );
                           }
                           setJobDescription(next);
                         }}
                         aria-describedby="jd-count"
                       />
-                      <div id="jd-count" className="flex items-center justify-between mt-1.5">
-                        <span className={`text-[10px] font-mono uppercase tracking-widest ${jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS ? "text-amber-600 dark:text-amber-400" : "text-stone-500"}`}>
-                          {jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS
+                      <div
+                        id="jd-count"
+                        className="flex items-center justify-between mt-1.5"
+                      >
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${jobDescription.length > 0 && jobDescription.length < JD_MIN_CHARS ? "text-amber-600 dark:text-amber-400" : "text-stone-500"}`}
+                        >
+                          {jobDescription.length > 0 &&
+                          jobDescription.length < JD_MIN_CHARS
                             ? `${String(jobDescription.length)} / ${String(JD_MIN_CHARS)} min`
                             : `min ${String(JD_MIN_CHARS)} chars`}
                         </span>
                         <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
-                          {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
+                          {jobDescription.length.toLocaleString()} /{" "}
+                          {JD_MAX_CHARS.toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -382,9 +464,14 @@ export default function ResumeGeneratorPage() {
                         value={keySkills}
                         maxLength={KEY_SKILLS_MAX_CHARS}
                         onChange={(e) => {
-                          const next = e.target.value.slice(0, KEY_SKILLS_MAX_CHARS);
+                          const next = e.target.value.slice(
+                            0,
+                            KEY_SKILLS_MAX_CHARS,
+                          );
                           if (e.target.value.length > KEY_SKILLS_MAX_CHARS) {
-                            toast.error(`Key skills capped at ${KEY_SKILLS_MAX_CHARS.toLocaleString()} characters.`);
+                            toast.error(
+                              `Key skills capped at ${KEY_SKILLS_MAX_CHARS.toLocaleString()} characters.`,
+                            );
                           }
                           setKeySkills(next);
                         }}
@@ -398,13 +485,13 @@ export default function ResumeGeneratorPage() {
                             : "text-stone-500"
                         }`}
                       >
-                        {keySkills.length.toLocaleString()} / {KEY_SKILLS_MAX_CHARS.toLocaleString()}
+                        {keySkills.length.toLocaleString()} /{" "}
+                        {KEY_SKILLS_MAX_CHARS.toLocaleString()}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* ─── Profile toggle card ─── */}
                 <div className={cardCls}>
                   <CardHeader
                     kicker="step 02"
@@ -429,11 +516,13 @@ export default function ResumeGeneratorPage() {
                             : "border-stone-300 dark:border-white/10 bg-stone-50/60 dark:bg-stone-950/40 hover:border-stone-400 dark:hover:border-white/20"
                       }`}
                     >
-                      <div className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${
-                        useProfile && hasProfileData
-                          ? "bg-lime-400 text-stone-950"
-                          : "bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-500"
-                      }`}>
+                      <div
+                        className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${
+                          useProfile && hasProfileData
+                            ? "bg-lime-400 text-stone-950"
+                            : "bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-500"
+                        }`}
+                      >
                         <User className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -441,15 +530,25 @@ export default function ResumeGeneratorPage() {
                           Pull from profile
                         </p>
                         <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
-                          {hasProfileData ? "auto-fill skills, projects, achievements" : "profile is empty"}
+                          {hasProfileData
+                            ? "auto-fill skills, projects, achievements"
+                            : "profile is empty"}
                         </p>
                       </div>
-                      <div className={`w-9 h-5 relative transition-colors shrink-0 rounded-sm ${
-                        useProfile && hasProfileData ? "bg-lime-400" : "bg-stone-200 dark:bg-white/10"
-                      }`}>
-                        <div className={`absolute top-0.5 w-4 h-4 bg-white dark:bg-stone-50 shadow-sm transition-all rounded-xs ${
-                          useProfile && hasProfileData ? "left-4.5" : "left-0.5"
-                        }`} />
+                      <div
+                        className={`w-9 h-5 relative transition-colors shrink-0 rounded-sm ${
+                          useProfile && hasProfileData
+                            ? "bg-lime-400"
+                            : "bg-stone-200 dark:bg-white/10"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 w-4 h-4 bg-white dark:bg-stone-50 shadow-sm transition-all rounded-xs ${
+                            useProfile && hasProfileData
+                              ? "left-4.5"
+                              : "left-0.5"
+                          }`}
+                        />
                       </div>
                     </button>
 
@@ -480,7 +579,10 @@ export default function ResumeGeneratorPage() {
                                 <div className="flex items-start gap-2">
                                   <Code2 className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
                                   <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-relaxed">
-                                    {user.skills.slice(0, 6).join(", ")}{user.skills.length > 6 ? ` +${String(user.skills.length - 6)} more` : ""}
+                                    {user.skills.slice(0, 6).join(", ")}
+                                    {user.skills.length > 6
+                                      ? ` +${String(user.skills.length - 6)} more`
+                                      : ""}
                                   </p>
                                 </div>
                               )}
@@ -488,7 +590,10 @@ export default function ResumeGeneratorPage() {
                                 <div className="flex items-start gap-2">
                                   <GraduationCap className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
                                   <p className="text-[11px] text-stone-600 dark:text-stone-400">
-                                    {user.college}{user.graduationYear ? ` (${String(user.graduationYear)})` : ""}
+                                    {user.college}
+                                    {user.graduationYear
+                                      ? ` (${String(user.graduationYear)})`
+                                      : ""}
                                   </p>
                                 </div>
                               )}
@@ -496,29 +601,61 @@ export default function ResumeGeneratorPage() {
                                 <div className="flex items-start gap-2">
                                   <FolderGit2 className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
                                   <p className="text-[11px] text-stone-600 dark:text-stone-400">
-                                    {user.projects.map((p) => p.title).join(", ")}
+                                    {user.projects
+                                      .map((p) => p.title)
+                                      .join(", ")}
                                   </p>
                                 </div>
                               )}
-                              {user?.achievements && user.achievements.length > 0 && (
-                                <div className="flex items-start gap-2">
-                                  <Trophy className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
-                                  <p className="text-[11px] text-stone-600 dark:text-stone-400">
-                                    {user.achievements.map((a) => a.title).join(", ")}
-                                  </p>
-                                </div>
-                              )}
+                              {user?.achievements &&
+                                user.achievements.length > 0 && (
+                                  <div className="flex items-start gap-2">
+                                    <Trophy className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
+                                    <p className="text-[11px] text-stone-600 dark:text-stone-400">
+                                      {user.achievements
+                                        .map((a) => a.title)
+                                        .join(", ")}
+                                    </p>
+                                  </div>
+                                )}
                             </div>
                             <Link
                               to="/student/profile"
                               className="inline-flex items-center gap-1 mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors no-underline"
                             >
-                              edit profile <ChevronRight className="w-2.5 h-2.5" />
+                              edit profile{" "}
+                              <ChevronRight className="w-2.5 h-2.5" />
                             </Link>
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
+                  </div>
+                </div>
+
+                <div className={cardCls}>
+                  <CardHeader kicker="step 03" title="Choose template" />
+                  <div className="p-5">
+                    <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+                      {LATEX_TEMPLATES.map((tpl) => (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setSelectedTemplateId(tpl.id)}
+                          className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
+                            selectedTemplateId === tpl.id
+                              ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
+                              : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
+                          }`}
+                        >
+                          <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
+                          <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-2">{tpl.description}</p>
+                          <span className="inline-block mt-1.5 text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500">
+                            {tpl.category}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -561,7 +698,6 @@ export default function ResumeGeneratorPage() {
                 )}
               </div>
 
-              {/* ─── Right column: empty / loading / error ─── */}
               <div className="lg:col-span-3">
                 <AnimatePresence mode="wait">
                   {loading && (
@@ -592,11 +728,9 @@ export default function ResumeGeneratorPage() {
                             transition={{ duration: 0.6, ease: "easeOut" }}
                           />
                         </div>
-
                         <p className="sr-only" aria-live="polite" aria-atomic="true">
                           {`Step ${String(currentStep + 1)} of ${String(GENERATION_STEPS.length)}: ${GENERATION_STEPS[currentStep]?.label ?? ""}`}
                         </p>
-
                         <div className="space-y-1" role="list" aria-label="Resume generation progress">
                           {GENERATION_STEPS.map((step, i) => {
                             const Icon = step.icon;
@@ -617,52 +751,63 @@ export default function ResumeGeneratorPage() {
                                       : "border border-transparent opacity-50"
                                 }`}
                               >
-                                <div
-                                  className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
-                                    isDone
-                                      ? "bg-lime-400 text-stone-950"
-                                      : isActive
-                                        ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
-                                        : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
-                                  }`}
-                                >
+                                <div className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
+                                  isDone
+                                    ? "bg-lime-400 text-stone-950"
+                                    : isActive
+                                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                                      : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
+                                }`}>
                                   {isDone ? (
                                     <CheckCircle className="w-3.5 h-3.5" />
                                   ) : isActive ? (
-                                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}>
+                                    <motion.div
+                                      animate={{ rotate: 360 }}
+                                      transition={{
+                                        duration: 1.5,
+                                        repeat: Infinity,
+                                        ease: "linear",
+                                      }}
+                                    >
                                       <Icon className="w-3.5 h-3.5" />
                                     </motion.div>
                                   ) : (
                                     <Icon className="w-3.5 h-3.5" />
                                   )}
                                 </div>
-                                <span
-                                  className={`text-sm font-medium flex-1 ${
-                                    isDone
-                                      ? "text-stone-600 dark:text-stone-400"
-                                      : isActive
-                                        ? "text-stone-900 dark:text-stone-50"
-                                        : "text-stone-400 dark:text-stone-600"
-                                  }`}
-                                >
+                                <span className={`text-sm font-medium flex-1 ${
+                                  isDone
+                                    ? "text-stone-600 dark:text-stone-400"
+                                    : isActive
+                                      ? "text-stone-900 dark:text-stone-50"
+                                      : "text-stone-400 dark:text-stone-600"
+                                }`}>
                                   {step.label}
                                 </span>
                                 {isDone && (
-                                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
-                                    done
-                                  </span>
+                                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">done</span>
                                 )}
                                 {isActive && (
                                   <div className="flex gap-1">
                                     {[0, 0.15, 0.3].map((delay) => (
-                                      <motion.div key={delay} className="w-1.5 h-1.5 rounded-full bg-lime-400" animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.8, repeat: Infinity, delay }} />
+                                      <motion.div
+                                        key={delay}
+                                        className="w-1.5 h-1.5 rounded-full bg-lime-400"
+                                        animate={{
+                                          scale: [1, 1.4, 1],
+                                          opacity: [0.5, 1, 0.5],
+                                        }}
+                                        transition={{
+                                          duration: 0.8,
+                                          repeat: Infinity,
+                                          delay,
+                                        }}
+                                      />
                                     ))}
                                   </div>
                                 )}
                                 {isPending && (
-                                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
-                                    pending
-                                  </span>
+                                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">pending</span>
                                 )}
                               </motion.div>
                             );
@@ -685,7 +830,9 @@ export default function ResumeGeneratorPage() {
                           <FileText className="w-7 h-7 text-stone-400 dark:text-stone-600" />
                           <span className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400" />
                         </div>
-                        <div className={sectionKickerCls + " justify-center mb-2"}>
+                        <div
+                          className={sectionKickerCls + " justify-center mb-2"}
+                        >
                           <span className="h-1 w-1 bg-lime-400" />
                           preview panel
                         </div>
@@ -694,23 +841,26 @@ export default function ResumeGeneratorPage() {
                         </h3>
                         <p className="text-sm text-stone-500 leading-relaxed">
                           Fill in job details, toggle{" "}
-                          <span className="font-bold text-stone-900 dark:text-stone-50">
-                            Pull from profile
-                          </span>
+                          <span className="font-bold text-stone-900 dark:text-stone-50">Pull from profile</span>
                           , then click Generate to draft a LaTeX resume.
                         </p>
                         <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                           {[
-                            { label: "ai powered", icon: <Wand2 className="w-3 h-3" /> },
-                            { label: "ats ready", icon: <ScanSearch className="w-3 h-3" /> },
-                            { label: "editable", icon: <Zap className="w-3 h-3" /> },
+                            {
+                              label: "ai powered",
+                              icon: <Wand2 className="w-3 h-3" />,
+                            },
+                            {
+                              label: "ats ready",
+                              icon: <ScanSearch className="w-3 h-3" />,
+                            },
+                            {
+                              label: "editable",
+                              icon: <Zap className="w-3 h-3" />,
+                            },
                           ].map((tag) => (
-                            <div
-                              key={tag.label}
-                              className="bg-white dark:bg-stone-900 px-2 py-2.5 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500"
-                            >
-                              {tag.icon}
-                              {tag.label}
+                            <div key={tag.label} className="bg-white dark:bg-stone-900 px-2 py-2.5 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                              {tag.icon}{tag.label}
                             </div>
                           ))}
                         </div>
@@ -739,7 +889,9 @@ export default function ResumeGeneratorPage() {
                         <div className="w-14 h-14 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-center justify-center mx-auto mb-4">
                           <AlertCircle className="w-6 h-6 text-red-500" />
                         </div>
-                        <p className="text-sm text-stone-700 dark:text-stone-300 mb-5 max-w-sm mx-auto">{error}</p>
+                        <p className="text-sm text-stone-700 dark:text-stone-300 mb-5 max-w-sm mx-auto">
+                          {error}
+                        </p>
                         <button
                           type="button"
                           onClick={handleGenerate}
@@ -773,8 +925,7 @@ export default function ResumeGeneratorPage() {
                   <ArrowLeft className="w-3.5 h-3.5" /> Back
                 </button>
 
-                {/* Mobile toggle */}
-                <div className="flex lg:hidden gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                <div className="flex md:hidden gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                   <button
                     type="button"
                     onClick={() => setMobileView("editor")}
@@ -804,7 +955,11 @@ export default function ResumeGeneratorPage() {
                   onClick={handleCopyLatex}
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-lime-500" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5 text-lime-500" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
                   {copied ? "Copied" : "Copy"}
                 </button>
 
@@ -814,7 +969,11 @@ export default function ResumeGeneratorPage() {
                   disabled={compiling}
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-50 dark:text-stone-900 bg-stone-900 dark:bg-stone-50 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {compiling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                  {compiling ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Play className="w-3.5 h-3.5" />
+                  )}
                   {compiling ? "Compiling..." : "Compile"}
                 </button>
 
@@ -829,6 +988,14 @@ export default function ResumeGeneratorPage() {
 
                 <button
                   type="button"
+                  onClick={() => { setShowTemplateSwitch(!showTemplateSwitch); setTemplateSwitchError(""); }}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                >
+                  <FileCode2 className="w-3.5 h-3.5" /> Change Template
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => { setPhase("form"); setError(""); }}
                   className="ml-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-900 dark:text-stone-50 bg-transparent border border-stone-300 dark:border-white/15 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors cursor-pointer"
                 >
@@ -837,14 +1004,46 @@ export default function ResumeGeneratorPage() {
               </div>
             </div>
 
+            {showTemplateSwitch && (
+              <div className={`${cardCls} mb-5 p-5`}>
+                <p className="text-xs font-bold text-stone-900 dark:text-stone-50 mb-3">Switch template (uses cached content, no quota used)</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-1 mb-4">
+                  {LATEX_TEMPLATES.map((tpl) => (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      onClick={() => setSelectedTemplateId(tpl.id)}
+                      className={`text-left p-3 rounded-md border transition-colors cursor-pointer ${
+                        selectedTemplateId === tpl.id
+                          ? "border-lime-400 bg-lime-50/60 dark:bg-lime-400/5"
+                          : "border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
+                      }`}
+                    >
+                      <p className="text-xs font-bold text-stone-900 dark:text-stone-50">{tpl.name}</p>
+                      <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-1">{tpl.description}</p>
+                    </button>
+                  ))}
+                </div>
+                {templateSwitchError && (
+                  <div className="flex items-start gap-2.5 p-3 mb-3 bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 rounded-md text-xs border border-red-200 dark:border-red-900/40">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>{templateSwitchError}</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleApplyTemplate}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+                >
+                  {loading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Applying...</> : <><RefreshCw className="w-3.5 h-3.5" /> Apply Template</>}
+                </button>
+              </div>
+            )}
+
             {/* ─── Split pane ─── */}
-            <div className="flex flex-col lg:flex-row gap-5 min-h-[calc(100vh-220px)]">
-              {/* Editor */}
-              <div
-                className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${
-                  mobileView === "preview" ? "hidden lg:flex" : "flex"
-                }`}
-              >
+            <div className="flex flex-col md:flex-row gap-5 min-h-[calc(100vh-220px)]">
+              <div className={`md:w-2/5 lg:w-1/2 min-w-0 ${cardCls} flex-col overflow-hidden ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
                 <CardHeader
                   kicker="source"
                   title="LaTeX editor"
@@ -872,12 +1071,7 @@ export default function ResumeGeneratorPage() {
                 </div>
               </div>
 
-              {/* Preview */}
-              <div
-                className={`lg:w-1/2 ${cardCls} flex-col overflow-hidden ${
-                  mobileView === "editor" ? "hidden lg:flex" : "flex"
-                }`}
-              >
+              <div className={`md:w-3/5 lg:w-1/2 min-w-0 ${cardCls} flex-col overflow-hidden ${mobileView === "editor" ? "hidden md:flex" : "flex"}`}>
                 <CardHeader
                   kicker="output"
                   title="PDF preview"
@@ -901,11 +1095,12 @@ export default function ResumeGeneratorPage() {
                       title="PDF Preview"
                     />
                   )}
-
                   {previewError && (
                     <div className="absolute inset-0 flex items-center justify-center p-6">
                       <div className="max-w-md w-full">
-                        <div className={`${cardCls} border-red-200 dark:border-red-900/40 p-6`}>
+                        <div
+                          className={`${cardCls} border-red-200 dark:border-red-900/40 p-6`}
+                        >
                           <div className="flex items-start gap-3 mb-4">
                             <div className="w-10 h-10 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-center justify-center shrink-0">
                               <AlertCircle className="w-5 h-5 text-red-500" />
@@ -916,9 +1111,7 @@ export default function ResumeGeneratorPage() {
                                 error
                               </div>
                               <h3 className={sectionTitleCls + " mt-1"}>Compilation failed</h3>
-                              <p className="text-xs text-stone-500 mt-0.5">
-                                Fix the errors below and try again.
-                              </p>
+                              <p className="text-xs text-stone-500 mt-0.5">Fix the errors below and try again.</p>
                             </div>
                           </div>
                           <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 rounded-md p-4">
@@ -937,7 +1130,6 @@ export default function ResumeGeneratorPage() {
                       </div>
                     </div>
                   )}
-
                   {!pdfUrl && !previewError && !compiling && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center max-w-xs">
@@ -945,24 +1137,19 @@ export default function ResumeGeneratorPage() {
                           <Play className="w-7 h-7 text-stone-400 dark:text-stone-600" />
                           <span className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400" />
                         </div>
-                        <div className={sectionKickerCls + " justify-center mb-2"}>
+                        <div
+                          className={sectionKickerCls + " justify-center mb-2"}
+                        >
                           <span className="h-1 w-1 bg-lime-400" />
                           idle
                         </div>
-                        <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
-                          Ready to compile.
-                        </h3>
+                        <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">Ready to compile.</h3>
                         <p className="text-sm text-stone-500 leading-relaxed">
-                          Click{" "}
-                          <span className="font-bold text-stone-900 dark:text-stone-50">
-                            Compile
-                          </span>{" "}
-                          to render your AI-generated LaTeX as a PDF.
+                          Click <span className="font-bold text-stone-900 dark:text-stone-50">Compile</span> to render your AI-generated LaTeX as a PDF.
                         </p>
                       </div>
                     </div>
                   )}
-
                   {!pdfUrl && compiling && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
@@ -971,20 +1158,24 @@ export default function ResumeGeneratorPage() {
                           <motion.div
                             className="absolute inset-0 rounded-md border border-lime-400 border-t-transparent"
                             animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              ease: "linear",
+                            }}
                           />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <Code2 className="w-5 h-5 text-lime-500" />
                           </div>
                         </div>
-                        <div className={sectionKickerCls + " justify-center mb-2"}>
+                        <div
+                          className={sectionKickerCls + " justify-center mb-2"}
+                        >
                           <span className="h-1 w-1 bg-lime-400" />
                           compiling
                         </div>
                         <h3 className={sectionTitleCls}>Rendering LaTeX</h3>
-                        <p className="text-xs text-stone-500 mt-1">
-                          This usually takes a few seconds.
-                        </p>
+                        <p className="text-xs text-stone-500 mt-1">This usually takes a few seconds.</p>
                       </div>
                     </div>
                   )}

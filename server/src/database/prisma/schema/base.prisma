@@ -80,10 +80,13 @@ model user {
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
-  roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
-  scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
-  privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
-  generatedCoverLetters generatedCoverLetter[]      @relation("StudentCoverLetters")
+  roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
+  scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
+  privateRoadmaps       roadmap[]                @relation("UserPrivateRoadmaps")
+  generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
+  leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
+  generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
+  interviewProgress     userInterviewProgress?       @relation("UserInterviewProgress")
 
   @@index([role])
   @@index([role, isActive])
@@ -583,6 +586,20 @@ model ycCompany {
   @@index([name])
 }
 
+model leetcodeImportLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  username   String?
+  source     String   @default("LEETCODE_USERNAME")
+  matched    Int      @default(0)
+  imported   Int      @default(0)
+  importedAt DateTime @default(now())
+  user       user     @relation("UserLeetcodeImports", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([importedAt])
+}
+
 model dsaTopic {
   id          Int      @id @default(autoincrement())
   name        String
@@ -697,6 +714,18 @@ model studentSqlProgress {
 
   @@unique([studentId, exerciseId])
   @@index([studentId])
+}
+
+model userInterviewProgress {
+  id            String   @id @default(cuid())
+  userId        Int      @unique
+  user          user     @relation("UserInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+  completedIds  String[] @default([])
+  bookmarkedIds String[] @default([])
+  lastVisitedId String?
+  lastVisitedAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model aptitudeCategory {

@@ -77,8 +77,8 @@ export default function ApplicationProgressPage() {
                 onClick={() => window.open(googleCalendarUrl({
                   title: `${application.job?.title} @ ${application.job?.company} — Application Deadline`,
                   details: `Applied via InternHack: https://internhack.xyz/student/applications/${application.id}\\nCompany: ${application.job?.company}\\nRole: ${application.job?.title}\\nLocation: ${application.job?.location || "Remote"}`,
-                  start: new Date(application.job.deadline!),
-                  end: new Date(new Date(application.job.deadline!).getTime() + 30 * 60000),
+                  start: new Date(application.job?.deadline!),
+                  end: new Date(new Date(application.job?.deadline!).getTime() + 30 * 60000),
                 }), '_blank')}
               >
                 <CalendarIcon className="w-3 h-3" /> Google Calendar

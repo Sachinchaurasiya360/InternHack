@@ -226,7 +226,7 @@ function GraphDiagram({
 function VisualizeTab() {
   const [inputStr, setInputStr] = useState(DEFAULT_GRAPH);
   const [directed, setDirected] = useState(false);
-  const parsed = parseEdgeList(inputStr);
+  const parsed = useMemo(() => parseEdgeList(inputStr), [inputStr]);
 
   const { ids, edges, pos, adj, matrix } = useMemo(() => {
     const p = parsed ?? { nodeIds: [], edges: [] };

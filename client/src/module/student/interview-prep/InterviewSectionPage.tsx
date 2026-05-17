@@ -55,14 +55,14 @@ export default function InterviewSectionPage() {
 
   const section = sections.find((s) => s.id === sectionSlug);
 
-  if (section && !section.freeTier && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
-
   const sectionQuestions = useMemo(
     () => questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug],
   );
+
+  if (section && !section.freeTier && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
   if (!section) {
     return (
@@ -148,7 +148,7 @@ export default function InterviewSectionPage() {
         >
           <div className="flex items-center justify-between gap-4 mb-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              section progress
+              {isLoading ? "syncing progress" : "section progress"}
             </span>
             <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
               {completedCount} / {sectionQuestions.length}
