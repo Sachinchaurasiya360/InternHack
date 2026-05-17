@@ -1024,7 +1024,7 @@ export async function generateCertificatePdf(input: CertificateInput): Promise<B
 
     // Underline the name
     const nameWidth = Math.min(
-      doc.widthOfString(input.userName, { fontSize: 30 }),
+      doc.widthOfString(input.userName),
       380,
     );
     doc.rect(cx - nameWidth / 2, 250, nameWidth, 1).fill(colors.accent);
