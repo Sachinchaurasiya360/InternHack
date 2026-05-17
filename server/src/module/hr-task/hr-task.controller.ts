@@ -23,8 +23,8 @@ export class HRTaskController {
 
   async getMyTasks(req: Request, res: Response) {
     try {
-      const employeeId = Number(req.query["employeeId"]);
-      if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
+      if (!req.user || !req.user.id) return res.status(401).json({ message: "Authentication required" });
+      const employeeId = Number(req.user.id);
 
       const query = taskQuerySchema.parse(req.query);
       const data = await this.taskService.getMyTasks(employeeId, query);
@@ -37,8 +37,8 @@ export class HRTaskController {
 
   async getTeamTasks(req: Request, res: Response) {
     try {
-      const managerId = Number(req.query["managerId"]);
-      if (isNaN(managerId)) return res.status(400).json({ message: "managerId required" });
+      if (!req.user || !req.user.id) return res.status(401).json({ message: "Authentication required" });
+      const managerId = Number(req.user.id);
 
       const query = taskQuerySchema.parse(req.query);
       const data = await this.taskService.getTeamTasks(managerId, query);
@@ -102,13 +102,18 @@ export class HRTaskController {
 
   async addComment(req: Request, res: Response) {
     try {
+      if (!req.user || !req.user.id) return res.status(401).json({ message: "Authentication required" });
+      
       const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid task ID" });
 
       const result = taskCommentSchema.safeParse(req.body);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
-      const task = await this.taskService.addComment(id, result.data);
+      // Override userId with the authenticated user's ID to prevent IDOR
+      const commentData = { ...result.data, userId: Number(req.user.id) };
+
+      const task = await this.taskService.addComment(id, commentData);
       return res.json({ message: "Comment added", task });
     } catch (error) {
       if (error instanceof Error && error.message === "Task not found")
