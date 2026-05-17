@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { Link } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
@@ -242,6 +242,40 @@ function StatCell({
 }
 
 function WinsMarquee() {
+  const controls = useAnimation();
+  const isPaused = useRef(false);
+  
+  const startAnimation = () => {
+    controls.start({
+      x: ["0%", "-50%"],
+      transition: { duration: 90, repeat: Infinity, ease: "linear" },
+    });
+  };
+
+  useEffect( () => {
+    startAnimation();
+  }, []);
+
+  const mouseEnter = () => {
+    isPaused.current = true;
+    controls.stop();
+  };
+
+  const mouseLeave = () => {
+    isPaused.current = false;
+    startAnimation();
+  };
+
+  const onclicked = () => {
+    if(isPaused.current) {
+      isPaused.current = false;
+      startAnimation();
+    } else {
+      isPaused.current = true;
+      controls.stop();
+    }
+  };
+
   const row = [...WINS, ...WINS];
   return (
     <div
@@ -257,10 +291,15 @@ function WinsMarquee() {
         </span>
       </div>
 
+      <div
+        onMouseEnter={mouseEnter}
+        onMouseLeave={mouseLeave}
+        onClick={onclicked}
+        className="cursor-pointer"
+      >
       <motion.div
         className="flex gap-3 whitespace-nowrap w-max"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        animate={ controls }
       >
         {row.map((w, i) => (
           <div
@@ -284,6 +323,7 @@ function WinsMarquee() {
         ))}
       </motion.div>
     </div>
+  </div>
   );
 }
 
