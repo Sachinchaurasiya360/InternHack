@@ -257,23 +257,43 @@ export class StudentService {
     if (application.studentId !== studentId) throw new Error("Not authorized");
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
 
-    const submission = await prisma.roundSubmission.upsert({
-      where: { applicationId_roundId: { applicationId, roundId } },
-      update: {
-        fieldAnswers: JSON.parse(JSON.stringify(data.fieldAnswers)),
-        attachments: data.attachments,
-        submittedAt: new Date(),
-        status: "COMPLETED",
-      },
-      create: {
-        applicationId,
-        roundId,
-        fieldAnswers: JSON.parse(JSON.stringify(data.fieldAnswers)),
-        attachments: data.attachments,
-        submittedAt: new Date(),
-        status: "COMPLETED",
-      },
-    });
+    let submission;
+    try {
+      submission = await prisma.roundSubmission.create({
+        data: {
+          applicationId,
+          roundId,
+          fieldAnswers: JSON.parse(JSON.stringify(data.fieldAnswers)),
+          attachments: data.attachments,
+          submittedAt: new Date(),
+          status: "COMPLETED",
+        }
+      });
+    } catch (err: any) {
+      if (err.code === "P2002") {
+        const updateResult = await prisma.roundSubmission.updateMany({
+          where: { applicationId, roundId, status: { not: "COMPLETED" } },
+          data: {
+            fieldAnswers: JSON.parse(JSON.stringify(data.fieldAnswers)),
+            attachments: data.attachments,
+            submittedAt: new Date(),
+            status: "COMPLETED",
+          }
+        });
+        
+        if (updateResult.count === 0) {
+          throw new Error("You have already submitted this assessment.");
+        }
+        
+        submission = await prisma.roundSubmission.findUnique({
+          where: { applicationId_roundId: { applicationId, roundId } }
+        });
+      } else {
+        throw err;
+      }
+    }
+
+    if (!submission) throw new Error("Failed to process submission.");
 
     // Auto-grade assessment if the round has autoGrade enabled
     if (round.autoGrade) {
