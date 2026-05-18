@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
 import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
@@ -88,7 +88,12 @@ export default function CompanyDetailPage() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const { data: company, isLoading: companyLoading } = useQuery<Company>({
+  const { 
+    data: company, 
+    isLoading: companyLoading,
+    isError: companyIsError,
+    error: companyError 
+  } = useQuery<Company>({
     queryKey: queryKeys.companies.detail(slug!),
     queryFn: () => api.get(`/companies/${slug}`).then((r) => r.data.company),
     enabled: !!slug,
@@ -97,11 +102,14 @@ export default function CompanyDetailPage() {
   const {
     data: reviewsData,
     isLoading: reviewsLoading,
+    isError: reviewsIsError,
+    error: reviewsError,
     refetch: refetchReviews,
   } = useQuery<{ reviews: CompanyReview[] }>({
     queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
     queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
     enabled: !!slug,
+    placeholderData: keepPreviousData,
   });
 
   const reviews = reviewsData?.reviews || [];
@@ -123,7 +131,38 @@ export default function CompanyDetailPage() {
     );
   }
 
-  if (!company) {
+  if (companyIsError || reviewsIsError) {
+    const errorMsg = companyIsError 
+      ? (companyError as any)?.response?.data?.message || companyError?.message || "Failed to load company"
+      : (reviewsError as any)?.response?.data?.message || reviewsError?.message || "Failed to load reviews";
+      
+    const errorContent = (
+      <div className="max-w-6xl mx-auto px-6 pt-24 text-center">
+        <Kicker>error / api</Kicker>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-red-500">
+          Something went wrong
+        </h1>
+        <p className="mt-2 text-stone-500">{errorMsg}</p>
+        <Link
+          to={backPath}
+          className="mt-4 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to companies
+        </Link>
+      </div>
+    );
+    
+    if (isInsideLayout) return errorContent;
+    return (
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <Navbar />
+        {errorContent}
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!companyIsError && !company) {
     const notFound = (
       <div className="max-w-6xl mx-auto px-6 pt-24 text-center">
         <Kicker>error / 404</Kicker>
