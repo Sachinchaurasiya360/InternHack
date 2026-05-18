@@ -84,7 +84,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               const active =
                 item.href === "/"
                   ? location.pathname === "/"
-                  : location.pathname.startsWith(item.href);
+                  : location.pathname.startsWith(item.href + "/") || location.pathname === item.href;
               return (
                 <Link key={item.href} to={item.href} className="no-underline">
                   <button
