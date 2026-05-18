@@ -74,6 +74,7 @@ model user {
   jobPreference         userJobPreference?          @relation("UserJobPreferences")
   jobMatches            jobMatch[]                  @relation("UserJobMatches")
   agentConversations    jobAgentConversation[]      @relation("UserAgentConversations")
+  jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
@@ -845,6 +846,18 @@ model usageLog {
   user      user        @relation("UserUsageLogs", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, action, createdAt])
+}
+
+model jobAgentEmailLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jobIds    Int[]    @default([])
+  context   String?
+  sentCount Int
+  createdAt DateTime @default(now())
+  user      user     @relation("UserJobAgentEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
 
 model hackathon {

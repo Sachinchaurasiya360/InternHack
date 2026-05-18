@@ -25,6 +25,7 @@ const chatBurstLimiter = rateLimit({
 
 router.post("/chat",           chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chat);
 router.post("/chat/stream",    chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chatStream);
+router.post("/email-jobs",     jobAgentController.emailJobs);
 router.get("/conversation",    jobAgentController.getConversation);
 router.delete("/conversation", jobAgentController.resetConversation);
 
