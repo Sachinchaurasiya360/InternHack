@@ -113,7 +113,7 @@ export default function RecruiterLoginPage() {
                     to="/forgot-password"
                     className="text-xs font-mono text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline"
                   >
-                    forgot?
+                    Forgot Password?
                   </Link>
                 }
               >
