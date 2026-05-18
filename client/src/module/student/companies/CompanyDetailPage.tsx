@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
+import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -82,35 +84,32 @@ export default function CompanyDetailPage() {
   const { user, isAuthenticated } = useAuthStore();
   const location = useLocation();
   const isInsideLayout = location.pathname.startsWith("/student/");
-  const [company, setCompany] = useState<Company | null>(null);
-  const [reviews, setReviews] = useState<CompanyReview[]>([]);
   const [sortBy, setSortBy] = useState("latest");
-  const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  useEffect(() => {
-    if (!slug) return;
-    setLoading(true);
-    Promise.all([
-      api.get(`/companies/${slug}`),
-      api.get(`/companies/${slug}/reviews?sort=${sortBy}`),
-    ])
-      .then(([companyRes, reviewsRes]) => {
-        setCompany(companyRes.data.company);
-        setReviews(reviewsRes.data.reviews);
-      })
-      .catch(() => setCompany(null))
-      .finally(() => setLoading(false));
-  }, [slug, sortBy]);
+  const { data: company, isLoading: companyLoading } = useQuery<Company>({
+    queryKey: queryKeys.companies.detail(slug!),
+    queryFn: () => api.get(`/companies/${slug}`).then((r) => r.data.company),
+    enabled: !!slug,
+  });
+
+  const {
+    data: reviewsData,
+    isLoading: reviewsLoading,
+    refetch: refetchReviews,
+  } = useQuery<{ reviews: CompanyReview[] }>({
+    queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
+    queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
+    enabled: !!slug,
+  });
+
+  const reviews = reviewsData?.reviews || [];
+  const loading = companyLoading || reviewsLoading;
 
   const refreshReviews = () => {
-    if (!slug) return;
     setShowReviewForm(false);
-    api
-      .get(`/companies/${slug}/reviews?sort=${sortBy}`)
-      .then((res) => setReviews(res.data.reviews))
-      .catch(() => {});
+    refetchReviews();
   };
 
   const backPath = isInsideLayout ? "/student/companies" : "/companies";
