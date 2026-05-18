@@ -182,9 +182,9 @@ function UpgradeBanner({
 }
 
 // ─── Cards ──────────────────────────────────────────────
-const CompanyCard = React.memo(function CompanyCard({ company }: { company: Company }) {
+const CompanyCard = React.memo(function CompanyCard({ company, insideLayout }: { company: Company; insideLayout: boolean }) {
   return (
-    <Link to={`/companies/${company.slug}`} className={cardBase}>
+    <Link to={`${insideLayout ? "/student" : ""}/companies/${company.slug}`} className={cardBase}>
       <div className="flex items-start gap-3 mb-3">
         <CompanyMark label={company.name} src={company.logo} />
         <div className="flex-1 min-w-0">
@@ -247,9 +247,9 @@ const CompanyCard = React.memo(function CompanyCard({ company }: { company: Comp
   );
 });
 
-const YCCard = React.memo(function YCCard({ company }: { company: YCCompany }) {
+const YCCard = React.memo(function YCCard({ company, insideLayout }: { company: YCCompany; insideLayout: boolean }) {
   return (
-    <Link to={`/yc/${company.slug}`} className={cardBase}>
+    <Link to={`${insideLayout ? "/student" : ""}/yc/${company.slug}`} className={cardBase}>
       <div className="flex items-start gap-3 mb-3">
         <CompanyMark label={company.name} src={company.smallLogoUrl} />
         <div className="flex-1 min-w-0">
@@ -1039,7 +1039,8 @@ export default function CompanyListPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
-                      <CompanyCard company={company} />
+                     <CompanyCard company={company} insideLayout={isInsideLayout} />
+
                     </motion.div>
                   ))}
                 </div>
@@ -1145,7 +1146,7 @@ export default function CompanyListPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
-                      <YCCard company={company} />
+                     <YCCard company={company} insideLayout={isInsideLayout} />
                     </motion.div>
                   ))}
                 </div>
