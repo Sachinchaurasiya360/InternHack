@@ -19,6 +19,13 @@ export function Footer() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const handleNavigation = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
@@ -120,10 +127,18 @@ export function Footer() {
                 Account
               </h4>
               <ul className="space-y-3">
-                <li><Link to="/register" className={linkClass}>Start free</Link></li>
-                <li><Link to="/login" className={linkClass}>Sign in</Link></li>
-                <li><Link to="/blog" className={linkClass}>Blog</Link></li>
-                <li><Link to="/contact" className={linkClass}>Contact</Link></li>
+                <li><Link to="/register" className={linkClass} onClick={handleNavigation}>Start free</Link></li>
+                <li><Link to="/login" className={linkClass} onClick={handleNavigation}>Sign in</Link></li>
+                <li><Link to="/blog" className={linkClass} onClick={handleNavigation}>Blog</Link></li>
+                <li>
+                  <Link
+                  to="/contact"
+                  className={linkClass}
+                  onClick={handleNavigation} 
+                  >
+                    Contact
+                  </Link>
+                  </li>
               </ul>
             </div>
           </div>
@@ -189,8 +204,14 @@ export function Footer() {
             <Link to="/privacy" className="hover:text-stone-400 transition-colors no-underline">Privacy</Link>
             <Link to="/refund" className="hover:text-stone-400 transition-colors no-underline">Refunds</Link>
             <Link to="/shipping" className="hover:text-stone-400 transition-colors no-underline">Shipping</Link>
-            <Link to="/contact" className="hover:text-stone-400 transition-colors no-underline">Contact</Link>
-          </div>
+            <Link
+              to="/contact"
+              className="hover:text-stone-400 transition-colors no-underline"
+              onClick={handleNavigation}
+            >
+              Contact
+            </Link>
+        </div>
         </div>
       </div>
     </footer>
