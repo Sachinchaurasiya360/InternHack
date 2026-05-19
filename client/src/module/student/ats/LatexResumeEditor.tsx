@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router";
+import { Link, useSearchParams, useNavigate, useLocation } from "react-router";
 import toast from "@/components/ui/toast";
 import { motion } from "framer-motion";
 import {
@@ -22,6 +22,7 @@ import {
   Undo2,
   Redo2,
   LayoutGrid,
+  Wand2,
 } from "lucide-react";
 import CodeMirror from "@uiw/react-codemirror";
 import AtsToolsNav from "./AtsToolsNav";
@@ -130,15 +131,19 @@ const darkBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-50 dark:text-stone-900 bg-stone-900 dark:bg-stone-50 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function LatexResumeEditor() {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const templateId = searchParams.get("template");
 
   const templateOverride = useMemo(() => {
+    if (location.state?.initialLatex) {
+      return { code: location.state.initialLatex, files: [] };
+    }
     if (!templateId) return null;
     const tmpl = getLatexTemplate(templateId);
     if (!tmpl) return null;
     return { code: tmpl.source, files: tmpl.supportingFiles };
-  }, [templateId]);
+  }, [templateId, location.state]);
 
   const { code, setCode, supportingFiles, setSupportingFiles } = useLatexAutoSave(
     DEFAULT_TEMPLATE,
@@ -147,6 +152,9 @@ export default function LatexResumeEditor() {
 
   useEffect(() => {
     if (templateId) setSearchParams({}, { replace: true });
+    if (location.state?.initialLatex) {
+      window.history.replaceState({}, document.title);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -312,6 +320,17 @@ export default function LatexResumeEditor() {
   return (
     <div className="relative pb-16">
       <SEO title="LaTeX Resume Editor" noIndex />
+
+      {location.state?.banner && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6 p-4 bg-lime-50 dark:bg-lime-900/20 border border-lime-200 dark:border-lime-900/50 rounded-md text-sm text-lime-800 dark:text-lime-300 flex items-start gap-3"
+        >
+          <Wand2 className="w-5 h-5 text-lime-600 dark:text-lime-400 shrink-0 mt-0.5" />
+          <p className="leading-relaxed">{location.state.banner}</p>
+        </motion.div>
+      )}
 
       {/* ─── Editorial header ─── */}
       <motion.div
