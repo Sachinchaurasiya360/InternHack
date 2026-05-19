@@ -30,7 +30,7 @@ const FEATURES: {
   desc: string;
   icon: typeof Briefcase;
   stat: string;
-  span?: "single" | "double";
+  span?: "single" | "double" | "full";
 }[] = [
   {
     title: "Hiring pipelines",
@@ -68,6 +68,7 @@ const FEATURES: {
     desc: "Cycles from draft to completion, measurable goals, self and manager assessments.",
     icon: TrendingUp,
     stat: "review cycles",
+    span: "double",
   },
   {
     title: "Compliance and workflows",
@@ -80,7 +81,7 @@ const FEATURES: {
     desc: "Real-time headcount, attrition, leave patterns, attendance trends, payroll summaries.",
     icon: BarChart3,
     stat: "live dashboard",
-    span: "double",
+    span: "full",
   },
 ];
 
@@ -359,7 +360,7 @@ export default function RecruiterLandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.4 }}
-                className={f.span === "double" ? "md:col-span-2" : ""}
+                className={f.span === "full" ? "md:col-span-3" : f.span === "double" ? "md:col-span-2" : ""}
               >
                 <div className="relative h-full flex flex-col p-8 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors">
                   <div className="flex items-center justify-between mb-8">
@@ -473,7 +474,7 @@ export default function RecruiterLandingPage() {
                 className={
                   plan.highlighted
                     ? "relative rounded-2xl border-2 border-lime-400/50 shadow-2xl shadow-lime-400/10 bg-white dark:bg-stone-900 flex flex-col"
-                    : "relative rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 flex flex-col"
+                    : "relative rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 flex flex-col hover:border-lime-400 hover:shadow-2xl hover:shadow-lime-400/10 hover:-translate-y-1 transition-all duration-300"
                 }
               >
                 {plan.highlighted && (

@@ -158,6 +158,27 @@ export class StudentController {
     }
   }
 
+  async deleteExternalApplication(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId) || applicationId <= 0) {
+        return res.status(400).json({ message: "Invalid application ID" });
+      }
+
+      const result = await this.studentService.deleteExternalApplication(applicationId, req.user.id);
+      return res.status(200).json({ message: "External application removed", ...result });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "External application not found") return res.status(404).json({ message: error.message });
+        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+      }
+      logger.error("Failed to delete external application", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async getExternalApplicationStatus(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -254,5 +275,42 @@ export class StudentController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  async downloadCalendarEvent(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid ID" });
+
+      const type = req.query["type"] as string;
+      const roundIdParam = req.query["roundId"] as string;
+      
+      if (type !== "deadline" && type !== "round") {
+        return res.status(400).json({ message: "Invalid event type" });
+      }
+
+      const eventData = await this.studentService.getCalendarEventData(applicationId, req.user.id, type, roundIdParam ? parseInt(roundIdParam, 10) : undefined);
+      
+      const { generateICS } = await import("../../utils/calendar.utils.js");
+      const icsContent = generateICS(eventData);
+
+      res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="event.ics"`);
+      return res.send(icsContent);
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Application not found" || error.message === "Round not found" || error.message === "Event not found") {
+           return res.status(404).json({ message: error.message });
+        }
+        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "Missing roundId") return res.status(400).json({ message: error.message });
+        if (error.message === "Round has no schedule") return res.status(400).json({ message: error.message });
+      }
+      logger.error("Failed to generate calendar event", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
 
 }

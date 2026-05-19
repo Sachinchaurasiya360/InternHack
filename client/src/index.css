@@ -182,6 +182,21 @@ body {
   -webkit-user-drag: none;
 }
 
+.job-agent-copy-button {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .job-agent-copy-button {
+    opacity: 0;
+  }
+
+  .job-agent-copy-group:hover .job-agent-copy-button,
+  .job-agent-copy-button:focus-visible {
+    opacity: 1;
+  }
+}
+
 @media print {
   .proctored-test {
     display: none !important;

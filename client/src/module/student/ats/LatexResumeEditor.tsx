@@ -238,10 +238,15 @@ export default function LatexResumeEditor() {
   }, [code, supportingFiles]);
 
   const handleCopyLatex = async () => {
+  try {
     await navigator.clipboard.writeText(code);
     setCopied(true);
+    toast.success("Copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
-  };
+  } catch {
+    toast.error("Failed to copy");
+  }
+};
 
   const handleCompile = async () => {
     setCompiling(true);

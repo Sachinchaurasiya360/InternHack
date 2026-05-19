@@ -1675,21 +1675,22 @@ export class AdminService {
     const html = this.renderBroadcastHtml(input.subject, input.body);
 
     if (input.testEmail) {
+      const testEmailAddr = input.testEmail;
       const sample = (s: string) =>
         s
           .replace(/\{\{?\s*username\s*\}?\}/gi, "Sachin")
           .replace(/\{\{?\s*name\s*\}?\}/gi, "Sachin")
           .replace(/\{\{?\s*firstName\s*\}?\}/gi, "Sachin")
-          .replace(/\{\{?\s*email\s*\}?\}/gi, input.testEmail);
+          .replace(/\{\{?\s*email\s*\}?\}/gi, testEmailAddr);
       await sendEmail({ to: input.testEmail, subject: `[TEST] ${sample(input.subject)}`, html: sample(html) });
       return { test: true, sent: 1, failed: 0, recipients: 1 };
     }
 
-    const where: Prisma.UserWhereInput = { isActive: true };
+    const where: Prisma.userWhereInput = { isActive: true };
     if (input.filter.role !== "ALL") where.role = input.filter.role as UserRole;
     if (typeof input.filter.isVerified === "boolean") where.isVerified = input.filter.isVerified;
     if (input.filter.subscriptionPlan !== "ALL") {
-      where.subscriptionPlan = input.filter.subscriptionPlan as Prisma.UserWhereInput["subscriptionPlan"];
+      where.subscriptionPlan = input.filter.subscriptionPlan as Prisma.userWhereInput["subscriptionPlan"];
     }
 
     const users = await prisma.user.findMany({ where, select: { email: true, name: true } });

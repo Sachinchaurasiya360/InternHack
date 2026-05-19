@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.workatastartup.com)",
+      "WebFetch(domain:api.ycombinator.com)",
+      "WebFetch(domain:k6aci9ca4z-dsn.algolia.net)",
+      "Bash(curl -s \"https://api.ycombinator.com/v0.1/companies?q=deel&isHiring=true\")",
+      "Bash(curl -s \"https://www.workatastartup.com/companies/deel\" -A \"Mozilla/5.0\")",
+      "Bash(curl -s \"https://www.workatastartup.com/companies/deel\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" -H \"Accept: text/html,application/xhtml+xml\")",
+      "Bash(curl -s -X POST \"https://K6ACI9CA4Z-dsn.algolia.net/1/indexes/Job_production/query\" -H \"X-Algolia-Application-Id: K6ACI9CA4Z\" -H \"X-Algolia-API-Key: d6b3a20cc8b7afc96a5f1efd8dfab62a\" -H \"Content-Type: application/json\" -d '{\"query\":\"\",\"filters\":\"company_slug:deel\",\"hitsPerPage\":20}')",
+      "Bash(curl -v -X POST \"https://K6ACI9CA4Z-dsn.algolia.net/1/indexes/Job_production/query\" -H \"X-Algolia-Application-Id: K6ACI9CA4Z\" -H \"X-Algolia-API-Key: d6b3a20cc8b7afc96a5f1efd8dfab62a\" -H \"Content-Type: application/json\" -d \"{\\\\\"query\\\\\":\\\\\"\\\\\",\\\\\"filters\\\\\":\\\\\"company_slug:deel\\\\\",\\\\\"hitsPerPage\\\\\":5}\")",
+      "Bash(curl -s \"https://www.workatastartup.com/api/companies/deel/jobs\" -H \"Accept: application/json\")",
+      "Bash(curl -s \"https://www.workatastartup.com/api/v1/jobs?company=deel\" -H \"Accept: application/json\")"
+    ]
+  }
+}

@@ -149,8 +149,8 @@ export async function listPublishedRoadmaps(opts: {
 }
 
 export async function getRoadmapBySlug(slug: string) {
-  return prisma.roadmap.findFirst({
-    where: { slug, isPublished: true },
+  return prisma.roadmap.findUnique({
+    where: { slug },
     include: {
       sections: {
         orderBy: { orderIndex: "asc" },
@@ -169,7 +169,7 @@ export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {
   return prisma.roadmapTopic.findFirst({
     where: {
       slug: topicSlug,
-      section: { roadmap: { slug: roadmapSlug, isPublished: true } },
+      section: { roadmap: { slug: roadmapSlug } },
     },
     include: {
       resources: { orderBy: { orderIndex: "asc" } },
@@ -178,7 +178,7 @@ export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {
           slug: true,
           title: true,
           orderIndex: true,
-          roadmap: { select: { slug: true, title: true } },
+          roadmap: { select: { slug: true, title: true, isPublished: true, ownerUserId: true } },
         },
       },
     },
@@ -341,12 +341,30 @@ export async function updateTopicProgress(args: {
     create.notes = args.notes;
   }
 
-  return prisma.roadmapTopicProgress.upsert({
+
+  const progress = await prisma.roadmapTopicProgress.upsert({
     where: { enrollmentId_topicId: { enrollmentId: enrollment.id, topicId: topic.id } },
     update: data,
     create,
   });
+
+  // Check if all topics are now complete
+  let roadmapCompleted = false;
+  if (args.status === "COMPLETED") {
+    const fullEnrollment = await getEnrollmentForUser({
+      userId: args.userId,
+      enrollmentId: args.enrollmentId,
+    });
+    if (fullEnrollment) {
+      const summary = summarizeProgress(fullEnrollment);
+      roadmapCompleted = summary.percentComplete === 100;
+    }
+  }
+
+  return { progress, roadmapCompleted };
 }
+
+
 
 export async function recomputePace(args: {
   userId: number;

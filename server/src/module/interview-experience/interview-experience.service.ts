@@ -123,7 +123,7 @@ export class InterviewExperienceService {
         userId,
         role: input.role,
         experienceYears: input.experienceYears ?? null,
-        interviewYear: input.interviewYear,
+        interviewYear: input.interviewYear ?? new Date().getFullYear(),
         interviewMonth: input.interviewMonth ?? null,
         source: input.source,
         difficulty: input.difficulty,
@@ -152,7 +152,7 @@ export class InterviewExperienceService {
     if (!viewerIsAdmin && existing.userId !== viewerId) throw new Error("Forbidden");
 
     const data: Prisma.interviewExperienceUpdateInput = {};
-    if (input.companyId !== undefined) data.companyId = input.companyId ?? null;
+    if (input.companyId !== undefined) data.company = input.companyId ? { connect: { id: input.companyId } } : { disconnect: true };
     if (input.companyName !== undefined) data.companyName = input.companyName ?? null;
     if (input.role !== undefined) data.role = input.role;
     if (input.experienceYears !== undefined) data.experienceYears = input.experienceYears;
@@ -245,7 +245,7 @@ export class InterviewExperienceService {
       _count: { _all: true },
     });
 
-    const companyIds = grouped.map((g) => g.companyId);
+    const companyIds = grouped.map((g) => g.companyId).filter((id): id is number => id !== null);
     const companies = await prisma.company.findMany({
       where: { id: { in: companyIds } },
       select: {
@@ -264,7 +264,7 @@ export class InterviewExperienceService {
     return {
       companies: grouped
         .map((g) => {
-          const c = companyMap.get(g.companyId);
+          const c = g.companyId ? companyMap.get(g.companyId) : undefined;
           if (!c) return null;
           return {
             ...c,

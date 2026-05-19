@@ -799,4 +799,36 @@ Return ONLY a JSON array, no markdown fences:
       },
     });
   }
+
+  async getActivity(studentId: number, year: number) {
+    const startDate = new Date(Date.UTC(year, 0, 1));
+    const endDate = new Date(Date.UTC(year + 1, 0, 1));
+
+    const progress = await prisma.studentDsaProgress.findMany({
+      where: {
+        studentId,
+        solved: true,
+        solvedAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      select: {
+        solvedAt: true,
+      },
+    });
+
+    const activityMap = new Map<string, number>();
+
+    for (const p of progress) {
+      const date = p.solvedAt.toISOString().split("T")[0];
+      if (date) {
+        activityMap.set(date, (activityMap.get(date) || 0) + 1);
+      }
+    }
+
+    return Array.from(activityMap.entries())
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
 }

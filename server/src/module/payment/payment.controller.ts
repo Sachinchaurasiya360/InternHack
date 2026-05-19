@@ -70,7 +70,7 @@ export class PaymentController {
         return;
       }
 
-      const { sessionId } = req.params;
+      const sessionId = req.params.sessionId as string;
       if (!sessionId) {
         res.status(400).json({ message: "Missing sessionId" });
         return;
