@@ -91,7 +91,7 @@ export default function LoginPage() {
         stats={[
           { value: "300", suffix: "+", label: "interview q's" },
           { value: "11", suffix: "", label: "coding tracks" },
-          { value: "14", suffix: "t", label: "templates" },
+          { value: "14", suffix: "", label: "templates" },
         ]}
       />
 
