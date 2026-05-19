@@ -29,11 +29,11 @@ const resumeFilter = (_req: Express.Request, file: Express.Multer.File, cb: mult
 };
 
 const imageFilter = (_req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const allowed = ["image/jpeg", "image/png", "image/webp"];
+  const allowed = ["image/jpeg", "image/png"];
   if (allowed.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only JPEG, PNG, and WebP images are allowed"));
+    cb(new Error("Only JPEG, PNG images are allowed"));
   }
 };
 

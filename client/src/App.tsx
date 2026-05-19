@@ -5,6 +5,7 @@ import toast, { Toaster } from "./components/ui/toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
+import BackToTopButton from "./components/common/BackToTopButton";
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
   return lazy(() =>
@@ -309,6 +310,7 @@ function App() {
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>
+      <BackToTopButton />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           {/* Public routes */}

@@ -25,6 +25,8 @@ import type {
   Roadmap,
   RoadmapEnrollmentListItem,
 } from "../../../lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 const DAYS: DayOfWeek[] = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 const DAY_LABEL: Record<DayOfWeek, string> = {
@@ -74,8 +76,6 @@ export default function RoadmapEnrollPage() {
   const { slug = "" } = useParams();
   const navigate = useNavigate();
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
-  const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState(0);
 
@@ -84,32 +84,30 @@ export default function RoadmapEnrollPage() {
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>("NEW");
   const [goal, setGoal] = useState<EnrollmentGoal>("JOB_READY");
 
-  const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
+  const { data: roadmapData, isLoading: roadmapLoading, isError: roadmapError } = useQuery({
+    queryKey: queryKeys.roadmaps.detail(slug),
+    queryFn: () => api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`).then(res => res.data),
+    enabled: !!slug,
+  });
+
+  const { data: enrollmentsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+  });
+
+  const roadmap = roadmapData?.roadmap || null;
+  const enrollments = enrollmentsData?.enrollments || [];
+  const loading = roadmapLoading;
 
   useEffect(() => {
-    let mounted = true;
-    api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`)
-      .then((res) => mounted && setRoadmap(res.data.roadmap))
-      .catch(() => mounted && setRoadmap(null))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, [slug]);
-
-  useEffect(() => {
-    let mounted = true;
-    api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments")
-      .then((res) => {
-        if (!mounted) return;
-        setEnrollments(res.data.enrollments);
-        const existing = res.data.enrollments.find((e) => e.roadmap.slug === slug);
-        if (existing) {
-          // Already enrolled, jump them to the canvas instead of letting them re-enroll
-          navigate(`/learn/roadmaps/${slug}`, { replace: true });
-        }
-      })
-      .catch(() => { /* ok */ });
-    return () => { mounted = false; };
-  }, [slug, navigate]);
+    if (enrollmentsData) {
+      const existing = enrollmentsData.enrollments.find((e) => e.roadmap.slug === slug);
+      if (existing) {
+        // Already enrolled, jump them to the canvas instead of letting them re-enroll
+        navigate(`/learn/roadmaps/${slug}`, { replace: true });
+      }
+    }
+  }, [enrollmentsData, slug, navigate]);
 
   const targetWeeks = useMemo(() => {
     if (!roadmap) return 0;
@@ -160,6 +158,18 @@ export default function RoadmapEnrollPage() {
       </Chrome>
     );
   }
+  if (roadmapError) {
+    return (
+      <Chrome {...chromeProps}>
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load enrollment data</p>
+          <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server.</p>
+          <Button onClick={() => window.location.reload()} variant="outline" size="sm">Retry</Button>
+        </div>
+      </Chrome>
+    );
+  }
+
   if (!roadmap) {
     return (
       <Chrome {...chromeProps}>

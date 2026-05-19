@@ -13,10 +13,77 @@ export default function RecruiterRegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Validation functions
+  const validateName = (name: string): string => {
+    if (!name.trim()) return "Name is required";
+    if (name.trim().length < 2) return "Name must be at least 2 characters long";
+    return "";
+  };
+
+  const validateEmail = (email: string): string => {
+    if (!email.trim()) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Invalid email address";
+    return "";
+  };
+
+  const validatePassword = (password: string): string => {
+    if (!password) return "Password is required";
+    if (password.length < 6) return "Password must be at least 6 characters";
+    return "";
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    
+    // Real-time validation
+    const newErrors = { ...fieldErrors };
+    if (field === "name") {
+      const nameError = validateName(value);
+      if (nameError) {
+        newErrors.name = nameError;
+      } else {
+        delete newErrors.name;
+      }
+    } else if (field === "email") {
+      const emailError = validateEmail(value);
+      if (emailError) {
+        newErrors.email = emailError;
+      } else {
+        delete newErrors.email;
+      }
+    } else if (field === "password") {
+      const passwordError = validatePassword(value);
+      if (passwordError) {
+        newErrors.password = passwordError;
+      } else {
+        delete newErrors.password;
+      }
+    }
+    setFieldErrors(newErrors);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
+    
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+    const nameError = validateName(form.name);
+    const emailError = validateEmail(form.email);
+    const passwordError = validatePassword(form.password);
+    
+    if (nameError) newErrors.name = nameError;
+    if (emailError) newErrors.email = emailError;
+    if (passwordError) newErrors.password = passwordError;
+    
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -35,8 +102,34 @@ export default function RecruiterRegisterPage() {
         navigate("/recruiters");
       }
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Registration failed");
+      const error = err as {
+        response?: {
+          data?: {
+            message?: string;
+            errors?: {
+              fieldErrors?: Record<string, string[]>;
+            };
+          };
+        };
+      };
+
+      // Handle field-level errors from backend
+      const backendFieldErrors = error.response?.data?.errors?.fieldErrors;
+      if (backendFieldErrors && typeof backendFieldErrors === "object") {
+        const fieldErrorsObj: Record<string, string> = {};
+        for (const [field, messages] of Object.entries(backendFieldErrors)) {
+          if (Array.isArray(messages) && messages.length > 0) {
+            fieldErrorsObj[field] = messages[0];
+          }
+        }
+        if (Object.keys(fieldErrorsObj).length > 0) {
+          setFieldErrors(fieldErrorsObj);
+          return;
+        }
+      }
+
+      const backendMessage = error.response?.data?.message || "Registration failed";
+      setError(backendMessage);
     } finally {
       setLoading(false);
     }
@@ -100,23 +193,31 @@ export default function RecruiterRegisterPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <FormField label="Full name">
+              <FormField label="Full name" error={fieldErrors.name}>
                 <input
                   type="text"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.name
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
                   placeholder="Jane Doe"
                   required
                 />
               </FormField>
 
-              <FormField label="Work email">
+              <FormField label="Work email" error={fieldErrors.email}>
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  onChange={(e) => handleFieldChange("email", e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.email
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
                   placeholder="you@company.com"
                   required
                 />
@@ -133,13 +234,17 @@ export default function RecruiterRegisterPage() {
                 />
               </FormField>
 
-              <FormField label="Password">
+              <FormField label="Password" error={fieldErrors.password}>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                    onChange={(e) => handleFieldChange("password", e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                      fieldErrors.password
+                        ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                        : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                    }`}
                     placeholder="Min. 6 characters"
                     required
                     minLength={6}
@@ -147,6 +252,7 @@ export default function RecruiterRegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -205,10 +311,12 @@ export default function RecruiterRegisterPage() {
 function FormField({
   label,
   right,
+  error,
   children,
 }: {
   label: string;
   right?: React.ReactNode;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -220,6 +328,11 @@ function FormField({
         {right}
       </div>
       {children}
+      {error && (
+        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -235,24 +348,8 @@ function AuthPromoPanel({
 }) {
   return (
     <div className="hidden lg:flex relative flex-col justify-between p-12 xl:p-16 bg-stone-900 overflow-hidden">
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-          backgroundSize: "28px 28px",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.06] auth-promo-dots" />
+      <div aria-hidden className="absolute inset-0 pointer-events-none auth-promo-lines" />
 
       <div className="relative">
         <Link to="/" className="inline-flex items-center gap-2.5 no-underline">

@@ -11,6 +11,15 @@ interface ActivityResponse {
   count: number;
 }
 
+const formatActivityDate = (date: string) => {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, (month ?? 1) - 1, day ?? 1).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
 export function DsaHeatmap() {
   const [year, setYear] = useState(new Date().getUTCFullYear());
   const theme = useThemeStore((s) => s.theme);
@@ -115,7 +124,7 @@ export function DsaHeatmap() {
                   React.cloneElement(
                     block,
                     {},
-                    <title>{`${activity.count} problems solved on ${new Date(activity.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}</title>
+                    <title>{`${activity.count} problems solved on ${formatActivityDate(activity.date)}`}</title>
                   )
                 }
               />

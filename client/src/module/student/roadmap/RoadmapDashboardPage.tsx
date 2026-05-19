@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, BookOpen, Download, Map, Loader2 } from "lucide-react";
@@ -7,20 +7,18 @@ import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type { RoadmapEnrollmentListItem } from "../../../lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 export default function RoadmapDashboardPage() {
-  const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments")
-      .then((res) => mounted && setEnrollments(res.data.enrollments))
-      .catch(() => mounted && setEnrollments([]))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, []);
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+  });
+
+  const enrollments = data?.enrollments || [];
 
   const downloadPdf = async (id: number, slug: string) => {
     setDownloadingId(id);
@@ -62,6 +60,14 @@ export default function RoadmapDashboardPage() {
           {[0, 1].map((i) => (
             <div key={i} className="h-44 bg-gray-100 dark:bg-gray-900 rounded-2xl animate-pulse" />
           ))}
+        </div>
+      ) : isError ? (
+        <div className="bg-white dark:bg-gray-900 border border-red-100 dark:border-red-900/30 rounded-2xl p-10 text-center">
+          <p className="text-base font-bold text-red-600 dark:text-red-400 mb-1">Failed to load roadmaps</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">There was an error fetching your data. Please try again.</p>
+          <Button onClick={() => window.location.reload()} variant="outline" size="sm">
+            Retry
+          </Button>
         </div>
       ) : enrollments.length === 0 ? (
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-10 text-center">

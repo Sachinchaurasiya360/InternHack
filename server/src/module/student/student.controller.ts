@@ -158,6 +158,27 @@ export class StudentController {
     }
   }
 
+  async deleteExternalApplication(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId) || applicationId <= 0) {
+        return res.status(400).json({ message: "Invalid application ID" });
+      }
+
+      const result = await this.studentService.deleteExternalApplication(applicationId, req.user.id);
+      return res.status(200).json({ message: "External application removed", ...result });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "External application not found") return res.status(404).json({ message: error.message });
+        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+      }
+      logger.error("Failed to delete external application", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async getExternalApplicationStatus(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
