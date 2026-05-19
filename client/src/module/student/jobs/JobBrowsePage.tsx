@@ -246,6 +246,12 @@ export default function JobBrowsePage() {
   const externalTotal = extData?.total;
   const scrapedTotal = scrData?.pagination?.total;
 
+  const allEmpty =
+    !isLoading &&
+    filteredExtJobs.length === 0 &&
+    scrapedJobs.length === 0 &&
+    (data?.jobs ?? []).length === 0;
+
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 relative">
       <SEO
@@ -503,125 +509,129 @@ export default function JobBrowsePage() {
           </motion.div>
         )}
 
-        {/* Internal jobs */}
-        <div className="flex items-end justify-between gap-4 mb-6">
-          <div>
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1 w-1 bg-lime-400" />
-              internal / live
+        {/* Global empty state — shown when ALL three sources return nothing */}
+        {allEmpty && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="py-24 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4 mb-14"
+          >
+            <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
+              <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
             </div>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Partner roles
-            </h2>
-          </div>
-        </div>
+            <div>
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">No jobs match your filters</p>
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
+                try adjusting your search or filters
+              </p>
+            </div>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" /> Clear filters
+              </button>
+            )}
+          </motion.div>
+        )}
 
-        {isLoading ? (
-          <div className="py-20 text-center">
-            <div className="inline-flex flex-col items-center gap-3">
-              <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
-            </div>
-          </div>
-        ) : (data?.jobs ?? []).length === 0 ? (
-          
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4"
-  >
-    <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
-      <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
-    </div>
-    <div>
-      <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
-        No jobs match your filters
-      </p>
-      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
-        try adjusting your search or filters
-      </p>
-    </div>
-    {hasFilters && (
-      <button
-        type="button"
-        onClick={clearAll}
-        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
-      >
-        <X className="w-3.5 h-3.5" /> Clear filters
-      </button>
-    )}
-  </motion.div>
-) : (
+        {/* Internal jobs — hidden when everything is empty */}
+        {!allEmpty && (
           <>
-            <div className="relative">
-              {isFetching && (
-                <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
-                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+            <div className="flex items-end justify-between gap-4 mb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  <span className="h-1 w-1 bg-lime-400" />
+                  internal / live
                 </div>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(data?.jobs ?? []).map((job, i) => (
-                  <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                    <Link to={`/jobs/${job.id}`} className={cardBase}>
-                      <div className="flex items-start gap-3 mb-3">
-                        <CompanyMark label={job.company || "C"} />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
-                            {job.title}
-                          </h3>
-                          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
-                            {job.company}
-                          </span>
-                        </div>
-                        {job._count && (
-                          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 shrink-0">
-                            {job._count.applications} applied
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-                        {job.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
-                        <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
-                        {job.deadline && (
-                          new Date(job.deadline) < new Date() ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                              <Clock className="w-3 h-3" /> expired
-                            </span>
-                          ) : (
-                            <MetaChip icon={<Clock className="w-3 h-3" />}>
-                              {new Date(job.deadline).toLocaleDateString()}
-                            </MetaChip>
-                          )
-                        )}
-                      </div>
-                      {job.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-4">
-                          {job.tags.slice(0, 3).map((tag) => (
-                            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
-                        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                  Partner roles
+                </h2>
               </div>
             </div>
 
-            {data?.pagination && (
-              <PaginationControls
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
+            {isLoading ? (
+              <div className="py-20 text-center">
+                <div className="inline-flex flex-col items-center gap-3">
+                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="relative">
+                  {isFetching && (
+                    <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
+                      <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {(data?.jobs ?? []).map((job, i) => (
+                      <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+                        <Link to={`/jobs/${job.id}`} className={cardBase}>
+                          <div className="flex items-start gap-3 mb-3">
+                            <CompanyMark label={job.company || "C"} />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+                                {job.title}
+                              </h3>
+                              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+                                {job.company}
+                              </span>
+                            </div>
+                            {job._count && (
+                              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 shrink-0">
+                                {job._count.applications} applied
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+                            {job.description}
+                          </p>
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
+                            <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
+                            {job.deadline && (
+                              new Date(job.deadline) < new Date() ? (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
+                                  <Clock className="w-3 h-3" /> expired
+                                </span>
+                              ) : (
+                                <MetaChip icon={<Clock className="w-3 h-3" />}>
+                                  {new Date(job.deadline).toLocaleDateString()}
+                                </MetaChip>
+                              )
+                            )}
+                          </div>
+                          {job.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-4">
+                              {job.tags.slice(0, 3).map((tag) => (
+                                <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+                            <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+                            <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {data?.pagination && (
+                  <PaginationControls
+                    currentPage={page}
+                    totalPages={data.pagination.totalPages}
+                    onPageChange={setPage}
+                  />
+                )}
+              </>
             )}
           </>
         )}
