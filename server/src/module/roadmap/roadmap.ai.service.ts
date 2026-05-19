@@ -63,9 +63,9 @@ export async function generateAiRoadmap(
   let parsed: unknown;
   try {
     parsed = parseJsonResponse(response.text);
-    logAIRequest("COVER_LETTER", response, true, undefined, userId);
+    logAIRequest("AI_ROADMAP_GENERATION", response, true, undefined, userId);
   } catch (err) {
-    logAIRequest("COVER_LETTER", response, false, (err as Error).message, userId);
+    logAIRequest("AI_ROADMAP_GENERATION", response, false, (err as Error).message, userId);
     throw new Error("AI returned a response we could not parse. Please try again.");
   }
 

@@ -2,7 +2,7 @@ export const queryKeys = {
   // Jobs
   jobs: {
     all: ["jobs"] as const,
-    list: (params?: Record<string, string | number>) =>
+    list: (params?: Record<string, string | number | boolean | undefined>) =>
       ["jobs", "list", params] as const,
     detail: (id: string | number) => ["jobs", "detail", id] as const,
   },
@@ -21,7 +21,12 @@ export const queryKeys = {
   ats: {
     all: ["ats"] as const,
     usage: () => ["ats", "usage"] as const,
+    history: () => ["ats", "history"] as const,
   },
+  coverLetter: {
+  history: ()           => ["cover-letter", "history"] as const,
+  detail:  (id: number) => ["cover-letter", "detail", id] as const,
+},
 
   // Companies
   companies: {
@@ -201,5 +206,18 @@ export const queryKeys = {
     pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
+    importStatus: () => ["dsa", "import-status"] as const,
+    activity: (year: number) => ["dsa", "activity", year] as const,
+  },
+
+  // Roadmaps
+  roadmaps: {
+    all: ["roadmaps"] as const,
+    list: (params?: Record<string, string | number>) =>
+      ["roadmaps", "list", params] as const,
+    detail: (slug: string) => ["roadmaps", "detail", slug] as const,
+    enrollments: () => ["roadmaps", "enrollments"] as const,
+    enrollmentDetail: (id: number) => ["roadmaps", "enrollment-detail", id] as const,
+    topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
   },
 };

@@ -153,6 +153,17 @@ export class StudentService {
     });
   }
 
+  async deleteExternalApplication(applicationId: number, studentId: number) {
+    const application = await prisma.externalJobApplication.findUnique({
+      where: { id: applicationId },
+    });
+    if (!application) throw new Error("External application not found");
+    if (application.studentId !== studentId) throw new Error("Not authorized");
+
+    await prisma.externalJobApplication.delete({ where: { id: applicationId } });
+    return { success: true };
+  }
+
   private async checkApplicationMilestone(studentId: number) {
     const [regular, external] = await Promise.all([
       prisma.application.count({ where: { studentId } }),
@@ -298,6 +309,67 @@ export class StudentService {
     }
 
     return submission;
+  }
+
+  async getCalendarEventData(applicationId: number, studentId: number, type: "deadline" | "round", roundId?: number) {
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      include: {
+        job: true,
+      },
+    });
+
+    if (!application) throw new Error("Application not found");
+    if (application.studentId !== studentId) throw new Error("Not authorized");
+
+    const description = [
+      `Applied via InternHack: https://internhack.xyz/student/applications/${application.id}`,
+      `Company: ${application.job.company}`,
+      `Role: ${application.job.title}`,
+      `Location: ${application.job.location || "Remote"}`,
+    ];
+
+    if (type === "deadline") {
+      if (!application.job.deadline) {
+         throw new Error("Event not found");
+      }
+      
+      const start = new Date(application.job.deadline);
+      const end = new Date(start.getTime() + 30 * 60 * 1000); // 30 mins for deadline
+      
+      return {
+        uid: `application-${application.id}-deadline`,
+        title: `${application.job.title} @ ${application.job.company} — Application Deadline`,
+        description: description.join("\n"),
+        start,
+        end,
+      };
+    } else if (type === "round") {
+      if (!roundId) throw new Error("Missing roundId");
+
+      const round = await prisma.round.findUnique({
+        where: { id: roundId },
+      });
+
+      if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
+      if (!round.activateAt) throw new Error("Round has no schedule");
+      
+      const start = new Date(round.activateAt);
+      const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hour for interviews/rounds
+      
+      return {
+        uid: `application-${application.id}-round-${round.id}`,
+        title: `${application.job.title} @ ${application.job.company} — ${round.name}`,
+        description: [
+          ...description,
+          `Round: ${round.name}`,
+        ].join("\n"),
+        start,
+        end,
+      };
+    }
+    
+    throw new Error("Invalid type");
   }
 
 }

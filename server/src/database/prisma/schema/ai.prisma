@@ -118,3 +118,37 @@ model jobAgentConversation {
 
   @@index([userId, isActive])
 }
+model generatedResume {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  title        String   @default("Untitled Resume")
+  jobTitle     String?
+  jobDescription String?
+  keySkills    String?
+  latexContent String
+  source       String   @default("AI_GENERATED")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         user     @relation("UserGeneratedResumes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+model generatedCoverLetter {
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  jobTitle       String?
+  companyName    String?
+  jobDescription String
+  content        String
+  tone           String
+  useProfile     Boolean  @default(false)
+  keySkills      String?
+  excerpt        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  student        user     @relation("StudentCoverLetters", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([createdAt])
+}
