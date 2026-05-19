@@ -18,6 +18,8 @@ import { useStudentSidebar } from "../../../components/StudentSidebar";
 import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type { DayOfWeek, RoadmapEnrollmentListItem } from "../../../lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 type Background = "CS_STUDENT" | "SELF_TAUGHT" | "CAREER_SWITCHER" | "HOBBYIST" | "WORKING_PRO";
 type Experience = "NEW" | "SOME" | "EXPERIENCED";
@@ -98,14 +100,12 @@ export default function AiRoadmapWizardPage() {
   const [submitMsgIdx, setSubmitMsgIdx] = useState(0);
 
   // Existing enrollments link
-  const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
-  useEffect(() => {
-    let mounted = true;
-    api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments")
-      .then((res) => mounted && setEnrollments(res.data.enrollments))
-      .catch(() => { /* ok */ });
-    return () => { mounted = false; };
-  }, []);
+  const { data: enrollmentsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+  });
+
+  const enrollments = enrollmentsData?.enrollments || [];
 
   // Rotating loading copy
   useEffect(() => {

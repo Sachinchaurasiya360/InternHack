@@ -82,11 +82,10 @@ model user {
   roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                @relation("UserPrivateRoadmaps")
-  leetcodeImports       leetcodeImportLog[]      @relation("UserLeetcodeImports")
-  roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
-  scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
-  privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
-  generatedCoverLetters generatedCoverLetter[]      @relation("StudentCoverLetters")
+  generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
+  leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
+  generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
+  interviewProgress     userInterviewProgress?       @relation("UserInterviewProgress")
 
   @@index([role])
   @@index([role, isActive])
@@ -699,6 +698,18 @@ model studentSqlProgress {
 
   @@unique([studentId, exerciseId])
   @@index([studentId])
+}
+
+model userInterviewProgress {
+  id            String   @id @default(cuid())
+  userId        Int      @unique
+  user          user     @relation("UserInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+  completedIds  String[] @default([])
+  bookmarkedIds String[] @default([])
+  lastVisitedId String?
+  lastVisitedAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model aptitudeCategory {

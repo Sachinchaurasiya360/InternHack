@@ -136,14 +136,16 @@ async function loadCatalog() {
   const byLcId = new Map<number, typeof problems[0]>();
   const bySlug = new Map<string, typeof problems[0]>();
   const byNormTitle = new Map<string, typeof problems[0]>();
+  const byId = new Map<number, typeof problems[0]>();
 
   for (const p of problems) {
     if (p.leetcodeId) byLcId.set(p.leetcodeId, p);
     bySlug.set(p.slug, p);
     byNormTitle.set(normalizeTitle(p.title), p);
+    byId.set(p.id, p);
   }
 
-  return { byLcId, bySlug, byNormTitle };
+  return { byLcId, bySlug, byNormTitle, byId };
 }
 
 function normalizeTitle(t: string) {
@@ -217,9 +219,7 @@ async function buildPreview(
 
   // Build preview items (first 50 for display)
   const preview: PreviewItem[] = newRows.slice(0, 50).map((r) => {
-    // Reverse-lookup the problem info from the catalog maps
-    const allCatalogByIdArr = [...catalog.bySlug.values()];
-    const problem = allCatalogByIdArr.find((p) => p.id === r.problemId)!;
+    const problem = catalog.byId.get(r.problemId)!;
     return {
       problemId: r.problemId,
       title: problem?.title ?? "Unknown",

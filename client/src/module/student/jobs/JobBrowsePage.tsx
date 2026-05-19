@@ -109,12 +109,20 @@ export default function JobBrowsePage() {
       },
     ],
     queryFn: async () => {
-      const params = new URLSearchParams({ page: String(extPage), limit: "12" });
+      const params = new URLSearchParams({
+        page: String(extPage),
+        limit: "12",
+      });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
       const res = await api.get(`/external-jobs?${params}`);
-      return res.data as { jobs: ExternalJob[]; total: number; totalPages: number; page: number };
+      return res.data as {
+        jobs: ExternalJob[];
+        total: number;
+        totalPages: number;
+        page: number;
+      };
     },
     placeholderData: keepPreviousData,
   });
@@ -130,7 +138,10 @@ export default function JobBrowsePage() {
       },
     ],
     queryFn: async () => {
-      const params = new URLSearchParams({ page: String(scrPage), limit: "12" });
+      const params = new URLSearchParams({
+        page: String(scrPage),
+        limit: "12",
+      });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
       const res = await api.get(`/scraped-jobs?${params}`);
@@ -197,7 +208,8 @@ export default function JobBrowsePage() {
         aria-hidden
         className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
         style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundImage:
+            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
           backgroundSize: "120px 100%",
         }}
       />
@@ -229,23 +241,33 @@ export default function JobBrowsePage() {
               </span>
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-md">
-              Open positions from partner companies plus curated external listings, updated daily.
+              Open positions from partner companies plus curated external
+              listings, updated daily.
             </p>
           </div>
           <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
             {typeof internalTotal === "number" && (
               <span>
-                internal <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{internalTotal}</span>
+                internal{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {internalTotal}
+                </span>
               </span>
             )}
             {typeof externalTotal === "number" && (
               <span>
-                external <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{externalTotal}</span>
+                external{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {externalTotal}
+                </span>
               </span>
             )}
             {typeof scrapedTotal === "number" && (
               <span>
-                scraped <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{scrapedTotal}</span>
+                scraped{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {scrapedTotal}
+                </span>
               </span>
             )}
           </div>
@@ -370,7 +392,12 @@ export default function JobBrowsePage() {
 
         {/* External / curated jobs */}
         {filteredExtJobs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-14"
+          >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
                 <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -411,7 +438,12 @@ export default function JobBrowsePage() {
 
         {/* Scraped / sourced jobs */}
         {scrapedJobs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-14"
+          >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
                 <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">

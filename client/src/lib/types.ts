@@ -1109,6 +1109,9 @@ export interface BlogPost {
   publishedAt?: string;
   createdAt: string;
   updatedAt: string;
+  bookmarked?: boolean;
+  likes?: number;
+  relatedPosts?: BlogPost[];
 }
 
 // ── Email Campaign ──
