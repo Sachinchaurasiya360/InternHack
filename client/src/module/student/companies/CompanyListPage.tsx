@@ -626,7 +626,7 @@ export default function CompanyListPage() {
     api
       .get("/companies/cities")
       .then((res) => setCities(res.data.cities))
-      .catch(() => {});
+      .catch((err) => console.error("Failed to load cities:", err));
   }, []);
 
   const hasActiveFilters =

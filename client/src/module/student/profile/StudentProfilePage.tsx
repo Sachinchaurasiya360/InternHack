@@ -221,7 +221,9 @@ export default function StudentProfilePage() {
 
     api.get("/skill-tests/my-verified")
       .then((res) => setVerifiedSkills(res.data.verified ?? []))
-      .catch((err) => console.error("Failed to fetch verified skills:", err));
+      .catch((err) => {
+        console.error("Failed to fetch verified skills:", err);
+      });
 
     api.get("/job-feed/preferences")
       .then((res) => {
@@ -236,7 +238,9 @@ export default function StudentProfilePage() {
           setJobPrefDomains(p.domains || []);
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to load job preferences:", err);
+      });
   }, []);
 
   useEffect(() => {

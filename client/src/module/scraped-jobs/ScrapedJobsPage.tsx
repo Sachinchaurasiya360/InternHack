@@ -37,7 +37,7 @@ export default function ScrapedJobsPage() {
   useEffect(() => {
     api.get("/scraped-jobs/sources").then((res) => {
       setSources(res.data.sources);
-    }).catch(() => {});
+    }).catch((err) => console.error("Failed to load job sources:", err));
   }, []);
 
   useEffect(() => { fetchJobs(); }, [page]);

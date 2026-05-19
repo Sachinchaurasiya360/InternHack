@@ -266,7 +266,9 @@ export function useInterviewProgress() {
       visitTimerRef.current = window.setTimeout(() => {
         const id = lastVisitRef.current;
         lastVisitRef.current = null;
-        if (id) void updateProgress(id, "visit").catch(() => {});
+        if (id) void updateProgress(id, "visit").catch((err) => {
+          console.error("Failed to update visit progress:", err);
+        });
       }, VISIT_DEBOUNCE_MS);
     },
     [updateProgress],
@@ -289,7 +291,7 @@ export function useInterviewProgress() {
         void api
           .post<InterviewServerProgress>(`/learn/interview/progress/${encodeURIComponent(id)}`, { action: "visit" })
           .then(({ data }) => writeStoredProgress(data, userId))
-          .catch(() => {});
+          .catch((err) => console.error("Failed to sync visit progress:", err));
       }
     };
   }, [isAuthenticated, userId]);

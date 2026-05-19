@@ -49,7 +49,9 @@ function loadPyodide(): Promise<any> {
 class PythonEngine {
   /** Begin loading Pyodide in the background. */
   preload(): void {
-    loadPyodide().catch(() => {});
+    loadPyodide().catch((err) => {
+      console.error("Failed to preload Pyodide:", err);
+    });
   }
 
   isReady(): boolean {
@@ -122,7 +124,9 @@ import sys
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
 `);
-      } catch {}
+      } catch (resetErr) {
+        console.error("Failed to reset Python stdout/stderr:", resetErr);
+      }
 
       // Extract clean error message from Pyodide traceback
       let message = err.message || String(err);

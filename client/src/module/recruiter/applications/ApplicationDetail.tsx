@@ -28,7 +28,7 @@ export default function ApplicationDetail() {
     if (application?.student?.id) {
       api.get(`/skill-tests/verified/${application.student.id}`)
         .then((res) => setVerifiedSkills(res.data.verifiedSkills || []))
-        .catch(() => {});
+        .catch((err) => console.error("Failed to load verified skills:", err));
     }
   }, [application?.student?.id]);
 

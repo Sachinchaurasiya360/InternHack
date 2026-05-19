@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>((set) => {
       fetch(
         `${(import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000/api"}/auth/logout`,
         { method: "POST", credentials: "include" },
-      ).catch(() => {});
+      ).catch((err) => console.error("Failed to clear session on logout:", err));
     },
 
     setUser: (user) => {

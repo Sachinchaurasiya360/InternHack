@@ -195,7 +195,7 @@ export default function SkillTestPage() {
         }
 
         if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => { });
+          document.exitFullscreen().catch((err) => console.error("Failed to exit fullscreen:", err));
         }
       } catch (err: any) {
         toast.error(err?.response?.data?.error ?? "Failed to submit test");

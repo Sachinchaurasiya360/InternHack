@@ -110,7 +110,7 @@ export default function CompanyDetailPage() {
     api
       .get(`/companies/${slug}/reviews?sort=${sortBy}`)
       .then((res) => setReviews(res.data.reviews))
-      .catch(() => {});
+      .catch((err) => console.error("Failed to load reviews:", err));
   };
 
   const backPath = isInsideLayout ? "/student/companies" : "/companies";

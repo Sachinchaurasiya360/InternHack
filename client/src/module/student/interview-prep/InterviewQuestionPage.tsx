@@ -139,7 +139,9 @@ export default function InterviewQuestionPage() {
           if (allDone) reportMilestone("INTERVIEW_SECTION_COMPLETE", sectionSlug);
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to toggle question completion:", err);
+      });
   }, [questionId, toggleComplete, isAuthenticated, sectionSlug, sectionQuestions, progress]);
 
   useEffect(() => {

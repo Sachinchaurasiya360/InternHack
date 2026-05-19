@@ -27,7 +27,7 @@ export default function AdminSubscribersPage() {
         setSubscribers(res.data.subscribers);
         setTotal(res.data.total);
       })
-      .catch(() => {})
+      .catch((err) => console.error("Failed to load subscribers:", err))
       .finally(() => setLoading(false));
   };
 
