@@ -10,7 +10,27 @@ import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
-import { useInterviewProgress } from "./interviewProgress";
+import api from "../../../lib/axios"
+
+const STORAGE_KEY = "interview-progress";
+
+function getLocalProgress(): InterviewProgress {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      return {};
+    }
+
+    return raw as InterviewProgress;
+  } catch {
+    return {};
+  }
+}
+
+function saveLocalProgress(progress: InterviewProgress) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+}
 
 const LEVEL_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -29,7 +49,56 @@ function MetaChip({ children, className = "" }: { children: React.ReactNode; cla
 export default function InterviewLessonsPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [showGate, setShowGate] = useState(false);
-  const { progress, isLoading } = useInterviewProgress();
+  const [progress, setProgress] = useState<InterviewProgress>({});
+
+  useEffect(() => {
+  if (!isAuthenticated) {
+    setProgress(getLocalProgress());
+    return;
+  }
+
+  const loadProgress = async () => {
+    try {
+      const localProgress = getLocalProgress();
+
+      const response = await api.get("/interview-progress");
+
+      const serverData = response.data;
+
+      const merged: InterviewProgress = {
+        ...localProgress,
+      };
+
+      serverData.completedIds.forEach((id: string) => {
+        merged[id] = { completed: true };
+      });
+
+      setProgress(merged);
+
+      saveLocalProgress(merged);
+
+      const migrated = localStorage.getItem("interview-progress-migrated");
+
+      if (!migrated && Object.keys(localProgress).length > 0) {
+        for (const [questionId, value] of Object.entries(localProgress)) {
+          if (value.completed) {
+            await api.patch(`/interview-progress`, {
+             questionId: questionId, action: "complete"
+            });
+          }
+        }
+
+        localStorage.setItem("interview-progress-migrated", "true");
+      }
+    } catch (error) {
+      console.error("Failed to load interview progress", error);
+
+      setProgress(getLocalProgress());
+    }
+  };
+
+  loadProgress();
+}, [isAuthenticated]);
 
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
