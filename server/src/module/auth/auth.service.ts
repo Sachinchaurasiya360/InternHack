@@ -7,7 +7,7 @@ import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
 
 const badgeService = new BadgeService();
-import { signUrls } from "../../utils/s3.utils.js";
+import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
 import type { UserRole } from "@prisma/client";
@@ -355,6 +355,12 @@ export class AuthService {
     if (user.resumes.length > 0) {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
+    if (user.profilePic) {
+      (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+    }
+    if (user.coverImage) {
+      (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+    }
 
     return user;
   }
@@ -397,6 +403,12 @@ export class AuthService {
     if (user.resumes.length > 0) {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
+    if (user.profilePic) {
+      (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+    }
+    if (user.coverImage) {
+      (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+    }
 
     return user;
   }
@@ -424,6 +436,12 @@ export class AuthService {
     const { atsScores, ...rest } = user;
     if (rest.resumes.length > 0) {
       (rest as Record<string, unknown>).resumes = await signUrls(rest.resumes);
+    }
+    if (rest.profilePic) {
+      (rest as Record<string, unknown>).profilePic = await signUrl(rest.profilePic);
+    }
+    if (rest.coverImage) {
+      (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
     }
     return {
       ...rest,

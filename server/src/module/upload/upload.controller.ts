@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { uploadToS3, deleteFromS3, getS3KeyFromUrl, signUrls } from "../../utils/s3.utils.js";
+import { uploadToS3, deleteFromS3, getS3KeyFromUrl, signUrl, signUrls } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
 import { validateOrReject } from "../../utils/file-validation.utils.js";
 
@@ -128,6 +128,11 @@ export class UploadController {
         deleteFile(current.profilePic);
       }
 
+      // Sign S3 URLs before returning to client
+      if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+      if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+      if (user.resumes.length > 0) (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
+
       return res.status(200).json({ message: "Profile picture updated", user });
     } catch (error) {
       console.error(error);
@@ -158,6 +163,11 @@ export class UploadController {
       if (current?.coverImage) {
         deleteFile(current.coverImage);
       }
+
+      // Sign S3 URLs before returning to client
+      if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+      if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+      if (user.resumes.length > 0) (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
 
       return res.status(200).json({ message: "Cover image updated", user });
     } catch (error) {
