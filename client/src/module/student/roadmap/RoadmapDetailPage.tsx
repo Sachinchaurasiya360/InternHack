@@ -201,9 +201,9 @@ export default function RoadmapDetailPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-stone-500 dark:text-stone-400 mb-8 font-mono">
-              <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4" /> {roadmap.estimatedHours} hours</span>
-              <span className="inline-flex items-center gap-2"><BookOpen className="w-4 h-4" /> {roadmap.topicCount} topics</span>
-              <span className="inline-flex items-center gap-2"><Target className="w-4 h-4" /> Free</span>
+              <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4" aria-hidden="true" /> {roadmap.estimatedHours} hours</span>
+              <span className="inline-flex items-center gap-2"><BookOpen className="w-4 h-4" aria-hidden="true" /> {roadmap.topicCount} topics</span>
+              <span className="inline-flex items-center gap-2"><Target className="w-4 h-4" aria-hidden="true" /> Free</span>
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -247,7 +247,7 @@ export default function RoadmapDetailPage() {
                   open={i === 0}
                   className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl group"
                 >
-                  <summary className="flex items-center justify-between gap-3 p-5 cursor-pointer list-none">
+                  <summary className="flex items-center justify-between gap-3 p-5 cursor-pointer list-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime-500 rounded-2xl">
                     <div>
                       <p className="text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">
                         Section {i + 1}
@@ -255,7 +255,7 @@ export default function RoadmapDetailPage() {
                       <p className="text-base font-bold text-stone-950 dark:text-stone-50">{section.title}</p>
                       <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">{section.summary}</p>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-stone-400 group-open:rotate-90 transition-transform shrink-0" />
+                    <ChevronRight className="w-5 h-5 text-stone-400 group-open:rotate-90 transition-transform shrink-0" aria-hidden="true" />
                   </summary>
                   <div className="px-5 pb-5 space-y-2">
                     {section.topics.map((t) => (
@@ -289,17 +289,25 @@ export default function RoadmapDetailPage() {
                   >
                     <button
                       type="button"
+                      id={`faq-btn-${i}`}
+                      aria-expanded={openFaq === i}
+                      aria-controls={`faq-panel-${i}`}
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      className="w-full flex items-center justify-between gap-3 p-4 text-left cursor-pointer bg-transparent border-0"
+                      className="w-full flex items-center justify-between gap-3 p-4 text-left cursor-pointer bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime-500 rounded-xl"
                     >
                       <span className="text-sm font-bold text-stone-950 dark:text-stone-50 inline-flex items-center gap-2">
-                        <HelpCircle className="w-4 h-4 text-lime-500" />
+                        <HelpCircle className="w-4 h-4 text-lime-500" aria-hidden="true" />
                         {f.q}
                       </span>
-                      <ChevronRight className={`w-4 h-4 text-stone-400 transition-transform ${openFaq === i ? "rotate-90" : ""}`} />
+                      <ChevronRight className={`w-4 h-4 text-stone-400 transition-transform shrink-0 ${openFaq === i ? "rotate-90" : ""}`} aria-hidden="true" />
                     </button>
                     {openFaq === i && (
-                      <p className="px-4 pb-4 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                      <p
+                        id={`faq-panel-${i}`}
+                        role="region"
+                        aria-labelledby={`faq-btn-${i}`}
+                        className="px-4 pb-4 text-sm text-stone-600 dark:text-stone-400 leading-relaxed"
+                      >
                         {f.a}
                       </p>
                     )}

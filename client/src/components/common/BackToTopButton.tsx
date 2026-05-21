@@ -47,6 +47,9 @@ export default function BackToTopButton() {
             hover:scale-110 hover:-translate-y-1
             hover:bg-primary
             active:scale-95
+            dark:bg-white
+            dark:text-black
+            dark:hover:bg-white
           "
         >
           <ChevronUp size={22} />

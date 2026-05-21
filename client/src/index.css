@@ -201,4 +201,75 @@ body {
   .proctored-test {
     display: none !important;
   }
+
+  /* ATS Print Report Styles */
+  body {
+    background: white;
+    color: #030712;
+  }
+
+  /* Hide navigation and sidebar */
+  nav,
+  aside,
+  .navbar,
+  .sidebar,
+  .student-sidebar {
+    display: none !important;
+  }
+
+  /* Hide print button and other action buttons */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* ATS Report section — full width and clean */
+  #ats-print-section {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Card styling for print */
+  .bg-white.dark\:bg-stone-900,
+  [class*="bg-stone-50"] {
+    background-color: white !important;
+    border-color: #000000 !important;
+  }
+
+  /* Text colors */
+  [class*="text-stone-"],
+  [class*="dark:text-stone-"] {
+    color: #030712 !important;
+  }
+
+  /* Accent colors */
+  .text-lime-600.dark\:text-lime-400 {
+    color: #15803d !important;
+  }
+
+  /* Score circle and chart improvements */
+  [class*="dark:stroke-"] {
+    stroke: #030712 !important;
+  }
+
+  /* Page breaks */
+  .bg-white.dark\:bg-stone-900 {
+    page-break-inside: avoid;
+  }
+
+  /* Hide decorative elements */
+  [aria-hidden="true"] {
+    display: none !important;
+  }
+
+  /* Improve readability */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Header and footer margins */
+  @page {
+    margin: 0.5in;
+  }
 }

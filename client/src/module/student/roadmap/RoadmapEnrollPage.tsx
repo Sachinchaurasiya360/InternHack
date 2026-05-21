@@ -231,21 +231,22 @@ export default function RoadmapEnrollPage() {
           </h1>
         </motion.div>
 
-        {/* Step progress dots */}
+        {/* Step progress indicator */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.05 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" role="list" aria-label="Enrollment steps">
             {STEPS.map((s) => {
               const done = s.id < step;
               const active = s.id === step;
               return (
-                <div key={s.id} className="flex-1">
+                <div key={s.id} className="flex-1" role="listitem">
                   <div className="flex items-center gap-2 mb-1.5">
                     <span
+                      aria-hidden="true"
                       className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-mono font-bold tabular-nums transition-colors ${
                         active
                           ? "bg-stone-950 dark:bg-stone-50 text-stone-50 dark:text-stone-950"
@@ -262,11 +263,12 @@ export default function RoadmapEnrollPage() {
                           ? "text-stone-900 dark:text-stone-100"
                           : "text-stone-400"
                       }`}
+                      aria-current={active ? "step" : undefined}
                     >
                       {s.label}
                     </span>
                   </div>
-                  <div className="h-0.5 w-full bg-stone-200 dark:bg-stone-800 overflow-hidden rounded-full">
+                  <div className="h-0.5 w-full bg-stone-200 dark:bg-stone-800 overflow-hidden rounded-full" aria-hidden="true">
                     <motion.div
                       className="h-full bg-lime-500"
                       initial={{ width: 0 }}
@@ -278,7 +280,7 @@ export default function RoadmapEnrollPage() {
               );
             })}
           </div>
-          <div className="mt-2 text-right text-[10px] font-mono uppercase tracking-widest text-stone-400 tabular-nums">
+          <div className="mt-2 text-right text-[10px] font-mono uppercase tracking-widest text-stone-400 tabular-nums" aria-live="polite" aria-atomic="true">
             {Math.round(progress)}% / step {step + 1} of {STEPS.length}
           </div>
         </motion.div>
@@ -321,6 +323,10 @@ export default function RoadmapEnrollPage() {
                   step={1}
                   value={hoursPerWeek}
                   onChange={(e) => setHoursPerWeek(Number(e.target.value))}
+                  aria-label={`Hours per week: ${hoursPerWeek}`}
+                  aria-valuemin={2}
+                  aria-valuemax={40}
+                  aria-valuenow={hoursPerWeek}
                   className="w-full accent-lime-500"
                 />
                 <div className="mt-2 flex justify-between text-[9px] font-mono text-stone-400">
@@ -350,6 +356,8 @@ export default function RoadmapEnrollPage() {
                         key={d}
                         type="button"
                         onClick={() => toggleDay(d)}
+                        aria-pressed={active}
+                        aria-label={`${DAY_LABEL[d]}${active ? ", selected" : ""}`}
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 + i * 0.04, duration: 0.3 }}
@@ -389,6 +397,7 @@ export default function RoadmapEnrollPage() {
                         key={o.value}
                         type="button"
                         onClick={() => setExperienceLevel(o.value)}
+                        aria-pressed={experienceLevel === o.value}
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 + i * 0.04, duration: 0.3 }}
@@ -413,6 +422,7 @@ export default function RoadmapEnrollPage() {
                         key={o.value}
                         type="button"
                         onClick={() => setGoal(o.value)}
+                        aria-pressed={goal === o.value}
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + i * 0.04, duration: 0.3 }}

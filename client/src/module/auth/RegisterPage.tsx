@@ -383,13 +383,16 @@ function FormField({
   label,
   right,
   error,
+  fieldName,
   children,
 }: {
   label: string;
   right?: React.ReactNode;
   error?: string;
+  fieldName?: string;
   children: React.ReactNode;
 }) {
+  const errorId = fieldName ? `error-${fieldName}` : undefined;
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
@@ -400,7 +403,7 @@ function FormField({
       </div>
       {children}
       {error && (
-        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+        <p id={errorId} className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
           {error}
         </p>
       )}
