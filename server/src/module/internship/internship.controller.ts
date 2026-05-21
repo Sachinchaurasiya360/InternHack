@@ -41,11 +41,11 @@ export class InternshipController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const idStr = req.params.id;
-      const id = typeof idStr === "string" ? parseInt(idStr, 10) : NaN;
-      if (isNaN(id)) {
+      if (!idStr || typeof idStr !== "string" || !/^\d+$/.test(idStr)) {
         res.status(400).json({ message: "Invalid internship ID" });
         return;
       }
+      const id = Number(idStr);
       const data = updateGovInternshipSchema.parse(req.body);
       const result = await service.update(id, data);
       res.json(result);
