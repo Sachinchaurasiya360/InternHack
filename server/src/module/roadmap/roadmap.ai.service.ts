@@ -210,6 +210,132 @@ function parseJsonResponse(raw: string): unknown {
   }
 }
 
+// ── Section-level regeneration ────────────────────────────────────────────
+
+/** Shape of a single section as returned by the section-regeneration AI call. */
+const aiSectionRegenerateSchema = z.object({
+  title: z.string().min(2).max(120),
+  summary: z.string().min(10).max(400),
+  topics: z.array(aiTopicSchema).min(2).max(8),
+});
+
+export type RegeneratedSection = z.infer<typeof aiSectionRegenerateSchema>;
+
+interface RegenerateSectionInput {
+  /** The roadmap's overall title and description — gives the AI context. */
+  roadmapTitle: string;
+  roadmapDescription: string;
+  /** The section being replaced. */
+  targetSection: {
+    title: string;
+    summary: string;
+    orderIndex: number;
+    topics: { title: string; estimatedHours: number }[];
+  };
+  /** Titles of neighbouring sections so the AI keeps the flow consistent. */
+  neighbourSections: { title: string; orderIndex: number }[];
+  /** Optional free-text instructions from the user. */
+  instructions?: string;
+}
+
+/**
+ * Ask Gemini to regenerate a single roadmap section while keeping the
+ * surrounding roadmap context intact.
+ */
+export async function regenerateSection(
+  input: RegenerateSectionInput,
+  userId: number,
+): Promise<RegeneratedSection> {
+  const provider = new GeminiProvider("gemini-2.5-flash-lite");
+  const prompt = buildSectionPrompt(input);
+  const response = await provider.generateText(prompt);
+
+  let parsed: unknown;
+  try {
+    parsed = parseJsonResponse(response.text);
+    logAIRequest("AI_ROADMAP_GENERATION", response, true, undefined, userId);
+  } catch (err) {
+    logAIRequest("AI_ROADMAP_GENERATION", response, false, (err as Error).message, userId);
+    throw new Error("AI returned a response we could not parse. Please try again.");
+  }
+
+  const result = aiSectionRegenerateSchema.safeParse(parsed);
+  if (!result.success) {
+    console.error("[AiRoadmap] Section regeneration validation failed", result.error.flatten());
+    throw new Error("AI returned an incomplete section. Please try again.");
+  }
+
+  return result.data;
+}
+
+function buildSectionPrompt(input: RegenerateSectionInput): string {
+  const neighbours = input.neighbourSections
+    .sort((a, b) => a.orderIndex - b.orderIndex)
+    .map((s) => `  - Section ${s.orderIndex + 1}: "${s.title}"`)
+    .join("\n");
+
+  const currentTopics = input.targetSection.topics
+    .map((t) => `  - ${t.title} (~${t.estimatedHours}h)`)
+    .join("\n");
+
+  const instructionLine = input.instructions?.trim()
+    ? `\nUSER INSTRUCTIONS\n${input.instructions.trim()}\n`
+    : "";
+
+  return `You are a senior software engineer and learning coach. Your task is to rewrite ONE section of an existing learning roadmap.
+
+ROADMAP CONTEXT
+- Title: ${input.roadmapTitle}
+- Description: ${input.roadmapDescription}
+
+OTHER SECTIONS IN THIS ROADMAP (do NOT change these, just use them for context)
+${neighbours || "  (none)"}
+
+SECTION TO REWRITE (Section ${input.targetSection.orderIndex + 1})
+- Current title: "${input.targetSection.title}"
+- Current summary: "${input.targetSection.summary}"
+- Current topics:
+${currentTopics}
+${instructionLine}
+CONSTRAINTS
+- Keep the section logically consistent with the surrounding sections listed above.
+- Do not repeat topics already covered in neighbouring sections.
+- Produce 2 to 8 topics. Each topic must have a real summary, contentMd (2 to 4 short paragraphs, plain text or simple bullets, no markdown headings), realistic estimatedHours, difficulty 1-5, a concrete miniProject, and a self-check question.
+- Each topic must have 2 to 5 RESOURCES with REAL, well-known URLs. Prefer official docs (mdn, react.dev, postgresql.org), university sites (MIT, freeCodeCamp), or canonical tutorials (javascript.info). Do not invent URLs.
+- Resources must be free.
+- Use natural English. Do not use the em dash character.
+
+OUTPUT FORMAT
+Return ONLY valid JSON matching this exact shape. No markdown fences, no explanation.
+
+{
+  "title": "Section title",
+  "summary": "One-sentence summary of the section",
+  "topics": [
+    {
+      "title": "Topic title",
+      "summary": "One-sentence summary",
+      "contentMd": "Plain text explanation, 2-4 short paragraphs.",
+      "estimatedHours": <integer 1-40>,
+      "difficulty": <integer 1-5>,
+      "prerequisiteSlugs": [],
+      "miniProject": "One paragraph describing a small but real project",
+      "selfCheck": "One open question to test understanding",
+      "resources": [
+        {
+          "kind": "VIDEO" | "ARTICLE" | "DOCS" | "COURSE" | "BOOK" | "PROJECT" | "OTHER",
+          "title": "Resource title",
+          "url": "https://...",
+          "source": "Site name"
+        }
+      ]
+    }
+  ]
+}
+
+Respond with ONLY the JSON object.`;
+}
+
 function expLabel(e: AiGenerateInput["experienceLevel"]): string {
   return e === "NEW" ? "brand new (never coded or very little)" :
     e === "SOME" ? "some experience (tutorials, school, side dabbling)" :

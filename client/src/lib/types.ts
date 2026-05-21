@@ -1299,6 +1299,7 @@ export interface RoadmapSection {
   title: string;
   summary: string;
   orderIndex: number;
+  aiRegeneratedAt: string | null;
   topics: RoadmapTopic[];
 }
 

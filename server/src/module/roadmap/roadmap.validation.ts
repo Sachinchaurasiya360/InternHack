@@ -69,3 +69,17 @@ export const aiGenerateSchema = z.object({
   avoid: z.array(z.string().max(40)).max(20).default([]),
 });
 export type AiGenerateInput = z.infer<typeof aiGenerateSchema>;
+
+// ── Section regeneration ──────────────────────────────────────────────────
+export const regenerateSectionParams = z.object({
+  slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid roadmap slug"),
+  sectionId: z.coerce.number().int().positive(),
+});
+
+export const regenerateSectionBody = z.object({
+  /** Optional free-text instructions from the user, e.g. "make it more beginner-friendly" */
+  instructions: z.string().max(400).optional(),
+});
+
+export type RegenerateSectionParams = z.infer<typeof regenerateSectionParams>;
+export type RegenerateSectionBody = z.infer<typeof regenerateSectionBody>;
