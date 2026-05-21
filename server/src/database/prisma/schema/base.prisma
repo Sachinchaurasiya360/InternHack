@@ -80,6 +80,9 @@ model user {
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
+  roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
+  scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
+  privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
   roadmapEnrollments    roadmapEnrollment[]      @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]         @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                @relation("UserPrivateRoadmaps")
@@ -616,6 +619,7 @@ model dsaProblem {
   difficulty       String
   leetcodeId       Int?
   leetcodeUrl      String?
+  leetcodeSlug     String?              @unique
   gfgUrl           String?
   articleUrl       String?
   videoUrl         String?
@@ -647,6 +651,7 @@ model studentDsaProgress {
   id        Int        @id @default(autoincrement())
   studentId Int
   problemId Int
+  source    String     @default("INTERNAL")
   solved    Boolean    @default(true)
   notes     String?
   solvedAt  DateTime   @default(now())
