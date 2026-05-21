@@ -897,6 +897,7 @@ model govInternship {
   stipend     String
   eligibility String
   reality     String
+  applyUrl    String?
   createdAt   DateTime @default(now())
 
   @@index([category])
