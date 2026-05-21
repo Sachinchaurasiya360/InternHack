@@ -31,6 +31,9 @@ export const useAuthStore = create<AuthState>((set) => {
 
     logout: () => {
       localStorage.removeItem("user");
+      localStorage.removeItem("interview-progress-migrated");
+      localStorage.removeItem("interview-progress");
+
       set({ user: null, isAuthenticated: false });
       _queryClient?.clear();
       // Clear httpOnly cookie server-side (fire-and-forget)
