@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Navbar } from "../../../components/Navbar";
+import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
@@ -637,6 +638,7 @@ export default function JobBrowsePage() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

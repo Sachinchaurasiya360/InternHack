@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
 import { Navbar } from "../../../components/Navbar";
+import { Footer } from "../../../components/Footer";
 
 const SEGMENT_NAMES: Record<string, string> = {
   javascript: "JavaScript",
@@ -155,6 +156,7 @@ export default function LearnLayout() {
         <LearnBreadcrumb />
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }

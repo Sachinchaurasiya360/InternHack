@@ -6,6 +6,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import { Footer } from "../../components/Footer";
 import api from "../../lib/axios";
 import { queryKeys } from "../../lib/query-keys";
 import { Navbar } from "../../components/Navbar";
@@ -234,6 +235,7 @@ export default function BlogListPage() {
           )}
         </section>
       </div>
+      <Footer />
     </div>
   );
 }
