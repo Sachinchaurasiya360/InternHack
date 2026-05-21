@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { uploadDirectToS3 } from "../../../utils/upload";
 import {
   Upload,
   FileText,
@@ -282,12 +283,12 @@ export default function AtsScorePage() {
     }> => {
       let url = resumeUrl;
       if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const uploadRes = await api.post("/upload/profile-resume", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        const uploadRes = await uploadDirectToS3({
+          file,
+          folder: "resumes",
+          endpoint: "/profile-resume",
         });
-        url = uploadRes.data.file.url;
+        url = uploadRes.file?.url || uploadRes.fileUrl || uploadRes.url || url;
         setResumeUrl(url);
       }
       if (!url) throw new Error("Please upload a resume PDF first.");
