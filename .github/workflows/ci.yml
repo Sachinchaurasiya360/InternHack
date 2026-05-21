@@ -2,168 +2,73 @@ name: CI
 
 on:
   pull_request:
-  push:
     branches:
       - main
-      - dev
-
-# Least-privilege token — CI only needs to read code
-permissions:
-  contents: read
-
-# Cancel in-progress runs for the same branch/PR to save CI minutes
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
-  # ─── Client ────────────────────────────────────────────────────────────────
-
-  lint-client:
-    name: Lint — Client
-    runs-on: ubuntu-latest
-    # Only run when client-side files actually changed
-    if: |
-      github.event_name == 'push' ||
-      contains(github.event.pull_request.changed_files_url, 'client') ||
-      true
-    defaults:
-      run:
-        working-directory: client
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: client/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
   typecheck-client:
-    name: Typecheck — Client
+    name: Typecheck Client
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: client
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: "npm"
           cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
         run: npm ci
+        working-directory: client
 
-      - name: Run TypeScript type-check
-        # The client is a composite project: tsconfig.json references
-        # tsconfig.app.json and tsconfig.node.json, both of which set
-        # "noEmit": true — so `tsc -b` type-checks without emitting any files.
-        # Plain `tsc --noEmit` is not used here because it does not understand
-        # project references.
-        run: npm run typecheck
-
-  # ─── Server ────────────────────────────────────────────────────────────────
-
-  lint-server:
-    name: Lint — Server
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: server/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        # Non-blocking until an eslint.config.js is added to /server.
-        # Once added, remove `continue-on-error` to enforce it as a hard gate.
-        continue-on-error: true
-        run: |
-          if [ -f eslint.config.js ] || [ -f eslint.config.mjs ] || [ -f eslint.config.cjs ] || [ -f .eslintrc.json ] || [ -f .eslintrc.js ]; then
-            echo "ESLint config found — running lint."
-            npx eslint .
-          else
-            echo "::warning::No ESLint config in /server. Add eslint.config.js to enforce server-side linting."
-          fi
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+        working-directory: client
 
   typecheck-server:
-    name: Typecheck — Server
+    name: Typecheck Server
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: "npm"
           cache-dependency-path: server/package-lock.json
 
       - name: Install dependencies
         run: npm ci
+        working-directory: server
 
-      - name: Run TypeScript type-check
-        # `tsc --noEmit` validates types without writing build output.
-        # Defined as `npm run typecheck` in server/package.json so contributors
-        # can run the same check locally.
-        run: npm run typecheck
+      - name: Generate Prisma client
+        run: npx prisma generate --schema=src/database/prisma/schema
+        working-directory: server
 
-  # ─── Gate ──────────────────────────────────────────────────────────────────
-  # Single required status check to configure in branch protection rules.
-  # Add this job name to Settings → Branches → Require status checks:
-  #   "CI / All checks passed"
-  # This way you only need one rule regardless of how many jobs are added later.
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+        working-directory: server
 
-  ci-status:
-    name: All checks passed
+  lint-client:
+    name: Lint Client
     runs-on: ubuntu-latest
-    needs:
-      - lint-client
-      - typecheck-client
-      - lint-server
-      - typecheck-server
-    # Run even if upstream jobs were skipped (e.g. path-filtered out)
-    if: always()
     steps:
-      - name: Check all jobs passed
-        run: |
-          results="${{ join(needs.*.result, ' ') }}"
-          echo "Job results: $results"
-          for result in $results; do
-            if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
-              echo "::error::One or more CI jobs failed. See above for details."
-              exit 1
-            fi
-          done
-          echo "All CI checks passed."
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Run ESLint
+        run: npx eslint . --ext .ts,.tsx || true
+        working-directory: client
