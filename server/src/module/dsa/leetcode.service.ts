@@ -58,7 +58,7 @@ export const syncLeetCodeSolvedProblems = async (userId: number, leetcodeUsernam
     // 3. Find matching problems in our database by leetcodeSlug
     const matchingProblems = await prisma.dsaProblem.findMany({
         where: {
-            leetcodeSlug: { in: titleSlugs },
+            leetcodeSlug: { in: titleSlugs as string[] },
         },
         select: { id: true },
     });
