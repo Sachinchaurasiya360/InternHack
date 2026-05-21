@@ -139,6 +139,15 @@ export const queryKeys = {
     stats: () => ["internships", "stats"] as const,
   },
 
+  // Scraped / external job aggregator
+  scrapedJobs: {
+    all: ["scraped-jobs"] as const,
+    sources: () => ["scraped-jobs", "sources"] as const,
+    list: (params?: Record<string, string | number | undefined>) =>
+      ["scraped-jobs", "list", params] as const,
+    detail: (id: string | number) => ["scraped-jobs", "detail", id] as const,
+  },
+
   // Professors
   professors: {
     list: (params?: Record<string, string | number>) =>
