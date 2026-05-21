@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Navbar } from "../../../components/Navbar";
+import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
@@ -145,6 +146,7 @@ export default function JobBrowsePage() {
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
+      if (selectedTags.length) params.set("tags", selectedTags.join(","));
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
@@ -637,6 +639,7 @@ export default function JobBrowsePage() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 }
