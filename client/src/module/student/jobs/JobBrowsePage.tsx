@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -58,9 +59,12 @@ export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [debouncedLocation, setDebouncedLocation] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+const [page, setPage] = useState(1);
+const [extPage, setExtPage] = useState(1);
+const [scrPage, setScrPage] = useState(1);
+const debouncedSearch = useDebounce(search, 400);
+const debouncedLocation = useDebounce(locationFilter, 400);
   const [hideExpired, setHideExpired] = useState(true);
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
@@ -173,14 +177,7 @@ export default function JobBrowsePage() {
 
   const hasFilters = search || locationFilter || selectedTags.length > 0;
 
-  const submitSearch = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDebouncedSearch(search);
-    setDebouncedLocation(locationFilter);
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
+  
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -306,7 +303,7 @@ export default function JobBrowsePage() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              submitSearch();
+          
             }}
             className="flex flex-col sm:flex-row gap-2"
           >
