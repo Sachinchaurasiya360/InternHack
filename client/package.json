@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "npx puppeteer browsers install chrome && tsc -b && vite build",
     "lint": "eslint .",
+    "typecheck": "tsc -b",
     "preview": "vite preview"
   },
   "dependencies": {
