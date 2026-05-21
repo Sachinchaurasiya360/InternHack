@@ -4,6 +4,7 @@ import { Clock, Eye, User, Calendar } from "lucide-react";
 
 import type { BlogPost, BlogCategory } from "@/lib/types";
 
+
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",
   INTERVIEW_TIPS: "Interview Tips",
