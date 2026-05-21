@@ -98,6 +98,12 @@ export function RoadmapCompletionModal({
     return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
 
+  // Move focus into the modal when it opens
+  useEffect(() => {
+    const btn = document.getElementById("completion-modal-close");
+    if (btn) btn.focus();
+  }, []);
+
   // ── Share text builders ──────────────────────────────────────────────────
   const tag = roadmapName.replace(/\s+/g, "");
   const twitterText = encodeURIComponent(
@@ -179,10 +185,10 @@ export function RoadmapCompletionModal({
             id="completion-modal-close"
             type="button"
             onClick={onClose}
-            aria-label="Close"
-            className="absolute top-3 right-3 z-10 p-1.5 rounded-lg text-stone-500 hover:text-stone-300 hover:bg-white/5 transition-colors cursor-pointer border-0 bg-transparent"
+            aria-label="Close completion dialog"
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-lg text-stone-500 hover:text-stone-300 hover:bg-white/5 transition-colors cursor-pointer border-0 bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
 
           {/* Content */}
@@ -253,9 +259,9 @@ export function RoadmapCompletionModal({
                 id="share-twitter-btn"
                 type="button"
                 onClick={() => openShare(twitterShareUrl)}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 border border-white/8 hover:border-white/15 text-stone-50 font-semibold text-sm transition-all duration-200 group cursor-pointer"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 border border-white/8 hover:border-white/15 text-stone-50 font-semibold text-sm transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               >
-                <XIcon className="w-4 h-4 text-stone-300 group-hover:text-stone-50 transition-colors shrink-0" />
+                <XIcon className="w-4 h-4 text-stone-300 group-hover:text-stone-50 transition-colors shrink-0" aria-hidden="true" />
                 <span>Share on X (Twitter)</span>
               </button>
 
@@ -264,9 +270,9 @@ export function RoadmapCompletionModal({
                 id="share-linkedin-btn"
                 type="button"
                 onClick={() => openShare(linkedInShareUrl)}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#0A66C2]/20 hover:bg-[#0A66C2]/35 border border-[#0A66C2]/30 hover:border-[#0A66C2]/60 text-[#70B5F9] font-semibold text-sm transition-all duration-200 group cursor-pointer"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#0A66C2]/20 hover:bg-[#0A66C2]/35 border border-[#0A66C2]/30 hover:border-[#0A66C2]/60 text-[#70B5F9] font-semibold text-sm transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               >
-                <LinkedInIcon className="w-4 h-4 shrink-0" />
+                <LinkedInIcon className="w-4 h-4 shrink-0" aria-hidden="true" />
                 <span>Share on LinkedIn</span>
               </button>
 
@@ -276,9 +282,9 @@ export function RoadmapCompletionModal({
                   id="share-native-btn"
                   type="button"
                   onClick={handleNativeShare}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-transparent hover:bg-white/5 border border-white/8 hover:border-white/15 text-stone-400 hover:text-stone-300 font-medium text-sm transition-all duration-200 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-transparent hover:bg-white/5 border border-white/8 hover:border-white/15 text-stone-400 hover:text-stone-300 font-medium text-sm transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
                 >
-                  <Share2 className="w-3.5 h-3.5 shrink-0" />
+                  <Share2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                   <span>More options</span>
                 </button>
               )}
@@ -295,7 +301,7 @@ export function RoadmapCompletionModal({
                 id="completion-modal-dismiss"
                 type="button"
                 onClick={onClose}
-                className="text-stone-500 hover:text-stone-400 text-xs font-mono transition-colors cursor-pointer border-0 bg-transparent"
+                className="text-stone-500 hover:text-stone-400 text-xs font-mono transition-colors cursor-pointer border-0 bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded px-1"
               >
                 dismiss
               </button>

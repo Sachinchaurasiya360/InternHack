@@ -1,8 +1,66 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 
+function useCountUp(target: number, isInView: boolean, duration = 2000) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+
+    let startTime: number | null = null;
+    const startValue = 0;
+
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      // easeOutQuart for smooth deceleration
+      const eased = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(eased * (target - startValue) + startValue));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
+  }, [isInView, target, duration]);
+
+  return count;
+}
+
+function formatNumber(num: number): string {
+  return num.toLocaleString("en-IN");
+}
+
+interface StatItemProps {
+  target: number;
+  label: string;
+  isInView: boolean;
+  duration?: number;
+}
+
+function StatItem({ target, label, isInView, duration }: StatItemProps) {
+  const count = useCountUp(target, isInView, duration);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="text-4xl md:text-5xl font-bold tracking-tight text-white tabular-nums">
+        {formatNumber(count)}
+        <span className="text-lime-400">+</span>
+      </div>
+      <div className="mt-1 text-xs font-mono uppercase tracking-widest text-stone-500">
+        {label}
+      </div>
+    </motion.div>
+  );
+}
+
 export function CTASection() {
+  const statsRef = useRef(null);
+  const isInView = useInView(statsRef, { once: true, margin: "-100px" });
+
   return (
     <section className="relative py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
@@ -60,31 +118,13 @@ export function CTASection() {
               </div>
             </div>
 
-            <div className="md:col-span-2 p-10 md:p-16 flex flex-col justify-center gap-8">
-              <div>
-                <div className="text-4xl md:text-5xl font-bold tracking-tight text-white tabular-nums">
-                  54,230<span className="text-lime-400">+</span>
-                </div>
-                <div className="mt-1 text-xs font-mono uppercase tracking-widest text-stone-500">
-                  resumes scored
-                </div>
-              </div>
-              <div>
-                <div className="text-4xl md:text-5xl font-bold tracking-tight text-white tabular-nums">
-                  8,900<span className="text-lime-400">+</span>
-                </div>
-                <div className="mt-1 text-xs font-mono uppercase tracking-widest text-stone-500">
-                  offers landed
-                </div>
-              </div>
-              <div>
-                <div className="text-4xl md:text-5xl font-bold tracking-tight text-white tabular-nums">
-                  1,247<span className="text-lime-400">+</span>
-                </div>
-                <div className="mt-1 text-xs font-mono uppercase tracking-widest text-stone-500">
-                  curated roles
-                </div>
-              </div>
+            <div
+              ref={statsRef}
+              className="md:col-span-2 p-10 md:p-16 flex flex-col justify-center gap-8"
+            >
+              <StatItem target={54230} label="resumes scored" isInView={isInView} duration={2000} />
+              <StatItem target={8900} label="offers landed" isInView={isInView} duration={1800} />
+              <StatItem target={1247} label="curated roles" isInView={isInView} duration={1600} />
             </div>
           </div>
         </motion.div>
