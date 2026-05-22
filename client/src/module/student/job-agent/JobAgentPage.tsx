@@ -256,7 +256,7 @@ export default function JobAgentPage() {
   const inputDisabled = chatMut.isPending || hitFreeLimit;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
+    <div className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden bg-stone-50 dark:bg-stone-950">
       <SEO title="InternHack AI" noIndex />
 
       {/* Editorial header */}
@@ -316,7 +316,7 @@ export default function JobAgentPage() {
       </div>
 
       {/* Messages area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 py-6">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 py-4">
         <div className="max-w-4xl mx-auto">
           <AnimatePresence mode="wait">
             {isEmpty ? (
@@ -436,6 +436,8 @@ export default function JobAgentPage() {
                 className={cn(
                   "w-full px-4 py-3",
                   "resize-none",
+                  "overflow-y-auto",
+                  "scrollbar-thin",
                   "bg-transparent",
                   "border-none",
                   "text-stone-900 dark:text-stone-50 text-sm",
@@ -444,7 +446,7 @@ export default function JobAgentPage() {
                   "placeholder:text-stone-400 dark:placeholder:text-stone-500 placeholder:text-sm",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
                 )}
-                style={{ overflow: "hidden", minHeight: "44px" }}
+                style={{ minHeight: "44px" }}
               />
             </div>
 
