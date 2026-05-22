@@ -366,7 +366,7 @@ return (
                     ? "border-red-300 dark:border-red-800 focus:border-red-400"
                     : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                 }`}
-                placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
+                placeholder={isRecruiter ? "you@company.com" : "you@mail.com"}
               />
               {!fieldErrors.email && isRecruiter && (
                 <p className="mt-1.5 text-xs font-mono text-amber-600 dark:text-amber-400">
