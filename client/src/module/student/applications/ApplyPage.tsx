@@ -6,6 +6,7 @@ import { ArrowLeft, FileText, ExternalLink, Check, MapPin, IndianRupee, Clock, S
 import { Navbar } from "../../../components/Navbar";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
 import api from "../../../lib/axios";
+import { uploadDirectToS3 } from "../../../utils/upload";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job, CustomFieldDefinition, User } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -56,12 +57,12 @@ export default function ApplyPage() {
     try {
       const finalAnswers = { ...customFieldAnswers };
       for (const [fieldId, file] of Object.entries(fileUploads)) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const uploadRes = await api.post("/upload/resume", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        const uploadRes = await uploadDirectToS3({
+          file,
+          folder: "resumes",
+          endpoint: "/profile-resume",
         });
-        finalAnswers[fieldId] = uploadRes.data.file.url;
+        finalAnswers[fieldId] = uploadRes.file?.url || uploadRes.fileUrl || uploadRes.url || "";
       }
 
       await api.post(`/student/jobs/${actualJobId}/apply`, {

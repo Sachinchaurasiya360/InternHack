@@ -118,6 +118,7 @@ model jobAgentConversation {
 
   @@index([userId, isActive])
 }
+
 model generatedResume {
   id           Int      @id @default(autoincrement())
   userId       Int

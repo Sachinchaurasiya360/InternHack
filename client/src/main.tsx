@@ -9,7 +9,7 @@ import { setAuthQueryClient } from './lib/auth.store'
 import './index.css'
 import App from './App.tsx'
 
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string || ''
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string || 'missing_client_id'
 
 const queryClient = new QueryClient({
   defaultOptions: {

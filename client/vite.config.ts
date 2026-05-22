@@ -46,9 +46,6 @@ const PRERENDER_ROUTES = [
 const skipPrerender =
   process.env.SKIP_PRERENDER === '1' || process.env.VERCEL === '1'
 
-// Dev-only: Vite Node process proxies `/sitemap.xml`; in Docker Compose the API hostname is `server`.
-const dockerInternalApiOrigin =
-  process.env.DOCKER_INTERNAL_API_ORIGIN ?? 'http://127.0.0.1:3000'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -82,19 +79,25 @@ export default defineConfig({
       loader: { '.keep': 'text' },
     },
   },
-  server: {
-    headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
-      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+server: {
+  headers: {
+    'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+    'Cross-Origin-Embedder-Policy': 'unsafe-none',
+  },
+  proxy: {
+    // Proxy sitemap.xml to backend so it works in development
+    '/sitemap.xml': {
+      target: 'http://localhost:3000',
+      changeOrigin: true,
     },
-    proxy: {
-      // Proxy sitemap.xml to backend so it works in development
-      '/sitemap.xml': {
-        target: dockerInternalApiOrigin,
-        changeOrigin: true,
-      },
+    // Proxy API requests to backend in development. 
+    '/api': {
+      target: 'http://localhost:3000',
+      changeOrigin: true,
+      secure: false,
     },
   },
+},
   build: {
     chunkSizeWarningLimit: 600,
     rollupOptions: {
