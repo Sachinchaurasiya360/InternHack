@@ -182,22 +182,22 @@ export default function RoadmapTopicPage() {
           transition={{ duration: 0.5 }}
         >
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-xs font-mono text-gray-400 mt-8 mb-6">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-mono text-gray-400 mt-8 mb-6">
             <Link
               to="/roadmaps"
               className="hover:text-gray-600 dark:hover:text-gray-300 no-underline"
             >
               roadmaps
             </Link>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3" aria-hidden="true" />
             <Link
               to={`/roadmaps/${slug}`}
               className="hover:text-gray-600 dark:hover:text-gray-300 no-underline"
             >
               {topic.section.roadmap.title.toLowerCase()}
             </Link>
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-gray-600 dark:text-gray-300">
+            <ChevronRight className="w-3 h-3" aria-hidden="true" />
+            <span className="text-gray-600 dark:text-gray-300" aria-current="page">
               {topic.title.toLowerCase()}
             </span>
           </nav>
@@ -225,6 +225,7 @@ export default function RoadmapTopicPage() {
                 variant={
                   progress.status === "COMPLETED" ? "primary" : "outline"
                 }
+                aria-pressed={progress.status === "COMPLETED"}
                 onClick={() =>
                   updateProgress({
                     status:
@@ -235,9 +236,9 @@ export default function RoadmapTopicPage() {
                 }
               >
                 {progress.status === "COMPLETED" ? (
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
                 ) : (
-                  <Circle className="w-3.5 h-3.5" />
+                  <Circle className="w-3.5 h-3.5" aria-hidden="true" />
                 )}
                 {progress.status === "COMPLETED"
                   ? "Completed"
@@ -246,12 +247,14 @@ export default function RoadmapTopicPage() {
               <Button
                 size="sm"
                 variant={progress.bookmarked ? "primary" : "outline"}
+                aria-pressed={progress.bookmarked}
                 onClick={() =>
                   updateProgress({ bookmarked: !progress.bookmarked })
                 }
               >
                 <Bookmark
                   className={`w-3.5 h-3.5 ${progress.bookmarked ? "fill-current" : ""}`}
+                  aria-hidden="true"
                 />
                 {progress.bookmarked ? "Bookmarked" : "Bookmark"}
               </Button>
@@ -293,7 +296,7 @@ export default function RoadmapTopicPage() {
                           </p>
                         )}
                       </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400 mt-1 shrink-0 group-hover:text-indigo-500 transition-colors" />
+                      <ExternalLink className="w-4 h-4 text-gray-400 mt-1 shrink-0 group-hover:text-indigo-500 transition-colors" aria-hidden="true" />
                     </a>
                   </li>
                 ))}
@@ -303,9 +306,9 @@ export default function RoadmapTopicPage() {
 
           {topic.miniProject && (
             <section className="mb-10 bg-lime-50 dark:bg-lime-950/30 border border-lime-200 dark:border-lime-900 rounded-2xl p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-lime-700 dark:text-lime-400 mb-2">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-lime-700 dark:text-lime-400 mb-2">
                 Mini project
-              </p>
+              </h2>
               <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">
                 {topic.miniProject}
               </p>
@@ -314,9 +317,9 @@ export default function RoadmapTopicPage() {
 
           {topic.selfCheck && (
             <section className="mb-10 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-2xl p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-2">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-2">
                 Self-check
-              </p>
+              </h2>
               <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">
                 {topic.selfCheck}
               </p>
@@ -329,21 +332,25 @@ export default function RoadmapTopicPage() {
               <h2 className="font-display text-xl font-bold text-gray-950 dark:text-white mb-3">
                 Your notes
               </h2>
+              <label htmlFor="topic-notes" className="sr-only">
+                Notes for {topic.title}
+              </label>
               <textarea
+                id="topic-notes"
                 value={progress.notes}
                 onChange={(e) =>
                   setProgress({ ...progress, notes: e.target.value })
                 }
                 rows={6}
                 placeholder="Anything you want to remember about this topic..."
-                className="w-full p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
               />
               <div className="mt-2 flex justify-end">
                 <Button size="sm" onClick={saveNotes} disabled={savingNotes}>
                   {savingNotes ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
                   ) : (
-                    <Save className="w-3.5 h-3.5" />
+                    <Save className="w-3.5 h-3.5" aria-hidden="true" />
                   )}
                   Save notes
                 </Button>

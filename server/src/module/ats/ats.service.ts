@@ -11,6 +11,7 @@ import type {
   ScoreResumeInput,
   AtsCategoryScores,
   AtsKeywordAnalysis,
+  ApplySuggestionsInput,
 } from "./ats.types.js";
 import type { Prisma } from "@prisma/client";
 
@@ -89,6 +90,89 @@ export class AtsService {
     });
 
     return atsScore;
+  }
+
+  async applySuggestions(studentId: number, input: ApplySuggestionsInput) {
+    const user = await prisma.user.findUnique({
+      where: { id: studentId },
+      select: { resumes: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    const isOwned =
+      user.resumes.includes(input.resumeUrl) ||
+      getS3KeyFromUrl(input.resumeUrl) !== null;
+    if (!isOwned) {
+      throw new Error("Resume does not belong to this user");
+    }
+
+    const resumeText = await this.extractPdfText(input.resumeUrl);
+
+    if (!resumeText || resumeText.trim().length < 50) {
+      throw new Error(
+        "Could not extract sufficient text from the resume PDF. Make sure it is not a scanned image.",
+      );
+    }
+
+    const provider = getProviderForService("ATS_SCORE");
+    const prompt = this.buildApplySuggestionsPrompt(resumeText, input);
+    const response = await provider.generateText(prompt);
+    logAIRequest("ATS_SCORE", response, true, undefined, studentId);
+
+    return this.parseApplySuggestionsResponse(response.text.trim());
+  }
+
+  private buildApplySuggestionsPrompt(resumeText: string, input: ApplySuggestionsInput): string {
+    const jobContext =
+      input.jobTitle || input.jobDescription
+        ? `\nTARGET JOB INFORMATION:\n${input.jobTitle ? `Job Title: ${input.jobTitle}` : ""}\n${input.jobDescription ? `Job Description: ${input.jobDescription}` : ""}\n`
+        : "";
+
+    return `You are an expert ATS resume optimizer. Your task is to rewrite a resume by applying specific improvement suggestions, and output the result as a complete, compile-ready LaTeX document.
+
+CURRENT RESUME TEXT:
+---
+${resumeText}
+---${jobContext}
+SUGGESTIONS TO APPLY:
+${input.suggestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}
+
+OPTIMIZATION INSTRUCTIONS:
+1. Rewrite the resume content to incorporate the suggestions listed above.
+2. If job information is provided, ensure the resume is tailored towards it.
+3. Keep all factual content accurate, do not fabricate experience or qualifications.
+4. Output a professional, clean LaTeX document using the 'article' class.
+5. The document MUST compile with standard pdflatex using only standard packages: geometry, enumitem, hyperref, titlesec.
+6. Keep it to exactly 1 page.
+
+Respond using the EXACT tag format below. No markdown fences outside the tags.
+
+RESPONSE FORMAT:
+<reply>brief summary of how you applied the suggestions</reply>
+<latex>the full rewritten LaTeX code</latex>`;
+  }
+
+  private parseApplySuggestionsResponse(text: string) {
+    const replyMatch = text.match(/<reply>([\s\S]*?)<\/reply>/);
+    let latexMatch = text.match(/<latex>([\s\S]*)<\/latex>/);
+
+    if (!latexMatch && text.includes("<latex>")) {
+      const idx = text.indexOf("<latex>") + "<latex>".length;
+      const raw = text.slice(idx).trim();
+      if (raw.length > 20) {
+        latexMatch = [raw, raw] as unknown as RegExpMatchArray;
+      }
+    }
+
+    let latexCode = latexMatch ? latexMatch[1].trim() : undefined;
+    if (latexCode?.startsWith("\`\`\`")) {
+      latexCode = latexCode.replace(/^\`\`\`(?:latex)?\n?/, "").replace(/\n?\`\`\`$/, "");
+    }
+
+    return {
+      reply: replyMatch ? replyMatch[1].trim() : "Successfully applied suggestions.",
+      updatedLatex: latexCode || text,
+    };
   }
 
   private async extractPdfText(resumeUrl: string): Promise<string> {

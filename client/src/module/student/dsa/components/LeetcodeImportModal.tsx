@@ -9,6 +9,7 @@ import api from "../../../../lib/axios";
 import { queryKeys } from "../../../../lib/query-keys";
 import type { LeetcodeImportPreview, LeetcodeImportResult, LeetcodeImportPreviewItem } from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
+import { DIFF_COLOR } from "../../../../lib/difficulty-colors";
 
 // Feature flag — mirrors server env
 const IMPORT_ENABLED = import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
@@ -20,12 +21,6 @@ interface Props {
   open: boolean;
   onClose: () => void;
 }
-
-const DIFF_COLOR: Record<string, string> = {
-  Easy: "text-emerald-500",
-  Medium: "text-amber-500",
-  Hard: "text-rose-500",
-};
 
 export function LeetcodeImportModal({ open, onClose }: Props) {
   const qc = useQueryClient();

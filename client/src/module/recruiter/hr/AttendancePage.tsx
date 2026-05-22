@@ -26,6 +26,7 @@ import type {
   HREmployee,
 } from "./hr-types";
 import { SEO } from "../../../components/SEO";
+import { formatLabel, initials } from "./hr-utils";
 
 const STATUS_OPTIONS: AttendanceStatus[] = [
   "PRESENT",
@@ -38,17 +39,6 @@ const STATUS_OPTIONS: AttendanceStatus[] = [
 ];
 
 type TabKey = "today" | "report" | "regularize";
-
-function formatLabel(value: string) {
-  return value
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function initials(first?: string, last?: string) {
-  return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase() || "?";
-}
 
 function formatTime(iso?: string) {
   if (!iso) return "";

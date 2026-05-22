@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Navbar } from "../../../components/Navbar";
+import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
@@ -57,27 +59,13 @@ export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [debouncedLocation, setDebouncedLocation] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [hideExpired, setHideExpired] = useState(true);
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-      setDebouncedLocation(locationFilter);
-      setPage(1);
-    }, 400);
-    return () => clearTimeout(timerRef.current);
-  }, [search, locationFilter]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [hideExpired]);
+  const debouncedSearch = useDebounce(search, 400);
+  const debouncedLocation = useDebounce(locationFilter, 400);
+  const [hideExpired, setHideExpired] = useState(true);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({
@@ -145,6 +133,7 @@ export default function JobBrowsePage() {
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
+      if (selectedTags.length) params.set("tags", selectedTags.join(","));
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
@@ -171,14 +160,7 @@ export default function JobBrowsePage() {
 
   const hasFilters = search || locationFilter || selectedTags.length > 0;
 
-  const submitSearch = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDebouncedSearch(search);
-    setDebouncedLocation(locationFilter);
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
+  
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -304,7 +286,7 @@ export default function JobBrowsePage() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              submitSearch();
+          
             }}
             className="flex flex-col sm:flex-row gap-2"
           >
@@ -637,6 +619,7 @@ export default function JobBrowsePage() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

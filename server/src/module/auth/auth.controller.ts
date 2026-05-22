@@ -83,6 +83,10 @@ export class AuthController {
       return res.status(200).json({ message: "Google authentication successful", ...data });
     } catch (error) {
       if (error instanceof Error) {
+        const statusCode = (error as Error & { statusCode?: number }).statusCode;
+        if (statusCode) {
+          return res.status(statusCode).json({ message: error.message });
+        }
         if (error.message === "Invalid Google token") {
           return res.status(401).json({ message: error.message });
         }

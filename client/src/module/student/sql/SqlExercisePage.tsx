@@ -30,6 +30,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
 type SqlProgress = Record<string, { solved: boolean; code: string | null }>;
 
@@ -79,12 +80,6 @@ function useSqlProgress() {
 
   return { progress, save };
 }
-
-const DIFF_COLOR: Record<string, string> = {
-  Easy: "text-emerald-600 dark:text-emerald-400",
-  Medium: "text-amber-600 dark:text-amber-400",
-  Hard: "text-rose-600 dark:text-rose-400",
-};
 
 export default function SqlExercisePage() {
   const { sectionSlug, exerciseId } = useParams();

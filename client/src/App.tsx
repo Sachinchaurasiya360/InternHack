@@ -155,8 +155,8 @@ const DataAnalyticsSectionPage = lazyWithRetry(() => import("./module/student/da
 const DataAnalyticsLessonDetailPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsLessonDetailPage"));
 
 // Recruiter auth pages
-const RecruiterLoginPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterLoginPage"));
-const RecruiterRegisterPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterRegisterPage"));
+// Redirected to unified auth pages
+
 
 // Recruiter pages
 const RecruiterLayout = lazyWithRetry(() => import("./module/recruiter/RecruiterLayout"));
@@ -337,8 +337,8 @@ function App() {
 
 
           <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
-          <Route path="/recruiter/login" element={<RecruiterLoginPage />} />
-          <Route path="/recruiter/register" element={<RecruiterRegisterPage />} />
+          <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
+          <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
           {/* Roadmaps (public + auth) */}
           <Route path="/roadmaps" element={<RoadmapsLandingPage />} />
