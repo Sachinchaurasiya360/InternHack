@@ -30,6 +30,7 @@ export default function RegisterPage() {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     company: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -39,10 +40,20 @@ export default function RegisterPage() {
 
   // Validation functions
   const validateName = (name: string): string => {
-    if (!name.trim()) return "Name is required";
-    if (name.trim().length < 2) return "Name must be at least 2 characters long";
-    return "";
-  };
+  if (!name.trim()) return "Name is required";
+
+  if (name.trim().length < 2) {
+    return "Name must be at least 2 characters long";
+  }
+
+  const nameRegex = /^[A-Za-z ]+$/;
+
+  if (!nameRegex.test(name)) {
+    return "Name should contain only alphabets";
+  }
+
+  return "";
+};
 
   const validateEmail = (email: string, userRole: string): string => {
     if (!email.trim()) return "Email is required";
@@ -54,10 +65,31 @@ export default function RegisterPage() {
   };
 
   const validatePassword = (password: string): string => {
-    if (!password) return "Password is required";
-    if (password.length < 6) return "Password must be at least 6 characters";
-    return "";
-  };
+  if (!password) return "Password is required";
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+  if (!passwordRegex.test(password)) {
+    return "Password must contain 8+ characters, uppercase, lowercase, number and special character";
+  }
+
+  return "";
+};
+const validateConfirmPassword = (
+  password: string,
+  confirmPassword: string
+): string => {
+  if (!confirmPassword) {
+    return "Please confirm your password";
+  }
+
+  if (password !== confirmPassword) {
+    return "Passwords do not match";
+  }
+
+  return "";
+};
 
   const handleFieldChange = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -84,6 +116,14 @@ export default function RegisterPage() {
         newErrors.password = passwordError;
       } else {
         delete newErrors.password;
+      }
+    }
+    else if (field === "confirmPassword") {
+      const confirmPasswordError = validateConfirmPassword(form.password, value);
+      if (confirmPasswordError) {
+        newErrors.confirmPassword = confirmPasswordError;
+      } else {
+        delete newErrors.confirmPassword;
       }
     }
     setFieldErrors(newErrors);
@@ -124,10 +164,12 @@ export default function RegisterPage() {
     const nameError = validateName(form.name);
     const emailError = validateEmail(form.email, role);
     const passwordError = validatePassword(form.password);
+    const confirmPasswordError = validateConfirmPassword(form.password,form.confirmPassword);
     
     if (nameError) newErrors.name = nameError;
     if (emailError) newErrors.email = emailError;
     if (passwordError) newErrors.password = passwordError;
+    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
     
     if (Object.keys(newErrors).length > 0) {
       setFieldErrors(newErrors);
@@ -287,6 +329,30 @@ return (
                 placeholder="Jane Doe"
               />
             </FormField>
+            <FormField
+              label="Confirm Password"
+              error={fieldErrors.confirmPassword}
+              fieldName="confirmPassword"
+            >
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.confirmPassword}
+                onChange={(e) =>
+                  handleFieldChange("confirmPassword", e.target.value)
+                }
+                aria-invalid={!!fieldErrors.confirmPassword}
+                aria-describedby={
+                  fieldErrors.confirmPassword
+                    ? "error-confirmPassword"
+                    : undefined
+                }
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${fieldErrors.confirmPassword
+                    ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                    : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
+                placeholder="Confirm your password"
+              />
+            </FormField>
 
             <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email} fieldName="email">
               <input
@@ -346,6 +412,11 @@ return (
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              <p className="mt-1.5 text-xs text-stone-500 dark:text-stone-400">
+                Password must contain at least 8 characters,
+                one uppercase letter, one lowercase letter,
+                one number and one special character.
+              </p>
             </FormField>
 
             <button
