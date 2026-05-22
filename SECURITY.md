@@ -112,4 +112,4 @@ This project uses the following automated security measures:
 
 ---
 
-*This policy is subject to updates. Last revised: 2025-05-22.*
+*This policy is subject to updates. Last revised: 2026-05-22.*

@@ -30,10 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@3b1399859f7b049b794401869e54d896131846b4 # v4.9.0
         with:
           fail-on-severity: high
           deny-licenses: GPL-3.0, AGPL-3.0
@@ -47,10 +49,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39a10693d8b2d1d368096899b82144760a99602a # v4.2.0
         with:
           node-version: 20
           cache: "npm"
@@ -71,7 +75,7 @@ jobs:
 
       - name: Upload audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65462800fd76c34412f7b833b934784a0d924d52 # v4.6.1
         with:
           name: server-audit-report
           path: server/audit-report.json
@@ -85,10 +89,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39a10693d8b2d1d368096899b82144760a99602a # v4.2.0
         with:
           node-version: 20
           cache: "npm"
@@ -109,7 +115,7 @@ jobs:
 
       - name: Upload audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65462800fd76c34412f7b833b934784a0d924d52 # v4.6.1
         with:
           name: client-audit-report
           path: client/audit-report.json
