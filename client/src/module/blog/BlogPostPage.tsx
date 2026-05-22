@@ -197,7 +197,7 @@ function markdownToHtml(md: string): string {
       }
 
       return `
-        <p class="text-stone-700 dark:text-stone-300 leading-8 mb-5 text-[1.02rem]">
+        <p class="text-stone-700 dark:text-stone-300 leading-8 mb-5 text-base">
           ${trimmed.replace(/\n/g, "<br />")}
         </p>
       `;
