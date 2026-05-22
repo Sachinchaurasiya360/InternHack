@@ -204,11 +204,10 @@ export default function GovInternshipsPage() {
         <div className="mb-8 flex flex-wrap items-center gap-2">
           <button
             onClick={() => { setCategory(""); setPage(1); }}
-            className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
-              !category
-                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-            }`}
+            className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${!category
+              ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+              : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+              }`}
           >
             All ({stats?.total ?? "..."})
           </button>
@@ -216,11 +215,10 @@ export default function GovInternshipsPage() {
             <button
               key={c.name}
               onClick={() => { setCategory(c.name); setPage(1); }}
-              className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
-                category === c.name
-                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                  : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-              }`}
+              className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${category === c.name
+                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+                }`}
             >
               {c.name} ({c.count})
             </button>
@@ -277,7 +275,10 @@ export default function GovInternshipsPage() {
             {pagination && pagination.totalPages > 1 && (
               <div className="flex items-center justify-center gap-3 mt-10">
                 <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() => {
+                    setPage((p) => Math.max(1, p - 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page <= 1}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-transparent cursor-pointer"
                 >
@@ -287,7 +288,10 @@ export default function GovInternshipsPage() {
                   {pagination.page} / {pagination.totalPages}
                 </span>
                 <button
-                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  onClick={() => {
+                    setPage((p) => Math.min(pagination.totalPages, p + 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page >= pagination.totalPages}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-transparent cursor-pointer"
                 >
