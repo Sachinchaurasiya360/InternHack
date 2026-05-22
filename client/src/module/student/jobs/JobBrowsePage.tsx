@@ -227,7 +227,7 @@ export default function JobBrowsePage() {
               listings, updated daily.
             </p>
           </div>
-          <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
             {typeof internalTotal === "number" && (
               <span>
                 internal{" "}
@@ -273,7 +273,7 @@ export default function JobBrowsePage() {
               <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
                 Top 100 Internships in India 2026
               </p>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5">
                 government / psus / iits / tech giants
               </p>
             </div>
@@ -321,7 +321,7 @@ export default function JobBrowsePage() {
           </form>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
             </span>
             {FILTER_TAGS.map((tag, i) => {
@@ -351,7 +351,7 @@ export default function JobBrowsePage() {
                 onChange={(e) => setHideExpired(e.target.checked)}
                 className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20"
               />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
                 Hide expired
               </span>
             </label>
@@ -382,7 +382,7 @@ export default function JobBrowsePage() {
           >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1 w-1 bg-lime-400" />
                   external / curated
                 </div>
@@ -390,7 +390,7 @@ export default function JobBrowsePage() {
                   Latest opportunities
                 </h2>
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">updated daily</span>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">updated daily</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
@@ -428,7 +428,7 @@ export default function JobBrowsePage() {
           >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1 w-1 bg-lime-400" />
                   sourced / partners
                 </div>
@@ -436,7 +436,7 @@ export default function JobBrowsePage() {
                   Tech roles from job boards
                 </h2>
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">refreshed every 6h</span>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">refreshed every 6h</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {scrapedJobs.map((job, i) => (
@@ -497,7 +497,7 @@ export default function JobBrowsePage() {
           <>
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1 w-1 bg-lime-400" />
                   internal / live
                 </div>
@@ -511,7 +511,7 @@ export default function JobBrowsePage() {
               <div className="py-20 text-center">
                 <div className="inline-flex flex-col items-center gap-3">
                   <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
                 </div>
               </div>
             ) : (
@@ -538,7 +538,7 @@ export default function JobBrowsePage() {
                               <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
                               {job.deadline && (
                                 new Date(job.deadline) < new Date() ? (
-                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
                                     <Clock className="w-3 h-3" /> expired
                                   </span>
                                 ) : (
