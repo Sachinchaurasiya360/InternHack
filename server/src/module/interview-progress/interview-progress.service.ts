@@ -37,28 +37,15 @@ export class InterviewProgressService {
     questionId: string,
     action: ProgressAction
   ) {
-    const existingProgress =
-      await prisma.userInterviewProgress.findUnique({
-        where: {
-          userId,
-        },
-      });
+    // Read current state; default to empty arrays if no row exists yet
+    const existing = await prisma.userInterviewProgress.findUnique({
+      where: { userId },
+    });
 
-    const progress =
-      existingProgress ??
-      (await prisma.userInterviewProgress.create({
-        data: {
-          userId,
-          completedIds: [],
-          bookmarkedIds: [],
-        },
-      }));
-
-    let completedIds = [...progress.completedIds];
-    let bookmarkedIds = [...progress.bookmarkedIds];
-
-    let lastVisitedId = progress.lastVisitedId;
-    let lastVisitedAt = progress.lastVisitedAt;
+    let completedIds = [...(existing?.completedIds ?? [])];
+    let bookmarkedIds = [...(existing?.bookmarkedIds ?? [])];
+    let lastVisitedId = existing?.lastVisitedId ?? null;
+    let lastVisitedAt = existing?.lastVisitedAt ?? null;
 
     if (action === "complete") {
       completedIds = [...new Set([...completedIds, questionId])];
@@ -85,11 +72,17 @@ export class InterviewProgressService {
       lastVisitedAt = new Date();
     }
 
-    return prisma.userInterviewProgress.update({
-      where: {
+    // Single atomic upsert — safe under concurrent requests
+    return prisma.userInterviewProgress.upsert({
+      where: { userId },
+      create: {
         userId,
+        completedIds,
+        bookmarkedIds,
+        lastVisitedId,
+        lastVisitedAt,
       },
-      data: {
+      update: {
         completedIds,
         bookmarkedIds,
         lastVisitedId,

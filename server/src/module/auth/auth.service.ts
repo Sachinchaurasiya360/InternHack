@@ -587,6 +587,12 @@ export class AuthService {
         resetOtpExpiresAt: null,
       },
     });
+    // Revoke existing sessions by bumping tokenVersion and clearing cache
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { tokenVersion: { increment: 1 } },
+    });
+    invalidateVersionCache(user.id);
   }
 
   async importGitHub(username: string) {

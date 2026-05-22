@@ -31,9 +31,7 @@ export class AtsService {
     });
     if (!user) throw new Error("User not found");
 
-    const isOwned =
-      user.resumes.includes(input.resumeUrl) ||
-      getS3KeyFromUrl(input.resumeUrl) !== null; // allow any S3 URL they uploaded via the upload endpoint
+    const isOwned = user.resumes.includes(input.resumeUrl);
     if (!isOwned) {
       throw new Error("Resume does not belong to this user");
     }
@@ -99,9 +97,7 @@ export class AtsService {
     });
     if (!user) throw new Error("User not found");
 
-    const isOwned =
-      user.resumes.includes(input.resumeUrl) ||
-      getS3KeyFromUrl(input.resumeUrl) !== null;
+    const isOwned = user.resumes.includes(input.resumeUrl);
     if (!isOwned) {
       throw new Error("Resume does not belong to this user");
     }
