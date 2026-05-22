@@ -21,7 +21,7 @@ export default function TrendingSidebar({
   if (!posts.length) return null;
 
   return (
-    <aside className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5">
+    <aside className="rounded-3xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
       {/* Header */}
       <div className="flex items-center gap-2 mb-5">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-900/30">
@@ -29,11 +29,11 @@ export default function TrendingSidebar({
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-bold text-stone-900 dark:text-stone-50">
             Trending
           </h3>
 
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-stone-500 dark:text-stone-400">
             Popular reads right now
           </p>
         </div>
@@ -53,20 +53,20 @@ export default function TrendingSidebar({
           >
             <Link
               to={`/blog/${post.slug}`}
-              className="group flex gap-4 rounded-2xl border border-transparent p-3 transition-all hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/60 no-underline"
+              className="group flex gap-4 rounded-2xl border border-transparent p-3 transition-all hover:border-stone-200 dark:hover:border-white/10 hover:bg-stone-50 dark:hover:bg-stone-800/60 no-underline"
             >
               {/* Ranking */}
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-sm font-black text-gray-700 dark:text-gray-300">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-stone-100 dark:bg-stone-800 text-sm font-black text-stone-700 dark:text-stone-300">
                 {index + 1}
               </div>
 
               {/* Content */}
               <div className="min-w-0 flex-1">
-                <h4 className="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h4 className="line-clamp-2 text-sm font-semibold leading-snug text-stone-900 dark:text-stone-50 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors">
                   {post.title}
                 </h4>
 
-                <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <div className="mt-2 flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
                   <Clock className="h-3.5 w-3.5" />
 
                   <span>

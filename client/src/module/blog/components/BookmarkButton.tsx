@@ -57,8 +57,8 @@ export default function BookmarkButton({
       onClick={toggleBookmark}
       className={`inline-flex items-center justify-center rounded-xl border p-2 transition-all duration-200 ${
         bookmarked
-          ? "border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/20"
-          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400"
+          ? "border-lime-400 bg-lime-400 text-stone-950 shadow-md shadow-lime-400/20"
+          : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-500 hover:text-lime-600 dark:hover:text-lime-400"
       }`}
       aria-label={
         bookmarked ? "Remove bookmark" : "Add bookmark"
