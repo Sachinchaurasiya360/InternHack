@@ -49,7 +49,7 @@ export default function RegisterPage() {
   const nameRegex = /^[A-Za-zÀ-ÿ' -]+$/;
 
   if (!nameRegex.test(name)) {
-    return "Name should contain only alphabets";
+    return "Name may contain only letters, spaces, apostrophes, and hyphens";
   }
 
   return "";
@@ -68,7 +68,7 @@ export default function RegisterPage() {
   if (!password) return "Password is required";
 
   const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{}|;:'",.<>\/?`~\\])[A-Za-z\d@$!%*?&#^()_+\-=\[\]{}|;:'",.<>\/?`~\\]{8,}$/;
 
   if (!passwordRegex.test(password)) {
     return "Password must contain 8+ characters, uppercase, lowercase, number and special character";
