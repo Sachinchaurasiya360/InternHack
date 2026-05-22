@@ -10,6 +10,7 @@ env:
 
 jobs:
   build-and-deploy:
+    if: github.repository == 'Sachinchaurasiya360/InternHack'
     runs-on: ubuntu-latest
 
     steps:
