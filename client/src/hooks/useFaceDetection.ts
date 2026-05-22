@@ -64,9 +64,21 @@ export function useFaceDetection(config: FaceDetectionConfig) {
       });
       streamRef.current = stream;
     } catch (err: any) {
-      const msg = err?.name === "NotAllowedError"
-        ? "Camera permission denied"
-        : "Camera not available";
+      let msg: string;
+      if (err?.name === "NotAllowedError") {
+        const isPolicy =
+          err?.message?.toLowerCase().includes("permissions policy") ||
+          err?.message?.toLowerCase().includes("feature policy");
+        msg = isPolicy
+          ? "Camera blocked by site security policy. Please contact support."
+          : "Camera permission denied. Please allow camera access in your browser settings and try again.";
+      } else if (err?.name === "NotFoundError") {
+        msg = "No camera found. Please connect a camera and try again.";
+      } else if (err?.name === "NotReadableError") {
+        msg = "Camera is in use by another application. Please close it and try again.";
+      } else {
+        msg = "Camera not available. Please check your device and try again.";
+      }
       setError(msg);
       setIsLoading(false);
       onErrorRef.current(msg);

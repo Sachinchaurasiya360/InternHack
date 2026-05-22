@@ -358,10 +358,23 @@ export default function SkillTestPage() {
         // Stop the preview stream - proctoring camera component will start its own
         stream.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
-      } catch {
-        setCameraError(
-          "Camera access denied. Please allow camera permissions and try again.",
-        );
+      } catch (err: any) {
+        let msg: string;
+        if (err?.name === "NotAllowedError") {
+          const isPolicy =
+            err?.message?.toLowerCase().includes("permissions policy") ||
+            err?.message?.toLowerCase().includes("feature policy");
+          msg = isPolicy
+            ? "Camera is blocked by a site security policy. This is a known issue — please contact support."
+            : "Camera permission denied. Please allow camera access in your browser settings and try again.";
+        } else if (err?.name === "NotFoundError") {
+          msg = "No camera detected. Please connect a camera and try again.";
+        } else if (err?.name === "NotReadableError") {
+          msg = "Camera is in use by another app. Please close it and try again.";
+        } else {
+          msg = "Camera not available. Please check your device and try again.";
+        }
+        setCameraError(msg);
       }
     };
 
