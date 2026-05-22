@@ -577,15 +577,15 @@ export default function JobAgentPage() {
                 </Button>
               </div>
             </div>
-          </div>
-          {voiceHint && (
-            <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
-              {voiceHint}
+            {voiceHint && (
+              <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
+                {voiceHint}
+              </p>
+            )}
+            <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+              powered by Neural Network, always verify job details
             </p>
-          )}
-          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
-            powered by Neural Network, always verify job details
-          </p>
+          </div>
         </div>
       </div>
     </div>
