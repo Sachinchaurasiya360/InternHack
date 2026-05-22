@@ -21,16 +21,29 @@ export function Footer() {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.preventDefault();
     if (!email.trim()) return;
     setSubmitting(true);
     setError("");
     try {
-      await api.post("/newsletter/subscribe", { email: email.trim() });
-      setSubscribed(true);
-      setEmail("");
-    } catch {
-      setError("Failed to subscribe. Try again.");
-    } finally {
+      const res = await api.post("/newsletter/subscribe", { email: email.trim() });
+      
+      if (res.status === 201) {
+        setSubscribed(true);
+        setEmail("");
+      } else if (res.status === 200) {
+        setError("You're already subscribed!");
+      }
+    } catch (err: any) {
+      if (err.response?.status === 400) {
+        setError("Please enter a valid email address.");
+      } else if (err.response?.status === 409) {
+        setError("You're already subscribed!");
+      } else {
+        setError("Failed to subscribe. Try again.");
+      }
+    }
+    finally {
       setSubmitting(false);
     }
   };
