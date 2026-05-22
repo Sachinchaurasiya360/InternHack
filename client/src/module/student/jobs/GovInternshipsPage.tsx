@@ -126,6 +126,7 @@ export default function GovInternshipsPage() {
   }>({
     queryKey: queryKeys.internships.list(queryParams),
     queryFn: () => api.get("/internships", { params: queryParams }).then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
   });
 
   const internships = data?.internships ?? [];
