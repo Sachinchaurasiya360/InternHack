@@ -46,7 +46,7 @@ export default function RegisterPage() {
     return "Name must be at least 2 characters long";
   }
 
-  const nameRegex = /^[A-Za-z ]+$/;
+  const nameRegex = /^[A-Za-zÀ-ÿ' -]+$/;
 
   if (!nameRegex.test(name)) {
     return "Name should contain only alphabets";
@@ -68,7 +68,7 @@ export default function RegisterPage() {
   if (!password) return "Password is required";
 
   const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
   if (!passwordRegex.test(password)) {
     return "Password must contain 8+ characters, uppercase, lowercase, number and special character";
