@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
@@ -24,8 +26,10 @@ import {
   ArrowRight,
   Award,
   Mail,
+  Wand2,
   Download,
 } from "lucide-react";
+import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
@@ -224,6 +228,8 @@ export default function AtsScorePage() {
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
+  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
+  const navigate = useNavigate();
 
   const handlePrint = useReactToPrint({
     contentRef: printRef,
@@ -327,6 +333,40 @@ export default function AtsScorePage() {
     },
   });
 
+  const applyMutation = useMutation({
+    mutationFn: async () => {
+      const suggestionsToApply = result?.suggestions.filter((_, i) => selectedSuggestions.has(i));
+      if (!suggestionsToApply?.length) throw new Error("Select at least one suggestion to apply.");
+      
+      const res = await api.post("/ats/apply-suggestions", {
+        resumeUrl,
+        jobTitle: jobTitle.trim() || undefined,
+        jobDescription: jobDescription.trim() || undefined,
+        suggestions: suggestionsToApply,
+      });
+      return res.data as { reply: string; updatedLatex: string };
+    },
+    onSuccess: (data) => {
+      navigate("/student/ats/latex-editor", {
+        state: {
+          initialLatex: data.updatedLatex,
+          banner: "AI-improved draft based on your ATS analysis. Review carefully before saving."
+        }
+      });
+    },
+    onError: (err: unknown) => {
+      const errorObj = err as { response?: { status?: number; data?: { message?: string } } };
+      
+      if (errorObj?.response?.status === 429) {
+        toast.error("AI usage limit reached. Please try again later.");
+        return;
+      }
+
+      const msg = errorObj?.response?.data?.message || "Failed to improve resume";
+      toast.error(msg);
+    },
+  });
+
   const loading = analyzeMutation.isPending;
 
   useEffect(() => {
@@ -386,6 +426,7 @@ export default function AtsScorePage() {
     setResult(null);
     setEmailSent(false);
     setActiveTab("suggestions");
+    setSelectedSuggestions(new Set());
     if (file) {
       setAnalyzedFileName(file.name);
       setAnalyzedFileSize(file.size);
@@ -1206,28 +1247,72 @@ export default function AtsScorePage() {
                           transition={{ duration: 0.18 }}
                         >
                           {result.suggestions.length > 0 ? (
-                            <div className="divide-y divide-stone-200 dark:divide-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
-                              {result.suggestions.map((s, i) => (
-                                <motion.div
-                                  key={i}
-                                  initial={{ opacity: 0, y: 6 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: i * 0.05 }}
-                                  className="group flex items-start gap-4 px-5 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors"
-                                >
-                                  <div className="w-8 h-8 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center shrink-0 mt-0.5 tabular-nums">
-                                    <span className="text-[11px] font-bold text-stone-50 dark:text-stone-900">
-                                      {String(i + 1).padStart(2, "0")}
-                                    </span>
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
-                                      {s}
-                                    </p>
-                                  </div>
-                                  <ArrowRight className="w-4 h-4 text-stone-300 dark:text-white/20 shrink-0 mt-1 group-hover:text-lime-500 group-hover:translate-x-0.5 transition-all" />
-                                </motion.div>
-                              ))}
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between px-1">
+                                <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedSuggestions.size === result.suggestions.length}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedSuggestions(new Set(result.suggestions.map((_, i) => i)));
+                                      } else {
+                                        setSelectedSuggestions(new Set());
+                                      }
+                                    }}
+                                    className="w-4 h-4 rounded border-stone-300 text-lime-500 focus:ring-lime-500 cursor-pointer"
+                                  />
+                                  <span className="font-bold">Select all</span>
+                                </label>
+                                <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+                                  {selectedSuggestions.size} selected
+                                </span>
+                              </div>
+                              <div className="divide-y divide-stone-200 dark:divide-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                                {result.suggestions.map((s, i) => (
+                                  <label
+                                    key={i}
+                                    className="group flex items-start gap-4 px-5 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors cursor-pointer"
+                                  >
+                                    <div className="pt-0.5">
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedSuggestions.has(i)}
+                                        onChange={(e) => {
+                                          const next = new Set(selectedSuggestions);
+                                          if (e.target.checked) next.add(i);
+                                          else next.delete(i);
+                                          setSelectedSuggestions(next);
+                                        }}
+                                        className="w-4 h-4 rounded border-stone-300 text-lime-500 focus:ring-lime-500 cursor-pointer"
+                                      />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
+                                        {s}
+                                      </p>
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                              <Button
+                                type="button"
+                                variant="primary"
+                                size="lg"
+                                onClick={() => applyMutation.mutate()}
+                                disabled={selectedSuggestions.size === 0 || applyMutation.isPending}
+                                className="group w-full font-bold bg-lime-400 text-stone-950 hover:bg-lime-300 border-0"
+                              >
+                                {applyMutation.isPending ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 animate-spin" /> Applying...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Wand2 className="w-4 h-4" /> Apply suggestions & improve resume
+                                  </>
+                                )}
+                              </Button>
                             </div>
                           ) : (
                             <div className="flex flex-col items-center py-10 text-center">
