@@ -35,14 +35,14 @@ export function Footer() {
         setError("You're already subscribed!");
       }
     } catch (err: any) {
-      if (err.response?.status === 400) {
-        setError("Please enter a valid email address.");
-      } else if (err.response?.status === 409) {
-        setError("You're already subscribed!");
-      } else {
-        setError("Failed to subscribe. Try again.");
-      }
-    }
+  if (err.response?.status === 400) {
+    setError(err.response?.data?.message || "Please enter a valid email address.");
+  } else if (err.response?.status === 409) {
+    setError(err.response?.data?.message || "You're already subscribed!");
+  } else {
+    setError("Failed to subscribe. Try again.");
+  }
+}
     finally {
       setSubmitting(false);
     }
