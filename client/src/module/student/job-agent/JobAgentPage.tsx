@@ -316,7 +316,7 @@ export default function JobAgentPage() {
       </div>
 
       {/* Messages area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 py-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 pt-2 pb-4">
         <div className="max-w-4xl mx-auto">
           <AnimatePresence mode="wait">
             {isEmpty ? (
@@ -326,10 +326,10 @@ export default function JobAgentPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col items-center justify-center py-12"
+                className="flex flex-col items-center pt-10 pb-6"
               >
                 {/* Hero icon box */}
-                <div className="relative mb-6">
+                <div className="relative mb-5 mt-4">
                   <div className="w-16 h-16 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center">
                     <BotMessageSquare className="w-8 h-8 text-stone-50 dark:text-stone-900" />
                   </div>
@@ -339,7 +339,7 @@ export default function JobAgentPage() {
                 <h2 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5">
                   Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
                 </h2>
-                <p className="text-sm text-stone-600 dark:text-stone-400 mb-6 text-center max-w-md">
+                <p className="text-sm text-stone-600 dark:text-stone-400 mb-5 text-center max-w-md leading-relaxed">
                   Tell me what you're looking for and I'll surface the best matches from the live job feed.
                 </p>
 
@@ -412,7 +412,7 @@ export default function JobAgentPage() {
       )}
 
       {/* Input bar */}
-      <div className="shrink-0 px-4 sm:px-8 py-4 border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950">
+      <div className="shrink-0 px-4 sm:px-8 py-3 border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950">
         <div className="max-w-4xl mx-auto">
           <div className="relative bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 focus-within:border-stone-400 dark:focus-within:border-white/25 transition-colors">
             <div className="overflow-y-auto">
