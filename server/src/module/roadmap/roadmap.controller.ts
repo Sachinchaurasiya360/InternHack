@@ -30,7 +30,8 @@ import {
   generateAiRoadmap,
   slugifyRoadmap,
 } from "./roadmap.ai.service.js";
-import { generateRoadmapPdf } from "./roadmap.pdf.js";
+
+import { generateRoadmapPdf, generateCertificatePdf } from "./roadmap.pdf.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { roadmapWelcomeEmailHtml } from "../../utils/email-templates.js";
 
@@ -71,6 +72,7 @@ export async function getRoadmap(req: Request, res: Response, next: NextFunction
         res.status(404).json({ message: "Roadmap not found" });
         return;
       }
+      res.locals["skipCache"] = true;
     }
 
     res.json({ roadmap });
@@ -287,7 +289,8 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
       return;
     }
 
-    const progress = await updateTopicProgress({
+
+  const { progress, roadmapCompleted } = await updateTopicProgress({
       userId: req.user!.id,
       enrollmentId: params.data.id,
       topicId: params.data.topicId,
@@ -295,7 +298,9 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
       bookmarked: body.data.bookmarked,
       notes: body.data.notes,
     });
-    res.json({ progress });
+    res.json({ progress, roadmapCompleted });
+
+
   } catch (err) {
     if (typeof err === "object" && err && "status" in err) {
       const e = err as { status: number; message: string };
@@ -645,3 +650,72 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     next(err);
   }
 }
+
+
+
+
+export async function downloadCertificate(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    const themeQuery = pdfThemeQuery.safeParse(req.query);
+    const theme = themeQuery.success ? themeQuery.data.theme : "light";
+
+    const enrollment = await getEnrollmentForUser({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+    if (!enrollment) {
+      res.status(404).json({ message: "Enrollment not found" });
+      return;
+    }
+
+    // Guard: only allow download if 100% complete
+    const summary = summarizeProgress(enrollment);
+    if (summary.percentComplete < 100) {
+      res.status(403).json({
+        message: "Complete all topics to download your certificate.",
+        percentComplete: summary.percentComplete,
+      });
+      return;
+    }
+
+    const userRecord = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { name: true },
+    });
+
+
+
+    const completedTopics = enrollment.topicProgress
+      .filter((p) => p.status === "COMPLETED" && p.completedAt)
+      .sort((a, b) => b.completedAt!.getTime() - a.completedAt!.getTime());
+    const actualCompletedAt = completedTopics[0]?.completedAt ?? new Date();
+
+    const pdfBuffer = await generateCertificatePdf({
+      theme,
+      userName: userRecord?.name ?? "Learner",
+      roadmapTitle: enrollment.roadmap.title,
+      completedAt: actualCompletedAt,
+    });
+
+
+
+
+    const suffix = theme === "dark" ? "-dark" : "";
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${enrollment.roadmap.slug}-certificate${suffix}.pdf"`,
+    );
+    res.send(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+

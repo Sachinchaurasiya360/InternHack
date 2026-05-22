@@ -2,32 +2,8 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Clock, Eye, User, Calendar } from "lucide-react";
 
-export type BlogCategory =
-  | "CAREER_ADVICE"
-  | "INTERVIEW_TIPS"
-  | "SALARY_GUIDE"
-  | "INDUSTRY_INSIGHTS"
-  | "RESUME_TIPS"
-  | "TECH_TRENDS";
+import type { BlogPost, BlogCategory } from "@/lib/types";
 
-export interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  category: BlogCategory;
-  tags: string[];
-  author: { id: number; name: string; profilePic?: string };
-  status: "DRAFT" | "PUBLISHED";
-  featuredImage?: string;
-  readingTime: number;
-  viewCount: number;
-  isFeatured: boolean;
-  publishedAt?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",
@@ -94,7 +70,7 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${gradient} opacity-80`} />
+            <div className={`w-full h-full bg-linear-to-br ${gradient} opacity-80`} />
           )}
           {/* Category badge */}
           <span

@@ -35,5 +35,6 @@ atsRouter.get("/cover-letter/history", (req, res, next) => coverLetterController
 atsRouter.get("/cover-letter/history/:id", (req, res, next) => coverLetterController.getOne(req, res, next));
 atsRouter.delete("/cover-letter/history/:id", (req, res, next) => coverLetterController.deleteOne(req, res, next));
 atsRouter.post("/generate-resume", usageLimit("GENERATE_RESUME"), (req, res, next) => resumeGenController.generate(req, res, next));
+atsRouter.get("/resume-history", (req, res, next) => resumeGenController.getHistory(req, res, next));
 atsRouter.post("/latex-chat", (req, res, next) => latexChatController.chat(req, res, next));
 atsRouter.post("/latex-optimize-jd", (req, res, next) => latexChatController.optimizeForJD(req, res, next));

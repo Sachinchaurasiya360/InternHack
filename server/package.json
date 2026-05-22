@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "tsx src/database/seeds/seed.ts",
@@ -43,6 +44,7 @@
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "node-cache": "^5.1.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.2",
     "openai": "^6.27.0",
