@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   X,
@@ -114,6 +114,7 @@ export default function GovInternshipsPage() {
     queryKey: queryKeys.internships.stats(),
     queryFn: () => api.get("/internships/stats").then((r) => r.data),
     staleTime: 5 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 
   const queryParams: Record<string, string | number> = { page, limit: 24 };
