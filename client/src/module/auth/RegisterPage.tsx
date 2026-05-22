@@ -329,30 +329,6 @@ return (
                 placeholder="Jane Doe"
               />
             </FormField>
-            <FormField
-              label="Confirm Password"
-              error={fieldErrors.confirmPassword}
-              fieldName="confirmPassword"
-            >
-              <input
-                type={showPassword ? "text" : "password"}
-                value={form.confirmPassword}
-                onChange={(e) =>
-                  handleFieldChange("confirmPassword", e.target.value)
-                }
-                aria-invalid={!!fieldErrors.confirmPassword}
-                aria-describedby={
-                  fieldErrors.confirmPassword
-                    ? "error-confirmPassword"
-                    : undefined
-                }
-                className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${fieldErrors.confirmPassword
-                    ? "border-red-300 dark:border-red-800 focus:border-red-400"
-                    : "border-stone-300 dark:border-white/10 focus:border-lime-400"
-                  }`}
-                placeholder="Confirm your password"
-              />
-            </FormField>
 
             <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email} fieldName="email">
               <input
@@ -369,8 +345,8 @@ return (
                 placeholder={isRecruiter ? "you@company.com" : "you@mail.com"}
               />
               {!fieldErrors.email && isRecruiter && (
-                <p className="mt-1.5 text-xs font-mono text-amber-600 dark:text-amber-400">
-                  no personal gmail, yahoo, or outlook.
+                <p className="mt-2 text-xs font-mono text-amber-600 dark:text-amber-400">
+                  only company google workspace accounts are accepted.
                 </p>
               )}
             </FormField>
@@ -400,8 +376,8 @@ return (
                       ? "border-red-300 dark:border-red-800 focus:border-red-400"
                       : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                   }`}
-                  placeholder="Min. 6 characters"
-                  minLength={6}
+                  placeholder="Enter a strong password"
+                  minLength={8}
                 />
                 <button
                   type="button"
@@ -412,11 +388,35 @@ return (
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="mt-1.5 text-xs text-stone-500 dark:text-stone-400">
+              <p className="mt-2 text-xs text-stone-500 dark:text-stone-400">
                 Password must contain at least 8 characters,
                 one uppercase letter, one lowercase letter,
                 one number and one special character.
               </p>
+            </FormField>
+            <FormField
+              label="Confirm Password"
+              error={fieldErrors.confirmPassword}
+              fieldName="confirmPassword"
+            >
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.confirmPassword}
+                onChange={(e) =>
+                  handleFieldChange("confirmPassword", e.target.value)
+                }
+                aria-invalid={!!fieldErrors.confirmPassword}
+                aria-describedby={
+                  fieldErrors.confirmPassword
+                    ? "error-confirmPassword"
+                    : undefined
+                }
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${fieldErrors.confirmPassword
+                    ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                    : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
+                placeholder="Confirm your password"
+              />
             </FormField>
 
             <button
@@ -473,7 +473,7 @@ function FormField({
       </div>
       {children}
       {error && (
-        <p id={errorId} className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+        <p id={errorId} className="mt-2 text-xs text-red-600 dark:text-red-400 font-medium">
           {error}
         </p>
       )}
