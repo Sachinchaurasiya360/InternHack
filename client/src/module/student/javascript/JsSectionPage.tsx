@@ -24,19 +24,20 @@ export default function JsSectionPage() {
   const basePath = "/learn/javascript";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const progress: JsProgress = getLocalProgress();
+
+ const progress: JsProgress = getLocalProgress();
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
 
-  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
-
+  // ✅ moved above both early returns
   const sectionLessons = useMemo(
     () => lessons.filter((l) => l.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug]
   );
+  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
   if (!section) {
     return (

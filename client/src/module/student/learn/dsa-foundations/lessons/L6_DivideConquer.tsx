@@ -285,6 +285,10 @@ function VisualizeTab() {
     return { res: masterTheorem(a, b, exp, includesLog), a, b, exp, includesLog };
   }, [aStr, bStr, fStr]);
 
+  // ── FIX: both hooks moved above the early return ──
+  const dummyFrames = useMemo(() => [{ line: 0, vars: {}, message: "Master Theorem calculator" }], []);
+  const dummy = useStepPlayer(dummyFrames);
+
   const modeToggle = (
     <div className="flex gap-1.5 flex-wrap">
       {(["closest", "master"] as const).map((m) => (
@@ -333,10 +337,6 @@ function VisualizeTab() {
       </AlgoCanvas>
     );
   }
-
-  // Master theorem panel - a static panel, minimal player
-  const dummyFrames = useMemo(() => [{ line: 0, vars: {}, message: "Master Theorem calculator" }], []);
-  const dummy = useStepPlayer(dummyFrames);
 
   return (
     <AlgoCanvas

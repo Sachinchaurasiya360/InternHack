@@ -89,7 +89,7 @@ ${code}
   }
   parent.postMessage({ type: "__js_done" }, "*");
 })();
-<\/script></body></html>`;
+</script></body></html>`;
 
       iframe.srcdoc = html;
     });

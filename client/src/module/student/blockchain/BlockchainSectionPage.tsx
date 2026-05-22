@@ -29,16 +29,17 @@ export default function BlockchainSectionPage() {
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
 
-  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
-
+  // ✅ useMemo FIRST — before any early returns
   const sectionLessons = useMemo(
     () => lessons.filter((l) => l.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug]
   );
+// ✅ early returns AFTER all hooks
+  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
-  if (!section) {
+   if (!section) {
     return (
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-8 py-16 text-center">

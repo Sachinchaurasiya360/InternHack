@@ -540,7 +540,7 @@ export default function ResumeBuilderPage() {
     win.document.write(`<!DOCTYPE html>
 <html><head><title>${data.personalInfo.fullName || "Resume"}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"><\/script>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
   body { margin: 0; font-family: 'Inter', sans-serif; }
   @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
