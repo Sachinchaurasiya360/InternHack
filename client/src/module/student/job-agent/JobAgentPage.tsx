@@ -19,7 +19,11 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { JobAgentMessage, JobAgentResponse, JobFeedMatch } from "../../../lib/types";
+import type {
+  JobAgentMessage,
+  JobAgentResponse,
+  JobFeedMatch,
+} from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { AgentMessage } from "./AgentMessage";
@@ -42,7 +46,13 @@ const QUICK_PROMPTS = [
   { icon: Zap, text: "Show me DevOps opportunities" },
 ];
 
-function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; maxHeight?: number }) {
+function useAutoResizeTextarea({
+  minHeight,
+  maxHeight,
+}: {
+  minHeight: number;
+  maxHeight?: number;
+}) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const adjustHeight = useCallback(
@@ -54,7 +64,10 @@ function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; ma
         return;
       }
       textarea.style.height = `${minHeight}px`;
-      const newHeight = Math.max(minHeight, Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY));
+      const newHeight = Math.max(
+        minHeight,
+        Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY),
+      );
       textarea.style.height = `${newHeight}px`;
     },
     [minHeight, maxHeight],
@@ -77,7 +90,8 @@ function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; ma
 export default function JobAgentPage() {
   const { user } = useAuthStore();
   const isPremium =
-    (user?.subscriptionPlan === "MONTHLY" || user?.subscriptionPlan === "YEARLY") &&
+    (user?.subscriptionPlan === "MONTHLY" ||
+      user?.subscriptionPlan === "YEARLY") &&
     user?.subscriptionStatus === "ACTIVE";
 
   const qc = useQueryClient();
@@ -88,10 +102,19 @@ export default function JobAgentPage() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
+  const { textareaRef, adjustHeight } = useAutoResizeTextarea({
+    minHeight: 44,
+    maxHeight: 200,
+  });
 
   // Voice input
-  const { supported: voiceSupported, isListening, error: voiceError, start: startListening, stop: stopListening } = useSpeechRecognition({
+  const {
+    supported: voiceSupported,
+    isListening,
+    error: voiceError,
+    start: startListening,
+    stop: stopListening,
+  } = useSpeechRecognition({
     onInterim: (text) => setInterimText(text),
     onFinal: (text) => {
       setInput((prev) => (prev ? `${prev} ${text}` : text));
@@ -138,11 +161,18 @@ export default function JobAgentPage() {
     [conversation],
   );
 
-  const messages = hasChatted || localMessages.length > 0 ? localMessages : conversationMessages;
+  const messages =
+    hasChatted || localMessages.length > 0
+      ? localMessages
+      : conversationMessages;
   const userMsgCount = messages.filter((m) => m.role === "user").length;
-  const hitFreeLimit = manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
+  const hitFreeLimit =
+    manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const chatMut = useMutation({
@@ -163,14 +193,16 @@ export default function JobAgentPage() {
       ]);
     },
     onError: (err: unknown) => {
-      const resp = (err as {
-        response?: {
-          status?: number;
-          data?: {
-            usage?: { action?: string; tier?: string };
+      const resp = (
+        err as {
+          response?: {
+            status?: number;
+            data?: {
+              usage?: { action?: string; tier?: string };
+            };
           };
-        };
-      })?.response;
+        }
+      )?.response;
       const isFreeLimitError =
         resp?.status === 429 &&
         resp.data?.usage?.action === "AI_JOB_CHAT" &&
@@ -183,7 +215,8 @@ export default function JobAgentPage() {
           {
             id: crypto.randomUUID(),
             role: "assistant",
-            content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
+            content:
+              "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
           },
         ]);
       } else {
@@ -192,7 +225,8 @@ export default function JobAgentPage() {
           {
             id: crypto.randomUUID(),
             role: "assistant",
-            content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
+            content:
+              "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
           },
         ]);
       }
@@ -210,14 +244,21 @@ export default function JobAgentPage() {
   });
 
   const handleSend = (text?: string) => {
-    const committedInput = interimText ? (input ? `${input} ${interimText}` : interimText) : input;
+    const committedInput = interimText
+      ? input
+        ? `${input} ${interimText}`
+        : interimText
+      : input;
     const msg = (text ?? committedInput).trim();
     if (!msg || chatMut.isPending) return;
     setInput("");
     setInterimText("");
     adjustHeight(true);
     setHasChatted(true);
-    setLocalMessages([...messages, { id: crypto.randomUUID(), role: "user", content: msg }]);
+    setLocalMessages([
+      ...messages,
+      { id: crypto.randomUUID(), role: "user", content: msg },
+    ]);
     chatMut.mutate(msg);
   };
 
@@ -275,8 +316,13 @@ export default function JobAgentPage() {
             <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest">
               {!isPremium ? (
                 <span className="text-stone-500 dark:text-stone-400">
-                  <span className="text-stone-900 dark:text-stone-50">{Math.min(userMsgCount, FREE_LIMIT)}</span>
-                  <span className="text-stone-400 dark:text-stone-600"> / {FREE_LIMIT} free</span>
+                  <span className="text-stone-900 dark:text-stone-50">
+                    {Math.min(userMsgCount, FREE_LIMIT)}
+                  </span>
+                  <span className="text-stone-400 dark:text-stone-600">
+                    {" "}
+                    / {FREE_LIMIT} free
+                  </span>
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 text-lime-600 dark:text-lime-400">
@@ -316,7 +362,10 @@ export default function JobAgentPage() {
       </div>
 
       {/* Messages area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 pt-2 pb-4">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-4 sm:px-8 pt-2 pb-4"
+      >
         <div className="max-w-4xl mx-auto">
           <AnimatePresence mode="wait">
             {isEmpty ? (
@@ -340,7 +389,8 @@ export default function JobAgentPage() {
                   Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
                 </h2>
                 <p className="text-sm text-stone-600 dark:text-stone-400 mb-5 text-center max-w-md leading-relaxed">
-                  Tell me what you're looking for and I'll surface the best matches from the live job feed.
+                  Tell me what you're looking for and I'll surface the best
+                  matches from the live job feed.
                 </p>
 
                 {/* Quick prompt numbered grid */}
@@ -380,9 +430,19 @@ export default function JobAgentPage() {
                 )}
               </motion.div>
             ) : (
-              <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+              <motion.div
+                key="messages"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-5"
+              >
                 {messages.map((msg) => (
-                  <AgentMessage key={msg.id} role={msg.role} content={msg.content} jobs={msg.jobs} />
+                  <AgentMessage
+                    key={msg.id}
+                    role={msg.role}
+                    content={msg.content}
+                    jobs={msg.jobs}
+                  />
                 ))}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
@@ -452,7 +512,9 @@ export default function JobAgentPage() {
 
             <div className="flex items-center justify-between px-3 pb-2.5">
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                {hitFreeLimit ? "limit reached" : "enter to send, shift + enter for newline"}
+                {hitFreeLimit
+                  ? "limit reached"
+                  : "enter to send, shift + enter for newline"}
               </span>
               <div className="flex items-center gap-1">
                 {voiceSupported && (
@@ -468,7 +530,9 @@ export default function JobAgentPage() {
                         startListening();
                       }
                     }}
-                    aria-label={isListening ? "Stop recording" : "Start voice input"}
+                    aria-label={
+                      isListening ? "Stop recording" : "Start voice input"
+                    }
                     aria-pressed={isListening}
                     className={cn(
                       "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer",
@@ -480,7 +544,11 @@ export default function JobAgentPage() {
                     {isListening ? (
                       <motion.span
                         animate={{ scale: [1, 1.15, 1] }}
-                        transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1.2,
+                          ease: "easeInOut",
+                        }}
                         className="inline-flex items-center justify-center"
                       >
                         <MicOff className="w-4 h-4" />
@@ -494,7 +562,9 @@ export default function JobAgentPage() {
                   type="button"
                   size="icon"
                   onClick={() => handleSend()}
-                  disabled={!(input.trim() || interimText.trim()) || inputDisabled}
+                  disabled={
+                    !(input.trim() || interimText.trim()) || inputDisabled
+                  }
                   className={cn(
                     "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
                     (input.trim() || interimText.trim()) && !inputDisabled
@@ -507,15 +577,15 @@ export default function JobAgentPage() {
                 </Button>
               </div>
             </div>
-            </div>
-            {voiceHint && (
-              <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
-                {voiceHint}
-              </p>
-            )}
-            <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
-              powered by Neural Network, always verify job details
+          </div>
+          {voiceHint && (
+            <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
+              {voiceHint}
             </p>
+          )}
+          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+            powered by Neural Network, always verify job details
+          </p>
         </div>
       </div>
     </div>
