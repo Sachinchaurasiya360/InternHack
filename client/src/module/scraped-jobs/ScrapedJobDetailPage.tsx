@@ -179,7 +179,7 @@ export default function ScrapedJobDetailPage() {
                 </div>
               </div>
               <Button variant="mono" size="lg" asChild className="shrink-0 rounded-md">
-                <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
+                <a href={/^https?:\/\//i.test(job.applicationUrl) ? job.applicationUrl : "#"} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="w-4 h-4" />
                   Apply Externally
                 </a>
@@ -222,7 +222,7 @@ export default function ScrapedJobDetailPage() {
                 <p>
                   Original listing:{" "}
                   <a
-                    href={job.sourceUrl}
+                    href={/^https?:\/\//i.test(job.sourceUrl) ? job.sourceUrl : "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-lime-600 dark:text-lime-400 hover:underline"

@@ -36,17 +36,20 @@ export default function InterviewSectionPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) return;
 
     const loadProgress = async () => {
+      setIsLoading(true);
       try {
         const res = await api.get("/interview-progress");
-
         setCompletedIds(res.data.completedIds || []);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     };
 

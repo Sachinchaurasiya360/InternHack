@@ -140,7 +140,7 @@ export default function RoadmapDetailPage() {
 
   const enrollHref = isAuthenticated
     ? (myEnrollment ? `/learn/roadmaps/${roadmap.slug}` : `/roadmaps/${roadmap.slug}/enroll`)
-    : `/login?next=${encodeURIComponent(`/roadmaps/${roadmap.slug}/enroll`)}`;
+    : `/login?from=${encodeURIComponent(`/roadmaps/${roadmap.slug}/enroll`)}`;
 
   const ctaLabel = myEnrollment ? "Resume this roadmap" : "Start this roadmap";
 

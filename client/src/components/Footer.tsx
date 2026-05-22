@@ -200,59 +200,12 @@ export function Footer() {
             &copy; {new Date().getFullYear()} InternHack. built in india.
           </p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-fix/harshita-contact-button
-            <Link to="/terms"  className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Terms</Link>
+            <Link to="/terms" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Terms</Link>
             <Link to="/privacy" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Privacy</Link>
             <Link to="/refund" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Refunds</Link>
-            <Link to="/shipping" className="hover:text-stone-400 transition-colors no-underline">Shipping</Link>
-            <Link
-              to="/contact"
-              className="hover:text-stone-400 transition-colors no-underline"
-              onClick={handleNavigation}
-            >
-              Contact
-            </Link>
-
-          <Link
-          to="/terms"
-             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="hover:text-stone-400 transition-colors no-underline"
-              >
-                Terms
-          </Link>
-
-          <Link
-          to="/privacy"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="hover:text-stone-400 transition-colors no-underline"
-                >
-                  Privacy
-          </Link>
-
-          <Link
-          to="/refund"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                 className="hover:text-stone-400 transition-colors no-underline"
-                 >
-                  Refunds
-          </Link>
-
-          <Link
-               to="/shipping"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="hover:text-stone-400 transition-colors no-underline"
-                  >
-                    Shipping
-          </Link>
-
-          <Link
-              to="/contact"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="hover:text-stone-400 transition-colors no-underline"
-          >
-              Contact
-          </Link>
-        </div>
+            <Link to="/shipping" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Shipping</Link>
+            <Link to="/contact" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Contact</Link>
+          </div>
         </div>
       </div>
     </footer>

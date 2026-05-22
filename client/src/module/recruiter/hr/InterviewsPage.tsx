@@ -28,6 +28,7 @@ import HRModal from "./components/HRModal";
 import type { HRInterview, InterviewType } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { formatLabel } from "./hr-utils";
 
 const INTERVIEW_TYPES: InterviewType[] = [
   "PHONE",
@@ -48,13 +49,6 @@ const TYPE_ICON: Record<InterviewType, typeof Video> = {
 };
 
 type ViewMode = "list" | "calendar";
-
-function formatLabel(value: string) {
-  return value
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 function initials(name?: string) {
   if (!name) return "?";

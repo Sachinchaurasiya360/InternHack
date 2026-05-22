@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight, Lock } from "lucide-react";
@@ -50,6 +50,7 @@ export default function InterviewLessonsPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [showGate, setShowGate] = useState(false);
   const [progress, setProgress] = useState<InterviewProgress>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
   if (!isAuthenticated) {
@@ -58,6 +59,7 @@ export default function InterviewLessonsPage() {
   }
 
   const loadProgress = async () => {
+    setIsLoading(true);
     try {
       const localProgress = getLocalProgress();
 
@@ -92,8 +94,9 @@ export default function InterviewLessonsPage() {
       }
     } catch (error) {
       console.error("Failed to load interview progress", error);
-
       setProgress(getLocalProgress());
+    } finally {
+      setIsLoading(false);
     }
   };
 

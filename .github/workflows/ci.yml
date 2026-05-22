@@ -70,5 +70,5 @@ jobs:
         working-directory: client
 
       - name: Run ESLint
-        run: npx eslint . --ext .ts,.tsx || true
+        run: npx eslint . --ext .ts,.tsx
         working-directory: client

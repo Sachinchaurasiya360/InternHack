@@ -20,8 +20,8 @@ export const useAuthStore = create<AuthState>((set) => {
   const storedUser = localStorage.getItem("user");
 
   return {
-    user: storedUser ? JSON.parse(storedUser) : null,
-    isAuthenticated: !!storedUser,
+    user: storedUser ? (() => { try { return JSON.parse(storedUser) as User; } catch { localStorage.removeItem("user"); return null; } })() : null,
+    isAuthenticated: !!storedUser && (() => { try { return !!JSON.parse(storedUser); } catch { return false; } })(),
 
     login: (user) => {
       localStorage.setItem("user", JSON.stringify(user));

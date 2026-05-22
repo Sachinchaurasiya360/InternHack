@@ -22,7 +22,8 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
-  const returnTo = searchParams.get("from");
+  const rawReturnTo = searchParams.get("from");
+  const returnTo = rawReturnTo && /^\/(?!\/)/.test(rawReturnTo) ? rawReturnTo : null;
   const initialRole = searchParams.get("role") === "RECRUITER" ? "RECRUITER" : "STUDENT";
   const [role, setRole] = useState<"STUDENT" | "RECRUITER">(initialRole);
   const [form, setForm] = useState({
