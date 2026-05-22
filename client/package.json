@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codemirror/view": "^6.39.16",
     "@codemirror/lang-cpp": "^6.0.3",
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/lang-html": "^6.4.11",
@@ -19,6 +18,7 @@
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/lang-python": "^6.2.1",
     "@codemirror/lang-sql": "^6.10.0",
+    "@codemirror/view": "^6.39.16",
     "@hookform/resolvers": "^5.2.2",
     "@mediapipe/tasks-vision": "^0.10.32",
     "@number-flow/react": "^0.6.0",
@@ -50,7 +50,7 @@
     "react-hot-toast": "^2.6.0",
     "react-markdown": "^10.1.0",
     "react-router": "^7.13.0",
-    "react-to-print": "^3.0.1",
+    "react-to-print": "^3.3.0",
     "reactflow": "^11.11.4",
     "recharts": "^3.8.0",
     "rehype-highlight": "^7.0.2",

@@ -10,7 +10,8 @@ import { GoogleAuthButton } from "../../components/GoogleAuthButton";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get("from");
+  const rawReturnTo = searchParams.get("from");
+  const returnTo = rawReturnTo && /^\/(?!\/)/.test(rawReturnTo) ? rawReturnTo : null;
   const initialRole = searchParams.get("role") === "RECRUITER" ? "RECRUITER" : "STUDENT";
   const [role, setRole] = useState<"STUDENT" | "RECRUITER">(initialRole);
   const login = useAuthStore((s) => s.login);

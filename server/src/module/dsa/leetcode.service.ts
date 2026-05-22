@@ -53,7 +53,7 @@ export const syncLeetCodeSolvedProblems = async (userId: number, leetcodeUsernam
     }
 
     // 2. Extract unique titleSlugs
-    const titleSlugs = [...new Set(recentSubmissions.map((s: any) => s.titleSlug as string))];
+    const titleSlugs: string[] = Array.from(new Set<string>(recentSubmissions.map((s: any) => s.titleSlug as string)));
 
     // 3. Find matching problems in our database by leetcodeSlug
     const matchingProblems = await prisma.dsaProblem.findMany({

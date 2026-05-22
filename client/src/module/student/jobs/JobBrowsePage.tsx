@@ -60,29 +60,12 @@ export default function JobBrowsePage() {
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-const [page, setPage] = useState(1);
-const [extPage, setExtPage] = useState(1);
-const [scrPage, setScrPage] = useState(1);
-const debouncedSearch = useDebounce(search, 400);
-const debouncedLocation = useDebounce(locationFilter, 400);
-  const [hideExpired, setHideExpired] = useState(true);
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-      setDebouncedLocation(locationFilter);
-      setPage(1);
-    }, 400);
-    return () => clearTimeout(timerRef.current);
-  }, [search, locationFilter]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [hideExpired]);
+  const debouncedSearch = useDebounce(search, 400);
+  const debouncedLocation = useDebounce(locationFilter, 400);
+  const [hideExpired, setHideExpired] = useState(true);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({

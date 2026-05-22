@@ -17,6 +17,7 @@ import HRModal from "./components/HRModal";
 import type { HRTask, TaskPriority, TaskStatus } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { labelize, labelClass } from "./hr-utils";
 
 const PRIORITY_OPTIONS: TaskPriority[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
 const STATUS_OPTIONS: TaskStatus[] = ["TODO", "IN_PROGRESS", "IN_REVIEW", "DONE", "CANCELLED"];
@@ -46,12 +47,6 @@ const STATUS_DOT: Record<TaskStatus, string> = {
 const inputClass =
   "w-full px-3 py-2 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors";
 
-const labelClass =
-  "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
-
-function labelize(value: string): string {
-  return value.replace(/_/g, " ").toLowerCase();
-}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, {

@@ -1,3 +1,5 @@
+import api from "../lib/axios";
+
 interface UploadProfileParams {
   file: File;
   folder: 'resumes' | 'profile-pics' | 'cover-images' | 'company-logos';
@@ -6,57 +8,35 @@ interface UploadProfileParams {
 
 export const uploadDirectToS3 = async ({ file, folder, endpoint }: UploadProfileParams) => {
   try {
-    const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000";
-
-    // Get the Pre-signed URL from your backend
-    const presignRes = await fetch(`${apiUrl}/api/upload/presigned-url`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        fileName: file.name,
-        fileType: file.type,
-        folder: folder,
-      }),
+    // Get pre-signed URL from backend (uses Bearer token via api instance)
+    const { data: presignData } = await api.post('/upload/presigned-url', {
+      fileName: file.name,
+      fileType: file.type,
+      folder,
     });
 
-    if (!presignRes.ok) throw new Error('Failed to get upload URL');
-    const { uploadUrl, fileUrl } = await presignRes.json();
+    const { uploadUrl, fileUrl } = presignData as { uploadUrl: string; fileUrl: string };
 
-    // Upload the file DIRECTLY to AWS S3
+    // Upload directly to S3 — no auth headers on pre-signed requests
     const s3UploadRes = await fetch(uploadUrl, {
       method: 'PUT',
-      headers: {
-        'Content-Type': file.type,
-      },
+      headers: { 'Content-Type': file.type },
       body: file,
     });
 
     if (!s3UploadRes.ok) {
-      const bodyText = await s3UploadRes.text();
+      const bodyText = (await s3UploadRes.text()).slice(0, 500);
       throw new Error(`S3 upload failed: ${s3UploadRes.status} ${s3UploadRes.statusText} ${bodyText}`);
     }
 
     if (endpoint) {
-      // Tell your backend to save the new file URL
-      const updateRes = await fetch(`${apiUrl}/api/upload${endpoint}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fileUrl: fileUrl,
-          originalName: file.name,
-          size: file.size,
-          mimeType: file.type,
-        }),
+      // Tell backend to persist the new URL (uses Bearer token via api instance)
+      const { data: result } = await api.post(`/upload${endpoint}`, {
+        fileUrl,
+        originalName: file.name,
+        size: file.size,
+        mimeType: file.type,
       });
-
-      if (!updateRes.ok) throw new Error('Failed to save file to profile');
-      const result = await updateRes.json();
       return result;
     }
 
