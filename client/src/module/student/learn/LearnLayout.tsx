@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
 import { Navbar } from "../../../components/Navbar";
+import { Footer } from "../../../components/Footer";
 
 const SEGMENT_NAMES: Record<string, string> = {
   javascript: "JavaScript",
@@ -149,12 +150,13 @@ export default function LearnLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <Navbar />
       <main className="max-w-4xl mx-auto px-4 pt-28 pb-12">
         <LearnBreadcrumb />
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }
@@ -163,7 +165,7 @@ function StudentLearnLayout() {
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <div className="hidden lg:block">
         <Navbar sidebarOffset={sidebarWidth} />
       </div>

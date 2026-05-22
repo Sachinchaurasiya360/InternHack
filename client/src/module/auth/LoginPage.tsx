@@ -10,7 +10,10 @@ import { GoogleAuthButton } from "../../components/GoogleAuthButton";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get("from");
+  const rawReturnTo = searchParams.get("from");
+  const returnTo = rawReturnTo && /^\/(?!\/)/.test(rawReturnTo) ? rawReturnTo : null;
+  const initialRole = searchParams.get("role") === "RECRUITER" ? "RECRUITER" : "STUDENT";
+  const [role, setRole] = useState<"STUDENT" | "RECRUITER">(initialRole);
   const login = useAuthStore((s) => s.login);
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +24,7 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/google", { accessToken });
+      const { data } = await api.post("/auth/google", { accessToken, role });
       login(data.user);
       if (returnTo) {
         navigate(returnTo);
@@ -69,6 +72,8 @@ export default function LoginPage() {
     }
   };
 
+  const isRecruiter = role === "RECRUITER";
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
@@ -77,23 +82,7 @@ export default function LoginPage() {
         keywords="login, sign in, InternHack, student login, recruiter login"
       />
 
-      <AuthPromoPanel
-        kicker="for students / new grads"
-        headline={
-          <>
-            Welcome back.{" "}
-            <span className="text-stone-500">
-              Let's land the next one.
-            </span>
-          </>
-        }
-        sub="Your applications, resume scores, and saved roles are right where you left them. Jump back in and keep the streak going."
-        stats={[
-          { value: "300", suffix: "+", label: "interview q's" },
-          { value: "11", suffix: "", label: "coding tracks" },
-          { value: "14", suffix: "t", label: "templates" },
-        ]}
-      />
+      <AuthPromoPanel isRecruiter={isRecruiter} />
 
       <div className="flex items-center justify-center px-6 py-12 lg:py-0">
 
@@ -121,8 +110,36 @@ export default function LoginPage() {
               </div>
             )}
 
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-500 mb-1.5">
+                I am a
+              </label>
+              <div className="grid grid-cols-2 gap-0 border border-stone-300 dark:border-white/10 rounded-md overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setRole("STUDENT")}
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
+                    ? "bg-lime-400 text-stone-950"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                    }`}
+                >
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("RECRUITER")}
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
+                    ? "bg-lime-400 text-stone-950"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                    }`}
+                >
+                  Recruiter
+                </button>
+              </div>
+            </div>
+
             <GoogleAuthButton
-              label="Continue with Google"
+              label={isRecruiter ? "Sign in with Google Workspace" : "Continue with Google"}
               onAccessToken={handleGoogleSuccess}
               onError={() => setError("Google sign-in failed")}
               disabled={loading}
@@ -140,13 +157,13 @@ export default function LoginPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <FormField label="Email">
+              <FormField label={isRecruiter ? "Company email" : "Email"}>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
-                  placeholder="you@example.com"
+                  placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
                   required
                 />
               </FormField>
@@ -194,20 +211,14 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="pt-4 space-y-2">
+            <div className="pt-4">
               <p className="text-sm text-stone-600 dark:text-stone-400">
                 Don't have an account?{" "}
                 <Link
-                  to={returnTo ? `/register?from=${encodeURIComponent(returnTo)}` : "/register"}
+                  to={returnTo ? `/register?from=${encodeURIComponent(returnTo)}&role=${role}` : `/register?role=${role}`}
                   className="text-stone-900 dark:text-stone-50 font-bold border-b border-stone-900 dark:border-stone-50 pb-0.5 no-underline"
                 >
                   Sign up
-                </Link>
-              </p>
-              <p className="text-xs font-mono text-stone-500">
-                hiring talent?{" "}
-                <Link to="/recruiter/login" className="hover:text-stone-900 dark:hover:text-stone-50 no-underline">
-                  sign in as recruiter
                 </Link>
               </p>
             </div>
@@ -240,23 +251,25 @@ function FormField({
   );
 }
 
-function AuthPromoPanel({
-  kicker,
-  headline,
-  sub,
-  stats,
-}: {
-  kicker: string;
-  headline: React.ReactNode;
-  sub: string;
-  stats: { value: string; suffix: string; label: string }[];
-}) {
+function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
+  const studentStats = [
+    { value: "300", suffix: "+", label: "interview q's" },
+    { value: "11", suffix: "", label: "coding tracks" },
+    { value: "14", suffix: "t", label: "templates" },
+  ];
+  const recruiterStats = [
+    { value: "7", suffix: "d", label: "free trial" },
+    { value: "14", suffix: "/14", label: "hr modules" },
+    { value: "10", suffix: "m", label: "to first post" },
+  ];
+  const stats = isRecruiter ? recruiterStats : studentStats;
+
   return (
     <div className="hidden lg:flex relative flex-col justify-between px-12 xl:px-16 pt-8 pb-12 xl:pb-16 bg-stone-900 overflow-hidden">
       <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.06] auth-promo-dots" />
       <div aria-hidden className="absolute inset-0 pointer-events-none auth-promo-lines" />
 
-      <div className="relative">
+      <div className="relative mb-auto">
         <Link to="/" className="inline-flex items-center gap-2.5 no-underline">
           <div className="relative">
             <img src="/logo.png" alt="InternHack" className="h-8 w-8 rounded-md object-contain" />
@@ -270,9 +283,10 @@ function AuthPromoPanel({
 
       <div className="relative max-w-lg">
         <motion.div
+          key={isRecruiter ? "r" : "s"}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4 }}
           className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-400"
         >
           <motion.span
@@ -280,12 +294,32 @@ function AuthPromoPanel({
             transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
             className="h-1.5 w-1.5 bg-lime-400"
           />
-          {kicker}
+          {isRecruiter ? "welcome back" : "for students / new grads"}
         </motion.div>
-        <h2 className="mt-6 text-4xl xl:text-5xl font-bold tracking-tight text-stone-50 leading-none">
-          {headline}
-        </h2>
-        <p className="mt-6 text-base text-stone-400 leading-relaxed">{sub}</p>
+        <motion.h2
+          key={isRecruiter ? "rh" : "sh"}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-6 text-4xl xl:text-5xl font-bold tracking-tight text-stone-50 leading-none"
+        >
+          {isRecruiter ? (
+            <>
+              Welcome back.{" "}
+              <span className="text-stone-500">Find the right one.</span>
+            </>
+          ) : (
+            <>
+              Welcome back.{" "}
+              <span className="text-stone-500">Let's land the next one.</span>
+            </>
+          )}
+        </motion.h2>
+        <p className="mt-6 text-base text-stone-400 leading-relaxed">
+          {isRecruiter
+            ? "Your talent pools, active jobs, and recent applications are waiting for you. Dive back into hiring."
+            : "Your applications, resume scores, and saved roles are right where you left them. Jump back in and keep the streak going."}
+        </p>
 
         <div className="mt-12 grid grid-cols-3 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden">
           {stats.map((s) => (
@@ -300,10 +334,12 @@ function AuthPromoPanel({
             </div>
           ))}
         </div>
-      </div>
 
-      <div className="relative text-xs font-mono text-stone-500">
-        free for students. always.
+        <div className="mt-8 relative text-xs font-mono text-stone-500">
+          {isRecruiter
+            ? "no card required. cancel any time."
+            : "free for students. always."}
+        </div>
       </div>
     </div>
   );

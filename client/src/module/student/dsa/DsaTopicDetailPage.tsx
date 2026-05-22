@@ -17,12 +17,7 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
-
-const DIFF_COLOR: Record<string, string> = {
-  Easy: "text-emerald-600 dark:text-emerald-400",
-  Medium: "text-amber-600 dark:text-amber-400",
-  Hard: "text-rose-600 dark:text-rose-400",
-};
+import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 

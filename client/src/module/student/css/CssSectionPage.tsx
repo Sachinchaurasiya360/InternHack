@@ -7,6 +7,7 @@ import type { CssProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
 const FREE_LIMIT = 5;
 
@@ -17,12 +18,6 @@ function getLocalProgress(): CssProgress {
     return {};
   }
 }
-
-const DIFF_COLOR: Record<string, string> = {
-  Beginner: "text-emerald-600 dark:text-emerald-400",
-  Intermediate: "text-amber-600 dark:text-amber-400",
-  Advanced: "text-rose-600 dark:text-rose-400",
-};
 
 export default function CssSectionPage() {
   const { sectionSlug } = useParams();

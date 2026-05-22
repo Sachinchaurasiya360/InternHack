@@ -381,9 +381,22 @@ export default function JobAgentPage() {
               </motion.div>
             ) : (
               <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg) => (
-                  <AgentMessage key={msg.id} role={msg.role} content={msg.content} jobs={msg.jobs} />
-                ))}
+                {messages.map((msg, index) => {
+                  const precedingUserPrompt =
+                    msg.role === "assistant"
+                      ? [...messages.slice(0, index)].reverse().find((m) => m.role === "user")?.content
+                      : undefined;
+
+                  return (
+                    <AgentMessage
+                      key={msg.id}
+                      role={msg.role}
+                      content={msg.content}
+                      jobs={msg.jobs}
+                      precedingUserPrompt={precedingUserPrompt}
+                    />
+                  );
+                })}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
             )}
