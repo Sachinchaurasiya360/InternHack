@@ -2,6 +2,7 @@ import React from "react";
 import { BotMessageSquare, Check, Copy, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { AgentJobCard } from "./AgentJobCard";
+import { EmailJobsButton } from "./EmailJobsButton";
 import type { JobFeedMatch } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { Button } from "../../../components/ui/button";
@@ -11,6 +12,7 @@ interface Props {
   content: string;
   jobs?: JobFeedMatch["job"][];
   isStreaming?: boolean;
+  precedingUserPrompt?: string;
 }
 
 function formatContent(text: string) {
@@ -89,7 +91,7 @@ function CopyMessageButton({ text }: { text: string }) {
   );
 }
 
-export const AgentMessage = React.memo(function AgentMessage({ role, content, jobs, isStreaming }: Props) {
+export const AgentMessage = React.memo(function AgentMessage({ role, content, jobs, isStreaming, precedingUserPrompt }: Props) {
   const { user } = useAuthStore();
   const isUser = role === "user";
   const copyText = messageToPlainText(content, jobs);
@@ -159,6 +161,7 @@ export const AgentMessage = React.memo(function AgentMessage({ role, content, jo
                 <AgentJobCard key={job.id} job={job} />
               ))}
             </div>
+            {!isStreaming && <EmailJobsButton jobs={jobs} precedingUserPrompt={precedingUserPrompt} />}
           </div>
         )}
       </div>

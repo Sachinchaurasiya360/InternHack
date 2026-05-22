@@ -24,3 +24,7 @@ export interface ScoreResumeInput {
   jobTitle?: string | undefined;
   jobDescription?: string | undefined;
 }
+
+export interface ApplySuggestionsInput extends ScoreResumeInput {
+  suggestions: string[];
+}
