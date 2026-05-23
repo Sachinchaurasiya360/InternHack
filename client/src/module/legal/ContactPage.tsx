@@ -4,6 +4,7 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
+import { api } from "../../lib/api";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
@@ -21,12 +22,7 @@ export default function ContactPage() {
     setError("");
     setSuccess(false);
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error("Failed to send message");
+      await api.post("/contact", formData);
       setSuccess(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch {
