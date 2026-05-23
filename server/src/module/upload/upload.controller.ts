@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import * as path from "path";
 import * as fs from "fs";
 import { fileURLToPath } from "url";
-import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
+import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
 
 const MAX_RESUMES = 2;
@@ -79,6 +79,10 @@ export class UploadController {
 
       if (current?.profilePic) deleteFile(current.profilePic);
 
+      if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+      if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+      if (user.resumes.length > 0) (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
+
       return res.status(200).json({ message: "Profile picture updated", user });
     } catch (error) {
       console.error(error);
@@ -106,6 +110,10 @@ export class UploadController {
       });
 
       if (current?.coverImage) deleteFile(current.coverImage);
+
+      if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+      if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+      if (user.resumes.length > 0) (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
 
       return res.status(200).json({ message: "Cover image updated", user });
     } catch (error) {
