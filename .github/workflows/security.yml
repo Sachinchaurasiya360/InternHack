@@ -1,0 +1,125 @@
+# Dependency Scanning & Security Audit
+#
+# Scans npm dependencies in both client/ and server/ for known vulnerabilities.
+# Runs on every PR (via dependency-review) and weekly (via npm audit).
+#
+# This complements Trivy (container image scanning in deploy.yml) by catching
+# vulnerable npm packages BEFORE they reach a Docker build.
+
+name: Security — Dependency Scanning
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run every Monday at 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  # ──────────────────────────────────────────────────────────────
+  # Job 1: Block PRs that introduce vulnerable dependencies
+  # ──────────────────────────────────────────────────────────────
+  dependency-review:
+    name: Dependency Review (PR only)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@3b1399859f7b049b794401869e54d896131846b4 # v4.9.0
+        with:
+          fail-on-severity: high
+          deny-licenses: GPL-3.0, AGPL-3.0
+          comment-summary-in-pr: always
+
+  # ──────────────────────────────────────────────────────────────
+  # Job 2: npm audit on server dependencies
+  # ──────────────────────────────────────────────────────────────
+  audit-server:
+    name: npm audit — Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39a10693d8b2d1d368096899b82144760a99602a # v4.2.0
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: server
+
+      - name: Run npm audit (high + critical)
+        run: npm audit --audit-level=high --omit=dev
+        working-directory: server
+        continue-on-error: true
+
+      - name: Run npm audit (full report)
+        run: npm audit --json > audit-report.json || true
+        working-directory: server
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@65462800fd76c34412f7b833b934784a0d924d52 # v4.6.1
+        with:
+          name: server-audit-report
+          path: server/audit-report.json
+          retention-days: 30
+
+  # ──────────────────────────────────────────────────────────────
+  # Job 3: npm audit on client dependencies
+  # ──────────────────────────────────────────────────────────────
+  audit-client:
+    name: npm audit — Client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39a10693d8b2d1d368096899b82144760a99602a # v4.2.0
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Run npm audit (high + critical)
+        run: npm audit --audit-level=high --omit=dev
+        working-directory: client
+        continue-on-error: true
+
+      - name: Run npm audit (full report)
+        run: npm audit --json > audit-report.json || true
+        working-directory: client
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@65462800fd76c34412f7b833b934784a0d924d52 # v4.6.1
+        with:
+          name: client-audit-report
+          path: client/audit-report.json
+          retention-days: 30
