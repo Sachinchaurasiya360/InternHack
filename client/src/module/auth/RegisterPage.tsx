@@ -274,34 +274,36 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <FormField label="Full name" error={fieldErrors.name}>
+            <form noValidate onSubmit={handleSubmit} className="space-y-4">
+              <FormField label="Full name" error={fieldErrors.name} fieldName="name">
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => handleFieldChange("name", e.target.value)}
+                  aria-invalid={!!fieldErrors.name}
+                  aria-describedby={fieldErrors.name ? "error-name" : undefined}
                   className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
                     fieldErrors.name
                       ? "border-red-300 dark:border-red-800 focus:border-red-400"
                       : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                   }`}
                   placeholder="Jane Doe"
-                  required
                 />
               </FormField>
 
-              <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email}>
+              <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email} fieldName="email">
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => handleFieldChange("email", e.target.value)}
+                  aria-invalid={!!fieldErrors.email}
+                  aria-describedby={fieldErrors.email ? "error-email" : undefined}
                   className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
                     fieldErrors.email
                       ? "border-red-300 dark:border-red-800 focus:border-red-400"
                       : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                   }`}
                   placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
-                  required
                 />
                 {!fieldErrors.email && isRecruiter && (
                   <p className="mt-1.5 text-xs font-mono text-amber-600 dark:text-amber-400">
@@ -311,31 +313,31 @@ export default function RegisterPage() {
               </FormField>
 
               {isRecruiter && (
-                <FormField label="Company">
+                <FormField label="Company" fieldName="company">
                   <input
                     type="text"
                     value={form.company}
                     onChange={(e) => setForm({ ...form, company: e.target.value })}
                     className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
                     placeholder="Your company name"
-                    required
                   />
                 </FormField>
               )}
 
-              <FormField label="Password" error={fieldErrors.password}>
+              <FormField label="Password" error={fieldErrors.password} fieldName="password">
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={(e) => handleFieldChange("password", e.target.value)}
+                    aria-invalid={!!fieldErrors.password}
+                    aria-describedby={fieldErrors.password ? "error-password" : undefined}
                     className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
                       fieldErrors.password
                         ? "border-red-300 dark:border-red-800 focus:border-red-400"
                         : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                     }`}
                     placeholder="Min. 8 chars (A-Z, a-z, 0-9, symbol)"
-                    required
                     minLength={8}
                   />
                   <button
