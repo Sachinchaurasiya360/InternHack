@@ -1315,6 +1315,8 @@ export interface Roadmap {
   ogImage: string | null;
   isPublished: boolean;
   isPremium: boolean;
+  isAiGenerated: boolean;
+  ownerUserId: number | null;
   topicCount: number;
   outcomes: string[];
   prerequisites: string[];

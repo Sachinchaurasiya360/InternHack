@@ -508,6 +508,13 @@ export default function RoadmapCanvasPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState<TopicNodeData | SectionLabelData>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
+  const isAiOwned = !!(data?.enrollment.roadmap.isAiGenerated && data?.enrollment.roadmap.ownerUserId);
+
+  const openRegenModal = useCallback((sectionId: number, sectionTitle: string) => {
+    setRegenInstructions("");
+    setRegenModal({ sectionId, sectionTitle });
+  }, []);
+
   useEffect(() => {
     if (!data) return;
 
@@ -688,8 +695,6 @@ export default function RoadmapCanvasPage() {
   };
 
   // ── Section regeneration mutation ────────────────────────────────────────
-  const isAiOwned = !!(data?.enrollment.roadmap.isAiGenerated && data?.enrollment.roadmap.ownerUserId);
-
   const regenerateMutation = useMutation({
     mutationFn: ({ sectionId, instructions }: { sectionId: number; instructions?: string }) =>
       api.post<{ message: string; section: RoadmapSection }>(
@@ -717,11 +722,6 @@ export default function RoadmapCanvasPage() {
       setRegeneratingSectionId(null);
     },
   });
-
-  const openRegenModal = useCallback((sectionId: number, sectionTitle: string) => {
-    setRegenInstructions("");
-    setRegenModal({ sectionId, sectionTitle });
-  }, []);
 
   const confirmRegen = () => {
     if (!regenModal) return;
