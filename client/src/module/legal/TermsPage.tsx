@@ -1,130 +1,181 @@
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
+import {
+  ShieldCheck,
+  UserCheck,
+  Lock,
+  BadgeCheck,
+  FileText,
+  Bot,
+  Scale,
+  Ban,
+  RefreshCcw,
+  Mail,
+} from "lucide-react";
+
+const sections = [
+  {
+    icon: ShieldCheck,
+    title: "Introduction",
+    content:
+      'Welcome to InternHack ("we", "our", "us"). By accessing or using our website and related services, you agree to comply with these Terms and Conditions. If you do not agree, please discontinue use of the Platform.',
+  },
+  {
+    icon: UserCheck,
+    title: "Eligibility",
+    content:
+      "You must be at least 16 years old to use the Platform. By creating an account, you confirm that all provided information is accurate and complete.",
+  },
+  {
+    icon: Lock,
+    title: "User Accounts",
+    content:
+      "You are responsible for maintaining the confidentiality of your account credentials and any activity under your account.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Acceptable Use",
+    list: [
+      "Do not use the Platform for unlawful or fraudulent purposes",
+      "Do not post misleading or harmful content",
+      "Do not attempt unauthorized access",
+      "Do not scrape or collect data without permission",
+      "Do not impersonate another individual or entity",
+    ],
+  },
+  {
+    icon: FileText,
+    title: "Subscriptions & Payments",
+    content:
+      "Some features require paid subscriptions. Payments are securely processed through Dodo Payments. Pricing and billing details are shown during checkout.",
+  },
+  {
+    icon: Bot,
+    title: "AI-Generated Content",
+    content:
+      "InternHack uses AI tools to generate resumes, cover letters, and interview responses. AI-generated content may contain inaccuracies, so users should review outputs carefully before use.",
+  },
+  {
+    icon: Scale,
+    title: "Limitation of Liability",
+    content:
+      "InternHack shall not be liable for indirect or consequential damages resulting from use of the Platform. Liability is limited to the amount paid by the user in the previous 12 months.",
+  },
+  {
+    icon: Ban,
+    title: "Termination",
+    content:
+      "We reserve the right to suspend or terminate access to the Platform for violations of these Terms or harmful activities.",
+  },
+  {
+    icon: RefreshCcw,
+    title: "Changes to Terms",
+    content:
+      "We may update these Terms periodically. Continued use of the Platform after updates indicates acceptance of the revised Terms.",
+  },
+];
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-white via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
       <SEO
         title="Terms and Conditions"
         description="Terms and Conditions for using InternHack, your all-in-one career platform."
       />
+
       <Navbar />
-      <main className="flex-1 max-w-3xl mx-auto px-4 pt-28 pb-16">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Terms and Conditions</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">Last updated: March 17, 2026</p>
 
-        <div className="space-y-8 text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">1. Introduction</h2>
-            <p>
-              Welcome to InternHack ("we", "our", "us"). By accessing or using our website at internhack.xyz
-              and any related services (collectively, the "Platform"), you agree to be bound by these Terms
-              and Conditions. If you do not agree, please do not use the Platform.
+      <main className="flex-1 px-4 pt-28 pb-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mt-6 mb-14">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+              Terms &amp; Conditions
+            </h1>
+
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
+              Please read these Terms carefully before using InternHack. By
+              accessing our platform, you agree to comply with the following
+              conditions and policies.
             </p>
-          </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">2. Eligibility</h2>
-            <p>
-              You must be at least 16 years of age to use the Platform. By creating an account, you represent
-              that you meet this requirement and that the information you provide is accurate and complete.
+            <p className="mt-5 text-sm text-gray-500 dark:text-gray-500">
+              Last updated: March 17, 2026
             </p>
-          </section>
+          </div>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">3. User Accounts</h2>
-            <p>
-              You are responsible for maintaining the confidentiality of your account credentials. You agree to
-              notify us immediately of any unauthorised use of your account. We reserve the right to suspend or
-              terminate accounts that violate these terms.
-            </p>
-          </section>
+          <div className="grid gap-6">
+            {sections.map((section, index) => {
+              const Icon = section.icon;
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">4. Acceptable Use</h2>
-            <p>You agree not to:</p>
-            <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li>Use the Platform for any unlawful or fraudulent purpose</li>
-              <li>Post misleading, defamatory, or harmful content</li>
-              <li>Attempt to gain unauthorised access to any part of the Platform</li>
-              <li>Scrape, crawl, or collect data from the Platform without prior written consent</li>
-              <li>Impersonate another person or entity</li>
-            </ul>
-          </section>
+              return (
+                <div
+                  key={index}
+                  className="group rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm hover:shadow-xl transition-all duration-300 p-6 md:p-8"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                      <Icon size={22} />
+                    </div>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">5. Subscriptions and Payments</h2>
-            <p>
-              Certain features of the Platform are available only to paid subscribers. Payments are processed
-              securely through Dodo Payments. By purchasing a subscription, you agree to the pricing and billing
-              terms presented at checkout. All prices are listed in Indian Rupees (INR) unless otherwise stated.
-            </p>
-          </section>
+                    <div className="flex-1">
+                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                        {index + 1}. {section.title}
+                      </h2>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">6. Intellectual Property</h2>
-            <p>
-              All content on the Platform, including text, graphics, logos, code, and AI-generated outputs, is
-              the property of InternHack or its licensors and is protected by applicable intellectual property
-              laws. You may not reproduce, distribute, or create derivative works without our express written permission.
-            </p>
-          </section>
+                      {section.content && (
+                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                          {section.content}
+                        </p>
+                      )}
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">7. AI-Generated Content</h2>
-            <p>
-              The Platform uses AI tools (including Google Gemini) to generate resumes, cover letters, interview
-              responses, and other content. AI-generated content is provided "as is" and may contain errors. You
-              are responsible for reviewing and verifying all AI outputs before use.
-            </p>
-          </section>
+                      {section.list && (
+                        <ul className="space-y-2 mt-3">
+                          {section.list.map((item, i) => (
+                            <li
+                              key={i}
+                              className="flex items-start gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-base"
+                            >
+                              <span className="mt-2 h-2 w-2 rounded-full bg-indigo-500 shrink-0"></span>
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">8. Limitation of Liability</h2>
-            <p>
-              To the maximum extent permitted by law, InternHack shall not be liable for any indirect, incidental,
-              special, or consequential damages arising from your use of the Platform. Our total liability for any
-              claim shall not exceed the amount paid by you in the 12 months preceding the claim.
-            </p>
-          </section>
+          <div className="mt-12 rounded-3xl overflow-hidden border border-indigo-200 dark:border-indigo-500/20 bg-linear-to-r from-indigo-600 to-purple-600 shadow-2xl">
+            <div className="p-8 md:p-10 text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 mb-5">
+                <Mail className="text-white" size={26} />
+              </div>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">9. Termination</h2>
-            <p>
-              We may suspend or terminate your access to the Platform at our sole discretion, with or without
-              notice, for conduct that we believe violates these Terms or is harmful to the Platform or other users.
-            </p>
-          </section>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                Need Help?
+              </h2>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">10. Governing Law</h2>
-            <p>
-              These Terms shall be governed by and construed in accordance with the laws of India. Any disputes
-              shall be subject to the exclusive jurisdiction of the courts in Pune, Maharashtra.
-            </p>
-          </section>
+              <p className="text-indigo-100 max-w-2xl mx-auto mb-6">
+                If you have questions regarding these Terms and Conditions,
+                please contact our support team.
+              </p>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">11. Changes to Terms</h2>
-            <p>
-              We reserve the right to modify these Terms at any time. Changes will be posted on this page with an
-              updated "Last updated" date. Continued use of the Platform after changes constitutes acceptance of
-              the revised Terms.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">12. Contact</h2>
-            <p>
-              If you have questions about these Terms, contact us at{" "}
-              <a href="mailto:mrsachinchaurasiya@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                mrsachinchaurasiya@gmail.com
-              </a>.
-            </p>
-          </section>
+              <a
+                href="mailto:mrsachinchaurasiya@gmail.com"
+                className="inline-flex items-center gap-2 bg-white text-indigo-700 hover:bg-gray-100 transition px-6 py-3 rounded-xl font-semibold shadow-lg"
+              >
+                <Mail size={18} />
+                Contact Support
+              </a>
+            </div>
+          </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );
