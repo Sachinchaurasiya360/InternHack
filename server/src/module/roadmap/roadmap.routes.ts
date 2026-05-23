@@ -14,6 +14,7 @@ import {
   patchTopicProgress,
   postAiGenerate,
   postRecomputePace,
+  postRegenerateSection,
 } from "./roadmap.controller.js";
 
 export const roadmapRouter = Router();
@@ -38,3 +39,5 @@ roadmapRouter.get("/", getRoadmaps);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
+// Section-level AI regeneration — only for AI-generated roadmaps owned by the user
+roadmapRouter.post("/:slug/sections/:sectionId/regenerate", authMiddleware, aiRoadmapLimiter, postRegenerateSection);
