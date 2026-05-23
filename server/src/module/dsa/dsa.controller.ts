@@ -203,7 +203,7 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      
+
       const currentYear = new Date().getUTCFullYear();
       const year = req.query.year ? parseInt(req.query.year as string, 10) : currentYear;
       if (!Number.isInteger(year) || year < 1970 || year > currentYear) {
@@ -220,6 +220,32 @@ export class DsaController {
       }
 
       res.json(activity);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getDailyProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      const dailyProblem = await this.dsaService.getDailyProblem(userId);
+      res.json(dailyProblem);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getUserDsaStreak(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
+      const streak = await this.dsaService.getUserDsaStreak(userId);
+      res.json(streak);
     } catch (err) {
       next(err);
     }
