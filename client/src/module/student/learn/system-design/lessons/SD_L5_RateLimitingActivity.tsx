@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, Globe, Pause, Play, RotateCcw, Zap } from "lucide-react";
 import EngineeringLessonShell from "@/components/engineering/EngineeringLessonShell";
@@ -225,13 +225,7 @@ function ThreeAlgos() {
   const [burst, setBurst] = useState(40);
   const [running, setRunning] = useState(false);
   const [tNow, setTNow] = useState(0);
-  const sim = useRef<SimResult>({ events: [], tokenSamples: [], leakySamples: [], slidingSamples: [] });
-
-  useEffect(() => {
-    sim.current = simulate(burst);
-    setTNow(0);
-    setRunning(false);
-  }, [burst]);
+  const sim = useMemo(() => simulate(burst), [burst]);
 
   useEffect(() => {
     if (!running) return;
@@ -254,16 +248,16 @@ function ThreeAlgos() {
   };
 
   // Stats up to tNow
-  const upTo = sim.current.events.filter((e) => e.t <= tNow);
+  const upTo = sim.events.filter((e) => e.t <= tNow);
   const stats = {
     token: { allowed: upTo.filter((e) => e.algo === "token" && e.result === "allowed").length, rejected: upTo.filter((e) => e.algo === "token" && e.result === "rejected").length },
     leaky: { allowed: upTo.filter((e) => e.algo === "leaky" && e.result === "queued").length, rejected: upTo.filter((e) => e.algo === "leaky" && e.result === "rejected").length },
     sliding: { allowed: upTo.filter((e) => e.algo === "sliding" && e.result === "allowed").length, rejected: upTo.filter((e) => e.algo === "sliding" && e.result === "rejected").length },
   };
 
-  const tokenSampleAtT = sim.current.tokenSamples.find((s) => s.t >= tNow) ?? sim.current.tokenSamples[sim.current.tokenSamples.length - 1];
-  const leakySampleAtT = sim.current.leakySamples.find((s) => s.t >= tNow) ?? sim.current.leakySamples[sim.current.leakySamples.length - 1];
-  const slidingSampleAtT = sim.current.slidingSamples.find((s) => s.t >= tNow) ?? sim.current.slidingSamples[sim.current.slidingSamples.length - 1];
+  const tokenSampleAtT = sim.tokenSamples.find((s) => s.t >= tNow) ?? sim.tokenSamples[sim.tokenSamples.length - 1];
+  const leakySampleAtT = sim.leakySamples.find((s) => s.t >= tNow) ?? sim.leakySamples[sim.leakySamples.length - 1];
+  const slidingSampleAtT = sim.slidingSamples.find((s) => s.t >= tNow) ?? sim.slidingSamples[sim.slidingSamples.length - 1];
 
   const inSpike = tNow >= 4000 && tNow <= 6000;
 
@@ -283,7 +277,7 @@ function ThreeAlgos() {
           max={80}
           step={10}
           value={burst}
-          onChange={(e) => setBurst(Number(e.target.value))}
+          onChange={(e) => { setBurst(Number(e.target.value)); setTNow(0); setRunning(false); }}
           disabled={running}
           style={{ accentColor: SD, flex: 1, maxWidth: 240 }}
         />
@@ -576,4 +570,3 @@ export default function SD_L5_RateLimitingActivity({ onQuizComplete }: { onQuizC
     />
   );
 }
-

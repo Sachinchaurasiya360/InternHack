@@ -36,6 +36,8 @@ import {
   Network,
   ChevronDown,
   ChevronUp,
+  RefreshCw,
+  Sparkles,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -47,11 +49,12 @@ import toast from "../../../components/ui/toast";
 import type {
   RoadmapEnrollment,
   RoadmapEnrollmentSummary,
+  RoadmapSection,
   RoadmapTopic,
   RoadmapTopicStatus,
   RoadmapResource,
 } from "../../../lib/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
 
 interface EnrollmentResponse {
@@ -75,6 +78,10 @@ interface SectionLabelData {
   completed: number;
   isCollapsed?: boolean;
   onToggle?: () => void;
+  /** Present only on AI-generated roadmaps owned by the current user */
+  onRegenerate?: () => void;
+  isRegenerating?: boolean;
+  aiRegeneratedAt?: string | null;
 }
 
 // ─── Custom node: section banner (decorative, no handles) ─────────────────
@@ -145,9 +152,26 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
           <button
             type="button"
             onClick={data.onToggle}
-            className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors pointer-events-auto mr-2 cursor-pointer"
+            title={data.isCollapsed ? "Expand section" : "Collapse section"}
+            className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors pointer-events-auto mr-1 cursor-pointer"
           >
             {data.isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+          </button>
+        )}
+
+        {data.onRegenerate && (
+          <button
+            type="button"
+            onClick={data.onRegenerate}
+            disabled={data.isRegenerating}
+            title={data.isRegenerating ? "Regenerating section…" : "Regenerate this section with AI"}
+            className="p-1 rounded hover:bg-lime-100 dark:hover:bg-lime-950/40 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors pointer-events-auto mr-2 cursor-pointer"
+          >
+            {data.isRegenerating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4" />
+            )}
           </button>
         )}
 
@@ -196,6 +220,14 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
           </span>
         )}
       </div>
+
+      {/* AI-regenerated badge */}
+      {data.aiRegeneratedAt && (
+        <div className="mt-1.5 mx-2 flex items-center gap-1 text-[9px] font-mono text-lime-600 dark:text-lime-500 uppercase tracking-wider">
+          <Sparkles className="w-2.5 h-2.5" />
+          ai-rewritten
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -368,6 +400,11 @@ export default function RoadmapCanvasPage() {
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
   const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">("LINEAR");
+  // Track which sectionId is currently being regenerated
+  const [regeneratingSectionId, setRegeneratingSectionId] = useState<number | null>(null);
+  // Modal state for the regenerate instructions dialog
+  const [regenModal, setRegenModal] = useState<{ sectionId: number; sectionTitle: string } | null>(null);
+  const [regenInstructions, setRegenInstructions] = useState("");
   const [collapsedSections, setCollapsedSections] = useState<Set<number>>(new Set());
 
   const toggleSection = useCallback((id: number) => {
@@ -509,6 +546,11 @@ export default function RoadmapCanvasPage() {
           completed: completedInSection,
           isCollapsed,
           onToggle: () => toggleSection(section.id),
+          ...(isAiOwned && {
+            onRegenerate: () => openRegenModal(section.id, section.title),
+            isRegenerating: regeneratingSectionId === section.id,
+            aiRegeneratedAt: section.aiRegeneratedAt ?? null,
+          }),
         },
         draggable: viewMode === "GRAPH",
         selectable: viewMode === "GRAPH",
@@ -596,7 +638,7 @@ export default function RoadmapCanvasPage() {
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [data, allTopics, progressByTopicId, nextTopicId, handleNodeClick, viewMode, collapsedSections, setNodes, setEdges]);
+  }, [data, allTopics, progressByTopicId, nextTopicId, handleNodeClick, viewMode, collapsedSections, isAiOwned, openRegenModal, regeneratingSectionId, setNodes, setEdges]);
 
   const drawerTopic = useMemo(() => {
     if (!drawerTopicId || !data) return null;
@@ -630,9 +672,7 @@ export default function RoadmapCanvasPage() {
     try {
       const res = await api.get(
         `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
-        {
-          responseType: "blob",
-        },
+        { responseType: "blob" },
       );
       const url = URL.createObjectURL(res.data as Blob);
       const a = document.createElement("a");
@@ -645,6 +685,47 @@ export default function RoadmapCanvasPage() {
     } finally {
       setDownloading(null);
     }
+  };
+
+  // ── Section regeneration mutation ────────────────────────────────────────
+  const isAiOwned = !!(data?.enrollment.roadmap.isAiGenerated && data?.enrollment.roadmap.ownerUserId);
+
+  const regenerateMutation = useMutation({
+    mutationFn: ({ sectionId, instructions }: { sectionId: number; instructions?: string }) =>
+      api.post<{ message: string; section: RoadmapSection }>(
+        `/roadmaps/${slug}/sections/${sectionId}/regenerate`,
+        { instructions: instructions?.trim() || undefined },
+      ).then((r) => r.data),
+    onMutate: ({ sectionId }) => {
+      setRegeneratingSectionId(sectionId);
+    },
+    onSuccess: () => {
+      toast.success("Section regenerated");
+      // Refresh the enrollment detail so the canvas re-renders with new topics
+      if (enrollmentId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollments() });
+      }
+      setRegenModal(null);
+      setRegenInstructions("");
+    },
+    onError: (err: { response?: { data?: { message?: string } } }) => {
+      const msg = err?.response?.data?.message ?? "Could not regenerate section. Please try again.";
+      toast.error(msg);
+    },
+    onSettled: () => {
+      setRegeneratingSectionId(null);
+    },
+  });
+
+  const openRegenModal = useCallback((sectionId: number, sectionTitle: string) => {
+    setRegenInstructions("");
+    setRegenModal({ sectionId, sectionTitle });
+  }, []);
+
+  const confirmRegen = () => {
+    if (!regenModal) return;
+    regenerateMutation.mutate({ sectionId: regenModal.sectionId, instructions: regenInstructions });
   };
 
   // useStudentSidebar must be called unconditionally (rules of hooks). It always
@@ -1138,6 +1219,118 @@ export default function RoadmapCanvasPage() {
             onClose={() => setShowCompletionModal(false)}
           />
         )}
+
+        {/* ─── Section Regeneration Modal ───────────────────────────────── */}
+        <AnimatePresence>
+          {regenModal && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                key="regen-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => !regenerateMutation.isPending && setRegenModal(null)}
+                className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm"
+              />
+              {/* Dialog */}
+              <motion.div
+                key="regen-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="regen-dialog-title"
+                initial={{ opacity: 0, scale: 0.92, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.94, y: 8 }}
+                transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                className="fixed inset-0 z-[70] flex items-center justify-center px-4 pointer-events-none"
+              >
+                <div className="w-full max-w-md pointer-events-auto bg-stone-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-white/8">
+                    <div className="flex items-center gap-2">
+                      <div className="h-7 w-7 rounded-md bg-lime-400 flex items-center justify-center">
+                        <RefreshCw className="w-3.5 h-3.5 text-stone-950" />
+                      </div>
+                      <div>
+                        <p id="regen-dialog-title" className="text-sm font-bold text-stone-50">
+                          Regenerate section
+                        </p>
+                        <p className="text-[10px] font-mono text-stone-500 truncate max-w-60">
+                          {regenModal.sectionTitle}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRegenModal(null)}
+                      disabled={regenerateMutation.isPending}
+                      aria-label="Close"
+                      className="p-1.5 rounded-lg text-stone-500 hover:text-stone-300 hover:bg-white/5 transition-colors disabled:opacity-40 cursor-pointer border-0 bg-transparent"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Body */}
+                  <div className="px-5 py-4 space-y-4">
+                    <p className="text-xs text-stone-400 leading-relaxed">
+                      AI will rewrite this section's topics and resources while keeping the rest of your roadmap intact. Your progress on existing topics will be cleared for this section.
+                    </p>
+
+                    <div>
+                      <label
+                        htmlFor="regen-instructions"
+                        className="block text-[10px] font-mono uppercase tracking-widest text-stone-400 mb-2"
+                      >
+                        Instructions (optional)
+                      </label>
+                      <textarea
+                        id="regen-instructions"
+                        value={regenInstructions}
+                        onChange={(e) => setRegenInstructions(e.target.value)}
+                        placeholder="e.g. make it more beginner-friendly, focus on practical projects, add more TypeScript content…"
+                        rows={3}
+                        maxLength={400}
+                        disabled={regenerateMutation.isPending}
+                        className="w-full px-3 py-2.5 bg-stone-800 border border-white/8 rounded-xl text-sm text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/30 resize-none disabled:opacity-50 transition-colors"
+                      />
+                      <p className="text-[10px] font-mono text-stone-600 mt-1 text-right tabular-nums">
+                        {regenInstructions.length}/400
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-5 pb-5 flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setRegenModal(null)}
+                      disabled={regenerateMutation.isPending}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={confirmRegen}
+                      disabled={regenerateMutation.isPending}
+                    >
+                      {regenerateMutation.isPending ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5" />
+                      )}
+                      {regenerateMutation.isPending ? "Regenerating…" : "Regenerate"}
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

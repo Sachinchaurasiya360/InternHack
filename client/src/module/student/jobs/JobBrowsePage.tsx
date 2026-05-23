@@ -39,7 +39,6 @@ const FILTER_TAGS = [
   "Data Science",
 ] as const;
 
-
 function MetaChip({
   icon,
   children,
@@ -170,6 +169,12 @@ export default function JobBrowsePage() {
   const externalTotal = extData?.total;
   const scrapedTotal = scrData?.pagination?.total;
 
+  const allEmpty =
+    !isLoading &&
+    filteredExtJobs.length === 0 &&
+    scrapedJobs.length === 0 &&
+    (data?.jobs ?? []).length === 0;
+
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 relative">
       <SEO
@@ -222,7 +227,7 @@ export default function JobBrowsePage() {
               listings, updated daily.
             </p>
           </div>
-          <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
             {typeof internalTotal === "number" && (
               <span>
                 internal{" "}
@@ -268,7 +273,7 @@ export default function JobBrowsePage() {
               <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
                 Top 100 Internships in India 2026
               </p>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5">
                 government / psus / iits / tech giants
               </p>
             </div>
@@ -284,10 +289,7 @@ export default function JobBrowsePage() {
           className="mb-10 space-y-4"
         >
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-          
-            }}
+            onSubmit={(e) => e.preventDefault()}
             className="flex flex-col sm:flex-row gap-2"
           >
             <div className="flex-1 relative">
@@ -319,7 +321,7 @@ export default function JobBrowsePage() {
           </form>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
             </span>
             {FILTER_TAGS.map((tag, i) => {
@@ -349,7 +351,7 @@ export default function JobBrowsePage() {
                 onChange={(e) => setHideExpired(e.target.checked)}
                 className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20"
               />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
                 Hide expired
               </span>
             </label>
@@ -380,7 +382,7 @@ export default function JobBrowsePage() {
           >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1 w-1 bg-lime-400" />
                   external / curated
                 </div>
@@ -388,18 +390,11 @@ export default function JobBrowsePage() {
                   Latest opportunities
                 </h2>
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
-                updated daily
-              </span>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">updated daily</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
-                <motion.div
-                  key={`ext-${job.id}`}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                >
+                <motion.div key={`ext-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
                   <JobCard
                     to={job.slug ? `/jobs/ext/${job.slug}` : "#"}
                     company={job.company || "?"}
@@ -409,16 +404,8 @@ export default function JobBrowsePage() {
                     tags={job.tags}
                     metaChips={
                       <>
-                        {job.location && (
-                          <MetaChip icon={<MapPin className="w-3 h-3" />}>
-                            {job.location}
-                          </MetaChip>
-                        )}
-                        {job.salary && (
-                          <MetaChip icon={<IndianRupee className="w-3 h-3" />}>
-                            {job.salary}
-                          </MetaChip>
-                        )}
+                        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
+                        {job.salary && <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>}
                       </>
                     }
                   />
@@ -426,11 +413,7 @@ export default function JobBrowsePage() {
               ))}
             </div>
             {extData && extData.totalPages > 1 && (
-              <PaginationControls
-                currentPage={extPage}
-                totalPages={extData.totalPages}
-                onPageChange={setExtPage}
-              />
+              <PaginationControls currentPage={extPage} totalPages={extData.totalPages} onPageChange={setExtPage} />
             )}
           </motion.div>
         )}
@@ -445,7 +428,7 @@ export default function JobBrowsePage() {
           >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1 w-1 bg-lime-400" />
                   sourced / partners
                 </div>
@@ -453,18 +436,11 @@ export default function JobBrowsePage() {
                   Tech roles from job boards
                 </h2>
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
-                refreshed every 6h
-              </span>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">refreshed every 6h</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {scrapedJobs.map((job, i) => (
-                <motion.div
-                  key={`scr-${job.id}`}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                >
+                <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
                   <JobCard
                     href={job.applicationUrl}
                     company={job.company || "?"}
@@ -474,16 +450,8 @@ export default function JobBrowsePage() {
                     tags={job.tags}
                     metaChips={
                       <>
-                        {job.location && (
-                          <MetaChip icon={<MapPin className="w-3 h-3" />}>
-                            {job.location}
-                          </MetaChip>
-                        )}
-                        {job.salary && (
-                          <MetaChip icon={<IndianRupee className="w-3 h-3" />}>
-                            {job.salary}
-                          </MetaChip>
-                        )}
+                        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
+                        {job.salary && <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>}
                       </>
                     }
                   />
@@ -491,130 +459,110 @@ export default function JobBrowsePage() {
               ))}
             </div>
             {scrapedPagination && scrapedPagination.totalPages > 1 && (
-              <PaginationControls
-                currentPage={scrPage}
-                totalPages={scrapedPagination.totalPages}
-                onPageChange={setScrPage}
-              />
+              <PaginationControls currentPage={scrPage} totalPages={scrapedPagination.totalPages} onPageChange={setScrPage} />
             )}
           </motion.div>
         )}
 
-        {/* Internal jobs */}
-        <div className="flex items-end justify-between gap-4 mb-6">
-          <div>
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1 w-1 bg-lime-400" />
-              internal / live
+        {/* Global empty state — shown when ALL three sources return nothing */}
+        {allEmpty && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="py-24 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4 mb-14"
+          >
+            <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
+              <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
             </div>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Partner roles
-            </h2>
-          </div>
-        </div>
+            <div>
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">No jobs match your filters</p>
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
+                try adjusting your search or filters
+              </p>
+            </div>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" /> Clear filters
+              </button>
+            )}
+          </motion.div>
+        )}
 
-        {isLoading ? (
-          <div className="py-20 text-center">
-            <div className="inline-flex flex-col items-center gap-3">
-              <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                loading roles...
-              </span>
-            </div>
-          </div>
-        ) : (data?.jobs ?? []).length === 0 ? (
-          
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4"
-  >
-    <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
-      <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
-    </div>
-    <div>
-      <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
-        No jobs match your filters
-      </p>
-      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
-        try adjusting your search or filters
-      </p>
-    </div>
-    {hasFilters && (
-      <button
-        type="button"
-        onClick={clearAll}
-        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
-      >
-        <X className="w-3.5 h-3.5" /> Clear filters
-      </button>
-    )}
-  </motion.div>
-) : (
+        {/* Internal jobs — hidden when everything is empty */}
+        {!allEmpty && (
           <>
-            <div className="relative">
-              {isFetching && (
-                <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
-                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+            <div className="flex items-end justify-between gap-4 mb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+                  <span className="h-1 w-1 bg-lime-400" />
+                  internal / live
                 </div>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(data?.jobs ?? []).map((job, i) => (
-                  <motion.div
-                    key={job.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                  >
-                    <JobCard
-                      to={`/jobs/${job.id}`}
-                      company={job.company || "C"}
-                      title={job.title}
-                      description={job.description}
-                      tags={job.tags}
-                      rightMeta={
-                        job._count
-                          ? `${job._count.applications} applied`
-                          : undefined
-                      }
-                      metaChips={
-                        <>
-                          {job.location && (
-                            <MetaChip icon={<MapPin className="w-3 h-3" />}>
-                              {job.location}
-                            </MetaChip>
-                          )}
-                          {job.salary && (
-                            <MetaChip
-                              icon={<IndianRupee className="w-3 h-3" />}
-                            >
-                              {job.salary}
-                            </MetaChip>
-                          )}
-                          {job.deadline &&
-                            (new Date(job.deadline) < new Date() ? (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                                <Clock className="w-3 h-3" /> expired
-                              </span>
-                            ) : (
-                              <MetaChip icon={<Clock className="w-3 h-3" />}>
-                                {new Date(job.deadline).toLocaleDateString()}
-                              </MetaChip>
-                            ))}
-                        </>
-                      }
-                    />
-                  </motion.div>
-                ))}
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                  Partner roles
+                </h2>
               </div>
             </div>
 
-            {data?.pagination && (
-              <PaginationControls
-                currentPage={page}
-                totalPages={data.pagination.totalPages}
-                onPageChange={setPage}
-              />
+            {isLoading ? (
+              <div className="py-20 text-center">
+                <div className="inline-flex flex-col items-center gap-3">
+                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="relative">
+                  {isFetching && (
+                    <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
+                      <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {(data?.jobs ?? []).map((job, i) => (
+                      <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+                        <JobCard
+                          to={`/jobs/${job.id}`}
+                          company={job.company || "C"}
+                          title={job.title}
+                          description={job.description}
+                          tags={job.tags}
+                          rightMeta={job._count ? `${job._count.applications} applied` : undefined}
+                          metaChips={
+                            <>
+                              <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
+                              <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
+                              {job.deadline && (
+                                new Date(job.deadline) < new Date() ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
+                                    <Clock className="w-3 h-3" /> expired
+                                  </span>
+                                ) : (
+                                  <MetaChip icon={<Clock className="w-3 h-3" />}>
+                                    {new Date(job.deadline).toLocaleDateString()}
+                                  </MetaChip>
+                                )
+                              )}
+                            </>
+                          }
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {data?.pagination && (
+                  <PaginationControls
+                    currentPage={page}
+                    totalPages={data.pagination.totalPages}
+                    onPageChange={setPage}
+                  />
+                )}
+              </>
             )}
           </>
         )}

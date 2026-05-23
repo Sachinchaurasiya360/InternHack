@@ -405,7 +405,7 @@ export default function GrantTrackerPage() {
   );
 
   const filtered = useMemo(() => {
-    let list =
+    const list =
       statusFilter === "ALL"
         ? [...trackedGrants]
         : trackedGrants.filter((g) => g.status === statusFilter);

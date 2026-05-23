@@ -29,14 +29,14 @@ export default function DataAnalyticsSectionPage() {
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
 
-  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
-
   const sectionLessons = useMemo(
     () => lessons.filter((l) => l.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug]
   );
+
+  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
   if (!section) {
     return (
