@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   X,
@@ -31,6 +31,7 @@ interface Internship {
   stipend: string;
   eligibility: string;
   reality: string;
+  applyUrl?: string | null;
 }
 
 interface InternshipStats {
@@ -48,8 +49,10 @@ function Kicker({ children }: { children: React.ReactNode }) {
 }
 
 function InternshipCard({ internship }: { internship: Internship }) {
-  return (
-    <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full">
+  const cardClassName = "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
+
+  const cardContent = (
+    <>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
@@ -62,7 +65,7 @@ function InternshipCard({ internship }: { internship: Internship }) {
             <p className="text-xs text-stone-500 truncate mt-0.5">{internship.organizer}</p>
           </div>
         </div>
-        <ArrowUpRight className="w-4 h-4 shrink-0 text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-50 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+        <ArrowUpRight className="w-4 h-4 shrink-0 text-stone-400 group-hover:text-lime-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
       </div>
 
       <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-3">
@@ -90,8 +93,18 @@ function InternshipCard({ internship }: { internship: Internship }) {
         </p>
         <p className="text-xs text-stone-500 mt-1.5 line-clamp-2 italic">{internship.reality}</p>
       </div>
-    </div>
+    </>
   );
+
+  if (internship.applyUrl) {
+    return (
+      <a href={internship.applyUrl} target="_blank" rel="noopener noreferrer" className={cardClassName}>
+        {cardContent}
+      </a>
+    );
+  }
+
+  return <div className={cardClassName}>{cardContent}</div>;
 }
 
 export default function GovInternshipsPage() {
@@ -114,6 +127,7 @@ export default function GovInternshipsPage() {
     queryKey: queryKeys.internships.stats(),
     queryFn: () => api.get("/internships/stats").then((r) => r.data),
     staleTime: 5 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 
   const queryParams: Record<string, string | number> = { page, limit: 24 };
@@ -126,6 +140,7 @@ export default function GovInternshipsPage() {
   }>({
     queryKey: queryKeys.internships.list(queryParams),
     queryFn: () => api.get("/internships", { params: queryParams }).then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
   });
 
   const internships = data?.internships ?? [];
@@ -204,11 +219,10 @@ export default function GovInternshipsPage() {
         <div className="mb-8 flex flex-wrap items-center gap-2">
           <button
             onClick={() => { setCategory(""); setPage(1); }}
-            className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
-              !category
+            className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${!category
                 ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
                 : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-            }`}
+              }`}
           >
             All ({stats?.total ?? "..."})
           </button>
@@ -216,11 +230,10 @@ export default function GovInternshipsPage() {
             <button
               key={c.name}
               onClick={() => { setCategory(c.name); setPage(1); }}
-              className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
-                category === c.name
+              className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${category === c.name
                   ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
                   : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-              }`}
+                }`}
             >
               {c.name} ({c.count})
             </button>
@@ -277,7 +290,10 @@ export default function GovInternshipsPage() {
             {pagination && pagination.totalPages > 1 && (
               <div className="flex items-center justify-center gap-3 mt-10">
                 <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() => {
+                    setPage((p) => Math.max(1, p - 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page <= 1}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-transparent cursor-pointer"
                 >
@@ -287,7 +303,10 @@ export default function GovInternshipsPage() {
                   {pagination.page} / {pagination.totalPages}
                 </span>
                 <button
-                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  onClick={() => {
+                    setPage((p) => Math.min(pagination.totalPages, p + 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page >= pagination.totalPages}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-transparent cursor-pointer"
                 >

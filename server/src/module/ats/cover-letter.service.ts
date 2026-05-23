@@ -27,10 +27,10 @@ export class CoverLetterService {
       jobDescription: string;
       content: string;
       tone: string;
-      length: string;
-      targetWords: number;
       useProfile: boolean;
       keySkills?: string;
+      length?: "short" | "medium" | "long";
+      targetWords?: number;
     }
   ) {
     const excerpt = data.content.slice(0, 120).replace(/\n/g, " ").trim();
@@ -42,8 +42,6 @@ export class CoverLetterService {
         jobDescription: data.jobDescription,
         content:        data.content,
         tone:           data.tone,
-        length:         data.length,
-        targetWords:    data.targetWords,
         useProfile:     data.useProfile,
         keySkills:      data.keySkills      ?? null,
         excerpt,
@@ -61,7 +59,6 @@ export class CoverLetterService {
         jobTitle:    true,
         companyName: true,
         tone:        true,
-        length:      true,
         excerpt:     true,
         createdAt:   true,
       },
@@ -155,7 +152,9 @@ export class CoverLetterService {
        long:
     "Write a detailed and comprehensive cover letter of approximately 500 words with richer examples and explanations.",
     }  ;
-    const lengthGuide = lengthInstructions[input.length]??lengthInstructions["medium"];
+    const lengthKey = input.length ?? "medium";
+    const lengthGuide = lengthInstructions[lengthKey];
+    const targetWords = input.targetWords ?? 300;
 
     const profileBlock = profile
       ? `\nCANDIDATE PROFILE:\n${this.buildProfileSection(profile)}\n`
@@ -166,7 +165,7 @@ export class CoverLetterService {
 TONE: ${input.tone}
 ${toneGuide}
 
-LENGTH:${input.length}
+LENGTH:${lengthKey}
 ${lengthGuide}
 
 JOB DESCRIPTION:
@@ -186,7 +185,7 @@ INSTRUCTIONS:
 - Reference the candidate's education and technical skills where relevant
 - Close with a clear call to action
 - Keep it concise
-- target approximately ${input.targetWords ?? 300} words 
+- target approximately ${targetWords} words 
 - Do NOT include placeholder brackets like [Your Name] - write it as a complete letter
 - Do NOT include any subject line, headers, or metadata - just the letter body
 

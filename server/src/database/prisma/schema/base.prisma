@@ -74,19 +74,38 @@ model user {
   jobPreference         userJobPreference?          @relation("UserJobPreferences")
   jobMatches            jobMatch[]                  @relation("UserJobMatches")
   agentConversations    jobAgentConversation[]      @relation("UserAgentConversations")
+  jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
-  generatedCoverLetters generatedCoverLetter[]      @relation("StudentCoverLetters")
+  generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
+  leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
+  generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
 
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
+}
+
+model userInterviewProgress {
+  id            Int       @id @default(autoincrement())
+  userId        Int       @unique
+  completedIds  String[]  @default([])
+  bookmarkedIds String[]  @default([])
+  lastVisitedId String?
+  lastVisitedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model adminProfile {
@@ -530,8 +549,8 @@ model gsocOrganization {
 }
 
 model ycCompany {
-  id              Int       @id @default(autoincrement())
-  ycId            Int       @unique
+  id              Int      @id @default(autoincrement())
+  ycId            Int      @unique
   name            String
   slug            String
   oneLiner        String?
@@ -545,19 +564,19 @@ model ycCompany {
   teamSize        Int?
   industry        String?
   subindustry     String?
-  tags            String[]  @default([])
-  industries      String[]  @default([])
-  regions         String[]  @default([])
+  tags            String[] @default([])
+  industries      String[] @default([])
+  regions         String[] @default([])
   stage           String?
-  isHiring        Boolean   @default(false)
-  topCompany      Boolean   @default(false)
+  isHiring        Boolean  @default(false)
+  topCompany      Boolean  @default(false)
   ycUrl           String?
   launchedAt      DateTime?
   founders        Json?
   socialLinks     Json?
   scrapedAt       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([batchShort])
   @@index([industry])
@@ -565,6 +584,20 @@ model ycCompany {
   @@index([isHiring])
   @@index([topCompany])
   @@index([name])
+}
+
+model leetcodeImportLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  username   String?
+  source     String   @default("LEETCODE_USERNAME")
+  matched    Int      @default(0)
+  imported   Int      @default(0)
+  importedAt DateTime @default(now())
+  user       user     @relation("UserLeetcodeImports", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([importedAt])
 }
 
 model dsaTopic {
@@ -583,6 +616,7 @@ model dsaProblem {
   difficulty       String
   leetcodeId       Int?
   leetcodeUrl      String?
+  leetcodeSlug     String?              @unique
   gfgUrl           String?
   articleUrl       String?
   videoUrl         String?
@@ -614,6 +648,7 @@ model studentDsaProgress {
   id        Int        @id @default(autoincrement())
   studentId Int
   problemId Int
+  source    String     @default("INTERNAL")
   solved    Boolean    @default(true)
   notes     String?
   solvedAt  DateTime   @default(now())
@@ -818,6 +853,18 @@ model usageLog {
   @@index([userId, action, createdAt])
 }
 
+model jobAgentEmailLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jobIds    Int[]    @default([])
+  context   String?
+  sentCount Int
+  createdAt DateTime @default(now())
+  user      user     @relation("UserJobAgentEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
 model hackathon {
   id           Int      @id @default(autoincrement())
   name         String
@@ -868,6 +915,7 @@ model govInternship {
   stipend     String
   eligibility String
   reality     String
+  applyUrl    String?
   createdAt   DateTime @default(now())
 
   @@index([category])
@@ -1219,6 +1267,17 @@ enum EmailLogStatus {
   PENDING
   SENT
   FAILED
+}
+
+model contactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 model errorLog {

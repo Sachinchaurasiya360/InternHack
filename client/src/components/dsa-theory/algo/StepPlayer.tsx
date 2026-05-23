@@ -20,16 +20,16 @@ export function useStepPlayer<T>(frames: T[], speedMs = 700): StepPlayer<T> {
   const [isPlaying, setIsPlaying] = useState(false);
   const total = frames.length;
   const framesRef = useRef(frames);
-  framesRef.current = frames;
+  useEffect(() => { framesRef.current = frames; });
 
   // Reset when frames change
   useEffect(() => {
-    setIndex(0);
-    setIsPlaying(false);
-  }, [frames]);
+  setIndex(0);
+  setIsPlaying(false);
+}, [frames.length]);
 
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying) return;``
     const t = setInterval(() => {
       setIndex((i) => {
         const max = framesRef.current.length - 1;

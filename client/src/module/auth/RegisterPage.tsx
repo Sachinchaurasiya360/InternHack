@@ -22,18 +22,91 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
-  const returnTo = searchParams.get("from");
+  const rawReturnTo = searchParams.get("from");
+  const returnTo = rawReturnTo && /^\/(?!\/)/.test(rawReturnTo) ? rawReturnTo : null;
   const initialRole = searchParams.get("role") === "RECRUITER" ? "RECRUITER" : "STUDENT";
   const [role, setRole] = useState<"STUDENT" | "RECRUITER">(initialRole);
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     company: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Validation functions
+  const validateName = (name: string): string => {
+    if (!name.trim()) return "Name is required";
+    if (name.trim().length < 2) return "Name must be at least 2 characters long";
+    if (!/^[A-Za-zÀ-ÿ' -]+$/.test(name)) return "Name may contain only letters, spaces, apostrophes, and hyphens";
+    return "";
+  };
+
+  const validateEmail = (email: string, userRole: string): string => {
+    if (!email.trim()) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Invalid email address";
+    if (userRole === "RECRUITER" && isPersonalEmail(email)) {
+      return "Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.";
+    }
+    return "";
+  };
+
+  const validatePassword = (password: string): string => {
+    if (!password) return "Password is required";
+    if (password.length < 8) return "Password must be at least 8 characters";
+    if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter";
+    if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
+    if (!/[0-9]/.test(password)) return "Password must contain at least one number";
+    if (!/[\W_]/.test(password)) return "Password must contain at least one special character";
+    return "";
+  };
+
+  const validateConfirmPassword = (password: string, confirmPassword: string): string => {
+    if (!confirmPassword) return "Please confirm your password";
+    if (password !== confirmPassword) return "Passwords do not match";
+    return "";
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    
+    // Real-time validation
+    const newErrors = { ...fieldErrors };
+    if (field === "name") {
+      const nameError = validateName(value);
+      if (nameError) {
+        newErrors.name = nameError;
+      } else {
+        delete newErrors.name;
+      }
+    } else if (field === "email") {
+      const emailError = validateEmail(value, role);
+      if (emailError) {
+        newErrors.email = emailError;
+      } else {
+        delete newErrors.email;
+      }
+    } else if (field === "password") {
+      const passwordError = validatePassword(value);
+      if (passwordError) {
+        newErrors.password = passwordError;
+      } else {
+        delete newErrors.password;
+      }
+    } else if (field === "confirmPassword") {
+      const confirmPasswordError = validateConfirmPassword(form.password, value);
+      if (confirmPasswordError) {
+        newErrors.confirmPassword = confirmPasswordError;
+      } else {
+        delete newErrors.confirmPassword;
+      }
+    }
+    setFieldErrors(newErrors);
+  };
 
   const redirectAfterAuth = (userRole: string) => {
     if (returnTo) {
@@ -63,13 +136,26 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setFieldErrors({});
+    
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+    const nameError = validateName(form.name);
+    const emailError = validateEmail(form.email, role);
+    const passwordError = validatePassword(form.password);
+    const confirmPasswordError = validateConfirmPassword(form.password, form.confirmPassword);
 
-    if (role === "RECRUITER" && isPersonalEmail(form.email)) {
-      setError("Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.");
-      setLoading(false);
+    if (nameError) newErrors.name = nameError;
+    if (emailError) newErrors.email = emailError;
+    if (passwordError) newErrors.password = passwordError;
+    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
+    
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
       return;
     }
+
+    setLoading(true);
 
     try {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
@@ -81,9 +167,35 @@ export default function RegisterPage() {
         login(data.user);
         redirectAfterAuth(data.user.role);
       }
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Registration failed");
+    }  catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: {
+            message?: string;
+            errors?: {
+              fieldErrors?: Record<string, string[]>;
+            };
+          };
+        };
+      };
+
+      // Handle field-level errors from backend
+      const backendFieldErrors = error.response?.data?.errors?.fieldErrors;
+      if (backendFieldErrors && typeof backendFieldErrors === "object") {
+        const fieldErrorsObj: Record<string, string> = {};
+        for (const [field, messages] of Object.entries(backendFieldErrors)) {
+          if (Array.isArray(messages) && messages.length > 0) {
+            fieldErrorsObj[field] = messages[0];
+          }
+        }
+        if (Object.keys(fieldErrorsObj).length > 0) {
+          setFieldErrors(fieldErrorsObj);
+          return;
+        }
+      }
+
+      const backendMessage = error.response?.data?.message || "Registration failed";
+      setError(backendMessage);
     } finally {
       setLoading(false);
     }
@@ -103,17 +215,7 @@ export default function RegisterPage() {
         isRecruiter={isRecruiter}
       />
 
-      <div className="relative flex items-center justify-center px-6 py-16 lg:py-0">
-        <Link
-          to="/"
-          className="absolute top-6 left-6 flex items-center gap-2 text-sm no-underline text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
-        >
-          <div className="relative">
-            <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-md object-contain" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
-          </div>
-          <span className="font-bold text-stone-900 dark:text-stone-50">InternHack</span>
-        </Link>
+      <div className="flex items-center justify-center px-6 py-12 lg:py-0">
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -148,8 +250,8 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setRole("STUDENT")}
                   className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
-                      ? "bg-lime-400 text-stone-950"
-                      : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                    ? "bg-lime-400 text-stone-950"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
                     }`}
                 >
                   Student
@@ -158,8 +260,8 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setRole("RECRUITER")}
                   className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
-                      ? "bg-lime-400 text-stone-950"
-                      : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                    ? "bg-lime-400 text-stone-950"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
                     }`}
                 >
                   Recruiter
@@ -190,28 +292,38 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <FormField label="Full name">
+            <form noValidate onSubmit={handleSubmit} className="space-y-4">
+              <FormField label="Full name" error={fieldErrors.name} fieldName="name">
                 <input
                   type="text"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                  aria-invalid={!!fieldErrors.name}
+                  aria-describedby={fieldErrors.name ? "error-name" : undefined}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.name
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
                   placeholder="Jane Doe"
-                  required
                 />
               </FormField>
 
-              <FormField label={isRecruiter ? "Company email" : "Email"}>
+              <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email} fieldName="email">
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                  onChange={(e) => handleFieldChange("email", e.target.value)}
+                  aria-invalid={!!fieldErrors.email}
+                  aria-describedby={fieldErrors.email ? "error-email" : undefined}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.email
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
                   placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
-                  required
                 />
-                {isRecruiter && (
+                {!fieldErrors.email && isRecruiter && (
                   <p className="mt-1.5 text-xs font-mono text-amber-600 dark:text-amber-400">
                     no personal gmail, yahoo, or outlook.
                   </p>
@@ -219,28 +331,32 @@ export default function RegisterPage() {
               </FormField>
 
               {isRecruiter && (
-                <FormField label="Company">
+                <FormField label="Company" fieldName="company">
                   <input
                     type="text"
                     value={form.company}
                     onChange={(e) => setForm({ ...form, company: e.target.value })}
                     className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
                     placeholder="Your company name"
-                    required
                   />
                 </FormField>
               )}
 
-              <FormField label="Password">
+              <FormField label="Password" error={fieldErrors.password} fieldName="password">
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
-                    placeholder="Min. 6 characters"
-                    required
-                    minLength={6}
+                    onChange={(e) => handleFieldChange("password", e.target.value)}
+                    aria-invalid={!!fieldErrors.password}
+                    aria-describedby={fieldErrors.password ? "error-password" : undefined}
+                    className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                      fieldErrors.password
+                        ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                        : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                    }`}
+                    placeholder="Min. 8 chars (A-Z, a-z, 0-9, symbol)"
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -251,6 +367,22 @@ export default function RegisterPage() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+              </FormField>
+
+              <FormField label="Confirm Password" error={fieldErrors.confirmPassword} fieldName="confirmPassword">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={form.confirmPassword}
+                  onChange={(e) => handleFieldChange("confirmPassword", e.target.value)}
+                  aria-invalid={!!fieldErrors.confirmPassword}
+                  aria-describedby={fieldErrors.confirmPassword ? "error-confirmPassword" : undefined}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.confirmPassword
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
+                  placeholder="Confirm your password"
+                />
               </FormField>
 
               <button
@@ -286,12 +418,17 @@ export default function RegisterPage() {
 function FormField({
   label,
   right,
+  error,
+  fieldName,
   children,
 }: {
   label: string;
   right?: React.ReactNode;
+  error?: string;
+  fieldName?: string;
   children: React.ReactNode;
 }) {
+  const errorId = fieldName ? `error-${fieldName}` : undefined;
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
@@ -301,6 +438,11 @@ function FormField({
         {right}
       </div>
       {children}
+      {error && (
+        <p id={errorId} className="mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -319,26 +461,19 @@ function AuthPromoPanel({ isRecruiter }: { isRecruiter: boolean }) {
   const stats = isRecruiter ? recruiterStats : studentStats;
 
   return (
-    <div className="hidden lg:flex relative flex-col justify-center p-12 xl:p-16 bg-stone-900 overflow-hidden">
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-          backgroundSize: "28px 28px",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+    <div className="hidden lg:flex relative flex-col justify-between px-12 xl:px-16 pt-8 pb-12 xl:pb-16 bg-stone-900 overflow-hidden">
+      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.06] auth-promo-dots" />
+      <div aria-hidden className="absolute inset-0 pointer-events-none auth-promo-lines" />
 
+      <div className="relative mb-auto">
+        <Link to="/" className="inline-flex items-center gap-2.5 no-underline">
+          <div className="relative">
+            <img src="/logo.png" alt="InternHack" className="h-8 w-8 rounded-md object-contain" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
+          </div>
+          <span className="text-base font-bold tracking-tight text-stone-50">InternHack</span>
+        </Link>
+      </div>
       <div className="relative max-w-lg">
         <motion.div
           key={isRecruiter ? "r" : "s"}

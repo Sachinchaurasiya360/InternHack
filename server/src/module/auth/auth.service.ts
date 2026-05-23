@@ -118,6 +118,10 @@ export class AuthService {
   }
 
   async googleAuth(data: GoogleAuthInput) {
+    if (!process.env["GOOGLE_CLIENT_ID"]) {
+      throw Object.assign(new Error("Google authentication is not configured on this server"), { statusCode: 503 });
+    }
+
     let email: string | undefined;
     let name: string | undefined;
     let picture: string | undefined;
@@ -599,8 +603,11 @@ export class AuthService {
         password: hashedPassword,
         resetPasswordOtp: null,
         resetOtpExpiresAt: null,
+        tokenVersion: { increment: 1 },
       },
     });
+    // Revoke existing sessions only after the atomic password + version update succeeds.
+    invalidateVersionCache(user.id);
   }
 
   async importGitHub(username: string) {

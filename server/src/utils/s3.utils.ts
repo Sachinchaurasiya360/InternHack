@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import {
   S3Client,
   PutObjectCommand,
@@ -7,18 +8,24 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3Client = new S3Client({
-  region: process.env["AWS_REGION"] ?? "ap-south-1",
+  region: process.env["AWS_REGION"] || "ap-south-1",
   credentials: {
-    accessKeyId: process.env["AWS_ACCESS_KEY_ID"] ?? "",
-    secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"] ?? "",
+    accessKeyId: process.env["AWS_ACCESS_KEY_ID"] || "",
+    secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"] || "",
   },
 });
 
-const BUCKET = process.env["AWS_S3_BUCKET"] ?? "";
-const REGION = process.env["AWS_REGION"] ?? "ap-south-1";
+const BUCKET = process.env["AWS_S3_BUCKET"] || "";
+const REGION = process.env["AWS_REGION"] || "ap-south-1";
 
 function getBucketUrl(): string {
   return `https://${BUCKET}.s3.${REGION}.amazonaws.com`;
+}
+
+export function createUniqueS3Key(folder: string, userId: string, fileName: string): string {
+  const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
+  const uniqueId = randomUUID();
+  return `${folder}/${String(userId)}/${uniqueId}-${cleanFileName}`;
 }
 
 export async function uploadToS3(
@@ -80,3 +87,16 @@ export async function signUrl(url: string, expiresIn = 3600): Promise<string> {
 export async function signUrls(urls: string[], expiresIn = 3600): Promise<string[]> {
   return Promise.all(urls.map((u) => signUrl(u, expiresIn)));
 }
+
+
+export const generatePresignedUploadUrl = async (fileKey: string, fileType: string) => {
+  const command = new PutObjectCommand({
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: fileKey,
+    ContentType: fileType, // Enforces that the client uploads the correct file type
+  });
+
+  // URL expires in 5 minutes (300 seconds)
+  const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
+  return uploadUrl;
+};

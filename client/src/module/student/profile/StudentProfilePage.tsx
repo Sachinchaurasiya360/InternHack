@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router";
 import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
 import api from "../../../lib/axios";
+import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -405,7 +406,14 @@ export default function StudentProfilePage() {
   const handleProfilePicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // 1. Size Check
     if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (picInputRef.current) picInputRef.current.value = ""; return; }
+    
+    // 2. Strict Format Check
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) { toast.error("Only JPG and PNG formats are allowed"); if (picInputRef.current) picInputRef.current.value = ""; return; }
+
     const reader = new FileReader();
     reader.onload = () => {
       setCropSrc(reader.result as string);
@@ -418,7 +426,14 @@ export default function StudentProfilePage() {
   const handleCoverImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // 1. Size Check
     if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (coverInputRef.current) coverInputRef.current.value = ""; return; }
+    
+    // 2. Strict Format Check
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) { toast.error("Only JPG and PNG formats are allowed"); if (coverInputRef.current) coverInputRef.current.value = ""; return; }
+
     const reader = new FileReader();
     reader.onload = () => {
       setCropSrc(reader.result as string);
@@ -431,21 +446,34 @@ export default function StudentProfilePage() {
   const handleCropComplete = async (blob: Blob) => {
     const isProfile = cropType === "profile";
     const setUploading = isProfile ? setUploadingPic : setUploadingCover;
-    const endpoint = isProfile ? "/upload/profile-pic" : "/upload/cover-image";
     const field = isProfile ? "profilePic" : "coverImage";
 
     setCropSrc(null);
     setCropType(null);
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", blob, "cropped.jpg");
-      const res = await api.post(endpoint, fd, { headers: { "Content-Type": "multipart/form-data" } });
-      const u = res.data.user;
-      setForm((prev) => ({ ...prev, [field]: u[field] ?? "" }));
-      syncUser({ ...form, [field]: u[field] ?? "" });
+      const file = new File([blob], "cropped.jpg", { type: blob.type || "image/jpeg" });
+      const res = await uploadDirectToS3({
+        file,
+        folder: isProfile ? "profile-pics" : "cover-images",
+        endpoint: isProfile ? "/profile-pic" : "/cover-image",
+      });
+
+      const u = res.user || res;
+      let imagePath = u[field] || u.fileUrl || u.url || "";
+      if (imagePath && !imagePath.startsWith("http")) {
+        imagePath = `${api.defaults.baseURL?.replace("/api", "") || "http://localhost:3000"}/${imagePath.replace(/^\//, "")}`;
+      }
+
+      setForm((prev) => {
+        const next = { ...prev, [field]: imagePath };
+        syncUser(next);
+        return next;
+      });
+
       toast.success(isProfile ? "Profile picture updated!" : "Cover image updated!");
-    } catch {
+    } catch (error) {
+      console.error("Upload rendering error:", error);
       toast.error(isProfile ? "Failed to upload profile picture" : "Failed to upload cover image");
     } finally {
       setUploading(false);
@@ -457,12 +485,18 @@ export default function StudentProfilePage() {
     if (!file) return;
     setUploadingResume(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await api.post("/upload/profile-resume", fd, { headers: { "Content-Type": "multipart/form-data" } });
-      const u = res.data.user;
-      setForm((prev) => ({ ...prev, resumes: u.resumes ?? [] }));
-      syncUser({ ...form, resumes: u.resumes ?? [] });
+      const res = await uploadDirectToS3({
+        file,
+        folder: "resumes",
+        endpoint: "/profile-resume",
+      });
+      const u = res.user || res;
+      const resumes = u.resumes ?? [];
+      setForm((prev) => {
+        const next = { ...prev, resumes };
+        syncUser(next);
+        return next;
+      });
       toast.success("Resume uploaded!");
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to upload resume";
@@ -594,7 +628,7 @@ export default function StudentProfilePage() {
               >
                 {uploadingCover ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
               </button>
-              <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverImageSelect} className="hidden" />
+              <input ref={coverInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={handleCoverImageSelect} className="hidden" />
             </div>
 
             <div className="px-5 pb-5 -mt-10 relative">
@@ -617,7 +651,7 @@ export default function StudentProfilePage() {
                 >
                   {uploadingPic ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
                 </button>
-                <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicSelect} className="hidden" />
+                <input ref={picInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={handleProfilePicSelect} className="hidden" />
               </div>
 
               <h2 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate leading-tight">
@@ -695,9 +729,10 @@ export default function StudentProfilePage() {
                     {profileUrlCopied ? "Copied!" : "Copy URL"}
                   </button>
                 </div>
-              )}
+               )}
               {/* Visibility */}
               <div className="flex items-start justify-between gap-3 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
+                <div className="min-w-0">
                   <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                     recruiter visibility
                   </p>

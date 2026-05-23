@@ -492,7 +492,7 @@ function DFSTopoViz({ ids, edges, inputStr, setInputStr }: {
 function VisualizeTab() {
   const [mode, setMode] = useState<"kahn" | "dfs">("kahn");
   const [inputStr, setInputStr] = useState("A>B, A>C, B>D, C>D, D>E, C>E");
-  const parsed = parseDirected(inputStr);
+  const parsed = useMemo(() => parseDirected(inputStr), [inputStr]);
   const ids = parsed?.ids ?? [];
   const edges = parsed?.edges ?? [];
 
