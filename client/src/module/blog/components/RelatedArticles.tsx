@@ -16,11 +16,11 @@ export default function RelatedArticles({
     <section className="mt-20">
       <div className="mb-8 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">
+          <h2 className="text-2xl md:text-3xl font-black text-stone-900 dark:text-stone-50">
             Related Articles
           </h2>
 
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
             Continue exploring similar insights and career resources
           </p>
         </div>
