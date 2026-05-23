@@ -103,7 +103,7 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
         connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com"],
-        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com"],
+        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
         fontSrc: ["'self'", "https:", "data:"],
       },
     },
@@ -151,7 +151,6 @@ app.get("/api/health", (_req, res) => {
 });
 
 // Raw body for webhooks (must be BEFORE express.json())
-app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
 app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
