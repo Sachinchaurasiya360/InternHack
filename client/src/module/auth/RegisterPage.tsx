@@ -30,6 +30,7 @@ export default function RegisterPage() {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     company: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +42,7 @@ export default function RegisterPage() {
   const validateName = (name: string): string => {
     if (!name.trim()) return "Name is required";
     if (name.trim().length < 2) return "Name must be at least 2 characters long";
+    if (!/^[A-Za-zÀ-ÿ' -]+$/.test(name)) return "Name may contain only letters, spaces, apostrophes, and hyphens";
     return "";
   };
 
@@ -60,6 +62,12 @@ export default function RegisterPage() {
     if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
     if (!/[0-9]/.test(password)) return "Password must contain at least one number";
     if (!/[\W_]/.test(password)) return "Password must contain at least one special character";
+    return "";
+  };
+
+  const validateConfirmPassword = (password: string, confirmPassword: string): string => {
+    if (!confirmPassword) return "Please confirm your password";
+    if (password !== confirmPassword) return "Passwords do not match";
     return "";
   };
 
@@ -88,6 +96,13 @@ export default function RegisterPage() {
         newErrors.password = passwordError;
       } else {
         delete newErrors.password;
+      }
+    } else if (field === "confirmPassword") {
+      const confirmPasswordError = validateConfirmPassword(form.password, value);
+      if (confirmPasswordError) {
+        newErrors.confirmPassword = confirmPasswordError;
+      } else {
+        delete newErrors.confirmPassword;
       }
     }
     setFieldErrors(newErrors);
@@ -128,10 +143,12 @@ export default function RegisterPage() {
     const nameError = validateName(form.name);
     const emailError = validateEmail(form.email, role);
     const passwordError = validatePassword(form.password);
-    
+    const confirmPasswordError = validateConfirmPassword(form.password, form.confirmPassword);
+
     if (nameError) newErrors.name = nameError;
     if (emailError) newErrors.email = emailError;
     if (passwordError) newErrors.password = passwordError;
+    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
     
     if (Object.keys(newErrors).length > 0) {
       setFieldErrors(newErrors);
@@ -350,6 +367,22 @@ export default function RegisterPage() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+              </FormField>
+
+              <FormField label="Confirm Password" error={fieldErrors.confirmPassword} fieldName="confirmPassword">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={form.confirmPassword}
+                  onChange={(e) => handleFieldChange("confirmPassword", e.target.value)}
+                  aria-invalid={!!fieldErrors.confirmPassword}
+                  aria-describedby={fieldErrors.confirmPassword ? "error-confirmPassword" : undefined}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.confirmPassword
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
+                  placeholder="Confirm your password"
+                />
               </FormField>
 
               <button
