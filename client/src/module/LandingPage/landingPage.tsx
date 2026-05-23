@@ -8,6 +8,7 @@ import { PricingSection } from "../../components/PricingSection"
 import { TestimonialsSection } from "../../components/TestimonialsSection"
 import { CTASection } from "../../components/CTASection"
 import { FAQSection, FAQ_ITEMS } from "../../components/FAQSection"
+import { DemoVideoSection } from "../../components/DemoVideoSection"
 import { SEO } from "../../components/SEO"
 import { canonicalUrl } from "../../lib/seo.utils"
 import { faqSchema, websiteSchema, platformOrganizationSchema } from "../../lib/structured-data"
@@ -26,7 +27,7 @@ export default function LandingPage(){
             />
             <Navbar/>
             <HeroGeometric/>
-            {/* <DemoVideoSection/> */}
+            <DemoVideoSection/>
             <AudienceSection/>
             <FeaturesSection/>
             <HowItWorksSection/>
