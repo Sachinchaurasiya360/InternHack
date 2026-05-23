@@ -55,7 +55,11 @@ export default function RegisterPage() {
 
   const validatePassword = (password: string): string => {
     if (!password) return "Password is required";
-    if (password.length < 6) return "Password must be at least 6 characters";
+    if (password.length < 8) return "Password must be at least 8 characters";
+    if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter";
+    if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
+    if (!/[0-9]/.test(password)) return "Password must contain at least one number";
+    if (!/[\W_]/.test(password)) return "Password must contain at least one special character";
     return "";
   };
 
@@ -180,202 +184,202 @@ export default function RegisterPage() {
     }
   };
 
-const isRecruiter = role === "RECRUITER";
+  const isRecruiter = role === "RECRUITER";
 
-return (
-  <div className="min-h-screen grid lg:grid-cols-2 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
-    <SEO
-      title="Create Account"
-      description="Join InternHack for free. Create a student or recruiter account to access AI-powered career tools, job listings, and career roadmaps."
-      keywords="register, sign up, create account, InternHack, student registration, recruiter registration"
-    />
+  return (
+    <div className="min-h-screen grid lg:grid-cols-2 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
+      <SEO
+        title="Create Account"
+        description="Join InternHack for free. Create a student or recruiter account to access AI-powered career tools, job listings, and career roadmaps."
+        keywords="register, sign up, create account, InternHack, student registration, recruiter registration"
+      />
 
-    <AuthPromoPanel
-      isRecruiter={isRecruiter}
-    />
+      <AuthPromoPanel
+        isRecruiter={isRecruiter}
+      />
 
-    <div className="flex items-center justify-center px-6 py-12 lg:py-0">
+      <div className="flex items-center justify-center px-6 py-12 lg:py-0">
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md"
-      >
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
-          <span className="h-1.5 w-1.5 bg-lime-400" />
-          create account
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
-          Create an account.
-        </h1>
-        <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">
-          Join InternHack. Takes a minute.
-        </p>
-
-        <div className="mt-8 space-y-5">
-          {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-600 dark:text-red-400">
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label className="block text-xs font-mono uppercase tracking-widest text-stone-500 mb-1.5">
-              I am a
-            </label>
-            <div className="grid grid-cols-2 gap-0 border border-stone-300 dark:border-white/10 rounded-md overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setRole("STUDENT")}
-                className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
-                  ? "bg-lime-400 text-stone-950"
-                  : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
-              >
-                Student
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole("RECRUITER")}
-                className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
-                  ? "bg-lime-400 text-stone-950"
-                  : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
-              >
-                Recruiter
-              </button>
-            </div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-md"
+        >
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            create account
           </div>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Create an account.
+          </h1>
+          <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">
+            Join InternHack. Takes a minute.
+          </p>
 
-          <GoogleAuthButton
-            label={isRecruiter ? "Sign up with Google Workspace" : "Continue with Google"}
-            onAccessToken={handleGoogleSuccess}
-            onError={() => setError("Google sign-up failed")}
-            disabled={loading}
-          />
-          {isRecruiter && (
-            <p className="text-xs font-mono text-amber-600 dark:text-amber-400">
-              only company google workspace accounts are accepted.
-            </p>
-          )}
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-stone-200 dark:border-white/10" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-stone-50 dark:bg-stone-950 px-3 text-xs font-mono uppercase tracking-widest text-stone-500">
-                or with email
-              </span>
-            </div>
-          </div>
-
-          <form noValidate onSubmit={handleSubmit} className="space-y-4">
-            <FormField label="Full name" error={fieldErrors.name} fieldName="name">
-              <input
-                type="text"
-                value={form.name}
-                onChange={(e) => handleFieldChange("name", e.target.value)}
-                aria-invalid={!!fieldErrors.name}
-                aria-describedby={fieldErrors.name ? "error-name" : undefined}
-                className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
-                  fieldErrors.name
-                    ? "border-red-300 dark:border-red-800 focus:border-red-400"
-                    : "border-stone-300 dark:border-white/10 focus:border-lime-400"
-                }`}
-                placeholder="Jane Doe"
-              />
-            </FormField>
-
-            <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email} fieldName="email">
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => handleFieldChange("email", e.target.value)}
-                aria-invalid={!!fieldErrors.email}
-                aria-describedby={fieldErrors.email ? "error-email" : undefined}
-                className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
-                  fieldErrors.email
-                    ? "border-red-300 dark:border-red-800 focus:border-red-400"
-                    : "border-stone-300 dark:border-white/10 focus:border-lime-400"
-                }`}
-                placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
-              />
-              {!fieldErrors.email && isRecruiter && (
-                <p className="mt-1.5 text-xs font-mono text-amber-600 dark:text-amber-400">
-                  no personal gmail, yahoo, or outlook.
-                </p>
-              )}
-            </FormField>
-
-            {isRecruiter && (
-              <FormField label="Company" fieldName="company">
-                <input
-                  type="text"
-                  value={form.company}
-                  onChange={(e) => setForm({ ...form, company: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
-                  placeholder="Your company name"
-                />
-              </FormField>
+          <div className="mt-8 space-y-5">
+            {error && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-600 dark:text-red-400">
+                {error}
+              </div>
             )}
 
-            <FormField label="Password" error={fieldErrors.password} fieldName="password">
-              <div className="relative">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-500 mb-1.5">
+                I am a
+              </label>
+              <div className="grid grid-cols-2 gap-0 border border-stone-300 dark:border-white/10 rounded-md overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setRole("STUDENT")}
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
+                    ? "bg-lime-400 text-stone-950"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                    }`}
+                >
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("RECRUITER")}
+                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
+                    ? "bg-lime-400 text-stone-950"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                    }`}
+                >
+                  Recruiter
+                </button>
+              </div>
+            </div>
+
+            <GoogleAuthButton
+              label={isRecruiter ? "Sign up with Google Workspace" : "Continue with Google"}
+              onAccessToken={handleGoogleSuccess}
+              onError={() => setError("Google sign-up failed")}
+              disabled={loading}
+            />
+            {isRecruiter && (
+              <p className="text-xs font-mono text-amber-600 dark:text-amber-400">
+                only company google workspace accounts are accepted.
+              </p>
+            )}
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-stone-200 dark:border-white/10" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-stone-50 dark:bg-stone-950 px-3 text-xs font-mono uppercase tracking-widest text-stone-500">
+                  or with email
+                </span>
+              </div>
+            </div>
+
+            <form noValidate onSubmit={handleSubmit} className="space-y-4">
+              <FormField label="Full name" error={fieldErrors.name} fieldName="name">
                 <input
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={(e) => handleFieldChange("password", e.target.value)}
-                  aria-invalid={!!fieldErrors.password}
-                  aria-describedby={fieldErrors.password ? "error-password" : undefined}
-                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
-                    fieldErrors.password
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                  aria-invalid={!!fieldErrors.name}
+                  aria-describedby={fieldErrors.name ? "error-name" : undefined}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.name
                       ? "border-red-300 dark:border-red-800 focus:border-red-400"
                       : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                   }`}
-                  placeholder="Min. 6 characters"
-                  minLength={6}
+                  placeholder="Jane Doe"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </FormField>
+              </FormField>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-50"
-            >
-              {loading ? "Creating account..." : "Create account"}
-              {!loading && (
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <FormField label={isRecruiter ? "Company email" : "Email"} error={fieldErrors.email} fieldName="email">
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => handleFieldChange("email", e.target.value)}
+                  aria-invalid={!!fieldErrors.email}
+                  aria-describedby={fieldErrors.email ? "error-email" : undefined}
+                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                    fieldErrors.email
+                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                  }`}
+                  placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
+                />
+                {!fieldErrors.email && isRecruiter && (
+                  <p className="mt-1.5 text-xs font-mono text-amber-600 dark:text-amber-400">
+                    no personal gmail, yahoo, or outlook.
+                  </p>
+                )}
+              </FormField>
+
+              {isRecruiter && (
+                <FormField label="Company" fieldName="company">
+                  <input
+                    type="text"
+                    value={form.company}
+                    onChange={(e) => setForm({ ...form, company: e.target.value })}
+                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                    placeholder="Your company name"
+                  />
+                </FormField>
               )}
-            </button>
-          </form>
 
-          <div className="pt-4">
-            <p className="text-sm text-stone-600 dark:text-stone-400">
-              Already have an account?{" "}
-              <Link
-                to={returnTo ? `/login?from=${encodeURIComponent(returnTo)}` : "/login"}
-                className="text-stone-900 dark:text-stone-50 font-bold border-b border-stone-900 dark:border-stone-50 pb-0.5 no-underline"
+              <FormField label="Password" error={fieldErrors.password} fieldName="password">
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => handleFieldChange("password", e.target.value)}
+                    aria-invalid={!!fieldErrors.password}
+                    aria-describedby={fieldErrors.password ? "error-password" : undefined}
+                    className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                      fieldErrors.password
+                        ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                        : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                    }`}
+                    placeholder="Min. 8 chars (A-Z, a-z, 0-9, symbol)"
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </FormField>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-50"
               >
-                Sign in
-              </Link>
-            </p>
+                {loading ? "Creating account..." : "Create account"}
+                {!loading && (
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                )}
+              </button>
+            </form>
+
+            <div className="pt-4">
+              <p className="text-sm text-stone-600 dark:text-stone-400">
+                Already have an account?{" "}
+                <Link
+                  to={returnTo ? `/login?from=${encodeURIComponent(returnTo)}` : "/login"}
+                  className="text-stone-900 dark:text-stone-50 font-bold border-b border-stone-900 dark:border-stone-50 pb-0.5 no-underline"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
 function FormField({
