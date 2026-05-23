@@ -585,8 +585,11 @@ export class AuthService {
         password: hashedPassword,
         resetPasswordOtp: null,
         resetOtpExpiresAt: null,
+        tokenVersion: { increment: 1 },
       },
     });
+    // Revoke existing sessions only after the atomic password + version update succeeds.
+    invalidateVersionCache(user.id);
   }
 
   async importGitHub(username: string) {
