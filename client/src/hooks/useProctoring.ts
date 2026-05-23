@@ -99,7 +99,7 @@ export function useProctoring(config: ProctoringConfig) {
   const snapshotCountRef = useRef(0);
   const cameraEnabledRef = useRef(false);
   const onTerminateRef = useRef(onTerminate);
-  onTerminateRef.current = onTerminate;
+  useEffect(() => { onTerminateRef.current = onTerminate; });
 
   // Reactive state for UI
   const [state, setState] = useState<ProctorState>({
