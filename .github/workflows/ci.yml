@@ -10,10 +10,12 @@ jobs:
     name: Typecheck Client
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39a10693d8b2d1d368096899b82144760a99602a # v4.2.0
         with:
           node-version: 20
           cache: "npm"
@@ -31,10 +33,12 @@ jobs:
     name: Typecheck Server
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39a10693d8b2d1d368096899b82144760a99602a # v4.2.0
         with:
           node-version: 20
           cache: "npm"
@@ -52,14 +56,20 @@ jobs:
         run: npx tsc --noEmit
         working-directory: server
 
+      - name: Run unit tests
+        run: npm test
+        working-directory: server
+
   lint-client:
     name: Lint Client
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@a8410d54a2a19d083168285579979318b8882798 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39a10693d8b2d1d368096899b82144760a99602a # v4.2.0
         with:
           node-version: 20
           cache: "npm"

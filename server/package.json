@@ -8,7 +8,7 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "seed": "tsx src/database/seeds/seed.ts",
     "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
     "seed:admin": "tsx src/database/seed-admin.ts"
@@ -70,6 +70,7 @@
     "@types/pdf-parse": "^1.1.5",
     "@types/pg": "^8.16.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.7"
   }
 }
