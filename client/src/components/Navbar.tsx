@@ -88,17 +88,23 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               return (
                 <Link key={item.href} to={item.href} className="no-underline">
                   <button
-                    className={cn(
-                      "relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors bg-transparent border-0 cursor-pointer",
-                      active
-                        ? "text-stone-900 dark:text-stone-50"
-                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50",
-                    )}
+                  className={cn(
+                    "group relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300 bg-transparent border-0 cursor-pointer",
+                    active
+                      ? "text-stone-900 dark:text-stone-50"
+                      : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50",
+                  )}
                   >
                     {item.label}
-                    {active && (
-                      <span className="absolute left-3 right-3 -bottom-0.5 h-0.5 bg-lime-400" />
-                    )}
+                    <span
+                      className={cn(
+                        "absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] rounded-full bg-lime-400 transition-all duration-300 ease-out origin-center",
+                        active
+                          ? "w-[72%] scale-x-100 opacity-100"
+                          : "w-[72%] scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100"
+                      )}
+                    />
+                
                   </button>
                 </Link>
               );
