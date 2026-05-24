@@ -27,6 +27,16 @@ async function sendFollowUpEmails(): Promise<void> {
       const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
       const elevenDaysAgo = new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000);
 
+      // Expire stale claims (older than 15 minutes) from previous crashed runs
+      const leaseExpiry = new Date(now.getTime() - 15 * 60 * 1000);
+      await tx.milestoneEmail.deleteMany({
+        where: {
+          milestoneKey: "DAY_10",
+          milestoneType: "FOLLOW_UP_CLAIMED",
+          sentAt: { lt: leaseExpiry },
+        },
+      });
+
       const users = await tx.user.findMany({
         where: {
           isVerified: true,
@@ -73,19 +83,6 @@ async function sendFollowUpEmails(): Promise<void> {
               subject: `${user.name.split(" ")[0]}, how's InternHack treating you?`,
               html: followUpEmailHtml(user.name),
             });
-
-            // Mark as sent
-            await prisma.milestoneEmail.updateMany({
-              where: {
-                studentId: user.id,
-                milestoneType: "FOLLOW_UP_CLAIMED",
-                milestoneKey: "DAY_10",
-              },
-              data: {
-                milestoneType: "FOLLOW_UP_SENT",
-                sentAt: new Date(),
-              },
-            });
           } catch (err) {
             console.error(`[FollowUpCron] Failed to send to ${user.email}:`, err);
             // Revert claim on failure to allow retry
@@ -96,7 +93,23 @@ async function sendFollowUpEmails(): Promise<void> {
                 milestoneKey: "DAY_10",
               },
             }).catch(e => console.error(`[FollowUpCron] Failed to delete claim for ${user.email}:`, e));
+            return;
           }
+
+          // Mark as sent (only if sendEmail succeeded)
+          await prisma.milestoneEmail.updateMany({
+            where: {
+              studentId: user.id,
+              milestoneType: "FOLLOW_UP_CLAIMED",
+              milestoneKey: "DAY_10",
+            },
+            data: {
+              milestoneType: "FOLLOW_UP_SENT",
+              sentAt: new Date(),
+            },
+          }).catch((err) => {
+            console.error(`[FollowUpCron] Sent email but failed to finalize claim for ${user.email}:`, err);
+          });
         })
       );
     }
