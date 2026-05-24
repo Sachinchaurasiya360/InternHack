@@ -101,12 +101,22 @@ export default function DsaBookmarksPage() {
             ))}
           </div>
         ) : bookmarks?.length === 0 ? (
-          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-            <Bookmark className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-            <p className="text-sm text-stone-600 dark:text-stone-400 mb-1">No bookmarked problems yet.</p>
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              save problems from any topic to keep them here
-            </p>
+          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4">
+            <div className="w-14 h-14 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center">
+              <Bookmark className="w-6 h-6 text-stone-400" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 mb-1">No bookmarked problems yet.</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                save problems from any topic to keep them here
+              </p>
+            </div>
+            <Link
+              to="/learn/dsa"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline"
+            >
+              Browse DSA Topics
+            </Link>
           </div>
         ) : (
           <div className="space-y-2">

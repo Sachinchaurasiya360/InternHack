@@ -260,16 +260,27 @@ export default function GovInternshipsPage() {
             ))}
           </div>
         ) : internships.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-            <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center mb-5">
+          <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 gap-4">
+            <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
               <Landmark className="w-7 h-7 text-stone-500" />
             </div>
-            <h3 className="text-stone-900 dark:text-stone-50 font-bold text-base mb-2">
-              No internships found
-            </h3>
-            <p className="text-stone-500 text-sm max-w-xs leading-relaxed mx-auto">
-              Try adjusting your search or category filter.
-            </p>
+            <div>
+              <h3 className="text-stone-900 dark:text-stone-50 font-bold text-base mb-2">
+                No internships found
+              </h3>
+              <p className="text-stone-500 text-sm max-w-xs leading-relaxed mx-auto">
+                Try adjusting your search or category filter.
+              </p>
+            </div>
+            {(search || category) && (
+              <button
+                onClick={() => { setSearchInput(""); setSearch(""); setCategory(""); setPage(1); }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                Clear filters
+              </button>
+            )}
           </div>
         ) : (
           <>

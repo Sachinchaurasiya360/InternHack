@@ -236,6 +236,7 @@ export default function RecruiterJobsList() {
                 ? `Nothing matches "${search}" in this view.`
                 : `No ${tab.toLowerCase()} jobs right now.`
             }
+            onClear={() => { setSearch(""); setTab("ALL"); }}
           />
         ) : (
           <ul className="space-y-3">
@@ -382,10 +383,12 @@ function EmptyState({
   title,
   message,
   cta = false,
+  onClear,
 }: {
   title: string;
   message: string;
   cta?: boolean;
+  onClear?: () => void;
 }) {
   return (
     <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-6 py-16 text-center">
@@ -401,6 +404,14 @@ function EmptyState({
             Post your first job
           </Link>
         </Button>
+      )}
+      {onClear && (
+        <button
+          onClick={onClear}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+        >
+          Clear filter
+        </button>
       )}
     </div>
   );
