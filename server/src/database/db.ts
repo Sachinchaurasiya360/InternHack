@@ -10,6 +10,7 @@ const adapter = new PrismaPg(
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 5_000,
     keepAlive: true,
+    ssl: { rejectUnauthorized: false },
   },
   {
     // Without these, an idle pg client erroring (managed Postgres dropping
