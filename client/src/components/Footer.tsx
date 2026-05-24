@@ -141,15 +141,8 @@ export function Footer() {
                 <li><Link to="/register" className={linkClass} onClick={handleNavigation}>Start free</Link></li>
                 <li><Link to="/login" className={linkClass} onClick={handleNavigation}>Sign in</Link></li>
                 <li><Link to="/blog" className={linkClass} onClick={handleNavigation}>Blog</Link></li>
-                <li>
-                  <Link
-                  to="/contact"
-                  className={linkClass}
-                  onClick={handleNavigation} 
-                  >
-                    Contact
-                  </Link>
-                  </li>
+                <li><Link to="/contact" className={linkClass} onClick={handleNavigation}> Contact </Link></li>
+                <li> <Link to="/contributors" className={linkClass} onClick={handleNavigation}> Contributors </Link></li>
               </ul>
             </div>
           </div>

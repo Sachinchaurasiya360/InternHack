@@ -1,6 +1,7 @@
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
+
 import {
   ShieldCheck,
   UserCheck,
@@ -12,9 +13,17 @@ import {
   Ban,
   RefreshCcw,
   Mail,
+  type LucideIcon,
 } from "lucide-react";
 
-const sections = [
+type Section = {
+  icon: LucideIcon;
+  title: string;
+  content?: string;
+  list?: string[];
+};
+
+const sections: Section[] = [
   {
     icon: ShieldCheck,
     title: "Introduction",
@@ -88,9 +97,10 @@ export default function TermsPage() {
 
       <main className="flex-1 px-4 pt-28 pb-16">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mt-6 mb-14">
+          {/* Hero Section */}
+          <div className="text-center mb-14">
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
-              Terms &amp; Conditions
+              Terms & Conditions
             </h1>
 
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg">

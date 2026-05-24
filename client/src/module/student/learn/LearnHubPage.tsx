@@ -34,6 +34,7 @@ export default function LearnHubPage() {
   const totalShown = grouped.reduce((sum, g) => sum + g.tracks.length, 0);
 
   return (
+    <main className="max-w-4xl mx-auto px-4 pt-10 pb-12">
     <div className="relative text-stone-900 dark:text-stone-50 pb-12">
       <SEO
         title="Learning Hub - Free Programming Tutorials"
@@ -170,5 +171,6 @@ export default function LearnHubPage() {
         )}
       </div>
     </div>
+    </main>
   );
 }
