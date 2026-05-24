@@ -13,10 +13,11 @@ import {
   Ban,
   RefreshCcw,
   Mail,
+  type LucideIcon,
 } from "lucide-react";
 
 type Section = {
-  icon: any;
+  icon: LucideIcon;
   title: string;
   content?: string;
   list?: string[];
@@ -86,7 +87,7 @@ const sections: Section[] = [
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-white via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-white via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
       <SEO
         title="Terms and Conditions"
         description="Terms and Conditions for using InternHack, your all-in-one career platform."
@@ -145,7 +146,7 @@ export default function TermsPage() {
                               key={i}
                               className="flex items-start gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-base"
                             >
-                              <span className="mt-2 h-2 w-2 rounded-full bg-indigo-500"></span>
+                              <span className="mt-2 h-2 w-2 rounded-full bg-indigo-500 shrink-0"></span>
                               {item}
                             </li>
                           ))}
@@ -158,9 +159,9 @@ export default function TermsPage() {
             })}
           </div>
 
-          <div className="mt-12 rounded-3xl overflow-hidden border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-r from-indigo-600 to-purple-600 shadow-2xl">
+          <div className="mt-12 rounded-3xl overflow-hidden border border-indigo-200 dark:border-indigo-500/20 bg-linear-to-r from-indigo-600 to-purple-600 shadow-2xl">
             <div className="p-8 md:p-10 text-center">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/20 mb-5">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 mb-5">
                 <Mail className="text-white" size={26} />
               </div>
 

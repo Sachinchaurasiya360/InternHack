@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Github, ExternalLink, GitPullRequest } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
+import { SEO } from "../../components/SEO";
 
 type Contributor = {
   id: number;
@@ -15,6 +16,7 @@ type Contributor = {
 export default function ContributorsPage() {
   const [contributors, setContributors] = useState<Contributor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchContributors = async () => {
@@ -33,6 +35,7 @@ export default function ContributorsPage() {
         setContributors(filteredContributors);
       } catch (error) {
         console.error("Failed to fetch contributors", error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -50,6 +53,10 @@ export default function ContributorsPage() {
 
   return (
     <>
+      <SEO
+        title="Contributors"
+        description="Meet the open-source contributors who built InternHack."
+      />
       <Navbar />
 
       <section className="min-h-screen bg-white text-stone-900 transition-colors duration-300 dark:bg-stone-950 dark:text-stone-50">
@@ -141,8 +148,12 @@ export default function ContributorsPage() {
             </motion.div>
           </div>
 
-          {/* Loading Skeleton */}
-          {loading ? (
+          {/* Loading Skeleton / Error / Grid */}
+          {error ? (
+            <p className="text-center text-stone-500 dark:text-stone-400 py-20">
+              Could not load contributors. Please try again later.
+            </p>
+          ) : loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(8)].map((_, idx) => (
                 <div
@@ -185,7 +196,7 @@ export default function ContributorsPage() {
                   className="group relative overflow-hidden rounded-2xl border border-stone-200 bg-stone-50/80 backdrop-blur-sm p-6 shadow-sm transition-all duration-300 hover:shadow-xl dark:border-white/10 dark:bg-white/[0.03] no-underline"
                 >
                   {/* Glow Effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-lime-400/10 via-transparent to-transparent" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-linear-to-br from-lime-400/10 via-transparent to-transparent" />
 
                   <div className="relative z-10">
                     <img
