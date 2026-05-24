@@ -406,6 +406,7 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
         id: true,
         overallScore: true,
         jobTitle: true,
+        jobDescription: true,
         resumeUrl: true,
         createdAt: true,
       },
