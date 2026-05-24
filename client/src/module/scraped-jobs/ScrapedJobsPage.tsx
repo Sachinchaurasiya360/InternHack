@@ -89,6 +89,10 @@ export default function ScrapedJobsPage() {
   const sources = sourcesData ?? [];
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
+
+  useEffect(() => {
     if (sourcesError && !sourcesErrorShown.current) {
       sourcesErrorShown.current = true;
       toast.error("Failed to load job sources");
