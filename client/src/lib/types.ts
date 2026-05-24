@@ -149,6 +149,7 @@ export interface Application {
   customFieldAnswers: Record<string, unknown>;
   resumeUrl?: string;
   coverLetter?: string;
+  studentNotes: string | null;
   job?: Job;
   student?: User;
   roundSubmissions?: RoundSubmission[];
@@ -194,6 +195,25 @@ export interface ExternalJob {
   tags: string[];
   expiresAt?: string;
   createdAt?: string;
+}
+
+export interface ExternalApplication {
+  id: number;
+  studentId: number;
+  adminJobId: number;
+  studentNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  adminJob: {
+    id: number;
+    slug: string | null;
+    company: string | null;
+    role: string | null;
+    location: string | null;
+    salary: string | null;
+    tags: string[];
+    applyLink: string | null;
+  };
 }
 
 // Scraped Jobs

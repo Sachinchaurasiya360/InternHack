@@ -190,6 +190,7 @@ model application {
   customFieldAnswers Json              @default("{}")
   resumeUrl          String?
   coverLetter        String?
+  studentNotes       String?           @db.Text
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -1017,6 +1018,7 @@ model externalJobApplication {
   id         Int      @id @default(autoincrement())
   studentId  Int
   adminJobId Int
+  studentNotes String?  @db.Text
   createdAt  DateTime @default(now())
   student    user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
   adminJob   adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)

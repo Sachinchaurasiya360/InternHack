@@ -10,3 +10,7 @@ export const submitRoundSchema = z.object({
   fieldAnswers: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])).default({}),
   attachments: z.array(z.string()).default([]),
 });
+
+export const updateApplicationNotesSchema = z.object({
+  notes: z.string().max(4000),
+});
