@@ -195,6 +195,44 @@ export class JobService {
     });
   }
 
+  async getRelatedJobs(jobId: number, limit = 4) {
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      select: { id: true, title: true, tags: true },
+    });
+    if (!job) return null;
+
+    const titleKeywords = job.title
+      .split(/[^a-zA-Z0-9+#.]+/)
+      .map((word) => word.trim())
+      .filter((word) => word.length >= 3)
+      .slice(0, 5);
+
+    const matchFilters: Prisma.jobWhereInput[] = [
+      ...(job.tags.length > 0 ? [{ tags: { hasSome: job.tags } }] : []),
+      ...titleKeywords.map((keyword) => ({
+        title: { contains: keyword, mode: "insensitive" as const },
+      })),
+    ];
+
+    if (matchFilters.length === 0) return [];
+
+    return prisma.job.findMany({
+      where: {
+        id: { not: job.id },
+        status: "PUBLISHED",
+        OR: matchFilters,
+        AND: [{ OR: [{ deadline: null }, { deadline: { gte: new Date() } }] }],
+      },
+      take: Math.min(Math.max(limit, 1), 8),
+      orderBy: { createdAt: "desc" },
+      include: {
+        recruiter: { select: { id: true, name: true, company: true } },
+        _count: { select: { applications: true, rounds: true } },
+      },
+    });
+  }
+
   async getRecruiterJobs(recruiterId: number, query: JobQuery) {
     const where: Prisma.jobWhereInput = { recruiterId };
 
