@@ -1097,6 +1097,83 @@ export function roadmapDay10EmailHtml(args: {
 </html>`;
 }
 
+export function roadmapWeeklyDigestEmailHtml(args: {
+  name: string;
+  roadmaps: {
+    title: string;
+    slug: string;
+    percentComplete: number;
+    completedThisWeek: number;
+    nextTopicTitle: string | null;
+    nextTopicSlug: string | null;
+  }[];
+}): string {
+  const firstName = args.name.split(" ")[0] || args.name;
+  const dashboardUrl = "https://www.internhack.xyz/dashboard/roadmaps";
+  const rows = args.roadmaps.map((roadmap) => {
+    const resumeUrl = roadmap.nextTopicSlug
+      ? `https://www.internhack.xyz/learn/roadmaps/${roadmap.slug}/${roadmap.nextTopicSlug}`
+      : `https://www.internhack.xyz/learn/roadmaps/${roadmap.slug}`;
+    const nudge = roadmap.completedThisWeek === 0
+      ? "No topics completed this week. A 20-minute restart still counts."
+      : `${roadmap.completedThisWeek} topic${roadmap.completedThisWeek === 1 ? "" : "s"} completed this week.`;
+
+    return `
+      <tr><td style="padding:16px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:10px;">
+        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#18181b;">${roadmap.title}</p>
+        <p style="margin:0 0 12px;font-size:12px;color:#71717a;">${nudge}</p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+          <tr><td style="height:8px;background-color:#e4e4e7;border-radius:999px;overflow:hidden;">
+            <div style="height:8px;width:${Math.max(0, Math.min(100, roadmap.percentComplete))}%;background-color:#a3e635;"></div>
+          </td></tr>
+        </table>
+        <p style="margin:0 0 10px;font-size:12px;color:#52525b;">
+          <strong style="color:#18181b;">${roadmap.percentComplete}% complete</strong>
+          ${roadmap.nextTopicTitle ? ` - Next: ${roadmap.nextTopicTitle}` : ""}
+        </p>
+        <a href="${resumeUrl}" style="display:inline-block;padding:10px 14px;background-color:#18181b;color:#ffffff;text-decoration:none;border-radius:6px;font-size:12px;font-weight:700;">
+          Resume roadmap
+        </a>
+      </td></tr>
+      <tr><td style="height:10px;"></td></tr>`;
+  }).join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+      <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">weekly roadmap digest</p>
+    </td></tr>
+    <tr><td style="background-color:#ffffff;padding:32px 24px;">
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}, your weekly roadmap check-in is here.</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+        Here is where your active roadmap progress stands, plus the next topic to pick up.
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;">
+        ${rows}
+      </table>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 14px;">
+        <tr><td style="background-color:#0a0a0a;border-radius:8px;">
+          <a href="${dashboardUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">
+            Open roadmap dashboard
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:18px 0 0;font-size:12px;color:#a1a1aa;text-align:center;">
+        You can turn off roadmap digests from your account preferences.
+      </p>
+    </td></tr>
+    <tr><td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 type ApplicationStatusEmailStatus = "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED";
 
 const STATUS_COPY: Record<
