@@ -40,6 +40,7 @@
     "google-auth-library": "^10.5.0",
     "groq-sdk": "^1.1.1",
     "helmet": "^8.1.0",
+    "ioredis": "^5.10.1",
     "isomorphic-dompurify": "^3.0.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
@@ -52,6 +53,7 @@
     "pdfkit": "^0.18.0",
     "pg": "^8.18.0",
     "prisma": "^7.4.2",
+    "rate-limit-redis": "^5.0.0",
     "resend": "^6.9.3",
     "xlsx": "^0.18.5",
     "zod": "^4.3.6"

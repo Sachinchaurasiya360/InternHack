@@ -4,6 +4,8 @@ import express from "express";
 import compression from "compression";
 
 import cookieParser from "cookie-parser";
+import { Redis } from "ioredis";
+import { RedisStore } from "rate-limit-redis";
 import path from "path";
 import { fileURLToPath } from "url";
 import helmet from "helmet";
@@ -170,12 +172,38 @@ if (process.env["NODE_ENV"] !== "production") {
   app.use(morgan("dev"));
 }
 
+// ── Distributed Redis Caching & Rate Limiting ──
+const redisUrl = process.env["REDIS_URL"];
+let redisClient: Redis | null = null;
+let rateLimitStore: any = undefined;
+
+if (redisUrl) {
+  try {
+    redisClient = new Redis(redisUrl, {
+      maxRetriesPerRequest: 3,
+      connectTimeout: 5000,
+    });
+    redisClient.on("error", (err) => {
+      console.error("[Redis] Connection error:", err);
+    });
+    console.log("[Redis] Client initialized successfully for shared rate limiting");
+
+    rateLimitStore = new RedisStore({
+      // @ts-expect-error - Redis client typing matches ioredis
+      sendCommand: (...args: string[]) => redisClient!.call(args[0], ...args.slice(1)),
+    });
+  } catch (err) {
+    console.error("[Redis] Failed to initialize client:", err);
+  }
+}
+
 // ── Rate limiters ──
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  store: rateLimitStore,
   skip: (req) => {
     const path = req.originalUrl.split("?")[0];
     return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
@@ -187,6 +215,7 @@ app.use("/api/", globalLimiter);
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  store: rateLimitStore,
   message: { message: "Too many login attempts, please try again later" },
 });
 app.use("/api/auth/login", authLimiter);
@@ -196,6 +225,7 @@ app.use("/api/admin/login", authLimiter);
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
+  store: rateLimitStore,
   message: { message: "LaTeX compilation limit reached. Try again later." },
 });
 app.use("/api/latex/compile", latexLimiter);
