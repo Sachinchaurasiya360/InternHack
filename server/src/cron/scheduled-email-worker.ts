@@ -19,8 +19,11 @@ interface Day10Payload {
  * Idempotent: a row is considered done once sentAt is set.
  */
 async function drainScheduledEmails(): Promise<void> {
+  let claimedRows: Array<any> = [];
+  const now = new Date();
+
   try {
-    await prisma.$transaction(async (tx) => {
+    claimedRows = await prisma.$transaction(async (tx) => {
       // Try to acquire transaction-level advisory lock (ID 4441002)
       const lockAcquired = await tx.$queryRaw<Array<{ pg_try_advisory_xact_lock: boolean }>>`
         SELECT pg_try_advisory_xact_lock(4441002) as pg_try_advisory_xact_lock
@@ -28,10 +31,9 @@ async function drainScheduledEmails(): Promise<void> {
 
       if (!lockAcquired[0]?.pg_try_advisory_xact_lock) {
         console.log("[ScheduledEmail] Failed to acquire advisory lock. Skipping batch drain.");
-        return;
+        return [];
       }
 
-      const now = new Date();
       const due = await tx.scheduledEmail.findMany({
         where: {
           sendAt: { lte: now },
@@ -45,45 +47,78 @@ async function drainScheduledEmails(): Promise<void> {
         },
       });
 
-      if (due.length === 0) return;
+      if (due.length === 0) return [];
       console.log(`[ScheduledEmail] Processing ${due.length} due email(s)`);
 
+      // Claim the rows by incrementing attempts and setting a temporary visibility timeout (future sendAt)
+      const visibilityTimeout = new Date(now.getTime() + 10 * 60 * 1000); // 10 minutes in the future
       for (const row of due) {
-        if (!row.user.isActive) {
-          // Skip and mark sent so we don't keep retrying
-          await tx.scheduledEmail.update({
-            where: { id: row.id },
-            data: { sentAt: now, lastError: "user inactive" },
-          });
-          continue;
-        }
-
-        try {
-          if (row.kind === "ROADMAP_DAY_10") {
-            await sendDay10(row.id, row.user, row.payload as unknown as Day10Payload);
-          }
-          // Future kinds (ROADMAP_WEEKLY_DIGEST, etc.) plug in here.
-
-          await tx.scheduledEmail.update({
-            where: { id: row.id },
-            data: { sentAt: new Date() },
-          });
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
-          console.error(`[ScheduledEmail] Failed id=${row.id}:`, msg);
-          await tx.scheduledEmail.update({
-            where: { id: row.id },
-            data: {
-              attempts: { increment: 1 },
-              lastError: msg.slice(0, 500),
-              failedAt: row.attempts + 1 >= MAX_ATTEMPTS ? new Date() : null,
-            },
-          });
-        }
+        await tx.scheduledEmail.update({
+          where: { id: row.id },
+          data: {
+            attempts: { increment: 1 },
+            sendAt: visibilityTimeout,
+          },
+        });
       }
+
+      return due;
     });
   } catch (err) {
-    console.error("[ScheduledEmail] Error during worker execution:", err);
+    console.error("[ScheduledEmail] Error during transaction claim:", err);
+    return;
+  }
+
+  if (claimedRows.length === 0) return;
+
+  // Process claimed rows outside transaction to avoid email duplicate risks during database rollbacks
+  for (const row of claimedRows) {
+    if (!row.user.isActive) {
+      try {
+        await prisma.scheduledEmail.update({
+          where: { id: row.id },
+          data: { sentAt: now, lastError: "user inactive" },
+        });
+      } catch (err) {
+        console.error(`[ScheduledEmail] Failed to update inactive state for id=${row.id}:`, err);
+      }
+      continue;
+    }
+
+    try {
+      if (row.kind === "ROADMAP_DAY_10") {
+        await sendDay10(row.id, row.user, row.payload as unknown as Day10Payload);
+      } else {
+        throw new Error(`Unsupported scheduled email kind: ${row.kind}`);
+      }
+
+      await prisma.scheduledEmail.update({
+        where: { id: row.id },
+        data: { sentAt: new Date() },
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`[ScheduledEmail] Failed id=${row.id}:`, msg);
+
+      const nextAttempts = row.attempts + 1;
+      const isFailedMax = nextAttempts >= MAX_ATTEMPTS;
+
+      try {
+        await prisma.scheduledEmail.update({
+          where: { id: row.id },
+          data: {
+            lastError: msg.slice(0, 500),
+            failedAt: isFailedMax ? new Date() : null,
+            // If not failed max, back off retry time; otherwise leave in future
+            sendAt: isFailedMax
+              ? row.sendAt
+              : new Date(now.getTime() + nextAttempts * 5 * 60 * 1000), // exponential backoff
+          },
+        });
+      } catch (dbErr) {
+        console.error(`[ScheduledEmail] Failed to write error state for id=${row.id}:`, dbErr);
+      }
+    }
   }
 }
 
