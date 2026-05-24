@@ -1,7 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const connectionString = process.env["DATABASE_URL"] ?? "";
+// Strip sslmode from the URL so the explicit ssl option below takes full control.
+// Newer pg versions treat sslmode=require as verify-full and reject AWS RDS certs.
+const connectionString = (process.env["DATABASE_URL"] ?? "").replace(
+  /([?&])sslmode=[^&]*/,
+  (m) => (m.startsWith("?") ? "?" : ""),
+);
 
 const adapter = new PrismaPg(
   {
