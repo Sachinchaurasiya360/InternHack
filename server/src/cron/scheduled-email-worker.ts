@@ -19,55 +19,71 @@ interface Day10Payload {
  * Idempotent: a row is considered done once sentAt is set.
  */
 async function drainScheduledEmails(): Promise<void> {
-  const now = new Date();
-  const due = await prisma.scheduledEmail.findMany({
-    where: {
-      sendAt: { lte: now },
-      sentAt: null,
-      attempts: { lt: MAX_ATTEMPTS },
-    },
-    orderBy: { sendAt: "asc" },
-    take: BATCH_SIZE,
-    include: {
-      user: { select: { id: true, name: true, email: true, isActive: true } },
-    },
-  });
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Try to acquire transaction-level advisory lock (ID 4441002)
+      const lockAcquired = await tx.$queryRaw<Array<{ pg_try_advisory_xact_lock: boolean }>>`
+        SELECT pg_try_advisory_xact_lock(4441002) as pg_try_advisory_xact_lock
+      `;
 
-  if (due.length === 0) return;
-  console.log(`[ScheduledEmail] Processing ${due.length} due email(s)`);
-
-  for (const row of due) {
-    if (!row.user.isActive) {
-      // Skip and mark sent so we don't keep retrying
-      await prisma.scheduledEmail.update({
-        where: { id: row.id },
-        data: { sentAt: now, lastError: "user inactive" },
-      });
-      continue;
-    }
-
-    try {
-      if (row.kind === "ROADMAP_DAY_10") {
-        await sendDay10(row.id, row.user, row.payload as unknown as Day10Payload);
+      if (!lockAcquired[0]?.pg_try_advisory_xact_lock) {
+        console.log("[ScheduledEmail] Failed to acquire advisory lock. Skipping batch drain.");
+        return;
       }
-      // Future kinds (ROADMAP_WEEKLY_DIGEST, etc.) plug in here.
 
-      await prisma.scheduledEmail.update({
-        where: { id: row.id },
-        data: { sentAt: new Date() },
-      });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[ScheduledEmail] Failed id=${row.id}:`, msg);
-      await prisma.scheduledEmail.update({
-        where: { id: row.id },
-        data: {
-          attempts: { increment: 1 },
-          lastError: msg.slice(0, 500),
-          failedAt: row.attempts + 1 >= MAX_ATTEMPTS ? new Date() : null,
+      const now = new Date();
+      const due = await tx.scheduledEmail.findMany({
+        where: {
+          sendAt: { lte: now },
+          sentAt: null,
+          attempts: { lt: MAX_ATTEMPTS },
+        },
+        orderBy: { sendAt: "asc" },
+        take: BATCH_SIZE,
+        include: {
+          user: { select: { id: true, name: true, email: true, isActive: true } },
         },
       });
-    }
+
+      if (due.length === 0) return;
+      console.log(`[ScheduledEmail] Processing ${due.length} due email(s)`);
+
+      for (const row of due) {
+        if (!row.user.isActive) {
+          // Skip and mark sent so we don't keep retrying
+          await tx.scheduledEmail.update({
+            where: { id: row.id },
+            data: { sentAt: now, lastError: "user inactive" },
+          });
+          continue;
+        }
+
+        try {
+          if (row.kind === "ROADMAP_DAY_10") {
+            await sendDay10(row.id, row.user, row.payload as unknown as Day10Payload);
+          }
+          // Future kinds (ROADMAP_WEEKLY_DIGEST, etc.) plug in here.
+
+          await tx.scheduledEmail.update({
+            where: { id: row.id },
+            data: { sentAt: new Date() },
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error(`[ScheduledEmail] Failed id=${row.id}:`, msg);
+          await tx.scheduledEmail.update({
+            where: { id: row.id },
+            data: {
+              attempts: { increment: 1 },
+              lastError: msg.slice(0, 500),
+              failedAt: row.attempts + 1 >= MAX_ATTEMPTS ? new Date() : null,
+            },
+          });
+        }
+      }
+    });
+  } catch (err) {
+    console.error("[ScheduledEmail] Error during worker execution:", err);
   }
 }
 

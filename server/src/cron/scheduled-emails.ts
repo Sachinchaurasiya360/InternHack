@@ -11,31 +11,47 @@ let cronJob: cron.ScheduledTask | null = null;
  * is picked up exactly once when the cron runs daily.
  */
 async function sendFollowUpEmails(): Promise<void> {
-  const now = new Date();
-  const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-  const elevenDaysAgo = new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000);
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Try to acquire transaction-level advisory lock (ID 4441001)
+      const lockAcquired = await tx.$queryRaw<Array<{ pg_try_advisory_xact_lock: boolean }>>`
+        SELECT pg_try_advisory_xact_lock(4441001) as pg_try_advisory_xact_lock
+      `;
 
-  const users = await prisma.user.findMany({
-    where: {
-      isVerified: true,
-      isActive: true,
-      createdAt: { gte: elevenDaysAgo, lt: tenDaysAgo },
-    },
-    select: { id: true, name: true, email: true },
-  });
+      if (!lockAcquired[0]?.pg_try_advisory_xact_lock) {
+        console.log("[FollowUpCron] Failed to acquire advisory lock. Skipping duplicate execution.");
+        return;
+      }
 
-  if (users.length === 0) return;
+      const now = new Date();
+      const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+      const elevenDaysAgo = new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000);
 
-  console.log(`[FollowUpCron] Sending follow-up emails to ${users.length} user(s)`);
+      const users = await tx.user.findMany({
+        where: {
+          isVerified: true,
+          isActive: true,
+          createdAt: { gte: elevenDaysAgo, lt: tenDaysAgo },
+        },
+        select: { id: true, name: true, email: true },
+      });
 
-  for (const user of users) {
-    sendEmail({
-      to: user.email,
-      subject: `${user.name.split(" ")[0]}, how's InternHack treating you?`,
-      html: followUpEmailHtml(user.name),
-    }).catch((err) =>
-      console.error(`[FollowUpCron] Failed to send to ${user.email}:`, err)
-    );
+      if (users.length === 0) return;
+
+      console.log(`[FollowUpCron] Sending follow-up emails to ${users.length} user(s)`);
+
+      for (const user of users) {
+        sendEmail({
+          to: user.email,
+          subject: `${user.name.split(" ")[0]}, how's InternHack treating you?`,
+          html: followUpEmailHtml(user.name),
+        }).catch((err) =>
+          console.error(`[FollowUpCron] Failed to send to ${user.email}:`, err)
+        );
+      }
+    });
+  } catch (err) {
+    console.error("[FollowUpCron] Error during cron execution:", err);
   }
 }
 
