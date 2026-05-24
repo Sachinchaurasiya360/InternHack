@@ -3,12 +3,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 const connectionString = process.env["DATABASE_URL"] ?? "";
 
-// Pool size: Neon/Supabase free tiers allow ~20 connections.
-// Keep a comfortable margin below the hard limit.
 const adapter = new PrismaPg(
   {
     connectionString,
-    max: 10,
+    max: 20,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 5_000,
     keepAlive: true,
