@@ -1,7 +1,5 @@
 # Pull Request
 
-If this PR is for an open source event such as NSoC'26, Apertre 3.0, or GSSoC'26, mention that in the title or description. If not, treat it as a general contribution.
-
 ## Description
 Describe your changes.
 
@@ -21,7 +19,9 @@ Explain how you tested it.
 (if applicable)
 
 ## Checklist
-- [ ] Code follows guidelines  
-- [ ] Tested properly  
-- [ ] Docs updated  
-- [ ] PR title includes the relevant event tag or a general contribution label
+- [ ] Code follows project guidelines
+- [ ] No new compile/type errors
+- [ ] Tested manually (include steps above)
+- [ ] No `.env`, credentials, or `node_modules` committed
+- [ ] Docs updated (if needed)
+- [ ] Screenshots added for UI changes (if applicable)

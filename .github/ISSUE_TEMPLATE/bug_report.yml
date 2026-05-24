@@ -1,7 +1,7 @@
 name: Bug Report
 description: Report a bug to help improve the project
 title: "[BUG]: "
-labels: []
+labels: ["bug"]
 
 body:
   - type: markdown
@@ -9,9 +9,7 @@ body:
       value: |
         ## Bug Report
 
-        This issue is raised as part of **GSSoC'26 (Girlscript Summer of Code)**.
-        If you are contributing through another open source event,mention it here as well.
-        Kindly consider assigning it to me if relevant.
+        Please provide complete details so maintainers can triage quickly.
 
   - type: textarea
     id: description

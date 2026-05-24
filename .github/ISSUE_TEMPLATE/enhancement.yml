@@ -1,7 +1,7 @@
 name: Enhancement
 description: Suggest an improvement
 title: "[ENHANCEMENT]: "
-labels: []
+labels: ["enhancement"]
 
 body:
   - type: markdown
@@ -9,9 +9,7 @@ body:
       value: |
         ## Enhancement Request
 
-        This enhancement is suggested under **GSSoC'26 (Girlscript Summer of Code)**.
-        If you are contributing through another open source event, mention it here as well.
-        Kindly consider assigning it to me if appropriate.
+        Please provide complete details so maintainers can triage quickly.
 
   - type: textarea
     id: current

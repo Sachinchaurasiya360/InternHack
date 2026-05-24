@@ -1,7 +1,7 @@
 name: Feature Request
 description: Suggest a new feature
 title: "[FEATURE]: "
-labels: []
+labels: ["feature"]
 
 body:
   - type: markdown
@@ -9,9 +9,7 @@ body:
       value: |
         ## Feature Request
 
-        This feature is proposed under **GSSoC'26 (Girlscript Summer of Code)**.
-        If you are contributing through another open source event,mention it here as well.
-        Kindly consider assigning it to me if relevant.
+        Please provide complete details so maintainers can triage quickly.
 
   - type: textarea
     id: summary
