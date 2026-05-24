@@ -296,14 +296,14 @@ export default function JobAgentPage() {
   const inputDisabled = chatMut.isPending || hitFreeLimit;
 
  return (
-  <div className="relative flex flex-col h-[calc(100vh-8rem)] overflow-hidden bg-stone-50 dark:bg-stone-950">
+  <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden overscroll-none bg-stone-50 dark:bg-stone-950">
 
     <SEO title="InternHack AI" noIndex />
 
     {/* Editorial header */}
-    <div className="shrink-0 px-4 sm:px-8 pt-6 pb-4 bg-stone-50 dark:bg-stone-950">
+    <div className="shrink-0 px-4 sm:px-8 pt-4 pb-2 bg-stone-50 dark:bg-stone-950">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-1">
           <motion.div
             animate={{ opacity: [0.4, 1, 0.4] }}
             transition={{
@@ -325,7 +325,7 @@ export default function JobAgentPage() {
         </div>
 
         <div className="flex items-end justify-between gap-4 flex-wrap">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
             Talk to your job agent.
           </h1>
 
@@ -381,24 +381,21 @@ export default function JobAgentPage() {
     </div>
 
     {/* Messages area */}
-    <div
-      ref={scrollRef}
-      className="flex-1 overflow-y-auto px-4 sm:px-8 pt-2 pb-4 mask-[linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)]"
-    >
-      <div className="max-w-4xl mx-auto">
+    <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex h-full min-h-0 w-full flex-col px-4 sm:px-8">
         <AnimatePresence mode="wait">
           {isEmpty ? (
             <motion.div
               key="empty"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col items-center pt-10 pb-6"
+              transition={{ duration: 0.25 }}
+              className="flex h-full w-full max-w-xl mx-auto flex-col items-center justify-center gap-4 pt-2 pb-1"
             >
               {/* Hero icon box */}
               <motion.div
-                className="relative mb-6 mt-4"
+                className="relative mb-2 mt-0.5"
                 animate={{ y: [0, -6, 0] }}
                 transition={{
                   repeat: Infinity,
@@ -408,40 +405,40 @@ export default function JobAgentPage() {
               >
                 <div className="absolute inset-0 bg-lime-400/15 dark:bg-lime-400/10 blur-3xl rounded-full" />
 
-                <div className="relative w-16 h-16 rounded-2xl bg-stone-900 dark:bg-stone-50 flex items-center justify-center border border-lime-400/20 shadow-lg">
-                  <BotMessageSquare className="w-8 h-8 text-stone-50 dark:text-stone-900 animate-pulse" />
+                <div className="relative w-11 h-11 rounded-2xl bg-stone-900 dark:bg-stone-50 flex items-center justify-center border border-lime-400/20 shadow-lg">
+                  <BotMessageSquare className="w-5 h-5 text-stone-50 dark:text-stone-900 animate-pulse" />
                 </div>
 
-                <div className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-lime-400 rounded-full border-2 border-white dark:border-stone-950 shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
+                <div className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400 rounded-full border-2 border-white dark:border-stone-950 shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
               </motion.div>
 
-              <h2 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5">
+              <h2 className="text-lg font-extrabold tracking-tight mb-1 text-stone-900 dark:text-stone-50">
                 Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
               </h2>
 
-              <p className="text-sm text-stone-600 dark:text-stone-400 mb-5 text-center max-w-sm leading-relaxed">
+              <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 max-w-sm mb-3 text-center leading-relaxed">
                 Tell me what you're looking for and I'll surface the best
                 matches from the live job feed.
               </p>
 
               {/* Quick prompt numbered grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
                 {QUICK_PROMPTS.map((q, i) => (
                   <button
                     key={q.text}
                     type="button"
                     onClick={() => handleSend(q.text)}
-                    className="group relative flex flex-col justify-between p-5 text-left rounded-2xl border border-stone-200 dark:border-stone-800 bg-white/50 dark:bg-stone-900/50 hover:bg-white dark:hover:bg-stone-900 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:border-stone-300 dark:hover:border-stone-700"
+                    className="group relative flex flex-col justify-between p-3.5 text-left rounded-2xl border border-stone-200 dark:border-stone-800 bg-white/50 dark:bg-stone-900/50 hover:bg-white dark:hover:bg-stone-900 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:border-stone-300 dark:hover:border-stone-700"
                   >
                     <div className="flex flex-col gap-2 w-full">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
                         / {String(i + 1).padStart(2, "0")}
                       </span>
 
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-2">
                         <q.icon className="w-4 h-4 text-stone-500 dark:text-stone-400 group-hover:text-lime-500 transition-colors shrink-0" />
 
-                        <span className="text-sm font-semibold text-stone-800 dark:text-stone-200 group-hover:text-stone-950 dark:group-hover:text-white transition-colors">
+                        <span className="text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 group-hover:text-stone-950 dark:group-hover:text-white transition-colors truncate">
                           {q.text}
                         </span>
                       </div>
@@ -451,7 +448,7 @@ export default function JobAgentPage() {
               </div>
 
               {!isPremium && (
-                <p className="mt-6 text-center text-xs text-stone-500 dark:text-stone-400">
+                <p className="mt-4 text-center text-xs text-stone-500 dark:text-stone-400">
                   Free plan: {FREE_LIMIT} messages per day{" "}
                   <span className="text-stone-400">-</span>{" "}
                   <Link
@@ -464,33 +461,38 @@ export default function JobAgentPage() {
               )}
             </motion.div>
           ) : (
-            <motion.div
-              key="messages"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-5"
+            <div
+              ref={scrollRef}
+              className="h-full min-h-0 overflow-y-auto pt-2 pb-2 mask-[linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)]"
             >
-              {messages.map((msg) => (
-                <AgentMessage
-                  key={msg.id}
-                  role={msg.role}
-                  content={msg.content}
-                  jobs={msg.jobs}
-                />
-              ))}
+              <motion.div
+                key="messages"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mx-auto w-full max-w-4xl space-y-5"
+              >
+                {messages.map((msg) => (
+                  <AgentMessage
+                    key={msg.id}
+                    role={msg.role}
+                    content={msg.content}
+                    jobs={msg.jobs}
+                  />
+                ))}
 
-              {chatMut.isPending && <ThinkingIndicator />}
-            </motion.div>
+                {chatMut.isPending && <ThinkingIndicator />}
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>
     </div>
 
     {/* Input bar */}
-    <div className="shrink-0 px-4 sm:px-8 py-3 border-t border-stone-200 dark:border-white/10 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md">
+    <div className="shrink-0 px-4 sm:px-8 pb-0.5 pt-2 border-t border-stone-200 dark:border-white/10 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md w-full">
       <div className="max-w-4xl mx-auto">
-        <div className="relative rounded-3xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm focus-within:border-lime-500/50 focus-within:ring-4 focus-within:ring-lime-500/10 transition-all">
-          <div className="flex items-end gap-2 px-3 py-2.5">
+        <div className="relative rounded-[26px] border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm focus-within:border-lime-500/50 focus-within:ring-4 focus-within:ring-lime-500/10 transition-all">
+          <div className="flex items-end gap-2 px-3.5 py-1.5">
             {voiceSupported && (
               <Button
                 type="button"
@@ -586,20 +588,21 @@ export default function JobAgentPage() {
           </div>
         </div>
 
-        <div className="mt-2 flex flex-col items-center gap-1 px-1 text-center">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-            {hitFreeLimit
-              ? "limit reached"
-              : "enter to send, shift + enter for newline"}
-          </span>
+        <div className="mt-1.5 flex flex-col items-center gap-1 px-1 text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 select-none">
+          <div className="flex items-center justify-center gap-1.5 flex-wrap">
+            <span>
+              {hitFreeLimit
+                ? "limit reached"
+                : "enter to send, shift + enter for newline"}
+            </span>
+            {voiceHint && (
+              <span className="text-red-500 dark:text-red-400 font-bold animate-pulse">
+                ({voiceHint})
+              </span>
+            )}
+          </div>
 
-          {voiceHint && (
-            <p className="text-xs text-red-500 dark:text-red-400">
-              {voiceHint}
-            </p>
-          )}
-
-          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-500">
+          <p className="text-stone-500 dark:text-stone-500">
             Powered by InternHack AI · Always verify job details
           </p>
         </div>
