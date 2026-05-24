@@ -1,7 +1,8 @@
 # InternHack
 
-**Prepare. Practice. Placed.**, A## About InternHack
+**Prepare. Practice. Placed.**
 
+## About InternHack
 - AI-powered career and hiring platform
 - Helps students prepare for placements and internships
 - Provides resume scoring and job matching tools
@@ -15,8 +16,6 @@
 Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ---
-
-## Tech Stack
 
 ## Tech Stack
 
@@ -36,9 +35,7 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ## Features
 
-### For Students
-
-## Features for Students
+### Features for Students
 
 - **Job Board** — Browse recruiter-posted jobs with advanced search, filters, tags, and one-click applications.
 - **External Job Listings** — Access curated opportunities aggregated from external platforms and updated regularly.
@@ -53,9 +50,8 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 - **Company Explorer** — Explore company reviews, ratings, salary insights, HR contacts, and active openings.
 - **Application Tracker** — Monitor application progress from submission to interview rounds and final offers.
 - **Open Source Guide** — Step-by-step guidance for understanding codebases and contributing to open-source projects.
-### For Recruiters
 
-## Features for Recruiters
+### Features for Recruiters
 
 - **Recruiter Dashboard** — Centralized overview of job postings, applications, and hiring pipelines.
 - **Job Management** — Create and manage job postings with custom fields, interview workflows, and automated assessments.
@@ -65,9 +61,7 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 - **Talent Pool Management** — Save, organize, and manage promising candidates for future opportunities.
 - **Campus Recruitment Drives** — Plan and manage campus hiring campaigns efficiently.
 
-### For Admins
-
-## Features for Admins
+### Features for Admins
 
 - **Admin Dashboard** — Monitor real-time platform statistics, user activity, and system performance.
 - **User & Job Management** — Manage users, recruiters, job postings, companies, and platform reviews.

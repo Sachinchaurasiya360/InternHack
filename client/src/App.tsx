@@ -6,6 +6,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import BackToTopButton from "./components/common/BackToTopButton";
+const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
   return lazy(() =>
@@ -349,6 +350,7 @@ function App() {
           <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
           <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
           <Route path="/blog" element={<BlogListPage />} />
+          <Route path="/contributors" element={<ContributorsPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           {/* Legal Pages */}
           <Route path="/terms" element={<TermsPage />} />

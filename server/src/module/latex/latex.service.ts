@@ -133,7 +133,14 @@ export class LatexService {
           `-output-directory=${outputDir}`,
           texFile,
         ],
-        { timeout: COMPILE_TIMEOUT }
+        {
+          timeout: COMPILE_TIMEOUT,
+          env: {
+            ...process.env,
+            openin_any: "p",
+            openout_any: "p",
+          },
+        }
       );
 
       let stdout = "";
