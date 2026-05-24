@@ -23,7 +23,13 @@ const __dirname = path.dirname(__filename);
 const SCORE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export class AtsService {
+  private normalizeResumeUrl(resumeUrl: string): string {
+    return resumeUrl.split("?")[0] ?? resumeUrl;
+  }
+
   async scoreResume(studentId: number, input: ScoreResumeInput) {
+    const resumeUrl = this.normalizeResumeUrl(input.resumeUrl);
+
     // IDOR check: verify the resume belongs to this student
     const user = await prisma.user.findUnique({
       where: { id: studentId },
@@ -31,9 +37,7 @@ export class AtsService {
     });
     if (!user) throw new Error("User not found");
 
-    const isOwned =
-      user.resumes.includes(input.resumeUrl) ||
-      getS3KeyFromUrl(input.resumeUrl) !== null; // allow any S3 URL they uploaded via the upload endpoint
+    const isOwned = user.resumes.includes(resumeUrl);
     if (!isOwned) {
       throw new Error("Resume does not belong to this user");
     }
@@ -43,7 +47,7 @@ export class AtsService {
     const cached = await prisma.atsScore.findFirst({
       where: {
         studentId,
-        resumeUrl: input.resumeUrl,
+        resumeUrl,
         jobTitle: input.jobTitle ?? null,
         jobDescription: input.jobDescription ?? null,
         createdAt: { gte: new Date(Date.now() - SCORE_CACHE_TTL_MS) },
@@ -52,7 +56,7 @@ export class AtsService {
     });
     if (cached) return cached;
 
-    const resumeText = await this.extractPdfText(input.resumeUrl);
+    const resumeText = await this.extractPdfText(resumeUrl);
 
     if (!resumeText || resumeText.trim().length < 50) {
       throw new Error(
@@ -70,7 +74,7 @@ export class AtsService {
     const atsScore = await prisma.atsScore.create({
       data: {
         studentId,
-        resumeUrl: input.resumeUrl,
+        resumeUrl,
         jobTitle: input.jobTitle ?? null,
         jobDescription: input.jobDescription ?? null,
         overallScore: result.overallScore,
@@ -93,20 +97,20 @@ export class AtsService {
   }
 
   async applySuggestions(studentId: number, input: ApplySuggestionsInput) {
+    const resumeUrl = this.normalizeResumeUrl(input.resumeUrl);
+
     const user = await prisma.user.findUnique({
       where: { id: studentId },
       select: { resumes: true },
     });
     if (!user) throw new Error("User not found");
 
-    const isOwned =
-      user.resumes.includes(input.resumeUrl) ||
-      getS3KeyFromUrl(input.resumeUrl) !== null;
+    const isOwned = user.resumes.includes(resumeUrl);
     if (!isOwned) {
       throw new Error("Resume does not belong to this user");
     }
 
-    const resumeText = await this.extractPdfText(input.resumeUrl);
+    const resumeText = await this.extractPdfText(resumeUrl);
 
     if (!resumeText || resumeText.trim().length < 50) {
       throw new Error(

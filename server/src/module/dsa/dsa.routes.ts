@@ -28,6 +28,9 @@ dsaRouter.post("/problems/:problemId/bookmark", authMiddleware, requireRole("STU
 dsaRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getBookmarks(req, res, next));
 dsaRouter.get("/my-progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getMyProgress(req, res, next));
 dsaRouter.get("/activity", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getActivity(req, res, next));
+dsaRouter.get("/daily", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getDailyProblem(req, res, next));
+dsaRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getUserDsaStreak(req, res, next));
+
 dsaRouter.post("/problems/:problemId/execute", authMiddleware, requireRole("STUDENT"), usageLimit("CODE_RUN"), (req, res, next) => dsaController.executeCode(req, res, next));
 dsaRouter.get("/problems/:problemId/submissions", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getSubmissionHistory(req, res, next));
 dsaRouter.post("/sync/leetcode", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.syncLeetCode(req, res, next));

@@ -53,6 +53,7 @@ import { onboardingRouter } from "./module/onboarding/onboarding.routes.js";
 import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
+import { contactRouter } from "./module/contact/contact.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
@@ -102,7 +103,7 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
         connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com"],
-        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com"],
+        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
         fontSrc: ["'self'", "https:", "data:"],
       },
     },
@@ -150,7 +151,6 @@ app.get("/api/health", (_req, res) => {
 });
 
 // Raw body for webhooks (must be BEFORE express.json())
-app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
 app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
@@ -252,6 +252,9 @@ app.use("/api/email-inbound", emailInboundRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
 app.use("/api/learn", learnRouter);
+
+// Contact form (public, no auth)
+app.use("/api/contact", contactRouter);
 
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());

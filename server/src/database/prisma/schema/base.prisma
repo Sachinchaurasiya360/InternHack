@@ -915,6 +915,7 @@ model govInternship {
   stipend     String
   eligibility String
   reality     String
+  applyUrl    String?
   createdAt   DateTime @default(now())
 
   @@index([category])
@@ -1266,6 +1267,17 @@ enum EmailLogStatus {
   PENDING
   SENT
   FAILED
+}
+
+model contactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 model errorLog {

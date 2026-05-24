@@ -535,21 +535,6 @@ export default function RecruiterLandingPage() {
                   )}
                 </div>
 
-                <div className="px-8">
-                  <Link to={plan.cta.href} className="no-underline block">
-                    <button
-                      className={
-                        plan.highlighted
-                          ? "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0"
-                          : "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-lg text-sm font-bold hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors cursor-pointer border-0"
-                      }
-                    >
-                      {plan.cta.label}
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </Link>
-                </div>
-
                 <div className="p-8 pt-6 flex-1">
                   <div className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-4">
                     Includes
@@ -580,6 +565,21 @@ export default function RecruiterLandingPage() {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                <div className="px-8 pb-8 mt-auto">
+                  <Link to={plan.cta.href} className="no-underline block">
+                    <button
+                      className={
+                        plan.highlighted
+                          ? "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0"
+                          : "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-lg text-sm font-bold hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors cursor-pointer border-0"
+                      }
+                    >
+                      {plan.cta.label}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </button>
+                  </Link>
                 </div>
               </motion.div>
             ))}

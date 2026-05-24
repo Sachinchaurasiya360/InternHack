@@ -32,11 +32,22 @@ export function Footer() {
     setSubmitting(true);
     setError("");
     try {
-      await api.post("/newsletter/subscribe", { email: email.trim() });
-      setSubscribed(true);
-      setEmail("");
-    } catch {
-      setError("Failed to subscribe. Try again.");
+      const res = await api.post("/newsletter/subscribe", { email: email.trim() });
+      if (res.status === 201) {
+        setSubscribed(true);
+        setEmail("");
+      } else if (res.status === 200) {
+        setError("You're already subscribed!");
+      }
+    } catch (err: unknown) {
+      const response = (err as { response?: { status?: number; data?: { message?: string } } }).response;
+      if (response?.status === 400) {
+        setError(response.data?.message || "Please enter a valid email address.");
+      } else if (response?.status === 409) {
+        setError(response.data?.message || "You're already subscribed!");
+      } else {
+        setError("Failed to subscribe. Try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -130,15 +141,8 @@ export function Footer() {
                 <li><Link to="/register" className={linkClass} onClick={handleNavigation}>Start free</Link></li>
                 <li><Link to="/login" className={linkClass} onClick={handleNavigation}>Sign in</Link></li>
                 <li><Link to="/blog" className={linkClass} onClick={handleNavigation}>Blog</Link></li>
-                <li>
-                  <Link
-                  to="/contact"
-                  className={linkClass}
-                  onClick={handleNavigation} 
-                  >
-                    Contact
-                  </Link>
-                  </li>
+                <li><Link to="/contact" className={linkClass} onClick={handleNavigation}> Contact </Link></li>
+                <li> <Link to="/contributors" className={linkClass} onClick={handleNavigation}> Contributors </Link></li>
               </ul>
             </div>
           </div>

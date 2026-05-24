@@ -46,7 +46,7 @@ export default function ShareButton({
       className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 ${
         copied
           ? "border-emerald-500 bg-emerald-500 text-white"
-          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
+          : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400"
       }`}
     >
       {copied ? (

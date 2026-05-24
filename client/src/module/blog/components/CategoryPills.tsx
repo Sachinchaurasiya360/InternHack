@@ -30,26 +30,35 @@ export default function CategoryPills({
   onChange,
 }: CategoryPillsProps) {
   return (
-    <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-      {categories.map((category) => {
-        const active = selected === category;
+    <div className="mt-6 mb-8">
+      {/* Kicker — lime dot + mono uppercase */}
+      <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-4">
+        <span className="h-1.5 w-1.5 bg-lime-400" />
+        categories
+      </div>
 
-        return (
-          <motion.button
-            key={category}
-            whileTap={{ scale: 0.96 }}
-            onClick={() => onChange(category)}
-            className={`relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border ${
-              active
-                ? "bg-stone-950 dark:bg-white text-white dark:text-stone-950 border-stone-950 dark:border-white"
-                : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:border-stone-950 hover:text-stone-950 dark:hover:text-white"            }`}
-          >
-            {category === "ALL"
-              ? "All"
-              : CATEGORY_LABELS[category]}
-          </motion.button>
-        );
-      })}
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+        {categories.map((category) => {
+          const active = selected === category;
+
+          return (
+            <motion.button
+              key={category}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => onChange(category)}
+              className={`relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border ${
+                active
+                  ? "bg-stone-950 dark:bg-white text-white dark:text-stone-950 border-stone-950 dark:border-white"
+                  : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:border-lime-400/50 hover:text-stone-950 dark:hover:text-white"
+              }`}
+            >
+              {category === "ALL"
+                ? "All"
+                : CATEGORY_LABELS[category]}
+            </motion.button>
+          );
+        })}
+      </div>
     </div>
   );
 }
