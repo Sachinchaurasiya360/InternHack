@@ -20,7 +20,7 @@ interface Day10Payload {
  */
 async function drainScheduledEmails(): Promise<void> {
   let claimedRows: Array<any> = [];
-  const now = new Date();
+  const claimStartedAt = new Date();
 
   try {
     claimedRows = await prisma.$transaction(async (tx) => {
@@ -36,7 +36,7 @@ async function drainScheduledEmails(): Promise<void> {
 
       const due = await tx.scheduledEmail.findMany({
         where: {
-          sendAt: { lte: now },
+          sendAt: { lte: claimStartedAt },
           sentAt: null,
           attempts: { lt: MAX_ATTEMPTS },
         },
@@ -50,9 +50,12 @@ async function drainScheduledEmails(): Promise<void> {
       if (due.length === 0) return [];
       console.log(`[ScheduledEmail] Processing ${due.length} due email(s)`);
 
-      // Claim the rows by incrementing attempts and setting a temporary visibility timeout (future sendAt)
-      const visibilityTimeout = new Date(now.getTime() + 10 * 60 * 1000); // 10 minutes in the future
-      for (const row of due) {
+      // Claim the rows by incrementing attempts and setting a per-row visibility timeout
+      const baseLeaseMs = 10 * 60 * 1000; // 10 minutes
+      const bufferPerItemMs = 2000; // 2 seconds per item buffer
+      for (let i = 0; i < due.length; i++) {
+        const row = due[i];
+        const visibilityTimeout = new Date(claimStartedAt.getTime() + baseLeaseMs + i * bufferPerItemMs);
         await tx.scheduledEmail.update({
           where: { id: row.id },
           data: {
@@ -77,7 +80,7 @@ async function drainScheduledEmails(): Promise<void> {
       try {
         await prisma.scheduledEmail.update({
           where: { id: row.id },
-          data: { sentAt: now, lastError: "user inactive" },
+          data: { sentAt: claimStartedAt, lastError: "user inactive" },
         });
       } catch (err) {
         console.error(`[ScheduledEmail] Failed to update inactive state for id=${row.id}:`, err);
@@ -100,6 +103,7 @@ async function drainScheduledEmails(): Promise<void> {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`[ScheduledEmail] Failed id=${row.id}:`, msg);
 
+      const failureTime = new Date();
       const nextAttempts = row.attempts + 1;
       const isFailedMax = nextAttempts >= MAX_ATTEMPTS;
 
@@ -108,11 +112,11 @@ async function drainScheduledEmails(): Promise<void> {
           where: { id: row.id },
           data: {
             lastError: msg.slice(0, 500),
-            failedAt: isFailedMax ? new Date() : null,
+            failedAt: isFailedMax ? failureTime : null,
             // If not failed max, back off retry time; otherwise leave in future
             sendAt: isFailedMax
               ? row.sendAt
-              : new Date(now.getTime() + nextAttempts * 5 * 60 * 1000), // exponential backoff
+              : new Date(failureTime.getTime() + nextAttempts * 5 * 60 * 1000), // exponential backoff
           },
         });
       } catch (dbErr) {

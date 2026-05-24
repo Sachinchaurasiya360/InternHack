@@ -67,4 +67,25 @@ describe("cookie.utils", () => {
       process.env.NODE_ENV = originalEnv;
     }
   });
+
+  it("should clear secure cookie when NODE_ENV is production", () => {
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+    try {
+      const res = {
+        clearCookie: vi.fn(),
+      } as unknown as Response;
+
+      clearTokenCookie(res);
+
+      expect(res.clearCookie).toHaveBeenCalledWith("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+      });
+    } finally {
+      process.env.NODE_ENV = originalEnv;
+    }
+  });
 });

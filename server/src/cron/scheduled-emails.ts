@@ -40,17 +40,21 @@ async function sendFollowUpEmails(): Promise<void> {
 
       console.log(`[FollowUpCron] Sending follow-up emails to ${users.length} user(s)`);
 
-      await Promise.allSettled(
-        users.map((user) =>
-          sendEmail({
-            to: user.email,
-            subject: `${user.name.split(" ")[0]}, how's InternHack treating you?`,
-            html: followUpEmailHtml(user.name),
-          }).catch((err) => {
-            console.error(`[FollowUpCron] Failed to send to ${user.email}:`, err);
-          }),
-        ),
-      );
+      const CONCURRENCY = 20;
+      for (let i = 0; i < users.length; i += CONCURRENCY) {
+        const chunk = users.slice(i, i + CONCURRENCY);
+        await Promise.allSettled(
+          chunk.map((user) =>
+            sendEmail({
+              to: user.email,
+              subject: `${user.name.split(" ")[0]}, how's InternHack treating you?`,
+              html: followUpEmailHtml(user.name),
+            }).catch((err) => {
+              console.error(`[FollowUpCron] Failed to send to ${user.email}:`, err);
+            }),
+          ),
+        );
+      }
     });
   } catch (err) {
     console.error("[FollowUpCron] Error during cron execution:", err);
