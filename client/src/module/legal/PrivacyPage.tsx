@@ -166,6 +166,7 @@ export default function PrivacyPage() {
         title="Privacy Policy"
         description="Privacy Policy for InternHack — how we collect, use, and protect your data."
       />
+
       <Navbar />
 
       <main className="flex-1 px-4 pt-28 pb-20">
