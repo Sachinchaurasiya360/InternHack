@@ -70,7 +70,7 @@ jobs:
       - name: Run npm audit (high + critical)
         run: npm audit --audit-level=high --omit=dev
         working-directory: server
-        continue-on-error: true
+        continue-on-error: ${{ github.event_name != 'pull_request' }}
 
       - name: Run npm audit (full report)
         run: npm audit --json > audit-report.json || true
@@ -110,7 +110,7 @@ jobs:
       - name: Run npm audit (high + critical)
         run: npm audit --audit-level=high --omit=dev
         working-directory: client
-        continue-on-error: true
+        continue-on-error: ${{ github.event_name != 'pull_request' }}
 
       - name: Run npm audit (full report)
         run: npm audit --json > audit-report.json || true
