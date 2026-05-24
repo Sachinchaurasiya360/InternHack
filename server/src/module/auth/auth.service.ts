@@ -213,12 +213,12 @@ export class AuthService {
         },
       });
 
-      // Send welcome email (fire-and-forget)
-      sendEmail({
-        to: user.email,
-        subject: "Welcome to InternHack!",
-        html: welcomeEmailHtml(user.name),
-      }).catch((err) => console.error("Failed to send welcome email:", err));
+      // Send welcome email (fire-and-forget) — temporarily disabled
+      // sendEmail({
+      //   to: user.email,
+      //   subject: "Welcome to InternHack!",
+      //   html: welcomeEmailHtml(user.name),
+      // }).catch((err) => console.error("Failed to send welcome email:", err));
     }
 
     // Increment tokenVersion to invalidate all previous sessions (single-device enforcement)
@@ -498,12 +498,12 @@ export class AuthService {
       },
     });
 
-    // Send welcome email (fire-and-forget)
-    sendEmail({
-      to: user.email,
-      subject: "Welcome to InternHack!",
-      html: welcomeEmailHtml(user.name),
-    }).catch((err) => console.error("Failed to send welcome email:", err));
+    // Send welcome email (fire-and-forget) — temporarily disabled
+    // sendEmail({
+    //   to: user.email,
+    //   subject: "Welcome to InternHack!",
+    //   html: welcomeEmailHtml(user.name),
+    // }).catch((err) => console.error("Failed to send welcome email:", err));
 
     // Increment tokenVersion, first real login after email verification
     const versionUpdate = await prisma.user.update({
