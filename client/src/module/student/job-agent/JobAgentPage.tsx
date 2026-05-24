@@ -295,320 +295,320 @@ export default function JobAgentPage() {
   const isEmpty = messages.length === 0;
   const inputDisabled = chatMut.isPending || hitFreeLimit;
 
- return (
-  <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden overscroll-none bg-stone-50 dark:bg-stone-950">
+  return (
+    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden overscroll-none bg-stone-50 dark:bg-stone-950">
+      <SEO title="InternHack AI" noIndex />
 
-    <SEO title="InternHack AI" noIndex />
-
-    {/* Editorial header */}
-    <div className="shrink-0 px-4 sm:px-8 pt-4 pb-2 bg-stone-50 dark:bg-stone-950">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-2 mb-1">
-          <motion.div
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{
-              repeat: Infinity,
-              duration: 1.5,
-              ease: "easeInOut",
-            }}
-            className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"
-          />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold">
-            system online
-          </span>
-          <span className="text-[10px] text-stone-300 dark:text-stone-700 font-mono">
-            |
-          </span>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-            ai / job agent
-          </span>
-        </div>
-
-        <div className="flex items-end justify-between gap-4 flex-wrap">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-            Talk to your job agent.
-          </h1>
-
-          <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest">
-            {!isPremium ? (
-              <span className="text-stone-500 dark:text-stone-400">
-                <span className="text-stone-900 dark:text-stone-50">
-                  {Math.min(userMsgCount, FREE_LIMIT)}
-                </span>
-
-                <span className="text-stone-400 dark:text-stone-600">
-                  {" "}
-                  / {FREE_LIMIT} free
-                </span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 text-lime-600 dark:text-lime-400">
-                <div className="h-1 w-1 bg-lime-400 rounded-full"></div>
-                premium, unlimited
-              </span>
-            )}
-
-            {messages.length > 0 && (
-              <Button
-                type="button"
-                onClick={() => {
-                  if (messages.length === 0) return;
-                  setShowResetConfirm(true);
-                }}
-                disabled={resetMut.isPending}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
-              >
-                <RotateCcw className="w-3 h-3" />
-                new chat
-              </Button>
-            )}
+      {/* Editorial header */}
+      <div className="shrink-0 px-4 sm:px-8 pt-4 pb-2 bg-stone-50 dark:bg-stone-950">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-2 mb-1">
+            <motion.div
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: "easeInOut",
+              }}
+              className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"
+            />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold">
+              system online
+            </span>
+            <span className="text-[10px] text-stone-300 dark:text-stone-700 font-mono">
+              |
+            </span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              ai / job agent
+            </span>
           </div>
 
-          <ConfirmDialog
-            open={showResetConfirm}
-            title="Start a new chat?"
-            description="This will permanently delete your current conversation. This action cannot be undone."
-            confirmLabel="Delete and start new"
-            cancelLabel="Cancel"
-            onConfirm={() => {
-              resetMut.mutate();
-              setShowResetConfirm(false);
-            }}
-            onCancel={() => setShowResetConfirm(false)}
-          />
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              Talk to your job agent.
+            </h1>
+
+            <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest">
+              {!isPremium ? (
+                <span className="text-stone-500 dark:text-stone-400">
+                  <span className="text-stone-900 dark:text-stone-50">
+                    {Math.min(userMsgCount, FREE_LIMIT)}
+                  </span>
+
+                  <span className="text-stone-400 dark:text-stone-600">
+                    {" "}
+                    / {FREE_LIMIT} free
+                  </span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-lime-600 dark:text-lime-400">
+                  <div className="h-1 w-1 bg-lime-400 rounded-full"></div>
+                  premium, unlimited
+                </span>
+              )}
+
+              {messages.length > 0 && (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (messages.length === 0) return;
+                    setShowResetConfirm(true);
+                  }}
+                  disabled={resetMut.isPending}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  new chat
+                </Button>
+              )}
+            </div>
+
+            <ConfirmDialog
+              open={showResetConfirm}
+              title="Start a new chat?"
+              description="This will permanently delete your current conversation. This action cannot be undone."
+              confirmLabel="Delete and start new"
+              cancelLabel="Cancel"
+              onConfirm={() => {
+                resetMut.mutate();
+                setShowResetConfirm(false);
+              }}
+              onCancel={() => setShowResetConfirm(false)}
+            />
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Messages area */}
-    <div className="flex-1 min-h-0 overflow-hidden">
-      <div className="flex h-full min-h-0 w-full flex-col px-4 sm:px-8">
-        <AnimatePresence mode="wait">
-          {isEmpty ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="flex h-full w-full max-w-xl mx-auto flex-col items-center justify-center gap-4 pt-2 pb-1"
-            >
-              {/* Hero icon box */}
+      {/* Messages area */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="flex h-full min-h-0 w-full flex-col px-4 sm:px-8">
+          <AnimatePresence mode="wait">
+            {isEmpty ? (
               <motion.div
-                className="relative mb-2 mt-0.5"
-                animate={{ y: [0, -6, 0] }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 3.5,
-                  ease: "easeInOut",
-                }}
+                key="empty"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="flex h-full w-full max-w-xl mx-auto flex-col items-center justify-center gap-4 pt-2 pb-1"
               >
-                <div className="absolute inset-0 bg-lime-400/15 dark:bg-lime-400/10 blur-3xl rounded-full" />
+                {/* Hero icon box */}
+                <motion.div
+                  className="relative mb-2 mt-0.5"
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 3.5,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <div className="absolute inset-0 bg-lime-400/15 dark:bg-lime-400/10 blur-3xl rounded-full" />
 
-                <div className="relative w-11 h-11 rounded-2xl bg-stone-900 dark:bg-stone-50 flex items-center justify-center border border-lime-400/20 shadow-lg">
-                  <BotMessageSquare className="w-5 h-5 text-stone-50 dark:text-stone-900 animate-pulse" />
+                  <div className="relative w-11 h-11 rounded-2xl bg-stone-900 dark:bg-stone-50 flex items-center justify-center border border-lime-400/20 shadow-lg">
+                    <BotMessageSquare className="w-5 h-5 text-stone-50 dark:text-stone-900 animate-pulse" />
+                  </div>
+
+                  <div className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400 rounded-full border-2 border-white dark:border-stone-950 shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
+                </motion.div>
+
+                <h2 className="text-lg font-extrabold tracking-tight mb-1 text-stone-900 dark:text-stone-50">
+                  Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
+                </h2>
+
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 max-w-sm mb-3 text-center leading-relaxed">
+                  Tell me what you're looking for and I'll surface the best
+                  matches from the live job feed.
+                </p>
+
+                {/* Quick prompt numbered grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
+                  {QUICK_PROMPTS.map((q, i) => (
+                    <button
+                      key={q.text}
+                      type="button"
+                      onClick={() => handleSend(q.text)}
+                      className="group relative flex flex-col justify-between p-3.5 text-left rounded-2xl border border-stone-200 dark:border-stone-800 bg-white/50 dark:bg-stone-900/50 hover:bg-white dark:hover:bg-stone-900 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:border-stone-300 dark:hover:border-stone-700"
+                    >
+                      <div className="flex flex-col gap-2 w-full">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                          / {String(i + 1).padStart(2, "0")}
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                          <q.icon className="w-4 h-4 text-stone-500 dark:text-stone-400 group-hover:text-lime-500 transition-colors shrink-0" />
+
+                          <span className="text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 group-hover:text-stone-950 dark:group-hover:text-white transition-colors truncate">
+                            {q.text}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
 
-                <div className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400 rounded-full border-2 border-white dark:border-stone-950 shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
+                {!isPremium && (
+                  <p className="mt-4 text-center text-xs text-stone-500 dark:text-stone-400">
+                    Free plan: {FREE_LIMIT} messages per day{" "}
+                    <span className="text-stone-400">-</span>{" "}
+                    <Link
+                      to="/student/checkout"
+                      className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
+                    >
+                      Upgrade for unlimited
+                    </Link>
+                  </p>
+                )}
               </motion.div>
+            ) : (
+              <div
+                ref={scrollRef}
+                className="h-full min-h-0 overflow-y-auto pt-2 pb-2 mask-[linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)]"
+              >
+                <motion.div
+                  key="messages"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mx-auto w-full max-w-4xl space-y-5"
+                >
+                  {messages.map((msg) => (
+                    <AgentMessage
+                      key={msg.id}
+                      role={msg.role}
+                      content={msg.content}
+                      jobs={msg.jobs}
+                    />
+                  ))}
 
-              <h2 className="text-lg font-extrabold tracking-tight mb-1 text-stone-900 dark:text-stone-50">
-                Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
-              </h2>
+                  {chatMut.isPending && <ThinkingIndicator />}
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
 
-              <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 max-w-sm mb-3 text-center leading-relaxed">
-                Tell me what you're looking for and I'll surface the best
-                matches from the live job feed.
-              </p>
+      {/* Input bar */}
+      <div className="shrink-0 px-4 sm:px-8 pb-0.5 pt-2 border-t border-stone-200 dark:border-white/10 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md w-full">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-[26px] border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm focus-within:border-lime-500/50 focus-within:ring-4 focus-within:ring-lime-500/10 transition-all">
+            <div className="flex items-end gap-2 px-3.5 py-1.5">
+              {voiceSupported && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (isListening) {
+                      setInterimText("");
+                      stopListening();
+                    } else {
+                      startListening();
+                    }
+                  }}
+                  aria-label={
+                    isListening ? "Stop recording" : "Start voice input"
+                  }
+                  aria-pressed={isListening}
+                  className={cn(
+                    "inline-flex items-center justify-center w-9 h-9 rounded-full transition-colors cursor-pointer shadow-sm",
+                    isListening
+                      ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-500/20"
+                      : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200/40 dark:border-white/5 bg-white/60 dark:bg-stone-900/40",
+                  )}
+                >
+                  {isListening ? (
+                    <motion.span
+                      animate={{ scale: [1, 1.15, 1] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.2,
+                        ease: "easeInOut",
+                      }}
+                      className="inline-flex items-center justify-center"
+                    >
+                      <MicOff className="w-4 h-4" />
+                    </motion.span>
+                  ) : (
+                    <Mic className="w-4 h-4" />
+                  )}
+                </Button>
+              )}
 
-              {/* Quick prompt numbered grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
-                {QUICK_PROMPTS.map((q, i) => (
-                  <button
-                    key={q.text}
-                    type="button"
-                    onClick={() => handleSend(q.text)}
-                    className="group relative flex flex-col justify-between p-3.5 text-left rounded-2xl border border-stone-200 dark:border-stone-800 bg-white/50 dark:bg-stone-900/50 hover:bg-white dark:hover:bg-stone-900 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:border-stone-300 dark:hover:border-stone-700"
-                  >
-                    <div className="flex flex-col gap-2 w-full">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                        / {String(i + 1).padStart(2, "0")}
-                      </span>
-
-                      <div className="flex items-center gap-2">
-                        <q.icon className="w-4 h-4 text-stone-500 dark:text-stone-400 group-hover:text-lime-500 transition-colors shrink-0" />
-
-                        <span className="text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 group-hover:text-stone-950 dark:group-hover:text-white transition-colors truncate">
-                          {q.text}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+              <div className="flex-1 min-w-0 overflow-y-auto">
+                <textarea
+                  ref={textareaRef}
+                  value={displayValue}
+                  onChange={(e) => {
+                    setInterimText("");
+                    setInput(e.target.value);
+                    adjustHeight();
+                  }}
+                  onKeyDown={handleKeyDown}
+                  placeholder={
+                    hitFreeLimit
+                      ? "Upgrade to continue chatting..."
+                      : chatMut.isPending
+                        ? "Thinking..."
+                        : "Ask me about jobs..."
+                  }
+                  disabled={inputDisabled}
+                  className={cn(
+                    "w-full px-2 py-2.5",
+                    "resize-none",
+                    "overflow-y-auto",
+                    "scrollbar-thin",
+                    "bg-transparent",
+                    "border-none",
+                    "text-stone-900 dark:text-stone-50 text-sm",
+                    "focus:outline-none",
+                    "focus-visible:ring-0 focus-visible:ring-offset-0",
+                    "placeholder:text-stone-400 dark:placeholder:text-stone-500 placeholder:text-sm",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                  )}
+                  style={{ minHeight: "44px" }}
+                />
               </div>
 
-              {!isPremium && (
-                <p className="mt-4 text-center text-xs text-stone-500 dark:text-stone-400">
-                  Free plan: {FREE_LIMIT} messages per day{" "}
-                  <span className="text-stone-400">-</span>{" "}
-                  <Link
-                    to="/student/checkout"
-                    className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
-                  >
-                    Upgrade for unlimited
-                  </Link>
-                </p>
-              )}
-            </motion.div>
-          ) : (
-            <div
-              ref={scrollRef}
-              className="h-full min-h-0 overflow-y-auto pt-2 pb-2 mask-[linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)]"
-            >
-              <motion.div
-                key="messages"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mx-auto w-full max-w-4xl space-y-5"
-              >
-                {messages.map((msg) => (
-                  <AgentMessage
-                    key={msg.id}
-                    role={msg.role}
-                    content={msg.content}
-                    jobs={msg.jobs}
-                  />
-                ))}
-
-                {chatMut.isPending && <ThinkingIndicator />}
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-
-    {/* Input bar */}
-    <div className="shrink-0 px-4 sm:px-8 pb-0.5 pt-2 border-t border-stone-200 dark:border-white/10 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md w-full">
-      <div className="max-w-4xl mx-auto">
-        <div className="relative rounded-[26px] border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm focus-within:border-lime-500/50 focus-within:ring-4 focus-within:ring-lime-500/10 transition-all">
-          <div className="flex items-end gap-2 px-3.5 py-1.5">
-            {voiceSupported && (
               <Button
                 type="button"
-                variant="ghost"
                 size="icon"
-                onClick={() => {
-                  if (isListening) {
-                    setInterimText("");
-                    stopListening();
-                  } else {
-                    startListening();
-                  }
-                }}
-                aria-label={
-                  isListening ? "Stop recording" : "Start voice input"
+                onClick={() => handleSend()}
+                disabled={
+                  !(input.trim() || interimText.trim()) || inputDisabled
                 }
-                aria-pressed={isListening}
                 className={cn(
-                  "inline-flex items-center justify-center w-9 h-9 rounded-full transition-colors cursor-pointer shadow-sm",
-                  isListening
-                    ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-500/20"
-                    : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200/40 dark:border-white/5 bg-white/60 dark:bg-stone-900/40",
+                  "inline-flex items-center justify-center w-9 h-9 rounded-full transition-colors cursor-pointer disabled:cursor-not-allowed shadow-sm border border-stone-200/40 dark:border-white/5",
+                  (input.trim() || interimText.trim()) && !inputDisabled
+                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
+                    : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
                 )}
+                aria-label="Send"
               >
-                {isListening ? (
-                  <motion.span
-                    animate={{ scale: [1, 1.15, 1] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 1.2,
-                      ease: "easeInOut",
-                    }}
-                    className="inline-flex items-center justify-center"
-                  >
-                    <MicOff className="w-4 h-4" />
-                  </motion.span>
-                ) : (
-                  <Mic className="w-4 h-4" />
-                )}
+                <ArrowUpIcon className="w-4 h-4" />
               </Button>
-            )}
+            </div>
+          </div>
 
-            <div className="flex-1 min-w-0 overflow-y-auto">
-              <textarea
-                ref={textareaRef}
-                value={displayValue}
-                onChange={(e) => {
-                  setInterimText("");
-                  setInput(e.target.value);
-                  adjustHeight();
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder={
-                  hitFreeLimit
-                    ? "Upgrade to continue chatting..."
-                    : chatMut.isPending
-                      ? "Thinking..."
-                      : "Ask me about jobs..."
-                }
-                disabled={inputDisabled}
-                className={cn(
-                  "w-full px-2 py-2.5",
-                  "resize-none",
-                  "overflow-y-auto",
-                  "scrollbar-thin",
-                  "bg-transparent",
-                  "border-none",
-                  "text-stone-900 dark:text-stone-50 text-sm",
-                  "focus:outline-none",
-                  "focus-visible:ring-0 focus-visible:ring-offset-0",
-                  "placeholder:text-stone-400 dark:placeholder:text-stone-500 placeholder:text-sm",
-                  "disabled:opacity-50 disabled:cursor-not-allowed",
-                )}
-                style={{ minHeight: "44px" }}
-              />
+          <div className="mt-1.5 flex flex-col items-center gap-1 px-1 text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 select-none">
+            <div className="flex items-center justify-center gap-1.5 flex-wrap">
+              <span>
+                {hitFreeLimit
+                  ? "limit reached"
+                  : "enter to send, shift + enter for newline"}
+              </span>
+              {voiceHint && (
+                <span className="text-red-500 dark:text-red-400 font-bold animate-pulse">
+                  ({voiceHint})
+                </span>
+              )}
             </div>
 
-            <Button
-              type="button"
-              size="icon"
-              onClick={() => handleSend()}
-              disabled={!(input.trim() || interimText.trim()) || inputDisabled}
-              className={cn(
-                "inline-flex items-center justify-center w-9 h-9 rounded-full transition-colors cursor-pointer disabled:cursor-not-allowed shadow-sm border border-stone-200/40 dark:border-white/5",
-                (input.trim() || interimText.trim()) && !inputDisabled
-                  ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
-                  : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
-              )}
-              aria-label="Send"
-            >
-              <ArrowUpIcon className="w-4 h-4" />
-            </Button>
+            <p className="text-stone-500 dark:text-stone-500">
+              Powered by InternHack AI · Always verify job details
+            </p>
           </div>
-        </div>
-
-        <div className="mt-1.5 flex flex-col items-center gap-1 px-1 text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 select-none">
-          <div className="flex items-center justify-center gap-1.5 flex-wrap">
-            <span>
-              {hitFreeLimit
-                ? "limit reached"
-                : "enter to send, shift + enter for newline"}
-            </span>
-            {voiceHint && (
-              <span className="text-red-500 dark:text-red-400 font-bold animate-pulse">
-                ({voiceHint})
-              </span>
-            )}
-          </div>
-
-          <p className="text-stone-500 dark:text-stone-500">
-            Powered by InternHack AI · Always verify job details
-          </p>
         </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 }
