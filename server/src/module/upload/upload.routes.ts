@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { UploadController } from "./upload.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 
@@ -9,7 +10,7 @@ export const uploadRouter = Router();
 // Protect all upload routes
 uploadRouter.use(authMiddleware);
 
-import rateLimit from "express-rate-limit";
+
 
 const presignedUrlRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

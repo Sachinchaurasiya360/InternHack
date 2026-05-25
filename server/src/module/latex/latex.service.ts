@@ -137,7 +137,7 @@ export class LatexService {
           timeout: COMPILE_TIMEOUT,
           env: {
             ...process.env,
-            openin_any: "p",
+            // openin_any is a no-op in TeX Live 2026+; read isolation is enforced at the container/sandbox level.
             openout_any: "p",
           },
         }

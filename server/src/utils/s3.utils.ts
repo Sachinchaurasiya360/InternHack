@@ -6,6 +6,7 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 
 const s3Client = new S3Client({
   region: process.env["AWS_REGION"] || "ap-south-1",
@@ -46,6 +47,8 @@ export async function uploadToS3(
 
 async function getSignedS3Url(key: string, expiresIn = 3600): Promise<string> {
   const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
+  // s3Client is cast to any due to a known TypeScript type mismatch/compatibility issue between @aws-sdk/client-s3 and @aws-sdk/s3-request-presigner.
+  // See: https://github.com/aws/aws-sdk-js-v3/issues/4312
   return getSignedUrl(s3Client as any, command, { expiresIn });
 }
 
@@ -89,14 +92,12 @@ export async function signUrls(urls: string[], expiresIn = 3600): Promise<string
 }
 
 
-import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
-
 export const generatePresignedUploadUrl = async (fileKey: string, fileType: string, maxSizeLimit = 10485760) => {
-  const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
-  
   // Use createPresignedPost to enforce strict file size limits (Denial of Wallet prevention)
+  // s3Client is cast to any due to a known TypeScript type mismatch/compatibility issue between @aws-sdk/client-s3 and @aws-sdk/s3-presigned-post.
+  // See: https://github.com/aws/aws-sdk-js-v3/issues/4312
   const { url, fields } = await createPresignedPost(s3Client as any, {
-    Bucket: bucketName,
+    Bucket: BUCKET,
     Key: fileKey,
     Conditions: [
       ["content-length-range", 0, maxSizeLimit], // Limit file size (default 10MB)
