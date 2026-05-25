@@ -40,6 +40,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const mobileMenuId = "main-navigation-mobile";
 
   const handleLogout = () => {
     logout();
@@ -293,6 +294,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
             <button
               onClick={() => setIsOpen(!isOpen)}
               aria-expanded={isOpen}
+              aria-controls={mobileMenuId}
               aria-label={isOpen ? "Close menu" : "Open menu"}
               className="p-2 text-stone-700 hover:bg-stone-200/60 dark:text-stone-300 dark:hover:bg-white/5 rounded-md transition-colors"
             >
@@ -308,6 +310,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
         <AnimatePresence>
           {isOpen && (
             <motion.div
+              id={mobileMenuId}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
