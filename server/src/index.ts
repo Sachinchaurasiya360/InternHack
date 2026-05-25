@@ -325,6 +325,13 @@ app.listen(PORT, async () => {
   // Start the scheduled-email worker (drains roadmap day-10, future digests)
   startScheduledEmailWorker();
 
-  // Start weekly roadmap progress digests (Monday 9 AM)
-  startWeeklyRoadmapDigestCron();
+  // Start weekly roadmap progress digests from one owner only in production.
+  const runWeeklyDigestCron =
+    process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] !== "false");
+  if (runWeeklyDigestCron) {
+    startWeeklyRoadmapDigestCron();
+  } else {
+    console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
+  }
 });
