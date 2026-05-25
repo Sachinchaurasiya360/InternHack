@@ -100,8 +100,8 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                       className={cn(
                         "absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] rounded-full bg-lime-400 transition-all duration-300 ease-out origin-center",
                         active
-                          ? "w-[72%] scale-x-100 opacity-100"
-                          : "w-[72%] scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100",
+                          ? "w-full scale-x-100 opacity-100"
+                          : "w-full scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100",
                       )}
                     />
                   </button>
