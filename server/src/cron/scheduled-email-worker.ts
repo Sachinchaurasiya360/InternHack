@@ -98,8 +98,7 @@ async function sendDay10(
   });
 
   if (!enrollment) {
-    console.warn(`[ScheduledEmail] Enrollment ${payload.enrollmentId} missing for scheduled ${scheduledId}, skipping`);
-    return;
+    throw new Error(`Enrollment ${payload.enrollmentId} missing for scheduled email ${scheduledId}`);
   }
 
   // Compute progress vs. planned topics for the first 10 days (week 1 + 2)

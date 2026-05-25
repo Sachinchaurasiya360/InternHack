@@ -4,6 +4,9 @@ import * as fs from "fs";
 import { fileURLToPath } from "url";
 import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
 
@@ -51,8 +54,17 @@ export class UploadController {
       try {
         presignedData = await generatePresignedUploadUrl(fileKey, fileType, folder);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        return res.status(400).json({ message: msg });
+        const msg = err instanceof Error ? err.message : "Failed to generate upload URL";
+        const isClientError =
+          msg.startsWith("Invalid or unauthorized upload folder") ||
+          msg.startsWith("Invalid file type");
+
+        if (isClientError) {
+          return res.status(400).json({ message: msg });
+        }
+
+        logger.error("Presigned URL generation failed:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
       }
 
       const { url: uploadUrl, fields: uploadFields } = presignedData;
@@ -157,6 +169,14 @@ export class UploadController {
         where: { id: userId },
         data: { resumes: updatedResumes },
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
+      });
+
+      // Log daily quota usage for resume generation/upload
+      await prisma.usageLog.create({
+        data: {
+          userId: req.user.id,
+          action: "GENERATE_RESUME",
+        },
       });
 
       const signedResumes = await signUrls(user.resumes);
