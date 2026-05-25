@@ -59,14 +59,26 @@ async function drainScheduledEmails(): Promise<void> {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`[ScheduledEmail] Failed id=${row.id}:`, msg);
-      await prisma.scheduledEmail.update({
-        where: { id: row.id },
-        data: {
-          attempts: { increment: 1 },
-          lastError: msg.slice(0, 500),
-          failedAt: row.attempts + 1 >= MAX_ATTEMPTS ? new Date() : null,
-        },
-      });
+      const failureTime = new Date();
+      const nextAttempts = row.attempts + 1;
+      const isFailedMax = nextAttempts >= MAX_ATTEMPTS;
+
+      try {
+        await prisma.scheduledEmail.update({
+          where: { id: row.id },
+          data: {
+            attempts: { increment: 1 },
+            lastError: msg.slice(0, 500),
+            failedAt: isFailedMax ? failureTime : null,
+            // If not failed max, back off retry time; otherwise leave in future
+            sendAt: isFailedMax
+              ? row.sendAt
+              : new Date(failureTime.getTime() + nextAttempts * 5 * 60 * 1000), // linear backoff
+          },
+        });
+      } catch (dbErr) {
+        console.error(`[ScheduledEmail] Failed to write error state for id=${row.id}:`, dbErr);
+      }
     }
   }
 }

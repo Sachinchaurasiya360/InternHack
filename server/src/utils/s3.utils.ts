@@ -92,7 +92,40 @@ export async function signUrls(urls: string[], expiresIn = 3600): Promise<string
 }
 
 
-export const generatePresignedUploadUrl = async (fileKey: string, fileType: string, maxSizeLimit = 10485760) => {
+export interface UploadPolicy {
+  allowedMimeTypes: string[];
+  maxSize: number;
+}
+
+export const UPLOAD_POLICIES: Record<string, UploadPolicy> = {
+  "resumes": {
+    allowedMimeTypes: ["application/pdf"],
+    maxSize: 5 * 1024 * 1024, // 5 MB
+  },
+  "profile-pics": {
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
+    maxSize: 5 * 1024 * 1024, // 5 MB
+  },
+  "cover-images": {
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
+    maxSize: 5 * 1024 * 1024, // 5 MB
+  },
+  "company-logos": {
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
+    maxSize: 5 * 1024 * 1024, // 5 MB
+  },
+};
+
+export const generatePresignedUploadUrl = async (fileKey: string, fileType: string, folder: string) => {
+  const policy = UPLOAD_POLICIES[folder];
+  if (!policy) {
+    throw new Error(`Invalid or unauthorized upload folder: ${folder}`);
+  }
+
+  if (!policy.allowedMimeTypes.includes(fileType)) {
+    throw new Error(`Invalid file type "${fileType}" for folder "${folder}". Allowed: ${policy.allowedMimeTypes.join(", ")}`);
+  }
+
   // Use createPresignedPost to enforce strict file size limits (Denial of Wallet prevention)
   // s3Client is cast to any due to a known TypeScript type mismatch/compatibility issue between @aws-sdk/client-s3 and @aws-sdk/s3-presigned-post.
   // See: https://github.com/aws/aws-sdk-js-v3/issues/4312
@@ -100,7 +133,7 @@ export const generatePresignedUploadUrl = async (fileKey: string, fileType: stri
     Bucket: BUCKET,
     Key: fileKey,
     Conditions: [
-      ["content-length-range", 0, maxSizeLimit], // Limit file size (default 10MB)
+      ["content-length-range", 0, policy.maxSize], // Limit file size based on server-side policy
       ["eq", "$Content-Type", fileType], // Enforces exact content type
     ],
     Fields: {

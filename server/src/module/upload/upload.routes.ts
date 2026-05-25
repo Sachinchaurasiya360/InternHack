@@ -20,8 +20,15 @@ const presignedUrlRateLimit = rateLimit({
   legacyHeaders: false,
 });
 
+import { validateBody, presignRequestSchema } from "./upload.validation.js";
+
 // NEW: Route to generate pre-signed URL for direct client-to-S3 uploads
-uploadRouter.post("/presigned-url", presignedUrlRateLimit, (req, res) => uploadController.getPresignedUrl(req, res));
+uploadRouter.post(
+  "/presigned-url",
+  presignedUrlRateLimit,
+  validateBody(presignRequestSchema),
+  (req, res) => uploadController.getPresignedUrl(req, res)
+);
 
 // UPDATED: Profile-specific endpoints (No more multer middleware!)
 // These now expect a JSON body like: { "fileUrl": "https://..." }

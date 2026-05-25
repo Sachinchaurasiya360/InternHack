@@ -136,8 +136,21 @@ export class LatexService {
         {
           timeout: COMPILE_TIMEOUT,
           env: {
-            ...process.env,
-            // openin_any is a no-op in TeX Live 2026+; read isolation is enforced at the container/sandbox level.
+            // Principle of least privilege: whitelist only minimal required environment variables
+            // and avoid forwarding credentials/secrets (like DATABASE_URL or JWT_SECRET).
+            PATH: process.env.PATH,
+            HOME: process.env.HOME,
+            TMPDIR: process.env.TMPDIR,
+            TEMP: process.env.TEMP,
+            TMP: process.env.TMP,
+            LANG: process.env.LANG,
+            TZ: process.env.TZ,
+            TEXINPUTS: process.env.TEXINPUTS,
+            SystemRoot: process.env.SystemRoot, // Required for process spawning on Windows
+            SystemDrive: process.env.SystemDrive,
+
+            // openout_any is set to paranoid ("p") to restrict LaTeX output file creation.
+            // Note: openin_any is a no-op in TeX Live 2026+, so read isolation must be enforced at the container/sandbox/OS level in production.
             openout_any: "p",
           },
         }

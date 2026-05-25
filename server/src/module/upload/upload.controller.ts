@@ -40,13 +40,22 @@ export class UploadController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const { fileName, fileType, folder = "uploads" } = req.body;
-      if (!fileName || !fileType) {
-        return res.status(400).json({ message: "fileName and fileType are required" });
+      const { fileName, fileType, folder } = req.body;
+      if (!fileName || !fileType || !folder) {
+        return res.status(400).json({ message: "fileName, fileType, and folder are required" });
       }
 
       const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
-      const { url: uploadUrl, fields: uploadFields } = await generatePresignedUploadUrl(fileKey, fileType);
+      
+      let presignedData;
+      try {
+        presignedData = await generatePresignedUploadUrl(fileKey, fileType, folder);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return res.status(400).json({ message: msg });
+      }
+
+      const { url: uploadUrl, fields: uploadFields } = presignedData;
       const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
       const region = process.env.AWS_REGION || "ap-south-1";
       const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${fileKey}`;
