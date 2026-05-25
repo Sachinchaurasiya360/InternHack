@@ -6,8 +6,13 @@ import { requireRole } from "../../middleware/role.middleware.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { OpensourceService } from "./opensource.service.js";
+import { OpensourceController } from "./opensource.controller.js";
 
 export const opensourceRouter = Router();
+
+const opensourceService = new OpensourceService();
+const opensourceController = new OpensourceController(opensourceService);
 
 // Public: list repos with optional filters
 opensourceRouter.get("/", async (req, res, next) => {
@@ -204,6 +209,9 @@ opensourceRouter.put("/requests/:id/reject", authMiddleware, requireRole("ADMIN"
     next(err);
   }
 });
+
+// Get repo insights (Student-authenticated)
+opensourceRouter.get("/:id/insights", authMiddleware, requireRole("STUDENT"), (req, res, next) => opensourceController.getRepoInsights(req, res, next));
 
 // Public: get single repo (must be AFTER /requests/* routes)
 opensourceRouter.get("/:id", async (req, res, next) => {

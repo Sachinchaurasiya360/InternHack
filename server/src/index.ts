@@ -69,6 +69,7 @@ import { startFollowUpCron } from "./cron/scheduled-emails.js";
 import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
+import { startOpensourceSyncCron } from "./cron/opensource-sync.cron.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -323,4 +324,7 @@ app.listen(PORT, async () => {
 
   // Start the scheduled-email worker (drains roadmap day-10, future digests)
   startScheduledEmailWorker();
+
+  // Start the OpenSource Repo sync cron (every 12 hours)
+  startOpensourceSyncCron();
 });

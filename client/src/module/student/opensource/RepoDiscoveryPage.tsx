@@ -33,6 +33,7 @@ import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { SuggestRepoModal } from "./SuggestRepoModal";
+import { RepoDetailInsights } from "./RepoDetailInsights";
 
 const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
@@ -555,6 +556,9 @@ export default function RepoDiscoveryPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Live Insights & AI */}
+                <RepoDetailInsights repoId={selectedRepo.id} />
 
                 {/* Tags */}
                 <div>
