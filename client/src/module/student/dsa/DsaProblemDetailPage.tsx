@@ -326,6 +326,16 @@ export default function DsaProblemDetailPage() {
             }`}
           >
             <div className="p-5 space-y-5">
+              {/* Mobile test results */}
+              {executeMutation.data && (
+                <div className="lg:hidden border border-stone-200 dark:border-white/10 rounded-md overflow-hidden bg-white dark:bg-stone-950 flex flex-col">
+                  <div className="p-3 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900/50">
+                    <SectionLabel>latest run results</SectionLabel>
+                  </div>
+                  <DsaTestResults result={executeMutation.data} isRunning={executeMutation.isPending} />
+                </div>
+              )}
+
               {/* Stats row */}
               {(problem.acceptanceRate || problem.totalSubmissions) && (
                 <div className="flex flex-wrap items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
@@ -566,14 +576,14 @@ export default function DsaProblemDetailPage() {
 
           {/* ── RIGHT: Code editor + results ── */}
           <div
-            className={`flex flex-col min-h-0 bg-stone-50 dark:bg-stone-900/50 ${
+            className={`flex flex-col min-h-0 bg-stone-50 dark:bg-stone-900/50 pb-16 lg:pb-0 ${
               activeTab !== "code" ? "hidden lg:flex" : "flex"
             }`}
           >
             {isPremium ? (
               <>
                 {/* Editor */}
-                <div className="h-[55%] min-h-0 border-b border-stone-200 dark:border-white/10">
+                <div className="h-[55%] max-lg:h-[calc(100vh-180px)] min-h-0 border-b border-stone-200 dark:border-white/10">
                   <DsaCodeEditor
                     value={codeMap[language]}
                     onChange={handleCodeChange}
@@ -585,7 +595,7 @@ export default function DsaProblemDetailPage() {
                 </div>
 
                 {/* Results / Output / History tabs */}
-                <div className="flex-1 min-h-0 flex flex-col">
+                <div className="hidden lg:flex flex-1 min-h-0 flex-col">
                   <div className="flex items-center border-b border-stone-200 dark:border-white/10 bg-white dark:bg-stone-950 shrink-0">
                     {([
                       { key: "results" as const, label: "test results", icon: null },
@@ -624,6 +634,23 @@ export default function DsaProblemDetailPage() {
                       <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
                     )}
                   </div>
+                </div>
+
+                {/* Mobile Floating Action Bar */}
+                <div className="fixed bottom-0 left-0 right-0 z-10 lg:hidden flex items-center p-3 bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-white/10 gap-3">
+                  <button
+                    onClick={() => setActiveTab("problem")}
+                    className="flex-1 py-3 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors"
+                  >
+                    results
+                  </button>
+                  <button
+                    onClick={handleRun}
+                    disabled={executeMutation.isPending}
+                    className="flex-1 py-3 bg-lime-400 text-stone-950 rounded-md text-[11px] font-mono font-bold uppercase tracking-widest hover:bg-lime-500 transition-colors disabled:opacity-50"
+                  >
+                    {executeMutation.isPending ? "running" : "run code"}
+                  </button>
                 </div>
               </>
             ) : (
