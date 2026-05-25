@@ -21,11 +21,12 @@ import { DsaCodeEditor } from "./components/DsaCodeEditor";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
+import { Button } from "@/components/ui/button";
 
 const DIFF_STYLE: Record<string, string> = {
-  Easy:   "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
   Medium: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Hard:   "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
+  Hard: "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
 const DEFAULT_CODE: Record<DsaLanguage, string> = {
@@ -265,22 +266,20 @@ export default function DsaProblemDetailPage() {
                 <button
                   onClick={() => toggleMutation.mutate(problem.id)}
                   title={problem.solved ? "Mark unsolved" : "Mark solved"}
-                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${
-                    problem.solved
+                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${problem.solved
                       ? "text-lime-600 dark:text-lime-400 border-lime-300 dark:border-lime-900/60 bg-lime-50 dark:bg-lime-900/10"
                       : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-                  }`}
+                    }`}
                 >
                   {problem.solved ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
                 </button>
                 <button
                   onClick={() => bookmarkMutation.mutate(problem.id)}
                   title={problem.bookmarked ? "Remove bookmark" : "Bookmark"}
-                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${
-                    problem.bookmarked
+                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${problem.bookmarked
                       ? "text-stone-900 dark:text-stone-50 border-stone-900 dark:border-stone-50"
                       : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-                  }`}
+                    }`}
                 >
                   {problem.bookmarked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
                 </button>
@@ -305,11 +304,10 @@ export default function DsaProblemDetailPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 relative py-3 text-[10px] font-mono uppercase tracking-widest transition-colors ${
-                activeTab === tab
+              className={`flex-1 relative py-3 text-[10px] font-mono uppercase tracking-widest transition-colors ${activeTab === tab
                   ? "text-stone-900 dark:text-stone-50"
                   : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
-              }`}
+                }`}
             >
               {tab}
               {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
@@ -321,9 +319,8 @@ export default function DsaProblemDetailPage() {
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[45fr_55fr] min-h-0">
           {/* LEFT: Problem details */}
           <div
-            className={`overflow-y-auto border-r border-stone-200 dark:border-white/10 ${
-              activeTab !== "problem" ? "hidden lg:block" : ""
-            }`}
+            className={`overflow-y-auto border-r border-stone-200 dark:border-white/10 ${activeTab !== "problem" ? "hidden lg:block" : ""
+              }`}
           >
             <div className="p-5 space-y-5">
               {/* Mobile test results */}
@@ -451,9 +448,8 @@ export default function DsaProblemDetailPage() {
                             </span>
                           </span>
                           <ChevronDown
-                            className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${
-                              expandedHint === i ? "rotate-180" : ""
-                            }`}
+                            className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${expandedHint === i ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                         <AnimatePresence>
@@ -494,9 +490,8 @@ export default function DsaProblemDetailPage() {
                         {problem.notes && !showNotes && <span className="h-1 w-1 bg-lime-400" />}
                       </span>
                       <ChevronDown
-                        className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${
-                          showNotes ? "rotate-180" : ""
-                        }`}
+                        className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${showNotes ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
                     <AnimatePresence>
@@ -576,14 +571,13 @@ export default function DsaProblemDetailPage() {
 
           {/* ── RIGHT: Code editor + results ── */}
           <div
-            className={`flex flex-col min-h-0 bg-stone-50 dark:bg-stone-900/50 pb-16 lg:pb-0 ${
-              activeTab !== "code" ? "hidden lg:flex" : "flex"
-            }`}
+            className={`flex flex-col min-h-0 bg-stone-50 dark:bg-stone-900/50 pb-16 lg:pb-0 ${activeTab !== "code" ? "hidden lg:flex" : "flex"
+              }`}
           >
             {isPremium ? (
               <>
                 {/* Editor */}
-                <div className="h-[55%] max-lg:h-[calc(100vh-180px)] min-h-0 border-b border-stone-200 dark:border-white/10">
+                <div className="h-[55%] max-lg:h-screen-minus-180 min-h-0 border-b border-stone-200 dark:border-white/10">
                   <DsaCodeEditor
                     value={codeMap[language]}
                     onChange={handleCodeChange}
@@ -605,11 +599,10 @@ export default function DsaProblemDetailPage() {
                       <button
                         key={key}
                         onClick={() => setRightTab(key)}
-                        className={`relative inline-flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-mono uppercase tracking-widest transition-colors ${
-                          rightTab === key
+                        className={`relative inline-flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-mono uppercase tracking-widest transition-colors ${rightTab === key
                             ? "text-stone-900 dark:text-stone-50"
                             : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
-                        }`}
+                          }`}
                       >
                         {Icon && <Icon className="w-3 h-3" />}
                         {label}
@@ -638,19 +631,23 @@ export default function DsaProblemDetailPage() {
 
                 {/* Mobile Floating Action Bar */}
                 <div className="fixed bottom-0 left-0 right-0 z-10 lg:hidden flex items-center p-3 bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-white/10 gap-3">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
                     onClick={() => setActiveTab("problem")}
-                    className="flex-1 py-3 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors"
                   >
                     results
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="flex-1"
                     onClick={handleRun}
                     disabled={executeMutation.isPending}
-                    className="flex-1 py-3 bg-lime-400 text-stone-950 rounded-md text-[11px] font-mono font-bold uppercase tracking-widest hover:bg-lime-500 transition-colors disabled:opacity-50"
                   >
                     {executeMutation.isPending ? "running" : "run code"}
-                  </button>
+                  </Button>
                 </div>
               </>
             ) : (
