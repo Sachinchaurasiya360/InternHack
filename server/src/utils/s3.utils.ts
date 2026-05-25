@@ -46,7 +46,7 @@ export async function uploadToS3(
 
 async function getSignedS3Url(key: string, expiresIn = 3600): Promise<string> {
   const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
-  return getSignedUrl(s3Client, command, { expiresIn });
+  return getSignedUrl(s3Client as any, command, { expiresIn });
 }
 
 export async function deleteFromS3(key: string): Promise<void> {
@@ -89,14 +89,24 @@ export async function signUrls(urls: string[], expiresIn = 3600): Promise<string
 }
 
 
-export const generatePresignedUploadUrl = async (fileKey: string, fileType: string) => {
-  const command = new PutObjectCommand({
-    Bucket: process.env.AWS_S3_BUCKET,
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+
+export const generatePresignedUploadUrl = async (fileKey: string, fileType: string, maxSizeLimit = 10485760) => {
+  const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
+  
+  // Use createPresignedPost to enforce strict file size limits (Denial of Wallet prevention)
+  const { url, fields } = await createPresignedPost(s3Client as any, {
+    Bucket: bucketName,
     Key: fileKey,
-    ContentType: fileType, // Enforces that the client uploads the correct file type
+    Conditions: [
+      ["content-length-range", 0, maxSizeLimit], // Limit file size (default 10MB)
+      ["eq", "$Content-Type", fileType], // Enforces exact content type
+    ],
+    Fields: {
+      "Content-Type": fileType,
+    },
+    Expires: 300, // URL expires in 5 minutes (300 seconds)
   });
 
-  // URL expires in 5 minutes (300 seconds)
-  const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
-  return uploadUrl;
+  return { url, fields };
 };

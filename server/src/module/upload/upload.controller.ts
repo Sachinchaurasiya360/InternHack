@@ -46,12 +46,12 @@ export class UploadController {
       }
 
       const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
-      const uploadUrl = await generatePresignedUploadUrl(fileKey, fileType);
+      const { url: uploadUrl, fields: uploadFields } = await generatePresignedUploadUrl(fileKey, fileType);
       const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
       const region = process.env.AWS_REGION || "ap-south-1";
       const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${fileKey}`;
 
-      return res.status(200).json({ uploadUrl, fileKey, fileUrl });
+      return res.status(200).json({ uploadUrl, uploadFields, fileKey, fileUrl });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });

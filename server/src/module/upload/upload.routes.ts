@@ -9,8 +9,18 @@ export const uploadRouter = Router();
 // Protect all upload routes
 uploadRouter.use(authMiddleware);
 
+import rateLimit from "express-rate-limit";
+
+const presignedUrlRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 presigned URL requests per window
+  message: { message: "Too many upload requests, please try again after 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // NEW: Route to generate pre-signed URL for direct client-to-S3 uploads
-uploadRouter.post("/presigned-url", (req, res) => uploadController.getPresignedUrl(req, res));
+uploadRouter.post("/presigned-url", presignedUrlRateLimit, (req, res) => uploadController.getPresignedUrl(req, res));
 
 // UPDATED: Profile-specific endpoints (No more multer middleware!)
 // These now expect a JSON body like: { "fileUrl": "https://..." }

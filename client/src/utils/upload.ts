@@ -15,13 +15,18 @@ export const uploadDirectToS3 = async ({ file, folder, endpoint }: UploadProfile
       folder,
     });
 
-    const { uploadUrl, fileUrl } = presignData as { uploadUrl: string; fileUrl: string };
+    const { uploadUrl, uploadFields, fileUrl } = presignData as { uploadUrl: string; uploadFields: Record<string, string>; fileUrl: string };
 
-    // Upload directly to S3 — no auth headers on pre-signed requests
+    const formData = new FormData();
+    Object.entries(uploadFields).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    formData.append("file", file); // file MUST be the last field appended
+
+    // Upload directly to S3 via POST — no auth headers on pre-signed requests
     const s3UploadRes = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file,
+      method: 'POST',
+      body: formData,
     });
 
     if (!s3UploadRes.ok) {

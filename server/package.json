@@ -20,6 +20,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",
     "@aws-sdk/client-s3": "^3.1053.0",
+    "@aws-sdk/s3-presigned-post": "^3.1053.0",
     "@aws-sdk/s3-request-presigner": "^3.1053.0",
     "@google/generative-ai": "^0.24.1",
     "@mistralai/mistralai": "^1.15.1",
