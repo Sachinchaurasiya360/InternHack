@@ -3,8 +3,8 @@ import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-quer
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
-  CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target, Download,
+CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
+  Lock, Search, BookOpen, TrendingUp, Target, Download, X,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
@@ -68,7 +68,13 @@ export default function DsaTopicsPage() {
     }, 300);
     return () => clearTimeout(t);
   }, [topicSearch]);
+const clearFilters = () => {
+    setTopicSearch("");
+    setActiveTab("all");
+    setPage(1);
+  };
 
+  const hasFilters = topicSearch.trim() !== "" || activeTab !== "all";
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
       activeTab === "medium-hard" ? "Medium,Hard" :
@@ -366,6 +372,14 @@ export default function DsaTopicsPage() {
                 </button>
               );
             })}
+            {hasFilters && (
+              <button
+                onClick={clearFilters}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
+              >
+                <X className="w-3 h-3" /> clear
+              </button>
+            )}
           </div>
         </motion.div>
 
