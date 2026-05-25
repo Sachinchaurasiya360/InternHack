@@ -28,6 +28,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
+import { ResultCount } from "../../../components/ui/ResultCount";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { cn } from "@/lib/utils";
@@ -1026,13 +1027,17 @@ export default function CompanyListPage() {
             {loading ? (
               <LoadingScreen compact />
             ) : companies.length === 0 ? (
-              <EmptyState
-                icon={<Building2 className="w-5 h-5" />}
-                title="No companies found"
-                hint="try different search criteria"
-              />
+              <>
+                {pagination && <ResultCount currentCount={companies.length} totalCount={pagination.total} />}
+                <EmptyState
+                  icon={<Building2 className="w-5 h-5" />}
+                  title="No companies found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {pagination && <ResultCount currentCount={companies.length} totalCount={pagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {companies.map((company, i) => (
                     <motion.div
@@ -1150,13 +1155,17 @@ export default function CompanyListPage() {
             {ycLoading ? (
               <Spinner />
             ) : ycCompanies.length === 0 ? (
-              <EmptyState
-                icon={<Rocket className="w-5 h-5" />}
-                title="No YC companies found"
-                hint="try different search criteria"
-              />
+              <>
+                {ycPagination && <ResultCount currentCount={ycCompanies.length} totalCount={ycPagination.total} />}
+                <EmptyState
+                  icon={<Rocket className="w-5 h-5" />}
+                  title="No YC companies found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {ycPagination && <ResultCount currentCount={ycCompanies.length} totalCount={ycPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {ycCompanies.map((company, i) => (
                     <motion.div
@@ -1248,13 +1257,17 @@ export default function CompanyListPage() {
             {profLoading ? (
               <Spinner />
             ) : professors.length === 0 ? (
-              <EmptyState
-                icon={<GraduationCap className="w-5 h-5" />}
-                title="No professors found"
-                hint="try different search criteria"
-              />
+              <>
+                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
+                <EmptyState
+                  icon={<GraduationCap className="w-5 h-5" />}
+                  title="No professors found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {professors.map((prof, i) => (
                     <motion.div
@@ -1338,13 +1351,17 @@ export default function CompanyListPage() {
             {interviewLoading ? (
               <Spinner />
             ) : interviewCompanies.length === 0 ? (
-              <EmptyState
-                icon={<MessageCircle className="w-5 h-5" />}
-                title="No interview experiences yet"
-                hint="be the first to share, earn a badge"
-              />
+              <>
+                {interviewPagination && <ResultCount currentCount={interviewCompanies.length} totalCount={interviewPagination.total} />}
+                <EmptyState
+                  icon={<MessageCircle className="w-5 h-5" />}
+                  title="No interview experiences yet"
+                  hint="be the first to share, earn a badge"
+                />
+              </>
             ) : (
               <>
+                {interviewPagination && <ResultCount currentCount={interviewCompanies.length} totalCount={interviewPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {interviewCompanies.map((company, i) => (
                     <motion.div

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { LocationDropdown } from "../../components/ui/LocationDropdown";
 import { PaginationControls } from "../../components/ui/PaginationControls";
+import { ResultCount } from "../../components/ui/ResultCount";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
 import { canonicalUrl } from "../../lib/seo.utils";
@@ -203,13 +204,17 @@ export default function ScrapedJobsPage() {
             <div className="w-8 h-8 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
           </div>
         ) : jobs.length === 0 ? (
-          <div className="text-center py-16">
-            <Globe className="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-4" />
-            <p className="text-stone-600 dark:text-stone-400 mb-2">No external jobs found</p>
-            <p className="text-sm text-stone-500">Try different search criteria or check back later</p>
-          </div>
+          <>
+            {pagination && <ResultCount currentCount={jobs.length} totalCount={pagination.total} />}
+            <div className="text-center py-16">
+              <Globe className="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-4" />
+              <p className="text-stone-600 dark:text-stone-400 mb-2">No external jobs found</p>
+              <p className="text-sm text-stone-500">Try different search criteria or check back later</p>
+            </div>
+          </>
         ) : (
           <>
+            {pagination && <ResultCount currentCount={jobs.length} totalCount={pagination.total} />}
             <div className="relative">
               {isFetching && !isLoading && (
                 <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
