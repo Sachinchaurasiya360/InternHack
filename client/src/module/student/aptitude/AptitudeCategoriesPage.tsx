@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
-import { motion } from "framer-motion";
-import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search, X } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
@@ -28,6 +28,15 @@ export default function AptitudeCategoriesPage() {
     enabled: !!user,
   });
 
+  // True when the user has deviated from the defaults.
+  const hasFilters = activeTab !== "all" || topicSearch.trim() !== "";
+
+  // Reset both filter axes in one shot.
+  const clearFilters = () => {
+    setTopicSearch("");
+    setActiveTab("all");
+  };
+
   const totalQuestions = categories?.reduce((s, c) => s + c.questionCount, 0) ?? 0;
   const totalAnswered = categories?.reduce((s, c) => s + c.answeredCount, 0) ?? 0;
   const overallPct = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
@@ -37,9 +46,9 @@ export default function AptitudeCategoriesPage() {
     categories?.flatMap((cat) =>
       cat.topics.map((t) => ({ ...t, categorySlug: cat.slug, categoryName: cat.name })),
     ) ?? [];
-  const filteredTopics = (activeTab === "all" ? allTopics : allTopics.filter((t) => t.categorySlug === activeTab)).filter(
-    (t) => !topicSearch || t.name.toLowerCase().includes(topicSearch.toLowerCase()),
-  );
+  const filteredTopics = (
+    activeTab === "all" ? allTopics : allTopics.filter((t) => t.categorySlug === activeTab)
+  ).filter((t) => !topicSearch || t.name.toLowerCase().includes(topicSearch.toLowerCase()));
 
   if (isLoading) return <LoadingScreen />;
 
@@ -122,12 +131,7 @@ export default function AptitudeCategoriesPage() {
         </motion.div>
 
         {/* Companies strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="mb-6"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-6">
           <Link
             to="/learn/aptitude/companies"
             className="group flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
@@ -145,7 +149,7 @@ export default function AptitudeCategoriesPage() {
           </Link>
         </motion.div>
 
-        {/* Overall progress + category breakdown */}
+        {/* Overall progress */}
         {user && progress && categories && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -163,9 +167,7 @@ export default function AptitudeCategoriesPage() {
                 labelClassName="text-[11px] font-mono font-bold tabular-nums text-stone-900 dark:text-stone-50"
               />
               <div className="flex-1 min-w-0">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                  overall progress
-                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">overall progress</span>
                 <p className="mt-1 text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 tabular-nums">
                   {totalAnswered.toLocaleString()} / {totalQuestions.toLocaleString()}
                 </p>
@@ -182,49 +184,71 @@ export default function AptitudeCategoriesPage() {
           </motion.div>
         )}
 
-        {/* Tabs + Search */}
+        {/* Search + category tabs + unified clear */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="mb-8 space-y-4"
         >
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-            <input
-              type="text"
-              placeholder="Search topics..."
-              value={topicSearch}
-              onChange={(e) => setTopicSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
-            />
+          {/* Search row — clear button sits here at the top of the filter block */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Search topics..."
+                value={topicSearch}
+                onChange={(e) => setTopicSearch(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+              />
+            </div>
+
+            {/* Clear filters — animated, visible only when a filter is active */}
+            <AnimatePresence>
+              {hasFilters && (
+                <motion.button
+                  type="button"
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.15 }}
+                  onClick={clearFilters}
+                  className="inline-flex items-center gap-1.5 px-4 py-3 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 border border-stone-300 dark:border-white/10 bg-white dark:bg-stone-900 hover:border-red-300 dark:hover:border-red-800 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  <X className="w-3.5 h-3.5" /> Clear filters
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
 
+          {/* Category tab pills */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
               category /
             </span>
-            {[{ key: "all", label: "All" }, ...(categories?.map((c) => ({ key: c.slug, label: c.name })) ?? [])].map(
-              (tab, i) => {
-                const active = activeTab === tab.key;
-                return (
-                  <motion.button
-                    key={tab.key}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.02, duration: 0.2 }}
-                    onClick={() => setActiveTab(tab.key)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                      active
-                        ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                        : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                  >
-                    {tab.label}
-                  </motion.button>
-                );
-              },
-            )}
+            {[
+              { key: "all", label: "All" },
+              ...(categories?.map((c) => ({ key: c.slug, label: c.name })) ?? []),
+            ].map((tab, i) => {
+              const active = activeTab === tab.key;
+              return (
+                <motion.button
+                  key={tab.key}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.02, duration: 0.2 }}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                    active
+                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                  }`}
+                >
+                  {tab.label}
+                </motion.button>
+              );
+            })}
           </div>
         </motion.div>
 
@@ -252,6 +276,16 @@ export default function AptitudeCategoriesPage() {
             <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
               try a different keyword or category
             </p>
+            {/* Empty-state clear button — avoids scroll back to top */}
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" /> Clear filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
