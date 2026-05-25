@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target, Download,
+  Lock, Search, BookOpen, TrendingUp, Target, Download, X,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
@@ -68,6 +68,17 @@ export default function DsaTopicsPage() {
     }, 300);
     return () => clearTimeout(t);
   }, [topicSearch]);
+
+  // True when the user has deviated from the default "show all" state.
+  const hasFilters = activeTab !== "all" || topicSearch.trim() !== "";
+
+  // Reset all filter state back to defaults in one click.
+  const clearFilters = () => {
+    setTopicSearch("");
+    setDebouncedSearch("");
+    setActiveTab("all");
+    setPage(1);
+  };
 
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
@@ -259,12 +270,8 @@ export default function DsaTopicsPage() {
                   className="flex flex-col gap-2 p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10"
                 >
                   <div className="flex items-baseline justify-between">
-                    <span className={`text-[10px] font-mono uppercase tracking-widest ${d.color}`}>
-                      / {d.label}
-                    </span>
-                    <span className="text-xs font-mono tabular-nums text-stone-500 dark:text-stone-400">
-                      {dPct}%
-                    </span>
+                    <span className={`text-[10px] font-mono uppercase tracking-widest ${d.color}`}>/ {d.label}</span>
+                    <span className="text-xs font-mono tabular-nums text-stone-500 dark:text-stone-400">{dPct}%</span>
                   </div>
                   <p className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 tabular-nums">
                     {stat.solved}
@@ -284,18 +291,14 @@ export default function DsaTopicsPage() {
           </motion.div>
         )}
 
-        {/* Heatmap (logged-in) */}
+        {/* Heatmap */}
         {user && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.09 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }}>
             <DsaHeatmap />
           </motion.div>
         )}
 
-        {/* Quick links strip */}
+        {/* Quick links */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -319,7 +322,7 @@ export default function DsaTopicsPage() {
           ))}
         </motion.div>
 
-        {/* LeetCode Sync — only for logged-in students */}
+        {/* LeetCode Sync */}
         {user && (
           <LeetCodeSync
             onSyncSuccess={() => {
@@ -336,17 +339,38 @@ export default function DsaTopicsPage() {
           transition={{ delay: 0.12 }}
           className="mb-6 space-y-3"
         >
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-            <input
-              type="text"
-              placeholder="Search topics..."
-              value={topicSearch}
-              onChange={(e) => setTopicSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
-            />
+          {/* Search row — clear button lives here for top-of-filter discoverability */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Search topics..."
+                value={topicSearch}
+                onChange={(e) => setTopicSearch(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+              />
+            </div>
+
+            {/* Clear filters — animated, appears only when a filter is active */}
+            <AnimatePresence>
+              {hasFilters && (
+                <motion.button
+                  type="button"
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.15 }}
+                  onClick={clearFilters}
+                  className="inline-flex items-center gap-1.5 px-4 py-3 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 border border-stone-300 dark:border-white/10 bg-white dark:bg-stone-900 hover:border-red-300 dark:hover:border-red-800 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  <X className="w-3.5 h-3.5" /> Clear filters
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
 
+          {/* Difficulty tab pills */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
               difficulty /
@@ -357,10 +381,11 @@ export default function DsaTopicsPage() {
                 <button
                   key={tab.key}
                   onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
-                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                    : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                    active
+                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                  }`}
                 >
                   {tab.label}
                 </button>
@@ -485,15 +510,21 @@ export default function DsaTopicsPage() {
               <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
                 try a different keyword or difficulty
               </p>
+              {/* Empty-state clear button so user doesn't have to scroll back up */}
+              {hasFilters && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" /> Clear filters
+                </button>
+              )}
             </div>
           )}
         </div>
 
-        <PaginationControls
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+        <PaginationControls currentPage={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <LoginGate open={showGate} onClose={() => setShowGate(false)} />
