@@ -64,6 +64,7 @@ export default function JobBrowsePage() {
   const [scrPage, setScrPage] = useState(1);
   const debouncedSearch = useDebounce(search, 400);
   const debouncedLocation = useDebounce(locationFilter, 400);
+  // Default: expired jobs are hidden. "Hide expired" toggled OFF counts as an active filter.
   const [hideExpired, setHideExpired] = useState(true);
 
   const { data, isLoading, isFetching } = useQuery({
@@ -148,18 +149,21 @@ export default function JobBrowsePage() {
     setScrPage(1);
   };
 
+  // Reset every filter back to its default value in one shot.
   const clearAll = () => {
     setSearch("");
     setLocationFilter("");
     setSelectedTags([]);
+    setHideExpired(true); // restore default
     setPage(1);
     setExtPage(1);
     setScrPage(1);
   };
 
-  const hasFilters = search || locationFilter || selectedTags.length > 0;
-
-  
+  // Showing the button when hideExpired is false catches the "I turned off
+  // expired-hiding" case that the old code missed.
+  const hasFilters =
+    !!search || !!locationFilter || selectedTags.length > 0 || !hideExpired;
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -288,6 +292,10 @@ export default function JobBrowsePage() {
           transition={{ delay: 0.1 }}
           className="mb-10 space-y-4"
         >
+          {/*
+           * Search row — "Clear filters" lives here so it's always reachable
+           * at the top of the filter block, not buried inside the tag strip.
+           */}
           <form
             onSubmit={(e) => e.preventDefault()}
             className="flex flex-col sm:flex-row gap-2"
@@ -308,6 +316,7 @@ export default function JobBrowsePage() {
                 placeholder="Search by title, company, or keyword..."
               />
             </div>
+
             <div className="relative sm:w-60">
               <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
               <input
@@ -318,8 +327,26 @@ export default function JobBrowsePage() {
                 placeholder="Location"
               />
             </div>
+
+            {/* Primary "Clear filters" button — visible whenever any filter is active */}
+            <AnimatePresence>
+              {hasFilters && (
+                <motion.button
+                  type="button"
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.15 }}
+                  onClick={clearAll}
+                  className="inline-flex items-center gap-1.5 px-4 py-3 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 border border-stone-300 dark:border-white/10 bg-white dark:bg-stone-900 hover:border-red-300 dark:hover:border-red-800 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  <X className="w-3.5 h-3.5" /> Clear filters
+                </motion.button>
+              )}
+            </AnimatePresence>
           </form>
 
+          {/* Tag chips + hide-expired toggle */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
@@ -355,6 +382,11 @@ export default function JobBrowsePage() {
                 Hide expired
               </span>
             </label>
+
+            {/*
+             * Secondary inline "clear" — kept for discoverability inside the
+             * tag row itself (same as before, but now also catches hideExpired).
+             */}
             <AnimatePresence>
               {hasFilters && (
                 <motion.button
@@ -464,7 +496,7 @@ export default function JobBrowsePage() {
           </motion.div>
         )}
 
-        {/* Global empty state — shown when ALL three sources return nothing */}
+        {/* Global empty state */}
         {allEmpty && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -492,7 +524,7 @@ export default function JobBrowsePage() {
           </motion.div>
         )}
 
-        {/* Internal jobs — hidden when everything is empty */}
+        {/* Internal jobs */}
         {!allEmpty && (
           <>
             <div className="flex items-end justify-between gap-4 mb-6">
