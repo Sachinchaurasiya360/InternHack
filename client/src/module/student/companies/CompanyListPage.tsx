@@ -464,11 +464,42 @@ function EditorialDropdown({
   options: DropdownOption[];
   onChange: (value: string) => void;
 }) {
+  const [open, setOpen] = useState(false);
+  const listboxId = `${label.toLowerCase().replace(/\s+/g, "-")}-listbox`;
   const current = options.find((o) => o.value === value);
+
+  const close = () => setOpen(false);
+  const toggle = () => setOpen((prev) => !prev);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      toggle();
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      close();
+    }
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    const nextFocus = event.relatedTarget;
+    if (!nextFocus || !event.currentTarget.contains(nextFocus as Node)) {
+      close();
+    }
+  };
+
   return (
-    <div className="relative group">
+    <div className="relative" onBlur={handleBlur}>
       <button
         type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listboxId}
+        onClick={toggle}
+        onKeyDown={handleKeyDown}
         className="inline-flex items-center gap-2 h-10 px-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer"
       >
         <span className="text-stone-400">{icon}</span>
@@ -478,14 +509,34 @@ function EditorialDropdown({
         </span>
         <ChevronDown className="w-3.5 h-3.5 opacity-60" />
       </button>
-      <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-55 max-h-80 overflow-y-auto rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
+      <div
+        id={listboxId}
+        role="listbox"
+        aria-label={`${label} filter options`}
+        className={cn(
+          "absolute left-0 top-full z-20 mt-1 min-w-55 max-h-80 overflow-y-auto rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl",
+          open ? "block" : "hidden"
+        )}
+      >
         {options.map((opt) => {
           const active = opt.value === value;
           return (
             <button
               key={opt.value || "__all"}
               type="button"
-              onClick={() => onChange(opt.value)}
+              role="option"
+              aria-selected={active}
+              onClick={() => {
+                onChange(opt.value);
+                close();
+              }}
+              onMouseDown={(event) => event.preventDefault()}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  close();
+                }
+              }}
               className={cn(
                 "flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors",
                 active
