@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import api from "../lib/axios";
 
 const linkClass =
-  "text-sm text-stone-400 hover:text-stone-50 transition-colors no-underline";
+  "text-sm text-stone-400 hover:text-stone-50 transition-all duration-300 no-underline hover:-translate-y-0.5 hover:drop-shadow-[0_0_8px_rgba(163,230,53,0.35)]";
 
 const SOCIAL_LINKS = {
   email: "mailto:mrsachinchaurasiya@gmail.com",
