@@ -302,12 +302,34 @@ export default function InterviewLessonsPage() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  <MetaChip>
-                    {isLocked ? `${section.total} questions` : `${section.completed} / ${section.total} done`}
-                  </MetaChip>
-                  <MetaChip className={LEVEL_STYLE[section.level]}>{section.level}</MetaChip>
-                </div>
+                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+  {/* Answer Progress Chip */}
+  <div
+    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold tracking-wide transition-all duration-200
+      ${
+        isComplete
+          ? "bg-lime-100 text-lime-700 border-lime-300 dark:bg-lime-950/40 dark:text-lime-400 dark:border-lime-800"
+          : section.completed > 0
+          ? "bg-stone-100 text-stone-800 border-stone-300 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700"
+          : "bg-stone-50 text-stone-500 border-stone-200 dark:bg-stone-900 dark:text-stone-400 dark:border-stone-800"
+      }`}
+  >
+    <span className="tabular-nums">
+      {isLocked
+        ? `${section.total} Questions`
+        : `${section.completed} / ${section.total} Answered`}
+    </span>
+
+    {isComplete && (
+      <CheckCircle2 className="w-4 h-4 shrink-0" />
+    )}
+  </div>
+
+  {/* Difficulty Badge */}
+  <MetaChip className={LEVEL_STYLE[section.level]}>
+    {section.level}
+  </MetaChip>
+</div>
 
                 <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
                   <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
