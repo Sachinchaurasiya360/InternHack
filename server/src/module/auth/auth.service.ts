@@ -64,6 +64,12 @@ type GitHubStats = {
   topLanguages: { name: string; count: number }[];
 };
 
+type GitHubStatsRepo = {
+  stargazers_count: number;
+  language: string | null;
+  fork: boolean;
+};
+
 const githubStatsCache = new Map<string, { data: GitHubStats; expiresAt: number }>();
 
 function parseGitHubUsername(input: string) {
@@ -77,6 +83,27 @@ function parseGitHubUsername(input: string) {
   } catch {
     return value.replace(/^github\.com\//i, "").split("/")[0]?.replace(/^@/, "") ?? "";
   }
+}
+
+async function fetchAllGitHubStatsRepos(username: string, headers: Record<string, string>): Promise<GitHubStatsRepo[]> {
+  const repos: GitHubStatsRepo[] = [];
+
+  for (let page = 1; ; page += 1) {
+    const reposRes = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner&sort=updated&page=${page}`,
+      { headers },
+    );
+    if (!reposRes.ok) {
+      throw new Error(`GitHub API error: ${reposRes.status}`);
+    }
+
+    const pageRepos = (await reposRes.json()) as GitHubStatsRepo[];
+    repos.push(...pageRepos);
+    const linkHeader = reposRes.headers.get("link") ?? "";
+    if (!linkHeader.includes('rel="next"')) break;
+  }
+
+  return repos;
 }
 
 export class AuthService {
@@ -705,29 +732,20 @@ export class AuthService {
     }
 
     const headers = { "User-Agent": "InternHack-App" };
-    const [userRes, reposRes] = await Promise.all([
+    const [userRes, repos] = await Promise.all([
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
-      fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner&sort=updated`, { headers }),
+      fetchAllGitHubStatsRepos(username, headers),
     ]);
 
     if (!userRes.ok) {
       if (userRes.status === 404) throw new Error("GitHub user not found");
       throw new Error(`GitHub API error: ${userRes.status}`);
     }
-    if (!reposRes.ok) {
-      throw new Error(`GitHub API error: ${reposRes.status}`);
-    }
-
     const profile = (await userRes.json()) as {
       login: string;
       html_url: string;
       public_repos: number;
     };
-    const repos = (await reposRes.json()) as {
-      stargazers_count: number;
-      language: string | null;
-      fork: boolean;
-    }[];
 
     const ownRepos = repos.filter((repo) => !repo.fork);
     const languageCounts = new Map<string, number>();
