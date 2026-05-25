@@ -86,17 +86,22 @@ export default function LoginPage() {
 
       <div className="flex items-center justify-center px-6 py-12 lg:py-0">
 
-        <motion.div
+        <main
+          role="main"
+          aria-labelledby="login-heading"
+          className="w-full max-w-md"
+        >
+          <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-md"
+          className="w-full"
         >
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
             <span className="h-1.5 w-1.5 bg-lime-400" />
             sign in
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+          <h1 id="login-heading" className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
             Welcome back.
           </h1>
           <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">
@@ -118,6 +123,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setRole("STUDENT")}
+                  aria-pressed={role === "STUDENT"}
                   className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
                     ? "bg-lime-400 text-stone-950"
                     : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
@@ -128,6 +134,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setRole("RECRUITER")}
+                  aria-pressed={role === "RECRUITER"}
                   className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
                     ? "bg-lime-400 text-stone-950"
                     : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
@@ -160,6 +167,7 @@ export default function LoginPage() {
               <FormField label={isRecruiter ? "Company email" : "Email"}>
                 <input
                   type="email"
+                  aria-label={isRecruiter ? "Company email" : "Email"}
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
@@ -182,6 +190,7 @@ export default function LoginPage() {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
+                    aria-label="Password"
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
