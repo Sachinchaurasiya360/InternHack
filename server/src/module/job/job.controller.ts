@@ -78,8 +78,8 @@ export class JobController {
         return res.status(400).json({ message: "Invalid job ID" });
       }
 
-      const limitParam = Number(req.query["limit"] ?? 4);
-      const limit = Number.isFinite(limitParam) ? limitParam : 4;
+      const rawLimit = Number.parseInt(String(req.query["limit"] ?? "4"), 10);
+      const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 4) : 4;
       const jobs = await this.jobService.getRelatedJobs(id, limit);
       if (!jobs) {
         return res.status(404).json({ message: "Job not found" });
