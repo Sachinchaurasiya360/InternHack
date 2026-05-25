@@ -110,23 +110,34 @@ export async function sendWeeklyRoadmapDigests(): Promise<void> {
   for (const digest of byUser.values()) {
     if (digest.roadmaps.length === 0) continue;
 
-    await sendEmail({
-      to: digest.user.email,
-      subject: `${digest.user.name.split(" ")[0] || "Student"}, your weekly roadmap progress`,
-      html: roadmapWeeklyDigestEmailHtml({
-        name: digest.user.name,
-        roadmaps: digest.roadmaps,
-      }),
-    });
+    try {
+      await sendEmail({
+        to: digest.user.email,
+        subject: `${digest.user.name.split(" ")[0] || "Student"}, your weekly roadmap progress`,
+        html: roadmapWeeklyDigestEmailHtml({
+          name: digest.user.name,
+          roadmaps: digest.roadmaps,
+        }),
+      });
+    } catch (err) {
+      console.error(
+        `[RoadmapDigest] Failed to send digest to user ${digest.user.id} (${digest.user.email}):`,
+        err,
+      );
+    }
   }
 }
 
 export function startWeeklyRoadmapDigestCron(schedule = "0 9 * * 1"): void {
   if (cronJob) return;
-  cronJob = cron.schedule(schedule, () => {
-    void sendWeeklyRoadmapDigests().catch((err) => {
-      console.error("[RoadmapDigest] Weekly digest failed:", err);
-    });
-  });
+  cronJob = cron.schedule(
+    schedule,
+    () => {
+      void sendWeeklyRoadmapDigests().catch((err) => {
+        console.error("[RoadmapDigest] Weekly digest failed:", err);
+      });
+    },
+    { timezone: "Etc/UTC" },
+  );
   console.log(`[RoadmapDigest] Weekly digest scheduled with cron "${schedule}"`);
 }

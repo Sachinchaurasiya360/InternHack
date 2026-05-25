@@ -1108,9 +1108,11 @@ export function roadmapWeeklyDigestEmailHtml(args: {
     nextTopicSlug: string | null;
   }[];
 }): string {
-  const firstName = args.name.split(" ")[0] || args.name;
+  const firstName = escapeHtml(args.name.split(" ")[0] || args.name || "there");
   const dashboardUrl = "https://www.internhack.xyz/dashboard/roadmaps";
   const rows = args.roadmaps.map((roadmap) => {
+    const title = escapeHtml(roadmap.title);
+    const nextTopicTitle = roadmap.nextTopicTitle ? escapeHtml(roadmap.nextTopicTitle) : "";
     const resumeUrl = roadmap.nextTopicSlug
       ? `https://www.internhack.xyz/learn/roadmaps/${roadmap.slug}/${roadmap.nextTopicSlug}`
       : `https://www.internhack.xyz/learn/roadmaps/${roadmap.slug}`;
@@ -1120,7 +1122,7 @@ export function roadmapWeeklyDigestEmailHtml(args: {
 
     return `
       <tr><td style="padding:16px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:10px;">
-        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#18181b;">${roadmap.title}</p>
+        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#18181b;">${title}</p>
         <p style="margin:0 0 12px;font-size:12px;color:#71717a;">${nudge}</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
           <tr><td style="height:8px;background-color:#e4e4e7;border-radius:999px;overflow:hidden;">
@@ -1129,7 +1131,7 @@ export function roadmapWeeklyDigestEmailHtml(args: {
         </table>
         <p style="margin:0 0 10px;font-size:12px;color:#52525b;">
           <strong style="color:#18181b;">${roadmap.percentComplete}% complete</strong>
-          ${roadmap.nextTopicTitle ? ` - Next: ${roadmap.nextTopicTitle}` : ""}
+          ${nextTopicTitle ? ` - Next: ${nextTopicTitle}` : ""}
         </p>
         <a href="${resumeUrl}" style="display:inline-block;padding:10px 14px;background-color:#18181b;color:#ffffff;text-decoration:none;border-radius:6px;font-size:12px;font-weight:700;">
           Resume roadmap
