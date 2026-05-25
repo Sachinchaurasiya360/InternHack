@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, ExternalLink, Github, Loader2, Star, Code2 } from "lucide-react";
 import api from "../../../lib/axios";
+import { Button } from "../../../components/ui/button";
 
 interface GitHubStats {
   username: string;
@@ -96,15 +97,12 @@ export default function GitHubStatsCard({
           </p>
           <h3 className="mt-1 text-sm font-bold text-stone-900 dark:text-stone-50 truncate">@{data.username}</h3>
         </div>
-        <a
-          href={data.profileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-stone-200 dark:border-white/10 text-[11px] font-semibold text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors shrink-0"
-        >
-          Profile
-          <ExternalLink className="w-3 h-3" />
-        </a>
+        <Button asChild variant="foreground" mode="link" size="sm" className="shrink-0">
+          <a href={data.profileUrl} target="_blank" rel="noopener noreferrer">
+            Profile
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

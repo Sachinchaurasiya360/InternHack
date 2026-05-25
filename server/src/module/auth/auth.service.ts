@@ -55,6 +55,7 @@ interface GoogleAuthInput {
 }
 
 const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
+const GITHUB_STATS_MAX_REPO_PAGES = 100;
 
 type GitHubStats = {
   username: string;
@@ -87,8 +88,9 @@ function parseGitHubUsername(input: string) {
 
 async function fetchAllGitHubStatsRepos(username: string, headers: Record<string, string>): Promise<GitHubStatsRepo[]> {
   const repos: GitHubStatsRepo[] = [];
+  let hasNextPage = false;
 
-  for (let page = 1; ; page += 1) {
+  for (let page = 1; page <= GITHUB_STATS_MAX_REPO_PAGES; page += 1) {
     const reposRes = await fetch(
       `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner&sort=updated&page=${page}`,
       { headers },
@@ -100,7 +102,12 @@ async function fetchAllGitHubStatsRepos(username: string, headers: Record<string
     const pageRepos = (await reposRes.json()) as GitHubStatsRepo[];
     repos.push(...pageRepos);
     const linkHeader = reposRes.headers.get("link") ?? "";
-    if (!linkHeader.includes('rel="next"')) break;
+    hasNextPage = linkHeader.includes('rel="next"');
+    if (!hasNextPage) break;
+  }
+
+  if (hasNextPage) {
+    throw new Error("Exceeded max GitHub repository pages while fetching stats");
   }
 
   return repos;
