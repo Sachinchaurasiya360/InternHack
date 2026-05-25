@@ -9,7 +9,7 @@ import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 
 export default function AptitudeCategoriesPage() {
@@ -231,12 +231,9 @@ const clearFilters = () => {
               },
             )}
             {hasFilters && (
-              <button
-                onClick={clearFilters}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
-              >
+              <Button onClick={clearFilters} variant="ghost" size="sm">
                 <X className="w-3 h-3" /> clear
-              </button>
+              </Button>
             )}
           </div>
         </motion.div>

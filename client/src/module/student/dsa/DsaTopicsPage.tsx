@@ -7,6 +7,7 @@ CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
   Lock, Search, BookOpen, TrendingUp, Target, Download, X,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus } from "../../../lib/types";
@@ -372,13 +373,10 @@ const clearFilters = () => {
                 </button>
               );
             })}
-            {hasFilters && (
-              <button
-                onClick={clearFilters}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
-              >
+{hasFilters && (
+              <Button onClick={clearFilters} variant="ghost" size="sm">
                 <X className="w-3 h-3" /> clear
-              </button>
+              </Button>
             )}
           </div>
         </motion.div>
