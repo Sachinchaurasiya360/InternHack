@@ -6,6 +6,12 @@ export const queryKeys = {
       ["jobs", "list", params] as const,
     detail: (id: string | number) => ["jobs", "detail", id] as const,
   },
+  // Hackathons
+  hackathons: {
+    all: ["hackathons"] as const,
+    list: () => ["hackathons", "list"] as const,
+    myParticipations: () => ["hackathons", "my-participations"] as const,
+  },
 
   // Applications
   applications: {
