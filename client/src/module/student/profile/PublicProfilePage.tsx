@@ -100,7 +100,13 @@ export default function PublicProfilePage() {
 
   return (
     <div className="relative pb-12 max-w-5xl mx-auto">
-      <SEO title={`${profile.name} - Profile`} noIndex />
+      <SEO
+  title={`${profile.name} — InternHack Profile`}
+  description={`${profile.name}'s skills: ${profile.skills.slice(0, 5).join(", ")}${profile.skills.length > 5 ? " and more" : ""}. ${profile.bio ? profile.bio.slice(0, 100) : "View their projects, achievements, and verified skills on InternHack."}`}
+  ogImage={profile.profilePic || undefined}
+  ogType="profile"
+  canonicalUrl={`https://internhack.xyz/student/profile/${profile.id}`}
+/>
 
       {/* Back button */}
       <motion.button
