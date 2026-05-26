@@ -4,6 +4,9 @@ import * as fs from "fs";
 import { fileURLToPath } from "url";
 import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
 
@@ -40,18 +43,36 @@ export class UploadController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const { fileName, fileType, folder = "uploads" } = req.body;
-      if (!fileName || !fileType) {
-        return res.status(400).json({ message: "fileName and fileType are required" });
+      const { fileName, fileType, folder } = req.body;
+      if (!fileName || !fileType || !folder) {
+        return res.status(400).json({ message: "fileName, fileType, and folder are required" });
       }
 
       const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
-      const uploadUrl = await generatePresignedUploadUrl(fileKey, fileType);
+      
+      let presignedData;
+      try {
+        presignedData = await generatePresignedUploadUrl(fileKey, fileType, folder);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Failed to generate upload URL";
+        const isClientError =
+          msg.startsWith("Invalid or unauthorized upload folder") ||
+          msg.startsWith("Invalid file type");
+
+        if (isClientError) {
+          return res.status(400).json({ message: msg });
+        }
+
+        logger.error("Presigned URL generation failed:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+
+      const { url: uploadUrl, fields: uploadFields } = presignedData;
       const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
       const region = process.env.AWS_REGION || "ap-south-1";
       const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${fileKey}`;
 
-      return res.status(200).json({ uploadUrl, fileKey, fileUrl });
+      return res.status(200).json({ uploadUrl, uploadFields, fileKey, fileUrl });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -148,6 +169,14 @@ export class UploadController {
         where: { id: userId },
         data: { resumes: updatedResumes },
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
+      });
+
+      // Log daily quota usage for resume generation/upload
+      await prisma.usageLog.create({
+        data: {
+          userId: req.user.id,
+          action: "GENERATE_RESUME",
+        },
       });
 
       const signedResumes = await signUrls(user.resumes);

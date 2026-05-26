@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
     "test": "vitest run",
-    "seed": "tsx src/database/seeds/seed.ts"
+    "seed": "tsx src/database/seeds/seed.ts",
+    "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
+    "seed:admin": "tsx src/database/seed-admin.ts"
   },
   "keywords": [],
   "author": "Sachin Chaurasiya",
@@ -19,6 +21,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",
     "@aws-sdk/client-s3": "^3.1053.0",
+    "@aws-sdk/s3-presigned-post": "^3.1053.0",
     "@aws-sdk/s3-request-presigner": "^3.1053.0",
     "@google/generative-ai": "^0.24.1",
     "@mistralai/mistralai": "^1.15.1",
