@@ -7,6 +7,8 @@ interface ResultCountProps {
 }
 
 export function ResultCount({ currentCount, totalCount, className }: ResultCountProps) {
+  if (currentCount >= totalCount) return null;
+
   return (
     <p
       aria-live="polite"
