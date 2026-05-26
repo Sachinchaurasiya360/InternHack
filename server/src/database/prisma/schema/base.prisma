@@ -1253,6 +1253,7 @@ enum UsageAction {
   MOCK_INTERVIEW
   AI_JOB_CHAT
   CODE_RUN
+  GITHUB_STATS
 }
 
 enum EmailCampaignStatus {
