@@ -259,14 +259,35 @@ export class ScraperService {
     // scraper) tagged with "Sales Jobs", "HR Jobs", etc. are excluded here
     // so users only see tech roles even before the 48h expiry sweep clears
     // them. Other sources (linkedin, arbeitnow) are tech-focused already.
-    const conditions: Prisma.scrapedJobWhereInput[] = [
-      {
-        OR: [
-          { source: { not: "adzuna" } },
-          { tags: { hasSome: ["IT Jobs"] } },
-        ],
-      },
-    ];
+    
+    //const conditions: Prisma.scrapedJobWhereInput[] = [
+    //  {
+    //    OR: [
+    //      { source: { not: "adzuna" } },
+    //     { tags: { hasSome: ["IT Jobs"] } },
+    //    ],
+    //  },
+    //]; 
+     
+    // Filter scraped jobs to show only tech-related roles
+  const conditions: Prisma.scrapedJobWhereInput[] = [
+  {
+    OR: [
+      { title: { contains: "developer", mode: "insensitive" } },
+      { title: { contains: "engineer", mode: "insensitive" } },
+      { title: { contains: "software", mode: "insensitive" } },
+      { title: { contains: "frontend", mode: "insensitive" } },
+      { title: { contains: "backend", mode: "insensitive" } },
+      { title: { contains: "full stack", mode: "insensitive" } },
+      { title: { contains: "python", mode: "insensitive" } },
+      { title: { contains: "java", mode: "insensitive" } },
+      { title: { contains: "react", mode: "insensitive" } },
+      { title: { contains: "ai", mode: "insensitive" } },
+      { title: { contains: "data", mode: "insensitive" } },
+    ],
+  },
+];
+   
 
     if (query.search) {
       conditions.push({
@@ -291,12 +312,37 @@ export class ScraperService {
       where.source = query.source;
     }
 
-    if (query.tags) {
-      const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
-      if (tagList.length > 0) {
-        where.tags = { hasSome: tagList };
-      }
-    }
+    //if (query.tags) {
+    //  const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
+    //  if (tagList.length > 0) {
+    //    where.tags = { hasSome: tagList };
+    //  }
+    // }
+  if (query.tags) {
+  const tagList = query.tags
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  if (tagList.length > 0) {
+    conditions.push({
+      OR: tagList.flatMap((tag) => [
+        {
+          title: {
+            contains: tag,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: tag,
+            mode: "insensitive",
+          },
+        },
+      ]),
+    });
+  }
+}
 
     const skip = (query.page - 1) * query.limit;
 

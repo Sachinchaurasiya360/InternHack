@@ -145,6 +145,9 @@ export default function JobBrowsePage() {
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
+      // Include selected filter tags in scraped jobs API request  
+      if (selectedTags.length) params.set("tags", selectedTags.join(","));  
+      
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
