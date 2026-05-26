@@ -54,6 +54,65 @@ interface GoogleAuthInput {
   role?: UserRole;
 }
 
+const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
+const GITHUB_STATS_MAX_REPO_PAGES = 100;
+
+type GitHubStats = {
+  username: string;
+  profileUrl: string;
+  publicRepos: number;
+  totalStars: number;
+  topLanguages: { name: string; count: number }[];
+};
+
+type GitHubStatsRepo = {
+  stargazers_count: number;
+  language: string | null;
+  fork: boolean;
+};
+
+const githubStatsCache = new Map<string, { data: GitHubStats; expiresAt: number }>();
+
+function parseGitHubUsername(input: string) {
+  const value = input.trim();
+  if (!value) return "";
+
+  try {
+    const parsed = new URL(value.startsWith("http") ? value : `https://${value}`);
+    if (!parsed.hostname.toLowerCase().includes("github.com")) return value.replace(/^@/, "");
+    return parsed.pathname.split("/").filter(Boolean)[0]?.replace(/^@/, "") ?? "";
+  } catch {
+    return value.replace(/^github\.com\//i, "").split("/")[0]?.replace(/^@/, "") ?? "";
+  }
+}
+
+async function fetchAllGitHubStatsRepos(username: string, headers: Record<string, string>): Promise<GitHubStatsRepo[]> {
+  const repos: GitHubStatsRepo[] = [];
+  let hasNextPage = false;
+
+  for (let page = 1; page <= GITHUB_STATS_MAX_REPO_PAGES; page += 1) {
+    const reposRes = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner&sort=updated&page=${page}`,
+      { headers },
+    );
+    if (!reposRes.ok) {
+      throw new Error(`GitHub API error: ${reposRes.status}`);
+    }
+
+    const pageRepos = (await reposRes.json()) as GitHubStatsRepo[];
+    repos.push(...pageRepos);
+    const linkHeader = reposRes.headers.get("link") ?? "";
+    hasNextPage = linkHeader.includes('rel="next"');
+    if (!hasNextPage) break;
+  }
+
+  if (hasNextPage) {
+    throw new Error("Exceeded max GitHub repository pages while fetching stats");
+  }
+
+  return repos;
+}
+
 export class AuthService {
   private googleClient: OAuth2Client;
 
@@ -665,5 +724,66 @@ export class AuthService {
       languages,
       projects,
     };
+  }
+
+  async getGitHubStats(input: string): Promise<GitHubStats> {
+    const username = parseGitHubUsername(input);
+    if (!username) {
+      throw new Error("GitHub username is required");
+    }
+
+    const cacheKey = username.toLowerCase();
+    const cached = githubStatsCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
+    const headers = { "User-Agent": "InternHack-App" };
+    const [userRes, repos] = await Promise.all([
+      fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
+      fetchAllGitHubStatsRepos(username, headers),
+    ]);
+
+    if (!userRes.ok) {
+      if (userRes.status === 404) throw new Error("GitHub user not found");
+      throw new Error(`GitHub API error: ${userRes.status}`);
+    }
+    const profile = (await userRes.json()) as {
+      login: string;
+      html_url: string;
+      public_repos: number;
+    };
+
+    const ownRepos = repos.filter((repo) => !repo.fork);
+    const languageCounts = new Map<string, number>();
+    let totalStars = 0;
+
+    for (const repo of ownRepos) {
+      totalStars += repo.stargazers_count ?? 0;
+      if (repo.language) {
+        languageCounts.set(repo.language, (languageCounts.get(repo.language) ?? 0) + 1);
+      }
+    }
+
+    const data: GitHubStats = {
+      username: profile.login,
+      profileUrl: profile.html_url,
+      publicRepos: profile.public_repos ?? ownRepos.length,
+      totalStars,
+      topLanguages: [...languageCounts.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 3)
+        .map(([name, count]) => ({ name, count })),
+    };
+
+    githubStatsCache.set(cacheKey, { data, expiresAt: Date.now() + GITHUB_STATS_CACHE_TTL });
+    if (githubStatsCache.size > 200) {
+      const now = Date.now();
+      for (const [key, entry] of githubStatsCache) {
+        if (entry.expiresAt <= now) githubStatsCache.delete(key);
+      }
+    }
+
+    return data;
   }
 }

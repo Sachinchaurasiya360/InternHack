@@ -5,6 +5,7 @@ export const queryKeys = {
     list: (params?: Record<string, string | number | boolean | undefined>) =>
       ["jobs", "list", params] as const,
     detail: (id: string | number) => ["jobs", "detail", id] as const,
+    related: (id: string | number) => ["jobs", "related", id] as const,
   },
 
   // Applications
@@ -91,6 +92,7 @@ export const queryKeys = {
       ["opensource", "list", params] as const,
     detail: (id: number) => ["opensource", "detail", id] as const,
     myRequests: () => ["opensource", "my-requests"] as const,
+    trend: () => ["opensource", "trend"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
   },

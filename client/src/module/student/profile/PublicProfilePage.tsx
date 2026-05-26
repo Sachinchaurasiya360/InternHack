@@ -12,6 +12,7 @@ import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
+import GitHubStatsCard from "./GitHubStatsCard";
 import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
 
 interface PublicProfile {
@@ -265,6 +266,10 @@ export default function PublicProfilePage() {
           <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
             <BadgesSection studentId={profile.id} />
+          </motion.div>
+
+          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">
+            <GitHubStatsCard githubUrl={profile.githubUrl} compact />
           </motion.div>
         </div>
 

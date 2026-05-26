@@ -236,6 +236,7 @@ export interface AtsCategoryScores {
 
 export interface AtsKeywordAnalysis {
   found: string[];
+  partial: string[];
   missing: string[];
 }
 
@@ -683,6 +684,35 @@ export interface RepoRequest {
   user?: { id: number; name: string; email: string; profilePic?: string | null };
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OpenSourceContributionTrendPoint {
+  month: string;
+  label: string;
+  count: number;
+}
+
+export interface OpenSourceContributionTrendResponse {
+  trend: OpenSourceContributionTrendPoint[];
+  total: number;
+}
+
+export interface MockInterviewTranscriptEntry {
+  question: string;
+  answer: string;
+}
+
+export interface MockInterviewFeedback {
+  communication: string;
+  technicalAccuracy: string;
+  areasToImprove: string[];
+  strengths: string[];
+  overallRating: number;
+}
+
+export interface MockInterviewFeedbackResponse {
+  feedback: MockInterviewFeedback;
+  fallbackUsed: boolean;
 }
 
 // DSA Practice

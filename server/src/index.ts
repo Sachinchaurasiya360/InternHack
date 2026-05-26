@@ -69,6 +69,7 @@ import { startFollowUpCron } from "./cron/scheduled-emails.js";
 import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
+import { startWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -323,4 +324,14 @@ app.listen(PORT, async () => {
 
   // Start the scheduled-email worker (drains roadmap day-10, future digests)
   startScheduledEmailWorker();
+
+  // Start weekly roadmap progress digests from one owner only in production.
+  const runWeeklyDigestCron =
+    process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] !== "false");
+  if (runWeeklyDigestCron) {
+    startWeeklyRoadmapDigestCron();
+  } else {
+    console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
+  }
 });

@@ -71,6 +71,27 @@ export class JobController {
     }
   }
 
+  async getRelatedJobs(req: Request, res: Response) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid job ID" });
+      }
+
+      const rawLimit = Number.parseInt(String(req.query["limit"] ?? "4"), 10);
+      const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 4) : 4;
+      const jobs = await this.jobService.getRelatedJobs(id, limit);
+      if (!jobs) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+
+      return res.status(200).json({ jobs });
+    } catch (error) {
+      logger.error("Failed to get related jobs", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async getRecruiterJobs(req: Request, res: Response) {
     try {
       if (!req.user) {

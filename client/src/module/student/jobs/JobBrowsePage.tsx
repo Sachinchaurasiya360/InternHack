@@ -13,6 +13,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { ResultCount } from "../../../components/ui/ResultCount";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
@@ -392,6 +393,7 @@ export default function JobBrowsePage() {
               </div>
               <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">updated daily</span>
             </div>
+            {extData && <ResultCount currentCount={filteredExtJobs.length} totalCount={extData.total} />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
                 <motion.div key={`ext-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
@@ -438,6 +440,7 @@ export default function JobBrowsePage() {
               </div>
               <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">refreshed every 6h</span>
             </div>
+            {scrapedPagination && <ResultCount currentCount={scrapedJobs.length} totalCount={scrapedPagination.total} />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {scrapedJobs.map((job, i) => (
                 <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
@@ -516,6 +519,7 @@ export default function JobBrowsePage() {
               </div>
             ) : (
               <>
+                {data?.pagination && <ResultCount currentCount={(data.jobs ?? []).length} totalCount={data.pagination.total} />}
                 <div className="relative">
                   {isFetching && (
                     <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
