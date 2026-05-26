@@ -6,7 +6,11 @@ import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
+<<<<<<< HEAD
   History, Terminal, Lock, Crown, Code2, Flag, X,
+=======
+  History, Terminal, Lock, Crown, Code2,Flag
+>>>>>>> bfbe4a8 (feat: added frontend flag button along with integration with backend)
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
@@ -784,10 +788,20 @@ export default function DsaProblemDetailPage() {
       {showReportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
+<<<<<<< HEAD
             <h2 className="text-sm font-bold uppercase tracking-widest mb-4">
               Report Issue
             </h2>
             <div className="space-y-4">
+=======
+
+            <h2 className="text-sm font-bold uppercase tracking-widest mb-4">
+              Report Issue
+            </h2>
+
+            <div className="space-y-4">
+
+>>>>>>> bfbe4a8 (feat: added frontend flag button along with integration with backend)
               <select
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}
@@ -799,19 +813,33 @@ export default function DsaProblemDetailPage() {
                 <option value="Broken editor">Broken editor</option>
                 <option value="Other">Other</option>
               </select>
+<<<<<<< HEAD
+=======
+
+>>>>>>> bfbe4a8 (feat: added frontend flag button along with integration with backend)
               <textarea
                 value={reportMessage}
                 onChange={(e) => setReportMessage(e.target.value)}
                 placeholder="Additional details (optional)"
                 className="w-full h-28 px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm resize-none"
               />
+<<<<<<< HEAD
               <div className="flex justify-end gap-2">
+=======
+
+              <div className="flex justify-end gap-2">
+
+>>>>>>> bfbe4a8 (feat: added frontend flag button along with integration with backend)
                 <button
                   onClick={() => setShowReportModal(false)}
                   className="px-3 py-2 text-xs font-mono uppercase border border-stone-300 dark:border-white/10 rounded-md"
                 >
                   Cancel
                 </button>
+<<<<<<< HEAD
+=======
+
+>>>>>>> bfbe4a8 (feat: added frontend flag button along with integration with backend)
                 <button
                   disabled={!reportReason || reportIssueMutation.isPending}
                   onClick={() =>
@@ -825,11 +853,16 @@ export default function DsaProblemDetailPage() {
                 >
                   {reportIssueMutation.isPending ? "Submitting" : "Submit"}
                 </button>
+<<<<<<< HEAD
+=======
+
+>>>>>>> bfbe4a8 (feat: added frontend flag button along with integration with backend)
               </div>
             </div>
           </div>
         </div>
       )}
+<<<<<<< HEAD
 
       {/* ── "Try Next" slide-up panel ── */}
       <AnimatePresence>
@@ -896,6 +929,8 @@ export default function DsaProblemDetailPage() {
           </motion.div>
         )}
       </AnimatePresence>
+=======
+>>>>>>> bfbe4a8 (feat: added frontend flag button along with integration with backend)
     </>
   );
 }
