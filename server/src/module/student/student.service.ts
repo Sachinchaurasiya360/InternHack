@@ -299,5 +299,21 @@ export class StudentService {
 
     return submission;
   }
+async getProjects(studentId: number) {
+  const user = await prisma.user.findUnique({
+    where: { id: studentId },
+    select: { projects: true },
+  });
+  if (!user) throw new Error("User not found");
+  return user.projects;
+}
 
+async upsertProjects(studentId: number, projects: unknown[]) {
+  if (projects.length > 4) throw new Error("Maximum 4 projects allowed");
+  return prisma.user.update({
+    where: { id: studentId },
+    data: { projects: JSON.parse(JSON.stringify(projects)) },
+    select: { projects: true },
+  });
+}
 }

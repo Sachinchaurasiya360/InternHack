@@ -254,5 +254,25 @@ export class StudentController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+async getProjects(req: Request, res: Response, next: NextFunction) {
+  try {
+    const studentId = req.user!.id;
+    const projects = await this.studentService.getProjects(studentId);
+    return res.status(200).json({ projects });
+  } catch (err) {
+    next(err);
+  }
+  }
 
+async upsertProjects(req: Request, res: Response, next: NextFunction) {
+  try {
+    const studentId = req.user!.id;
+    const { projects } = req.body;
+    if (!Array.isArray(projects)) return res.status(400).json({ message: "projects must be an array" });
+    const result = await this.studentService.upsertProjects(studentId, projects);
+    return res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
 }

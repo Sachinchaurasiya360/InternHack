@@ -4,7 +4,7 @@ import {
   User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2,
   CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap,
   Linkedin, Github, Globe, X, Plus, AlignLeft, Calendar, Crown,
-  ChevronDown, ShieldCheck, Trophy, Pencil, Search as SearchIcon,
+  ChevronDown, ShieldCheck, Trophy, Pencil, Search as SearchIcon,GripVertical,
 } from "lucide-react";
 import { Link } from "react-router";
 import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
@@ -1053,7 +1053,7 @@ export default function StudentProfilePage() {
             <SectionHeader
               kicker="section / 05"
               title="Projects"
-              meta={`${form.projects.length}/10`}
+              meta={`${form.projects.length}/4`}
               open={openSections.projects}
               onToggle={() => toggleSection("projects")}
               right={
@@ -1301,13 +1301,13 @@ function ProjectsSection({ projects, onChange, errors }: {
   errors?: string[];
 }) {
   const [editing, setEditing] = useState<string | null>(null);
-  const [draft, setDraft] = useState<ProjectItem>({ id: "", title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" });
+  const [draft, setDraft] = useState<ProjectItem>({ id: "", title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" , builtAt: "" });
   const [techInput, setTechInput] = useState("");
 
   const startAdd = () => {
-    if (projects.length >= 10) return;
+    if (projects.length >= 4) return;
     const id = crypto.randomUUID();
-    setDraft({ id, title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" });
+    setDraft({ id, title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" , builtAt: "" });
     setEditing(id);
   };
 
@@ -1340,13 +1340,34 @@ function ProjectsSection({ projects, onChange, errors }: {
     setTechInput("");
   };
 
+  const dragItem = useRef<number | null>(null);
+  const dragOver = useRef<number | null>(null);
+
+  const handleDragEnd = () => {
+    if (dragItem.current === null || dragOver.current === null) return;
+    if (dragItem.current === dragOver.current) return;
+    const reordered = [...projects];
+    const [moved] = reordered.splice(dragItem.current, 1);
+    reordered.splice(dragOver.current, 0, moved!);
+    onChange(reordered);
+    dragItem.current = null;
+    dragOver.current = null;
+  };
+
   return (
     <div className="px-5 py-5 space-y-3">
       {errors && errors.length > 0 && (
         <p className="text-xs text-red-500 dark:text-red-400 px-1 font-mono">Project URLs must be valid (e.g. https://...)</p>
       )}
-      {projects.filter((p) => p.id !== editing).map((p) => (
-        <div key={p.id} className="flex items-start gap-3 px-4 py-3 border border-stone-200 dark:border-white/10 rounded-md">
+      {projects.filter((p) => p.id !== editing).map((p,i) => (
+        <div key={p.id} draggable
+           onDragStart={() => { dragItem.current = i; }}
+           onDragEnter={() => { dragOver.current = i; }}
+           onDragEnd={handleDragEnd}
+           onDragOver={(e) => e.preventDefault()}
+           className="flex items-start gap-3 px-4 py-3 border border-stone-200 dark:border-white/10 rounded-md cursor-grab active:cursor-grabbing"
+           >
+           <GripVertical className="w-4 h-4 text-stone-300 dark:text-stone-600 shrink-0 mt-1" />
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">{p.title}</h4>
             <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">{p.description}</p>
@@ -1362,6 +1383,11 @@ function ProjectsSection({ projects, onChange, errors }: {
                 {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"><ExternalLink className="w-3 h-3" /> live</a>}
                 {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"><Github className="w-3 h-3" /> code</a>}
               </div>
+            )}
+             {p.builtAt && (
+              <p className="text-[10px] font-mono text-stone-400 mt-1.5">
+                {new Date(p.builtAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+              </p>
             )}
           </div>
           <div className="flex gap-1 shrink-0">
@@ -1425,6 +1451,15 @@ function ProjectsSection({ projects, onChange, errors }: {
               <label className={labelClass}><Github className="w-3 h-3" /> Repo URL</label>
               <input type="url" value={draft.repoUrl ?? ""} onChange={(e) => setDraft((d) => ({ ...d, repoUrl: e.target.value }))} className={inputClass} placeholder="https://github.com/..." />
             </div>
+            <div>
+              <label className={labelClass}><Calendar className="w-3 h-3" /> Built at</label>
+             <input
+                type="month"
+                value={draft.builtAt ?? ""}
+                onChange={(e) => setDraft((d) => ({ ...d, builtAt: e.target.value }))}
+               className={inputClass}
+              />
+            </div>
           </div>
           <div className="flex gap-2 pt-1">
             <button
@@ -1446,7 +1481,7 @@ function ProjectsSection({ projects, onChange, errors }: {
         </div>
       )}
 
-      {projects.length < 10 && !editing && (
+      {projects.length < 4 && !editing && (
         <button
           type="button"
           onClick={startAdd}

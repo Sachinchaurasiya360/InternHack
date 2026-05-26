@@ -32,6 +32,7 @@ export interface ProjectItem {
   techStack: string[];
   liveUrl?: string;
   repoUrl?: string;
+  builtAt?: string;
 }
 
 export interface AchievementItem {

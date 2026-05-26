@@ -32,4 +32,6 @@ studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", (req, r
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
 studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));
-
+// Projects
+studentRouter.get("/projects", (req, res, next) => studentController.getProjects(req, res, next));
+studentRouter.put("/projects", (req, res, next) => studentController.upsertProjects(req, res, next));
